@@ -80,7 +80,7 @@ def test_real_connection() -> bool:
                     str(e)[:100],
                 )
                 logger.info("✅ CODE STRUCTURE VERIFIED!")
-        
+
         return True
 
     except Exception as e:
