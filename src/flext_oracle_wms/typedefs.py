@@ -12,9 +12,6 @@ from collections.abc import Callable
 from typing import TYPE_CHECKING, Annotated, Any, TypedDict
 
 # Import flext-core types
-from flext_core.domain.types import (
-    WMSEntityName,  # Use centralized WMSEntityName from flext-core
-)
 from pydantic import Field, StringConstraints
 
 # Import Oracle WMS constants
@@ -307,8 +304,7 @@ __all__ = [
     "WMSDiscoveryResult",
     "WMSEntityData",
     "WMSEntityInfo",
-    # WMS Specific Types
-    "WMSEntityName",
+    # WMS Specific Types (remove WMSEntityName as it's not defined)
     "WMSErrorCallback",
     "WMSErrorInfo",
     "WMSExecutionStats",

@@ -2,7 +2,6 @@
 
 Copyright (c) 2025 FLEXT Contributors
 SPDX-License-Identifier: MIT
-
 This module provides unified configuration management for all Oracle WMS operations,
 eliminating duplication between tap and target implementations.
 Implements flext-core unified configuration standards with composition mixins.
@@ -17,18 +16,15 @@ if TYPE_CHECKING:
     from pydantic import HttpUrl
 else:
     HttpUrl = str
-
 # Import unified configuration system from flext-core
 from flext_core.config.unified_config import (
     BaseConfigMixin,
     LoggingConfigMixin,
     PerformanceConfigMixin,
-    WMSConfigMixin,
 )
 from flext_core.domain.constants import ConfigDefaults
 from flext_core.domain.shared_types import (
     BatchSize,
-    Environment,
     Password,
     PositiveInt,
     RetryCount,
@@ -53,7 +49,6 @@ class OracleWMSConfig(
     BaseConfigMixin,
     LoggingConfigMixin,
     PerformanceConfigMixin,
-    WMSConfigMixin,
     BaseSettings,
 ):
     """Enterprise Oracle WMS configuration using unified composition mixins.
@@ -73,7 +68,6 @@ class OracleWMSConfig(
         validate_assignment=True,
         str_strip_whitespace=True,
     )
-
     # === Oracle WMS API Configuration (additional to WMSConfigMixin) ===
     base_url: HttpUrl = Field(
         ...,
@@ -85,7 +79,6 @@ class OracleWMSConfig(
     )
     username: Username = Field(..., description="Oracle WMS API username")
     password: Password = Field(..., description="Oracle WMS API password")
-
     # === WMS Rate Limiting (additional to PerformanceConfigMixin) ===
     enable_rate_limiting: bool = Field(
         default=True,
@@ -99,21 +92,18 @@ class OracleWMSConfig(
         default=0.1,
         description="Minimum delay between WMS requests",
     )
-
     # === Security Configuration ===
     verify_ssl: bool = Field(default=True, description="Verify SSL certificates")
     ssl_cert_path: Path | None = Field(
         default=None,
         description="Path to SSL certificate file",
     )
-
     # === Observability (additional to LoggingConfigMixin) ===
     enable_request_logging: bool = Field(
         default=False,
         description="Log detailed API request/response information",
     )
     enable_metrics: bool = Field(default=True, description="Enable metrics collection")
-
     # === Discovery Configuration ===
     auto_discover: bool = Field(
         default=True,
@@ -123,7 +113,6 @@ class OracleWMSConfig(
         default=True,
         description="Include metadata in responses",
     )
-
     # === Connection Pool Configuration (additional to PerformanceConfigMixin) ===
     pool_size: PositiveInt = Field(
         default=5,
@@ -133,7 +122,6 @@ class OracleWMSConfig(
         default=30.0,
         description="Connection pool timeout",
     )
-
     # === Version Information ===
     version: Version = Field(default="1.0.0", description="Client version")
 
@@ -145,7 +133,6 @@ class OracleWMSConfig(
         if not url_str.startswith(("http://", "https://")):
             msg = f"Invalid Oracle WMS base URL: {url_str} (must start with http:// or https://)"
             raise ValueError(msg)
-
         # Validate Oracle WMS URL pattern
         if ".wms.ocs.oraclecloud.com" not in url_str:
             # Allow for development/testing URLs
@@ -154,11 +141,9 @@ class OracleWMSConfig(
             ):
                 msg = f"Invalid Oracle WMS base URL: {url_str} (must contain .wms.ocs.oraclecloud.com or be a dev/test URL)"
                 raise ValueError(msg)
-
         return v
 
     # Note: log_level validation is now handled by LoggingConfigMixin
-
     @property
     def api_headers(self) -> dict[str, str]:
         """Generate standard API headers for Oracle WMS requests."""
@@ -205,8 +190,8 @@ class OracleWMSConfig(
         """Create configuration optimized for testing."""
         return cls(
             project_name="flext-oracle-wms-test",
-            environment=Environment.TEST,
-            base_url="https://test.example.com",  # type: ignore[arg-type]
+            environment="test",
+            base_url="https://test.example.com",
             username="test_user",
             password="test_password",
             batch_size=10,  # Using composition mixin field
@@ -226,14 +211,12 @@ def load_config() -> OracleWMSConfig:
     # Try to find .env file in current directory or parent directories
     env_file = None
     current_dir = Path.cwd()
-
     for _ in range(5):  # Search up to 5 levels up
         potential_env = Path(current_dir) / ".env"
         if Path(potential_env).exists():
             env_file = potential_env
             break
         current_dir = Path(current_dir).parent
-
     if env_file:
         return OracleWMSConfig(_env_file=env_file)
     return OracleWMSConfig()

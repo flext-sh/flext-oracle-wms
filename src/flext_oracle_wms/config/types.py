@@ -18,30 +18,19 @@ from flext_core.domain.shared_types import (
     BatchSize,
     ConfigurationKey,
     ConfigurationValue,
-    CpuPercent,
     DatabaseName,
-    DatabaseURL,
-    DirPath,
-    DiskMB,
     DurationSeconds,
     EntityId,
-    Environment,
+    EnvironmentLiteral,
     FileName,
     FilePath,
-    FileSize,
     Json,
     JsonDict,
-    JsonList,
     JsonSchema,
     LogLevel,
     MemoryMB,
     NonEmptyStr,
     NonNegativeInt,
-    OracleWMSAuthMethod,
-    OracleWMSEntityType,
-    OracleWMSFilterOperator,
-    OracleWMSPageMode,
-    OracleWMSWriteMode,
     Password,
     Port,
     PositiveInt,
@@ -49,26 +38,43 @@ from flext_core.domain.shared_types import (
     RetryCount,
     RetryDelay,
     ServiceResult,
-    SingerBookmark,
-    SingerCatalog,
-    SingerRecordCount,
-    SingerSchemaName,
-    SingerState,
-    SingerStreamName,
     TimeoutSeconds,
     TimestampISO,
     Token,
     Username,
     Version,
+)
+from pydantic import Field, StringConstraints
+
+from flext_oracle_wms.constants import (
+    OracleWMSAuthMethod,
+    OracleWMSEntityType,
+    OracleWMSFilterOperator,
+    OracleWMSPageMode,
+    OracleWMSWriteMode,
+)
+from flext_oracle_wms.typedefs import (
     WMSCompanyCode,
     WMSFacilityCode,
     WMSFieldMapping,
     WMSFieldName,
-    WMSItemID,
-    WMSLocationID,
-    WMSOrderNumber,
 )
-from pydantic import Field
+
+# Singer types (define as aliases since they're not in shared_types yet)
+type SingerCatalog = JsonDict
+type SingerState = JsonDict
+type SingerBookmark = JsonDict
+
+# Missing types that need to be defined (not in shared_types yet)
+type DiskMB = Annotated[int, Field(ge=0, description="Disk space in megabytes")]
+type DirPath = Annotated[str, Field(min_length=1, description="Directory path")]
+
+# Local type definitions to avoid import issues
+type ProjectName = Annotated[
+    str,
+    StringConstraints(min_length=1, max_length=128),
+    Field(description="Project name"),
+]
 
 # ==============================================================================
 # ORACLE WMS SPECIFIC TYPE ALIASES - Building on unified types
@@ -190,7 +196,7 @@ class OracleWMSConnectionConfig(TypedDict):
 
     # Connection identification
     connection_name: NonEmptyStr
-    environment: Environment
+    environment: EnvironmentLiteral
 
     # API configuration
     base_url: OracleWMSApiUrl
@@ -597,7 +603,7 @@ class FlextOracleWMSConfig(TypedDict):
     # Project information
     project_name: ProjectName
     project_version: Version
-    environment: Environment
+    environment: EnvironmentLiteral
 
     # Core Oracle WMS configurations
     connection: OracleWMSConnectionConfig
@@ -716,38 +722,19 @@ __all__ = [
     "BatchSize",
     "ConfigurationKey",
     "ConfigurationValue",
-    "CpuPercent",
     "DatabaseName",
-    "DatabaseURL",
-    "DevOracleWMSConfig",
-    # Environment configurations
-    "DevelopmentOracleWMSConfig",
-    "DirPath",
-    "DiskMB",
     "DurationSeconds",
     "EntityId",
-    "Environment",
+    "EnvironmentLiteral",
     "FileName",
     "FilePath",
-    "FileSize",
-    "FlextOracleWMSConfig",
     "Json",
     "JsonDict",
-    "JsonList",
     "JsonSchema",
     "LogLevel",
     "MemoryMB",
     "NonEmptyStr",
     "NonNegativeInt",
-    "OracleWMSApiKey",
-    "OracleWMSApiPort",
-    "OracleWMSApiTimeout",
-    "OracleWMSApiUrl",
-    "OracleWMSApiVersion",
-    "OracleWMSAuthMethod",
-    "OracleWMSBatchRetries",
-    "OracleWMSBatchSize",
-    "OracleWMSBatchTimeout",
     # Type aliases
     "OracleWMSConfiguration",
     # Configuration structures
@@ -799,32 +786,13 @@ __all__ = [
     "Password",
     "Port",
     "PositiveInt",
-    "ProdOracleWMSConfig",
-    "ProductionOracleWMSConfig",
     "ProjectName",
     "RetryCount",
     "RetryDelay",
     "ServiceResult",
-    "SingerBookmark",
-    "SingerCatalog",
-    "SingerRecordCount",
-    "SingerSchemaName",
-    "SingerState",
-    "SingerStreamName",
-    "TestOracleWMSConfig",
-    "TestingOracleWMSConfig",
     "TimeoutSeconds",
     "TimestampISO",
     "Token",
     "Username",
     "Version",
-    "WMSCompanyCode",
-    "WMSFacilityCode",
-    "WMSFieldMapping",
-    "WMSFieldName",
-    # Oracle WMS specific types
-    "WMSFilters",
-    "WMSItemID",
-    "WMSLocationID",
-    "WMSOrderNumber",
 ]

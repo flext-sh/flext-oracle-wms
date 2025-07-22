@@ -2,7 +2,6 @@
 
 Copyright (c) 2025 FLEXT Contributors
 SPDX-License-Identifier: MIT
-
 Modern Python 3.13 client with flext-core type integration.
 """
 
@@ -15,7 +14,6 @@ from typing import TYPE_CHECKING, Any, Self
 
 if TYPE_CHECKING:
     from collections.abc import Generator
-
 import httpx
 
 # Import local flattener for dynamic record flattening
@@ -55,7 +53,6 @@ if TYPE_CHECKING:
         WMSPageSize,
         WMSRecordBatch,
     )
-
 logger = get_logger(__name__)
 
 
@@ -63,7 +60,9 @@ class OracleWMSAuth(Auth):
     """Oracle WMS authentication handler."""
 
     def __init__(
-        self, username: OracleWMSUsername, password: OracleWMSPassword,
+        self,
+        username: OracleWMSUsername,
+        password: OracleWMSPassword,
     ) -> None:
         """Initialize Oracle WMS authentication with flext-core types.
 
@@ -99,7 +98,7 @@ class OracleWMSClient:
     - Authentication handling
     - Rate limiting and retry logic
     - Connection pooling
-    - Comprehensive error handling
+    - Comprehensive error handling.
     """
 
     def __init__(self, config: OracleWMSConfig) -> None:
@@ -108,11 +107,9 @@ class OracleWMSClient:
         self._last_request_time = 0.0
         self._request_count = 0
         self._session_start = time.time()
-
         # Setup logging
         if config.enable_request_logging:
             logging.getLogger("httpx").setLevel(logging.DEBUG)
-
         logger.info("Initialized Oracle WMS client for %s", config.base_url)
 
     @property
@@ -120,7 +117,6 @@ class OracleWMSClient:
         """Get HTTP client instance with Oracle WMS authentication."""
         if self._client is None:
             auth = OracleWMSAuth(self.config.username, self.config.password)
-
             self._client = httpx.Client(
                 auth=auth,
                 **self.config.connection_config,
@@ -133,16 +129,13 @@ class OracleWMSClient:
                 "Created HTTP client with connection pool size: %d",
                 self.config.pool_size,
             )
-
         return self._client
 
     def _apply_rate_limiting(self) -> None:
         """Apply rate limiting to Oracle WMS requests."""
         if not self.config.enable_rate_limiting:
             return
-
         current_time = time.time()
-
         # Check requests per minute limit
         if current_time - self._session_start < 60:
             if self._request_count >= self.config.max_requests_per_minute:
@@ -158,13 +151,11 @@ class OracleWMSClient:
             # Reset counters after a minute
             self._session_start = current_time
             self._request_count = 0
-
         # Apply minimum delay between requests
         time_since_last = current_time - self._last_request_time
         if time_since_last < self.config.min_request_delay:
             sleep_time = self.config.min_request_delay - time_since_last
             time.sleep(sleep_time)
-
         self._last_request_time = time.time()
         self._request_count += 1
 
@@ -179,11 +170,8 @@ class OracleWMSClient:
         """Make a request to Oracle WMS API with retry logic."""
         if retries is None:
             retries = self.config.max_retries
-
         self._apply_rate_limiting()
-
         full_url = f"{self.config.base_url}{endpoint}"
-
         for attempt in range(retries + 1):
             try:
                 if self.config.enable_request_logging:
@@ -198,18 +186,15 @@ class OracleWMSClient:
                         logger.debug("Request params: %s", params)
                     if json_data:
                         logger.debug("Request JSON: %s", json_data)
-
                 response = self.client.request(
                     method=method,
                     url=full_url,
                     params=params,
                     json=json_data,
                 )
-
                 if self.config.enable_request_logging:
                     logger.debug("Response status: %d", response.status_code)
                     logger.debug("Response headers: %s", dict(response.headers))
-
                 # Handle Oracle WMS specific errors
                 if response.status_code == 401:
                     msg = "Authentication failed"
@@ -220,10 +205,8 @@ class OracleWMSClient:
                 if response.status_code >= 400:
                     msg = f"HTTP {response.status_code}: {response.text}"
                     raise APIError(msg)
-
                 response.raise_for_status()
                 return response
-
             except httpx.TimeoutException as e:
                 logger.warning(
                     "Request timeout (attempt %d/%d): %s",
@@ -235,7 +218,6 @@ class OracleWMSClient:
                     msg = f"Request failed after {retries + 1} attempts"
                     raise OracleWMSError(msg) from e
                 time.sleep(self.config.retry_delay * (attempt + 1))
-
             except httpx.ConnectError as e:
                 logger.warning(
                     "Connection error (attempt %d/%d): %s",
@@ -247,7 +229,6 @@ class OracleWMSClient:
                     msg = f"Connection failed after {retries + 1} attempts"
                     raise OracleWMSError(msg) from e
                 time.sleep(self.config.retry_delay * (attempt + 1))
-
             except (AuthenticationError, APIError):
                 # Don't retry authentication or API errors
                 raise
@@ -262,7 +243,6 @@ class OracleWMSClient:
                     msg = f"Request failed after {retries + 1} attempts"
                     raise OracleWMSError(msg) from e
                 time.sleep(self.config.retry_delay * (attempt + 1))
-
         msg = f"Request failed after {retries + 1} attempts"
         raise OracleWMSError(msg)
 
@@ -280,10 +260,8 @@ class OracleWMSClient:
         try:
             logger.info("Starting entity discovery from Oracle WMS API")
             response = self._make_request("GET", self.config.wms_endpoint_base)
-
             data = response.json()
             entities = []
-
             if isinstance(data, list):
                 # Direct list of entities
                 for entity_name in data:
@@ -301,7 +279,6 @@ class OracleWMSClient:
                         entity_name = entity_info
                     else:
                         entity_name = entity_info.get("name", str(entity_info))
-
                     entity = WMSEntity(
                         name=entity_name,
                         description=entity_info.get(
@@ -316,7 +293,6 @@ class OracleWMSClient:
                 logger.warning("Unexpected discovery response format: %s", type(data))
                 # Fallback to known entities
                 entities = self._get_fallback_entities()
-
             return WMSDiscoveryResult(
                 entities=entities,
                 total_count=len(entities),
@@ -373,25 +349,20 @@ class OracleWMSClient:
             entity_name: WMS entity name using flext-core validation
             params: Optional query parameters
             page_size: WMS page size using flext-core validation
-
         Returns:
             WMSResponse with entity data
 
         """
         endpoint = self.config.get_entity_endpoint(entity_name)
         request_params = self.config.get_entity_params()
-
         if params:
             request_params.update(params)
-
         if page_size:
             request_params["page_size"] = min(page_size, self.config.batch_size)
         try:
             logger.info("Fetching data for entity: %s", entity_name)
             response = self._make_request("GET", endpoint, params=request_params)
-
             data = response.json()
-
             # Handle different response formats
             records: list[Any] = []
             if isinstance(data, list):
@@ -409,13 +380,11 @@ class OracleWMSClient:
                     type(data),
                 )
                 records = []
-
             logger.info(
                 "Retrieved %d records for entity: %s",
                 len(records),
                 entity_name,
             )
-
             # Apply dynamic flattening if enabled (MANDATORY for Oracle WMS)
             flattening_enabled = getattr(self.config, "flattening_enabled", True)
             if flattening_enabled and records:
@@ -424,7 +393,6 @@ class OracleWMSClient:
                     len(records),
                     entity_name,
                 )
-
                 # Initialize flattener with Oracle WMS standards
                 flattener = OracleWMSFlattener(
                     enabled=True,
@@ -432,14 +400,12 @@ class OracleWMSClient:
                     separator="__",  # Oracle WMS standard separator
                     preserve_empty_arrays=False,
                 )
-
                 # Flatten each record dynamically
                 flattened_records = []
                 for i, record in enumerate(records):
                     if isinstance(record, dict):
                         flatten_result = flattener.flatten_record(record)
-
-                        if flatten_result.is_success:
+                        if flatten_result.success:
                             # Extract the flattened record from the result data
                             flattening_data = flatten_result.data
                             if flattening_data is None:
@@ -451,7 +417,6 @@ class OracleWMSClient:
                                 continue
                             flattened_record = flattening_data["flattened_record"]
                             flattened_records.append(flattened_record)
-
                             # Log first record transformation for debugging
                             if i == 0:
                                 original_fields = len(record)
@@ -473,14 +438,12 @@ class OracleWMSClient:
                     else:
                         # Non-dict records pass through unchanged
                         flattened_records.append(record)
-
                 records = flattened_records
                 logger.info(
                     "✅ Successfully flattened %d records for entity: %s",
                     len(records),
                     entity_name,
                 )
-
             # Return WMSResponse object with processed records
             return WMSResponse(
                 data=records,
@@ -518,7 +481,6 @@ class OracleWMSClient:
 
         """
         endpoint = self.config.get_entity_endpoint(entity_name)
-
         results: dict[str, Any] = {
             "total_records": len(records),
             "successful": 0,
@@ -536,7 +498,6 @@ class OracleWMSClient:
                 try:
                     method = "POST" if write_mode == "insert" else "PUT"
                     response = self._make_request(method, endpoint, json_data=record)
-
                     if response.status_code in {200, 201, 204}:
                         results["successful"] += 1
                     else:
@@ -552,7 +513,6 @@ class OracleWMSClient:
                 except Exception as e:
                     results["failed"] += 1
                     results["errors"].append({"record_index": i, "error": str(e)})
-
             logger.info(
                 "Write operation completed: %d successful, %d failed",
                 results["successful"],
@@ -592,13 +552,11 @@ class OracleWMSClient:
     # ==============================================================================
     # ULTRA-MODERN FLEXT-CORE INTEGRATION METHODS - Python 3.13 Enhanced
     # ==============================================================================
-
     def get_entity_metadata(self, entity_name: OracleWMSEntityType) -> dict[str, Any]:
         """Get Oracle WMS entity metadata using flext-core types.
 
         Args:
             entity_name: WMS entity name using flext-core validation
-
         Returns:
             Entity metadata dictionary
 
@@ -608,7 +566,6 @@ class OracleWMSClient:
             logger.info("Fetching metadata for entity: %s", entity_name)
             response = self._make_request("GET", endpoint)
             metadata_raw = response.json()
-
             # Ensure we return a dict[str, Any]
             if isinstance(metadata_raw, dict):
                 metadata: dict[str, Any] = metadata_raw
@@ -617,7 +574,6 @@ class OracleWMSClient:
                     "error": "Invalid metadata format",
                     "raw_data": metadata_raw,
                 }
-
             logger.info("Retrieved metadata for entity: %s", entity_name)
             return metadata
         except Exception as e:
@@ -638,16 +594,14 @@ class OracleWMSClient:
 
         Args:
             entity_name: Entity name to validate
-
         Returns:
             Validated WMS entity name
-
         Raises:
             ValueError: If entity name is invalid
 
         """
         # This uses the Oracle WMS entity type validation
-        validated_name: OracleWMSEntityType = entity_name  # type: ignore[assignment]
+        validated_name: OracleWMSEntityType = entity_name
         logger.debug("Validated entity name: %s", validated_name)
         return validated_name
 
@@ -661,14 +615,12 @@ class OracleWMSClient:
         Args:
             entity_name: WMS entity name using flext-core validation
             api_version: WMS API version using flext-core validation
-
         Returns:
             Complete API URL for the entity
 
         """
         version = api_version or self.config.api_version
         url = f"{self.config.base_url}/wms/lgfapi/{version}/entity/{entity_name}"
-
         logger.debug("Built API URL for %s: %s", entity_name, url)
         return url
 

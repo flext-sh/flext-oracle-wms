@@ -14,7 +14,7 @@ from typing import TYPE_CHECKING, Any
 from flext_core.domain.core import DomainError as FlextError
 
 if TYPE_CHECKING:
-    from flext_core.domain.types import WMSEntityName
+    from flext_core.domain.shared_types import WMSEntityName
 
 
 class OracleWMSError(FlextError):

@@ -11,7 +11,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any, TypedDict
 
-from flext_core.domain.types import ServiceResult
+from flext_core.domain.shared_types import ServiceResult
 
 from flext_oracle_wms.constants import OracleWMSDefaults, OracleWMSErrorMessages
 
@@ -68,11 +68,10 @@ class OracleWMSFlattener:
         self,
         record: WMSRecord,
         schema: WMSSchema | None = None,
-    ) -> ServiceResult[FlatteningResult]:
+    ) -> ServiceResult[Any]:
         """Flatten a WMS record with mandatory capabilities."""
         if not self.enabled:
-            return ServiceResult.ok(
-                FlatteningResult(
+            return ServiceResult.ok(FlatteningResult(
                     flattened_record=record,
                     original_schema=schema or {},
                     flattened_schema=schema or {},
@@ -107,19 +106,17 @@ class OracleWMSFlattener:
             return ServiceResult.ok(result)
 
         except Exception as e:
-            return ServiceResult.fail(
-                f"{OracleWMSErrorMessages.FLATTENING_FAILED}: {e}",
+            return ServiceResult.fail(f"{OracleWMSErrorMessages.FLATTENING_FAILED}: {e}",
             )
 
     def flatten_batch(
         self,
         records: WMSRecordBatch,
         schema: WMSSchema | None = None,
-    ) -> ServiceResult[list[FlatteningResult]]:
+    ) -> ServiceResult[Any]:
         """Flatten a batch of WMS records."""
         if not self.enabled:
-            return ServiceResult.ok(
-                [
+            return ServiceResult.ok([
                     FlatteningResult(
                         flattened_record=record,
                         original_schema=schema or {},
@@ -134,15 +131,13 @@ class OracleWMSFlattener:
             results: list[FlatteningResult] = []
             for record in records:
                 flatten_result = self.flatten_record(record, schema)
-                if not flatten_result.is_success:
-                    return ServiceResult.fail(
-                        f"{OracleWMSErrorMessages.FLATTENING_FAILED}: "
+                if not flatten_result.success:
+                    return ServiceResult.fail(f"{OracleWMSErrorMessages.FLATTENING_FAILED}: "
                         f"{flatten_result.error}",
                     )
                 # Since we know it's successful, data is guaranteed to be not None
                 if flatten_result.data is None:
-                    return ServiceResult.fail(
-                        f"{OracleWMSErrorMessages.FLATTENING_FAILED}: "
+                    return ServiceResult.fail(f"{OracleWMSErrorMessages.FLATTENING_FAILED}: "
                         "Result data is None despite success status",
                     )
                 results.append(flatten_result.data)
@@ -150,8 +145,7 @@ class OracleWMSFlattener:
             return ServiceResult.ok(results)
 
         except Exception as e:
-            return ServiceResult.fail(
-                f"{OracleWMSErrorMessages.FLATTENING_FAILED}: {e}",
+            return ServiceResult.fail(f"{OracleWMSErrorMessages.FLATTENING_FAILED}: {e}",
             )
 
     def _flatten_object(
@@ -258,7 +252,7 @@ class OracleWMSDeflattener:
         self,
         flattened_record: WMSFlattenedRecord,
         original_schema: WMSSchema | None = None,
-    ) -> ServiceResult[DeflatteningResult]:
+    ) -> ServiceResult[Any]:
         """Deflattened a flattened WMS record."""
         try:
             original_record = self._deflattened_object(flattened_record)
@@ -275,8 +269,7 @@ class OracleWMSDeflattener:
                     restored_schema,
                 )
                 if not validation_result:
-                    return ServiceResult.fail(
-                        f"{OracleWMSErrorMessages.DEFLATTENING_FAILED}: "
+                    return ServiceResult.fail(f"{OracleWMSErrorMessages.DEFLATTENING_FAILED}: "
                         "Restored structure doesn't match schema",
                     )
 
@@ -299,15 +292,14 @@ class OracleWMSDeflattener:
             return ServiceResult.ok(result)
 
         except Exception as e:
-            return ServiceResult.fail(
-                f"{OracleWMSErrorMessages.DEFLATTENING_FAILED}: {e}",
+            return ServiceResult.fail(f"{OracleWMSErrorMessages.DEFLATTENING_FAILED}: {e}",
             )
 
     def deflattened_batch(
         self,
         flattened_records: list[WMSFlattenedRecord],
         original_schema: WMSSchema | None = None,
-    ) -> ServiceResult[list[DeflatteningResult]]:
+    ) -> ServiceResult[Any]:
         """Deflattened a batch of flattened WMS records."""
         try:
             results: list[DeflatteningResult] = []
@@ -316,15 +308,13 @@ class OracleWMSDeflattener:
                     flattened_record,
                     original_schema,
                 )
-                if not deflattened_result.is_success:
-                    return ServiceResult.fail(
-                        f"{OracleWMSErrorMessages.DEFLATTENING_FAILED}: "
+                if not deflattened_result.success:
+                    return ServiceResult.fail(f"{OracleWMSErrorMessages.DEFLATTENING_FAILED}: "
                         f"{deflattened_result.error}",
                     )
                 # Since we know it's successful, data is guaranteed to be not None
                 if deflattened_result.data is None:
-                    return ServiceResult.fail(
-                        f"{OracleWMSErrorMessages.DEFLATTENING_FAILED}: "
+                    return ServiceResult.fail(f"{OracleWMSErrorMessages.DEFLATTENING_FAILED}: "
                         "Result data is None despite success status",
                     )
                 results.append(deflattened_result.data)
@@ -332,8 +322,7 @@ class OracleWMSDeflattener:
             return ServiceResult.ok(results)
 
         except Exception as e:
-            return ServiceResult.fail(
-                f"{OracleWMSErrorMessages.DEFLATTENING_FAILED}: {e}",
+            return ServiceResult.fail(f"{OracleWMSErrorMessages.DEFLATTENING_FAILED}: {e}",
             )
 
     def _deflattened_object(self, flattened_obj: dict[str, Any]) -> dict[str, Any]:
@@ -538,7 +527,7 @@ def flatten_wms_record(
     record: WMSRecord,
     schema: WMSSchema | None = None,
     **flattener_kwargs: Any,
-) -> ServiceResult[FlatteningResult]:
+) -> ServiceResult[Any]:
     """Flatten a WMS record with default configuration."""
     flattener = create_flattener(**flattener_kwargs)
     return flattener.flatten_record(record, schema)
@@ -548,7 +537,7 @@ def deflattened_wms_record(
     flattened_record: WMSFlattenedRecord,
     original_schema: WMSSchema | None = None,
     **deflattener_kwargs: Any,
-) -> ServiceResult[DeflatteningResult]:
+) -> ServiceResult[Any]:
     """Deflattened a WMS record with default configuration."""
     deflattener = create_deflattener(**deflattener_kwargs)
     return deflattener.deflattened_record(flattened_record, original_schema)

@@ -1,14 +1,13 @@
-"""Oracle WMS Singer SDK Package - Strict compliance with mandatory capabilities.
+"""Singer SDK integration module for Oracle WMS data processing.
 
-This package provides Singer SDK strict compliance for Oracle WMS integrations
-with mandatory flattening/deflattening capabilities as required.
-
-Copyright (c) 2025 FLEXT Contributors
-SPDX-License-Identifier: MIT
+This module provides Singer SDK-compatible data flattening and deflattening
+capabilities for Oracle WMS data structures, enabling seamless integration
+with the Singer ecosystem for ETL operations.
 """
 
 from __future__ import annotations
 
+from flext_oracle_wms.common import create_standard_exports
 from flext_oracle_wms.singer.flattening import (
     DeflatteningResult,
     # Result types
@@ -24,7 +23,8 @@ from flext_oracle_wms.singer.flattening import (
     flatten_wms_record,
 )
 
-__all__ = [
+# Use standardized export pattern
+_exports = [
     "DeflatteningResult",
     "FlatteningResult",
     "OracleWMSDeflattener",
@@ -34,3 +34,5 @@ __all__ = [
     "deflattened_wms_record",
     "flatten_wms_record",
 ]
+
+__all__, __doc__ = create_standard_exports("Singer SDK", _exports)

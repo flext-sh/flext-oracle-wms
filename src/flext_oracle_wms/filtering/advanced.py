@@ -13,7 +13,7 @@ import re
 from datetime import UTC, datetime
 from typing import TYPE_CHECKING, Any, Literal, TypedDict
 
-from flext_core.domain.types import ServiceResult
+from flext_core.domain.shared_types import ServiceResult
 
 from flext_oracle_wms.constants import (
     OracleWMSErrorMessages,
@@ -118,16 +118,15 @@ class OracleWMSAdvancedFilter:
         self,
         records: WMSRecordBatch,
         filter_query: FilterQuery,
-    ) -> ServiceResult[FilterResult]:
+    ) -> ServiceResult[Any]:
         """Filter records using advanced query."""
         start_time = datetime.now()
 
         try:
             # Validate filter query
             validation_result = self._validate_filter_query(filter_query)
-            if not validation_result.is_success:
-                return ServiceResult.fail(
-                    f"{OracleWMSErrorMessages.INVALID_FILTER_OPERATOR}: "
+            if not validation_result.success:
+                return ServiceResult.fail(f"{OracleWMSErrorMessages.INVALID_FILTER_OPERATOR}: "
                     f"{validation_result.error}",
                 )
 
@@ -166,11 +165,10 @@ class OracleWMSAdvancedFilter:
                 filter_summary=self._generate_filter_summary(filter_query),
             )
 
-            return ServiceResult.ok(result)
+            return ServiceResult.ok({"result": result})
 
         except Exception as e:
-            return ServiceResult.fail(
-                f"{OracleWMSErrorMessages.INVALID_FILTER_OPERATOR}: {e}",
+            return ServiceResult.fail(f"{OracleWMSErrorMessages.INVALID_FILTER_OPERATOR}: {e}",
             )
 
     def build_filter_query(
@@ -230,7 +228,7 @@ class OracleWMSAdvancedFilter:
             limit=kwargs.get("limit"),
         )
 
-    def _validate_filter_query(self, filter_query: FilterQuery) -> ServiceResult[bool]:
+    def _validate_filter_query(self, filter_query: FilterQuery) -> ServiceResult[Any]:
         """Validate filter query structure."""
         try:
             # Count total conditions
@@ -243,16 +241,14 @@ class OracleWMSAdvancedFilter:
                 )
 
             if total_conditions > self.max_conditions:
-                return ServiceResult.fail(
-                    f"{OracleWMSErrorMessages.TOO_MANY_FILTERS}: "
+                return ServiceResult.fail(f"{OracleWMSErrorMessages.TOO_MANY_FILTERS}: "
                     f"{total_conditions} > {self.max_conditions}",
                 )
 
             # Validate nested groups depth
             for group in filter_groups:
                 if len(group["nested_groups"]) > self.max_nested_groups:
-                    return ServiceResult.fail(
-                        f"{OracleWMSErrorMessages.TOO_MANY_FILTERS}: "
+                    return ServiceResult.fail(f"{OracleWMSErrorMessages.TOO_MANY_FILTERS}: "
                         f"nested groups {len(group['nested_groups'])} > "
                         f"{self.max_nested_groups}",
                     )
@@ -261,24 +257,21 @@ class OracleWMSAdvancedFilter:
             for group in filter_groups:
                 for condition in group["conditions"]:
                     if condition["operator"] not in self.operators:
-                        return ServiceResult.fail(
-                            f"{OracleWMSErrorMessages.INVALID_FILTER_OPERATOR}: "
+                        return ServiceResult.fail(f"{OracleWMSErrorMessages.INVALID_FILTER_OPERATOR}: "
                             f"{condition['operator']}",
                         )
 
             # Validate page mode
             page_mode = filter_query["page_mode"]
             if page_mode not in OracleWMSPageModes.ALL_MODES:
-                return ServiceResult.fail(
-                    f"{OracleWMSErrorMessages.INVALID_FILTER_OPERATOR}: "
+                return ServiceResult.fail(f"{OracleWMSErrorMessages.INVALID_FILTER_OPERATOR}: "
                     f"invalid page mode {page_mode}",
                 )
 
-            return ServiceResult.ok(True)
+            return ServiceResult.ok({"result": True})
 
         except Exception as e:
-            return ServiceResult.fail(
-                f"{OracleWMSErrorMessages.INVALID_FILTER_OPERATOR}: "
+            return ServiceResult.fail(f"{OracleWMSErrorMessages.INVALID_FILTER_OPERATOR}: "
                 f"validation error {e}",
             )
 
@@ -619,7 +612,7 @@ def filter_by_id_range(
     id_field: str = "id",
     id_min: int | None = None,
     id_max: int | None = None,
-) -> ServiceResult[FilterResult]:
+) -> ServiceResult[Any]:
     """Filter records by ID range."""
     filter_engine = create_advanced_filter()
 
@@ -642,7 +635,7 @@ def filter_by_modification_time(
     modts_field: str = "last_modified",
     modts_gte: str | None = None,
     modts_lte: str | None = None,
-) -> ServiceResult[FilterResult]:
+) -> ServiceResult[Any]:
     """Filter records by modification timestamp."""
     filter_engine = create_advanced_filter()
 
