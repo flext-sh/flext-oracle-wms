@@ -8,43 +8,41 @@ Ultra-modern Python 3.13 models with MAXIMUM flext-core integration.
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any
+from datetime import datetime
+from typing import TYPE_CHECKING, Annotated, Any
 
-# Import flext-core base and types for maximum standardization
-from flext_core.domain.pydantic_base import DomainBaseModel
+# Import from flext-core root namespace as required
+from flext_core import FlextResult
+from pydantic import BaseModel, Field
 
-# Import runtime types for Pydantic model validation
-from pydantic import Field
+# Import constants for runtime usage
 
-# Import WMS types from typedefs for runtime availability
+# Define WMS-specific types at runtime - needed for Pydantic models
+WMSPageSize = Annotated[int, Field(ge=1, le=10000)]
+WMSRecord = dict[str, Any]
+WMSFieldName = str
 
 if TYPE_CHECKING:
-    from datetime import datetime
-    from typing import Annotated
-
     from flext_oracle_wms.constants import OracleWMSEntityType
     from flext_oracle_wms.typedefs import WMSSchema
 
     # Define WMS-specific types for this module
     WMSErrorCode = str
     WMSErrorMessage = str
-    WMSFieldName = str
-    WMSPageSize = Annotated[int, Field(ge=1, le=10000)]
-    WMSRecord = dict[str, Any]
 
 
-class WMSEntity(DomainBaseModel):
+class FlextOracleWmsEntity(BaseModel):
     """Oracle WMS entity model using flext-core standards."""
 
-    name: OracleWMSEntityType = Field(
+    name: str = Field(
         ...,
-        description="Oracle WMS entity name using local validation",
+        description="Oracle WMS entity name",
     )
     description: str | None = Field(
         None,
         description="Human-readable entity description",
     )
-    fields: WMSSchema = Field(
+    fields: dict[str, Any] = Field(
         default_factory=dict,
         description="Entity schema fields using flext-core WMS types",
     )
@@ -62,10 +60,10 @@ class WMSEntity(DomainBaseModel):
     )
 
 
-class WMSDiscoveryResult(DomainBaseModel):
+class FlextOracleWmsDiscoveryResult(BaseModel):
     """Oracle WMS discovery result using flext-core standards."""
 
-    entities: list[WMSEntity] = Field(
+    entities: list[FlextOracleWmsEntity] = Field(
         default_factory=list,
         description="List of discovered Oracle WMS entities",
     )
@@ -94,7 +92,7 @@ class WMSDiscoveryResult(DomainBaseModel):
     )
 
 
-class WMSError(DomainBaseModel):
+class FlextOracleWmsError(BaseModel):
     """Oracle WMS error model using flext-core standards."""
 
     code: str | None = Field(
@@ -112,7 +110,7 @@ class WMSError(DomainBaseModel):
 
     # Enhanced error metadata
     timestamp: datetime | None = Field(None, description="When the error occurred")
-    entity_name: OracleWMSEntityType | None = Field(
+    entity_name: str | None = Field(
         None,
         description="Oracle WMS entity associated with error",
     )
@@ -134,7 +132,7 @@ class WMSError(DomainBaseModel):
     request_id: str | None = Field(None, description="Request ID for tracking")
 
 
-class WMSResponse(DomainBaseModel):
+class FlextOracleWmsResponse(BaseModel):
     """Oracle WMS API response using flext-core standards."""
 
     data: list[dict[str, Any]] = Field(
@@ -159,7 +157,7 @@ class WMSResponse(DomainBaseModel):
     )
 
     # Enhanced Oracle WMS response metadata
-    entity_name: OracleWMSEntityType | None = Field(
+    entity_name: str | None = Field(
         None,
         description="Oracle WMS entity name for this response",
     )
@@ -177,16 +175,20 @@ class WMSResponse(DomainBaseModel):
         description="Pagination cursor for next page",
     )
 
-    def __init__(self, **data: Any) -> None:
-        super().__init__(**data)
-        # Ensure records and data are synchronized for backward compatibility
-        if self.data and not self.records:
-            self.records = self.data
-        elif self.records and not self.data:
-            self.data = self.records
+    def model_post_init(self, __context: Any, /) -> None:
+        """Post-init hook to synchronize records and data fields."""
+        # Synchronize data and records for backward compatibility
+        if hasattr(self, "data") and self.data and not getattr(self, "records", None):
+            object.__setattr__(self, "records", self.data)
+        elif (
+            hasattr(self, "records")
+            and self.records
+            and not getattr(self, "data", None)
+        ):
+            object.__setattr__(self, "data", self.records)
 
 
-class WMSEntityField(DomainBaseModel):
+class FlextOracleWmsEntityField(BaseModel):
     """Oracle WMS entity field definition using flext-core standards."""
 
     name: WMSFieldName = Field(
@@ -233,18 +235,20 @@ class WMSEntityField(DomainBaseModel):
     )
 
 
-class WMSRecordModel(DomainBaseModel):
+class FlextOracleWmsRecordModel(BaseModel):
     """Oracle WMS record model using flext-core standards."""
 
-    data: WMSRecord = Field(
+    data: dict[str, Any] = Field(
         default_factory=dict,
         description="Oracle WMS record data using flext-core validation",
     )
-    entity: OracleWMSEntityType = Field(
+    entity: str = Field(
         ...,
         description="Oracle WMS entity name using flext-core types",
     )
-    id: str | None = Field(None, description="Unique record identifier from Oracle WMS")
+    record_id: str | None = Field(
+        None, description="Unique record identifier from Oracle WMS"
+    )
 
     # Enhanced Oracle WMS record metadata
     extracted_at: datetime | None = Field(
@@ -255,7 +259,7 @@ class WMSRecordModel(DomainBaseModel):
         None,
         description="Last modification timestamp from Oracle WMS",
     )
-    version: int | None = Field(
+    record_version: int | None = Field(
         None,
         description="Record version for optimistic locking",
     )
@@ -274,3 +278,12 @@ class WMSRecordModel(DomainBaseModel):
 
 
 # Models are ready for use with runtime type resolution
+
+__all__ = [
+    "FlextOracleWmsDiscoveryResult",
+    "FlextOracleWmsEntity",
+    "FlextOracleWmsEntityField",
+    "FlextOracleWmsError",
+    "FlextOracleWmsRecordModel",
+    "FlextOracleWmsResponse",
+]

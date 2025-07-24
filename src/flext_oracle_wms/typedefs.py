@@ -123,7 +123,7 @@ WMSEntityData = list[WMSRecord]
 # ==============================================================================
 
 
-class WMSConnectionInfo(TypedDict):
+class FlextOracleWmsConnectionInfo(TypedDict):
     """WMS connection information."""
 
     base_url: str
@@ -134,7 +134,7 @@ class WMSConnectionInfo(TypedDict):
     facility_code: str
 
 
-class WMSEntityInfo(TypedDict):
+class FlextOracleWmsEntityInfo(TypedDict):
     """WMS entity information."""
 
     entity_name: OracleWMSEntityType
@@ -145,7 +145,7 @@ class WMSEntityInfo(TypedDict):
     schema: WMSSchema
 
 
-class WMSStreamConfig(TypedDict):
+class FlextOracleWmsStreamConfig(TypedDict):
     """WMS stream configuration."""
 
     entity_name: OracleWMSEntityType
@@ -156,7 +156,7 @@ class WMSStreamConfig(TypedDict):
     field_selection: list[str] | None
 
 
-class WMSPaginationInfo(TypedDict):
+class FlextOracleWmsPaginationInfo(TypedDict):
     """WMS pagination information."""
 
     page_mode: OracleWMSPageMode
@@ -167,7 +167,7 @@ class WMSPaginationInfo(TypedDict):
     next_token: str | None
 
 
-class WMSRateLimitInfo(TypedDict):
+class FlextOracleWmsRateLimitInfo(TypedDict):
     """WMS rate limiting information."""
 
     enabled: bool
@@ -177,7 +177,7 @@ class WMSRateLimitInfo(TypedDict):
     delay_next_request: float
 
 
-class WMSBatchInfo(TypedDict):
+class FlextOracleWmsBatchInfo(TypedDict):
     """WMS batch processing information."""
 
     batch_size: int
@@ -188,7 +188,7 @@ class WMSBatchInfo(TypedDict):
     total_batches: int
 
 
-class WMSValidationResult(TypedDict):
+class FlextOracleWmsValidationResult(TypedDict):
     """WMS validation result."""
 
     valid: bool
@@ -198,17 +198,17 @@ class WMSValidationResult(TypedDict):
     record_count: int
 
 
-class WMSDiscoveryResult(TypedDict):
+class FlextOracleWmsDiscoveryResult(TypedDict):
     """WMS discovery result."""
 
-    entities: list[WMSEntityInfo]
+    entities: list[FlextOracleWmsEntityInfo]
     total_entities: int
     discovery_time: datetime
     api_version: str
-    connection_info: WMSConnectionInfo
+    connection_info: FlextOracleWmsConnectionInfo
 
 
-class WMSExecutionStats(TypedDict):
+class FlextOracleWmsExecutionStats(TypedDict):
     """WMS execution statistics."""
 
     start_time: datetime
@@ -239,8 +239,8 @@ class WMSErrorInfo(TypedDict):
 
 type WMSProgressCallback = Callable[[int, int], None]  # (processed, total)
 type WMSErrorCallback = Callable[[WMSErrorInfo], None]
-type WMSValidationCallback = Callable[[WMSValidationResult], None]
-type WMSDiscoveryCallback = Callable[[WMSDiscoveryResult], None]
+type WMSValidationCallback = Callable[[FlextOracleWmsValidationResult], None]
+type WMSDiscoveryCallback = Callable[[FlextOracleWmsDiscoveryResult], None]
 
 
 # ==============================================================================
@@ -248,7 +248,7 @@ type WMSDiscoveryCallback = Callable[[WMSDiscoveryResult], None]
 # ==============================================================================
 
 
-class WMSFilterConfig(TypedDict, total=False):
+class FlextOracleWmsFilterConfig(TypedDict, total=False):
     """WMS filter configuration."""
 
     enable_dynamic_filters: bool
@@ -257,7 +257,7 @@ class WMSFilterConfig(TypedDict, total=False):
     max_filter_conditions: int
 
 
-class WMSSchemaConfig(TypedDict, total=False):
+class FlextOracleWmsSchemaConfig(TypedDict, total=False):
     """WMS schema configuration."""
 
     enable_flattening: bool
@@ -267,7 +267,7 @@ class WMSSchemaConfig(TypedDict, total=False):
     preserve_original_schema: bool
 
 
-class WMSPerformanceConfig(TypedDict, total=False):
+class FlextOracleWmsPerformanceConfig(TypedDict, total=False):
     """WMS performance configuration."""
 
     page_size: int
@@ -279,7 +279,7 @@ class WMSPerformanceConfig(TypedDict, total=False):
     max_requests_per_minute: int
 
 
-class WMSTargetConfig(TypedDict, total=False):
+class FlextOracleWmsTargetConfig(TypedDict, total=False):
     """WMS target configuration."""
 
     write_mode: OracleWMSWriteMode
@@ -294,26 +294,33 @@ class WMSTargetConfig(TypedDict, total=False):
 # ==============================================================================
 
 __all__ = [
+    "FlextOracleWmsBatchInfo",
+    # Typed Dicts
+    "FlextOracleWmsConnectionInfo",
+    "FlextOracleWmsDiscoveryResult",
+    "FlextOracleWmsEntityInfo",
+    "FlextOracleWmsExecutionStats",
+    # Configuration Types
+    "FlextOracleWmsFilterConfig",
+    "FlextOracleWmsPaginationInfo",
+    "FlextOracleWmsPerformanceConfig",
+    "FlextOracleWmsRateLimitInfo",
+    "FlextOracleWmsSchemaConfig",
+    "FlextOracleWmsStreamConfig",
+    "FlextOracleWmsTargetConfig",
+    "FlextOracleWmsValidationResult",
     # Response Types
     "WMSAPIResponse",
-    "WMSBatchInfo",
     "WMSCompanyCode",
-    # Typed Dicts
-    "WMSConnectionInfo",
     "WMSDiscoveryCallback",
-    "WMSDiscoveryResult",
     "WMSEntityData",
-    "WMSEntityInfo",
     # WMS Specific Types (remove WMSEntityName as it's not defined)
     "WMSErrorCallback",
     "WMSErrorInfo",
-    "WMSExecutionStats",
     "WMSFacilityCode",
     "WMSFieldMapping",
     "WMSFieldName",
     "WMSFilterCondition",
-    # Configuration Types
-    "WMSFilterConfig",
     # Filter Types
     "WMSFilterValue",
     "WMSFilters",
@@ -326,20 +333,13 @@ __all__ = [
     "WMSPageSize",
     # Pagination Types
     "WMSPageToken",
-    "WMSPaginationInfo",
-    "WMSPerformanceConfig",
     # Callback Types
     "WMSProgressCallback",
-    "WMSRateLimitInfo",
     # Record Types
     "WMSRecord",
     "WMSRecordBatch",
     "WMSSchema",
-    "WMSSchemaConfig",
     # Schema Types
     "WMSSchemaProperty",
-    "WMSStreamConfig",
-    "WMSTargetConfig",
     "WMSValidationCallback",
-    "WMSValidationResult",
 ]

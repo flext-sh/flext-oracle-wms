@@ -11,22 +11,22 @@ from __future__ import annotations
 
 from flext_oracle_wms.schema.dynamic import (
     # Core schema classes
-    DynamicSchemaProcessor,
-    EntityProcessingResult,
+    FlextOracleWmsDynamicSchemaProcessor,
+    FlextOracleWmsEntityProcessingResult,
     # Result types
-    SchemaDiscoveryResult,
+    FlextOracleWmsSchemaDiscoveryResult,
     # Factory functions
-    create_dynamic_schema_processor,
+    flext_oracle_wms_create_dynamic_schema_processor,
     # Convenience functions
-    discover_entity_schemas,
-    process_entity_with_schema,
+    flext_oracle_wms_discover_entity_schemas,
+    flext_oracle_wms_process_entity_with_schema,
 )
 
 __all__ = [
-    "DynamicSchemaProcessor",
-    "EntityProcessingResult",
-    "SchemaDiscoveryResult",
-    "create_dynamic_schema_processor",
-    "discover_entity_schemas",
-    "process_entity_with_schema",
+    "FlextOracleWmsDynamicSchemaProcessor",
+    "FlextOracleWmsEntityProcessingResult",
+    "FlextOracleWmsSchemaDiscoveryResult",
+    "flext_oracle_wms_create_dynamic_schema_processor",
+    "flext_oracle_wms_discover_entity_schemas",
+    "flext_oracle_wms_process_entity_with_schema",
 ]

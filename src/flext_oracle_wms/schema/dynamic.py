@@ -17,29 +17,30 @@ from typing import TYPE_CHECKING, Any, TypedDict
 if TYPE_CHECKING:
     from collections.abc import Callable
 
-from flext_core.domain.shared_types import ServiceResult
+# Import from flext-core root namespace as required
+from flext_core import FlextResult
 
 from flext_oracle_wms.constants import (
-    OracleWMSEntityTypes,
-    OracleWMSErrorMessages,
+    FlextOracleWmsEntityTypes,
+    FlextOracleWmsErrorMessages,
+    OracleWMSEntityType,
 )
 from flext_oracle_wms.typedefs import (
-    WMSDiscoveryResult,
-    WMSEntityInfo,
+    FlextOracleWmsDiscoveryResult,
+    FlextOracleWmsEntityInfo,
 )
 
 logger = logging.getLogger(__name__)
 if TYPE_CHECKING:
-    from flext_oracle_wms.constants import OracleWMSEntityType
     from flext_oracle_wms.typedefs import (
-        WMSConnectionInfo,
+        FlextOracleWmsConnectionInfo,
         WMSRecord,
         WMSRecordBatch,
         WMSSchema,
     )
 
 
-class SchemaDiscoveryResult(TypedDict):
+class FlextOracleWmsSchemaDiscoveryResult(TypedDict):
     """Result of schema discovery operation."""
 
     entity_name: str
@@ -51,7 +52,7 @@ class SchemaDiscoveryResult(TypedDict):
     discovery_metadata: dict[str, Any]
 
 
-class EntityProcessingResult(TypedDict):
+class FlextOracleWmsEntityProcessingResult(TypedDict):
     """Result of entity processing operation."""
 
     entity_name: str
@@ -62,7 +63,7 @@ class EntityProcessingResult(TypedDict):
     processing_metadata: dict[str, Any]
 
 
-class DynamicSchemaProcessor:
+class FlextOracleWmsDynamicSchemaProcessor:
     """Dynamic schema discovery and processing for Oracle WMS entities."""
 
     def __init__(
@@ -81,15 +82,16 @@ class DynamicSchemaProcessor:
         self.enable_schema_validation = enable_schema_validation
         self.enable_field_analysis = enable_field_analysis
         self.max_schema_depth = max_schema_depth
-        # Type inference mappings with proper typing
+        # Type inference mappings with proper typing (order matters!)
+        # Note: boolean must come before integer since bool is subclass of int
         self.type_patterns: dict[str, Callable[[Any], bool]] = {
-            "string": lambda x: isinstance(x, str),
-            "integer": lambda x: isinstance(x, int),
-            "number": lambda x: isinstance(x, (int, float)),
+            "null": lambda x: x is None,
             "boolean": lambda x: isinstance(x, bool),
+            "integer": lambda x: isinstance(x, int) and not isinstance(x, bool),
+            "number": lambda x: isinstance(x, (int, float)) and not isinstance(x, bool),
             "array": lambda x: isinstance(x, list),
             "object": lambda x: isinstance(x, dict),
-            "null": lambda x: x is None,
+            "string": lambda x: isinstance(x, str),
         }
 
     def discover_entity_schema(
@@ -97,17 +99,19 @@ class DynamicSchemaProcessor:
         entity_name: OracleWMSEntityType,
         sample_records: WMSRecordBatch,
         existing_schema: WMSSchema | None = None,
-    ) -> ServiceResult[Any]:
+    ) -> FlextResult[Any]:
         """Discover schema for a WMS entity dynamically."""
         try:
             # Validate entity type
-            if entity_name not in OracleWMSEntityTypes.ALL_ENTITIES:
-                return ServiceResult.fail(f"{OracleWMSErrorMessages.INVALID_ENTITY_TYPE}: {entity_name}",
+            if entity_name not in FlextOracleWmsEntityTypes.ALL_ENTITIES:
+                return FlextResult.fail(
+                    f"{FlextOracleWmsErrorMessages.INVALID_ENTITY_TYPE}: {entity_name}",
                 )
             # Limit sample size
             limited_sample = sample_records[: self.sample_size]
             if not limited_sample:
-                return ServiceResult.fail(f"{OracleWMSErrorMessages.ENTITY_NOT_FOUND}: {entity_name} "
+                return FlextResult.fail(
+                    f"{FlextOracleWmsErrorMessages.ENTITY_NOT_FOUND}: {entity_name} "
                     "(sample_size: 0)",
                 )
             # Discover schema
@@ -128,7 +132,7 @@ class DynamicSchemaProcessor:
                     existing_schema,
                     discovered_schema,
                 )
-            result = SchemaDiscoveryResult(
+            result = FlextOracleWmsSchemaDiscoveryResult(
                 entity_name=entity_name,
                 schema=discovered_schema,
                 sample_records=limited_sample[:10],  # Return small sample for reference
@@ -143,9 +147,10 @@ class DynamicSchemaProcessor:
                     "confidence_threshold": self.confidence_threshold,
                 },
             )
-            return ServiceResult.ok({"result": result})
+            return FlextResult.ok({"result": result})
         except Exception as e:
-            return ServiceResult.fail(f"{OracleWMSErrorMessages.SCHEMA_GENERATION_FAILED}: {e} "
+            return FlextResult.fail(
+                f"{FlextOracleWmsErrorMessages.SCHEMA_GENERATION_FAILED}: {e} "
                 f"(entity: {entity_name})",
             )
 
@@ -156,7 +161,7 @@ class DynamicSchemaProcessor:
         target_schema: WMSSchema,
         validate_schema: bool = True,
         convert_types: bool = True,
-    ) -> ServiceResult[Any]:
+    ) -> FlextResult[Any]:
         """Process entity records against a target schema."""
         try:
             processed_records = []
@@ -208,8 +213,8 @@ class DynamicSchemaProcessor:
                 processed_records.append(processed_record)
                 processing_stats["processed_records"] += 1
         except Exception as e:
-            return ServiceResult.fail(f"Error in operation: {e}")
-        result = EntityProcessingResult(
+            return FlextResult.fail(f"Error in operation: {e}")
+        result = FlextOracleWmsEntityProcessingResult(
             entity_name=entity_name,
             processed_records=processed_records,
             schema_validation_results=validation_results,
@@ -222,20 +227,22 @@ class DynamicSchemaProcessor:
                 "processing_timestamp": datetime.now().isoformat(),
             },
         )
-        return ServiceResult.ok({"result": result})
+        return FlextResult.ok({"result": result})
 
     def discover_all_entities(
         self,
         entity_data: dict[str, WMSRecordBatch],
-        connection_info: WMSConnectionInfo,
-    ) -> ServiceResult[Any]:
+        connection_info: FlextOracleWmsConnectionInfo,
+    ) -> FlextResult[Any]:
         """Discover schemas for all provided entities."""
         try:
             discovered_entities = []
             for entity_name, records in entity_data.items():
-                if entity_name in OracleWMSEntityTypes.ALL_ENTITIES:
+                if entity_name in FlextOracleWmsEntityTypes.ALL_ENTITIES:
                     # Cast to the proper type for the discover_entity_schema method
-                    validated_entity_name: OracleWMSEntityType = entity_name
+                    from typing import cast
+
+                    validated_entity_name = cast("OracleWMSEntityType", entity_name)
                     discovery_result = self.discover_entity_schema(
                         validated_entity_name,
                         records,
@@ -244,11 +251,12 @@ class DynamicSchemaProcessor:
                         continue
                     schema_data = discovery_result.data
                     if schema_data is None:
-                        return ServiceResult.fail(f"{OracleWMSErrorMessages.SCHEMA_GENERATION_FAILED}: "
+                        return FlextResult.fail(
+                            f"{FlextOracleWmsErrorMessages.SCHEMA_GENERATION_FAILED}: "
                             "Discovery result data is None",
                         )
                     # Create entity info
-                    entity_info = WMSEntityInfo(
+                    entity_info = FlextOracleWmsEntityInfo(
                         entity_name=validated_entity_name,
                         display_name=entity_name.replace("_", " ").title(),
                         description=f"Dynamically discovered {entity_name} entity",
@@ -259,16 +267,17 @@ class DynamicSchemaProcessor:
                         schema=schema_data["schema"],
                     )
                     discovered_entities.append(entity_info)
-            result = WMSDiscoveryResult(
+            result = FlextOracleWmsDiscoveryResult(
                 entities=discovered_entities,
                 total_entities=len(discovered_entities),
                 discovery_time=datetime.now(),
                 api_version=connection_info.get("api_version", "unknown"),
                 connection_info=connection_info,
             )
-            return ServiceResult.ok(result)
+            return FlextResult.ok(result)
         except Exception as e:
-            return ServiceResult.fail(f"{OracleWMSErrorMessages.ENTITY_DISCOVERY_FAILED}: {e}",
+            return FlextResult.fail(
+                f"{FlextOracleWmsErrorMessages.ENTITY_DISCOVERY_FAILED}: {e}",
             )
 
     def _discover_schema_from_records(self, records: WMSRecordBatch) -> WMSSchema:
@@ -628,25 +637,29 @@ class DynamicSchemaProcessor:
 
     def _convert_value_to_type(self, value: Any, target_type: str) -> Any:
         """Convert value to target type."""
-        if target_type == "string":
-            return str(value)
-        if target_type == "integer":
-            return int(float(value))
-        if target_type == "number":
-            return float(value)
-        if target_type == "boolean":
-            if isinstance(value, bool):
-                return value
-            return str(value).lower() in {"true", "1", "yes", "on"}
-        if target_type == "array":
-            if isinstance(value, list):
-                return value
-            return [value]
-        if target_type == "object":
-            if isinstance(value, dict):
-                return value
-            return {"value": value}
-        return value
+        try:
+            if target_type == "string":
+                return str(value)
+            if target_type == "integer":
+                return int(float(value))
+            if target_type == "number":
+                return float(value)
+            if target_type == "boolean":
+                if isinstance(value, bool):
+                    return value
+                return str(value).lower() in {"true", "1", "yes", "on"}
+            if target_type == "array":
+                if isinstance(value, list):
+                    return value
+                return [value]
+            if target_type == "object":
+                if isinstance(value, dict):
+                    return value
+                return {"value": value}
+            return value
+        except (ValueError, TypeError):
+            # Return original value if conversion fails
+            return value
 
     def _add_missing_fields(self, record: WMSRecord, schema: WMSSchema) -> WMSRecord:
         """Add missing fields with default values."""
@@ -707,38 +720,40 @@ class DynamicSchemaProcessor:
 
 
 # Factory function for easy instantiation
-def create_dynamic_schema_processor(**kwargs: Any) -> DynamicSchemaProcessor:
+def flext_oracle_wms_create_dynamic_schema_processor(
+    **kwargs: Any,
+) -> FlextOracleWmsDynamicSchemaProcessor:
     """Create a configured dynamic schema processor."""
-    return DynamicSchemaProcessor(**kwargs)
+    return FlextOracleWmsDynamicSchemaProcessor(**kwargs)
 
 
 # Convenience functions for common scenarios
-def discover_entity_schemas(
+def flext_oracle_wms_discover_entity_schemas(
     entities_data: dict[str, WMSRecordBatch],
-    connection_info: WMSConnectionInfo,
+    connection_info: FlextOracleWmsConnectionInfo,
     **processor_kwargs: Any,
-) -> ServiceResult[Any]:
+) -> FlextResult[Any]:
     """Discover schemas for multiple entities."""
-    processor = create_dynamic_schema_processor(**processor_kwargs)
+    processor = flext_oracle_wms_create_dynamic_schema_processor(**processor_kwargs)
     return processor.discover_all_entities(entities_data, connection_info)
 
 
-def process_entity_with_schema(
+def flext_oracle_wms_process_entity_with_schema(
     entity_name: OracleWMSEntityType,
     records: WMSRecordBatch,
     target_schema: WMSSchema,
     **processor_kwargs: Any,
-) -> ServiceResult[Any]:
+) -> FlextResult[Any]:
     """Process entity records with schema validation."""
-    processor = create_dynamic_schema_processor(**processor_kwargs)
+    processor = flext_oracle_wms_create_dynamic_schema_processor(**processor_kwargs)
     return processor.process_entity_records(entity_name, records, target_schema)
 
 
 __all__ = [
-    "DynamicSchemaProcessor",
-    "EntityProcessingResult",
-    "SchemaDiscoveryResult",
-    "create_dynamic_schema_processor",
-    "discover_entity_schemas",
-    "process_entity_with_schema",
+    "FlextOracleWmsDynamicSchemaProcessor",
+    "FlextOracleWmsEntityProcessingResult",
+    "FlextOracleWmsSchemaDiscoveryResult",
+    "flext_oracle_wms_create_dynamic_schema_processor",
+    "flext_oracle_wms_discover_entity_schemas",
+    "flext_oracle_wms_process_entity_with_schema",
 ]

@@ -10,21 +10,25 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any
 
-# Import flext-core exception base
-from flext_core.domain.core import DomainError as FlextError
+# Import from flext-core root namespace as required
+from flext_core import (
+    FlextResult,
+)
 
-if TYPE_CHECKING:
-    from flext_core.domain.shared_types import WMSEntityName
+
+# Define base error for compatibility
+class FlextError(Exception):
+    """Base exception for FLEXT operations."""
 
 
-class OracleWMSError(FlextError):
+class FlextOracleWmsError(FlextError):
     """Base exception for Oracle WMS operations using flext-core standards."""
 
     def __init__(
         self,
         message: str,
         error_code: str | None = None,
-        entity_name: WMSEntityName | None = None,
+        entity_name: str | None = None,
         details: dict[str, Any] | None = None,
     ) -> None:
         """Initialize Oracle WMS error with enhanced metadata.
@@ -42,7 +46,7 @@ class OracleWMSError(FlextError):
         self.details = details or {}
 
 
-class AuthenticationError(OracleWMSError):
+class FlextOracleWmsAuthenticationError(FlextOracleWmsError):
     """Oracle WMS authentication and authorization errors."""
 
     def __init__(
@@ -63,7 +67,7 @@ class AuthenticationError(OracleWMSError):
         self.auth_method = auth_method
 
 
-class APIError(OracleWMSError):
+class FlextOracleWmsApiError(FlextOracleWmsError):
     """Oracle WMS API request and response errors."""
 
     def __init__(
@@ -87,7 +91,7 @@ class APIError(OracleWMSError):
         self.response_body = response_body
 
 
-class OracleWMSConnectionError(OracleWMSError):
+class FlextOracleWmsConnectionError(FlextOracleWmsError):
     """Oracle WMS connection and network errors."""
 
     def __init__(
@@ -108,7 +112,7 @@ class OracleWMSConnectionError(OracleWMSError):
         self.retry_count = retry_count
 
 
-class DataValidationError(OracleWMSError):
+class FlextOracleWmsDataValidationError(FlextOracleWmsError):
     """Oracle WMS data validation and schema errors."""
 
     def __init__(
@@ -132,7 +136,7 @@ class DataValidationError(OracleWMSError):
         self.invalid_value = invalid_value
 
 
-class ConfigurationError(OracleWMSError):
+class FlextOracleWmsConfigurationError(FlextOracleWmsError):
     """Oracle WMS configuration and setup errors."""
 
     def __init__(
@@ -153,12 +157,12 @@ class ConfigurationError(OracleWMSError):
         self.config_key = config_key
 
 
-class EntityNotFoundError(OracleWMSError):
+class FlextOracleWmsEntityNotFoundError(FlextOracleWmsError):
     """Oracle WMS entity not found errors."""
 
     def __init__(
         self,
-        entity_name: WMSEntityName,
+        entity_name: str,
         message: str | None = None,
         **kwargs: Any,
     ) -> None:
@@ -179,7 +183,7 @@ class EntityNotFoundError(OracleWMSError):
         )
 
 
-class RateLimitError(OracleWMSError):
+class FlextOracleWmsRateLimitError(FlextOracleWmsError):
     """Oracle WMS rate limiting errors."""
 
     def __init__(
@@ -200,7 +204,7 @@ class RateLimitError(OracleWMSError):
         self.retry_after_seconds = retry_after_seconds
 
 
-class SchemaFlatteningError(OracleWMSError):
+class FlextOracleWmsSchemaFlatteningError(FlextOracleWmsError):
     """Oracle WMS schema flattening/deflattening errors."""
 
     def __init__(
@@ -224,7 +228,7 @@ class SchemaFlatteningError(OracleWMSError):
         self.depth_level = depth_level
 
 
-class FilterError(OracleWMSError):
+class FilterError(FlextOracleWmsError):
     """Oracle WMS filtering and query errors."""
 
     def __init__(
@@ -248,7 +252,7 @@ class FilterError(OracleWMSError):
         self.filter_value = filter_value
 
 
-class SchemaError(OracleWMSError):
+class FlextOracleWmsSchemaError(FlextOracleWmsError):
     """Oracle WMS schema definition and validation errors."""
 
     def __init__(
@@ -273,6 +277,6 @@ class SchemaError(OracleWMSError):
 
 
 # Create aliases for backward compatibility
-OracleWMSFlatteningError = SchemaFlatteningError
+OracleWMSFlatteningError = FlextOracleWmsSchemaFlatteningError
 OracleWMSFilterError = FilterError
-OracleWMSSchemaError = SchemaError
+OracleWMSSchemaError = FlextOracleWmsSchemaError

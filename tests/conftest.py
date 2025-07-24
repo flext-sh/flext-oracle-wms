@@ -54,10 +54,10 @@ async def oracle_wms_connection(
     # Convert dict config to proper OracleWMSConfig object
     from pydantic import HttpUrl
 
-    from flext_oracle_wms.client import OracleWMSClient
-    from flext_oracle_wms.config_module import OracleWMSConfig
+    from flext_oracle_wms.client import FlextOracleWmsLegacyClient
+    from flext_oracle_wms.config_module import FlextOracleWmsModuleConfig
 
-    config = OracleWMSConfig(
+    config = FlextOracleWmsModuleConfig(
         base_url=HttpUrl("https://test.example.com"),
         username=oracle_wms_config["username"],
         password=oracle_wms_config["password"],
@@ -65,7 +65,7 @@ async def oracle_wms_connection(
         timeout_seconds=oracle_wms_config.get("pool_timeout", 30),
     )
 
-    client = OracleWMSClient(config)
+    client = FlextOracleWmsLegacyClient(config)
     # OracleWMSClient doesn't have async connect/disconnect methods
     # It uses context manager pattern instead
     yield client

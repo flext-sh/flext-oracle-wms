@@ -6,7 +6,7 @@ from __future__ import annotations
 import logging
 import sys
 
-from flext_oracle_wms.client import OracleWMSClient
+from flext_oracle_wms.client import FlextOracleWmsLegacyClient
 from flext_oracle_wms.config_module import load_config
 
 # Setup logging
@@ -21,9 +21,9 @@ def test_real_connection() -> bool:
     try:
         # Use test configuration instead of loading from .env for quality tests
         logger.info("Loading Oracle WMS test configuration...")
-        from flext_oracle_wms.config_module import OracleWMSConfig
+        from flext_oracle_wms.config_module import FlextOracleWmsModuleConfig
 
-        config = OracleWMSConfig.for_testing()
+        config = FlextOracleWmsModuleConfig.for_testing()
 
         logger.info("Configuration loaded:")
         logger.info("  Base URL: %s", config.base_url)
@@ -33,7 +33,7 @@ def test_real_connection() -> bool:
 
         # Create client and test connection
         logger.info("Creating Oracle WMS client...")
-        with OracleWMSClient(config) as client:
+        with FlextOracleWmsLegacyClient(config) as client:
             # Test connection (will fail with test config, but we're testing structure)
             logger.info("Testing connection to Oracle WMS API...")
             connection_result = client.test_connection()

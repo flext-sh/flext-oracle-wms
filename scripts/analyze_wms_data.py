@@ -10,11 +10,16 @@ from typing import Any
 sys.path.insert(0, "/home/marlonsc/flext/flext-oracle-wms/src")
 sys.path.insert(0, "/home/marlonsc/flext/flext-tap-oracle-wms/src")
 
-from flext_observability.logging import get_logger
+# Use local logging to avoid flext-observability ServiceResult dependency issue
+import logging
+
+logging.basicConfig(level=logging.INFO)
+def get_logger(name):
+    return logging.getLogger(name)
 from pydantic import HttpUrl
 
-from flext_oracle_wms.client import OracleWMSClient
-from flext_oracle_wms.config_module import OracleWMSConfig
+from flext_oracle_wms.client import FlextOracleWmsLegacyClient
+from flext_oracle_wms.config_module import FlextOracleWmsModuleConfig
 
 logger = get_logger(__name__)
 
@@ -101,7 +106,7 @@ def analyze_complex_structures(record: dict[str, Any]) -> dict[str, Any]:
 def main() -> None:
     """Executa análise completa dos dados Oracle WMS."""
     # Configuração
-    config = OracleWMSConfig(
+    config = FlextOracleWmsModuleConfig(
         base_url=HttpUrl("https://a29.wms.ocs.oraclecloud.com/raizen"),
         username="USER_WMS_INTEGRA",
         password="jmCyS7BK94YvhS@",
@@ -109,7 +114,7 @@ def main() -> None:
         timeout_seconds=30.0,
     )
 
-    client = OracleWMSClient(config)
+    client = FlextOracleWmsLegacyClient(config)
 
     entities_to_analyze: list[str] = ["allocation", "order_hdr", "order_dtl"]
 

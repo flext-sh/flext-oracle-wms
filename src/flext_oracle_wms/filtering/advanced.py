@@ -13,12 +13,13 @@ import re
 from datetime import UTC, datetime
 from typing import TYPE_CHECKING, Any, Literal, TypedDict
 
-from flext_core.domain.shared_types import ServiceResult
+# Import from flext-core root namespace as required
+from flext_core import FlextResult
 
 from flext_oracle_wms.constants import (
-    OracleWMSErrorMessages,
-    OracleWMSFilterOperators,
-    OracleWMSPageModes,
+    FlextOracleWmsErrorMessages,
+    FlextOracleWmsFilterOperators,
+    FlextOracleWmsPageModes,
 )
 
 if TYPE_CHECKING:
@@ -81,7 +82,7 @@ class FilterResult(TypedDict):
     filter_summary: dict[str, Any]
 
 
-class OracleWMSAdvancedFilter:
+class FlextOracleWmsAdvancedFilter:
     """Oracle WMS advanced filtering engine with comprehensive capabilities."""
 
     def __init__(
@@ -103,22 +104,22 @@ class OracleWMSAdvancedFilter:
 
         # Operator mapping
         self.operators = {
-            OracleWMSFilterOperators.EQ: self._op_equals,
-            OracleWMSFilterOperators.NEQ: self._op_not_equals,
-            OracleWMSFilterOperators.GT: self._op_greater_than,
-            OracleWMSFilterOperators.GTE: self._op_greater_than_equal,
-            OracleWMSFilterOperators.LT: self._op_less_than,
-            OracleWMSFilterOperators.LTE: self._op_less_than_equal,
-            OracleWMSFilterOperators.IN: self._op_in,
-            OracleWMSFilterOperators.NIN: self._op_not_in,
-            OracleWMSFilterOperators.LIKE: self._op_like,
+            FlextOracleWmsFilterOperators.EQ: self._op_equals,
+            FlextOracleWmsFilterOperators.NEQ: self._op_not_equals,
+            FlextOracleWmsFilterOperators.GT: self._op_greater_than,
+            FlextOracleWmsFilterOperators.GTE: self._op_greater_than_equal,
+            FlextOracleWmsFilterOperators.LT: self._op_less_than,
+            FlextOracleWmsFilterOperators.LTE: self._op_less_than_equal,
+            FlextOracleWmsFilterOperators.IN: self._op_in,
+            FlextOracleWmsFilterOperators.NIN: self._op_not_in,
+            FlextOracleWmsFilterOperators.LIKE: self._op_like,
         }
 
     def filter_records(
         self,
         records: WMSRecordBatch,
         filter_query: FilterQuery,
-    ) -> ServiceResult[Any]:
+    ) -> FlextResult[Any]:
         """Filter records using advanced query."""
         start_time = datetime.now()
 
@@ -126,7 +127,8 @@ class OracleWMSAdvancedFilter:
             # Validate filter query
             validation_result = self._validate_filter_query(filter_query)
             if not validation_result.success:
-                return ServiceResult.fail(f"{OracleWMSErrorMessages.INVALID_FILTER_OPERATOR}: "
+                return FlextResult.fail(
+                    f"{FlextOracleWmsErrorMessages.INVALID_FILTER_OPERATOR}: "
                     f"{validation_result.error}",
                 )
 
@@ -165,10 +167,11 @@ class OracleWMSAdvancedFilter:
                 filter_summary=self._generate_filter_summary(filter_query),
             )
 
-            return ServiceResult.ok({"result": result})
+            return FlextResult.ok({"result": result})
 
         except Exception as e:
-            return ServiceResult.fail(f"{OracleWMSErrorMessages.INVALID_FILTER_OPERATOR}: {e}",
+            return FlextResult.fail(
+                f"{FlextOracleWmsErrorMessages.INVALID_FILTER_OPERATOR}: {e}",
             )
 
     def build_filter_query(
@@ -176,7 +179,7 @@ class OracleWMSAdvancedFilter:
         entity: OracleWMSEntityType,
         filters: dict[str, Any],
         ordering: list[dict[str, str]] | None = None,
-        page_mode: OracleWMSPageMode = OracleWMSPageModes.DEFAULT,
+        page_mode: OracleWMSPageMode = FlextOracleWmsPageModes.DEFAULT,
         page_size: int = 100,
         **kwargs: Any,
     ) -> FilterQuery:
@@ -201,7 +204,7 @@ class OracleWMSAdvancedFilter:
                     # Simple equality filter
                     condition = FilterCondition(
                         field=field,
-                        operator=OracleWMSFilterOperators.EQ,
+                        operator=FlextOracleWmsFilterOperators.EQ,
                         value=filter_config,
                         case_sensitive=self.case_sensitive_default,
                         data_type=self._infer_data_type(filter_config),
@@ -228,7 +231,7 @@ class OracleWMSAdvancedFilter:
             limit=kwargs.get("limit"),
         )
 
-    def _validate_filter_query(self, filter_query: FilterQuery) -> ServiceResult[Any]:
+    def _validate_filter_query(self, filter_query: FilterQuery) -> FlextResult[Any]:
         """Validate filter query structure."""
         try:
             # Count total conditions
@@ -241,14 +244,16 @@ class OracleWMSAdvancedFilter:
                 )
 
             if total_conditions > self.max_conditions:
-                return ServiceResult.fail(f"{OracleWMSErrorMessages.TOO_MANY_FILTERS}: "
+                return FlextResult.fail(
+                    f"{FlextOracleWmsErrorMessages.TOO_MANY_FILTERS}: "
                     f"{total_conditions} > {self.max_conditions}",
                 )
 
             # Validate nested groups depth
             for group in filter_groups:
                 if len(group["nested_groups"]) > self.max_nested_groups:
-                    return ServiceResult.fail(f"{OracleWMSErrorMessages.TOO_MANY_FILTERS}: "
+                    return FlextResult.fail(
+                        f"{FlextOracleWmsErrorMessages.TOO_MANY_FILTERS}: "
                         f"nested groups {len(group['nested_groups'])} > "
                         f"{self.max_nested_groups}",
                     )
@@ -257,21 +262,24 @@ class OracleWMSAdvancedFilter:
             for group in filter_groups:
                 for condition in group["conditions"]:
                     if condition["operator"] not in self.operators:
-                        return ServiceResult.fail(f"{OracleWMSErrorMessages.INVALID_FILTER_OPERATOR}: "
+                        return FlextResult.fail(
+                            f"{FlextOracleWmsErrorMessages.INVALID_FILTER_OPERATOR}: "
                             f"{condition['operator']}",
                         )
 
             # Validate page mode
             page_mode = filter_query["page_mode"]
-            if page_mode not in OracleWMSPageModes.ALL_MODES:
-                return ServiceResult.fail(f"{OracleWMSErrorMessages.INVALID_FILTER_OPERATOR}: "
+            if page_mode not in FlextOracleWmsPageModes.ALL_MODES:
+                return FlextResult.fail(
+                    f"{FlextOracleWmsErrorMessages.INVALID_FILTER_OPERATOR}: "
                     f"invalid page mode {page_mode}",
                 )
 
-            return ServiceResult.ok({"result": True})
+            return FlextResult.ok({"result": True})
 
         except Exception as e:
-            return ServiceResult.fail(f"{OracleWMSErrorMessages.INVALID_FILTER_OPERATOR}: "
+            return FlextResult.fail(
+                f"{FlextOracleWmsErrorMessages.INVALID_FILTER_OPERATOR}: "
                 f"validation error {e}",
             )
 
@@ -416,7 +424,7 @@ class OracleWMSAdvancedFilter:
             records = records[:limit]
 
         # Apply pagination based on mode
-        if page_mode == OracleWMSPageModes.API:
+        if page_mode == FlextOracleWmsPageModes.API:
             # Offset-based pagination
             offset = page_offset or 0
             end_index = offset + page_size
@@ -425,7 +433,7 @@ class OracleWMSAdvancedFilter:
             has_next = end_index < len(records)
             next_token = str(end_index) if has_next else None
 
-        elif page_mode == OracleWMSPageModes.SEQUENCED:
+        elif page_mode == FlextOracleWmsPageModes.SEQUENCED:
             # Cursor-based pagination
             if page_token:
                 try:
@@ -600,52 +608,54 @@ class OracleWMSAdvancedFilter:
 
 
 # Factory function for easy instantiation
-def create_advanced_filter(**kwargs: Any) -> OracleWMSAdvancedFilter:
+def flext_oracle_wms_create_advanced_filter(
+    **kwargs: Any,
+) -> FlextOracleWmsAdvancedFilter:
     """Create a configured Oracle WMS advanced filter."""
-    return OracleWMSAdvancedFilter(**kwargs)
+    return FlextOracleWmsAdvancedFilter(**kwargs)
 
 
 # Convenience functions for common filtering scenarios
-def filter_by_id_range(
+def flext_oracle_wms_filter_by_id_range(
     records: WMSRecordBatch,
     entity: OracleWMSEntityType,
     id_field: str = "id",
     id_min: int | None = None,
     id_max: int | None = None,
-) -> ServiceResult[Any]:
+) -> FlextResult[Any]:
     """Filter records by ID range."""
-    filter_engine = create_advanced_filter()
+    filter_engine = flext_oracle_wms_create_advanced_filter()
 
     filters = {}
     if id_min is not None:
-        filters[id_field] = {OracleWMSFilterOperators.GTE: id_min}
+        filters[id_field] = {FlextOracleWmsFilterOperators.GTE: id_min}
     if id_max is not None:
         filters[id_field] = {
             **filters.get(id_field, {}),
-            OracleWMSFilterOperators.LTE: id_max,
+            FlextOracleWmsFilterOperators.LTE: id_max,
         }
 
     filter_query = filter_engine.build_filter_query(entity, filters)
     return filter_engine.filter_records(records, filter_query)
 
 
-def filter_by_modification_time(
+def flext_oracle_wms_filter_by_modification_time(
     records: WMSRecordBatch,
     entity: OracleWMSEntityType,
     modts_field: str = "last_modified",
     modts_gte: str | None = None,
     modts_lte: str | None = None,
-) -> ServiceResult[Any]:
+) -> FlextResult[Any]:
     """Filter records by modification timestamp."""
-    filter_engine = create_advanced_filter()
+    filter_engine = flext_oracle_wms_create_advanced_filter()
 
     filters = {}
     if modts_gte is not None:
-        filters[modts_field] = {OracleWMSFilterOperators.GTE: modts_gte}
+        filters[modts_field] = {FlextOracleWmsFilterOperators.GTE: modts_gte}
     if modts_lte is not None:
         filters[modts_field] = {
             **filters.get(modts_field, {}),
-            OracleWMSFilterOperators.LTE: modts_lte,
+            FlextOracleWmsFilterOperators.LTE: modts_lte,
         }
 
     filter_query = filter_engine.build_filter_query(entity, filters)
@@ -657,8 +667,8 @@ __all__ = [
     "FilterGroup",
     "FilterQuery",
     "FilterResult",
-    "OracleWMSAdvancedFilter",
-    "create_advanced_filter",
-    "filter_by_id_range",
-    "filter_by_modification_time",
+    "FlextOracleWmsAdvancedFilter",
+    "flext_oracle_wms_create_advanced_filter",
+    "flext_oracle_wms_filter_by_id_range",
+    "flext_oracle_wms_filter_by_modification_time",
 ]

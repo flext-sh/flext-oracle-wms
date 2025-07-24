@@ -19,7 +19,7 @@ classifiers = [
     "Topic :: Software Development :: Libraries :: Python Modules",
     "Typing :: Typed",
 ]
-dependencies = []
+dependencies = ["pydantic (>=2.11.7,<3.0.0)", "flext-core @ file:///home/marlonsc/flext/flext-core", "flext-observability @ file:///home/marlonsc/flext/flext-observability", "httpx (>=0.28.1,<0.29.0)"]
 [[project.authors]]
 name = "FLEXT Team"
 email = "team@flext.sh"
@@ -146,7 +146,6 @@ ignore = [
     "DTZ001",
     "DTZ005",
     "E401",
-    "E501",
     "EM101",
     "EM102",
     "ERA001",
@@ -233,6 +232,8 @@ radon = "^6.0.1"
 codespell = "^2.3.0"
 pyupgrade = "^3.19.0"
 autoflake = "^2.3.1"
+detect-secrets = "^1.5.0"
+commitizen = "^4.8.3"
 
 [tool.poetry.group.test.dependencies]
 pytest = "^8.4.0"

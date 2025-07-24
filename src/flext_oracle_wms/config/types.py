@@ -9,41 +9,9 @@ Oracle WMS-specific configuration types using modern Python 3.13 patterns.
 
 from __future__ import annotations
 
-from typing import Annotated, Literal, TypedDict
+from typing import Annotated, Any, Literal, TypedDict
 
-# Import ALL types from unified core typing system - eliminate duplication
-from flext_core.domain.shared_types import (
-    URL,
-    ApiKey,
-    BatchSize,
-    ConfigurationKey,
-    ConfigurationValue,
-    DatabaseName,
-    DurationSeconds,
-    EntityId,
-    EnvironmentLiteral,
-    FileName,
-    FilePath,
-    Json,
-    JsonDict,
-    JsonSchema,
-    LogLevel,
-    MemoryMB,
-    NonEmptyStr,
-    NonNegativeInt,
-    Password,
-    Port,
-    PositiveInt,
-    ProjectName,
-    RetryCount,
-    RetryDelay,
-    ServiceResult,
-    TimeoutSeconds,
-    TimestampISO,
-    Token,
-    Username,
-    Version,
-)
+# Import from flext-core root namespace as required
 from pydantic import Field, StringConstraints
 
 from flext_oracle_wms.constants import (
@@ -59,6 +27,41 @@ from flext_oracle_wms.typedefs import (
     WMSFieldMapping,
     WMSFieldName,
 )
+
+# Define basic types locally since not in flext-core yet
+type JsonDict = dict[str, Any]
+type URL = str
+type Port = int
+type ApiKey = str
+type BatchSize = int
+type TimeoutSeconds = float
+type Username = str
+type Password = str
+type Token = str
+type RetryCount = int
+type RetryDelay = float
+
+# Define missing types that should be in flext-core
+type NonEmptyStr = Annotated[str, Field(min_length=1)]
+type EnvironmentLiteral = Literal["development", "staging", "production", "test"]
+type FilePath = Annotated[str, Field(min_length=1, description="File path")]
+type JsonSchema = dict[str, Any]
+type LogLevel = Literal["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"]
+type MemoryMB = Annotated[int, Field(ge=1, description="Memory in megabytes")]
+type PositiveInt = Annotated[int, Field(ge=1)]
+type Version = Annotated[str, Field(min_length=1, description="Version string")]
+
+# Additional missing types referenced in __all__
+type ConfigurationKey = str
+type ConfigurationValue = str | int | float | bool
+type DatabaseName = str
+type DurationSeconds = int
+type EntityId = str
+type FileName = str
+type Json = dict[str, Any] | list[Any] | str | int | float | bool | None
+type NonNegativeInt = Annotated[int, Field(ge=0)]
+type ServiceResult = Any  # This should come from flext-core
+type TimestampISO = str
 
 # Singer types (define as aliases since they're not in shared_types yet)
 type SingerCatalog = JsonDict
@@ -191,7 +194,7 @@ type OracleWMSHealthCheckInterval = Annotated[
 # ==============================================================================
 
 
-class OracleWMSConnectionConfig(TypedDict):
+class FlextOracleWmsConnectionConfig(TypedDict):
     """Oracle WMS connection configuration structure using flext-core types."""
 
     # Connection identification
@@ -238,7 +241,7 @@ class OracleWMSConnectionConfig(TypedDict):
     connection_pool_size: PositiveInt
 
 
-class OracleWMSEntityConfig(TypedDict):
+class FlextOracleWmsEntityConfig(TypedDict):
     """Oracle WMS entity configuration structure using flext-core types."""
 
     # Entity identification
@@ -280,7 +283,7 @@ class OracleWMSEntityConfig(TypedDict):
     deflattening_enabled: bool
 
 
-class OracleWMSSchemaConfig(TypedDict):
+class FlextOracleWmsSchemaConfig(TypedDict):
     """Oracle WMS schema configuration structure using flext-core types."""
 
     # Schema discovery configuration
@@ -320,7 +323,7 @@ class OracleWMSSchemaConfig(TypedDict):
     cache_compression: bool
 
 
-class OracleWMSPerformanceConfig(TypedDict):
+class FlextOracleWmsPerformanceConfig(TypedDict):
     """Oracle WMS performance configuration structure using flext-core types."""
 
     # Batch processing configuration
@@ -374,7 +377,7 @@ class OracleWMSPerformanceConfig(TypedDict):
     disk_cache_ttl: TimeoutSeconds
 
 
-class OracleWMSFilterConfig(TypedDict):
+class FlextOracleWmsFilterConfig(TypedDict):
     """Oracle WMS filter configuration structure using flext-core types."""
 
     # Filter general configuration
@@ -414,7 +417,7 @@ class OracleWMSFilterConfig(TypedDict):
     filter_audit_trail: bool
 
 
-class OracleWMSMonitoringConfig(TypedDict):
+class FlextOracleWmsMonitoringConfig(TypedDict):
     """Oracle WMS monitoring configuration structure using flext-core types."""
 
     # Monitoring general configuration
@@ -462,7 +465,7 @@ class OracleWMSMonitoringConfig(TypedDict):
     resource_limits_enforcement: bool
 
 
-class OracleWMSTargetConfig(TypedDict):
+class FlextOracleWmsTargetConfig(TypedDict):
     """Oracle WMS target configuration structure using flext-core types."""
 
     # Target identification
@@ -518,7 +521,7 @@ class OracleWMSTargetConfig(TypedDict):
 # ==============================================================================
 
 
-class OracleWMSTapConfig(TypedDict):
+class FlextOracleWmsTapConfig(TypedDict):
     """Oracle WMS tap configuration structure using flext-core types."""
 
     # Tap identification
@@ -527,24 +530,24 @@ class OracleWMSTapConfig(TypedDict):
     tap_version: Version
 
     # Tap connection configuration
-    connection: OracleWMSConnectionConfig
+    connection: FlextOracleWmsConnectionConfig
 
     # Tap entities configuration
-    entities: dict[str, OracleWMSEntityConfig]
+    entities: dict[str, FlextOracleWmsEntityConfig]
     entities_selection: list[OracleWMSEntityType]
     entities_exclusion: list[OracleWMSEntityType]
 
     # Tap schema configuration
-    schema: OracleWMSSchemaConfig
+    schema: FlextOracleWmsSchemaConfig
 
     # Tap performance configuration
-    performance: OracleWMSPerformanceConfig
+    performance: FlextOracleWmsPerformanceConfig
 
     # Tap filtering configuration
-    filters: OracleWMSFilterConfig
+    filters: FlextOracleWmsFilterConfig
 
     # Tap monitoring configuration
-    monitoring: OracleWMSMonitoringConfig
+    monitoring: FlextOracleWmsMonitoringConfig
 
     # Tap Singer configuration
     singer_catalog: SingerCatalog | None
@@ -558,7 +561,7 @@ class OracleWMSTapConfig(TypedDict):
     advanced_tuning: dict[str, float]
 
 
-class OracleWMSTargetFullConfig(TypedDict):
+class FlextOracleWmsTargetFullConfig(TypedDict):
     """Oracle WMS target full configuration structure using flext-core types."""
 
     # Target identification
@@ -567,19 +570,19 @@ class OracleWMSTargetFullConfig(TypedDict):
     target_version: Version
 
     # Target connection configuration
-    connection: OracleWMSConnectionConfig
+    connection: FlextOracleWmsConnectionConfig
 
     # Target write configuration
-    target: OracleWMSTargetConfig
+    target: FlextOracleWmsTargetConfig
 
     # Target schema configuration
-    schema: OracleWMSSchemaConfig
+    schema: FlextOracleWmsSchemaConfig
 
     # Target performance configuration
-    performance: OracleWMSPerformanceConfig
+    performance: FlextOracleWmsPerformanceConfig
 
     # Target monitoring configuration
-    monitoring: OracleWMSMonitoringConfig
+    monitoring: FlextOracleWmsMonitoringConfig
 
     # Target Singer configuration
     singer_schema: JsonSchema | None
@@ -606,16 +609,16 @@ class FlextOracleWMSConfig(TypedDict):
     environment: EnvironmentLiteral
 
     # Core Oracle WMS configurations
-    connection: OracleWMSConnectionConfig
-    entities: dict[str, OracleWMSEntityConfig]
-    schema: OracleWMSSchemaConfig
-    performance: OracleWMSPerformanceConfig
-    filters: OracleWMSFilterConfig
-    monitoring: OracleWMSMonitoringConfig
+    connection: FlextOracleWmsConnectionConfig
+    entities: dict[str, FlextOracleWmsEntityConfig]
+    schema: FlextOracleWmsSchemaConfig
+    performance: FlextOracleWmsPerformanceConfig
+    filters: FlextOracleWmsFilterConfig
+    monitoring: FlextOracleWmsMonitoringConfig
 
     # Singer configurations
-    tap_config: OracleWMSTapConfig
-    target_config: OracleWMSTargetFullConfig
+    tap_config: FlextOracleWmsTapConfig
+    target_config: FlextOracleWmsTargetFullConfig
 
     # Global settings
     global_timeout: TimeoutSeconds
@@ -635,7 +638,7 @@ class FlextOracleWMSConfig(TypedDict):
 # ==============================================================================
 
 
-class DevelopmentOracleWMSConfig(TypedDict):
+class FlextOracleWmsDevelopmentConfig(TypedDict):
     """Development environment Oracle WMS configuration."""
 
     debug: bool
@@ -650,7 +653,7 @@ class DevelopmentOracleWMSConfig(TypedDict):
     performance_mode: Literal["debug"]
 
 
-class ProductionOracleWMSConfig(TypedDict):
+class FlextOracleWmsProductionConfig(TypedDict):
     """Production environment Oracle WMS configuration."""
 
     debug: bool
@@ -666,7 +669,7 @@ class ProductionOracleWMSConfig(TypedDict):
     performance_mode: Literal["production"]
 
 
-class TestingOracleWMSConfig(TypedDict):
+class FlextOracleWmsTestingConfig(TypedDict):
     """Testing environment Oracle WMS configuration."""
 
     debug: bool
@@ -688,24 +691,24 @@ class TestingOracleWMSConfig(TypedDict):
 
 # Configuration aggregates for simplified usage
 type OracleWMSConfiguration = FlextOracleWMSConfig
-type OracleWMSConnectionConfiguration = OracleWMSConnectionConfig
-type OracleWMSEntityConfiguration = OracleWMSEntityConfig
-type OracleWMSSchemaConfiguration = OracleWMSSchemaConfig
+type OracleWMSConnectionConfiguration = FlextOracleWmsConnectionConfig
+type OracleWMSEntityConfiguration = FlextOracleWmsEntityConfig
+type OracleWMSSchemaConfiguration = FlextOracleWmsSchemaConfig
 
 # Performance configurations
-type OracleWMSPerformanceConfiguration = OracleWMSPerformanceConfig
-type OracleWMSFilterConfiguration = OracleWMSFilterConfig
-type OracleWMSMonitoringConfiguration = OracleWMSMonitoringConfig
-type OracleWMSTargetConfiguration = OracleWMSTargetConfig
+type OracleWMSPerformanceConfiguration = FlextOracleWmsPerformanceConfig
+type OracleWMSFilterConfiguration = FlextOracleWmsFilterConfig
+type OracleWMSMonitoringConfiguration = FlextOracleWmsMonitoringConfig
+type OracleWMSTargetConfiguration = FlextOracleWmsTargetConfig
 
 # Singer configurations
-type OracleWMSTapConfiguration = OracleWMSTapConfig
-type OracleWMSTargetFullConfiguration = OracleWMSTargetFullConfig
+type OracleWMSTapConfiguration = FlextOracleWmsTapConfig
+type OracleWMSTargetFullConfiguration = FlextOracleWmsTargetFullConfig
 
 # Environment configurations
-type DevOracleWMSConfig = DevelopmentOracleWMSConfig
-type ProdOracleWMSConfig = ProductionOracleWMSConfig
-type TestOracleWMSConfig = TestingOracleWMSConfig
+type DevOracleWMSConfig = FlextOracleWmsDevelopmentConfig
+type ProdOracleWMSConfig = FlextOracleWmsProductionConfig
+type TestOracleWMSConfig = FlextOracleWmsTestingConfig
 
 # ==============================================================================
 # EXPORT PUBLIC API
@@ -728,6 +731,16 @@ __all__ = [
     "EnvironmentLiteral",
     "FileName",
     "FilePath",
+    # Configuration structures
+    "FlextOracleWmsConnectionConfig",
+    "FlextOracleWmsEntityConfig",
+    "FlextOracleWmsFilterConfig",
+    "FlextOracleWmsMonitoringConfig",
+    "FlextOracleWmsPerformanceConfig",
+    "FlextOracleWmsSchemaConfig",
+    "FlextOracleWmsTapConfig",
+    "FlextOracleWmsTargetConfig",
+    "FlextOracleWmsTargetFullConfig",
     "Json",
     "JsonDict",
     "JsonSchema",
@@ -737,16 +750,12 @@ __all__ = [
     "NonNegativeInt",
     # Type aliases
     "OracleWMSConfiguration",
-    # Configuration structures
-    "OracleWMSConnectionConfig",
     "OracleWMSConnectionConfiguration",
     "OracleWMSConnectionRetries",
     "OracleWMSConnectionRetryDelay",
     "OracleWMSConnectionTimeout",
-    "OracleWMSEntityConfig",
     "OracleWMSEntityConfiguration",
     "OracleWMSEntityType",
-    "OracleWMSFilterConfig",
     "OracleWMSFilterConfiguration",
     "OracleWMSFilterEnabled",
     "OracleWMSFilterMaxConditions",
@@ -756,7 +765,6 @@ __all__ = [
     "OracleWMSFlattenSeparator",
     "OracleWMSHealthCheckEnabled",
     "OracleWMSHealthCheckInterval",
-    "OracleWMSMonitoringConfig",
     "OracleWMSMonitoringConfiguration",
     "OracleWMSMonitoringEnabled",
     "OracleWMSMonitoringInterval",
@@ -764,21 +772,16 @@ __all__ = [
     "OracleWMSPageOffset",
     "OracleWMSPageSize",
     "OracleWMSPassword",
-    "OracleWMSPerformanceConfig",
     "OracleWMSPerformanceConfiguration",
     "OracleWMSRateLimitDelay",
     "OracleWMSRateLimitEnabled",
     "OracleWMSRateLimitRPM",
-    "OracleWMSSchemaConfig",
     "OracleWMSSchemaConfiguration",
     "OracleWMSSchemaDiscovery",
     "OracleWMSSchemaRetries",
     "OracleWMSSchemaTimeout",
-    "OracleWMSTapConfig",
     "OracleWMSTapConfiguration",
-    "OracleWMSTargetConfig",
     "OracleWMSTargetConfiguration",
-    "OracleWMSTargetFullConfig",
     "OracleWMSTargetFullConfiguration",
     "OracleWMSToken",
     "OracleWMSUsername",

@@ -7,7 +7,6 @@ with optimized performance for large datasets.
 
 from __future__ import annotations
 
-from flext_oracle_wms.common import create_standard_exports
 from flext_oracle_wms.filtering.advanced import (
     # Filter structures
     FilterCondition,
@@ -15,24 +14,21 @@ from flext_oracle_wms.filtering.advanced import (
     FilterQuery,
     FilterResult,
     # Core filtering classes
-    OracleWMSAdvancedFilter,
+    FlextOracleWmsAdvancedFilter,
     # Factory functions
-    create_advanced_filter,
+    flext_oracle_wms_create_advanced_filter,
     # Convenience functions
-    filter_by_id_range,
-    filter_by_modification_time,
+    flext_oracle_wms_filter_by_id_range,
+    flext_oracle_wms_filter_by_modification_time,
 )
 
-# Use standardized export pattern
-_exports = [
+__all__ = [
     "FilterCondition",
     "FilterGroup",
     "FilterQuery",
     "FilterResult",
-    "OracleWMSAdvancedFilter",
-    "create_advanced_filter",
-    "filter_by_id_range",
-    "filter_by_modification_time",
+    "FlextOracleWmsAdvancedFilter",
+    "flext_oracle_wms_create_advanced_filter",
+    "flext_oracle_wms_filter_by_id_range",
+    "flext_oracle_wms_filter_by_modification_time",
 ]
-
-__all__, __doc__ = create_standard_exports("Filtering", _exports)

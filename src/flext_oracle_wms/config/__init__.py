@@ -29,7 +29,7 @@ from flext_oracle_wms.config.types import (
     ProdOracleWMSConfig,
     TestOracleWMSConfig,
 )
-from flext_oracle_wms.config_module import OracleWMSConfig
+from flext_oracle_wms.config_module import FlextOracleWmsModuleConfig as OracleWMSConfig
 
 __all__ = [
     "DevOracleWMSConfig",

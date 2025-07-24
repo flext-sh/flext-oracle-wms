@@ -12,18 +12,12 @@ from __future__ import annotations
 from pathlib import Path
 from typing import TYPE_CHECKING, Any
 
-if TYPE_CHECKING:
-    from pydantic import HttpUrl
-else:
-    HttpUrl = str
-# Import unified configuration system from flext-core
-from flext_core.config.unified_config import (
-    BaseConfigMixin,
-    LoggingConfigMixin,
-    PerformanceConfigMixin,
-)
-from flext_core.domain.constants import ConfigDefaults
-from flext_core.domain.shared_types import (
+# Import from flext-core root namespace as required
+from pydantic import Field, HttpUrl, field_validator
+from pydantic_settings import BaseSettings, SettingsConfigDict
+
+# Import types from our config.types module
+from flext_oracle_wms.config.types import (
     BatchSize,
     Password,
     PositiveInt,
@@ -33,8 +27,6 @@ from flext_core.domain.shared_types import (
     Username,
     Version,
 )
-from pydantic import Field, field_validator
-from pydantic_settings import BaseSettings, SettingsConfigDict
 
 # Oracle WMS specific types using unified core types
 type WMSAPIVersion = str
@@ -45,24 +37,18 @@ type WMSRetryDelay = RetryDelay
 type WMSTimeout = TimeoutSeconds
 
 
-class OracleWMSConfig(
-    BaseConfigMixin,
-    LoggingConfigMixin,
-    PerformanceConfigMixin,
-    BaseSettings,
-):
-    """Enterprise Oracle WMS configuration using unified composition mixins.
+class FlextOracleWmsModuleConfig(BaseSettings):
+    """Enterprise Oracle WMS configuration using modern Pydantic patterns.
 
-    This configuration eliminates duplication by composing standardized mixins
-    from flext-core while adding Oracle WMS-specific fields. Uses modern Python 3.13
-    patterns and Pydantic v2 with field composition.
+    Simplified configuration management for Oracle WMS integration operations
+    with proper type safety and validation, following SOLID principles.
     """
 
     model_config = SettingsConfigDict(
-        env_prefix=ConfigDefaults.ENV_PREFIX + "ORACLE_WMS_",
+        env_prefix="FLEXT_ORACLE_WMS_",
         env_file=".env",
-        env_file_encoding=ConfigDefaults.DEFAULT_ENCODING,
-        env_nested_delimiter=ConfigDefaults.ENV_DELIMITER,
+        env_file_encoding="utf-8",
+        env_nested_delimiter="__",
         case_sensitive=False,
         extra="ignore",  # Allow extra fields in .env
         validate_assignment=True,
@@ -125,6 +111,48 @@ class OracleWMSConfig(
     # === Version Information ===
     version: Version = Field(default="1.0.0", description="Client version")
 
+    # === Enterprise Cache Configuration ===
+    enable_cache: bool = Field(default=True, description="Enable enterprise caching")
+    cache_ttl_seconds: int = Field(default=300, description="Cache TTL in seconds")
+    max_cache_size: int = Field(default=1000, description="Maximum cache entries")
+    cleanup_interval_seconds: int = Field(
+        default=300, description="Cache cleanup interval"
+    )
+
+    # === Performance Configuration ===
+    timeout_seconds: TimeoutSeconds = Field(
+        default=30.0,
+        description="HTTP request timeout in seconds",
+    )
+    batch_size: PositiveInt = Field(
+        default=100,
+        description="Batch size for API requests",
+    )
+    max_retries: RetryCount = Field(
+        default=3,
+        description="Maximum number of retry attempts",
+    )
+    retry_delay: RetryDelay = Field(
+        default=1.0,
+        description="Delay between retry attempts in seconds",
+    )
+
+    # === Project Configuration ===
+    project_name: str = Field(
+        default="flext-oracle-wms",
+        description="Project name for identification",
+    )
+    environment: str = Field(
+        default="production",
+        description="Environment identifier (dev, test, prod)",
+    )
+
+    # === Compatibility Properties ===
+    @property
+    def timeout(self) -> float:
+        """Compatibility property for timeout access."""
+        return self.timeout_seconds
+
     @field_validator("base_url")
     @classmethod
     def validate_base_url(cls, v: HttpUrl) -> HttpUrl:
@@ -133,14 +161,44 @@ class OracleWMSConfig(
         if not url_str.startswith(("http://", "https://")):
             msg = f"Invalid Oracle WMS base URL: {url_str} (must start with http:// or https://)"
             raise ValueError(msg)
-        # Validate Oracle WMS URL pattern
-        if ".wms.ocs.oraclecloud.com" not in url_str:
-            # Allow for development/testing URLs
-            if not any(
-                env in url_str for env in ["localhost", "test", "dev", "staging"]
-            ):
-                msg = f"Invalid Oracle WMS base URL: {url_str} (must contain .wms.ocs.oraclecloud.com or be a dev/test URL)"
+        # Validate Oracle WMS URL pattern - more flexible for different environments
+        oracle_patterns = [
+            ".wms.ocs.oraclecloud.com",  # Production Oracle Cloud
+            ".oraclecloud.com",  # Other Oracle Cloud services
+            "oracle.com",  # Oracle domains
+        ]
+
+        dev_patterns = [
+            "localhost",
+            "127.0.0.1",
+            "test",
+            "dev",
+            "staging",
+            "demo",
+            "sandbox",
+            "internal",
+            "lab",
+            "qa",
+        ]
+
+        # Check if URL matches Oracle patterns or dev patterns
+        is_oracle_url = any(pattern in url_str for pattern in oracle_patterns)
+        is_dev_url = any(pattern in url_str for pattern in dev_patterns)
+
+        if not (is_oracle_url or is_dev_url):
+            # Allow any HTTPS URL for maximum flexibility
+            if not url_str.startswith("https://"):
+                msg = f"Oracle WMS URL should use HTTPS for security: {url_str}"
                 raise ValueError(msg)
+            # For non-Oracle URLs, just issue a warning in logs but allow it
+            import logging
+
+            logger = logging.getLogger(__name__)
+            logger.warning(
+                "Using non-standard Oracle WMS URL: %s. "
+                "Ensure this is correct for your environment.",
+                url_str,
+            )
         return v
 
     # Note: log_level validation is now handled by LoggingConfigMixin
@@ -181,17 +239,17 @@ class OracleWMSConfig(
         return params
 
     @classmethod
-    def from_env_file(cls, env_file: str | Path = ".env") -> OracleWMSConfig:
+    def from_env_file(cls, env_file: str | Path = ".env") -> FlextOracleWmsModuleConfig:
         """Create configuration from environment file."""
         return cls(_env_file=env_file)
 
     @classmethod
-    def for_testing(cls) -> OracleWMSConfig:
+    def for_testing(cls) -> FlextOracleWmsModuleConfig:
         """Create configuration optimized for testing."""
         return cls(
             project_name="flext-oracle-wms-test",
             environment="test",
-            base_url="https://test.example.com",
+            base_url=HttpUrl("https://test.example.com"),
             username="test_user",
             password="test_password",
             batch_size=10,  # Using composition mixin field
@@ -202,7 +260,7 @@ class OracleWMSConfig(
         )
 
 
-def load_config() -> OracleWMSConfig:
+def load_config() -> FlextOracleWmsModuleConfig:
     """Load Oracle WMS configuration from environment.
 
     This function provides a convenient way to load configuration
@@ -218,9 +276,9 @@ def load_config() -> OracleWMSConfig:
             break
         current_dir = Path(current_dir).parent
     if env_file:
-        return OracleWMSConfig(_env_file=env_file)
-    return OracleWMSConfig()
+        return FlextOracleWmsModuleConfig(_env_file=env_file)
+    return FlextOracleWmsModuleConfig()
 
 
 # Rebuild the model to ensure all types are properly resolved
-OracleWMSConfig.model_rebuild()
+FlextOracleWmsModuleConfig.model_rebuild()

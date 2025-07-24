@@ -10,15 +10,15 @@ from __future__ import annotations
 
 from typing import Final, Literal
 
-# Import flext-core constants
-from flext_core.domain.constants import ConfigDefaults
+# Import from flext-core root namespace as required
+from flext_core import FlextConstants
 
 # ==============================================================================
 # ORACLE WMS API CONSTANTS
 # ==============================================================================
 
 
-class OracleWMSDefaults:
+class FlextOracleWmsDefaults:
     """Oracle WMS-specific default values."""
 
     # API Configuration
@@ -26,11 +26,11 @@ class OracleWMSDefaults:
     DEFAULT_AUTH_METHOD: Final = "basic"
 
     # Performance settings aligned with flext-core
-    DEFAULT_PAGE_SIZE: Final = ConfigDefaults.DEFAULT_PAGE_SIZE
-    MAX_PAGE_SIZE: Final = ConfigDefaults.MAX_PAGE_SIZE
-    DEFAULT_TIMEOUT: Final = ConfigDefaults.DEFAULT_HTTP_TIMEOUT
-    DEFAULT_RETRIES: Final = ConfigDefaults.DEFAULT_HTTP_RETRIES
-    DEFAULT_BATCH_SIZE: Final = ConfigDefaults.DEFAULT_BATCH_SIZE
+    DEFAULT_PAGE_SIZE: Final = 100
+    MAX_PAGE_SIZE: Final = 1000
+    DEFAULT_TIMEOUT: Final = 30
+    DEFAULT_RETRIES: Final = 3
+    DEFAULT_BATCH_SIZE: Final = 50
 
     # WMS-specific limits
     MAX_ENTITIES_PER_REQUEST: Final = 50
@@ -47,7 +47,7 @@ class OracleWMSDefaults:
     FLATTEN_SEPARATOR: Final = "__"
 
 
-class OracleWMSEntityTypes:
+class FlextOracleWmsEntityTypes:
     """Oracle WMS entity types."""
 
     ALLOCATION: Final = "allocation"
@@ -76,7 +76,7 @@ class OracleWMSEntityTypes:
     ]
 
 
-class OracleWMSFilterOperators:
+class FlextOracleWmsFilterOperators:
     """Oracle WMS filter operators."""
 
     EQ: Final = "eq"
@@ -92,7 +92,7 @@ class OracleWMSFilterOperators:
     ALL_OPERATORS: Final = [EQ, NEQ, GT, GTE, LT, LTE, IN, NIN, LIKE]
 
 
-class OracleWMSPageModes:
+class FlextOracleWmsPageModes:
     """Oracle WMS pagination modes."""
 
     API: Final = "api"
@@ -102,7 +102,7 @@ class OracleWMSPageModes:
     DEFAULT: Final = API
 
 
-class OracleWMSWriteModes:
+class FlextOracleWmsWriteModes:
     """Oracle WMS write modes for targets."""
 
     INSERT: Final = "insert"
@@ -159,7 +159,7 @@ OracleWMSAuthMethod = Literal["basic", "oauth2"]
 # ==============================================================================
 
 
-class OracleWMSErrorMessages:
+class FlextOracleWmsErrorMessages:
     """Oracle WMS-specific error messages."""
 
     # Connection errors
@@ -194,7 +194,7 @@ class OracleWMSErrorMessages:
 # ==============================================================================
 
 
-class OracleWMSSuccessMessages:
+class FlextOracleWmsSuccessMessages:
     """Oracle WMS-specific success messages."""
 
     # Connection
@@ -216,19 +216,19 @@ class OracleWMSSuccessMessages:
 # ==============================================================================
 
 __all__ = [
+    # Constants with FlextOracleWms prefix
+    "FlextOracleWmsDefaults",
+    "FlextOracleWmsEntityTypes",
+    # Messages
+    "FlextOracleWmsErrorMessages",
+    "FlextOracleWmsFilterOperators",
+    "FlextOracleWmsPageModes",
+    "FlextOracleWmsSuccessMessages",
+    "FlextOracleWmsWriteModes",
     "OracleWMSAuthMethod",
-    # Constants
-    "OracleWMSDefaults",
     # Type literals
     "OracleWMSEntityType",
-    "OracleWMSEntityTypes",
-    # Messages
-    "OracleWMSErrorMessages",
     "OracleWMSFilterOperator",
-    "OracleWMSFilterOperators",
     "OracleWMSPageMode",
-    "OracleWMSPageModes",
-    "OracleWMSSuccessMessages",
     "OracleWMSWriteMode",
-    "OracleWMSWriteModes",
 ]

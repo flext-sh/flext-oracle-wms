@@ -25,10 +25,12 @@ def create_standard_exports(
         Tuple of (__all__ list, formatted docstring)
 
     """
-    docstring = f"""Oracle WMS {module_name} Package - Strict compliance with mandatory capabilities.
+    docstring = f"""Oracle WMS {module_name} Package.
 
-This package provides {module_name.lower()} strict compliance for Oracle WMS integrations
-with mandatory capabilities as required.
+Strict compliance with mandatory capabilities.
+
+This package provides {module_name.lower()} strict compliance for
+Oracle WMS integrations with mandatory capabilities as required.
 
 Copyright (c) 2025 FLEXT Contributors
 SPDX-License-Identifier: MIT
