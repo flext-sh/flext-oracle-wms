@@ -13,6 +13,11 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime
 from typing import TYPE_CHECKING, Any, Self
 
+from flext_core import get_logger
+
+# Simple replacement for FlextLoggerFactory
+FlextLoggerFactory = logging
+
 if TYPE_CHECKING:
     from collections.abc import Generator
 
@@ -38,12 +43,12 @@ from flext_oracle_wms.models import (
 )
 from flext_oracle_wms.singer.flattening import FlextOracleWmsFlattener
 
-logger = logging.getLogger(__name__)
+logger = get_logger(__name__)
 
 
 def get_logger(name: str) -> logging.Logger:
     """Get logger instance with consistent formatting."""
-    logger = logging.getLogger(name)
+    logger = FlextLoggerFactory.get_logger(name)
     if not logger.handlers:
         handler = logging.StreamHandler()
         formatter = logging.Formatter(
@@ -69,7 +74,7 @@ if TYPE_CHECKING:
         WMSPageSize,
         WMSRecordBatch,
     )
-logger = logging.getLogger(__name__)
+logger = get_logger(__name__)
 
 
 class FlextOracleWmsAuth(Auth):
@@ -129,7 +134,9 @@ class FlextOracleWmsLegacyClient:
             "cache_ttl_seconds": getattr(config, "cache_ttl_seconds", 300),
             "max_cache_entries": getattr(config, "max_cache_size", 1000),
             "cleanup_interval_seconds": getattr(
-                config, "cleanup_interval_seconds", 300
+                config,
+                "cleanup_interval_seconds",
+                300,
             ),
         }
         self._cache_manager = FlextOracleWmsCacheManager(cache_config)
@@ -140,7 +147,7 @@ class FlextOracleWmsLegacyClient:
 
         # Setup logging
         if config.enable_request_logging:
-            logging.getLogger("httpx").setLevel(logging.DEBUG)
+            FlextLoggerFactory.get_logger("httpx").setLevel(logging.DEBUG)
         logger.info(
             "Initialized Oracle WMS client for %s with enterprise cache",
             config.base_url,
@@ -549,7 +556,10 @@ class FlextOracleWmsLegacyClient:
 
                     # Track the operation
                     operation_id = self._track_operation(
-                        write_mode, entity_name, record, original_data
+                        write_mode,
+                        entity_name,
+                        record,
+                        original_data,
                     )
 
                     method = "POST" if write_mode == "insert" else "PUT"
@@ -567,7 +577,7 @@ class FlextOracleWmsLegacyClient:
                             {
                                 "record_index": i,
                                 "error": error_msg,
-                            }
+                            },
                         )
                         # Mark operation as failed
                         self._mark_operation_failed(operation_id, error_msg)
@@ -815,7 +825,8 @@ class FlextOracleWmsLegacyClient:
         # Implement real bulk post with parallelization and rollback
         batch_size_value = batch_size or self.config.batch_size
         max_workers = min(
-            max(1, len(records) // batch_size_value), self.config.pool_size
+            max(1, len(records) // batch_size_value),
+            self.config.pool_size,
         )
 
         results: dict[str, Any] = {
@@ -852,7 +863,9 @@ class FlextOracleWmsLegacyClient:
 
                 try:
                     write_result = self.write_entity_data(
-                        validated_name, batch, "insert"
+                        validated_name,
+                        batch,
+                        "insert",
                     )
                     batch_result.update(write_result)
                     logger.debug(
@@ -901,7 +914,9 @@ class FlextOracleWmsLegacyClient:
 
                     except Exception as e:
                         logger.exception(
-                            "Failed to process batch %d result: %s", batch_index, e
+                            "Failed to process batch %d result: %s",
+                            batch_index,
+                            e,
                         )
                         current_failed = results["failed_batches"]
                         if isinstance(current_failed, int):
@@ -945,7 +960,8 @@ class FlextOracleWmsLegacyClient:
         # Implement real bulk update with parallelization
         batch_size_value = batch_size or self.config.batch_size
         max_workers = min(
-            max(1, len(records) // batch_size_value), self.config.pool_size
+            max(1, len(records) // batch_size_value),
+            self.config.pool_size,
         )
 
         results: dict[str, Any] = {
@@ -965,7 +981,7 @@ class FlextOracleWmsLegacyClient:
             for i, record in enumerate(records):
                 if id_field not in record:
                     invalid_records.append(
-                        f"Record {i} missing required ID field '{id_field}'"
+                        f"Record {i} missing required ID field '{id_field}'",
                     )
 
             if invalid_records:
@@ -1001,7 +1017,9 @@ class FlextOracleWmsLegacyClient:
 
                 try:
                     write_result = self.write_entity_data(
-                        validated_name, batch, "update"
+                        validated_name,
+                        batch,
+                        "update",
                     )
                     batch_result.update(write_result)
                     logger.debug(
@@ -1016,7 +1034,9 @@ class FlextOracleWmsLegacyClient:
                     if isinstance(errors_list, list):
                         errors_list.append(f"Batch update failed: {e}")
                     logger.exception(
-                        "Update batch %d failed completely: %s", batch_index, e
+                        "Update batch %d failed completely: %s",
+                        batch_index,
+                        e,
                     )
 
                 return batch_result
@@ -1046,13 +1066,15 @@ class FlextOracleWmsLegacyClient:
                         current_failed = results["failed_updates"]
 
                         if isinstance(current_successful, int) and isinstance(
-                            successful_count, int
+                            successful_count,
+                            int,
                         ):
                             results["successful_updates"] = (
                                 current_successful + successful_count
                             )
                         if isinstance(current_failed, int) and isinstance(
-                            failed_count, int
+                            failed_count,
+                            int,
                         ):
                             results["failed_updates"] = current_failed + failed_count
 
@@ -1115,7 +1137,8 @@ class FlextOracleWmsLegacyClient:
                 "active" if self._client is not None else "inactive"
             )
             validation_results["config_validation"] = hasattr(
-                self.config, "base_url"
+                self.config,
+                "base_url",
             ) and hasattr(self.config, "pool_size")
 
             # 2. Check method availability
@@ -1129,12 +1152,12 @@ class FlextOracleWmsLegacyClient:
 
             for method_name in required_methods:
                 method_exists = hasattr(self, method_name) and callable(
-                    getattr(self, method_name)
+                    getattr(self, method_name),
                 )
                 validation_results["method_availability"][method_name] = method_exists
                 if not method_exists:
                     validation_results["errors"].append(
-                        f"Required method {method_name} not available"
+                        f"Required method {method_name} not available",
                     )
 
             # 3. Test entity validation with known entities
@@ -1148,7 +1171,7 @@ class FlextOracleWmsLegacyClient:
                 except Exception as e:
                     validation_results["entity_validation"][entity] = False
                     validation_results["warnings"].append(
-                        f"Entity validation failed for {entity}: {e}"
+                        f"Entity validation failed for {entity}: {e}",
                     )
 
             # 4. Test connection (if possible)
@@ -1157,7 +1180,7 @@ class FlextOracleWmsLegacyClient:
                 validation_results["connection_test"] = connection_test
                 if not connection_test:
                     validation_results["warnings"].append(
-                        "Connection test failed - bulk operations may fail"
+                        "Connection test failed - bulk operations may fail",
                     )
             except Exception as e:
                 validation_results["connection_test"] = False
@@ -1175,7 +1198,7 @@ class FlextOracleWmsLegacyClient:
 
             # 6. Determine overall status
             all_methods_available = all(
-                validation_results["method_availability"].values()
+                validation_results["method_availability"].values(),
             )
             config_valid = validation_results["config_validation"]
             some_entities_valid = any(validation_results["entity_validation"].values())
@@ -1204,7 +1227,9 @@ class FlextOracleWmsLegacyClient:
             return validation_results
 
     def _get_cached_entity_data(
-        self, entity_name: str, params: dict[str, Any] | None = None
+        self,
+        entity_name: str,
+        params: dict[str, Any] | None = None,
     ) -> tuple[bool, Any]:
         """Get cached entity data if available using enterprise cache manager.
 
@@ -1239,7 +1264,10 @@ class FlextOracleWmsLegacyClient:
         return False, None
 
     def _cache_entity_data(
-        self, entity_name: str, params: dict[str, Any] | None, data: Any
+        self,
+        entity_name: str,
+        params: dict[str, Any] | None,
+        data: Any,
     ) -> None:
         """Cache entity data using enterprise cache manager.
 
@@ -1264,7 +1292,9 @@ class FlextOracleWmsLegacyClient:
         # Use enterprise cache manager
         cache_ttl = getattr(self.config, "cache_ttl_seconds", 300)
         success = self._cache_manager.flext_oracle_wms_set_entity(
-            cache_key, data, cache_ttl
+            cache_key,
+            data,
+            cache_ttl,
         )
         if success:
             logger.debug("Enterprise cached data for entity %s", entity_name)
@@ -1343,7 +1373,9 @@ class FlextOracleWmsLegacyClient:
         return operation_id
 
     def _mark_operation_success(
-        self, operation_id: str, result_data: dict[str, Any] | None = None
+        self,
+        operation_id: str,
+        result_data: dict[str, Any] | None = None,
     ) -> None:
         """Mark operation as successful."""
         if operation_id in self._operation_tracker:
@@ -1360,7 +1392,9 @@ class FlextOracleWmsLegacyClient:
             logger.debug("Marked operation %s as failed: %s", operation_id, error)
 
     def _get_successful_operations(
-        self, entity_name: str, operation_type: str
+        self,
+        entity_name: str,
+        operation_type: str,
     ) -> list[dict[str, Any]]:
         """Get successful operations for potential rollback."""
         return [
@@ -1417,7 +1451,7 @@ class FlextOracleWmsLegacyClient:
                 id_field = "id"
             else:
                 rollback_results["rollback_errors"].append(
-                    f"Unknown operation type: {operation_type}"
+                    f"Unknown operation type: {operation_type}",
                 )
                 return rollback_results
 
@@ -1453,22 +1487,23 @@ class FlextOracleWmsLegacyClient:
                             record_id = original_data[id_field]
                             api_version = getattr(self.config, "api_version", "v10")
                             endpoint = (
-                            f"/wms/lgfapi/{api_version}/entity/{validated_name}/"
-                            f"{record_id}"
-                        )
+                                f"/wms/lgfapi/{api_version}/entity/{validated_name}/"
+                                f"{record_id}"
+                            )
 
                             response = self.client.put(endpoint, json=original_data)
                             response.raise_for_status()
 
                             rollback_results["successful_rollbacks"] += 1
                             logger.debug(
-                                "Restored original data for record %s", record_id
+                                "Restored original data for record %s",
+                                record_id,
                             )
                         else:
                             rollback_results["failed_rollbacks"] += 1
                             rollback_results["rollback_errors"].append(
                                 "Missing original data for update rollback: "
-                                f"{operation}"
+                                f"{operation}",
                             )
 
                     elif (
@@ -1485,23 +1520,26 @@ class FlextOracleWmsLegacyClient:
 
                         rollback_results["successful_rollbacks"] += 1
                         logger.debug(
-                            "Recreated deleted record for entity %s", validated_name
+                            "Recreated deleted record for entity %s",
+                            validated_name,
                         )
 
                     else:
                         rollback_results["failed_rollbacks"] += 1
                         rollback_results["rollback_errors"].append(
                             f"Cannot rollback {rollback_operation} operation: "
-                            f"{operation}"
+                            f"{operation}",
                         )
 
                 except Exception as e:
                     rollback_results["failed_rollbacks"] += 1
                     rollback_results["rollback_errors"].append(
-                        f"Rollback failed for {operation}: {e}"
+                        f"Rollback failed for {operation}: {e}",
                     )
                     logger.exception(
-                        "Rollback failed for operation %s: %s", operation, e
+                        "Rollback failed for operation %s: %s",
+                        operation,
+                        e,
                     )
 
             logger.info(
@@ -1519,7 +1557,9 @@ class FlextOracleWmsLegacyClient:
             return rollback_results
 
     def bulk_rollback_tracked_operations(
-        self, entity_name: str, operation_type: str = "insert"
+        self,
+        entity_name: str,
+        operation_type: str = "insert",
     ) -> dict[str, Any]:
         """Rollback all successful tracked operations for an entity.
 
@@ -1533,7 +1573,8 @@ class FlextOracleWmsLegacyClient:
         """
         # Get successful operations from tracker
         successful_operations = self._get_successful_operations(
-            entity_name, operation_type
+            entity_name,
+            operation_type,
         )
 
         if not successful_operations:
@@ -1551,7 +1592,9 @@ class FlextOracleWmsLegacyClient:
 
         # Use the enhanced rollback mechanism
         return self.bulk_rollback_batch_operation(
-            entity_name, successful_operations, operation_type
+            entity_name,
+            successful_operations,
+            operation_type,
         )
 
     def clear_operation_tracking(self, entity_name: str | None = None) -> int:

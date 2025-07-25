@@ -10,7 +10,6 @@ using modern Python 3.13 patterns and flext-core standards.
 from __future__ import annotations
 
 import base64
-import logging
 import secrets
 import urllib.parse
 from datetime import datetime, timedelta
@@ -19,7 +18,7 @@ from typing import TYPE_CHECKING, Any, Self
 import httpx
 
 # Import from flext-core root namespace as required
-from flext_core import FlextResult
+from flext_core import FlextResult, get_logger
 
 if TYPE_CHECKING:
     from collections.abc import Generator
@@ -35,7 +34,7 @@ if TYPE_CHECKING:
         scope: str
 
 
-logger = logging.getLogger(__name__)
+logger = get_logger(__name__)
 
 
 class FlextOracleWmsAuth(httpx.Auth):
@@ -131,14 +130,14 @@ class FlextOracleWmsAuth(httpx.Auth):
                     return FlextResult.ok(True)
                 if response.status_code == 401:
                     return FlextResult.fail(
-                        "Authentication failed - invalid credentials"
+                        "Authentication failed - invalid credentials",
                     )
                 if response.status_code == 403:
                     return FlextResult.fail(
-                        "Access forbidden - insufficient permissions"
+                        "Access forbidden - insufficient permissions",
                     )
                 return FlextResult.fail(
-                    f"Connection test failed: HTTP {response.status_code}"
+                    f"Connection test failed: HTTP {response.status_code}",
                 )
 
         except httpx.TimeoutException:
@@ -284,7 +283,7 @@ class FlextOracleWmsOAuth2Auth(httpx.Auth):
             # Validate state if provided
             if state and hasattr(self, "_oauth_state") and state != self._oauth_state:
                 return FlextResult.fail(
-                    "Invalid state parameter - possible CSRF attack"
+                    "Invalid state parameter - possible CSRF attack",
                 )
 
             # Prepare token request
@@ -307,7 +306,7 @@ class FlextOracleWmsOAuth2Auth(httpx.Auth):
 
                 if response.status_code != 200:
                     return FlextResult.fail(
-                        f"Token exchange failed: HTTP {response.status_code}"
+                        f"Token exchange failed: HTTP {response.status_code}",
                     )
 
                 token_data = response.json()
@@ -385,7 +384,7 @@ class FlextOracleWmsOAuth2Auth(httpx.Auth):
 
                 if response.status_code != 200:
                     return FlextResult.fail(
-                        f"Token refresh failed: HTTP {response.status_code}"
+                        f"Token refresh failed: HTTP {response.status_code}",
                     )
 
                 token_data = response.json()

@@ -3,7 +3,6 @@
 
 from __future__ import annotations
 
-import logging
 import sys
 
 from flext_oracle_wms.client import FlextOracleWmsLegacyClient
@@ -13,13 +12,14 @@ from flext_oracle_wms.config_module import load_config
 logging.basicConfig(
     level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
 )
-logger = logging.getLogger(__name__)
+logger = get_logger(__name__)
 
 
 def test_real_connection() -> bool:
     """Test real Oracle WMS connection with ta29 environment."""
     try:
-        # Use test configuration instead of loading from .env for quality tests
+        # Use test configuration instead of loading from flext_core import get_logger
+from .env for quality tests
         logger.info("Loading Oracle WMS test configuration...")
         from flext_oracle_wms.config_module import FlextOracleWmsModuleConfig
 

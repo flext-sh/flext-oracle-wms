@@ -10,7 +10,6 @@ for Oracle WMS integrations as required by the user specifications.
 
 from __future__ import annotations
 
-import logging
 from datetime import datetime
 from typing import TYPE_CHECKING, Any, TypedDict
 
@@ -18,7 +17,7 @@ if TYPE_CHECKING:
     from collections.abc import Callable
 
 # Import from flext-core root namespace as required
-from flext_core import FlextResult
+from flext_core import FlextResult, get_logger
 
 from flext_oracle_wms.constants import (
     FlextOracleWmsEntityTypes,
@@ -30,7 +29,7 @@ from flext_oracle_wms.typedefs import (
     FlextOracleWmsEntityInfo,
 )
 
-logger = logging.getLogger(__name__)
+logger = get_logger(__name__)
 if TYPE_CHECKING:
     from flext_oracle_wms.typedefs import (
         FlextOracleWmsConnectionInfo,
@@ -721,7 +720,7 @@ class FlextOracleWmsDynamicSchemaProcessor:
 
 # Factory function for easy instantiation
 def flext_oracle_wms_create_dynamic_schema_processor(
-    **kwargs: Any,
+    **kwargs: object,
 ) -> FlextOracleWmsDynamicSchemaProcessor:
     """Create a configured dynamic schema processor."""
     return FlextOracleWmsDynamicSchemaProcessor(**kwargs)

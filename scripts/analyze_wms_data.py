@@ -3,25 +3,17 @@
 
 from __future__ import annotations
 
-import sys
 from collections import defaultdict
 from typing import Any
 
-sys.path.insert(0, "/home/marlonsc/flext/flext-oracle-wms/src")
-sys.path.insert(0, "/home/marlonsc/flext/flext-tap-oracle-wms/src")
-
-# Use local logging to avoid flext-observability ServiceResult dependency issue
-import logging
-
-logging.basicConfig(level=logging.INFO)
-def get_logger(name):
-    return logging.getLogger(name)
+from flext_core import FlextLoggerFactory, FlextLoggerName
 from pydantic import HttpUrl
 
 from flext_oracle_wms.client import FlextOracleWmsLegacyClient
 from flext_oracle_wms.config_module import FlextOracleWmsModuleConfig
 
-logger = get_logger(__name__)
+logger_factory = FlextLoggerFactory()
+logger = logger_factory.create_logger(FlextLoggerName(__name__))
 
 
 def analyze_data_types(data: Any, path: str = "") -> dict[str, set[str]]:

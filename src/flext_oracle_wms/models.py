@@ -8,11 +8,9 @@ Ultra-modern Python 3.13 models with MAXIMUM flext-core integration.
 
 from __future__ import annotations
 
-from datetime import datetime
 from typing import TYPE_CHECKING, Annotated, Any
 
 # Import from flext-core root namespace as required
-from flext_core import FlextResult
 from pydantic import BaseModel, Field
 
 # Import constants for runtime usage
@@ -23,8 +21,7 @@ WMSRecord = dict[str, Any]
 WMSFieldName = str
 
 if TYPE_CHECKING:
-    from flext_oracle_wms.constants import OracleWMSEntityType
-    from flext_oracle_wms.typedefs import WMSSchema
+    from datetime import datetime
 
     # Define WMS-specific types for this module
     WMSErrorCode = str
@@ -247,7 +244,8 @@ class FlextOracleWmsRecordModel(BaseModel):
         description="Oracle WMS entity name using flext-core types",
     )
     record_id: str | None = Field(
-        None, description="Unique record identifier from Oracle WMS"
+        None,
+        description="Unique record identifier from Oracle WMS",
     )
 
     # Enhanced Oracle WMS record metadata

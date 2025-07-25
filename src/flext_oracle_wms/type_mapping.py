@@ -10,13 +10,10 @@ modern Python 3.13 patterns and Singer SDK compatibility.
 from __future__ import annotations
 
 import re
-from typing import TYPE_CHECKING, Any
+from typing import Any
 
 # Import from flext-core root namespace as required
 from flext_core import FlextResult
-
-if TYPE_CHECKING:
-    from collections.abc import Callable
 
 # Oracle WMS API to Singer Schema Type Mappings
 FLEXT_ORACLE_WMS_TYPE_MAPPINGS: dict[str, dict[str, Any]] = {
@@ -121,7 +118,8 @@ class FlextOracleWmsTypeMapper:
         ]
 
     def flext_oracle_wms_map_oracle_type(
-        self, oracle_type: str
+        self,
+        oracle_type: str,
     ) -> FlextResult[dict[str, Any]]:
         """Map Oracle WMS type to Singer schema type.
 
@@ -158,7 +156,8 @@ class FlextOracleWmsTypeMapper:
             return FlextResult.fail(f"Type mapping failed: {e}")
 
     def flext_oracle_wms_map_field_by_name(
-        self, field_name: str
+        self,
+        field_name: str,
     ) -> FlextResult[dict[str, Any]]:
         """Map field by name pattern to Singer schema type.
 
@@ -219,16 +218,17 @@ class FlextOracleWmsTypeMapper:
                     schema_field["description"] = name_mapping["description"]
 
             # Handle nullability
-            if not nullable and "type" in schema_field:
-                if (
+            if (
+                not nullable
+                and "type" in schema_field
+                and (
                     isinstance(schema_field["type"], list)
                     and "null" in schema_field["type"]
-                ):
-                    schema_field["type"] = [
-                        t for t in schema_field["type"] if t != "null"
-                    ]
-                    if len(schema_field["type"]) == 1:
-                        schema_field["type"] = schema_field["type"][0]
+                )
+            ):
+                schema_field["type"] = [t for t in schema_field["type"] if t != "null"]
+                if len(schema_field["type"]) == 1:
+                    schema_field["type"] = schema_field["type"][0]
 
             return FlextResult.ok(schema_field)
 
@@ -236,7 +236,9 @@ class FlextOracleWmsTypeMapper:
             return FlextResult.fail(f"Schema field mapping failed: {e}")
 
     def flext_oracle_wms_add_custom_mapping(
-        self, oracle_type: str, singer_schema: dict[str, Any]
+        self,
+        oracle_type: str,
+        singer_schema: dict[str, Any],
     ) -> FlextResult[bool]:
         """Add custom type mapping.
 
@@ -262,7 +264,7 @@ class FlextOracleWmsTypeMapper:
 
         """
         return list(FLEXT_ORACLE_WMS_TYPE_MAPPINGS.keys()) + list(
-            self._custom_mappings.keys()
+            self._custom_mappings.keys(),
         )
 
 

@@ -8,18 +8,16 @@ Thread-safe caching system for Oracle WMS operations with TTL support.
 
 from __future__ import annotations
 
-import logging
 import threading
 import time
-from typing import TYPE_CHECKING, Any
+from typing import Any
+
+from flext_core import get_logger
 
 # Import from flext-core root namespace as required
-from flext_core import FlextResult
 
-if TYPE_CHECKING:
-    from collections.abc import Iterator
 
-logger = logging.getLogger(__name__)
+logger = get_logger(__name__)
 
 
 class FlextOracleWmsCacheManager:
@@ -45,7 +43,8 @@ class FlextOracleWmsCacheManager:
         self._default_ttl = config.get("cache_ttl_seconds", 3600)  # 1 hour
         self._max_cache_size = config.get("max_cache_entries", 1000)
         self._cleanup_interval = config.get(
-            "cleanup_interval_seconds", 300
+            "cleanup_interval_seconds",
+            300,
         )  # 5 minutes
 
         # Cache statistics
@@ -72,7 +71,10 @@ class FlextOracleWmsCacheManager:
         return self._get_from_cache(self._entity_cache, key, "entity")
 
     def flext_oracle_wms_set_entity(
-        self, key: str, value: Any, ttl: int | None = None
+        self,
+        key: str,
+        value: Any,
+        ttl: int | None = None,
     ) -> bool:
         """Set entity in cache with TTL.
 
@@ -100,7 +102,10 @@ class FlextOracleWmsCacheManager:
         return self._get_from_cache(self._schema_cache, key, "schema")
 
     def flext_oracle_wms_set_schema(
-        self, key: str, value: Any, ttl: int | None = None
+        self,
+        key: str,
+        value: Any,
+        ttl: int | None = None,
     ) -> bool:
         """Set schema in cache with TTL.
 
@@ -128,7 +133,10 @@ class FlextOracleWmsCacheManager:
         return self._get_from_cache(self._metadata_cache, key, "metadata")
 
     def flext_oracle_wms_set_metadata(
-        self, key: str, value: Any, ttl: int | None = None
+        self,
+        key: str,
+        value: Any,
+        ttl: int | None = None,
     ) -> bool:
         """Set metadata in cache with TTL.
 
@@ -233,7 +241,10 @@ class FlextOracleWmsCacheManager:
             return 0
 
     def _get_from_cache(
-        self, cache: dict[str, dict[str, Any]], key: str, cache_type: str
+        self,
+        cache: dict[str, dict[str, Any]],
+        key: str,
+        cache_type: str,
     ) -> Any | None:
         """Get item from specific cache with TTL check."""
         try:
@@ -288,7 +299,9 @@ class FlextOracleWmsCacheManager:
                     del cache[oldest_key]
                     self._stats["evictions"] += 1
                     logger.debug(
-                        "Evicted oldest entry: %s from %s cache", oldest_key, cache_type
+                        "Evicted oldest entry: %s from %s cache",
+                        oldest_key,
+                        cache_type,
                     )
 
                 cache[key] = {
@@ -299,7 +312,10 @@ class FlextOracleWmsCacheManager:
                 }
 
                 logger.debug(
-                    "Cached: %s in %s cache (TTL: %d seconds)", key, cache_type, ttl
+                    "Cached: %s in %s cache (TTL: %d seconds)",
+                    key,
+                    cache_type,
+                    ttl,
                 )
                 return True
 
@@ -308,7 +324,9 @@ class FlextOracleWmsCacheManager:
             return False
 
     def _cleanup_cache(
-        self, cache: dict[str, dict[str, Any]], current_time: float
+        self,
+        cache: dict[str, dict[str, Any]],
+        current_time: float,
     ) -> int:
         """Clean expired entries from a specific cache."""
         expired_keys = [

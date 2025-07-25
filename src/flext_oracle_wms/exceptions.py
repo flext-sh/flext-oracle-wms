@@ -8,12 +8,9 @@ Enterprise-grade exception hierarchy for Oracle WMS operations.
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any
+from typing import Any
 
 # Import from flext-core root namespace as required
-from flext_core import (
-    FlextResult,
-)
 
 
 # Define base error for compatibility
@@ -53,7 +50,7 @@ class FlextOracleWmsAuthenticationError(FlextOracleWmsError):
         self,
         message: str = "Oracle WMS authentication failed",
         auth_method: str | None = None,
-        **kwargs: Any,
+        **kwargs: object,
     ) -> None:
         """Initialize authentication error.
 
@@ -75,7 +72,7 @@ class FlextOracleWmsApiError(FlextOracleWmsError):
         message: str,
         status_code: int | None = None,
         response_body: str | None = None,
-        **kwargs: Any,
+        **kwargs: object,
     ) -> None:
         """Initialize API error.
 
@@ -98,7 +95,7 @@ class FlextOracleWmsConnectionError(FlextOracleWmsError):
         self,
         message: str = "Oracle WMS connection failed",
         retry_count: int = 0,
-        **kwargs: Any,
+        **kwargs: object,
     ) -> None:
         """Initialize connection error.
 
@@ -120,7 +117,7 @@ class FlextOracleWmsDataValidationError(FlextOracleWmsError):
         message: str,
         field_name: str | None = None,
         invalid_value: Any = None,
-        **kwargs: Any,
+        **kwargs: object,
     ) -> None:
         """Initialize data validation error.
 
@@ -143,7 +140,7 @@ class FlextOracleWmsConfigurationError(FlextOracleWmsError):
         self,
         message: str,
         config_key: str | None = None,
-        **kwargs: Any,
+        **kwargs: object,
     ) -> None:
         """Initialize configuration error.
 
@@ -164,7 +161,7 @@ class FlextOracleWmsEntityNotFoundError(FlextOracleWmsError):
         self,
         entity_name: str,
         message: str | None = None,
-        **kwargs: Any,
+        **kwargs: object,
     ) -> None:
         """Initialize entity not found error.
 
@@ -190,7 +187,7 @@ class FlextOracleWmsRateLimitError(FlextOracleWmsError):
         self,
         message: str = "Oracle WMS API rate limit exceeded",
         retry_after_seconds: float | None = None,
-        **kwargs: Any,
+        **kwargs: object,
     ) -> None:
         """Initialize rate limit error.
 
@@ -212,7 +209,7 @@ class FlextOracleWmsSchemaFlatteningError(FlextOracleWmsError):
         message: str,
         schema_operation: str,
         depth_level: int | None = None,
-        **kwargs: Any,
+        **kwargs: object,
     ) -> None:
         """Initialize schema flattening error.
 
@@ -236,7 +233,7 @@ class FilterError(FlextOracleWmsError):
         message: str,
         filter_type: str | None = None,
         filter_value: Any = None,
-        **kwargs: Any,
+        **kwargs: object,
     ) -> None:
         """Initialize filter error.
 
@@ -260,7 +257,7 @@ class FlextOracleWmsSchemaError(FlextOracleWmsError):
         message: str,
         schema_name: str | None = None,
         validation_details: dict[str, Any] | None = None,
-        **kwargs: Any,
+        **kwargs: object,
     ) -> None:
         """Initialize schema error.
 

@@ -517,7 +517,7 @@ def flext_oracle_wms_create_flattener(
     enabled: bool = True,
     max_depth: int = 5,
     separator: str = "__",
-    **kwargs: Any,
+    **kwargs: object,
 ) -> FlextOracleWmsFlattener:
     """Create a configured Oracle WMS flattener."""
     return FlextOracleWmsFlattener(
@@ -531,11 +531,13 @@ def flext_oracle_wms_create_flattener(
 def flext_oracle_wms_create_deflattener(
     separator: str = "__",
     strict_mode: bool = False,
-    **kwargs: Any,
+    **kwargs: object,
 ) -> FlextOracleWmsDeflattener:
     """Create a configured Oracle WMS deflattener."""
     return FlextOracleWmsDeflattener(
-        separator=separator, strict_mode=strict_mode, **kwargs
+        separator=separator,
+        strict_mode=strict_mode,
+        **kwargs,
     )
 
 

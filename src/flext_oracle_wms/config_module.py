@@ -10,7 +10,9 @@ Implements flext-core unified configuration standards with composition mixins.
 from __future__ import annotations
 
 from pathlib import Path
-from typing import TYPE_CHECKING, Any
+from typing import Any
+
+from flext_core import get_logger
 
 # Import from flext-core root namespace as required
 from pydantic import Field, HttpUrl, field_validator
@@ -116,7 +118,8 @@ class FlextOracleWmsModuleConfig(BaseSettings):
     cache_ttl_seconds: int = Field(default=300, description="Cache TTL in seconds")
     max_cache_size: int = Field(default=1000, description="Maximum cache entries")
     cleanup_interval_seconds: int = Field(
-        default=300, description="Cache cleanup interval"
+        default=300,
+        description="Cache cleanup interval",
     )
 
     # === Performance Configuration ===
@@ -191,9 +194,8 @@ class FlextOracleWmsModuleConfig(BaseSettings):
                 msg = f"Oracle WMS URL should use HTTPS for security: {url_str}"
                 raise ValueError(msg)
             # For non-Oracle URLs, just issue a warning in logs but allow it
-            import logging
 
-            logger = logging.getLogger(__name__)
+            logger = get_logger(__name__)
             logger.warning(
                 "Using non-standard Oracle WMS URL: %s. "
                 "Ensure this is correct for your environment.",

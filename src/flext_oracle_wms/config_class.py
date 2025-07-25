@@ -9,7 +9,7 @@ Clean Architecture principles.
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any
+from typing import Any
 
 # Import from flext-core root namespace as required
 from flext_core import FlextEntity, FlextResult

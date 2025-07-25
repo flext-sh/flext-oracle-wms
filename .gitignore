@@ -1,650 +1,335 @@
 # ============================================================================
-# FLEXT WORKSPACE STANDARD - COMPREHENSIVE .gitignore
-# Python 3.13 | Go | Node.js | Docker | Singer/Meltano
+# FLEXT-ORACLE-WMS - Oracle Warehouse Management System .gitignore
+# Python 3.13 | Poetry | Oracle WMS | Warehouse Operations | ERP Integration
 # ============================================================================
 
 # ============================================================================
-# PYTHON BUILD AND RUNTIME ARTIFACTS
+# JUNK FILES - NEVER COMMIT THESE
 # ============================================================================
 
-# Python cache and compiled files
+# Archive and backup directories  
+archive/
+archives/
+backup/
+backups/
+.backup/
+*_backup/
+*_backup_*/
+
+# AI-generated files and reports
+*_REPORT*.md
+*_ANALYSIS*.md
+*_SUMMARY*.md  
+*_FINDINGS*.md
+CLAUDE*.md
+CONFIG_MIGRATION*.md
+DEVELOPMENT_STANDARDS*.md
+DUPLICATION_REPORT*.md
+LINT_CORRECTIONS*.md
+*.ai.md
+*.ai.txt
+
+# Backup files with timestamps
+*_20250*.bak
+*_202507*.bak
+*_202506*.bak
+*.md_20250*
+README_20250*.bak
+
+# Generic backup patterns
+*.bak
+*.backup
+*.orig
+*.syntax_backup  
+*.broken
+*.tmp.bak
+*_temp.py
+*_temp.md
+
+# Fix scripts and validation files
+fix_*.py
+*_fix.py
+*_validation.py
+validate_*.py
+investigate_*.py
+temp_*.py
+debug_*.py
+
+# Tool reports and analysis
+*_analysis.txt
+*_report.txt
+*_output.txt
+analysis_temp/
+report_*/
+reports/
+reports_*/
+temp_test_*/
+
+# ============================================================================
+# PYTHON ARTIFACTS
+# ============================================================================
+
+# Python artifacts
 __pycache__/
 *.py[cod]
-*$py.class
 *.pyc
 *.pyo
 *.pyd
-*.so
 
 # Distribution / packaging
-.Python
 build/
-develop-eggs/
 dist/
-downloads/
-eggs/
-.eggs/
-lib/
-lib64/
-parts/
-sdist/
-var/
-wheels/
-share/python-wheels/
 *.egg-info/
 .installed.cfg
 *.egg
 MANIFEST
-pip-wheel-metadata/
-*.dist-info/
 
-# PyInstaller
-*.manifest
-*.spec
-
-# Installer logs
-pip-log.txt
-pip-delete-this-directory.txt
-
-# Unit test / coverage reports
+# Testing and coverage
 htmlcov/
 .tox/
 .nox/
 .coverage
 .coverage.*
-.cache
-nosetests.xml
 coverage.xml
 *.cover
-*.py,cover
 .hypothesis/
 .pytest_cache/
-cover/
-junit.xml
-test-results/
-reports/
 
-# ============================================================================
-# VIRTUAL ENVIRONMENTS
-# ============================================================================
+# Development tools
+.mypy_cache/
+.ruff_cache/
+.pyre/
+.pytype/
 
-# All virtual environment patterns
+# Virtual environments
 .env
 .venv/
 env/
 venv/
 ENV/
-env.bak/
-venv.bak/
-.venv.bkp/
-*/venv/
-*/.venv/
-*/ENV/
-*/env/
-**/.venv/
-**/venv/
-**/ENV/
-**/env/
 
-# ============================================================================
-# PACKAGE MANAGERS AND DEPENDENCIES
-# ============================================================================
-
-# Poetry - keep only root lock file
-**/poetry.lock
-!/poetry.lock
-
-# pip
-pip-wheel-metadata/
-
-# pipenv
-Pipfile.lock
-
-# pdm
-pdm.lock
-.pdm.toml
-
-# PEP 582
-__pypackages__/
-
-# ============================================================================
-# ENVIRONMENT AND CONFIGURATION
-# ============================================================================
-
-# Environment files
-.env
-.env.*
-!.env.example
-!.env.template
-.internal.invalid
-.env.*.local
-.env.production
-.env.prod
-
-# ============================================================================
-# IDE AND EDITOR FILES
-# ============================================================================
-
-# VS Code
+# IDEs and editors
 .vscode/
-!.vscode/settings.json
-!.vscode/tasks.json
-!.vscode/launch.json
-!.vscode/extensions.json
-
-# JetBrains IDEs
 .idea/
-
-# Cursor AI
-.cursor/
-.cursorignore
-
-# Vim/Neovim
 *.swp
 *.swo
 *~
-.netrwhist
-Session.vim
-Sessionx.vim
 
-# Emacs
-*~
-\#*\#
-/.emacs.desktop
-/.emacs.desktop.lock
-*.elc
-auto-save-list
-tramp
-.\#*
-
-# Sublime Text
-*.sublime-*
-
-# Other editors
-.fleet/
-
-# ============================================================================
-# OS SPECIFIC FILES
-# ============================================================================
-
-# Windows
-Thumbs.db
-ehthumbs.db
-Desktop.ini
-$RECYCLE.BIN/
-*.cab
-*.msi
-*.msix
-*.msm
-*.msp
-*.lnk
-
-# macOS
+# System files
 .DS_Store
-.AppleDouble
-.LSOverride
-._*
-.DocumentRevisions-V100
-.fseventsd
-.Spotlight-V100
-.TemporaryItems
-.Trashes
-.VolumeIcon.icns
-.com.apple.timemachine.donotpresent
-
-# Linux
-*~
-.nfs*
+Thumbs.db
+Desktop.ini
 
 # ============================================================================
-# DEVELOPMENT TOOLS
+# ORACLE WMS SPECIFIC
 # ============================================================================
 
-# Type checkers
-.mypy_cache/
-.dmypy.json
-dmypy.json
-.pyre/
-.pytype/
-
-# Linting and formatting
-.ruff_cache/
-.black
-.isort.cfg
-
-# Testing frameworks
-.pytest_cache/
-
-# Documentation
-docs/_build/
-docs/build/
-_build/
-.sphinx/
-/site
-
-# ============================================================================
-# GO SPECIFIC
-# ============================================================================
-
-# Go build artifacts
-*.exe
-*.exe~
-*.dll
-*.so
-*.dylib
-
-# Go executables (no extension in root only)
-/flext
-*/flext
-
-# Go test binary, built with `go test -c`
-*.test
-
-# Go coverage
-*.out
-
-# Go mod cache
-go.sum
-
-# Go workspace file
-go.work
-
-# Command binaries
-cmd/*/flext*
-cmd/*/*
-!cmd/*/Makefile
-!cmd/*/*.go
-!cmd/*/*.md
-
-# ============================================================================
-# NODE.JS SPECIFIC
-# ============================================================================
-
-# Node modules
-node_modules/
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-lerna-debug.log*
-.pnpm-debug.log*
-
-# Yarn
-.yarn/*
-!.yarn/patches
-!.yarn/plugins
-!.yarn/releases
-!.yarn/sdks
-!.yarn/versions
-
-# npm
-.npm
-.npmrc
-
-# Coverage directory used by tools like istanbul
-coverage/
-*.lcov
-
-# Dependency directories
-jspm_packages/
-
-# Build outputs
-dist/
-build/
-out/
-.next/
-.nuxt/
-.vercel/
-vendor/
-
-# ============================================================================
-# DOCKER AND CONTAINERIZATION
-# ============================================================================
-
-# Docker
-.dockerignore
-docker-compose.override.yml
-internal.invalid.yml
-*.tar.gz
-
-# Kubernetes secrets
-k8s-secrets.yaml
-*.secret.yaml
-
-# ============================================================================
-# DATABASES
-# ============================================================================
-
-# SQLite
-*.sqlite
-*.sqlite3
-*.db
-*.sqlite3-journal
-*.sqlite3-shm
-*.sqlite3-wal
-
-# PostgreSQL
-*.backup
-*.dump
-
-# ============================================================================
-# LOGS AND OUTPUT
-# ============================================================================
-
-# Log files
-logs/
-*.log
-log/
-output/
-outputs/
-temp/
-tmp/
-.flext_logs/
-
-# Runtime data
-runtime/
-cache/
-.cache/
-pids/
-*.pid
-*.seed
-*.pid.lock
-.meltano/
-
-# ============================================================================
-# BACKUP AND TEMPORARY FILES
-# ============================================================================
-
-# Backup files
-*.backup
-*.syntax_backup
-*.bak
-.bak/
-*.broken
-*.bkp
-*.tmp
-*.orig
-*.rej
-*.diff
-*.patch
-*_backup*
-*_bak*
-*_temp*
-backup_*
-backup/
-backups/
-bak/
-temp_*/
-tmp_*/
-
-# ============================================================================
-# JUPYTER AND NOTEBOOKS
-# ============================================================================
-
-.ipynb_checkpoints/
-**/.ipynb_checkpoints/
-*.ipynb
-*/.ipynb_checkpoints/*
-
-# IPython
-profile_default/
-ipython_config.py
-
-# ============================================================================
-# SECURITY SENSITIVE FILES
-# ============================================================================
-
-# Private keys and certificates
-*.pem
-*.key
-*.crt
-*.p12
-*.pfx
-*.jks
-secret*
-*.secret
-credentials.json
-auth.json
-service-account*.json
-
-# API keys and tokens
-api_keys.json
-tokens.json
-*.token
-
-# SSL certificates
-ssl/
-certs/
-wallet/
-*.wallet
-
-# ============================================================================
-# SINGER/MELTANO SPECIFIC
-# ============================================================================
-
-# Meltano
-.meltano/
-.meltano-*
-meltano.db
-meltano-*.db
-**/.meltano/run/
-**/.meltano/logs/
-**/.meltano/transformers/
-**/.meltano/extractors/
-**/.meltano/loaders/
-**/.meltano/run_test/
-plugins/
-
-# Singer
-*.state
-*.state.json
-state.json
-*_state.json
-catalogs/
-catalog.json
-*.catalog.json
-
-# dbt
-target/
-dbt_packages/
-dbt_modules/
-dbt.log
-
-# ============================================================================
-# FLEXT WORKSPACE SPECIFIC
-# ============================================================================
-
-# Multi-agent coordination
-.token
-.token*
-
-# Project scaffolding
-.scaffold-tracking/
-.doc-reorg
-.standardization_backup/
-.lock*
-archive/
-archives/
-pyproject_backups/
-
-# Plugin system backups
-.plugin_backups/
-**/.plugin_backups/
-
-# Generated content
-schemas/
-reference/
-ldif_output/
-deprecated*/
-oracle-documentation/
-
-# Analysis and temporary work
-analysis_temp/
-docs-refactored/
-meltano-plugins-extracted/
-
-# Backup patterns
-*_source_*/
-*_current_*/
-*_backup_*/
-*_original_*/
-*_extracted_*/
-*_migrated_*/
-flx*_backup_*/
-flext*_backup_*/
-
-# ============================================================================
-# PROJECT SPECIFIC PATTERNS
-# ============================================================================
-
-# Data pipeline artifacts
-data/
-extracted/
-loaded/
-transformed/
-pipeline_state/
-execution_logs/
-workflow_data/
-sync_state/
-migration_state/
-
-# LDAP specific
-*.ldif.bak
-ldap_data/
-ldap_backup/
-
-# Oracle specific
+# Oracle WMS database files
 *.ora
 tnsnames.ora
 sqlnet.ora
-cwallet.sso
-ewallet.p12
-oracle_connection.log
-oracle_trace_*.log
 *.dmp
 *.exp
 *.log.sql
+*.wallet
+cwallet.sso
+ewallet.p12
 
-# Test artifacts
-test_output/
-test_data/
-e2e_results/
-test_*.py
-*_test.py
-validate_*.py
-investigate_*.py
+# Oracle WMS configuration
+wms_config/
+*.wms.conf
+wms_settings.json.bak
 
-# Analysis and output files
-*_analysis.txt
-*_report.txt
-*_output.txt
-*.jsonl
-sync_*.txt
+# Oracle WMS logs
+wms.log
+oracle_wms.log
+wms_operations.log
+wms_interface.log
+wms_batch.log
 
-# Monitoring
-metrics/
-monitoring/
-prometheus/
-grafana/
-*.prom
-*.metrics
-health_*.json
-status_*.json
+# Oracle WMS batch files
+*.bat.bak
+*.sh.bak
+wms_batch/
+batch_logs/
 
-# ============================================================================
-# ARCHIVE AND COMPRESSED FILES
-# ============================================================================
-
-*.7z
-*.dmg
-*.gz
-*.iso
-*.jar
-*.rar
-*.tar
-*.zip
-*.bz2
-*.xz
+# Oracle WMS reports
+wms_reports/
+warehouse_reports/
+inventory_reports/
+shipment_reports/
 
 # ============================================================================
-# AI
+# WAREHOUSE MANAGEMENT DATA
 # ============================================================================
 
-# AI generated files and analysis
-*.ai
-*.ai.md
-*.ai.txt
-cursor/
-.cursor/
-.cursorrules
-.aider*
-.github/copilot*
+# Inventory data
+inventory_data/
+stock_levels/
+item_master/
+location_master/
 
-# Claude/AI generated analysis files
-CLAUDE*.md
-*_ANALYSIS*.md
-*_REPORT*.md
-*_SUMMARY*.md
-DUPLICATE_CODE_*.md
-LINT_CORRECTIONS_*.md
+# Warehouse operations
+picking_data/
+packing_data/
+receiving_data/
+shipping_data/
+cycle_count_data/
 
-# Strinct exclude all md, but keep important documentation
-^*.md
-!README.md
-!CHANGELOG.md
-!CONTRIBUTING.md
-!.markdownlint.json
+# Transaction logs
+transaction_logs/
+movement_history/
+audit_trail/
+
+# Performance data
+performance_metrics/
+kpi_data/
+dashboard_data/
 
 # ============================================================================
-# ALWAYS INCLUDE EXCEPTIONS
+# ERP INTEGRATION
 # ============================================================================
 
-# Important: Use ! to force include critical files
-!.env.example
-!.env.template
+# ERP interface files
+erp_interface/
+sap_interface/
+oracle_erp/
+integration_logs/
+
+# EDI files
+edi_inbound/
+edi_outbound/
+edi_archive/
+*.edi
+*.txt.processed
+
+# File transfers
+ftp_staging/
+sftp_staging/
+file_exchange/
+
+# Integration mapping
+mapping_files/
+transformation_rules/
+field_mappings/
+
+# ============================================================================
+# WMS OPERATIONS DATA
+# ============================================================================
+
+# Wave planning
+wave_data/
+wave_templates/
+wave_history/
+
+# Labor management
+labor_data/
+time_tracking/
+productivity_reports/
+
+# Equipment management
+equipment_logs/
+maintenance_logs/
+device_configs/
+
+# Quality control
+qc_data/
+inspection_logs/
+quality_reports/
+
+# ============================================================================
+# THIRD-PARTY INTEGRATIONS
+# ============================================================================
+
+# Carrier integrations
+carrier_data/
+shipping_labels/
+tracking_data/
+rate_shopping/
+
+# Vendor integrations
+vendor_catalogs/
+purchase_orders/
+receiving_schedules/
+
+# Customer integrations
+customer_orders/
+shipment_notifications/
+invoicing_data/
+
+# ============================================================================
+# MONITORING AND PERFORMANCE
+# ============================================================================
+
+# Performance monitoring
+performance_logs/
+system_metrics/
+database_stats/
+query_performance/
+
+# Error tracking
+error_logs/
+exception_logs/
+system_alerts/
+
+# Audit and compliance
+audit_logs/
+compliance_reports/
+security_logs/
+
+# ============================================================================
+# TEMPORARY AND CACHE FILES
+# ============================================================================
+
+# Logs
+*.log
+logs/
+wms_logs/
+
+# Temporary files
+*.tmp
+temp/
+tmp/
+wms_temp/
+
+# Cache files
+cache/
+.cache/
+wms_cache/
+
+# Data files
+data/
+export/
+import/
+staging/
+
+# ============================================================================
+# SECURITY AND CREDENTIALS
+# ============================================================================
+
+# Database credentials
+*.key
+*.pem
+*.crt
+database_credentials.json
+wms_credentials.json
+oracle_creds.json
+
+# Environment files
+.env.wms
+.env.oracle
+.env.production
+
+# Certificate stores
+certificates/
+*.p12
+*.jks
+*.keystore
+
+# Force include critical files
 !pyproject.toml
 !Makefile
 !README.md
 !docker-compose.yml
-!Dockerfile
-!.gitignore
-!.pre-commit-config.yaml
-!meltano.yml
-!go.mod
-!package.json
-!dbt_project.yml
-!ansible.cfg
-!requirements.txt
-
-# ============================================================================
-# ROOT DIRECTORY SPECIFIC RULES
-# ============================================================================
-
-# Ignore all .md files in root except essential ones
-/*.md
-!/README.md
-!/CHANGELOG.md
-!/CONTRIBUTING.md
-
-# Ignore all .json files in root except essential ones  
-/*.json
-!/.markdownlint.json
-
-# Ignore all .txt files in root
-/*.txt
-
-# FLEXT workspace directories
-.flext_backups/
-.flext_logs/
-.benchmarks/
-.qlty/
-.logfire/
-.meltano/
-
-# Development and analysis artifacts  
-**/.claude/
-**/analysis_temp/
-**/*_analysis/
-**/*_backup_*/
-**/*_temp/
-reports_*/
-temp_test_*/
+!wms_config.example.json
+!oracle_config.template.ora

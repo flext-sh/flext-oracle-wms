@@ -181,7 +181,7 @@ class FlextOracleWmsAdvancedFilter:
         ordering: list[dict[str, str]] | None = None,
         page_mode: OracleWMSPageMode = FlextOracleWmsPageModes.DEFAULT,
         page_size: int = 100,
-        **kwargs: Any,
+        **kwargs: object,
     ) -> FilterQuery:
         """Build a filter query from parameters."""
         filter_groups = []
@@ -609,7 +609,7 @@ class FlextOracleWmsAdvancedFilter:
 
 # Factory function for easy instantiation
 def flext_oracle_wms_create_advanced_filter(
-    **kwargs: Any,
+    **kwargs: object,
 ) -> FlextOracleWmsAdvancedFilter:
     """Create a configured Oracle WMS advanced filter."""
     return FlextOracleWmsAdvancedFilter(**kwargs)

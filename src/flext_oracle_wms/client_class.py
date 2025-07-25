@@ -10,16 +10,13 @@ Clean Architecture principles - migrated from flext-tap-oracle-wms.
 from __future__ import annotations
 
 import base64
-import logging
-import time
-from datetime import datetime
 from http import HTTPStatus
 from typing import TYPE_CHECKING, Any, Self
 
 import httpx
 
 # Import from flext-core root namespace as required
-from flext_core import FlextResult
+from flext_core import FlextResult, get_logger
 
 # Import enterprise cache manager for consistency
 from flext_oracle_wms.infrastructure.flext_oracle_wms_cache import (
@@ -32,7 +29,7 @@ if TYPE_CHECKING:
     from flext_oracle_wms.config_module import FlextOracleWmsModuleConfig
 
 
-logger = logging.getLogger(__name__)
+logger = get_logger(__name__)
 
 
 class FlextOracleWmsClientError(Exception):
@@ -88,7 +85,9 @@ class FlextOracleWmsClient:
             "cache_ttl_seconds": getattr(config, "cache_ttl_seconds", 300),
             "max_cache_entries": getattr(config, "max_cache_size", 1000),
             "cleanup_interval_seconds": getattr(
-                config, "cleanup_interval_seconds", 300
+                config,
+                "cleanup_interval_seconds",
+                300,
             ),
         }
         self._cache_manager = FlextOracleWmsCacheManager(cache_config)
@@ -240,7 +239,9 @@ class FlextOracleWmsClient:
                         entities = result["entities"]
                         if isinstance(entities, list):
                             logger.info(
-                                "Found %d entities via %s", len(entities), endpoint
+                                "Found %d entities via %s",
+                                len(entities),
+                                endpoint,
                             )
                             return FlextResult.ok(entities)
                 except FlextOracleWmsClientError:
@@ -346,7 +347,7 @@ class FlextOracleWmsClient:
 
             if failed_entities and not results:
                 return FlextResult.fail(
-                    f"All entities failed: {'; '.join(failed_entities)}"
+                    f"All entities failed: {'; '.join(failed_entities)}",
                 )
             if failed_entities:
                 # Partial success - include failed entities in metadata
@@ -355,7 +356,7 @@ class FlextOracleWmsClient:
                         "data": results,
                         "failed_entities": failed_entities,
                         "partial_success": True,
-                    }
+                    },
                 )
             return FlextResult.ok({"data": results, "partial_success": False})
 
@@ -415,7 +416,8 @@ class FlextOracleWmsClient:
 
                     # Post batch
                     response = self.client.post(
-                        endpoint, json={"records": batch_records}
+                        endpoint,
+                        json={"records": batch_records},
                     )
 
                     # Handle response errors
@@ -433,7 +435,7 @@ class FlextOracleWmsClient:
             if results["successful_batches"] > 0:
                 return FlextResult.ok({**results, "partial_success": True})
             return FlextResult.fail(
-                f"All batches failed: {'; '.join(results['errors'])}"
+                f"All batches failed: {'; '.join(results['errors'])}",
             )
 
         except Exception as e:
@@ -468,7 +470,7 @@ class FlextOracleWmsClient:
             ]
             if missing_id_records:
                 return FlextResult.fail(
-                    f"Records missing {id_field}: {missing_id_records}"
+                    f"Records missing {id_field}: {missing_id_records}",
                 )
 
             # Get batch size
@@ -495,7 +497,7 @@ class FlextOracleWmsClient:
             }
 
             # Process each batch
-            for _batch_index, batch_records in enumerate(batches):
+            for batch_records in batches:
                 successful_in_batch = 0
 
                 for record in batch_records:
@@ -524,7 +526,7 @@ class FlextOracleWmsClient:
             if results["successful_updates"] > 0:
                 return FlextResult.ok({**results, "partial_success": True})
             return FlextResult.fail(
-                f"All updates failed: {len(results['errors'])} errors"
+                f"All updates failed: {len(results['errors'])} errors",
             )
 
         except Exception as e:

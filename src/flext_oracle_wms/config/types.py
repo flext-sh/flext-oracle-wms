@@ -60,7 +60,7 @@ type EntityId = str
 type FileName = str
 type Json = dict[str, Any] | list[Any] | str | int | float | bool | None
 type NonNegativeInt = Annotated[int, Field(ge=0)]
-type ServiceResult = Any  # This should come from flext-core
+type FlextResult = Any  # This should come from flext-core
 type TimestampISO = str
 
 # Singer types (define as aliases since they're not in shared_types yet)
@@ -741,6 +741,7 @@ __all__ = [
     "FlextOracleWmsTapConfig",
     "FlextOracleWmsTargetConfig",
     "FlextOracleWmsTargetFullConfig",
+    "FlextResult",
     "Json",
     "JsonDict",
     "JsonSchema",
@@ -792,7 +793,6 @@ __all__ = [
     "ProjectName",
     "RetryCount",
     "RetryDelay",
-    "ServiceResult",
     "TimeoutSeconds",
     "TimestampISO",
     "Token",

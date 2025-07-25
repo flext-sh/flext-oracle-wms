@@ -11,7 +11,6 @@ from __future__ import annotations
 from typing import Final, Literal
 
 # Import from flext-core root namespace as required
-from flext_core import FlextConstants
 
 # ==============================================================================
 # ORACLE WMS API CONSTANTS
