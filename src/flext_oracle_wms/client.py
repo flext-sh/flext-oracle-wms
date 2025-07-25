@@ -15,9 +15,6 @@ from typing import TYPE_CHECKING, Any, Self
 
 from flext_core import get_logger
 
-# Simple replacement for FlextLoggerFactory
-FlextLoggerFactory = logging
-
 if TYPE_CHECKING:
     from collections.abc import Generator
 
@@ -44,20 +41,6 @@ from flext_oracle_wms.models import (
 from flext_oracle_wms.singer.flattening import FlextOracleWmsFlattener
 
 logger = get_logger(__name__)
-
-
-def get_logger(name: str) -> logging.Logger:
-    """Get logger instance with consistent formatting."""
-    logger = FlextLoggerFactory.get_logger(name)
-    if not logger.handlers:
-        handler = logging.StreamHandler()
-        formatter = logging.Formatter(
-            "%(asctime)s - %(name)s - %(levelname)s - %(message)s",
-        )
-        handler.setFormatter(formatter)
-        logger.addHandler(handler)
-        logger.setLevel(logging.INFO)
-    return logger
 
 
 if TYPE_CHECKING:
