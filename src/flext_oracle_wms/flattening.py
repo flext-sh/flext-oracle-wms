@@ -49,8 +49,9 @@ class FlextOracleWmsDeflatteningResult(TypedDict):
 class FlextOracleWmsFlattener:
     """Oracle WMS data flattener with mandatory capabilities."""
 
-    def __init__(
+    def __init__(  # noqa: PLR0913
         self,
+        *,
         enabled: bool = FlextOracleWmsDefaults.DEFAULT_FLATTEN_ENABLED,
         max_depth: int = FlextOracleWmsDefaults.DEFAULT_FLATTEN_MAX_DEPTH,
         separator: str = FlextOracleWmsDefaults.FLATTEN_SEPARATOR,
@@ -138,7 +139,7 @@ class FlextOracleWmsFlattener:
             results: list[FlatteningResult] = []
             for record in records:
                 flatten_result = self.flatten_record(record, schema)
-                if not flatten_result.success:
+                if not flatten_result.is_success:
                     return FlextResult.fail(
                         f"{FlextOracleWmsErrorMessages.FLATTENING_FAILED}: "
                         f"{flatten_result.error}",
@@ -160,7 +161,7 @@ class FlextOracleWmsFlattener:
 
     def _flatten_object(
         self,
-        obj: Any,
+        obj: object,
         prefix: str = "",
         depth: int = 0,
     ) -> dict[str, Any]:
@@ -247,6 +248,7 @@ class FlextOracleWmsDeflattener:
 
     def __init__(
         self,
+        *,
         separator: str = FlextOracleWmsDefaults.FLATTEN_SEPARATOR,
         restore_types: bool = True,
         validate_structure: bool = True,
@@ -320,7 +322,7 @@ class FlextOracleWmsDeflattener:
                     flattened_record,
                     original_schema,
                 )
-                if not deflattened_result.success:
+                if not deflattened_result.is_success:
                     return FlextResult.fail(
                         f"{FlextOracleWmsErrorMessages.DEFLATTENING_FAILED}: "
                         f"{deflattened_result.error}",
@@ -349,7 +351,12 @@ class FlextOracleWmsDeflattener:
 
         return result
 
-    def _set_nested_value(self, obj: dict[str, Any], key: str, value: Any) -> None:
+    def _set_nested_value(  # noqa: C901, PLR0912
+        self,
+        obj: dict[str, object],
+        key: str,
+        value: object,
+    ) -> None:
         """Set a nested value in an object using dot notation."""
         if self.separator not in key:
             obj[key] = value
@@ -431,7 +438,7 @@ class FlextOracleWmsDeflattener:
         self,
         schema: dict[str, Any],
         field_path: str,
-        field_props: Any,
+        field_props: object,
     ) -> None:
         """Set nested schema value using field path."""
         keys = field_path.split(self.separator)
@@ -514,6 +521,7 @@ class FlextOracleWmsDeflattener:
 
 # Factory functions for easy instantiation
 def flext_oracle_wms_create_flattener(
+    *,
     enabled: bool = True,
     max_depth: int = 5,
     separator: str = "__",
@@ -529,6 +537,7 @@ def flext_oracle_wms_create_flattener(
 
 
 def flext_oracle_wms_create_deflattener(
+    *,
     separator: str = "__",
     strict_mode: bool = False,
     **kwargs: object,
@@ -545,7 +554,7 @@ def flext_oracle_wms_create_deflattener(
 def flext_oracle_wms_flatten_wms_record(
     record: WMSRecord,
     schema: WMSSchema | None = None,
-    **flattener_kwargs: Any,
+    **flattener_kwargs: object,
 ) -> FlextResult[Any]:
     """Flatten a WMS record with default configuration."""
     flattener = flext_oracle_wms_create_flattener(**flattener_kwargs)
@@ -555,7 +564,7 @@ def flext_oracle_wms_flatten_wms_record(
 def flext_oracle_wms_deflattened_wms_record(
     flattened_record: WMSFlattenedRecord,
     original_schema: WMSSchema | None = None,
-    **deflattener_kwargs: Any,
+    **deflattener_kwargs: object,
 ) -> FlextResult[Any]:
     """Deflattened a WMS record with default configuration."""
     deflattener = flext_oracle_wms_create_deflattener(**deflattener_kwargs)

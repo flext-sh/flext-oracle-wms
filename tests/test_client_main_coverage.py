@@ -1,17 +1,14 @@
 """Comprehensive tests for client.py - targeting critical missing coverage."""
 
-from typing import Any
-from unittest.mock import MagicMock, Mock, patch
+from unittest.mock import Mock, patch
 
 import httpx
 import pytest
 from flext_core import get_logger
 
 from flext_oracle_wms.client import FlextOracleWmsAuth, FlextOracleWmsLegacyClient
-from flext_oracle_wms.config_module import FlextOracleWmsModuleConfig
+from flext_oracle_wms.config import FlextOracleWmsModuleConfig
 from flext_oracle_wms.exceptions import (
-    FlextOracleWmsApiError,
-    FlextOracleWmsConnectionError,
     FlextOracleWmsError,
 )
 
@@ -70,6 +67,7 @@ class TestFlextOracleWmsAuth:
         assert len(basic_auth) > 0
         # Should be base64 encoded
         import base64
+
         try:
             decoded = base64.b64decode(basic_auth).decode("utf-8")
             assert decoded == "user:pass"
@@ -101,7 +99,7 @@ class TestFlextOracleWmsLegacyClientInitialization:
             username="test_user",
             password="test_pass",
             timeout_seconds=30.0,
-            batch_size=100
+            batch_size=100,
         )
 
     def test_client_initialization(self) -> None:
@@ -164,7 +162,7 @@ class TestFlextOracleWmsLegacyClientCore:
             username="test_user",
             password="test_pass",
             timeout_seconds=30.0,
-            batch_size=100
+            batch_size=100,
         )
         self.client = FlextOracleWmsLegacyClient(self.config)
 
@@ -251,7 +249,7 @@ class TestFlextOracleWmsLegacyClientDiscovery:
             username="test_user",
             password="test_pass",
             timeout_seconds=30.0,
-            batch_size=100
+            batch_size=100,
         )
         self.client = FlextOracleWmsLegacyClient(self.config)
 
@@ -294,7 +292,9 @@ class TestFlextOracleWmsLegacyClientDiscovery:
     def test_test_connection_failure(self, mock_client_class) -> None:
         """Test connection testing - failure case."""
         mock_client_instance = Mock()
-        mock_client_instance.request.side_effect = httpx.RequestError("Connection failed")
+        mock_client_instance.request.side_effect = httpx.RequestError(
+            "Connection failed",
+        )
         mock_client_class.return_value = mock_client_instance
 
         result = self.client.test_connection()
@@ -311,7 +311,7 @@ class TestFlextOracleWmsLegacyClientOperations:
             username="test_user",
             password="test_pass",
             timeout_seconds=30.0,
-            batch_size=100
+            batch_size=100,
         )
         self.client = FlextOracleWmsLegacyClient(self.config)
 
@@ -349,21 +349,33 @@ class TestFlextOracleWmsLegacyClientOperations:
 
     def test_track_operation(self) -> None:
         """Test operation tracking."""
-        operation_id = self.client._track_operation("test_operation", "order_hdr", {"key": "value"})
+        operation_id = self.client._track_operation(
+            "test_operation",
+            "order_hdr",
+            {"key": "value"},
+        )
 
         assert isinstance(operation_id, str)
         assert len(operation_id) > 0
 
     def test_mark_operation_success(self) -> None:
         """Test marking operation as successful."""
-        operation_id = self.client._track_operation("test_operation", "order_hdr", {"key": "value"})
+        operation_id = self.client._track_operation(
+            "test_operation",
+            "order_hdr",
+            {"key": "value"},
+        )
 
         # Should not raise error
         self.client._mark_operation_success(operation_id, {"result": "success"})
 
     def test_mark_operation_failed(self) -> None:
         """Test marking operation as failed."""
-        operation_id = self.client._track_operation("test_operation", "order_hdr", {"key": "value"})
+        operation_id = self.client._track_operation(
+            "test_operation",
+            "order_hdr",
+            {"key": "value"},
+        )
 
         # Should not raise error
         self.client._mark_operation_failed(operation_id, "Test error")
@@ -371,10 +383,17 @@ class TestFlextOracleWmsLegacyClientOperations:
     def test_get_successful_operations(self) -> None:
         """Test retrieving successful operations."""
         # Track and mark successful operation
-        operation_id = self.client._track_operation("test_operation", "order_hdr", {"key": "value"})
+        operation_id = self.client._track_operation(
+            "test_operation",
+            "order_hdr",
+            {"key": "value"},
+        )
         self.client._mark_operation_success(operation_id, {"result": "success"})
 
-        successful_ops = self.client._get_successful_operations("order_hdr", "test_operation")
+        successful_ops = self.client._get_successful_operations(
+            "order_hdr",
+            "test_operation",
+        )
         assert isinstance(successful_ops, list)
 
 
@@ -388,7 +407,7 @@ class TestFlextOracleWmsLegacyClientBulkOperations:
             username="test_user",
             password="test_pass",
             timeout_seconds=30.0,
-            batch_size=100
+            batch_size=100,
         )
         self.client = FlextOracleWmsLegacyClient(self.config)
 
@@ -432,7 +451,7 @@ class TestFlextOracleWmsLegacyClientCaching:
             username="test_user",
             password="test_pass",
             timeout_seconds=30.0,
-            batch_size=100
+            batch_size=100,
         )
         self.client = FlextOracleWmsLegacyClient(self.config)
 
@@ -462,7 +481,7 @@ class TestFlextOracleWmsLegacyClientErrorHandling:
             username="test_user",
             password="test_pass",
             timeout_seconds=30.0,
-            batch_size=100
+            batch_size=100,
         )
         self.client = FlextOracleWmsLegacyClient(self.config)
 
@@ -502,7 +521,7 @@ class TestFlextOracleWmsLegacyClientEdgeCases:
             username="test_user",
             password="test_pass",
             timeout_seconds=30.0,
-            batch_size=2  # Small batch size for testing
+            batch_size=2,  # Small batch size for testing
         )
         self.client = FlextOracleWmsLegacyClient(self.config)
 
@@ -520,7 +539,7 @@ class TestFlextOracleWmsLegacyClientEdgeCases:
             username="test_user",
             password="test_pass",
             timeout_seconds=0.1,  # Very small timeout
-            batch_size=1
+            batch_size=1,
         )
 
         client = FlextOracleWmsLegacyClient(config)
@@ -549,7 +568,11 @@ class TestFlextOracleWmsLegacyClientEdgeCases:
         # Track multiple operations simultaneously
         ops = []
         for i in range(5):
-            op_id = self.client._track_operation(f"operation_{i}", "order_hdr", {"index": i})
+            op_id = self.client._track_operation(
+                f"operation_{i}",
+                "order_hdr",
+                {"index": i},
+            )
             ops.append(op_id)
 
         # Mark some as successful, some as failed

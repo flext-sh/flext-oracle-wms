@@ -2,13 +2,8 @@
 
 from unittest.mock import Mock, patch
 
-from flext_oracle_wms.client import (
-    FlextOracleWmsLegacyClient,
-)
-from flext_oracle_wms.client_class import (
-    FlextOracleWmsClient,
-)
-from flext_oracle_wms.config_module import FlextOracleWmsModuleConfig
+from flext_oracle_wms.client import FlextOracleWmsClient
+from flext_oracle_wms.config import FlextOracleWmsModuleConfig
 
 
 def test_client_creation() -> None:
@@ -30,8 +25,8 @@ def test_client_with_metrics() -> None:
 def test_legacy_client_creation() -> None:
     """Test legacy client creation."""
     config = FlextOracleWmsModuleConfig.for_testing()
-    client = FlextOracleWmsLegacyClient(config)
-    assert isinstance(client, FlextOracleWmsLegacyClient)
+    client = FlextOracleWmsClient(config)
+    assert isinstance(client, FlextOracleWmsClient)
 
 
 def test_context_manager() -> None:
@@ -41,7 +36,7 @@ def test_context_manager() -> None:
         assert isinstance(client, FlextOracleWmsClient)
 
 
-@patch("flext_oracle_wms.client_class.httpx")
+@patch("flext_oracle_wms.client.httpx")
 def test_get_request(mock_httpx) -> None:
     """Test GET request functionality."""
     config = FlextOracleWmsModuleConfig.for_testing()
@@ -98,21 +93,21 @@ def test_operation_tracking() -> None:
     assert "total_operations" in stats
 
 
-def test_discovery_entities() -> None:
+async def test_discovery_entities() -> None:
     """Test entity discovery functionality."""
     config = FlextOracleWmsModuleConfig.for_testing()
     client = FlextOracleWmsClient(config)
 
-    result = client.discover_entities()
+    result = await client.discover_entities()
     assert result.is_success is True or result.is_success is False
 
 
-def test_connection_test() -> None:
+async def test_connection_test() -> None:
     """Test connection testing."""
     config = FlextOracleWmsModuleConfig.for_testing()
     client = FlextOracleWmsClient(config)
 
-    result = client.test_connection()
+    result = await client.test_connection()
     assert result.is_success is True or result.is_success is False
 
 
@@ -125,12 +120,12 @@ def test_client_close() -> None:
     client.close()
 
 
-def test_entity_data_fetch() -> None:
+async def test_entity_data_fetch() -> None:
     """Test entity data fetching."""
     config = FlextOracleWmsModuleConfig.for_testing()
     client = FlextOracleWmsClient(config)
 
-    result = client.get_entity_data("test_entity")
+    result = await client.get_entity_data("test_entity")
     assert result.is_success is True or result.is_success is False
 
 

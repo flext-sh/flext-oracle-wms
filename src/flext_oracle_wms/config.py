@@ -4,7 +4,7 @@ Copyright (c) 2025 FLEXT Contributors
 SPDX-License-Identifier: MIT
 This module provides unified configuration management for all Oracle WMS operations,
 eliminating duplication between tap and target implementations.
-Implements flext-core unified configuration standards with composition mixins.
+Implements flext-core unified configuration standards.
 """
 
 from __future__ import annotations
@@ -12,71 +12,50 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Any
 
-from flext_core import get_logger
+from flext_core import FlextBaseSettings, get_logger
 
 # Import from flext-core root namespace as required
 from pydantic import Field, HttpUrl, field_validator
-from pydantic_settings import BaseSettings, SettingsConfigDict
-
-# Import types from our config.types module
-from flext_oracle_wms.config.types import (
-    BatchSize,
-    Password,
-    PositiveInt,
-    RetryCount,
-    RetryDelay,
-    TimeoutSeconds,
-    Username,
-    Version,
-)
-
-# Oracle WMS specific types using unified core types
-type WMSAPIVersion = str
-type WMSPageSize = BatchSize  # Reuse BatchSize for page size
-type WMSRateLimit = PositiveInt
-type WMSRetryAttempts = RetryCount
-type WMSRetryDelay = RetryDelay
-type WMSTimeout = TimeoutSeconds
 
 
-class FlextOracleWmsModuleConfig(BaseSettings):
+class FlextOracleWmsModuleConfig(FlextBaseSettings):
     """Enterprise Oracle WMS configuration using modern Pydantic patterns.
 
     Simplified configuration management for Oracle WMS integration operations
     with proper type safety and validation, following SOLID principles.
     """
 
-    model_config = SettingsConfigDict(
-        env_prefix="FLEXT_ORACLE_WMS_",
-        env_file=".env",
-        env_file_encoding="utf-8",
-        env_nested_delimiter="__",
-        case_sensitive=False,
-        extra="ignore",  # Allow extra fields in .env
-        validate_assignment=True,
-        str_strip_whitespace=True,
-    )
+    model_config = {
+        "env_prefix": "FLEXT_ORACLE_WMS_",
+        "env_file": ".env",
+        "env_file_encoding": "utf-8",
+        "env_nested_delimiter": "__",
+        "case_sensitive": False,
+        "extra": "ignore",  # Allow extra fields in .env
+        "validate_assignment": True,
+        "str_strip_whitespace": True,
+    }
     # === Oracle WMS API Configuration (additional to WMSConfigMixin) ===
     base_url: HttpUrl = Field(
         ...,
         description="Oracle WMS base URL (e.g., https://ta29.wms.ocs.oraclecloud.com/raizen_test)",
     )
-    api_version: WMSAPIVersion = Field(
+    api_version: str = Field(
         default="v10",
         description="Oracle WMS API version",
     )
-    username: Username = Field(..., description="Oracle WMS API username")
-    password: Password = Field(..., description="Oracle WMS API password")
+    username: str = Field(..., description="Oracle WMS API username")
+    password: str = Field(..., description="Oracle WMS API password")
     # === WMS Rate Limiting (additional to PerformanceConfigMixin) ===
     enable_rate_limiting: bool = Field(
         default=True,
         description="Enable WMS API rate limiting",
     )
-    max_requests_per_minute: WMSRateLimit = Field(
+    max_requests_per_minute: int = Field(
         default=60,
         description="Max WMS requests per minute",
     )
-    min_request_delay: WMSRetryDelay = Field(
+    min_request_delay: float = Field(
         default=0.1,
         description="Minimum delay between WMS requests",
     )
@@ -102,16 +81,16 @@ class FlextOracleWmsModuleConfig(BaseSettings):
         description="Include metadata in responses",
     )
     # === Connection Pool Configuration (additional to PerformanceConfigMixin) ===
-    pool_size: PositiveInt = Field(
+    pool_size: int = Field(
         default=5,
         description="HTTP connection pool size",
     )
-    pool_timeout: TimeoutSeconds = Field(
+    pool_timeout: float = Field(
         default=30.0,
         description="Connection pool timeout",
     )
     # === Version Information ===
-    version: Version = Field(default="1.0.0", description="Client version")
+    version: str = Field(default="1.0.0", description="Client version")
 
     # === Enterprise Cache Configuration ===
     enable_cache: bool = Field(default=True, description="Enable enterprise caching")
@@ -123,19 +102,19 @@ class FlextOracleWmsModuleConfig(BaseSettings):
     )
 
     # === Performance Configuration ===
-    timeout_seconds: TimeoutSeconds = Field(
+    timeout_seconds: float = Field(
         default=30.0,
         description="HTTP request timeout in seconds",
     )
-    batch_size: PositiveInt = Field(
+    batch_size: int = Field(
         default=100,
         description="Batch size for API requests",
     )
-    max_retries: RetryCount = Field(
+    max_retries: int = Field(
         default=3,
         description="Maximum number of retry attempts",
     )
-    retry_delay: RetryDelay = Field(
+    retry_delay: float = Field(
         default=1.0,
         description="Delay between retry attempts in seconds",
     )

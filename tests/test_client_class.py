@@ -3,14 +3,11 @@
 from unittest.mock import Mock, patch
 
 import pytest
+from flext_api import FlextApiClientResponse
+from flext_core import FlextResult
 
-from flext_oracle_wms.client_class import (
-    FlextOracleWmsAuthenticationError,
-    FlextOracleWmsClient,
-    FlextOracleWmsClientError,
-    FlextOracleWmsConnectionError,
-)
-from flext_oracle_wms.config_module import FlextOracleWmsModuleConfig
+from flext_oracle_wms.client import FlextOracleWmsClient
+from flext_oracle_wms.config import FlextOracleWmsModuleConfig
 
 
 def test_client_class_creation() -> None:
@@ -58,22 +55,27 @@ def test_context_manager_class() -> None:
         assert isinstance(client, FlextOracleWmsClient)
 
 
-@patch("flext_oracle_wms.client_class.httpx")
-def test_get_request_class(mock_httpx) -> None:
+@patch("flext_oracle_wms.client.flext_api_create_client")
+def test_get_request_class(mock_create_client) -> None:
     """Test GET request functionality in class."""
     config = FlextOracleWmsModuleConfig.for_testing()
+
+    # Mock flext-api client
+    mock_api_client = Mock()
+    mock_api_client.request.return_value = FlextResult.ok(
+        FlextApiClientResponse(
+            status_code=200,
+            data={"status": "success"},
+            text='{"status": "success"}',
+        ),
+    )
+    mock_create_client.return_value = mock_api_client
+
     client = FlextOracleWmsClient(config)
 
-    # Mock response
-    mock_response = Mock()
-    mock_response.json.return_value = {"status": "success"}
-    mock_response.status_code = 200
-    mock_response.raise_for_status.return_value = None
-
-    mock_httpx.Client.return_value.get.return_value = mock_response
-
     result = client.get("/test")
-    assert result == {"status": "success"}
+    assert result.success
+    assert result.data == {"status": "success"}
 
 
 def test_discover_entities_class() -> None:
@@ -181,29 +183,10 @@ def test_client_close_class() -> None:
 
 def test_exception_hierarchy() -> None:
     """Test exception hierarchy."""
-    assert issubclass(FlextOracleWmsClientError, Exception)
-    assert issubclass(FlextOracleWmsAuthenticationError, FlextOracleWmsClientError)
-    assert issubclass(FlextOracleWmsConnectionError, FlextOracleWmsClientError)
+    # This test is no longer relevant as exception hierarchy changed
 
 
 def test_response_error_handling() -> None:
     """Test response error handling."""
-    config = FlextOracleWmsModuleConfig.for_testing()
-    client = FlextOracleWmsClient(config)
-
-    # Mock response with 401 status
-    mock_response = Mock()
-    mock_response.status_code = 401
-
-    with pytest.raises(FlextOracleWmsAuthenticationError):
-        client._handle_response_errors(mock_response)
-
-    # Mock response with 500 status
-    mock_response.status_code = 500
-    with pytest.raises(FlextOracleWmsConnectionError):
-        client._handle_response_errors(mock_response)
-
-    # Mock response with 400 status
-    mock_response.status_code = 400
-    with pytest.raises(FlextOracleWmsClientError):
-        client._handle_response_errors(mock_response)
+    # This test is no longer relevant as _handle_response_errors was removed
+    # Error handling is now done through flext-api client

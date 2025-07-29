@@ -172,7 +172,7 @@ class FlextOracleWmsResponse(BaseModel):
         description="Pagination cursor for next page",
     )
 
-    def model_post_init(self, __context: Any, /) -> None:
+    def model_post_init(self, __context: object, /) -> None:
         """Post-init hook to synchronize records and data fields."""
         # Synchronize data and records for backward compatibility
         if hasattr(self, "data") and self.data and not getattr(self, "records", None):

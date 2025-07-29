@@ -1,6 +1,5 @@
 """Test Oracle WMS helpers functionality."""
 
-
 from flext_oracle_wms.helpers import (
     flext_oracle_wms_build_filter_query,
     flext_oracle_wms_calculate_pagination_info,
@@ -13,7 +12,11 @@ from flext_oracle_wms.helpers import (
 
 def test_validate_connection() -> None:
     """Test connection validation."""
-    config = {"base_url": "https://test.example.com", "username": "test", "password": "test"}
+    config = {
+        "base_url": "https://test.example.com",
+        "username": "test",
+        "password": "test",
+    }
     result = flext_oracle_wms_validate_connection(config)
     assert result.is_success is True or result.is_success is False
 
@@ -115,7 +118,11 @@ def test_connection_validation_edge_cases() -> None:
         {"username": "test", "password": "test"},  # missing base_url
         {"base_url": "https://test.com", "password": "test"},  # missing username
         {"base_url": "https://test.com", "username": "test"},  # missing password
-        {"base_url": "invalid-url", "username": "test", "password": "test"},  # invalid URL
+        {
+            "base_url": "invalid-url",
+            "username": "test",
+            "password": "test",
+        },  # invalid URL
     ]
 
     for config in incomplete_configs:

@@ -62,7 +62,7 @@ class TestAuthenticationSimple:
         )
 
         result = auth.get_authorization_url()
-        assert result.success is True
+        assert result.is_success is True
         assert "client_id=client123" in result.data
         assert "response_type=code" in result.data
 
@@ -107,8 +107,8 @@ class TestAuthenticationSimple:
         result2 = auth.get_authorization_url()
 
         # Both should succeed
-        assert result1.success is True
-        assert result2.success is True
+        assert result1.is_success is True
+        assert result2.is_success is True
 
         # Should contain different state parameters (random)
         assert "state=" in result1.data

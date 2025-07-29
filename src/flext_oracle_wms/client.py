@@ -7,7 +7,6 @@ Modern Python 3.13 client with flext-core type integration.
 
 from __future__ import annotations
 
-import logging
 import time
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime
@@ -18,37 +17,43 @@ from flext_core import get_logger
 if TYPE_CHECKING:
     from collections.abc import Generator
 
+    from flext_oracle_wms.config import (
+        FlextOracleWmsModuleConfig,
+        WMSAPIVersion,
+        WMSRetryAttempts,
+    )
     from flext_oracle_wms.constants import OracleWMSEntityType
-
+    from flext_oracle_wms.typedefs import (
+        WMSPageSize,
+        WMSRecordBatch,
+    )
+    from flext_oracle_wms.types import (
+        OracleWMSPassword,
+        OracleWMSUsername,
+    )
 import httpx
-
-# Import local flattener for dynamic record flattening
 from httpx import Auth
 
+from flext_oracle_wms.cache import (
+    FlextOracleWmsCacheManager,
+)
 from flext_oracle_wms.exceptions import (
     FlextOracleWmsApiError,
     FlextOracleWmsAuthenticationError,
     FlextOracleWmsError,
 )
-from flext_oracle_wms.infrastructure.flext_oracle_wms_cache import (
-    FlextOracleWmsCacheManager,
-)
+from flext_oracle_wms.flattening import FlextOracleWmsFlattener
 from flext_oracle_wms.models import (
     FlextOracleWmsDiscoveryResult,
     FlextOracleWmsEntity,
     FlextOracleWmsResponse,
 )
-from flext_oracle_wms.singer.flattening import FlextOracleWmsFlattener
 
 logger = get_logger(__name__)
 
 
 if TYPE_CHECKING:
-    from flext_oracle_wms.config.types import (
-        OracleWMSPassword,
-        OracleWMSUsername,
-    )
-    from flext_oracle_wms.config_module import (
+    from flext_oracle_wms.config import (
         FlextOracleWmsModuleConfig,
         WMSAPIVersion,
         WMSRetryAttempts,
@@ -56,6 +61,10 @@ if TYPE_CHECKING:
     from flext_oracle_wms.typedefs import (
         WMSPageSize,
         WMSRecordBatch,
+    )
+    from flext_oracle_wms.types import (
+        OracleWMSPassword,
+        OracleWMSUsername,
     )
 logger = get_logger(__name__)
 
@@ -94,7 +103,7 @@ class FlextOracleWmsAuth(Auth):
         return base64.b64encode(credentials.encode()).decode()
 
 
-class FlextOracleWmsLegacyClient:
+class FlextOracleWmsClient:
     """Enterprise Oracle WMS client with REAL Oracle WMS API integration.
 
     This client provides:
@@ -130,7 +139,7 @@ class FlextOracleWmsLegacyClient:
 
         # Setup logging
         if config.enable_request_logging:
-            FlextLoggerFactory.get_logger("httpx").setLevel(logging.DEBUG)
+            get_logger("httpx").set_level("DEBUG")
         logger.info(
             "Initialized Oracle WMS client for %s with enterprise cache",
             config.base_url,
@@ -361,7 +370,7 @@ class FlextOracleWmsLegacyClient:
             ),
         ]
 
-    def get_entity_data(
+    def get_entity_data(  # noqa: C901
         self,
         entity_name: OracleWMSEntityType,
         params: dict[str, Any] | None = None,
@@ -1250,7 +1259,7 @@ class FlextOracleWmsLegacyClient:
         self,
         entity_name: str,
         params: dict[str, Any] | None,
-        data: Any,
+        data: object,
     ) -> None:
         """Cache entity data using enterprise cache manager.
 

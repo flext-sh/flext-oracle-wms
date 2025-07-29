@@ -1,6 +1,5 @@
 """Tests for type_mapping module - focusing on coverage improvement."""
 
-
 from flext_oracle_wms.type_mapping import (
     FlextOracleWmsTypeMapper,
     flext_oracle_wms_create_type_mapper,
@@ -46,13 +45,18 @@ class TestFlextOracleWmsTypeMapper:
     def test_map_schema_field(self) -> None:
         """Test schema field mapping."""
         mapper = FlextOracleWmsTypeMapper()
-        result = mapper.flext_oracle_wms_map_schema_field("name", "VARCHAR2", True)
+        result = mapper.flext_oracle_wms_map_schema_field(
+            "name", "VARCHAR2", nullable=True,
+        )
         assert hasattr(result, "success")
 
     def test_add_custom_mapping(self) -> None:
         """Test adding custom type mapping."""
         mapper = FlextOracleWmsTypeMapper()
-        result = mapper.flext_oracle_wms_add_custom_mapping("CUSTOM_TYPE", {"type": "string"})
+        result = mapper.flext_oracle_wms_add_custom_mapping(
+            "CUSTOM_TYPE",
+            {"type": "string"},
+        )
         assert hasattr(result, "success")
 
     def test_get_supported_types(self) -> None:
@@ -206,4 +210,4 @@ class TestEdgeCases:
         # Should create similar instances
         assert isinstance(mapper1, FlextOracleWmsTypeMapper)
         assert isinstance(mapper2, FlextOracleWmsTypeMapper)
-        assert type(mapper1) == type(mapper2)
+        assert isinstance(mapper1, type(mapper2))

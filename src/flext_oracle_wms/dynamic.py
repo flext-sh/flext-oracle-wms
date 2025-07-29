@@ -10,13 +10,10 @@ for Oracle WMS integrations as required by the user specifications.
 
 from __future__ import annotations
 
+import re
 from datetime import datetime
-from typing import TYPE_CHECKING, Any, TypedDict
+from typing import TYPE_CHECKING, Any, TypedDict, cast
 
-if TYPE_CHECKING:
-    from collections.abc import Callable
-
-# Import from flext-core root namespace as required
 from flext_core import FlextResult, get_logger
 
 from flext_oracle_wms.constants import (
@@ -29,14 +26,17 @@ from flext_oracle_wms.typedefs import (
     FlextOracleWmsEntityInfo,
 )
 
-logger = get_logger(__name__)
 if TYPE_CHECKING:
+    from collections.abc import Callable
+
     from flext_oracle_wms.typedefs import (
         FlextOracleWmsConnectionInfo,
         WMSRecord,
         WMSRecordBatch,
         WMSSchema,
     )
+
+logger = get_logger(__name__)
 
 
 class FlextOracleWmsSchemaDiscoveryResult(TypedDict):
@@ -65,7 +65,7 @@ class FlextOracleWmsEntityProcessingResult(TypedDict):
 class FlextOracleWmsDynamicSchemaProcessor:
     """Dynamic schema discovery and processing for Oracle WMS entities."""
 
-    def __init__(
+    def __init__(  # noqa: PLR0913
         self,
         sample_size: int = 1000,
         confidence_threshold: float = 0.8,
@@ -239,14 +239,13 @@ class FlextOracleWmsDynamicSchemaProcessor:
             for entity_name, records in entity_data.items():
                 if entity_name in FlextOracleWmsEntityTypes.ALL_ENTITIES:
                     # Cast to the proper type for the discover_entity_schema method
-                    from typing import cast
 
                     validated_entity_name = cast("OracleWMSEntityType", entity_name)
                     discovery_result = self.discover_entity_schema(
                         validated_entity_name,
                         records,
                     )
-                    if not discovery_result.success:
+                    if not discovery_result.is_success:
                         continue
                     schema_data = discovery_result.data
                     if schema_data is None:
@@ -312,7 +311,9 @@ class FlextOracleWmsDynamicSchemaProcessor:
                 field_schema["null_count"] += 1
             else:
                 # Add sample values for analysis
-                if len(field_schema["sample_values"]) < 10:
+                if (
+                    len(field_schema["sample_values"]) < 10  # noqa: PLR2004
+                ):
                     field_schema["sample_values"].append(field_value)
                 # Handle nested objects
                 if isinstance(field_value, dict) and depth < self.max_schema_depth:
@@ -409,7 +410,6 @@ class FlextOracleWmsDynamicSchemaProcessor:
         if not sample_values:
             return None
         # Check for common patterns
-        import re
 
         # Email pattern
         email_pattern = r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
@@ -634,7 +634,7 @@ class FlextOracleWmsDynamicSchemaProcessor:
                         conversions[field_name] = f"conversion_failed: {e!s}"
         return converted_record, conversions
 
-    def _convert_value_to_type(self, value: Any, target_type: str) -> Any:
+    def _convert_value_to_type(self, value: object, target_type: str) -> object:  # noqa: C901
         """Convert value to target type."""
         try:
             if target_type == "string":
@@ -730,7 +730,7 @@ def flext_oracle_wms_create_dynamic_schema_processor(
 def flext_oracle_wms_discover_entity_schemas(
     entities_data: dict[str, WMSRecordBatch],
     connection_info: FlextOracleWmsConnectionInfo,
-    **processor_kwargs: Any,
+    **processor_kwargs: object,
 ) -> FlextResult[Any]:
     """Discover schemas for multiple entities."""
     processor = flext_oracle_wms_create_dynamic_schema_processor(**processor_kwargs)
@@ -741,7 +741,7 @@ def flext_oracle_wms_process_entity_with_schema(
     entity_name: OracleWMSEntityType,
     records: WMSRecordBatch,
     target_schema: WMSSchema,
-    **processor_kwargs: Any,
+    **processor_kwargs: object,
 ) -> FlextResult[Any]:
     """Process entity records with schema validation."""
     processor = flext_oracle_wms_create_dynamic_schema_processor(**processor_kwargs)

@@ -1,6 +1,5 @@
 """Test Oracle WMS models functionality."""
 
-
 from flext_oracle_wms.models import (
     FlextOracleWmsDiscoveryResult,
     FlextOracleWmsEntity,
@@ -169,8 +168,12 @@ def test_entity_field_count() -> None:
     entity = FlextOracleWmsEntity(
         name="order_hdr",
         endpoint="/api/order_hdr",
-        fields={"order_id": {"type": "string"}, "status": {"type": "string"},
-                "created_date": {"type": "datetime"}, "modified_date": {"type": "datetime"}},
+        fields={
+            "order_id": {"type": "string"},
+            "status": {"type": "string"},
+            "created_date": {"type": "datetime"},
+            "modified_date": {"type": "datetime"},
+        },
     )
     assert len(entity.fields) == 4
 

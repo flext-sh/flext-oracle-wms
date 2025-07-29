@@ -9,6 +9,7 @@ Advanced entity discovery system with multiple endpoint support and caching.
 from __future__ import annotations
 
 import re
+from datetime import datetime
 from typing import TYPE_CHECKING, Any
 
 # Import from flext-core root namespace as required
@@ -20,7 +21,7 @@ from flext_oracle_wms.models import FlextOracleWmsDiscoveryResult, FlextOracleWm
 if TYPE_CHECKING:
     import httpx
 
-    from flext_oracle_wms.infrastructure.flext_oracle_wms_cache import (
+    from flext_oracle_wms.cache import (
         FlextOracleWmsCacheManager,
     )
 
@@ -65,7 +66,7 @@ class FlextOracleWmsEntityDiscovery:
             len(self.discovery_endpoints),
         )
 
-    def flext_oracle_wms_discover_all_entities(
+    def flext_oracle_wms_discover_all_entities(  # noqa: C901
         self,
         include_patterns: list[str] | None = None,
         exclude_patterns: list[str] | None = None,
@@ -164,7 +165,7 @@ class FlextOracleWmsEntityDiscovery:
             logger.exception("Entity discovery failed: %s", e)
             return FlextResult.fail(f"Discovery failed: {e}")
 
-    def flext_oracle_wms_discover_entity_details(
+    def flext_oracle_wms_discover_entity_details(  # noqa: C901
         self,
         entity_name: str,
         use_cache: bool = True,
@@ -257,7 +258,7 @@ class FlextOracleWmsEntityDiscovery:
 
     def _parse_discovery_response(
         self,
-        data: Any,
+        data: object,
         endpoint: str,
     ) -> list[FlextOracleWmsEntity]:
         """Parse discovery response into entity list."""
@@ -293,7 +294,7 @@ class FlextOracleWmsEntityDiscovery:
 
     def _create_entity_from_item(
         self,
-        item: Any,
+        item: object,
         endpoint: str,
     ) -> FlextOracleWmsEntity | None:
         """Create entity from discovery response item."""
@@ -393,8 +394,6 @@ class FlextOracleWmsEntityDiscovery:
 
     def _get_current_timestamp(self) -> str:
         """Get current timestamp in ISO format."""
-        from datetime import datetime
-
         return datetime.now().isoformat()
 
 
@@ -402,7 +401,7 @@ def flext_oracle_wms_create_entity_discovery(
     client: httpx.Client,
     cache_manager: FlextOracleWmsCacheManager | None = None,
 ) -> FlextOracleWmsEntityDiscovery:
-    """Factory function to create entity discovery system.
+    """Create entity discovery system.
 
     Args:
         client: HTTP client for API requests

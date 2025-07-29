@@ -1,10 +1,9 @@
-"""Simple focused tests for FlextOracleWmsClient - high coverage without complex mocking."""
-
+"""Simple focused tests for FlextOracleWmsClient - high coverage without complex mocking."""  # noqa: E501
 
 import pytest
 
-from flext_oracle_wms.client_class import FlextOracleWmsClient
-from flext_oracle_wms.config_module import FlextOracleWmsModuleConfig
+from flext_oracle_wms.client import FlextOracleWmsClient
+from flext_oracle_wms.config import FlextOracleWmsModuleConfig
 
 
 class TestClientSimpleNew:
@@ -33,7 +32,11 @@ class TestClientSimpleNew:
         # Just test that it doesn't crash
         repr_str = str(client)
         # Basic validation - should contain class name
-        assert "FlextOracleWmsClient" in repr_str or "WMS" in repr_str or "object" in repr_str
+        assert (
+            "FlextOracleWmsClient" in repr_str
+            or "WMS" in repr_str
+            or "object" in repr_str
+        )
 
     def test_validate_entity_name_valid(self) -> None:
         """Test entity name validation with valid names."""

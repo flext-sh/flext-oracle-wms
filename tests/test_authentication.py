@@ -1,6 +1,5 @@
 """Test Oracle WMS authentication functionality."""
 
-
 from flext_oracle_wms.authentication import (
     FlextOracleWmsAuth,
     FlextOracleWmsOAuth2Auth,

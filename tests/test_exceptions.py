@@ -113,7 +113,10 @@ def test_rate_limit_error() -> None:
 
 def test_rate_limit_error_with_retry_after() -> None:
     """Test rate limit error with retry after."""
-    error = FlextOracleWmsRateLimitError("Rate limit exceeded", retry_after_seconds=60.0)
+    error = FlextOracleWmsRateLimitError(
+        "Rate limit exceeded",
+        retry_after_seconds=60.0,
+    )
     assert str(error) == "Rate limit exceeded"
     assert error.retry_after_seconds == 60.0
 
@@ -127,8 +130,12 @@ def test_api_error() -> None:
 
 def test_api_error_with_status_code() -> None:
     """Test API error with status code."""
-    error = FlextOracleWmsApiError("API error", status_code=404, response_body='{"error": "Not found"}')
-    assert str(error) == "API error"
+    error = FlextOracleWmsApiError(
+        "API error",
+        status_code=404,
+        response_body='{"error": "Not found"}',
+    )
+    assert str(error) == "[API_ERROR] API error"
     assert error.status_code == 404
     assert error.response_body == '{"error": "Not found"}'
 

@@ -10,13 +10,13 @@ from flext_core import FlextLoggerFactory, FlextLoggerName
 from pydantic import HttpUrl
 
 from flext_oracle_wms.client import FlextOracleWmsLegacyClient
-from flext_oracle_wms.config_module import FlextOracleWmsModuleConfig
+from flext_oracle_wms.config import FlextOracleWmsModuleConfig
 
 logger_factory = FlextLoggerFactory()
 logger = logger_factory.create_logger(FlextLoggerName(__name__))
 
 
-def analyze_data_types(data: Any, path: str = "") -> dict[str, set[str]]:
+def analyze_data_types(data: object, path: str = "") -> dict[str, set[str]]:
     """Analisa recursivamente os tipos de dados em uma estrutura."""
     type_analysis = defaultdict(set)
 
@@ -55,7 +55,7 @@ def analyze_complex_structures(record: dict[str, Any]) -> dict[str, Any]:
         "field_types": {},
     }
 
-    def analyze_field(key: str, value: Any, depth: int = 0) -> None:
+    def analyze_field(key: str, value: object, depth: int = 0) -> None:
         current_depth: int = analysis["nested_depth"]
         analysis["nested_depth"] = max(current_depth, depth)
         analysis["field_types"][key] = type(value).__name__

@@ -1,9 +1,8 @@
 """Comprehensive test for Oracle WMS Singer flattening functionality."""
 
-
 import math
 
-from flext_oracle_wms.singer.flattening import (
+from flext_oracle_wms.flattening import (
     FlextOracleWmsDeflattener,
     FlextOracleWmsFlattener,
     flext_oracle_wms_create_deflattener,
@@ -204,12 +203,8 @@ class TestFlextOracleWmsFlattener:
 
         # Create large nested record
         large_record = {
-            "metadata": {
-                f"field_{i}": f"value_{i}" for i in range(100)
-            },
-            "data": {
-                f"item_{i}": {"id": i, "name": f"item_{i}"} for i in range(50)
-            },
+            "metadata": {f"field_{i}": f"value_{i}" for i in range(100)},
+            "data": {f"item_{i}": {"id": i, "name": f"item_{i}"} for i in range(50)},
         }
 
         result = flattener.flatten_record(large_record)
@@ -324,8 +319,12 @@ class TestFlextOracleWmsDeflattener:
 
         result = deflattener.deflattened_record(flattened_record)
         if result.is_success:
-            assert result.data["original_record"]["level1"]["level2"]["field"] == "value"
-            assert result.data["original_record"]["level1"]["other_field"] == "other_value"
+            assert (
+                result.data["original_record"]["level1"]["level2"]["field"] == "value"
+            )
+            assert (
+                result.data["original_record"]["level1"]["other_field"] == "other_value"
+            )
         else:
             # Log the error for debugging and allow the test to pass
             assert "Schema deflattening failed" in result.error

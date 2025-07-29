@@ -11,11 +11,14 @@ from __future__ import annotations
 from typing import Any
 
 # Import from flext-core root namespace as required
-
-
-# Define base error for compatibility
-class FlextError(Exception):
-    """Base exception for FLEXT operations."""
+from flext_core import (
+    FlextAuthenticationError,
+    FlextConfigurationError,
+    FlextConnectionError,
+    FlextError,
+    FlextNotFoundError,
+    FlextValidationError,
+)
 
 
 class FlextOracleWmsError(FlextError):
@@ -26,7 +29,7 @@ class FlextOracleWmsError(FlextError):
         message: str,
         error_code: str | None = None,
         entity_name: str | None = None,
-        details: dict[str, Any] | None = None,
+        details: dict[str, object] | None = None,
     ) -> None:
         """Initialize Oracle WMS error with enhanced metadata.
 
@@ -37,13 +40,11 @@ class FlextOracleWmsError(FlextError):
             details: Additional error context
 
         """
-        super().__init__(message)
-        self.error_code = error_code
+        super().__init__(message, error_code=error_code, context=details or {})
         self.entity_name = entity_name
-        self.details = details or {}
 
 
-class FlextOracleWmsAuthenticationError(FlextOracleWmsError):
+class FlextOracleWmsAuthenticationError(FlextAuthenticationError):
     """Oracle WMS authentication and authorization errors."""
 
     def __init__(
@@ -60,7 +61,7 @@ class FlextOracleWmsAuthenticationError(FlextOracleWmsError):
             **kwargs: Additional error context
 
         """
-        super().__init__(message, error_code="AUTH_FAILED", **kwargs)
+        super().__init__(message, **kwargs)
         self.auth_method = auth_method
 
 
@@ -88,7 +89,7 @@ class FlextOracleWmsApiError(FlextOracleWmsError):
         self.response_body = response_body
 
 
-class FlextOracleWmsConnectionError(FlextOracleWmsError):
+class FlextOracleWmsConnectionError(FlextConnectionError):
     """Oracle WMS connection and network errors."""
 
     def __init__(
@@ -105,18 +106,18 @@ class FlextOracleWmsConnectionError(FlextOracleWmsError):
             **kwargs: Additional error context
 
         """
-        super().__init__(message, error_code="CONNECTION_ERROR", **kwargs)
+        super().__init__(message, **kwargs)
         self.retry_count = retry_count
 
 
-class FlextOracleWmsDataValidationError(FlextOracleWmsError):
+class FlextOracleWmsDataValidationError(FlextValidationError):
     """Oracle WMS data validation and schema errors."""
 
     def __init__(
         self,
         message: str,
         field_name: str | None = None,
-        invalid_value: Any = None,
+        invalid_value: object = None,
         **kwargs: object,
     ) -> None:
         """Initialize data validation error.
@@ -128,12 +129,12 @@ class FlextOracleWmsDataValidationError(FlextOracleWmsError):
             **kwargs: Additional error context
 
         """
-        super().__init__(message, error_code="VALIDATION_ERROR", **kwargs)
+        super().__init__(message, **kwargs)
         self.field_name = field_name
         self.invalid_value = invalid_value
 
 
-class FlextOracleWmsConfigurationError(FlextOracleWmsError):
+class FlextOracleWmsConfigurationError(FlextConfigurationError):
     """Oracle WMS configuration and setup errors."""
 
     def __init__(
@@ -150,11 +151,11 @@ class FlextOracleWmsConfigurationError(FlextOracleWmsError):
             **kwargs: Additional error context
 
         """
-        super().__init__(message, error_code="CONFIG_ERROR", **kwargs)
+        super().__init__(message, **kwargs)
         self.config_key = config_key
 
 
-class FlextOracleWmsEntityNotFoundError(FlextOracleWmsError):
+class FlextOracleWmsEntityNotFoundError(FlextNotFoundError):
     """Oracle WMS entity not found errors."""
 
     def __init__(
@@ -172,12 +173,8 @@ class FlextOracleWmsEntityNotFoundError(FlextOracleWmsError):
 
         """
         message = message or f"Oracle WMS entity '{entity_name}' not found"
-        super().__init__(
-            message,
-            error_code="ENTITY_NOT_FOUND",
-            entity_name=entity_name,
-            **kwargs,
-        )
+        super().__init__(message, **kwargs)
+        self.entity_name = entity_name
 
 
 class FlextOracleWmsRateLimitError(FlextOracleWmsError):
@@ -232,7 +229,7 @@ class FilterError(FlextOracleWmsError):
         self,
         message: str,
         filter_type: str | None = None,
-        filter_value: Any = None,
+        filter_value: object = None,
         **kwargs: object,
     ) -> None:
         """Initialize filter error.

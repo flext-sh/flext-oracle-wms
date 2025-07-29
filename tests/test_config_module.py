@@ -1,7 +1,6 @@
 """Test Oracle WMS configuration module functionality."""
 
-
-from flext_oracle_wms.config_module import (
+from flext_oracle_wms.config import (
     FlextOracleWmsModuleConfig,
 )
 

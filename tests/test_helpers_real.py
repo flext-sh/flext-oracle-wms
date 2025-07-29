@@ -1,6 +1,5 @@
 """Real functional tests for Oracle WMS helpers module."""
 
-
 from flext_oracle_wms.helpers import (
     flext_oracle_wms_build_filter_query,
     flext_oracle_wms_calculate_pagination_info,
@@ -132,7 +131,11 @@ class TestFilterQueryBuilding:
     def test_list_filter(self) -> None:
         """Test building filter with list of values."""
         filters = [
-            {"field": "status", "operator": "in", "value": ["active", "pending", "completed"]},
+            {
+                "field": "status",
+                "operator": "in",
+                "value": ["active", "pending", "completed"],
+            },
         ]
         result = flext_oracle_wms_build_filter_query(filters)
         assert result.is_success is True

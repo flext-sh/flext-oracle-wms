@@ -1,9 +1,8 @@
 """Test Oracle WMS dynamic schema processing functionality."""
 
-
 import math
 
-from flext_oracle_wms.schema.dynamic import (
+from flext_oracle_wms.dynamic import (
     FlextOracleWmsDynamicSchemaProcessor,
     flext_oracle_wms_create_dynamic_schema_processor,
     flext_oracle_wms_discover_entity_schemas,
@@ -115,7 +114,9 @@ class TestFlextOracleWmsDynamicSchemaProcessor:
         """Test field type inference for strings."""
         processor = FlextOracleWmsDynamicSchemaProcessor()
         assert processor._infer_field_type("hello") == "string"
-        assert processor._infer_field_type("2025-01-01") == "string"  # Could be date but defaults to string
+        assert (
+            processor._infer_field_type("2025-01-01") == "string"
+        )  # Could be date but defaults to string
 
     def test_infer_field_type_integer(self) -> None:
         """Test field type inference for integers."""
@@ -134,8 +135,8 @@ class TestFlextOracleWmsDynamicSchemaProcessor:
     def test_infer_field_type_boolean(self) -> None:
         """Test field type inference for booleans."""
         processor = FlextOracleWmsDynamicSchemaProcessor()
-        assert processor._infer_field_type(True) == "boolean"
-        assert processor._infer_field_type(False) == "boolean"
+        assert processor._infer_field_type(True) == "boolean"  # noqa: FBT003
+        assert processor._infer_field_type(False) == "boolean"  # noqa: FBT003
 
     def test_infer_field_type_array(self) -> None:
         """Test field type inference for arrays."""
@@ -158,7 +159,7 @@ class TestFlextOracleWmsDynamicSchemaProcessor:
         """Test value conversion to string type."""
         processor = FlextOracleWmsDynamicSchemaProcessor()
         assert processor._convert_value_to_type(123, "string") == "123"
-        assert processor._convert_value_to_type(True, "string") == "True"
+        assert processor._convert_value_to_type(True, "string") == "True"  # noqa: FBT003
 
     def test_convert_value_to_type_integer(self) -> None:
         """Test value conversion to integer type."""
@@ -215,7 +216,11 @@ class TestFlextOracleWmsDynamicSchemaProcessor:
             "field2": {"seen_count": 1, "null_count": 0, "type_consistency": 1.0},
             "field3": {"seen_count": 1, "null_count": 0, "type_consistency": 1.0},
         }
-        confidence = processor._calculate_schema_confidence(records, schema, field_analysis)
+        confidence = processor._calculate_schema_confidence(
+            records,
+            schema,
+            field_analysis,
+        )
         assert 0.0 <= confidence <= 1.0
 
     def test_infer_primary_key(self) -> None:
@@ -239,7 +244,10 @@ class TestFlextOracleWmsDynamicSchemaProcessor:
             "name": {"type": "string"},
         }
         replication_key = processor._infer_replication_key(schema)
-        assert replication_key in {"created_date", "modified_date"} or replication_key is None
+        assert (
+            replication_key in {"created_date", "modified_date"}
+            or replication_key is None
+        )
 
 
 class TestDynamicSchemaEntryFunctions:
@@ -273,7 +281,10 @@ class TestDynamicSchemaEntryFunctions:
             "password": "test",
         }
 
-        result = flext_oracle_wms_discover_entity_schemas(entities_data, connection_info)
+        result = flext_oracle_wms_discover_entity_schemas(
+            entities_data,
+            connection_info,
+        )
         assert result.is_success is True or result.is_success is False
 
     def test_process_entity_with_schema(self) -> None:
@@ -287,7 +298,11 @@ class TestDynamicSchemaEntryFunctions:
             "count": {"type": "integer"},
         }
 
-        result = flext_oracle_wms_process_entity_with_schema("order_hdr", records, target_schema)
+        result = flext_oracle_wms_process_entity_with_schema(
+            "order_hdr",
+            records,
+            target_schema,
+        )
         assert result.is_success is True or result.is_success is False
 
     def test_discover_entity_schemas_empty_data(self) -> None:
@@ -308,7 +323,11 @@ class TestDynamicSchemaEntryFunctions:
             "id": {"type": "string"},
         }
 
-        result = flext_oracle_wms_process_entity_with_schema("order_hdr", [], target_schema)
+        result = flext_oracle_wms_process_entity_with_schema(
+            "order_hdr",
+            [],
+            target_schema,
+        )
         assert result.is_success is True or result.is_success is False
 
 
@@ -370,8 +389,7 @@ class TestSchemaProcessorEdgeCases:
         processor = FlextOracleWmsDynamicSchemaProcessor(sample_size=10)
         # Create large dataset
         records = [
-            {"id": i, "name": f"record_{i}", "value": i * 10}
-            for i in range(100)
+            {"id": i, "name": f"record_{i}", "value": i * 10} for i in range(100)
         ]
 
         result = processor.discover_entity_schema("order_hdr", records)

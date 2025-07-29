@@ -1,6 +1,5 @@
 """Test Oracle WMS type mapping functionality."""
 
-
 from flext_oracle_wms.type_mapping import (
     FLEXT_ORACLE_WMS_FIELD_PATTERNS,
     FLEXT_ORACLE_WMS_TYPE_MAPPINGS,
@@ -135,7 +134,8 @@ def test_schema_field_mapping_with_type() -> None:
     """Test complete schema field mapping with Oracle type."""
     mapper = FlextOracleWmsTypeMapper()
     result = mapper.flext_oracle_wms_map_schema_field(
-        field_name="user_id", oracle_type="number",
+        field_name="user_id",
+        oracle_type="number",
     )
     assert result.is_success is True
     assert result.data["type"] == ["number", "null"]
@@ -145,7 +145,9 @@ def test_schema_field_mapping_nullable() -> None:
     """Test schema field mapping with nullable parameter."""
     mapper = FlextOracleWmsTypeMapper()
     result = mapper.flext_oracle_wms_map_schema_field(
-        field_name="user_id", oracle_type="number", nullable=False,
+        field_name="user_id",
+        oracle_type="number",
+        nullable=False,
     )
     assert result.is_success is True
     assert "null" not in result.data["type"]

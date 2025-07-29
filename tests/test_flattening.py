@@ -1,7 +1,6 @@
 """Test Oracle WMS flattening functionality."""
 
-
-from flext_oracle_wms.singer.flattening import (
+from flext_oracle_wms.flattening import (
     FlextOracleWmsDeflattener,
     FlextOracleWmsFlattener,
 )

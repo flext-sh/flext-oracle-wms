@@ -193,7 +193,9 @@ class TestFactoryFunctions:
         """Test API headers generation."""
         headers = flext_oracle_wms_get_api_headers()
         assert isinstance(headers, dict)
-        assert "Content-Type" in headers or "Accept" in headers or "User-Agent" in headers
+        assert (
+            "Content-Type" in headers or "Accept" in headers or "User-Agent" in headers
+        )
 
     def test_get_api_headers_with_config(self) -> None:
         """Test API headers generation with config."""

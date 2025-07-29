@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """Test REAL Oracle WMS connection with ta29 credentials."""
 
 from __future__ import annotations
@@ -9,11 +8,11 @@ import sys
 from flext_core import get_logger
 
 from flext_oracle_wms.client import FlextOracleWmsLegacyClient
-from flext_oracle_wms.config_module import load_config
 
 # Setup logging
 logging.basicConfig(
-    level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+    level=logging.INFO,
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
 )
 logger = get_logger(__name__)
 
@@ -23,7 +22,7 @@ def test_real_connection() -> bool:
     try:
         # Use test configuration instead of loading from environment
         logger.info("Loading Oracle WMS test configuration...")
-        from flext_oracle_wms.config_module import FlextOracleWmsModuleConfig
+        from flext_oracle_wms.config import FlextOracleWmsModuleConfig
 
         config = FlextOracleWmsModuleConfig.for_testing()
 
@@ -66,7 +65,9 @@ def test_real_connection() -> bool:
 
             for entity in discovery.entities[:3]:  # Show first 3
                 logger.info(
-                    "  - %s: %s", entity.name, entity.description or "No description"
+                    "  - %s: %s",
+                    entity.name,
+                    entity.description or "No description",
                 )
 
             # Test that we can construct data retrieval calls
@@ -93,9 +94,10 @@ def test_real_connection() -> bool:
             or "ImportError" in str(type(e))
             or "AttributeError" in str(type(e))
         ):
-            raise AssertionError(f"Structural test failed with error: {e}")
+            msg = f"Structural test failed with error: {e}"
+            raise AssertionError(msg)
         logger.info(
-            "✅ CODE STRUCTURE TEST PASSED (network errors expected with test config)"
+            "✅ CODE STRUCTURE TEST PASSED (network errors expected with test config)",
         )
         return True  # Pass the test for network-related failures
 
@@ -109,7 +111,7 @@ if __name__ == "__main__":
     logger.info("=" * 70)
     if success:
         logger.info(
-            "🎉 ALL TESTS PASSED - Oracle WMS library is WORKING with real environment!"
+            "🎉 ALL TESTS PASSED - Oracle WMS library is WORKING with real environment!",  # noqa: E501
         )
         sys.exit(0)
     else:

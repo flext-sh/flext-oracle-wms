@@ -55,7 +55,7 @@ async def oracle_wms_connection(
     from pydantic import HttpUrl
 
     from flext_oracle_wms.client import FlextOracleWmsLegacyClient
-    from flext_oracle_wms.config_module import FlextOracleWmsModuleConfig
+    from flext_oracle_wms.config import FlextOracleWmsModuleConfig
 
     config = FlextOracleWmsModuleConfig(
         base_url=HttpUrl("https://test.example.com"),
@@ -252,7 +252,7 @@ def allocation_request() -> dict[str, Any]:
 
 @pytest.fixture
 def picking_list_data() -> dict[str, Any]:
-    """Picking list data for testing."""
+    """Provide picking list data for testing."""
     return {
         "pick_list_id": "PICK001",
         "shipment_id": "SHIP001",
@@ -294,7 +294,7 @@ def integration_test_config() -> dict[str, Any]:
 
 @pytest.fixture
 def performance_test_config() -> dict[str, Any]:
-    """Performance test configuration."""
+    """Provide performance test configuration."""
     return {
         "concurrent_operations": 10,
         "test_duration": 30,
@@ -339,7 +339,7 @@ def error_scenarios() -> list[dict[str, Any]]:
 # Data validation fixtures
 @pytest.fixture
 def validation_rules() -> dict[str, Any]:
-    """Data validation rules for testing."""
+    """Provide data validation rules for testing."""
     return {
         "item_id": {
             "required": True,

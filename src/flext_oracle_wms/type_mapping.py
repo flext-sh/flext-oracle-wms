@@ -184,6 +184,7 @@ class FlextOracleWmsTypeMapper:
         self,
         field_name: str,
         oracle_type: str | None = None,
+        *,
         nullable: bool = True,
     ) -> FlextResult[dict[str, Any]]:
         """Map complete schema field with type and name pattern analysis.
@@ -252,7 +253,7 @@ class FlextOracleWmsTypeMapper:
         """
         try:
             self._custom_mappings[oracle_type.lower().strip()] = singer_schema
-            return FlextResult.ok(True)
+            return FlextResult.ok(None)
         except Exception as e:
             return FlextResult.fail(f"Custom mapping addition failed: {e}")
 
@@ -269,7 +270,7 @@ class FlextOracleWmsTypeMapper:
 
 
 def flext_oracle_wms_create_type_mapper() -> FlextOracleWmsTypeMapper:
-    """Factory function to create Oracle WMS type mapper.
+    """Create Oracle WMS type mapper.
 
     Returns:
         Configured Oracle WMS type mapper
@@ -318,8 +319,6 @@ def flext_oracle_wms_is_timestamp_field(field_name: str) -> bool:
         r"^updated_dttm$",
         r"^last_modified$",
     ]
-
-    import re
 
     field_lower = field_name.lower()
     return any(re.search(pattern, field_lower) for pattern in timestamp_patterns)
