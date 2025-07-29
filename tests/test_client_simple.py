@@ -1,4 +1,4 @@
-"""Simple focused tests for FlextOracleWmsClient - high coverage without complex mocking."""  # noqa: E501
+"""Simple focused tests for FlextOracleWmsClient - high coverage without complex mocking."""
 
 import pytest
 

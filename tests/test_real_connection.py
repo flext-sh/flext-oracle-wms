@@ -111,7 +111,7 @@ if __name__ == "__main__":
     logger.info("=" * 70)
     if success:
         logger.info(
-            "🎉 ALL TESTS PASSED - Oracle WMS library is WORKING with real environment!",  # noqa: E501
+            "🎉 ALL TESTS PASSED - Oracle WMS library is WORKING with real environment!",
         )
         sys.exit(0)
     else:
