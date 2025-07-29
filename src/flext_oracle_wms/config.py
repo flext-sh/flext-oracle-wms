@@ -9,17 +9,91 @@ Implements flext-core unified configuration standards.
 
 from __future__ import annotations
 
+from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, ClassVar, NewType
+from urllib.parse import urlparse
 
-from flext_core import FlextBaseSettings, get_logger
-
-# Import from flext-core root namespace as required
+from flext_core import FlextBaseSettings, FlextValueObject, get_logger
 from pydantic import Field, HttpUrl, field_validator
+
+from flext_oracle_wms.api_catalog import FlextOracleWmsApiVersion
 
 # Type aliases for better type safety
 WMSAPIVersion = NewType("WMSAPIVersion", str)
 WMSRetryAttempts = NewType("WMSRetryAttempts", int)
+
+
+@dataclass(frozen=True)
+class FlextOracleWmsClientConfig(FlextValueObject):
+    """Oracle WMS Declarative Client Configuration.
+
+    Configuração simplificada para o cliente declarativo Oracle WMS Cloud.
+    """
+
+    base_url: str
+    username: str
+    password: str
+    environment: str = "default"
+    api_version: FlextOracleWmsApiVersion = FlextOracleWmsApiVersion.LGF_V10
+    timeout: float = 30.0
+    max_retries: int = 3
+    verify_ssl: bool = True
+    enable_logging: bool = True
+
+    def validate_domain_rules(self) -> None:
+        """Validate Oracle WMS client configuration domain rules."""
+        if not self.base_url:
+            msg = "Base URL cannot be empty"
+            raise ValueError(msg)
+        if not self.base_url.startswith(("http://", "https://")):
+            msg = "Base URL must start with http:// or https://"
+            raise ValueError(msg)
+        if not self.username:
+            msg = "Username cannot be empty"
+            raise ValueError(msg)
+        if not self.password:
+            msg = "Password cannot be empty"
+            raise ValueError(msg)
+        if not self.environment:
+            msg = "Environment cannot be empty"
+            raise ValueError(msg)
+        if self.timeout <= 0:
+            msg = "Timeout must be greater than 0"
+            raise ValueError(msg)
+        if self.max_retries < 0:
+            msg = "Max retries cannot be negative"
+            raise ValueError(msg)
+
+    @classmethod
+    def from_legacy_config(
+        cls, legacy_config: FlextOracleWmsModuleConfig
+    ) -> FlextOracleWmsClientConfig:
+        """Create declarative config from legacy config."""
+        # Extract environment from base_url
+        environment = "default"
+        base_url_str = str(legacy_config.base_url)
+        try:
+            parsed = urlparse(base_url_str)
+            path_parts = parsed.path.strip("/").split("/")
+            if path_parts and path_parts[-1]:
+                environment = path_parts[-1]
+        except Exception:
+            environment = "default"
+
+        return cls(
+            base_url=base_url_str,
+            username=legacy_config.username,
+            password=legacy_config.password,
+            environment=environment,
+            api_version=FlextOracleWmsApiVersion.LGF_V10
+            if legacy_config.api_version == "v10"
+            else FlextOracleWmsApiVersion.LEGACY,
+            timeout=legacy_config.timeout_seconds,
+            max_retries=legacy_config.max_retries,
+            verify_ssl=legacy_config.verify_ssl,
+            enable_logging=legacy_config.enable_request_logging,
+        )
 
 
 class FlextOracleWmsModuleConfig(FlextBaseSettings):

@@ -295,7 +295,7 @@ class FlextOracleWmsSchemaFlatteningError(FlextOracleWmsError):
         self.depth_level = depth_level
 
 
-class FilterError(FlextOracleWmsError):
+class FlextOracleWmsFilterError(FlextOracleWmsError):
     """Oracle WMS filtering and query errors."""
 
     def __init__(
@@ -373,9 +373,3 @@ class FlextOracleWmsSchemaError(FlextOracleWmsError):
         )
         self.schema_name = schema_name
         self.validation_details = validation_details or {}
-
-
-# Create aliases for backward compatibility
-OracleWMSFlatteningError = FlextOracleWmsSchemaFlatteningError
-OracleWMSFilterError = FilterError
-OracleWMSSchemaError = FlextOracleWmsSchemaError

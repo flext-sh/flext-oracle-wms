@@ -1,20 +1,21 @@
 """Test Oracle WMS authentication functionality."""
 
 from flext_oracle_wms.authentication import (
-    FlextOracleWmsAuth,
-    FlextOracleWmsOAuth2Auth,
-    flext_oracle_wms_create_authenticator,
-    flext_oracle_wms_create_oauth2_authenticator,
-    flext_oracle_wms_get_api_headers,
+    FlextOracleWmsAuthConfig,
 )
+from flext_oracle_wms.constants import OracleWMSAuthMethod
 
 
 def test_basic_auth_creation() -> None:
     """Test basic authentication creation."""
-    auth = FlextOracleWmsAuth("user", "pass")
-    assert auth.username == "user"
-    assert auth.password == "pass"
-    assert auth.auth_method == "basic"
+    config = FlextOracleWmsAuthConfig(
+        auth_type=OracleWMSAuthMethod.BASIC,
+        username="user",
+        password="pass"
+    )
+    assert config.username == "user"
+    assert config.password == "pass"
+    assert config.auth_type == OracleWMSAuthMethod.BASIC
 
 
 def test_basic_auth_validation() -> None:

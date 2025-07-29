@@ -1,305 +1,292 @@
-"""Oracle WMS Helper Functions.
+"""Oracle WMS Essential Helper Functions.
 
 Copyright (c) 2025 FLEXT Contributors
 SPDX-License-Identifier: MIT
 
-Utility functions for Oracle WMS operations using flext-core patterns.
+Only essential helper functions that are actually used.
 """
 
 from __future__ import annotations
 
 import re
+from datetime import UTC, datetime
 from typing import TYPE_CHECKING, Any
+from urllib.parse import urljoin, urlparse
 
 from flext_core import FlextResult, get_logger
 
 from flext_oracle_wms.constants import (
-    FlextOracleWmsEntityTypes,
-    OracleWMSEntityType,
-    OracleWMSFilterOperator,
+    FlextOracleWmsDefaults,
+    FlextOracleWmsResponseFields,
+)
+from flext_oracle_wms.exceptions import (
+    FlextOracleWmsError,
 )
 
 if TYPE_CHECKING:
-    from collections.abc import Mapping
+    from flext_oracle_wms.types import (
+        TOracleWmsApiVersion,
+        TOracleWmsEnvironment,
+        TOracleWmsRecord,
+    )
 
 logger = get_logger(__name__)
 
 
-def flext_oracle_wms_validate_connection(
-    config: Mapping[str, Any],
-) -> FlextResult[bool]:
-    """Validate Oracle WMS connection configuration.
+def flext_oracle_wms_normalize_url(base_url: str, path: str) -> str:
+    """Normalize and join URL paths.
 
     Args:
-        config: Configuration dictionary
+        base_url: Base URL to normalize
+        path: Path to join with base URL
 
     Returns:
-        FlextResult indicating if configuration is valid
+        Normalized complete URL
+
+    Raises:
+        FlextOracleWmsError: If URL normalization fails
 
     """
+    if not isinstance(base_url, str) or not isinstance(path, str):
+        msg = "URL and path must be strings"
+        raise FlextOracleWmsError(msg)
+
+    if not base_url.strip():
+        msg = "Base URL cannot be empty"
+        raise FlextOracleWmsError(msg)
+
     try:
-        required_fields = ["base_url", "username", "password"]
-
-        for field in required_fields:
-            if field not in config or not config[field]:
-                return FlextResult.fail(f"Missing required field: {field}")
-
-        # Validate URL format
-        base_url = str(config["base_url"])
-        if not base_url.startswith(("http://", "https://")):
-            return FlextResult.fail("base_url must start with http:// or https://")
-
-        return FlextResult.ok(data=True)
-
+        if not base_url.endswith("/"):
+            base_url += "/"
+        path = path.lstrip("/")
+        return urljoin(base_url, path)
     except Exception as e:
-        logger.exception("Connection validation failed")
-        return FlextResult.fail(f"Validation error: {e}")
+        msg = f"Failed to normalize URL: {e}"
+        raise FlextOracleWmsError(msg) from e
 
 
-def flext_oracle_wms_sanitize_entity_name(entity_name: str) -> FlextResult[str]:
-    """Sanitize entity name for safe API usage.
+def flext_oracle_wms_extract_environment_from_url(url: str) -> TOracleWmsEnvironment:
+    """Extract environment name from Oracle WMS URL.
 
     Args:
-        entity_name: Raw entity name
+        url: Oracle WMS URL to parse
 
     Returns:
-        FlextResult with sanitized entity name
+        Environment name extracted from URL path
+
+    Raises:
+        FlextOracleWmsError: If URL parsing fails
 
     """
+    if not isinstance(url, str) or not url.strip():
+        msg = "URL cannot be empty"
+        raise FlextOracleWmsError(msg)
+
     try:
-        # Remove special characters, keep only alphanumeric and underscores
-        sanitized = re.sub(r"[^a-zA-Z0-9_]", "", entity_name.strip())
-
-        if not sanitized:
-            return FlextResult.fail("Entity name cannot be empty after sanitization")
-
-        # Convert to lowercase for consistency
-        sanitized = sanitized.lower()
-
-        return FlextResult.ok(sanitized)
-
+        parsed = urlparse(url)
+        path_parts = [part for part in parsed.path.strip("/").split("/") if part]
+        return (
+            path_parts[0] if path_parts else FlextOracleWmsDefaults.DEFAULT_ENVIRONMENT
+        )
     except Exception as e:
-        logger.exception("Entity name sanitization failed")
-        return FlextResult.fail(f"Sanitization error: {e}")
+        logger.warning(f"Failed to parse environment from URL {url}: {e}")
+        return FlextOracleWmsDefaults.DEFAULT_ENVIRONMENT
 
 
-def flext_oracle_wms_build_filter_query(
-    filters: Mapping[str, Any],
-    operator: OracleWMSFilterOperator = "eq",
-) -> FlextResult[str]:
-    """Build filter query string for Oracle WMS API.
+def flext_oracle_wms_build_entity_url(
+    base_url: str,
+    environment: TOracleWmsEnvironment,
+    entity_name: str,
+    api_version: TOracleWmsApiVersion = FlextOracleWmsDefaults.DEFAULT_API_VERSION,
+) -> str:
+    """Build URL for Oracle WMS entity endpoint.
 
     Args:
-        filters: Dictionary of field-value pairs
-        operator: Filter operator to use
+        base_url: Base URL of the Oracle WMS instance
+        environment: Environment name
+        entity_name: Name of the entity
+        api_version: API version to use
 
     Returns:
-        FlextResult with query string
+        Complete entity URL
+
+    Raises:
+        FlextOracleWmsError: If URL building fails
 
     """
+    if not all(
+        isinstance(arg, str) and arg.strip()
+        for arg in [base_url, environment, entity_name]
+    ):
+        msg = "All URL components must be non-empty strings"
+        raise FlextOracleWmsError(msg)
+
     try:
-        if not filters:
-            return FlextResult.ok("")
-
-        query_parts = []
-        for field, value in filters.items():
-            # Sanitize field name
-            field_result = flext_oracle_wms_sanitize_entity_name(field)
-            if not field_result.is_success:
-                return FlextResult.fail(f"Invalid field name: {field}")
-
-            sanitized_field = field_result.data
-
-            # Build query part based on operator
-            if operator == "eq":
-                query_parts.append(f"{sanitized_field}={value}")
-            elif operator == "neq":
-                query_parts.append(f"{sanitized_field}!={value}")
-            elif operator == "gt":
-                query_parts.append(f"{sanitized_field}>{value}")
-            elif operator == "gte":
-                query_parts.append(f"{sanitized_field}>={value}")
-            elif operator == "lt":
-                query_parts.append(f"{sanitized_field}<{value}")
-            elif operator == "lte":
-                query_parts.append(f"{sanitized_field}<={value}")
-            elif operator == "in":
-                if isinstance(value, (list, tuple)):
-                    value_str = ",".join(str(v) for v in value)
-                    query_parts.append(f"{sanitized_field} IN ({value_str})")
-                else:
-                    query_parts.append(f"{sanitized_field}={value}")
-            else:
-                return FlextResult.fail(f"Unsupported operator: {operator}")
-
-        query_string = "&".join(query_parts)
-        return FlextResult.ok(query_string)
-
+        path = f"/{environment}/wms/lgfapi/{api_version}/entity/{entity_name}/"
+        return flext_oracle_wms_normalize_url(base_url, path)
     except Exception as e:
-        logger.exception("Filter query building failed")
-        return FlextResult.fail(f"Query building error: {e}")
+        msg = f"Failed to build entity URL: {e}"
+        raise FlextOracleWmsError(msg) from e
 
 
-def flext_oracle_wms_calculate_pagination_info(
-    page: int,
-    page_size: int,
-    total_count: int,
+def flext_oracle_wms_validate_entity_name(entity_name: str) -> FlextResult[str]:
+    """Validate Oracle WMS entity name.
+
+    Args:
+        entity_name: Entity name to validate
+
+    Returns:
+        FlextResult with validated and normalized entity name
+
+    """
+    if not isinstance(entity_name, str):
+        return FlextResult.fail("Entity name must be a string")
+
+    if not entity_name.strip():
+        return FlextResult.fail("Entity name cannot be empty")
+
+    cleaned = entity_name.strip().lower()
+
+    # Use constants for validation
+    if len(cleaned) > FlextOracleWmsDefaults.MAX_ENTITY_NAME_LENGTH:
+        return FlextResult.fail(
+            f"Entity name too long (max {FlextOracleWmsDefaults.MAX_ENTITY_NAME_LENGTH} characters)"
+        )
+
+    if not re.match(FlextOracleWmsDefaults.ENTITY_NAME_PATTERN, cleaned):
+        return FlextResult.fail(f"Invalid entity name format: {entity_name}")
+
+    return FlextResult.ok(cleaned)
+
+
+def flext_oracle_wms_validate_api_response(
+    response_data: dict[str, Any],
 ) -> FlextResult[dict[str, Any]]:
-    """Calculate pagination information.
+    """Validate Oracle WMS API response structure.
 
     Args:
-        page: Current page (1-based)
-        page_size: Number of items per page
-        total_count: Total number of items
+        response_data: Response data to validate
 
     Returns:
-        FlextResult with pagination info
+        FlextResult with validated response data
 
     """
+    if not isinstance(response_data, dict):
+        return FlextResult.fail("Response must be a dictionary")
+
+    # Check for error indicators using constants
+    if "error" in response_data:
+        error_msg = response_data.get("error", "Unknown error")
+        return FlextResult.fail(f"API error: {error_msg}")
+
+    # Check for error messages
+    message = response_data.get("message", "")
+    if isinstance(message, str) and "error" in message.lower():
+        return FlextResult.fail(f"API error: {message}")
+
+    return FlextResult.ok(response_data)
+
+
+def flext_oracle_wms_extract_pagination_info(
+    response_data: dict[str, Any],
+) -> dict[str, Any]:
+    """Extract pagination information from API response.
+
+    Args:
+        response_data: API response data
+
+    Returns:
+        Dictionary containing pagination information
+
+    Raises:
+        FlextOracleWmsError: If pagination extraction fails
+
+    """
+    if not isinstance(response_data, dict):
+        msg = "Response data must be a dictionary"
+        raise FlextOracleWmsError(msg)
+
     try:
-        if page < 1:
-            return FlextResult.fail("Page must be >= 1")
-
-        if page_size < 1:
-            return FlextResult.fail("Page size must be >= 1")
-
-        if total_count < 0:
-            return FlextResult.fail("Total count must be >= 0")
-
-        if total_count > 0:
-            total_pages = (total_count + page_size - 1) // page_size
-        else:
-            total_pages = 1
-
-        offset = (page - 1) * page_size
-
-        pagination_info = {
-            "page": page,
-            "page_size": page_size,
-            "total_count": total_count,
-            "total_pages": total_pages,
-            "offset": offset,
-            "has_next": page < total_pages,
-            "has_previous": page > 1,
-            "next_page": page + 1 if page < total_pages else None,
-            "previous_page": page - 1 if page > 1 else None,
+        return {
+            "current_page": response_data.get(
+                FlextOracleWmsResponseFields.PAGE_NUMBER, 1
+            ),
+            "total_pages": response_data.get(
+                FlextOracleWmsResponseFields.PAGE_COUNT, 1
+            ),
+            "total_results": response_data.get(
+                FlextOracleWmsResponseFields.RESULT_COUNT, 0
+            ),
+            "has_next": bool(response_data.get(FlextOracleWmsResponseFields.NEXT_PAGE)),
+            "has_previous": bool(
+                response_data.get(FlextOracleWmsResponseFields.PREVIOUS_PAGE)
+            ),
+            "next_url": response_data.get(FlextOracleWmsResponseFields.NEXT_PAGE),
+            "previous_url": response_data.get(
+                FlextOracleWmsResponseFields.PREVIOUS_PAGE
+            ),
         }
-
-        return FlextResult.ok(pagination_info)
-
     except Exception as e:
-        logger.exception("Pagination calculation failed")
-        return FlextResult.fail(f"Pagination error: {e}")
+        msg = f"Failed to extract pagination info: {e}"
+        raise FlextOracleWmsError(msg) from e
 
 
-def flext_oracle_wms_extract_entity_metadata(
-    entity_data: Mapping[str, Any],
-) -> FlextResult[dict[str, Any]]:
-    """Extract metadata from Oracle WMS entity response.
+def flext_oracle_wms_format_timestamp(timestamp: str | None = None) -> str:
+    """Format timestamp for Oracle WMS operations.
 
     Args:
-        entity_data: Raw entity response data
+        timestamp: Optional timestamp string to format
 
     Returns:
-        FlextResult with extracted metadata
+        ISO formatted timestamp string
 
     """
-    try:
-        metadata = {
-            "total_records": 0,
-            "page_info": {},
-            "schema_info": {},
-            "timestamps": {},
-        }
+    if timestamp:
+        try:
+            if isinstance(timestamp, str) and timestamp.strip():
+                return timestamp.strip()
+            return str(timestamp)
+        except Exception:
+            logger.warning(f"Failed to format provided timestamp: {timestamp}")
 
-        # Extract record count
-        if "total" in entity_data:
-            metadata["total_records"] = int(entity_data["total"])
-        elif "count" in entity_data:
-            metadata["total_records"] = int(entity_data["count"])
-        elif "data" in entity_data and isinstance(entity_data["data"], list):
-            metadata["total_records"] = len(entity_data["data"])
-
-        # Extract pagination info
-        if "page" in entity_data:
-            metadata["page_info"] = entity_data["page"]
-
-        # Extract schema info if available
-        if "schema" in entity_data:
-            metadata["schema_info"] = entity_data["schema"]
-        elif "fields" in entity_data:
-            metadata["schema_info"] = {"fields": entity_data["fields"]}
-
-        # Extract timestamp info
-        timestamp_fields = ["created_at", "updated_at", "timestamp", "last_modified"]
-        timestamps_dict = metadata["timestamps"]
-        for field in timestamp_fields:
-            if field in entity_data and isinstance(timestamps_dict, dict):
-                timestamps_dict[field] = entity_data[field]
-
-        return FlextResult.ok(metadata)
-
-    except Exception as e:
-        logger.exception("Metadata extraction failed")
-        return FlextResult.fail(f"Metadata extraction error: {e}")
+    return datetime.now(UTC).isoformat()
 
 
-def flext_oracle_wms_format_wms_record(
-    record: Mapping[str, Any],
-    entity_type: OracleWMSEntityType,
-) -> FlextResult[dict[str, Any]]:
-    """Format a record according to Oracle WMS standards.
+def flext_oracle_wms_chunk_records(
+    records: list[TOracleWmsRecord],
+    chunk_size: int = FlextOracleWmsDefaults.DEFAULT_PAGE_SIZE,
+) -> list[list[TOracleWmsRecord]]:
+    """Split records into chunks for batch processing.
 
     Args:
-        record: Raw record data
-        entity_type: Type of Oracle WMS entity
+        records: List of records to chunk
+        chunk_size: Size of each chunk
 
     Returns:
-        FlextResult with formatted record
+        List of record chunks
+
+    Raises:
+        FlextOracleWmsError: If chunking parameters are invalid
 
     """
+    if not isinstance(records, list):
+        msg = "Records must be a list"
+        raise FlextOracleWmsError(msg)
+
+    if chunk_size <= 0:
+        msg = "Chunk size must be positive"
+        raise FlextOracleWmsError(msg)
+
+    if chunk_size > FlextOracleWmsDefaults.MAX_PAGE_SIZE:
+        msg = f"Chunk size cannot exceed {FlextOracleWmsDefaults.MAX_PAGE_SIZE}"
+        raise FlextOracleWmsError(msg)
+
     try:
-        # Validate entity type
-        if entity_type not in FlextOracleWmsEntityTypes.ALL_ENTITIES:
-            return FlextResult.fail(f"Invalid entity type: {entity_type}")
-
-        formatted_record = dict(record)
-
-        # Add standard Oracle WMS fields if missing
-        if "entity_type" not in formatted_record:
-            formatted_record["entity_type"] = entity_type
-
-        # Ensure required fields exist (entity-specific logic can be added here)
-        if entity_type == "order_hdr":
-            required_fields = ["order_id", "status"]
-        elif entity_type == "inventory":
-            required_fields = ["item_id", "location_id", "quantity"]
-        else:
-            required_fields = ["id"]  # Default requirement
-
-        for field in required_fields:
-            if field not in formatted_record:
-                formatted_record[field] = None
-
-        # Standardize field names (convert to lowercase with underscores)
-        standardized_record = {}
-        for key, value in formatted_record.items():
-            # Convert camelCase to snake_case
-            snake_case_key = re.sub(r"([A-Z])", r"_\1", key).lower().lstrip("_")
-            standardized_record[snake_case_key] = value
-
-        return FlextResult.ok(standardized_record)
-
+        chunks = []
+        for i in range(0, len(records), chunk_size):
+            chunk = records[i : i + chunk_size]
+            chunks.append(chunk)
+        return chunks
     except Exception as e:
-        logger.exception("Record formatting failed")
-        return FlextResult.fail(f"Formatting error: {e}")
-
-
-__all__ = [
-    "flext_oracle_wms_build_filter_query",
-    "flext_oracle_wms_calculate_pagination_info",
-    "flext_oracle_wms_extract_entity_metadata",
-    "flext_oracle_wms_format_wms_record",
-    "flext_oracle_wms_sanitize_entity_name",
-    "flext_oracle_wms_validate_connection",
-]
+        msg = f"Failed to chunk records: {e}"
+        raise FlextOracleWmsError(msg) from e

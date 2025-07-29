@@ -1,287 +1,163 @@
-"""Enterprise Oracle WMS data models using flext-core standards.
+"""Essential Oracle WMS Models - Only what's actually used.
 
 Copyright (c) 2025 FLEXT Contributors
 SPDX-License-Identifier: MIT
 
-Ultra-modern Python 3.13 models with MAXIMUM flext-core integration.
+Minimal models using flext-core standards.
 """
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Annotated, Any
+from dataclasses import dataclass, field
+from typing import Any
 
-# Import from flext-core root namespace as required
-from pydantic import BaseModel, Field
-
-# Import constants for runtime usage
-
-# Define WMS-specific types at runtime - needed for Pydantic models
-WMSPageSize = Annotated[int, Field(ge=1, le=10000)]
-WMSRecord = dict[str, Any]
-WMSFieldName = str
-
-if TYPE_CHECKING:
-    from datetime import datetime
-
-    # Define WMS-specific types for this module
-    WMSErrorCode = str
-    WMSErrorMessage = str
+from flext_oracle_wms.constants import (
+    FlextOracleWmsDefaults,
+    FlextOracleWmsErrorMessages,
+)
+from flext_oracle_wms.exceptions import (
+    FlextOracleWmsDataValidationError,
+)
 
 
-class FlextOracleWmsEntity(BaseModel):
-    """Oracle WMS entity model using flext-core standards."""
+@dataclass(frozen=True)
+class FlextOracleWmsEntity:
+    """Oracle WMS entity model - USED BY DISCOVERY."""
 
-    name: str = Field(
-        ...,
-        description="Oracle WMS entity name",
-    )
-    description: str | None = Field(
-        None,
-        description="Human-readable entity description",
-    )
-    fields: dict[str, Any] = Field(
-        default_factory=dict,
-        description="Entity schema fields using flext-core WMS types",
-    )
-    endpoint: str = Field(..., description="Oracle WMS API endpoint for this entity")
+    name: str
+    endpoint: str
+    description: str | None = None
+    fields: dict[str, Any] | None = field(default_factory=dict)
+    primary_key: str | None = None
+    replication_key: str | None = None
+    supports_incremental: bool = False
 
-    # Additional Oracle WMS entity metadata
-    primary_key: str | None = Field(None, description="Primary key field for entity")
-    replication_key: str | None = Field(
-        None,
-        description="Replication key for incremental sync",
-    )
-    supports_incremental: bool = Field(
-        default=False,
-        description="Whether entity supports incremental extraction",
-    )
+    def validate_domain_rules(self) -> None:
+        """Validate entity domain rules.
 
+        Raises:
+            FlextOracleWmsDataValidationError: If entity data is invalid
 
-class FlextOracleWmsDiscoveryResult(BaseModel):
-    """Oracle WMS discovery result using flext-core standards."""
+        """
+        if not isinstance(self.name, str) or not self.name.strip():
+            msg = (
+                f"{FlextOracleWmsErrorMessages.ENTITY_VALIDATION_FAILED}: "
+                "Entity name cannot be empty"
+            )
+            raise FlextOracleWmsDataValidationError(msg)
 
-    entities: list[FlextOracleWmsEntity] = Field(
-        default_factory=list,
-        description="List of discovered Oracle WMS entities",
-    )
-    total_count: int = Field(
-        default=0,
-        description="Total number of discovered entities",
-    )
-    timestamp: str = Field(..., description="Discovery timestamp in ISO format")
+        if not isinstance(self.endpoint, str) or not self.endpoint.strip():
+            msg = (
+                f"{FlextOracleWmsErrorMessages.ENTITY_VALIDATION_FAILED}: "
+                "Entity endpoint cannot be empty"
+            )
+            raise FlextOracleWmsDataValidationError(msg)
 
-    # Additional discovery metadata
-    api_version: str | None = Field(
-        None,
-        description="Oracle WMS API version used for discovery",
-    )
-    discovery_duration_ms: float | None = Field(
-        None,
-        description="Time taken for discovery in milliseconds",
-    )
-    has_errors: bool = Field(
-        default=False,
-        description="Whether discovery encountered any errors",
-    )
-    errors: list[str] = Field(
-        default_factory=list,
-        description="List of discovery errors if any",
-    )
+        if not self.endpoint.startswith("/"):
+            msg = (
+                f"{FlextOracleWmsErrorMessages.ENTITY_VALIDATION_FAILED}: "
+                "Entity endpoint must start with /"
+            )
+            raise FlextOracleWmsDataValidationError(msg)
+
+        max_length = FlextOracleWmsDefaults.MAX_ENTITY_NAME_LENGTH
+        if len(self.name) > max_length:
+            msg = (
+                f"{FlextOracleWmsErrorMessages.ENTITY_VALIDATION_FAILED}: "
+                f"Entity name too long (max {max_length} characters)"
+            )
+            raise FlextOracleWmsDataValidationError(msg)
 
 
-class FlextOracleWmsError(BaseModel):
-    """Oracle WMS error model using flext-core standards."""
+@dataclass(frozen=True)
+class FlextOracleWmsDiscoveryResult:
+    """Oracle WMS discovery result - USED BY DISCOVERY."""
 
-    code: str | None = Field(
-        None,
-        description="Oracle WMS error code using flext-core validation",
-    )
-    message: str | None = Field(
-        None,
-        description="Oracle WMS error message using flext-core validation",
-    )
-    details: dict[str, Any] | None = Field(
-        None,
-        description="Additional error context and details",
-    )
+    entities: list[FlextOracleWmsEntity] = field(default_factory=list)
+    total_count: int = 0
+    timestamp: str = ""
+    api_version: str | None = None
 
-    # Enhanced error metadata
-    timestamp: datetime | None = Field(None, description="When the error occurred")
-    entity_name: str | None = Field(
-        None,
-        description="Oracle WMS entity associated with error",
-    )
-    field_name: WMSFieldName | None = Field(
-        None,
-        description="Specific field that caused the error",
-    )
-    recoverable: bool = Field(
-        default=True,
-        description="Whether this error can be recovered from",
-    )
-    retry_count: int = Field(default=0, description="Number of retry attempts made")
+    def validate_domain_rules(self) -> None:
+        """Validate discovery result.
 
-    # Additional fields for test compatibility
-    error_type: str | None = Field(None, description="Error type classification")
-    endpoint: str | None = Field(None, description="API endpoint where error occurred")
-    status_code: int | None = Field(None, description="HTTP status code")
-    retryable: bool | None = Field(None, description="Whether error is retryable")
-    request_id: str | None = Field(None, description="Request ID for tracking")
+        Raises:
+            FlextOracleWmsDataValidationError: If discovery result is invalid
 
+        """
+        if not isinstance(self.entities, list):
+            msg = (
+                f"{FlextOracleWmsErrorMessages.DISCOVERY_FAILED}: "
+                "Entities must be a list"
+            )
+            raise FlextOracleWmsDataValidationError(msg)
 
-class FlextOracleWmsResponse(BaseModel):
-    """Oracle WMS API response using flext-core standards."""
+        if self.total_count < 0:
+            msg = (
+                f"{FlextOracleWmsErrorMessages.DISCOVERY_FAILED}: "
+                "Total count cannot be negative"
+            )
+            raise FlextOracleWmsDataValidationError(msg)
 
-    data: list[dict[str, Any]] = Field(
-        default_factory=list,
-        description="Oracle WMS response data - flexible structure for any entity",
-    )
-    records: list[dict[str, Any]] = Field(
-        default_factory=list,
-        description="Oracle WMS records - flexible structure for any entity",
-    )
-    total_count: int = Field(
-        default=0,
-        description="Total number of records in response",
-    )
-    page_size: WMSPageSize = Field(
-        default=100,
-        description="Page size using flext-core WMS validation",
-    )
-    has_more: bool = Field(
-        default=False,
-        description="Whether more pages are available",
-    )
+        if self.entities and len(self.entities) != self.total_count:
+            msg = (
+                f"{FlextOracleWmsErrorMessages.DISCOVERY_FAILED}: Entity count mismatch"
+            )
+            raise FlextOracleWmsDataValidationError(msg)
 
-    # Enhanced Oracle WMS response metadata
-    entity_name: str | None = Field(
-        None,
-        description="Oracle WMS entity name for this response",
-    )
-    api_version: str | None = Field(None, description="Oracle WMS API version used")
-    response_time_ms: float | None = Field(
-        None,
-        description="API response time in milliseconds",
-    )
-    extracted_at: datetime | None = Field(
-        None,
-        description="When the data was extracted from Oracle WMS",
-    )
-    cursor_bookmark: str | None = Field(
-        None,
-        description="Pagination cursor for next page",
-    )
-
-    def model_post_init(self, __context: object, /) -> None:
-        """Post-init hook to synchronize records and data fields."""
-        # Synchronize data and records for backward compatibility
-        if hasattr(self, "data") and self.data and not getattr(self, "records", None):
-            object.__setattr__(self, "records", self.data)
-        elif (
-            hasattr(self, "records")
-            and self.records
-            and not getattr(self, "data", None)
-        ):
-            object.__setattr__(self, "data", self.records)
+        # Validate all entities
+        for entity in self.entities:
+            if not isinstance(entity, FlextOracleWmsEntity):
+                msg = (
+                    f"{FlextOracleWmsErrorMessages.DISCOVERY_FAILED}: "
+                    "Invalid entity type"
+                )
+                raise FlextOracleWmsDataValidationError(msg)
+            entity.validate_domain_rules()
 
 
-class FlextOracleWmsEntityField(BaseModel):
-    """Oracle WMS entity field definition using flext-core standards."""
+@dataclass(frozen=True)
+class FlextOracleWmsApiResponse:
+    """Oracle WMS API response wrapper - USED BY CLIENT."""
 
-    name: WMSFieldName = Field(
-        ...,
-        description="Field name using flext-core WMS validation",
-    )
-    type: str = Field(
-        ...,
-        description="Oracle WMS field data type (string, integer, number, etc.)",
-    )
-    required: bool = Field(
-        default=False,
-        description="Whether this field is required by Oracle WMS",
-    )
-    description: str | None = Field(
-        None,
-        description="Human-readable field description",
-    )
+    data: dict[str, Any] = field(default_factory=dict)
+    status_code: int = 200
+    success: bool = True
+    error_message: str | None = None
 
-    # Enhanced Oracle WMS field metadata
-    max_length: int | None = Field(
-        None,
-        description="Maximum field length for string types",
-    )
-    nullable: bool = Field(
-        default=True,
-        description="Whether field can be null in Oracle WMS",
-    )
-    primary_key: bool = Field(
-        default=False,
-        description="Whether this field is part of primary key",
-    )
-    indexed: bool = Field(
-        default=False,
-        description="Whether this field is indexed in Oracle WMS",
-    )
-    format: str | None = Field(
-        None,
-        description="Field format (e.g., 'date-time', 'email', etc.)",
-    )
-    enum_values: list[str] | None = Field(
-        None,
-        description="Allowed enum values for this field",
-    )
+    def validate_domain_rules(self) -> None:
+        """Validate API response.
 
+        Raises:
+            FlextOracleWmsDataValidationError: If API response is invalid
 
-class FlextOracleWmsRecordModel(BaseModel):
-    """Oracle WMS record model using flext-core standards."""
+        """
+        if not isinstance(self.data, dict):
+            msg = (
+                f"{FlextOracleWmsErrorMessages.INVALID_RESPONSE}: "
+                "Data must be a dictionary"
+            )
+            raise FlextOracleWmsDataValidationError(msg)
 
-    data: dict[str, Any] = Field(
-        default_factory=dict,
-        description="Oracle WMS record data using flext-core validation",
-    )
-    entity: str = Field(
-        ...,
-        description="Oracle WMS entity name using flext-core types",
-    )
-    record_id: str | None = Field(
-        None,
-        description="Unique record identifier from Oracle WMS",
-    )
+        if not isinstance(self.status_code, int):
+            msg = (
+                f"{FlextOracleWmsErrorMessages.INVALID_RESPONSE}: "
+                "Status code must be an integer"
+            )
+            raise FlextOracleWmsDataValidationError(msg)
 
-    # Enhanced Oracle WMS record metadata
-    extracted_at: datetime | None = Field(
-        None,
-        description="When this record was extracted from Oracle WMS",
-    )
-    mod_ts: datetime | None = Field(
-        None,
-        description="Last modification timestamp from Oracle WMS",
-    )
-    record_version: int | None = Field(
-        None,
-        description="Record version for optimistic locking",
-    )
-    checksum: str | None = Field(
-        None,
-        description="Data checksum for integrity validation",
-    )
-    flattened: bool = Field(
-        default=False,
-        description="Whether record data has been flattened",
-    )
-    original_structure: dict[str, Any] | None = Field(
-        None,
-        description="Original nested structure before flattening",
-    )
+        min_code = FlextOracleWmsDefaults.MIN_HTTP_STATUS_CODE
+        max_code = FlextOracleWmsDefaults.MAX_HTTP_STATUS_CODE
+        if self.status_code < min_code or self.status_code > max_code:
+            msg = (
+                f"{FlextOracleWmsErrorMessages.INVALID_RESPONSE}: "
+                f"Invalid HTTP status code: {self.status_code}"
+            )
+            raise FlextOracleWmsDataValidationError(msg)
 
-
-# Models are ready for use with runtime type resolution
-
-__all__ = [
-    "FlextOracleWmsDiscoveryResult",
-    "FlextOracleWmsEntity",
-    "FlextOracleWmsEntityField",
-    "FlextOracleWmsError",
-    "FlextOracleWmsRecordModel",
-    "FlextOracleWmsResponse",
-]
+        if not self.success and not self.error_message:
+            msg = (
+                f"{FlextOracleWmsErrorMessages.INVALID_RESPONSE}: "
+                "Failed response must have error message"
+            )
+            raise FlextOracleWmsDataValidationError(msg)

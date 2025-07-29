@@ -1,255 +1,257 @@
-"""Oracle WMS constants and types.
+"""Oracle WMS Constants using flext-core patterns.
 
 Copyright (c) 2025 FLEXT Contributors
 SPDX-License-Identifier: MIT
 
-Centralized constants for Oracle WMS integrations using flext-core standards.
+Essential constants for Oracle WMS operations.
 """
 
 from __future__ import annotations
 
-from typing import Final, Literal
+from enum import StrEnum
 
-# Import from flext-core root namespace as required
+# =================================================================
+# API CONSTANTS
+# =================================================================
 
-# ==============================================================================
-# ORACLE WMS API CONSTANTS
-# ==============================================================================
+
+class OracleWMSAuthMethod(StrEnum):
+    """Oracle WMS authentication methods."""
+
+    BASIC = "basic"
+    BEARER = "bearer"
+    API_KEY = "api_key"
+
+
+class FlextOracleWmsApiVersion(StrEnum):
+    """Oracle WMS API versions."""
+
+    LGF_V10 = "v10"
+    LGF_V9 = "v9"
+    LGF_V8 = "v8"
+
+
+class OracleWMSEntityType(StrEnum):
+    """Oracle WMS entity types."""
+
+    # Core entities
+    COMPANY = "company"
+    FACILITY = "facility"
+    LOCATION = "location"
+    ITEM = "item"
+
+    # Order entities
+    ORDER_HDR = "order_hdr"
+    ORDER_DTL = "order_dtl"
+
+    # Inventory entities
+    INVENTORY = "inventory"
+    ALLOCATION = "allocation"
+
+    # Movement entities
+    PICK_HDR = "pick_hdr"
+    PICK_DTL = "pick_dtl"
+
+    # Shipment entities
+    SHIPMENT = "shipment"
+    OBLPN = "oblpn"
+
+
+class OracleWMSFilterOperator(StrEnum):
+    """Oracle WMS filter operators."""
+
+    EQ = "eq"
+    NE = "ne"
+    GT = "gt"
+    GE = "ge"
+    LT = "lt"
+    LE = "le"
+    IN = "in"
+    NOT_IN = "not_in"
+    LIKE = "like"
+    NOT_LIKE = "not_like"
+
+
+class OracleWMSPageMode(StrEnum):
+    """Oracle WMS pagination modes."""
+
+    OFFSET = "offset"
+    CURSOR = "cursor"
+    TOKEN = "token"  # noqa: S105
+
+
+class OracleWMSWriteMode(StrEnum):
+    """Oracle WMS write modes."""
+
+    INSERT = "insert"
+    UPDATE = "update"
+    UPSERT = "upsert"
+    DELETE = "delete"
+
+
+# =================================================================
+# DEFAULT VALUES
+# =================================================================
 
 
 class FlextOracleWmsDefaults:
-    """Oracle WMS-specific default values."""
+    """Default values for Oracle WMS operations."""
 
     # API Configuration
-    DEFAULT_API_VERSION: Final = "v10"
-    DEFAULT_AUTH_METHOD: Final = "basic"
+    DEFAULT_API_VERSION = "v10"
+    DEFAULT_TIMEOUT = 30.0
+    DEFAULT_MAX_RETRIES = 3
+    DEFAULT_RETRY_DELAY = 1.0
 
-    # Performance settings aligned with flext-core
-    DEFAULT_PAGE_SIZE: Final = 100
-    MAX_PAGE_SIZE: Final = 1000
-    DEFAULT_TIMEOUT: Final = 30
-    DEFAULT_RETRIES: Final = 3
-    DEFAULT_BATCH_SIZE: Final = 50
+    # Authentication
+    MIN_TOKEN_LENGTH = 10
+    MIN_API_KEY_LENGTH = 10
 
-    # WMS-specific limits
-    MAX_ENTITIES_PER_REQUEST: Final = 50
-    MAX_FILTER_CONDITIONS: Final = 10
-    MAX_ORDERING_FIELDS: Final = 5
+    # Pagination
+    DEFAULT_PAGE_SIZE = 100
+    MAX_PAGE_SIZE = 1000
+    MIN_PAGE_SIZE = 1
 
-    # Rate limiting
-    DEFAULT_RATE_LIMIT_RPM: Final = 60
-    MIN_REQUEST_DELAY: Final = 0.1
+    # Batch Processing
+    DEFAULT_BATCH_SIZE = 50
+    MAX_BATCH_SIZE = 500
 
-    # HTTP Status codes
-    HTTP_OK: Final = 200
-    HTTP_UNAUTHORIZED: Final = 401
-    HTTP_FORBIDDEN: Final = 403
-    HTTP_BAD_REQUEST: Final = 400
-    REQUESTS_PER_MINUTE_LIMIT: Final = 60
+    # Rate Limiting
+    DEFAULT_RATE_LIMIT = 60  # requests per minute
+    MIN_REQUEST_DELAY = 0.1  # seconds
 
-    # Schema flattening
-    DEFAULT_FLATTEN_ENABLED: Final = True
-    DEFAULT_FLATTEN_MAX_DEPTH: Final = 5
-    FLATTEN_SEPARATOR: Final = "__"
+    # Schema Discovery
+    DEFAULT_SAMPLE_SIZE = 100
+    MIN_CONFIDENCE_THRESHOLD = 0.7
+    MAX_SCHEMA_DEPTH = 10
 
+    # Connections
+    DEFAULT_POOL_SIZE = 5
+    MAX_POOL_SIZE = 20
 
-class FlextOracleWmsEntityTypes:
-    """Oracle WMS entity types."""
+    # Caching
+    DEFAULT_CACHE_TTL = 300  # 5 minutes
+    MAX_CACHE_SIZE = 1000
 
-    ALLOCATION: Final = "allocation"
-    ORDER_HDR: Final = "order_hdr"
-    ORDER_DTL: Final = "order_dtl"
-    INVENTORY: Final = "inventory"
-    LOCATION: Final = "location"
-    ITEM: Final = "item"
-    SHIPMENT: Final = "shipment"
-    RECEIPT: Final = "receipt"
-    TASK: Final = "task"
-    WAVE: Final = "wave"
+    # Timeouts
+    DEFAULT_CONNECT_TIMEOUT = 10
+    DEFAULT_READ_TIMEOUT = 30
 
-    # All supported entities
-    ALL_ENTITIES: Final = [
-        ALLOCATION,
-        ORDER_HDR,
-        ORDER_DTL,
-        INVENTORY,
-        LOCATION,
-        ITEM,
-        SHIPMENT,
-        RECEIPT,
-        TASK,
-        WAVE,
-    ]
+    # Environment Configuration
+    DEFAULT_ENVIRONMENT = "default"
 
+    # Entity Validation
+    MAX_ENTITY_NAME_LENGTH = 100
+    ENTITY_NAME_PATTERN = r"^[a-z0-9_]+$"
 
-class FlextOracleWmsFilterOperators:
-    """Oracle WMS filter operators."""
+    # Filter Limits
+    MAX_FILTER_CONDITIONS = 50
 
-    EQ: Final = "eq"
-    NEQ: Final = "neq"
-    GT: Final = "gt"
-    GTE: Final = "gte"
-    LT: Final = "lt"
-    LTE: Final = "lte"
-    IN: Final = "in"
-    NIN: Final = "nin"
-    LIKE: Final = "like"
+    # HTTP Status Code Limits
+    MIN_HTTP_STATUS_CODE = 100
+    MAX_HTTP_STATUS_CODE = 599
 
-    ALL_OPERATORS: Final = [EQ, NEQ, GT, GTE, LT, LTE, IN, NIN, LIKE]
+    # HTTP status codes
+    HTTP_OK = 200
+    HTTP_BAD_REQUEST = 400
+    HTTP_UNAUTHORIZED = 401
+    HTTP_FORBIDDEN = 403
+
+    # Authentication status codes
+    AUTH_ERROR_CODES = (HTTP_UNAUTHORIZED, HTTP_FORBIDDEN)
 
 
-class FlextOracleWmsPageModes:
-    """Oracle WMS pagination modes."""
-
-    API: Final = "api"
-    SEQUENCED: Final = "sequenced"
-
-    ALL_MODES: Final = [API, SEQUENCED]
-    DEFAULT: Final = API
-
-
-class FlextOracleWmsWriteModes:
-    """Oracle WMS write modes for targets."""
-
-    INSERT: Final = "insert"
-    UPDATE: Final = "update"
-    UPSERT: Final = "upsert"
-
-    ALL_MODES: Final = [INSERT, UPDATE, UPSERT]
-    DEFAULT: Final = INSERT
-
-
-# ==============================================================================
-# TYPE LITERALS
-# ==============================================================================
-
-# Entity type literal
-OracleWMSEntityType = Literal[
-    "allocation",
-    "order_hdr",
-    "order_dtl",
-    "inventory",
-    "location",
-    "item",
-    "shipment",
-    "receipt",
-    "task",
-    "wave",
-]
-
-# Filter operator literal
-OracleWMSFilterOperator = Literal[
-    "eq",
-    "neq",
-    "gt",
-    "gte",
-    "lt",
-    "lte",
-    "in",
-    "nin",
-    "like",
-]
-
-# Page mode literal
-OracleWMSPageMode = Literal["api", "sequenced"]
-
-# Write mode literal
-OracleWMSWriteMode = Literal["insert", "update", "upsert"]
-
-# Authentication method literal
-OracleWMSAuthMethod = Literal["basic", "oauth2"]
-
-
-# ==============================================================================
+# =================================================================
 # ERROR MESSAGES
-# ==============================================================================
+# =================================================================
 
 
 class FlextOracleWmsErrorMessages:
-    """Oracle WMS-specific error messages."""
+    """Standard error messages for Oracle WMS operations."""
 
-    # Connection errors
-    CONNECTION_FAILED: Final = "Failed to connect to Oracle WMS API"
-    AUTHENTICATION_FAILED: Final = "Oracle WMS authentication failed"
-    API_ERROR: Final = "Oracle WMS API error"
-    TIMEOUT_ERROR: Final = "Oracle WMS API request timeout"
+    # Connection Errors
+    CONNECTION_FAILED = "Failed to connect to Oracle WMS"
+    AUTHENTICATION_FAILED = "Authentication failed"
+    TIMEOUT_ERROR = "Request timeout"
 
-    # Entity errors
-    ENTITY_NOT_FOUND: Final = "Oracle WMS entity not found"
-    INVALID_ENTITY_TYPE: Final = "Invalid Oracle WMS entity type"
-    ENTITY_DISCOVERY_FAILED: Final = "Oracle WMS entity discovery failed"
+    # API Errors
+    API_ERROR = "Oracle WMS API error"
+    INVALID_ENDPOINT = "Invalid API endpoint"
+    INVALID_RESPONSE = "Invalid API response format"
 
-    # Schema errors
-    SCHEMA_GENERATION_FAILED: Final = "Oracle WMS schema generation failed"
-    FLATTENING_FAILED: Final = "Schema flattening failed"
-    DEFLATTENING_FAILED: Final = "Schema deflattening failed"
+    # Entity Errors
+    ENTITY_NOT_FOUND = "Entity not found"
+    INVALID_ENTITY_TYPE = "Invalid entity type"
+    ENTITY_VALIDATION_FAILED = "Entity validation failed"
 
-    # Filter errors
-    INVALID_FILTER_OPERATOR: Final = "Invalid filter operator"
-    INVALID_FILTER_VALUE: Final = "Invalid filter value"
-    TOO_MANY_FILTERS: Final = "Too many filter conditions"
+    # Data Errors
+    INVALID_DATA_FORMAT = "Invalid data format"
+    DATA_VALIDATION_FAILED = "Data validation failed"
+    SCHEMA_GENERATION_FAILED = "Schema generation failed"
 
-    # Data errors
-    INVALID_RECORD_FORMAT: Final = "Invalid record format"
-    BATCH_WRITE_FAILED: Final = "Batch write to Oracle WMS failed"
-    RATE_LIMIT_EXCEEDED: Final = "Oracle WMS rate limit exceeded"
-
-
-# ==============================================================================
-# SUCCESS MESSAGES
-# ==============================================================================
+    # Processing Errors
+    FLATTENING_FAILED = "Data flattening failed"
+    DISCOVERY_FAILED = "Entity discovery failed"
+    PROCESSING_FAILED = "Data processing failed"
 
 
-class FlextOracleWmsSuccessMessages:
-    """Oracle WMS-specific success messages."""
-
-    # Connection
-    CONNECTION_SUCCESS: Final = "Connected to Oracle WMS API successfully"
-    AUTHENTICATION_SUCCESS: Final = "Oracle WMS authentication successful"
-
-    # Discovery
-    ENTITY_DISCOVERY_SUCCESS: Final = "Oracle WMS entity discovery completed"
-    SCHEMA_GENERATION_SUCCESS: Final = "Oracle WMS schema generation completed"
-
-    # Data operations
-    DATA_EXTRACTION_SUCCESS: Final = "Oracle WMS data extraction completed"
-    DATA_LOAD_SUCCESS: Final = "Oracle WMS data load completed"
-    BATCH_WRITE_SUCCESS: Final = "Batch write to Oracle WMS completed"
+# =================================================================
+# API PATHS
+# =================================================================
 
 
-# ==============================================================================
-# CONVENIENT EXPORTS - HTTP Status Codes
-# ==============================================================================
+class FlextOracleWmsApiPaths:
+    """Standard API paths for Oracle WMS."""
 
-# Export common HTTP constants from defaults class for convenience
-HTTP_OK: Final = FlextOracleWmsDefaults.HTTP_OK
-HTTP_UNAUTHORIZED: Final = FlextOracleWmsDefaults.HTTP_UNAUTHORIZED
-HTTP_FORBIDDEN: Final = FlextOracleWmsDefaults.HTTP_FORBIDDEN
-HTTP_BAD_REQUEST: Final = FlextOracleWmsDefaults.HTTP_BAD_REQUEST
+    # Base paths
+    LGF_API_BASE = "/wms/lgfapi"
 
-# ==============================================================================
-# EXPORTS
-# ==============================================================================
+    # Entity paths
+    ENTITY_DISCOVERY = "/entity/"
+    ENTITY_DATA = "/entity/{entity_name}/"
+    ENTITY_BY_ID = "/entity/{entity_name}/{entity_id}/"
 
-__all__ = [
-    "HTTP_BAD_REQUEST",
-    "HTTP_FORBIDDEN",
-    # HTTP Status codes (convenient exports)
-    "HTTP_OK",
-    "HTTP_UNAUTHORIZED",
-    # Constants with FlextOracleWms prefix
-    "FlextOracleWmsDefaults",
-    "FlextOracleWmsEntityTypes",
-    # Messages
-    "FlextOracleWmsErrorMessages",
-    "FlextOracleWmsFilterOperators",
-    "FlextOracleWmsPageModes",
-    "FlextOracleWmsSuccessMessages",
-    "FlextOracleWmsWriteModes",
-    "OracleWMSAuthMethod",
-    # Type literals
-    "OracleWMSEntityType",
-    "OracleWMSFilterOperator",
-    "OracleWMSPageMode",
-    "OracleWMSWriteMode",
-]
+    # Metadata paths
+    METADATA_BASE = "/metadata"
+    SCHEMA_BASE = "/schema"
+
+    # Operation paths
+    INIT_STAGE = "/init_stage_interface/"
+    RUN_STAGE = "/run_stage_interface/"
+
+    # Status paths
+    STATUS_CHECK = "/status/"
+    HEALTH_CHECK = "/health/"
+
+
+# =================================================================
+# RESPONSE FORMATS
+# =================================================================
+
+
+class FlextOracleWmsResponseFields:
+    """Standard response field names."""
+
+    # Pagination fields
+    RESULT_COUNT = "result_count"
+    PAGE_COUNT = "page_count"
+    PAGE_NUMBER = "page_nbr"
+    NEXT_PAGE = "next_page"
+    PREVIOUS_PAGE = "previous_page"
+    RESULTS = "results"
+
+    # Data fields
+    DATA = "data"
+    ID = "id"
+    URL = "url"
+
+    # Metadata fields
+    CREATE_USER = "create_user"
+    CREATE_TS = "create_ts"
+    MOD_USER = "mod_user"
+    MOD_TS = "mod_ts"
+
+    # Status fields
+    STATUS = "status"
+    MESSAGE = "message"
+    ERROR = "error"

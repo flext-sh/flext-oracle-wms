@@ -1,630 +1,310 @@
-"""Oracle WMS Singer SDK Flattening/Deflattening Module - Mandatory capabilities.
-
-This module provides MANDATORY flattening and deflattening capabilities for Oracle WMS
-Singer SDK compliance as required by the user specifications.
+"""Oracle WMS Data Flattening using flext-core patterns.
 
 Copyright (c) 2025 FLEXT Contributors
 SPDX-License-Identifier: MIT
+
+Simplified data flattening for Oracle WMS nested structures.
 """
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, TypedDict
+from typing import TYPE_CHECKING, Any
 
-# Import from flext-core root namespace as required
-from flext_core import FlextResult
-
-from flext_oracle_wms.constants import (
-    FlextOracleWmsDefaults,
-    FlextOracleWmsErrorMessages,
-)
+from flext_core import FlextResult, get_logger
 
 if TYPE_CHECKING:
-    from flext_oracle_wms.typedefs import (
-        WMSFlattenedRecord,
-        WMSFlattenedSchema,
-        WMSRecord,
-        WMSRecordBatch,
-        WMSSchema,
-    )
+    from flext_oracle_wms.types import TOracleWmsRecord, TOracleWmsRecordBatch
+
+logger = get_logger(__name__)
 
 
-class FlatteningResult(TypedDict):
-    """Result of flattening operation."""
+class FlextOracleWmsDataFlattener:
+    """Simplified data flattener for Oracle WMS using flext-core patterns."""
 
-    flattened_record: WMSFlattenedRecord
-    original_schema: WMSSchema
-    flattened_schema: WMSFlattenedSchema
-    metadata: dict[str, Any]
-
-
-class FlextOracleWmsDeflatteningResult(TypedDict):
-    """Result of deflattening operation."""
-
-    original_record: WMSRecord
-    restored_schema: WMSSchema
-    metadata: dict[str, Any]
-
-
-class FlextOracleWmsFlattener:
-    """Oracle WMS data flattener with mandatory capabilities."""
-
-    def __init__(  # noqa: PLR0913
+    def __init__(
         self,
+        separator: str = "_",
+        max_depth: int = 5,
         *,
-        enabled: bool = FlextOracleWmsDefaults.DEFAULT_FLATTEN_ENABLED,
-        max_depth: int = FlextOracleWmsDefaults.DEFAULT_FLATTEN_MAX_DEPTH,
-        separator: str = FlextOracleWmsDefaults.FLATTEN_SEPARATOR,
-        preserve_types: bool = True,
-        preserve_null_values: bool = True,
-        preserve_empty_objects: bool = False,
-        preserve_empty_arrays: bool = False,
+        preserve_lists: bool = True,
     ) -> None:
-        """Initialize flattener with configuration."""
-        self.enabled = enabled
-        self.max_depth = max_depth
+        """Initialize data flattener.
+
+        Args:
+            separator: Separator for nested field names
+            max_depth: Maximum nesting depth to flatten
+            preserve_lists: Whether to preserve list structures
+
+        """
         self.separator = separator
-        self.preserve_types = preserve_types
-        self.preserve_null_values = preserve_null_values
-        self.preserve_empty_objects = preserve_empty_objects
-        self.preserve_empty_arrays = preserve_empty_arrays
+        self.max_depth = max_depth
+        self.preserve_lists = preserve_lists
+        logger.info(
+            "Data flattener initialized",
+            separator=separator,
+            max_depth=max_depth,
+            preserve_lists=preserve_lists,
+        )
 
-    def flatten_record(
+    async def flatten_records(
         self,
-        record: WMSRecord,
-        schema: WMSSchema | None = None,
-    ) -> FlextResult[Any]:
-        """Flatten a WMS record with mandatory capabilities."""
-        if not self.enabled:
-            return FlextResult.ok(
-                FlatteningResult(
-                    flattened_record=record,
-                    original_schema=schema or {},
-                    flattened_schema=schema or {},
-                    metadata={"flattening_enabled": False},
-                ),
-            )
+        records: TOracleWmsRecordBatch,
+        entity_name: str | None = None,
+    ) -> FlextResult[TOracleWmsRecordBatch]:
+        """Flatten nested records.
 
+        Args:
+            records: Records to flatten
+            entity_name: Optional entity name for logging
+
+        Returns:
+            FlextResult with flattened records
+
+        """
         try:
-            flattened_record = self._flatten_object(record, prefix="", depth=0)
+            flattened_records = []
 
-            # Generate flattened schema if original schema provided
-            flattened_schema = {}
-            if schema:
-                flattened_schema = self._flatten_schema(schema)
-
-            result = FlatteningResult(
-                flattened_record=flattened_record,
-                original_schema=schema or {},
-                flattened_schema=flattened_schema,
-                metadata={
-                    "flattening_enabled": True,
-                    "max_depth": self.max_depth,
-                    "separator": self.separator,
-                    "total_fields": len(flattened_record),
-                    "original_fields": len(record),
-                    "flattening_ratio": (
-                        len(flattened_record) / len(record) if record else 0
-                    ),
-                },
-            )
-
-            return FlextResult.ok(result)
-
-        except Exception as e:
-            return FlextResult.fail(
-                f"{FlextOracleWmsErrorMessages.FLATTENING_FAILED}: {e}",
-            )
-
-    def flatten_batch(
-        self,
-        records: WMSRecordBatch,
-        schema: WMSSchema | None = None,
-    ) -> FlextResult[Any]:
-        """Flatten a batch of WMS records."""
-        if not self.enabled:
-            return FlextResult.ok(
-                [
-                    FlatteningResult(
-                        flattened_record=record,
-                        original_schema=schema or {},
-                        flattened_schema=schema or {},
-                        metadata={"flattening_enabled": False},
-                    )
-                    for record in records
-                ],
-            )
-
-        try:
-            results: list[FlatteningResult] = []
             for record in records:
-                flatten_result = self.flatten_record(record, schema)
-                if not flatten_result.is_success:
-                    return FlextResult.fail(
-                        f"{FlextOracleWmsErrorMessages.FLATTENING_FAILED}: "
-                        f"{flatten_result.error}",
-                    )
-                # Since we know it's successful, data is guaranteed to be not None
-                if flatten_result.data is None:
-                    return FlextResult.fail(
-                        f"{FlextOracleWmsErrorMessages.FLATTENING_FAILED}: "
-                        "Result data is None despite success status",
-                    )
-                results.append(flatten_result.data)
+                if isinstance(record, dict):
+                    flattened_record = self._flatten_record(record)
+                    flattened_records.append(flattened_record)
+                else:
+                    # Skip non-dict records
+                    flattened_records.append(record)
 
-            return FlextResult.ok(results)
-
-        except Exception as e:
-            return FlextResult.fail(
-                f"{FlextOracleWmsErrorMessages.FLATTENING_FAILED}: {e}",
+            logger.info(
+                "Records flattened successfully",
+                entity_name=entity_name,
+                record_count=len(flattened_records),
             )
 
-    def _flatten_object(
-        self,
-        obj: object,
-        prefix: str = "",
-        depth: int = 0,
-    ) -> dict[str, Any]:
-        """Recursively flatten an object."""
-        if depth >= self.max_depth:
-            return {prefix.rstrip(self.separator): obj}
+            return FlextResult.ok(flattened_records)
 
-        if not isinstance(obj, dict):
-            return {prefix.rstrip(self.separator): obj}
+        except Exception as e:
+            logger.exception("Record flattening failed", entity_name=entity_name)
+            return FlextResult.fail(f"Record flattening failed: {e}")
+
+    async def unflatten_records(
+        self,
+        records: TOracleWmsRecordBatch,
+        entity_name: str | None = None,
+    ) -> FlextResult[TOracleWmsRecordBatch]:
+        """Unflatten records back to nested structure.
+
+        Args:
+            records: Flattened records to unflatten
+            entity_name: Optional entity name for logging
+
+        Returns:
+            FlextResult with unflattened records
+
+        """
+        try:
+            unflattened_records = []
+
+            for record in records:
+                if isinstance(record, dict):
+                    unflattened_record = self._unflatten_record(record)
+                    unflattened_records.append(unflattened_record)
+                else:
+                    # Skip non-dict records
+                    unflattened_records.append(record)
+
+            logger.info(
+                "Records unflattened successfully",
+                entity_name=entity_name,
+                record_count=len(unflattened_records),
+            )
+
+            return FlextResult.ok(unflattened_records)
+
+        except Exception as e:
+            logger.exception("Record unflattening failed", entity_name=entity_name)
+            return FlextResult.fail(f"Record unflattening failed: {e}")
+
+    def _flatten_record(
+        self, record: TOracleWmsRecord, prefix: str = "", depth: int = 0
+    ) -> TOracleWmsRecord:
+        """Flatten a single record recursively."""
+        if depth > self.max_depth:
+            # Stop recursion at max depth
+            return {"__deep_object__": str(record)}
 
         flattened = {}
 
-        for key, value in obj.items():
-            new_key = (
-                f"{prefix}{key}" if not prefix else f"{prefix}{self.separator}{key}"
-            )
+        for key, value in record.items():
+            new_key = f"{prefix}{self.separator}{key}" if prefix else key
 
-            if isinstance(value, dict):
-                if not value and not self.preserve_empty_objects:
-                    continue
-                flattened.update(
-                    self._flatten_object(value, new_key, depth + 1),
-                )
-            elif isinstance(value, list):
-                if not value and not self.preserve_empty_arrays:
-                    continue
-                flattened.update(self._flatten_array(value, new_key, depth + 1))
-            elif value is None and not self.preserve_null_values:
-                continue
+            if isinstance(value, dict) and depth < self.max_depth:
+                # Recursively flatten nested dictionaries
+                nested_flattened = self._flatten_record(value, new_key, depth + 1)
+                flattened.update(nested_flattened)
+            elif isinstance(value, list) and not self.preserve_lists:
+                # Flatten lists if not preserving them
+                flattened.update(self._flatten_list(value, new_key, depth))
             else:
+                # Keep the value as is
                 flattened[new_key] = value
 
         return flattened
 
-    def _flatten_array(
-        self,
-        arr: list[Any],
-        prefix: str,
-        depth: int,
-    ) -> dict[str, Any]:
-        """Flatten an array with indexed keys."""
+    def _flatten_list(self, lst: list[Any], prefix: str, depth: int) -> dict[str, Any]:
+        """Flatten a list into indexed keys."""
         flattened = {}
 
-        for i, item in enumerate(arr):
-            indexed_key = f"{prefix}{self.separator}{i}"
+        for i, item in enumerate(lst):
+            new_key = f"{prefix}{self.separator}{i}"
 
-            if isinstance(item, dict):
-                flattened.update(
-                    self._flatten_object(item, indexed_key, depth),
-                )
-            elif isinstance(item, list):
-                flattened.update(self._flatten_array(item, indexed_key, depth))
+            if isinstance(item, dict) and depth < self.max_depth:
+                # Recursively flatten nested dictionaries in list
+                nested_flattened = self._flatten_record(item, new_key, depth + 1)
+                flattened.update(nested_flattened)
             else:
-                flattened[indexed_key] = item
+                flattened[new_key] = item
 
         return flattened
 
-    def _flatten_schema(self, schema: WMSSchema) -> WMSFlattenedSchema:
-        """Flatten a schema structure."""
-        flattened_schema = {}
+    def _unflatten_record(self, record: TOracleWmsRecord) -> TOracleWmsRecord:
+        """Unflatten a single record by expanding dot-notation keys."""
+        unflattened: dict[str, Any] = {}
 
-        for field_name, field_props in schema.items():
-            if isinstance(field_props, dict) and "type" in field_props:
-                if field_props["type"] == "object" and "properties" in field_props:
-                    # Flatten nested object schema
-                    nested_schema = self._flatten_schema(field_props["properties"])
-                    for nested_field, nested_props in nested_schema.items():
-                        flattened_key = f"{field_name}{self.separator}{nested_field}"
-                        flattened_schema[flattened_key] = nested_props
-                elif field_props["type"] == "array" and "items" in field_props:
-                    # Handle array schema flattening
-                    array_key = f"{field_name}{self.separator}*"
-                    flattened_schema[array_key] = field_props["items"]
-                else:
-                    flattened_schema[field_name] = field_props
-            else:
-                flattened_schema[field_name] = field_props
+        for key, value in record.items():
+            self._set_nested_value(unflattened, key, value)
 
-        return flattened_schema
+        return unflattened
 
+    def _set_nested_value(self, target: dict[str, Any], key: str, value: Any) -> None:
+        """Set a nested value in the target dictionary using dot notation.
 
-class FlextOracleWmsDeflattener:
-    """Oracle WMS data deflattener with mandatory capabilities."""
-
-    def __init__(
-        self,
-        *,
-        separator: str = FlextOracleWmsDefaults.FLATTEN_SEPARATOR,
-        restore_types: bool = True,
-        validate_structure: bool = True,
-        strict_mode: bool = False,
-    ) -> None:
-        """Initialize deflattener with configuration."""
-        self.separator = separator
-        self.restore_types = restore_types
-        self.validate_structure = validate_structure
-        self.strict_mode = strict_mode
-
-    def deflattened_record(
-        self,
-        flattened_record: WMSFlattenedRecord,
-        original_schema: WMSSchema | None = None,
-    ) -> FlextResult[Any]:
-        """Deflattened a flattened WMS record."""
-        try:
-            original_record = self._deflattened_object(flattened_record)
-
-            # Restore schema if provided
-            restored_schema = original_schema or {}
-            if original_schema:
-                restored_schema = self._restore_schema(original_schema)
-
-            # Validate structure if enabled
-            if self.validate_structure and original_schema:
-                validation_result = self._validate_restored_structure(
-                    original_record,
-                    restored_schema,
-                )
-                if not validation_result:
-                    return FlextResult.fail(
-                        f"{FlextOracleWmsErrorMessages.DEFLATTENING_FAILED}: "
-                        "Restored structure doesn't match schema",
-                    )
-
-            result = FlextOracleWmsDeflatteningResult(
-                original_record=original_record,
-                restored_schema=restored_schema,
-                metadata={
-                    "deflattening_enabled": True,
-                    "separator": self.separator,
-                    "total_restored_fields": len(original_record),
-                    "original_flattened_fields": len(flattened_record),
-                    "restoration_ratio": (
-                        len(original_record) / len(flattened_record)
-                        if flattened_record
-                        else 0
-                    ),
-                },
-            )
-
-            return FlextResult.ok(result)
-
-        except Exception as e:
-            return FlextResult.fail(
-                f"{FlextOracleWmsErrorMessages.DEFLATTENING_FAILED}: {e}",
-            )
-
-    def deflattened_batch(
-        self,
-        flattened_records: list[WMSFlattenedRecord],
-        original_schema: WMSSchema | None = None,
-    ) -> FlextResult[Any]:
-        """Deflattened a batch of flattened WMS records."""
-        try:
-            results: list[FlextOracleWmsDeflatteningResult] = []
-            for flattened_record in flattened_records:
-                deflattened_result = self.deflattened_record(
-                    flattened_record,
-                    original_schema,
-                )
-                if not deflattened_result.is_success:
-                    return FlextResult.fail(
-                        f"{FlextOracleWmsErrorMessages.DEFLATTENING_FAILED}: "
-                        f"{deflattened_result.error}",
-                    )
-                # Since we know it's successful, data is guaranteed to be not None
-                if deflattened_result.data is None:
-                    return FlextResult.fail(
-                        f"{FlextOracleWmsErrorMessages.DEFLATTENING_FAILED}: "
-                        "Result data is None despite success status",
-                    )
-                results.append(deflattened_result.data)
-
-            return FlextResult.ok(results)
-
-        except Exception as e:
-            return FlextResult.fail(
-                f"{FlextOracleWmsErrorMessages.DEFLATTENING_FAILED}: {e}",
-            )
-
-    def _deflattened_object(self, flattened_obj: dict[str, Any]) -> dict[str, Any]:
-        """Recursively deflattened a flattened object."""
-        result: dict[str, Any] = {}
-
-        for key, value in flattened_obj.items():
-            self._set_nested_value(result, key, value)
-
-        return result
-
-    def _set_nested_value(  # noqa: C901, PLR0912
-        self,
-        obj: dict[str, object],
-        key: str,
-        value: object,
-    ) -> None:
-        """Set a nested value in an object using dot notation."""
-        if self.separator not in key:
-            obj[key] = value
+        Simplified version to avoid complex type issues with dict/list union.
+        """
+        if "." not in key:
+            target[key] = value
             return
 
-        keys = key.split(self.separator)
-        current: dict[str, object] = obj
+        # For complex nested structures with mixed dict/list, we'll use a simpler approach
+        # that just creates nested dicts and converts the final key appropriately
+        parts = key.split(".")
+        current: dict[str, Any] = target
 
-        for i, k in enumerate(keys[:-1]):
-            # Handle array indices
-            if k.isdigit():
-                # Convert current level to array if needed
-                parent_key = keys[i - 1] if i > 0 else None
-                if parent_key and parent_key in current:
-                    if not isinstance(current[parent_key], list):
-                        current[parent_key] = []
-
-                    # Extend array if needed
-                    index = int(k)
-                    parent_list = current[parent_key]
-                    if isinstance(parent_list, list):
-                        while len(parent_list) <= index:
-                            parent_list.append({})
-                        next_current = parent_list[index]
-                        if isinstance(next_current, dict):
-                            current = next_current
-                        else:
-                            # Create new dict and replace
-                            new_dict: dict[str, object] = {}
-                            parent_list[index] = new_dict
-                            current = new_dict
-                    else:
-                        # Fallback if not a list
-                        current[parent_key] = []
-                else:
-                    # This shouldn't happen in well-formed flattened data
-                    if self.strict_mode:
-                        msg = f"Invalid array index structure: {key}"
-                        raise ValueError(msg)
-                    continue
-            else:
-                if k not in current:
-                    # Check if next key is a digit (array index)
-                    if i + 1 < len(keys) - 1 and keys[i + 1].isdigit():
-                        current[k] = []
-                    else:
-                        current[k] = {}
-
-                next_current = current[k]
-                if isinstance(next_current, dict):
-                    current = next_current
-                else:
-                    # Create new dict and replace
-                    replacement_dict: dict[str, object] = {}
-                    current[k] = replacement_dict
-                    current = replacement_dict
+        # Navigate through all parts except the last one, creating dicts
+        for part in parts[:-1]:
+            if part not in current:
+                current[part] = {}
+            if not isinstance(current[part], dict):
+                current[part] = {}
+            current = current[part]
 
         # Set the final value
-        final_key = keys[-1]
-        if final_key.isdigit():
-            # This is an array index - but current should be a dict here
-            # The parent should have been set as an array in the loop above
-            index = int(final_key)
-            parent_key = keys[-2] if len(keys) > 1 else None
-            if parent_key and parent_key in obj:
-                parent_obj: dict[str, object] = obj
-                for k in keys[:-2]:
-                    next_obj = parent_obj[k]
-                    if isinstance(next_obj, dict):
-                        parent_obj = next_obj
-                    else:
-                        # Should not happen with proper structure
-                        current[final_key] = value
-                        return
+        final_part = parts[-1]
+        current[final_part] = value
 
-                if parent_key in parent_obj:
-                    parent_list = parent_obj[parent_key]
-                    if isinstance(parent_list, list):
-                        while len(parent_list) <= index:
-                            parent_list.append(None)
-                        parent_list[index] = value
-                    else:
-                        # Fallback: treat as regular field
-                        current[final_key] = value
-                else:
-                    current[final_key] = value
-            else:
-                current[final_key] = value
-        else:
-            current[final_key] = value
-
-    def _restore_schema(self, flattened_schema: WMSFlattenedSchema) -> WMSSchema:
-        """Restore original schema from flattened schema."""
-        restored_schema: dict[str, Any] = {}
-
-        for field_name, field_props in flattened_schema.items():
-            if self.separator in field_name:
-                # This is a nested field, restore its structure
-                self._set_nested_schema_value(restored_schema, field_name, field_props)
-            else:
-                restored_schema[field_name] = field_props
-
-        return restored_schema
-
-    def _set_nested_schema_value(
+    async def get_flattening_stats(
         self,
-        schema: dict[str, Any],
-        field_path: str,
-        field_props: object,
-    ) -> None:
-        """Set nested schema value using field path."""
-        keys = field_path.split(self.separator)
-        current = schema
+        records: TOracleWmsRecordBatch,
+    ) -> FlextResult[dict[str, Any]]:
+        """Get statistics about data structure complexity.
 
-        for _i, key in enumerate(keys[:-1]):
-            if key not in current:
-                current[key] = {"type": "object", "properties": {}}
+        Args:
+            records: Records to analyze
 
-            if "properties" not in current[key]:
-                current[key]["properties"] = {}
+        Returns:
+            FlextResult with flattening statistics
 
-            current = current[key]["properties"]
-
-        # Set the final field
-        final_key = keys[-1]
-        current[final_key] = field_props
-
-    def _validate_restored_structure(
-        self,
-        restored_record: WMSRecord,
-        original_schema: WMSSchema,
-    ) -> bool:
-        """Validate that restored record matches original schema."""
+        """
         try:
-            # Basic structure validation
-            for field_name, field_props in original_schema.items():
-                if isinstance(field_props, dict) and "type" in field_props:
-                    if (
-                        field_props.get("required", False)
-                        and field_name not in restored_record
-                    ):
-                        return False
+            stats: dict[str, int | float] = {
+                "total_records": len(records),
+                "nested_records": 0,
+                "max_depth": 0,
+                "total_fields": 0,
+                "nested_fields": 0,
+                "list_fields": 0,
+            }
 
-                    if field_name in restored_record:
-                        field_type = field_props["type"]
-                        field_value = restored_record[field_name]
+            for record in records:
+                if isinstance(record, dict):
+                    record_stats = self._analyze_record_structure(record)
+                    stats["nested_records"] += 1 if record_stats["depth"] > 1 else 0
+                    stats["max_depth"] = max(stats["max_depth"], record_stats["depth"])
+                    stats["total_fields"] += record_stats["total_fields"]
+                    stats["nested_fields"] += record_stats["nested_fields"]
+                    stats["list_fields"] += record_stats["list_fields"]
 
-                        # Type validation
-                        if (
-                            field_type == "object" and not isinstance(field_value, dict)
-                        ) or (
-                            field_type == "array"
-                            and not isinstance(
-                                field_value,
-                                list,
-                            )
-                        ):
-                            return False
-                        if (
-                            (
-                                field_type == "string"
-                                and not isinstance(
-                                    field_value,
-                                    str,
-                                )
-                            )
-                            or (
-                                field_type == "number"
-                                and not isinstance(
-                                    field_value,
-                                    (int, float),
-                                )
-                            )
-                            or (
-                                field_type == "boolean"
-                                and not isinstance(
-                                    field_value,
-                                    bool,
-                                )
-                            )
-                        ):
-                            return False
+            # Calculate averages (explicitly handling float results)
+            if stats["total_records"] > 0:
+                avg_fields = stats["total_fields"] / stats["total_records"]
+                nested_percentage = (stats["nested_records"] / stats["total_records"]) * 100
 
-            return True
+                # Update stats with proper types
+                stats["avg_fields_per_record"] = avg_fields
+                stats["nested_percentage"] = nested_percentage
+            else:
+                stats["avg_fields_per_record"] = 0.0
+                stats["nested_percentage"] = 0.0
 
-        except Exception:
-            return False
+            logger.info("Flattening statistics calculated", **stats)
+
+            return FlextResult.ok(stats)
+
+        except Exception as e:
+            logger.exception("Failed to calculate flattening statistics")
+            return FlextResult.fail(f"Statistics calculation failed: {e}")
+
+    def _analyze_record_structure(
+        self, record: TOracleWmsRecord, depth: int = 1
+    ) -> dict[str, int]:
+        """Analyze the structure of a single record."""
+        stats = {
+            "depth": depth,
+            "total_fields": 0,
+            "nested_fields": 0,
+            "list_fields": 0,
+        }
+
+        for value in record.values():
+            stats["total_fields"] += 1
+
+            if isinstance(value, dict):
+                stats["nested_fields"] += 1
+                # Recursively analyze nested structure
+                nested_stats = self._analyze_record_structure(value, depth + 1)
+                stats["depth"] = max(stats["depth"], nested_stats["depth"])
+                stats["total_fields"] += nested_stats["total_fields"]
+                stats["nested_fields"] += nested_stats["nested_fields"]
+                stats["list_fields"] += nested_stats["list_fields"]
+            elif isinstance(value, list):
+                stats["list_fields"] += 1
+                # Analyze list items
+                for item in value:
+                    if isinstance(item, dict):
+                        nested_stats = self._analyze_record_structure(item, depth + 1)
+                        stats["depth"] = max(stats["depth"], nested_stats["depth"])
+                        stats["total_fields"] += nested_stats["total_fields"]
+                        stats["nested_fields"] += nested_stats["nested_fields"]
+                        stats["list_fields"] += nested_stats["list_fields"]
+
+        return stats
 
 
-# Factory functions for easy instantiation
-def flext_oracle_wms_create_flattener(
-    *,
-    enabled: bool = True,
+# Factory function for easy usage
+def flext_oracle_wms_create_data_flattener(
+    separator: str = "_",
     max_depth: int = 5,
-    separator: str = "__",
-    preserve_types: bool = True,
-    preserve_null_values: bool = True,
-    preserve_empty_objects: bool = False,
-    preserve_empty_arrays: bool = False,
-) -> FlextOracleWmsFlattener:
-    """Create a configured Oracle WMS flattener."""
-    return FlextOracleWmsFlattener(
-        enabled=enabled,
-        max_depth=max_depth,
-        separator=separator,
-        preserve_types=preserve_types,
-        preserve_null_values=preserve_null_values,
-        preserve_empty_objects=preserve_empty_objects,
-        preserve_empty_arrays=preserve_empty_arrays,
-    )
-
-
-def flext_oracle_wms_create_deflattener(
     *,
-    separator: str = "__",
-    strict_mode: bool = False,
-    restore_types: bool = True,
-    validate_structure: bool = True,
-) -> FlextOracleWmsDeflattener:
-    """Create a configured Oracle WMS deflattener."""
-    return FlextOracleWmsDeflattener(
-        separator=separator,
-        strict_mode=strict_mode,
-        restore_types=restore_types,
-        validate_structure=validate_structure,
+    preserve_lists: bool = True,
+) -> FlextOracleWmsDataFlattener:
+    """Create data flattener.
+
+    Args:
+        separator: Separator for nested field names
+        max_depth: Maximum nesting depth
+        preserve_lists: Whether to preserve list structures
+
+    Returns:
+        Configured data flattener
+
+    """
+    return FlextOracleWmsDataFlattener(
+        separator=separator, max_depth=max_depth, preserve_lists=preserve_lists
     )
-
-
-# Convenience functions for direct usage
-def flext_oracle_wms_flatten_wms_record(
-    record: WMSRecord,
-    schema: WMSSchema | None = None,
-    *,
-    enabled: bool = True,
-    max_depth: int = 5,
-    separator: str = "__",
-) -> FlextResult[Any]:
-    """Flatten a WMS record with default configuration."""
-    flattener = flext_oracle_wms_create_flattener(
-        enabled=enabled,
-        max_depth=max_depth,
-        separator=separator,
-    )
-    return flattener.flatten_record(record, schema)
-
-
-def flext_oracle_wms_deflattened_wms_record(
-    flattened_record: WMSFlattenedRecord,
-    original_schema: WMSSchema | None = None,
-    *,
-    separator: str = "__",
-    strict_mode: bool = False,
-) -> FlextResult[Any]:
-    """Deflattened a WMS record with default configuration."""
-    deflattener = flext_oracle_wms_create_deflattener(
-        separator=separator,
-        strict_mode=strict_mode,
-    )
-    return deflattener.deflattened_record(flattened_record, original_schema)
-
-
-__all__ = [
-    "FlatteningResult",
-    "FlextOracleWmsDeflattener",
-    "FlextOracleWmsDeflatteningResult",
-    "FlextOracleWmsFlattener",
-    "flext_oracle_wms_create_deflattener",
-    "flext_oracle_wms_create_flattener",
-    "flext_oracle_wms_deflattened_wms_record",
-    "flext_oracle_wms_flatten_wms_record",
-]

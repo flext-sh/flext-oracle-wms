@@ -3,359 +3,542 @@
 Copyright (c) 2025 FLEXT Contributors
 SPDX-License-Identifier: MIT
 
-Thread-safe caching system for Oracle WMS operations with TTL support.
+Thread-safe caching system for Oracle WMS operations using flext-core patterns.
 """
 
 from __future__ import annotations
 
+import asyncio
+import contextlib
 import threading
 import time
-from typing import Any
+from dataclasses import dataclass
+from typing import Any, TypeVar
 
-from flext_core import get_logger
+from flext_core import FlextResult, FlextValueObject, get_logger
 
-# Type aliases for cache values - usando tipos específicos em vez de Any
-CacheValue = dict[str, Any] | list[Any] | str | int | float | bool | None
-
-# Import from flext-core root namespace as required
-
+from flext_oracle_wms.constants import FlextOracleWmsDefaults
 
 logger = get_logger(__name__)
 
+# Type variables for generic cache
+T = TypeVar("T")
+
+# Cache value types - using specific types from Oracle WMS instead of Any
+CacheValueBasic = str | int | float | bool | None
+CacheValueDict = dict[str, CacheValueBasic]
+CacheValueList = list[CacheValueBasic | CacheValueDict]
+CacheValue = CacheValueDict | CacheValueList | CacheValueBasic
+
+
+@dataclass(frozen=True)
+class FlextOracleWmsCacheConfig(FlextValueObject):
+    """Oracle WMS cache configuration using flext-core standards."""
+
+    default_ttl_seconds: int = 3600  # 1 hour
+    max_cache_entries: int = 1000
+    cleanup_interval_seconds: int = 300  # 5 minutes
+    enable_statistics: bool = True
+    enable_async_cleanup: bool = True
+
+    def validate_domain_rules(self) -> FlextResult[None]:
+        """Validate Oracle WMS cache configuration domain rules."""
+        if self.default_ttl_seconds <= 0:
+            return FlextResult.fail("Default TTL must be positive")
+        if self.max_cache_entries <= 0:
+            return FlextResult.fail("Max cache entries must be positive")
+        if self.cleanup_interval_seconds <= 0:
+            return FlextResult.fail("Cleanup interval must be positive")
+        return FlextResult.ok(None)
+
+
+@dataclass(frozen=True)
+class FlextOracleWmsCacheEntry[T](FlextValueObject):
+    """Oracle WMS cache entry with metadata using flext-core standards."""
+
+    key: str
+    value: T
+    timestamp: float
+    ttl_seconds: int
+    access_count: int = 0
+    last_accessed: float = 0.0
+
+    def __post_init__(self) -> None:
+        """Post-initialization to set last_accessed if not provided."""
+        if self.last_accessed == 0.0:
+            object.__setattr__(self, "last_accessed", time.time())
+
+    def validate_domain_rules(self) -> FlextResult[None]:
+        """Validate Oracle WMS cache entry domain rules."""
+        if not self.key:
+            return FlextResult.fail("Cache key cannot be empty")
+        if self.ttl_seconds <= 0:
+            return FlextResult.fail("TTL must be positive")
+        if self.timestamp <= 0:
+            return FlextResult.fail("Timestamp must be positive")
+        if self.access_count < 0:
+            return FlextResult.fail("Access count cannot be negative")
+        return FlextResult.ok(None)
+
+    def is_expired(self) -> bool:
+        """Check if cache entry is expired."""
+        return time.time() > (self.timestamp + self.ttl_seconds)
+
+    def update_access(self) -> FlextOracleWmsCacheEntry[T]:
+        """Update access statistics and return new entry."""
+        return FlextOracleWmsCacheEntry(
+            key=self.key,
+            value=self.value,
+            timestamp=self.timestamp,
+            ttl_seconds=self.ttl_seconds,
+            access_count=self.access_count + 1,
+            last_accessed=time.time(),
+        )
+
+
+@dataclass(frozen=True)
+class FlextOracleWmsCacheStats(FlextValueObject):
+    """Oracle WMS cache statistics using flext-core standards."""
+
+    hits: int = 0
+    misses: int = 0
+    evictions: int = 0
+    expired_entries: int = 0
+    total_entries: int = 0
+    memory_usage_bytes: int = 0
+    last_cleanup: float = 0.0
+
+    def validate_domain_rules(self) -> FlextResult[None]:
+        """Validate Oracle WMS cache statistics domain rules."""
+        if self.hits < 0 or self.misses < 0 or self.evictions < 0:
+            return FlextResult.fail("Statistics counters cannot be negative")
+        if self.expired_entries < 0 or self.total_entries < 0:
+            return FlextResult.fail("Entry counts cannot be negative")
+        if self.memory_usage_bytes < 0:
+            return FlextResult.fail("Memory usage cannot be negative")
+        return FlextResult.ok(None)
+
+    def get_hit_ratio(self) -> float:
+        """Calculate cache hit ratio."""
+        total_requests = self.hits + self.misses
+        return self.hits / total_requests if total_requests > 0 else 0.0
+
+    def update_hit(self) -> FlextOracleWmsCacheStats:
+        """Update hit statistics and return new stats."""
+        return FlextOracleWmsCacheStats(
+            hits=self.hits + 1,
+            misses=self.misses,
+            evictions=self.evictions,
+            expired_entries=self.expired_entries,
+            total_entries=self.total_entries,
+            memory_usage_bytes=self.memory_usage_bytes,
+            last_cleanup=self.last_cleanup,
+        )
+
+    def update_miss(self) -> FlextOracleWmsCacheStats:
+        """Update miss statistics and return new stats."""
+        return FlextOracleWmsCacheStats(
+            hits=self.hits,
+            misses=self.misses + 1,
+            evictions=self.evictions,
+            expired_entries=self.expired_entries,
+            total_entries=self.total_entries,
+            memory_usage_bytes=self.memory_usage_bytes,
+            last_cleanup=self.last_cleanup,
+        )
+
 
 class FlextOracleWmsCacheManager:
-    """Enterprise thread-safe cache manager for Oracle WMS operations.
+    """Enterprise thread-safe cache manager for Oracle WMS using flext-core patterns.
 
     Provides comprehensive caching with TTL, statistics, and cleanup capabilities.
     """
 
-    def __init__(self, config: dict[str, Any]) -> None:
+    def __init__(self, config: FlextOracleWmsCacheConfig) -> None:
         """Initialize cache manager with configuration.
 
         Args:
-            config: Cache configuration dictionary
+            config: Cache configuration
 
         """
         self.config = config
-        self._entity_cache: dict[str, dict[str, Any]] = {}
-        self._schema_cache: dict[str, dict[str, Any]] = {}
-        self._metadata_cache: dict[str, dict[str, Any]] = {}
+        self._entity_cache: dict[str, FlextOracleWmsCacheEntry] = {}
+        self._schema_cache: dict[str, FlextOracleWmsCacheEntry] = {}
+        self._metadata_cache: dict[str, FlextOracleWmsCacheEntry] = {}
         self._cache_lock = threading.RLock()
 
-        # Cache configuration
-        self._default_ttl = config.get("cache_ttl_seconds", 3600)  # 1 hour
-        self._max_cache_size = config.get("max_cache_entries", 1000)
-        self._cleanup_interval = config.get(
-            "cleanup_interval_seconds",
-            300,
-        )  # 5 minutes
+        # Statistics
+        self._stats = FlextOracleWmsCacheStats(last_cleanup=time.time())
 
-        # Cache statistics
-        self._stats = {"hits": 0, "misses": 0, "evictions": 0, "expired": 0}
-
-        # Last cleanup time
-        self._last_cleanup = time.time()
+        # Cleanup task
+        self._cleanup_task: asyncio.Task | None = None
+        self._shutdown_event = asyncio.Event()
 
         logger.info(
-            "FlextOracleWms cache manager initialized with TTL=%d seconds",
-            self._default_ttl,
+            "Oracle WMS cache manager initialized",
+            ttl_seconds=config.default_ttl_seconds,
+            max_entries=config.max_cache_entries,
         )
 
-    def flext_oracle_wms_get_entity(self, key: str) -> CacheValue:
+    async def start(self) -> FlextResult[None]:
+        """Start the cache manager and cleanup task."""
+        try:
+            if self.config.enable_async_cleanup:
+                self._cleanup_task = asyncio.create_task(self._cleanup_loop())
+
+            logger.info("Oracle WMS cache manager started")
+            return FlextResult.ok(None)
+        except Exception as e:
+            logger.exception("Failed to start cache manager")
+            return FlextResult.fail(f"Cache manager startup failed: {e}")
+
+    async def stop(self) -> FlextResult[None]:
+        """Stop the cache manager and cleanup task."""
+        try:
+            self._shutdown_event.set()
+
+            if self._cleanup_task:
+                self._cleanup_task.cancel()
+                with contextlib.suppress(asyncio.CancelledError):
+                    await self._cleanup_task
+
+            # Clear all caches
+            await self.clear_all()
+
+            logger.info("Oracle WMS cache manager stopped")
+            return FlextResult.ok(None)
+        except Exception as e:
+            logger.exception("Failed to stop cache manager")
+            return FlextResult.fail(f"Cache manager stop failed: {e}")
+
+    async def get_entity(self, key: str) -> FlextResult[Any | None]:
         """Get entity from cache with thread safety.
 
         Args:
             key: Cache key for entity
 
         Returns:
-            Cached entity data or None
+            FlextResult containing cached entity data or None
 
         """
-        return self._get_from_cache(self._entity_cache, key, "entity")
+        return await self._get_from_cache(self._entity_cache, key, "entity")
 
-    def flext_oracle_wms_set_entity(
-        self,
-        key: str,
-        value: object,
-        ttl: int | None = None,
-    ) -> bool:
-        """Set entity in cache with TTL.
+    async def set_entity(
+        self, key: str, value: CacheValue, ttl_seconds: int | None = None
+    ) -> FlextResult[bool]:
+        """Set entity in cache with thread safety.
 
         Args:
-            key: Cache key
+            key: Cache key for entity
             value: Entity data to cache
-            ttl: Time-to-live in seconds (uses default if None)
+            ttl_seconds: Optional TTL override
 
         Returns:
-            Success status
+            FlextResult indicating success
 
         """
-        return self._set_in_cache(self._entity_cache, key, value, ttl, "entity")
+        return await self._set_in_cache(
+            self._entity_cache, key, value, ttl_seconds, "entity"
+        )
 
-    def flext_oracle_wms_get_schema(self, key: str) -> CacheValue:
-        """Get schema from cache with thread safety.
+    async def get_schema(self, key: str) -> FlextResult[Any | None]:
+        """Get schema from cache."""
+        return await self._get_from_cache(self._schema_cache, key, "schema")
+
+    async def set_schema(
+        self, key: str, value: CacheValue, ttl_seconds: int | None = None
+    ) -> FlextResult[bool]:
+        """Set schema in cache."""
+        return await self._set_in_cache(
+            self._schema_cache, key, value, ttl_seconds, "schema"
+        )
+
+    async def get_metadata(self, key: str) -> FlextResult[Any | None]:
+        """Get metadata from cache."""
+        return await self._get_from_cache(self._metadata_cache, key, "metadata")
+
+    async def set_metadata(
+        self, key: str, value: CacheValue, ttl_seconds: int | None = None
+    ) -> FlextResult[bool]:
+        """Set metadata in cache."""
+        return await self._set_in_cache(
+            self._metadata_cache, key, value, ttl_seconds, "metadata"
+        )
+
+    async def invalidate_key(self, key: str) -> FlextResult[bool]:
+        """Invalidate a specific key from all caches.
 
         Args:
-            key: Cache key for schema
+            key: Cache key to invalidate
 
         Returns:
-            Cached schema data or None
+            FlextResult indicating if any key was removed
 
         """
-        return self._get_from_cache(self._schema_cache, key, "schema")
+        try:
+            removed = False
 
-    def flext_oracle_wms_set_schema(
-        self,
-        key: str,
-        value: object,
-        ttl: int | None = None,
-    ) -> bool:
-        """Set schema in cache with TTL.
+            with self._cache_lock:
+                # Remove from all cache types
+                for cache in [
+                    self._entity_cache,
+                    self._schema_cache,
+                    self._metadata_cache,
+                ]:
+                    if key in cache:
+                        del cache[key]
+                        removed = True
 
-        Args:
-            key: Cache key
-            value: Schema data to cache
-            ttl: Time-to-live in seconds (uses default if None)
+                if removed:
+                    self._stats = FlextOracleWmsCacheStats(
+                        hits=self._stats.hits,
+                        misses=self._stats.misses,
+                        evictions=self._stats.evictions + 1,
+                        expired_entries=self._stats.expired_entries,
+                        total_entries=self._stats.total_entries - 1,
+                        memory_usage_bytes=self._stats.memory_usage_bytes,
+                        last_cleanup=self._stats.last_cleanup,
+                    )
 
-        Returns:
-            Success status
+            logger.debug("Cache key invalidated", key=key, removed=removed)
+            return FlextResult.ok(removed)
 
-        """
-        return self._set_in_cache(self._schema_cache, key, value, ttl, "schema")
+        except Exception as e:
+            logger.exception("Failed to invalidate cache key", key=key)
+            return FlextResult.fail(f"Cache invalidation failed: {e}")
 
-    def flext_oracle_wms_get_metadata(self, key: str) -> CacheValue:
-        """Get metadata from cache with thread safety.
-
-        Args:
-            key: Cache key for metadata
-
-        Returns:
-            Cached metadata or None
-
-        """
-        return self._get_from_cache(self._metadata_cache, key, "metadata")
-
-    def flext_oracle_wms_set_metadata(
-        self,
-        key: str,
-        value: object,
-        ttl: int | None = None,
-    ) -> bool:
-        """Set metadata in cache with TTL.
-
-        Args:
-            key: Cache key
-            value: Metadata to cache
-            ttl: Time-to-live in seconds (uses default if None)
-
-        Returns:
-            Success status
-
-        """
-        return self._set_in_cache(self._metadata_cache, key, value, ttl, "metadata")
-
-    def flext_oracle_wms_clear_all(self) -> bool:
-        """Clear all caches with thread safety.
-
-        Returns:
-            Success status
-
-        """
+    async def clear_all(self) -> FlextResult[None]:
+        """Clear all caches."""
         try:
             with self._cache_lock:
                 self._entity_cache.clear()
                 self._schema_cache.clear()
                 self._metadata_cache.clear()
-                self._stats = {"hits": 0, "misses": 0, "evictions": 0, "expired": 0}
-                logger.info("All FlextOracleWms caches cleared")
-                return True
-        except Exception:
-            logger.exception("Failed to clear caches")
-            return False
 
-    def flext_oracle_wms_get_stats(self) -> dict[str, Any]:
+                self._stats = FlextOracleWmsCacheStats(last_cleanup=time.time())
+
+            logger.info("All caches cleared")
+            return FlextResult.ok(None)
+
+        except Exception as e:
+            logger.exception("Failed to clear caches")
+            return FlextResult.fail(f"Cache clear failed: {e}")
+
+    async def get_statistics(self) -> FlextResult[FlextOracleWmsCacheStats]:
         """Get cache statistics.
 
         Returns:
-            Dictionary with cache statistics
-
-        """
-        with self._cache_lock:
-            total_requests = self._stats["hits"] + self._stats["misses"]
-            hit_rate = (
-                (self._stats["hits"] / total_requests * 100)
-                if total_requests > 0
-                else 0
-            )
-
-            return {
-                "hit_rate_percent": round(hit_rate, 2),
-                "total_hits": self._stats["hits"],
-                "total_misses": self._stats["misses"],
-                "total_requests": total_requests,
-                "evictions": self._stats["evictions"],
-                "expired_entries": self._stats["expired"],
-                "entity_cache_size": len(self._entity_cache),
-                "schema_cache_size": len(self._schema_cache),
-                "metadata_cache_size": len(self._metadata_cache),
-                "total_cache_size": len(self._entity_cache)
-                + len(self._schema_cache)
-                + len(self._metadata_cache),
-                "max_cache_size": self._max_cache_size,
-                "default_ttl_seconds": self._default_ttl,
-            }
-
-    def flext_oracle_wms_cleanup_expired(self) -> int:
-        """Clean up expired cache entries.
-
-        Returns:
-            Number of expired entries removed
+            FlextResult containing cache statistics
 
         """
         try:
-            current_time = time.time()
-
-            # Only cleanup if interval has passed
-            if current_time - self._last_cleanup < self._cleanup_interval:
-                return 0
-
             with self._cache_lock:
-                expired_count = 0
+                # Update total entries count
+                total_entries = (
+                    len(self._entity_cache)
+                    + len(self._schema_cache)
+                    + len(self._metadata_cache)
+                )
 
-                # Clean entity cache
-                expired_count += self._cleanup_cache(self._entity_cache, current_time)
+                current_stats = FlextOracleWmsCacheStats(
+                    hits=self._stats.hits,
+                    misses=self._stats.misses,
+                    evictions=self._stats.evictions,
+                    expired_entries=self._stats.expired_entries,
+                    total_entries=total_entries,
+                    memory_usage_bytes=self._stats.memory_usage_bytes,
+                    last_cleanup=self._stats.last_cleanup,
+                )
 
-                # Clean schema cache
-                expired_count += self._cleanup_cache(self._schema_cache, current_time)
+            return FlextResult.ok(current_stats)
 
-                # Clean metadata cache
-                expired_count += self._cleanup_cache(self._metadata_cache, current_time)
+        except Exception as e:
+            logger.exception("Failed to get cache statistics")
+            return FlextResult.fail(f"Statistics retrieval failed: {e}")
 
-                self._stats["expired"] += expired_count
-                self._last_cleanup = current_time
-
-                if expired_count > 0:
-                    logger.debug("Cleaned up %d expired cache entries", expired_count)
-
-                return expired_count
-
-        except Exception:
-            logger.exception("Cache cleanup failed")
-            return 0
-
-    def _get_from_cache(
-        self,
-        cache: dict[str, dict[str, Any]],
-        key: str,
-        cache_type: str,
-    ) -> CacheValue:
-        """Get item from specific cache with TTL check."""
+    async def _get_from_cache(
+        self, cache: dict[str, FlextOracleWmsCacheEntry], key: str, cache_type: str
+    ) -> FlextResult[Any | None]:
+        """Get value from specific cache with thread safety."""
         try:
-            # Cleanup expired entries periodically
-            self.flext_oracle_wms_cleanup_expired()
-
             with self._cache_lock:
                 if key not in cache:
-                    self._stats["misses"] += 1
-                    return None
+                    self._stats = self._stats.update_miss()
+                    logger.debug("Cache miss", key=key, cache_type=cache_type)
+                    return FlextResult.ok(None)
 
                 entry = cache[key]
-                current_time = time.time()
 
                 # Check if expired
-                if current_time > entry["expires_at"]:
+                if entry.is_expired():
                     del cache[key]
-                    self._stats["misses"] += 1
-                    self._stats["expired"] += 1
-                    logger.debug("Cache entry expired: %s in %s cache", key, cache_type)
-                    return None
+                    self._stats = FlextOracleWmsCacheStats(
+                        hits=self._stats.hits,
+                        misses=self._stats.misses + 1,
+                        evictions=self._stats.evictions,
+                        expired_entries=self._stats.expired_entries + 1,
+                        total_entries=self._stats.total_entries - 1,
+                        memory_usage_bytes=self._stats.memory_usage_bytes,
+                        last_cleanup=self._stats.last_cleanup,
+                    )
+                    logger.debug("Cache entry expired", key=key, cache_type=cache_type)
+                    return FlextResult.ok(None)
 
-                # Cache hit
-                self._stats["hits"] += 1
-                logger.debug("Cache hit: %s in %s cache", key, cache_type)
-                cached_value: CacheValue = entry["value"]
-                return cached_value
+                # Update access statistics
+                cache[key] = entry.update_access()
+                self._stats = self._stats.update_hit()
 
-        except Exception:
-            logger.exception("Cache get failed for key %s", key)
-            self._stats["misses"] += 1
-            return None
+                logger.debug("Cache hit", key=key, cache_type=cache_type)
+                return FlextResult.ok(entry.value)
 
-    def _set_in_cache(
+        except Exception as e:
+            logger.exception("Failed to get from cache", key=key, cache_type=cache_type)
+            return FlextResult.fail(f"Cache get failed: {e}")
+
+    async def _set_in_cache(
         self,
-        cache: dict[str, dict[str, Any]],
+        cache: dict[str, FlextOracleWmsCacheEntry],
         key: str,
-        value: object,
-        ttl: int | None,
+        value: CacheValue,
+        ttl_seconds: int | None,
         cache_type: str,
-    ) -> bool:
-        """Set item in specific cache with TTL."""
+    ) -> FlextResult[bool]:
+        """Set value in specific cache with thread safety."""
         try:
-            ttl = ttl or self._default_ttl
-            current_time = time.time()
-            expires_at = current_time + ttl
+            ttl = ttl_seconds or self.config.default_ttl_seconds
 
             with self._cache_lock:
-                # Check cache size limit
-                if len(cache) >= self._max_cache_size and key not in cache:
-                    # Evict oldest entry
-                    oldest_key = min(cache.keys(), key=lambda k: cache[k]["created_at"])
-                    del cache[oldest_key]
-                    self._stats["evictions"] += 1
-                    logger.debug(
-                        "Evicted oldest entry: %s from %s cache",
-                        oldest_key,
-                        cache_type,
-                    )
+                # Check if we need to evict entries
+                if len(cache) >= self.config.max_cache_entries:
+                    await self._evict_oldest_entry(cache)
 
-                cache[key] = {
-                    "value": value,
-                    "created_at": current_time,
-                    "expires_at": expires_at,
-                    "ttl": ttl,
-                }
-
-                logger.debug(
-                    "Cached: %s in %s cache (TTL: %d seconds)",
-                    key,
-                    cache_type,
-                    ttl,
+                # Create cache entry
+                entry = FlextOracleWmsCacheEntry(
+                    key=key, value=value, timestamp=time.time(), ttl_seconds=ttl
                 )
-                return True
+
+                cache[key] = entry
+
+                # Update statistics
+                self._stats = FlextOracleWmsCacheStats(
+                    hits=self._stats.hits,
+                    misses=self._stats.misses,
+                    evictions=self._stats.evictions,
+                    expired_entries=self._stats.expired_entries,
+                    total_entries=self._stats.total_entries + 1,
+                    memory_usage_bytes=self._stats.memory_usage_bytes,
+                    last_cleanup=self._stats.last_cleanup,
+                )
+
+            logger.debug("Cache entry set", key=key, cache_type=cache_type, ttl=ttl)
+            return FlextResult.ok(data=True)
+
+        except Exception as e:
+            logger.exception(
+                "Failed to set cache entry", key=key, cache_type=cache_type
+            )
+            return FlextResult.fail(f"Cache set failed: {e}")
+
+    async def _evict_oldest_entry(
+        self, cache: dict[str, FlextOracleWmsCacheEntry]
+    ) -> None:
+        """Evict the oldest entry from cache."""
+        if not cache:
+            return
+
+        # Find oldest entry by timestamp
+        oldest_key = min(cache.keys(), key=lambda k: cache[k].timestamp)
+        del cache[oldest_key]
+
+        self._stats = FlextOracleWmsCacheStats(
+            hits=self._stats.hits,
+            misses=self._stats.misses,
+            evictions=self._stats.evictions + 1,
+            expired_entries=self._stats.expired_entries,
+            total_entries=self._stats.total_entries - 1,
+            memory_usage_bytes=self._stats.memory_usage_bytes,
+            last_cleanup=self._stats.last_cleanup,
+        )
+
+        logger.debug("Cache entry evicted", key=oldest_key)
+
+    async def _cleanup_loop(self) -> None:
+        """Background cleanup loop for expired entries."""
+        logger.info("Cache cleanup loop started")
+
+        while not self._shutdown_event.is_set():
+            try:
+                await asyncio.sleep(self.config.cleanup_interval_seconds)
+                await self._cleanup_expired_entries()
+            except asyncio.CancelledError:
+                break
+            except Exception:
+                logger.exception("Cache cleanup error")
+                await asyncio.sleep(60)  # Wait before retrying
+
+    async def _cleanup_expired_entries(self) -> None:
+        """Clean up expired entries from all caches."""
+        try:
+            expired_count = 0
+            current_time = time.time()
+
+            with self._cache_lock:
+                for cache in [
+                    self._entity_cache,
+                    self._schema_cache,
+                    self._metadata_cache,
+                ]:
+                    expired_keys = [
+                        key
+                        for key, entry in cache.items()
+                        if current_time > (entry.timestamp + entry.ttl_seconds)
+                    ]
+
+                    for key in expired_keys:
+                        del cache[key]
+                        expired_count += 1
+
+                # Update statistics
+                self._stats = FlextOracleWmsCacheStats(
+                    hits=self._stats.hits,
+                    misses=self._stats.misses,
+                    evictions=self._stats.evictions,
+                    expired_entries=self._stats.expired_entries + expired_count,
+                    total_entries=self._stats.total_entries - expired_count,
+                    memory_usage_bytes=self._stats.memory_usage_bytes,
+                    last_cleanup=current_time,
+                )
+
+            if expired_count > 0:
+                logger.info("Cache cleanup completed", expired_entries=expired_count)
 
         except Exception:
-            logger.exception("Cache set failed for key %s", key)
-            return False
-
-    def _cleanup_cache(
-        self,
-        cache: dict[str, dict[str, Any]],
-        current_time: float,
-    ) -> int:
-        """Clean expired entries from a specific cache."""
-        expired_keys = [
-            key for key, entry in cache.items() if current_time > entry["expires_at"]
-        ]
-
-        for key in expired_keys:
-            del cache[key]
-
-        return len(expired_keys)
+            logger.exception("Failed to cleanup expired cache entries")
 
 
+# Factory function for easy usage
 def flext_oracle_wms_create_cache_manager(
-    config: dict[str, Any],
+    entity_ttl: int = FlextOracleWmsDefaults.DEFAULT_CACHE_TTL,
+    schema_ttl: int = FlextOracleWmsDefaults.DEFAULT_CACHE_TTL,
+    metadata_ttl: int = FlextOracleWmsDefaults.DEFAULT_CACHE_TTL,
+    max_size: int = FlextOracleWmsDefaults.MAX_CACHE_SIZE,
 ) -> FlextOracleWmsCacheManager:
-    """Factory function to create cache manager.
+    """Create cache manager.
 
     Args:
-        config: Cache configuration
+        entity_ttl: Entity cache TTL in seconds
+        schema_ttl: Schema cache TTL in seconds
+        metadata_ttl: Metadata cache TTL in seconds
+        max_size: Maximum cache size
 
     Returns:
-        Configured cache manager instance
+        Configured cache manager
 
     """
+    config = FlextOracleWmsCacheConfig(
+        entity_ttl_seconds=entity_ttl,
+        schema_ttl_seconds=schema_ttl,
+        metadata_ttl_seconds=metadata_ttl,
+        max_size=max_size,
+    )
     return FlextOracleWmsCacheManager(config)
-
-
-__all__ = ["FlextOracleWmsCacheManager", "flext_oracle_wms_create_cache_manager"]
