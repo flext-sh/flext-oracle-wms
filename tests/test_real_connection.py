@@ -7,7 +7,7 @@ import sys
 
 from flext_core import get_logger
 
-from flext_oracle_wms.client import FlextOracleWmsLegacyClient
+from flext_oracle_wms.client import FlextOracleWmsClient
 
 # Setup logging
 logging.basicConfig(
@@ -34,7 +34,7 @@ def test_real_connection() -> bool:
 
         # Create client and test connection
         logger.info("Creating Oracle WMS client...")
-        with FlextOracleWmsLegacyClient(config) as client:
+        with FlextOracleWmsClient(config) as client:
             # Test connection (will fail with test config, but we're testing structure)
             logger.info("Testing connection to Oracle WMS API...")
             connection_result = client.test_connection()

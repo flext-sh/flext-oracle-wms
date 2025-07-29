@@ -14,6 +14,9 @@ from typing import Any
 
 from flext_core import get_logger
 
+# Type aliases for cache values - usando tipos específicos em vez de Any
+CacheValue = dict[str, Any] | list[Any] | str | int | float | bool | None
+
 # Import from flext-core root namespace as required
 
 
@@ -58,7 +61,7 @@ class FlextOracleWmsCacheManager:
             self._default_ttl,
         )
 
-    def flext_oracle_wms_get_entity(self, key: str) -> object | None:
+    def flext_oracle_wms_get_entity(self, key: str) -> CacheValue:
         """Get entity from cache with thread safety.
 
         Args:
@@ -89,7 +92,7 @@ class FlextOracleWmsCacheManager:
         """
         return self._set_in_cache(self._entity_cache, key, value, ttl, "entity")
 
-    def flext_oracle_wms_get_schema(self, key: str) -> object | None:
+    def flext_oracle_wms_get_schema(self, key: str) -> CacheValue:
         """Get schema from cache with thread safety.
 
         Args:
@@ -120,7 +123,7 @@ class FlextOracleWmsCacheManager:
         """
         return self._set_in_cache(self._schema_cache, key, value, ttl, "schema")
 
-    def flext_oracle_wms_get_metadata(self, key: str) -> object | None:
+    def flext_oracle_wms_get_metadata(self, key: str) -> CacheValue:
         """Get metadata from cache with thread safety.
 
         Args:
@@ -166,8 +169,8 @@ class FlextOracleWmsCacheManager:
                 self._stats = {"hits": 0, "misses": 0, "evictions": 0, "expired": 0}
                 logger.info("All FlextOracleWms caches cleared")
                 return True
-        except Exception as e:
-            logger.exception("Failed to clear caches: %s", e)
+        except Exception:
+            logger.exception("Failed to clear caches")
             return False
 
     def flext_oracle_wms_get_stats(self) -> dict[str, Any]:
@@ -236,8 +239,8 @@ class FlextOracleWmsCacheManager:
 
                 return expired_count
 
-        except Exception as e:
-            logger.exception("Cache cleanup failed: %s", e)
+        except Exception:
+            logger.exception("Cache cleanup failed")
             return 0
 
     def _get_from_cache(
@@ -245,7 +248,7 @@ class FlextOracleWmsCacheManager:
         cache: dict[str, dict[str, Any]],
         key: str,
         cache_type: str,
-    ) -> object | None:
+    ) -> CacheValue:
         """Get item from specific cache with TTL check."""
         try:
             # Cleanup expired entries periodically
@@ -270,10 +273,11 @@ class FlextOracleWmsCacheManager:
                 # Cache hit
                 self._stats["hits"] += 1
                 logger.debug("Cache hit: %s in %s cache", key, cache_type)
-                return entry["value"]
+                cached_value: CacheValue = entry["value"]
+                return cached_value
 
-        except Exception as e:
-            logger.exception("Cache get failed for key %s: %s", key, e)
+        except Exception:
+            logger.exception("Cache get failed for key %s", key)
             self._stats["misses"] += 1
             return None
 
@@ -319,8 +323,8 @@ class FlextOracleWmsCacheManager:
                 )
                 return True
 
-        except Exception as e:
-            logger.exception("Cache set failed for key %s: %s", key, e)
+        except Exception:
+            logger.exception("Cache set failed for key %s", key)
             return False
 
     def _cleanup_cache(

@@ -7,12 +7,17 @@ Modern Python 3.13 client with flext-core type integration.
 
 from __future__ import annotations
 
+import base64
+import hashlib
 import time
 from concurrent.futures import ThreadPoolExecutor, as_completed
-from datetime import datetime
-from typing import TYPE_CHECKING, Any, Self
+from datetime import UTC, datetime
+from typing import TYPE_CHECKING, Any, Self, cast
 
-from flext_core import get_logger
+from flext_api import FlextApiClient, create_client
+from flext_core import FlextResult, get_logger
+
+from flext_oracle_wms.constants import FlextOracleWmsDefaults, FlextOracleWmsEntityTypes
 
 if TYPE_CHECKING:
     from collections.abc import Generator
@@ -50,6 +55,29 @@ from flext_oracle_wms.models import (
 )
 
 logger = get_logger(__name__)
+
+
+def _raise_auth_error() -> None:
+    """Raise authentication error."""
+    msg = "Authentication failed"
+    raise FlextOracleWmsAuthenticationError(msg)
+
+
+def _raise_permission_error() -> None:
+    """Raise permission error."""
+    msg = "Access forbidden"
+    raise PermissionError(msg)
+
+
+def _handle_response_errors(response: httpx.Response) -> None:
+    """Handle HTTP response errors."""
+    if response.status_code == FlextOracleWmsDefaults.HTTP_UNAUTHORIZED:
+        _raise_auth_error()
+    if response.status_code == FlextOracleWmsDefaults.HTTP_FORBIDDEN:
+        _raise_permission_error()
+    if response.status_code >= FlextOracleWmsDefaults.HTTP_BAD_REQUEST:
+        msg = f"HTTP {response.status_code}: {response.text}"
+        raise FlextOracleWmsApiError(msg)
 
 
 if TYPE_CHECKING:
@@ -92,15 +120,14 @@ class FlextOracleWmsAuth(Auth):
         request: httpx.Request,
     ) -> Generator[httpx.Request, httpx.Response]:
         """Apply Oracle WMS authentication to request."""
-        request.headers["Authorization"] = f"Basic {self._get_basic_auth()}"
+        auth_header = f"Basic {_get_basic_auth(self.username, self.password)}"
+        request.headers["Authorization"] = auth_header
         yield request
 
-    def _get_basic_auth(self) -> str:
-        """Generate basic auth string."""
-        import base64
-
-        credentials = f"{self.username}:{self.password}"
-        return base64.b64encode(credentials.encode()).decode()
+def _get_basic_auth(username: str, password: str) -> str:
+    """Generate basic auth string."""
+    credentials = f"{username}:{password}"
+    return base64.b64encode(credentials.encode()).decode()
 
 
 class FlextOracleWmsClient:
@@ -145,6 +172,28 @@ class FlextOracleWmsClient:
             config.base_url,
         )
 
+    def _create_flext_api_client(self) -> FlextResult[FlextApiClient]:
+        """Create FlextApiClient with proper configuration.
+
+        Returns:
+            FlextResult containing FlextApiClient or error
+
+        """
+        try:
+            config = {
+                "base_url": self.config.base_url,
+                "timeout": self.config.timeout_seconds,
+                "headers": {
+                    "Authorization": f"Basic {_get_basic_auth(
+                        self.config.username, self.config.password
+                    )}"
+                },
+            }
+            client = create_client(config)
+            return FlextResult.ok(client)
+        except Exception as e:
+            return FlextResult.fail(f"Failed to create FlextApi client: {e}")
+
     @property
     def client(self) -> httpx.Client:
         """Get HTTP client instance with Oracle WMS authentication."""
@@ -170,9 +219,10 @@ class FlextOracleWmsClient:
             return
         current_time = time.time()
         # Check requests per minute limit
-        if current_time - self._session_start < 60:
+        time_limit = FlextOracleWmsDefaults.REQUESTS_PER_MINUTE_LIMIT
+        if current_time - self._session_start < time_limit:
             if self._request_count >= self.config.max_requests_per_minute:
-                sleep_time = 60 - (current_time - self._session_start)
+                sleep_time = time_limit - (current_time - self._session_start)
                 logger.warning(
                     "Rate limit reached, sleeping for %.2f seconds",
                     sleep_time,
@@ -192,6 +242,34 @@ class FlextOracleWmsClient:
         self._last_request_time = time.time()
         self._request_count += 1
 
+    def _log_request_details(
+        self,
+        method: str,
+        full_url: str,
+        attempt: int,
+        retries: int,
+        *,
+        request_data: dict[str, Any] | None = None,
+    ) -> None:
+        """Log request details if logging is enabled."""
+        if not self.config.enable_request_logging:
+            return
+
+        logger.debug(
+            "Making %s request to %s (attempt %d/%d)",
+            method, full_url, attempt + 1, retries + 1,
+        )
+        if request_data:
+            logger.debug("Request data: %s", request_data)
+
+    def _log_response_details(self, response: httpx.Response) -> None:
+        """Log response details if logging is enabled."""
+        if not self.config.enable_request_logging:
+            return
+
+        logger.debug("Response status: %d", response.status_code)
+        logger.debug("Response headers: %s", dict(response.headers))
+
     def _make_request(
         self,
         method: str,
@@ -202,94 +280,89 @@ class FlextOracleWmsClient:
     ) -> httpx.Response:
         """Make a request to Oracle WMS API with retry logic."""
         if retries is None:
-            retries = self.config.max_retries
+            retries = cast("WMSRetryAttempts", self.config.max_retries)
         self._apply_rate_limiting()
         full_url = f"{self.config.base_url}{endpoint}"
         for attempt in range(retries + 1):
             try:
-                if self.config.enable_request_logging:
-                    logger.debug(
-                        "Making %s request to %s (attempt %d/%d)",
-                        method,
-                        full_url,
-                        attempt + 1,
-                        retries + 1,
-                    )
-                    if params:
-                        logger.debug("Request params: %s", params)
-                    if json_data:
-                        logger.debug("Request JSON: %s", json_data)
+                # Combine request data for logging
+                request_data = {}
+                if params:
+                    request_data.update({"params": params})
+                if json_data:
+                    request_data.update({"json": json_data})
+
+                self._log_request_details(
+                    method, full_url, attempt, retries, request_data=request_data,
+                )
                 response = self.client.request(
                     method=method,
                     url=full_url,
                     params=params,
                     json=json_data,
                 )
-                if self.config.enable_request_logging:
-                    logger.debug("Response status: %d", response.status_code)
-                    logger.debug("Response headers: %s", dict(response.headers))
+                self._log_response_details(response)
                 # Handle Oracle WMS specific errors
-                if response.status_code == 401:
-                    msg = "Authentication failed"
-                    raise FlextOracleWmsAuthenticationError(msg)
-                if response.status_code == 403:
-                    msg = "Access forbidden"
-                    raise PermissionError(msg)
-                if response.status_code >= 400:
-                    msg = f"HTTP {response.status_code}: {response.text}"
-                    raise FlextOracleWmsApiError(msg)
+                _handle_response_errors(response)
                 response.raise_for_status()
                 return response
-            except httpx.TimeoutException as e:
-                logger.warning(
-                    "Request timeout (attempt %d/%d): %s",
-                    attempt + 1,
-                    retries + 1,
-                    e,
-                )
-                if attempt == retries:
-                    msg = f"Request failed after {retries + 1} attempts"
-                    raise FlextOracleWmsError(msg) from e
-                time.sleep(self.config.retry_delay * (attempt + 1))
-            except httpx.ConnectError as e:
-                logger.warning(
-                    "Connection error (attempt %d/%d): %s",
-                    attempt + 1,
-                    retries + 1,
-                    e,
-                )
-                if attempt == retries:
-                    msg = f"Connection failed after {retries + 1} attempts"
-                    raise FlextOracleWmsError(msg) from e
-                time.sleep(self.config.retry_delay * (attempt + 1))
+            except (httpx.TimeoutException, httpx.ConnectError) as e:
+                self._handle_retryable_error(e, attempt, retries)
             except (FlextOracleWmsAuthenticationError, FlextOracleWmsApiError):
                 # Don't retry authentication or API errors
                 raise
             except Exception as e:
-                logger.warning(
-                    "Unexpected error (attempt %d/%d): %s",
-                    attempt + 1,
-                    retries + 1,
-                    e,
-                )
-                if attempt == retries:
-                    msg = f"Request failed after {retries + 1} attempts"
-                    raise FlextOracleWmsError(msg) from e
-                time.sleep(self.config.retry_delay * (attempt + 1))
+                self._handle_retryable_error(e, attempt, retries)
         msg = f"Request failed after {retries + 1} attempts"
         raise FlextOracleWmsError(msg)
 
+    def _handle_retryable_error(
+        self,
+        error: Exception,
+        attempt: int,
+        retries: int,
+    ) -> None:
+        """Handle retryable errors with logging and retry logic."""
+        error_type = type(error).__name__
+        logger.warning(
+            "%s (attempt %d/%d): %s",
+            error_type,
+            attempt + 1,
+            retries + 1,
+            error,
+        )
+        if attempt == retries:
+            msg = f"Request failed after {retries + 1} attempts"
+            raise FlextOracleWmsError(msg) from error
+        time.sleep(self.config.retry_delay * (attempt + 1))
+
     def test_connection(self) -> bool:
+        """Test connection to Oracle WMS API.
+
+        Returns:
+            True if connection successful, False otherwise
+
+        """
         try:
             # Test with a lightweight discovery call
-            self._make_request("GET", self.config.wms_endpoint_base, retries=1)
+            self._make_request(
+                "GET", 
+                self.config.wms_endpoint_base, 
+                retries=cast("WMSRetryAttempts", 1)
+            )
             logger.info("Connection test successful")
             return True
-        except Exception as e:
-            logger.exception("Connection test failed: %s", e)
+        except Exception:
+            logger.exception("Connection test failed")
             return False
 
     def discover_entities(self) -> FlextOracleWmsDiscoveryResult:
+        """Discover available entities from Oracle WMS API.
+
+        Returns:
+            Discovery result with available entities
+
+        """
         try:
             logger.info("Starting entity discovery from Oracle WMS API")
             response = self._make_request("GET", self.config.wms_endpoint_base)
@@ -329,14 +402,14 @@ class FlextOracleWmsClient:
             return FlextOracleWmsDiscoveryResult(
                 entities=entities,
                 total_count=len(entities),
-                timestamp=datetime.now().isoformat(),
+                timestamp=datetime.now(UTC).isoformat(),
             )
         except Exception as e:
-            logger.exception("Entity discovery failed: %s", e)
+            logger.exception("Entity discovery failed")
             return FlextOracleWmsDiscoveryResult(
                 entities=[],
                 total_count=0,
-                timestamp=datetime.now().isoformat(),
+                timestamp=datetime.now(UTC).isoformat(),
                 has_errors=True,
                 errors=[str(e)],
             )
@@ -370,7 +443,146 @@ class FlextOracleWmsClient:
             ),
         ]
 
-    def get_entity_data(  # noqa: C901
+    def get_entity_data_safe(
+        self,
+        entity_name: str,
+        params: dict[str, Any] | None = None,
+        page_size: int | None = None,
+        *,
+        enable_flattening: bool = True,
+    ) -> FlextResult[FlextOracleWmsResponse]:
+        """Get entity data with FlextResult error handling.
+
+        Args:
+            entity_name: Oracle WMS entity name
+            params: Query parameters
+            page_size: Page size for pagination
+            enable_flattening: Whether to flatten nested data
+
+        Returns:
+            FlextResult containing FlextOracleWmsResponse
+
+        """
+        try:
+            # Convert page_size parameter to required type
+            typed_page_size: WMSPageSize | None = page_size
+            response = self.get_entity_data(
+                cast("OracleWMSEntityType", entity_name),
+                params,
+                typed_page_size,
+            )
+
+            # Apply flattening if requested
+            if enable_flattening and response.records:
+                flattener = FlextOracleWmsFlattener()
+                flattened_records: list[dict[str, Any]] = []
+                for record in response.records:
+                    flattened = self._flatten_single_record(
+                        record, flattener, len(flattened_records), entity_name
+                    )
+                    flattened_records.append(flattened)
+                response.records = flattened_records
+
+            return FlextResult.ok(response)
+        except Exception as e:
+            error_msg = f"Failed to get data for entity {entity_name}: {e}"
+            logger.exception(error_msg)
+            return FlextResult.fail(error_msg)
+
+    def get_entity_data_with_flext_api(
+        self,
+        entity_name: str,
+        params: dict[str, Any] | None = None,
+    ) -> FlextResult[dict[str, Any]]:
+        """Get entity data using FlextApi client.
+
+        Args:
+            entity_name: Oracle WMS entity name
+            params: Query parameters
+
+        Returns:
+            FlextResult containing response data
+
+        """
+        # Create FlextApi client
+        client_result = self._create_flext_api_client()
+        if not client_result.is_success:
+            return FlextResult.fail(f"Client creation failed: {client_result.error}")
+
+        # Get validated entity name
+        try:
+            validated_name = self.validate_entity_name(entity_name)
+        except ValueError as e:
+            return FlextResult.fail(str(e))
+
+        # Build endpoint
+        endpoint = self.build_api_url(validated_name)
+
+        # Make request using FlextApi client
+        try:
+            # Since FlextApi client is async, we can't use it directly in sync method
+            # Use the existing _make_request for now, but properly typed
+            response = self._make_request("GET", endpoint, params=params)
+            data = response.json()
+            if isinstance(data, dict):
+                return FlextResult.ok(data)
+            return FlextResult.fail("Response is not a dictionary")
+        except Exception as e:
+            return FlextResult.fail(f"Request failed: {e}")
+
+    async def get_entity_data_async(
+        self,
+        entity_name: str,
+        params: dict[str, Any] | None = None,
+    ) -> FlextResult[dict[str, Any]]:
+        """Get entity data using async FlextApi client.
+
+        Args:
+            entity_name: Oracle WMS entity name
+            params: Query parameters
+
+        Returns:
+            FlextResult containing response data
+
+        """
+        # Create FlextApi client
+        client_result = self._create_flext_api_client()
+        if not client_result.is_success:
+            return FlextResult.fail(f"Client creation failed: {client_result.error}")
+
+        client = client_result.data
+        if client is None:
+            return FlextResult.fail("FlextApi client creation returned None")
+
+        # Get validated entity name
+        try:
+            validated_name = self.validate_entity_name(entity_name)
+        except ValueError as e:
+            return FlextResult.fail(str(e))
+
+        # Build endpoint
+        endpoint = self.build_api_url(validated_name)
+
+        # Make request using FlextApi client
+        try:
+            # Convert params to proper type for FlextApi
+            api_params = dict(params) if params else {}
+
+            response_result = await client.get(endpoint, params=api_params)
+            if not response_result.is_success:
+                return FlextResult.fail(f"API request failed: {response_result.error}")
+
+            response = response_result.data
+            if response is None:
+                return FlextResult.fail("API response data is None")
+            data = response.json()
+            if isinstance(data, dict):
+                return FlextResult.ok(data)
+            return FlextResult.fail("Response is not a dictionary")
+        except Exception as e:
+            return FlextResult.fail(f"Request failed: {e}")
+
+    def get_entity_data(
         self,
         entity_name: OracleWMSEntityType,
         params: dict[str, Any] | None = None,
@@ -387,114 +599,184 @@ class FlextOracleWmsClient:
 
         """
         endpoint = self.config.get_entity_endpoint(entity_name)
+        request_params = self._build_request_params(params, page_size)
+
+        try:
+            logger.info("Fetching data for entity: %s", entity_name)
+            response = self._make_request("GET", endpoint, params=request_params)
+            data = response.json()
+
+            records = self._extract_records_from_response(data, entity_name)
+            processed_records = self._apply_flattening_if_enabled(records, entity_name)
+
+            return self._create_success_response(processed_records)
+
+        except Exception:
+            logger.exception("Failed to get data for entity %s", entity_name)
+            return self._create_error_response()
+
+    def _build_request_params(
+        self,
+        params: dict[str, Any] | None,
+        page_size: WMSPageSize | None,
+    ) -> dict[str, Any]:
+        """Build request parameters for entity data requests."""
         request_params = self.config.get_entity_params()
         if params:
             request_params.update(params)
         if page_size:
             request_params["page_size"] = min(page_size, self.config.batch_size)
-        try:
-            logger.info("Fetching data for entity: %s", entity_name)
-            response = self._make_request("GET", endpoint, params=request_params)
-            data = response.json()
-            # Handle different response formats
-            records: list[Any] = []
-            if isinstance(data, list):
-                records = data
-            elif isinstance(data, dict):
-                records_data = data.get(
-                    "data",
-                    data.get("results", data.get("records", [])),
-                )
-                records = records_data if isinstance(records_data, list) else []
-            else:
-                logger.warning(
-                    "Unexpected response format for %s: %s",
-                    entity_name,
-                    type(data),
-                )
-                records = []
-            logger.info(
-                "Retrieved %d records for entity: %s",
-                len(records),
+        return request_params
+
+    def _extract_records_from_response(
+        self,
+        data: dict[str, Any] | list[dict[str, Any]],
+        entity_name: str,
+    ) -> list[dict[str, Any]]:
+        """Extract records from different response formats."""
+        records: list[dict[str, Any]] = []
+        if isinstance(data, list):
+            records = data
+        elif isinstance(data, dict):
+            records_data = data.get(
+                "data",
+                data.get("results", data.get("records", [])),
+            )
+            records = records_data if isinstance(records_data, list) else []
+        else:
+            logger.warning(
+                "Unexpected response format for %s: %s",
                 entity_name,
+                type(data),
             )
-            # Apply dynamic flattening if enabled (MANDATORY for Oracle WMS)
-            flattening_enabled = getattr(self.config, "flattening_enabled", True)
-            if flattening_enabled and records:
-                logger.info(
-                    "Applying dynamic flattening to %d records for entity: %s",
-                    len(records),
-                    entity_name,
-                )
-                # Initialize flattener with Oracle WMS standards
-                flattener = FlextOracleWmsFlattener(
-                    enabled=True,
-                    max_depth=5,  # Oracle WMS standard depth
-                    separator="__",  # Oracle WMS standard separator
-                    preserve_empty_arrays=False,
-                )
-                # Flatten each record dynamically
-                flattened_records = []
-                for i, record in enumerate(records):
-                    if isinstance(record, dict):
-                        flatten_result = flattener.flatten_record(record)
-                        if flatten_result.success:
-                            # Extract the flattened record from the result data
-                            flattening_data = flatten_result.data
-                            if flattening_data is None:
-                                logger.warning(
-                                    "Flattening result data is None for record %d",
-                                    i,
-                                )
-                                flattened_records.append(record)
-                                continue
-                            flattened_record = flattening_data["flattened_record"]
-                            flattened_records.append(flattened_record)
-                            # Log first record transformation for debugging
-                            if i == 0:
-                                original_fields = len(record)
-                                flattened_fields = len(flattened_record)
-                                logger.info(
-                                    "🔄 Flattened sample record: %d -> %d fields",
-                                    original_fields,
-                                    flattened_fields,
-                                )
-                        else:
-                            logger.warning(
-                                "Failed to flatten record %d for entity %s: %s",
-                                i,
-                                entity_name,
-                                flatten_result.error,
-                            )
-                            # Use original record if flattening fails
-                            flattened_records.append(record)
-                    else:
-                        # Non-dict records pass through unchanged
-                        flattened_records.append(record)
-                records = flattened_records
-                logger.info(
-                    "✅ Successfully flattened %d records for entity: %s",
-                    len(records),
-                    entity_name,
-                )
-            # Return WMSResponse object with processed records
-            return FlextOracleWmsResponse(
-                data=records,
-                records=records,
-                total_count=len(records),
-                page_size=self.config.batch_size,
-                has_more=len(records) == self.config.batch_size,
+            records = []
+
+        logger.info(
+            "Retrieved %d records for entity: %s",
+            len(records),
+            entity_name,
+        )
+        return records
+
+    def _apply_flattening_if_enabled(
+        self,
+        records: list[Any],
+        entity_name: str,
+    ) -> list[Any]:
+        """Apply flattening to records if enabled."""
+        flattening_enabled = getattr(self.config, "flattening_enabled", True)
+        if not flattening_enabled or not records:
+            return records
+
+        logger.info(
+            "Applying dynamic flattening to %d records for entity: %s",
+            len(records),
+            entity_name,
+        )
+
+        flattener = self._create_flattener()
+        flattened_records = self._flatten_records_batch(records, flattener, entity_name)
+
+        logger.info(
+            "✅ Successfully flattened %d records for entity: %s",
+            len(flattened_records),
+            entity_name,
+        )
+        return flattened_records
+
+    def _create_flattener(self) -> FlextOracleWmsFlattener:
+        """Create Oracle WMS flattener with standard configuration."""
+        return FlextOracleWmsFlattener(
+            enabled=True,
+            max_depth=5,  # Oracle WMS standard depth
+            separator="__",  # Oracle WMS standard separator
+            preserve_empty_arrays=False,
+        )
+
+    def _flatten_records_batch(
+        self,
+        records: list[Any],
+        flattener: FlextOracleWmsFlattener,
+        entity_name: str,
+    ) -> list[Any]:
+        """Flatten a batch of records with error handling."""
+        flattened_records = []
+        for i, record in enumerate(records):
+            flattened_record = self._flatten_single_record(
+                record, flattener, i, entity_name,
             )
-        except Exception as e:
-            logger.exception("Failed to get data for entity %s: %s", entity_name, e)
-            # Return empty WMSResponse for error cases
-            return FlextOracleWmsResponse(
-                data=[],
-                records=[],
-                total_count=0,
-                page_size=self.config.batch_size,
-                has_more=False,
+            flattened_records.append(flattened_record)
+        return flattened_records
+
+    def _flatten_single_record(
+        self,
+        record: dict[str, Any],
+        flattener: FlextOracleWmsFlattener,
+        index: int,
+        entity_name: str,
+    ) -> dict[str, Any]:
+        """Flatten a single record with error handling."""
+        if not isinstance(record, dict):
+            logger.warning(
+                "Record %d for entity %s is not a dict, returning empty dict",
+                index, entity_name
             )
+            return {}
+
+        flatten_result = flattener.flatten_record(record)
+        if not flatten_result.is_success:
+            logger.warning(
+                "Failed to flatten record %d for entity %s: %s",
+                index,
+                entity_name,
+                flatten_result.error,
+            )
+            return record
+
+        flattening_data = flatten_result.data
+        if flattening_data is None:
+            logger.warning(
+                "Flattening result data is None for record %d",
+                index,
+            )
+            return record
+
+        flattened_record_data = flattening_data["flattened_record"]
+        flattened_record: dict[str, Any] = (
+            flattened_record_data if isinstance(flattened_record_data, dict) else {}
+        )
+
+        # Log first record transformation for debugging
+        if index == 0:
+            original_fields = len(record)
+            flattened_fields = len(flattened_record)
+            logger.info(
+                "🔄 Flattened sample record: %d -> %d fields",
+                original_fields,
+                flattened_fields,
+            )
+
+        return flattened_record
+
+    def _create_success_response(self, records: list[Any]) -> FlextOracleWmsResponse:
+        """Create successful response object."""
+        return FlextOracleWmsResponse(
+            data=records,
+            records=records,
+            total_count=len(records),
+            page_size=self.config.batch_size,
+            has_more=len(records) == self.config.batch_size,
+        )
+
+    def _create_error_response(self) -> FlextOracleWmsResponse:
+        """Create error response object."""
+        return FlextOracleWmsResponse(
+            data=[],
+            records=[],
+            total_count=0,
+            page_size=self.config.batch_size,
+            has_more=False,
+        )
 
     def write_entity_data(
         self,
@@ -537,7 +819,10 @@ class FlextOracleWmsClient:
                         try:
                             get_endpoint = f"{endpoint}/{record['id']}"
                             get_response = self._make_request("GET", get_endpoint)
-                            if get_response.status_code == 200:
+                            if (
+                                get_response.status_code
+                                == FlextOracleWmsDefaults.HTTP_OK
+                            ):
                                 original_data = get_response.json()
                         except Exception as e:
                             logger.warning(
@@ -588,7 +873,7 @@ class FlextOracleWmsClient:
             )
             return results
         except Exception as e:
-            logger.exception("Write operation failed for entity %s: %s", entity_name, e)
+            logger.exception("Write operation failed for entity %s", entity_name)
             # Return error results dict for write operation
             return {
                 "total_records": len(records),
@@ -644,8 +929,8 @@ class FlextOracleWmsClient:
                 }
             logger.info("Retrieved metadata for entity: %s", entity_name)
             return metadata
-        except Exception as e:
-            logger.exception("Failed to get metadata for entity %s: %s", entity_name, e)
+        except Exception:
+            logger.exception("Failed to get metadata for entity %s", entity_name)
             # Return fallback metadata
             return {
                 "entity_name": entity_name,
@@ -668,9 +953,6 @@ class FlextOracleWmsClient:
             ValueError: If entity name is invalid
 
         """
-        # Import here to avoid circular import
-        from flext_oracle_wms.constants import FlextOracleWmsEntityTypes
-
         # Check if entity name is valid
         if entity_name not in FlextOracleWmsEntityTypes.ALL_ENTITIES:
             msg = (
@@ -680,8 +962,6 @@ class FlextOracleWmsClient:
             raise ValueError(msg)
 
         # Safe to cast after validation since we've confirmed it's a valid literal value
-        from typing import cast
-
         validated_name = cast("OracleWMSEntityType", entity_name)
         logger.debug("Validated entity name: %s", validated_name)
         return validated_name
@@ -777,8 +1057,8 @@ class FlextOracleWmsClient:
                         results[name] = data
                     else:
                         failed_entities.append(name)
-                except Exception as e:
-                    logger.exception("Failed to process entity %s: %s", entity_name, e)
+                except Exception:
+                    logger.exception("Failed to process entity %s", entity_name)
                     failed_entities.append(entity_name)
 
         logger.info(
@@ -814,14 +1094,49 @@ class FlextOracleWmsClient:
             Dictionary with batch operation results
 
         """
-        # Implement real bulk post with parallelization and rollback
+        try:
+            validated_name = self.validate_entity_name(entity_name)
+            batch_config = self._prepare_bulk_operation_config(records, batch_size)
+            batches = self._create_record_batches(records, batch_config["batch_size"])
+
+            results = self._initialize_bulk_results(records)
+            return self._execute_bulk_post_batches(
+                validated_name, batches, batch_config["max_workers"], results,
+            )
+
+        except ValueError as e:
+            return self._create_bulk_error_response(e, records)
+
+    def _prepare_bulk_operation_config(
+        self,
+        records: list[dict[str, Any]],
+        batch_size: int | None,
+    ) -> dict[str, Any]:
+        """Prepare configuration for bulk operations."""
         batch_size_value = batch_size or self.config.batch_size
         max_workers = min(
             max(1, len(records) // batch_size_value),
             self.config.pool_size,
         )
+        return {
+            "batch_size": batch_size_value,
+            "max_workers": max_workers,
+        }
 
-        results: dict[str, Any] = {
+    def _create_record_batches(
+        self,
+        records: list[dict[str, Any]],
+        batch_size: int,
+    ) -> list[list[dict[str, Any]]]:
+        """Create batches from records list."""
+        return [
+            records[i : i + batch_size]
+            for i in range(0, len(records), batch_size)
+        ]
+
+    def _initialize_bulk_results(self, records: list[dict[str, Any]]) -> dict[str, Any]:
+        """Initialize results structure for bulk operations."""
+        return {
             "total_records": len(records),
             "successful_batches": 0,
             "failed_batches": 0,
@@ -830,103 +1145,116 @@ class FlextOracleWmsClient:
             "failed_records": [],
         }
 
-        try:
-            # Validate entity name first
-            validated_name = self.validate_entity_name(entity_name)
-
-            # Create batches
-            batches = [
-                records[i : i + batch_size_value]
-                for i in range(0, len(records), batch_size_value)
-            ]
-
-            def process_batch(
-                batch_data: tuple[int, list[dict[str, Any]]],
-            ) -> dict[str, Any]:
-                """Process a single batch with detailed tracking."""
-                batch_index, batch = batch_data
-                batch_result = {
-                    "batch_index": batch_index,
-                    "batch_size": len(batch),
-                    "successful": 0,
-                    "failed": 0,
-                    "errors": [],
-                }
-
-                try:
-                    write_result = self.write_entity_data(
-                        validated_name,
-                        batch,
-                        "insert",
-                    )
-                    batch_result.update(write_result)
-                    logger.debug(
-                        "Batch %d completed: %d successful, %d failed",
-                        batch_index,
-                        batch_result["successful"],
-                        batch_result["failed"],
-                    )
-                except Exception as e:
-                    batch_result["failed"] = len(batch)
-                    errors_list = batch_result["errors"]
-                    if isinstance(errors_list, list):
-                        errors_list.append(f"Batch processing failed: {e}")
-                    logger.exception("Batch %d failed completely: %s", batch_index, e)
-
-                return batch_result
-
-            # Execute parallel batch processing
-            with ThreadPoolExecutor(max_workers=max_workers) as executor:
-                # Submit all batch tasks
-                future_to_batch = {
-                    executor.submit(process_batch, (i, batch)): i
-                    for i, batch in enumerate(batches)
-                }
-
-                # Collect results as they complete
-                for future in as_completed(future_to_batch):
-                    batch_index = future_to_batch[future]
-                    try:
-                        batch_result = future.result()
-
-                        batch_results_list = results["batch_results"]
-                        if isinstance(batch_results_list, list):
-                            batch_results_list.append(batch_result)
-
-                        # Track successful and failed batches
-                        if batch_result["successful"] > 0:
-                            current_successful = results["successful_batches"]
-                            if isinstance(current_successful, int):
-                                results["successful_batches"] = current_successful + 1
-
-                        if batch_result["failed"] > 0:
-                            current_failed = results["failed_batches"]
-                            if isinstance(current_failed, int):
-                                results["failed_batches"] = current_failed + 1
-
-                    except Exception as e:
-                        logger.exception(
-                            "Failed to process batch %d result: %s",
-                            batch_index,
-                            e,
-                        )
-                        current_failed = results["failed_batches"]
-                        if isinstance(current_failed, int):
-                            results["failed_batches"] = current_failed + 1
-
-            logger.info(
-                "Bulk post completed: %d batches successful, %d failed",
-                results["successful_batches"],
-                results["failed_batches"],
-            )
-
-            return results
-        except ValueError as e:
-            return {
-                "error": str(e),
-                "total_records": len(records),
-                "successful_batches": 0,
+    def _execute_bulk_post_batches(
+        self,
+        entity_name: str,
+        batches: list[list[dict[str, Any]]],
+        max_workers: int,
+        results: dict[str, Any],
+    ) -> dict[str, Any]:
+        """Execute bulk post operations with parallel processing."""
+        with ThreadPoolExecutor(max_workers=max_workers) as executor:
+            future_to_batch = {
+                executor.submit(self._process_post_batch, entity_name, i, batch): i
+                for i, batch in enumerate(batches)
             }
+
+            self._collect_bulk_post_results(future_to_batch, results)
+
+        logger.info(
+            "Bulk post completed: %d batches successful, %d failed",
+            results["successful_batches"],
+            results["failed_batches"],
+        )
+        return results
+
+    def _process_post_batch(
+        self,
+        entity_name: str,
+        batch_index: int,
+        batch: list[dict[str, Any]],
+    ) -> dict[str, Any]:
+        """Process a single batch for posting."""
+        batch_result = {
+            "batch_index": batch_index,
+            "batch_size": len(batch),
+            "successful": 0,
+            "failed": 0,
+            "errors": [],
+        }
+
+        try:
+            write_result = self.write_entity_data(
+                cast("OracleWMSEntityType", entity_name), batch, "insert"
+            )
+            batch_result.update(write_result)
+            logger.debug(
+                "Batch %d completed: %d successful, %d failed",
+                batch_index,
+                batch_result["successful"],
+                batch_result["failed"],
+            )
+        except Exception as e:
+            batch_result["failed"] = len(batch)
+            errors_list = batch_result["errors"]
+            if isinstance(errors_list, list):
+                errors_list.append(f"Batch processing failed: {e}")
+            logger.exception("Batch %d failed completely", batch_index)
+
+        return batch_result
+
+    def _collect_bulk_post_results(
+        self,
+        future_to_batch: dict[Any, int],
+        results: dict[str, Any],
+    ) -> None:
+        """Collect results from parallel batch processing."""
+        for future in as_completed(future_to_batch):
+            batch_index = future_to_batch[future]
+            try:
+                batch_result = future.result()
+
+                batch_results_list = results["batch_results"]
+                if isinstance(batch_results_list, list):
+                    batch_results_list.append(batch_result)
+
+                self._update_batch_counters(results, batch_result)
+
+            except Exception:
+                logger.exception("Failed to process batch %d result", batch_index)
+                self._increment_failed_batches(results)
+
+    def _update_batch_counters(
+        self,
+        results: dict[str, Any],
+        batch_result: dict[str, Any],
+    ) -> None:
+        """Update success/failure counters for batches."""
+        if batch_result["successful"] > 0:
+            current_successful = results["successful_batches"]
+            if isinstance(current_successful, int):
+                results["successful_batches"] = current_successful + 1
+
+        if batch_result["failed"] > 0:
+            self._increment_failed_batches(results)
+
+    def _increment_failed_batches(self, results: dict[str, Any]) -> None:
+        """Increment failed batches counter."""
+        current_failed = results["failed_batches"]
+        if isinstance(current_failed, int):
+            results["failed_batches"] = current_failed + 1
+
+    def _create_bulk_error_response(
+        self,
+        error: Exception,
+        records: list[dict[str, Any]],
+    ) -> dict[str, Any]:
+        """Create error response for bulk operations."""
+        return {
+            "error": str(error),
+            "total_records": len(records),
+            "successful_batches": 0,
+        }
 
     def bulk_update_records(
         self,
@@ -949,36 +1277,43 @@ class FlextOracleWmsClient:
             Dictionary with batch update results
 
         """
-        # Implement real bulk update with parallelization
-        batch_size_value = batch_size or self.config.batch_size
-        max_workers = min(
-            max(1, len(records) // batch_size_value),
-            self.config.pool_size,
-        )
-
-        results: dict[str, Any] = {
-            "total_records": len(records),
-            "successful_updates": 0,
-            "failed_updates": 0,
-            "batch_results": [],
-            "validation_errors": [],
-        }
-
         try:
-            # Validate entity name first
             validated_name = self.validate_entity_name(entity_name)
 
-            # Pre-validate all records have ID field
-            invalid_records = []
-            for i, record in enumerate(records):
-                if id_field not in record:
-                    invalid_records.append(
-                        f"Record {i} missing required ID field '{id_field}'",
-                    )
+            # Validate records have required ID field
+            validation_result = self._validate_update_records(records, id_field)
+            if validation_result["has_errors"]:
+                error_response = validation_result["error_response"]
+                return error_response if isinstance(error_response, dict) else {}
 
-            if invalid_records:
-                results["validation_errors"] = invalid_records
-                return {
+            batch_config = self._prepare_bulk_operation_config(records, batch_size)
+            batches = self._create_record_batches(records, batch_config["batch_size"])
+
+            results = self._initialize_bulk_update_results(records)
+            return self._execute_bulk_update_batches(
+                validated_name, batches, batch_config["max_workers"], results,
+            )
+
+        except ValueError as e:
+            return self._create_bulk_update_error_response(e, records)
+
+    def _validate_update_records(
+        self,
+        records: list[dict[str, Any]],
+        id_field: str,
+    ) -> dict[str, Any]:
+        """Validate that all records have required ID field."""
+        invalid_records = []
+        for i, record in enumerate(records):
+            if id_field not in record:
+                invalid_records.append(
+                    f"Record {i} missing required ID field '{id_field}'",
+                )
+
+        if invalid_records:
+            return {
+                "has_errors": True,
+                "error_response": {
                     "error": (
                         f"Validation failed: {len(invalid_records)} "
                         "records missing ID field"
@@ -986,120 +1321,149 @@ class FlextOracleWmsClient:
                     "total_records": len(records),
                     "successful_updates": 0,
                     "validation_errors": invalid_records,
-                }
-
-            # Create batches
-            batches = [
-                records[i : i + batch_size_value]
-                for i in range(0, len(records), batch_size_value)
-            ]
-
-            def process_update_batch(
-                batch_data: tuple[int, list[dict[str, Any]]],
-            ) -> dict[str, Any]:
-                """Process a single update batch with detailed tracking."""
-                batch_index, batch = batch_data
-                batch_result = {
-                    "batch_index": batch_index,
-                    "batch_size": len(batch),
-                    "successful": 0,
-                    "failed": 0,
-                    "errors": [],
-                }
-
-                try:
-                    write_result = self.write_entity_data(
-                        validated_name,
-                        batch,
-                        "update",
-                    )
-                    batch_result.update(write_result)
-                    logger.debug(
-                        "Update batch %d completed: %d successful, %d failed",
-                        batch_index,
-                        batch_result["successful"],
-                        batch_result["failed"],
-                    )
-                except Exception as e:
-                    batch_result["failed"] = len(batch)
-                    errors_list = batch_result["errors"]
-                    if isinstance(errors_list, list):
-                        errors_list.append(f"Batch update failed: {e}")
-                    logger.exception(
-                        "Update batch %d failed completely: %s",
-                        batch_index,
-                        e,
-                    )
-
-                return batch_result
-
-            # Execute parallel batch processing
-            with ThreadPoolExecutor(max_workers=max_workers) as executor:
-                # Submit all batch tasks
-                future_to_batch = {
-                    executor.submit(process_update_batch, (i, batch)): i
-                    for i, batch in enumerate(batches)
-                }
-
-                # Collect results as they complete
-                for future in as_completed(future_to_batch):
-                    batch_index = future_to_batch[future]
-                    try:
-                        batch_result = future.result()
-
-                        batch_results_list = results["batch_results"]
-                        if isinstance(batch_results_list, list):
-                            batch_results_list.append(batch_result)
-
-                        # Accumulate successful and failed updates
-                        successful_count = batch_result.get("successful", 0)
-                        failed_count = batch_result.get("failed", 0)
-                        current_successful = results["successful_updates"]
-                        current_failed = results["failed_updates"]
-
-                        if isinstance(current_successful, int) and isinstance(
-                            successful_count,
-                            int,
-                        ):
-                            results["successful_updates"] = (
-                                current_successful + successful_count
-                            )
-                        if isinstance(current_failed, int) and isinstance(
-                            failed_count,
-                            int,
-                        ):
-                            results["failed_updates"] = current_failed + failed_count
-
-                    except Exception as e:
-                        logger.exception(
-                            "Failed to process update batch %d result: %s",
-                            batch_index,
-                            e,
-                        )
-                        current_failed = results["failed_updates"]
-                        if isinstance(current_failed, int):
-                            # Add the entire batch as failed
-                            batch_size = (
-                                len(batches[batch_index])
-                                if batch_index < len(batches)
-                                else batch_size_value
-                            )
-                            results["failed_updates"] = current_failed + batch_size
-
-            logger.info(
-                "Bulk update completed: %d successful, %d failed out of %d records",
-                results["successful_updates"],
-                results["failed_updates"],
-                len(records),
-            )
-
-            return results
-        except ValueError as e:
-            return {
-                "error": str(e),
-                "total_records": len(records),
-                "successful_updates": 0,
+                },
             }
+
+        return {"has_errors": False}
+
+    def _initialize_bulk_update_results(
+        self,
+        records: list[dict[str, Any]],
+    ) -> dict[str, Any]:
+        """Initialize results structure for bulk update operations."""
+        return {
+            "total_records": len(records),
+            "successful_updates": 0,
+            "failed_updates": 0,
+            "batch_results": [],
+            "validation_errors": [],
+        }
+
+    def _execute_bulk_update_batches(
+        self,
+        entity_name: str,
+        batches: list[list[dict[str, Any]]],
+        max_workers: int,
+        results: dict[str, Any],
+    ) -> dict[str, Any]:
+        """Execute bulk update operations with parallel processing."""
+        with ThreadPoolExecutor(max_workers=max_workers) as executor:
+            future_to_batch = {
+                executor.submit(self._process_update_batch, entity_name, i, batch): i
+                for i, batch in enumerate(batches)
+            }
+
+            self._collect_bulk_update_results(future_to_batch, results, batches)
+
+        logger.info(
+            "Bulk update completed: %d successful, %d failed out of %d records",
+            results["successful_updates"],
+            results["failed_updates"],
+            results["total_records"],
+        )
+        return results
+
+    def _process_update_batch(
+        self,
+        entity_name: str,
+        batch_index: int,
+        batch: list[dict[str, Any]],
+    ) -> dict[str, Any]:
+        """Process a single batch for updating."""
+        batch_result = {
+            "batch_index": batch_index,
+            "batch_size": len(batch),
+            "successful": 0,
+            "failed": 0,
+            "errors": [],
+        }
+
+        try:
+            write_result = self.write_entity_data(
+                cast("OracleWMSEntityType", entity_name), batch, "update"
+            )
+            batch_result.update(write_result)
+            logger.debug(
+                "Update batch %d completed: %d successful, %d failed",
+                batch_index,
+                batch_result["successful"],
+                batch_result["failed"],
+            )
+        except Exception as e:
+            batch_result["failed"] = len(batch)
+            errors_list = batch_result["errors"]
+            if isinstance(errors_list, list):
+                errors_list.append(f"Batch update failed: {e}")
+            logger.exception("Update batch %d failed completely", batch_index)
+
+        return batch_result
+
+    def _collect_bulk_update_results(
+        self,
+        future_to_batch: dict[Any, int],
+        results: dict[str, Any],
+        batches: list[list[dict[str, Any]]],
+    ) -> None:
+        """Collect results from parallel update batch processing."""
+        for future in as_completed(future_to_batch):
+            batch_index = future_to_batch[future]
+            try:
+                batch_result = future.result()
+
+                batch_results_list = results["batch_results"]
+                if isinstance(batch_results_list, list):
+                    batch_results_list.append(batch_result)
+
+                self._accumulate_update_counters(results, batch_result)
+
+            except Exception:
+                logger.exception("Failed to process update batch %d result", batch_index)
+                self._handle_failed_update_batch(results, batches, batch_index)
+
+    def _accumulate_update_counters(
+        self,
+        results: dict[str, Any],
+        batch_result: dict[str, Any],
+    ) -> None:
+        """Accumulate successful and failed update counters."""
+        successful_count = batch_result.get("successful", 0)
+        failed_count = batch_result.get("failed", 0)
+        current_successful = results["successful_updates"]
+        current_failed = results["failed_updates"]
+
+        if isinstance(current_successful, int) and isinstance(successful_count, int):
+            results["successful_updates"] = current_successful + successful_count
+
+        if isinstance(current_failed, int) and isinstance(failed_count, int):
+            results["failed_updates"] = current_failed + failed_count
+
+    def _handle_failed_update_batch(
+        self,
+        results: dict[str, Any],
+        batches: list[list[dict[str, Any]]],
+        batch_index: int,
+    ) -> None:
+        """Handle failed update batch by adding entire batch as failed."""
+        current_failed = results["failed_updates"]
+        if isinstance(current_failed, int):
+            batch_size = (
+                len(batches[batch_index])
+                if batch_index < len(batches)
+                else self.config.batch_size
+            )
+            results["failed_updates"] = current_failed + batch_size
+
+    def _create_bulk_update_error_response(
+        self,
+        error: Exception,
+        records: list[dict[str, Any]],
+    ) -> dict[str, Any]:
+        """Create error response for bulk update operations."""
+        return {
+            "error": str(error),
+            "total_records": len(records),
+            "successful_updates": 0,
+        }
 
     def validate_bulk_operations_integration(self) -> dict[str, Any]:
         """Validate that bulk operations can integrate with existing methods.
@@ -1111,8 +1475,32 @@ class FlextOracleWmsClient:
             Dictionary with validation results
 
         """
-        validation_results: dict[str, Any] = {
-            "timestamp": datetime.now().isoformat(),
+        validation_results = self._initialize_validation_results()
+
+        try:
+            self._validate_client_and_config(validation_results)
+            self._validate_method_availability(validation_results)
+            self._validate_entity_operations(validation_results)
+            self._validate_connection(validation_results)
+            self._validate_configuration_consistency(validation_results)
+            self._determine_overall_status(validation_results)
+
+            logger.info(
+                "Bulk operations integration validation completed: %s",
+                validation_results["overall_status"],
+            )
+            return validation_results
+
+        except Exception as e:
+            validation_results["errors"].append(f"Validation process failed: {e}")
+            validation_results["overall_status"] = "error"
+            logger.exception("Integration validation failed")
+            return validation_results
+
+    def _initialize_validation_results(self) -> dict[str, Any]:
+        """Initialize the validation results structure."""
+        return {
+            "timestamp": datetime.now(UTC).isoformat(),
             "client_status": "unknown",
             "config_validation": False,
             "method_availability": {},
@@ -1123,100 +1511,86 @@ class FlextOracleWmsClient:
             "warnings": [],
         }
 
-        try:
-            # 1. Validate client and config
-            validation_results["client_status"] = (
-                "active" if self._client is not None else "inactive"
+    def _validate_client_and_config(self, validation_results: dict[str, Any]) -> None:
+        """Validate client and basic configuration."""
+        validation_results["client_status"] = (
+            "active" if self._client is not None else "inactive"
+        )
+        validation_results["config_validation"] = (
+            hasattr(self.config, "base_url") and hasattr(self.config, "pool_size")
+        )
+
+    def _validate_method_availability(self, validation_results: dict[str, Any]) -> None:
+        """Validate that required methods are available."""
+        required_methods = [
+            "validate_entity_name",
+            "get_entity_data",
+            "write_entity_data",
+            "_make_request",
+            "get_connection_info",
+        ]
+
+        for method_name in required_methods:
+            method_exists = hasattr(self, method_name) and callable(
+                getattr(self, method_name),
             )
-            validation_results["config_validation"] = hasattr(
-                self.config,
-                "base_url",
-            ) and hasattr(self.config, "pool_size")
-
-            # 2. Check method availability
-            required_methods = [
-                "validate_entity_name",
-                "get_entity_data",
-                "write_entity_data",
-                "_make_request",
-                "get_connection_info",
-            ]
-
-            for method_name in required_methods:
-                method_exists = hasattr(self, method_name) and callable(
-                    getattr(self, method_name),
+            validation_results["method_availability"][method_name] = method_exists
+            if not method_exists:
+                validation_results["errors"].append(
+                    f"Required method {method_name} not available",
                 )
-                validation_results["method_availability"][method_name] = method_exists
-                if not method_exists:
-                    validation_results["errors"].append(
-                        f"Required method {method_name} not available",
-                    )
 
-            # 3. Test entity validation with known entities
-            test_entities = ["allocation", "order_hdr", "inventory"]
-            for entity in test_entities:
-                try:
-                    validated = self.validate_entity_name(entity)
-                    validation_results["entity_validation"][entity] = (
-                        validated == entity
-                    )
-                except Exception as e:
-                    validation_results["entity_validation"][entity] = False
-                    validation_results["warnings"].append(
-                        f"Entity validation failed for {entity}: {e}",
-                    )
-
-            # 4. Test connection (if possible)
+    def _validate_entity_operations(self, validation_results: dict[str, Any]) -> None:
+        """Validate entity operations with known entities."""
+        test_entities = ["allocation", "order_hdr", "inventory"]
+        for entity in test_entities:
             try:
-                connection_test = self.test_connection()
-                validation_results["connection_test"] = connection_test
-                if not connection_test:
-                    validation_results["warnings"].append(
-                        "Connection test failed - bulk operations may fail",
-                    )
+                validated = self.validate_entity_name(entity)
+                validation_results["entity_validation"][entity] = (validated == entity)
             except Exception as e:
-                validation_results["connection_test"] = False
-                validation_results["errors"].append(f"Connection test error: {e}")
+                validation_results["entity_validation"][entity] = False
+                validation_results["warnings"].append(
+                    f"Entity validation failed for {entity}: {e}",
+                )
 
-            # 5. Check configuration consistency
-            config_issues = []
-            if not hasattr(self.config, "batch_size") or self.config.batch_size <= 0:
-                config_issues.append("Invalid batch_size configuration")
-            if not hasattr(self.config, "pool_size") or self.config.pool_size <= 0:
-                config_issues.append("Invalid pool_size configuration")
-
-            if config_issues:
-                validation_results["errors"].extend(config_issues)
-
-            # 6. Determine overall status
-            all_methods_available = all(
-                validation_results["method_availability"].values(),
-            )
-            config_valid = validation_results["config_validation"]
-            some_entities_valid = any(validation_results["entity_validation"].values())
-
-            if all_methods_available and config_valid and some_entities_valid:
-                if validation_results["connection_test"]:
-                    validation_results["overall_status"] = "ready"
-                else:
-                    validation_results["overall_status"] = "ready_offline"
-            elif all_methods_available and config_valid:
-                validation_results["overall_status"] = "partial"
-            else:
-                validation_results["overall_status"] = "failed"
-
-            logger.info(
-                "Bulk operations integration validation completed: %s",
-                validation_results["overall_status"],
-            )
-
-            return validation_results
-
+    def _validate_connection(self, validation_results: dict[str, Any]) -> None:
+        """Validate connection status."""
+        try:
+            connection_test = self.test_connection()
+            validation_results["connection_test"] = connection_test
+            if not connection_test:
+                validation_results["warnings"].append(
+                    "Connection test failed - bulk operations may fail",
+                )
         except Exception as e:
-            validation_results["errors"].append(f"Validation process failed: {e}")
-            validation_results["overall_status"] = "error"
-            logger.exception("Integration validation failed: %s", e)
-            return validation_results
+            validation_results["connection_test"] = False
+            validation_results["errors"].append(f"Connection test error: {e}")
+
+    def _validate_configuration_consistency(self, validation_results: dict[str, Any]) -> None:
+        """Validate configuration consistency."""
+        config_issues = []
+        if not hasattr(self.config, "batch_size") or self.config.batch_size <= 0:
+            config_issues.append("Invalid batch_size configuration")
+        if not hasattr(self.config, "pool_size") or self.config.pool_size <= 0:
+            config_issues.append("Invalid pool_size configuration")
+
+        if config_issues:
+            validation_results["errors"].extend(config_issues)
+
+    def _determine_overall_status(self, validation_results: dict[str, Any]) -> None:
+        """Determine the overall validation status."""
+        all_methods_available = all(validation_results["method_availability"].values())
+        config_valid = validation_results["config_validation"]
+        some_entities_valid = any(validation_results["entity_validation"].values())
+
+        if all_methods_available and config_valid and some_entities_valid:
+            validation_results["overall_status"] = (
+                "ready" if validation_results["connection_test"] else "ready_offline"
+            )
+        elif all_methods_available and config_valid:
+            validation_results["overall_status"] = "partial"
+        else:
+            validation_results["overall_status"] = "failed"
 
     def _get_cached_entity_data(
         self,
@@ -1234,7 +1608,6 @@ class FlextOracleWmsClient:
 
         """
         # Create cache key from entity name and params
-        import hashlib
 
         params_str = str(sorted((params or {}).items()))
         cache_key = (
@@ -1272,8 +1645,6 @@ class FlextOracleWmsClient:
         cache_enabled = getattr(self.config, "enable_cache", False)
         if not cache_enabled:
             return
-
-        import hashlib
 
         params_str = str(sorted((params or {}).items()))
         cache_key = (
@@ -1356,7 +1727,7 @@ class FlextOracleWmsClient:
             "entity_name": entity_name,
             "operation_data": operation_data,
             "original_data": original_data,
-            "timestamp": datetime.now().isoformat(),
+            "timestamp": datetime.now(UTC).isoformat(),
             "status": "pending",
         }
 
@@ -1416,123 +1787,24 @@ class FlextOracleWmsClient:
             Dictionary with rollback results
 
         """
-        rollback_results: dict[str, Any] = {
-            "total_rollbacks": len(successful_operations),
-            "successful_rollbacks": 0,
-            "failed_rollbacks": 0,
-            "rollback_errors": [],
-            "rollback_type": operation_type,
-        }
+        rollback_results = self._initialize_rollback_results(
+            successful_operations, operation_type,
+        )
 
         try:
-            # Validate entity name
             validated_name = self.validate_entity_name(entity_name)
+            rollback_config = self._determine_rollback_strategy(operation_type)
 
-            # Determine rollback operation based on original operation type
-            if operation_type == "insert":
-                # For inserts, we need to delete the created records
-                rollback_operation = "delete"
-                id_field = "id"  # Assume records have ID field
-            elif operation_type == "update":
-                # For updates, use tracked original values
-                rollback_operation = "restore"
-                id_field = "id"
-            elif operation_type == "delete":
-                # For deletes, recreate records using tracked data
-                rollback_operation = "recreate"
-                id_field = "id"
-            else:
-                rollback_results["rollback_errors"].append(
-                    f"Unknown operation type: {operation_type}",
-                )
+            if "error" in rollback_config:
+                rollback_results["rollback_errors"].append(rollback_config["error"])
                 return rollback_results
 
-            # Process rollback operations
-            for operation in successful_operations:
-                try:
-                    # Handle different rollback operation types
-                    if rollback_operation == "delete" and id_field in operation:
-                        # Rollback insert by deleting created record
-                        record_id = operation[id_field]
-                        api_version = getattr(self.config, "api_version", "v10")
-                        endpoint = (
-                            f"/wms/lgfapi/{api_version}/entity/{validated_name}/"
-                            f"{record_id}"
-                        )
-
-                        response = self.client.delete(endpoint)
-                        response.raise_for_status()
-
-                        rollback_results["successful_rollbacks"] += 1
-                        logger.debug(
-                            "Rolled back %s operation for record %s",
-                            operation_type,
-                            record_id,
-                        )
-
-                    elif (
-                        rollback_operation == "restore" and "original_data" in operation
-                    ):
-                        # Rollback update by restoring original values
-                        original_data = operation["original_data"]
-                        if original_data and id_field in original_data:
-                            record_id = original_data[id_field]
-                            api_version = getattr(self.config, "api_version", "v10")
-                            endpoint = (
-                                f"/wms/lgfapi/{api_version}/entity/{validated_name}/"
-                                f"{record_id}"
-                            )
-
-                            response = self.client.put(endpoint, json=original_data)
-                            response.raise_for_status()
-
-                            rollback_results["successful_rollbacks"] += 1
-                            logger.debug(
-                                "Restored original data for record %s",
-                                record_id,
-                            )
-                        else:
-                            rollback_results["failed_rollbacks"] += 1
-                            rollback_results["rollback_errors"].append(
-                                "Missing original data for update rollback: "
-                                f"{operation}",
-                            )
-
-                    elif (
-                        rollback_operation == "recreate"
-                        and "operation_data" in operation
-                    ):
-                        # Rollback delete by recreating the record
-                        recreate_data = operation["operation_data"]
-                        api_version = getattr(self.config, "api_version", "v10")
-                        endpoint = f"/wms/lgfapi/{api_version}/entity/{validated_name}"
-
-                        response = self.client.post(endpoint, json=recreate_data)
-                        response.raise_for_status()
-
-                        rollback_results["successful_rollbacks"] += 1
-                        logger.debug(
-                            "Recreated deleted record for entity %s",
-                            validated_name,
-                        )
-
-                    else:
-                        rollback_results["failed_rollbacks"] += 1
-                        rollback_results["rollback_errors"].append(
-                            f"Cannot rollback {rollback_operation} operation: "
-                            f"{operation}",
-                        )
-
-                except Exception as e:
-                    rollback_results["failed_rollbacks"] += 1
-                    rollback_results["rollback_errors"].append(
-                        f"Rollback failed for {operation}: {e}",
-                    )
-                    logger.exception(
-                        "Rollback failed for operation %s: %s",
-                        operation,
-                        e,
-                    )
+            self._execute_rollback_operations(
+                successful_operations,
+                validated_name,
+                rollback_config,
+                rollback_results,
+            )
 
             logger.info(
                 "Rollback completed: %d successful, %d failed out of %d operations",
@@ -1540,13 +1812,177 @@ class FlextOracleWmsClient:
                 rollback_results["failed_rollbacks"],
                 rollback_results["total_rollbacks"],
             )
-
             return rollback_results
 
         except Exception as e:
+            rollback_results["failed_rollbacks"] = len(successful_operations)
             rollback_results["rollback_errors"].append(f"Rollback process failed: {e}")
-            logger.exception("Rollback process failed: %s", e)
+            logger.exception("Bulk rollback operation failed")
             return rollback_results
+
+    def _initialize_rollback_results(
+        self,
+        successful_operations: list[dict[str, Any]],
+        operation_type: str,
+    ) -> dict[str, Any]:
+        """Initialize rollback results structure."""
+        return {
+            "total_rollbacks": len(successful_operations),
+            "successful_rollbacks": 0,
+            "failed_rollbacks": 0,
+            "rollback_errors": [],
+            "rollback_type": operation_type,
+        }
+
+    def _determine_rollback_strategy(self, operation_type: str) -> dict[str, str]:
+        """Determine rollback strategy based on operation type."""
+        if operation_type == "insert":
+            return {"rollback_operation": "delete", "id_field": "id"}
+        if operation_type == "update":
+            return {"rollback_operation": "restore", "id_field": "id"}
+        if operation_type == "delete":
+            return {"rollback_operation": "recreate", "id_field": "id"}
+        return {"error": f"Unknown operation type: {operation_type}"}
+
+    def _execute_rollback_operations(
+        self,
+        successful_operations: list[dict[str, Any]],
+        validated_name: str,
+        rollback_config: dict[str, str],
+        rollback_results: dict[str, Any],
+    ) -> None:
+        """Execute rollback operations for all successful operations."""
+        rollback_operation = rollback_config["rollback_operation"]
+        id_field = rollback_config["id_field"]
+
+        for operation in successful_operations:
+            try:
+                self._execute_single_rollback(
+                    operation, validated_name, rollback_operation, id_field, rollback_results,
+                )
+            except Exception as e:
+                rollback_results["failed_rollbacks"] += 1
+                rollback_results["rollback_errors"].append(
+                    f"Rollback failed for {operation}: {e}",
+                )
+                logger.exception("Rollback failed for operation %s", operation)
+
+    def _execute_single_rollback(
+        self,
+        operation: dict[str, Any],
+        validated_name: str,
+        rollback_operation: str,
+        id_field: str,
+        rollback_results: dict[str, Any],
+    ) -> None:
+        """Execute a single rollback operation."""
+        if rollback_operation == "delete":
+            self._rollback_insert_operation(
+                operation, validated_name, id_field, rollback_results,
+            )
+        elif rollback_operation == "restore":
+            self._rollback_update_operation(
+                operation, validated_name, id_field, rollback_results,
+            )
+        elif rollback_operation == "recreate":
+            self._rollback_delete_operation(
+                operation, validated_name, rollback_results,
+            )
+        else:
+            rollback_results["failed_rollbacks"] += 1
+            rollback_results["rollback_errors"].append(
+                f"Cannot rollback {rollback_operation} operation: {operation}",
+            )
+
+    def _rollback_insert_operation(
+        self,
+        operation: dict[str, Any],
+        validated_name: str,
+        id_field: str,
+        rollback_results: dict[str, Any],
+    ) -> None:
+        """Rollback insert by deleting created record."""
+        if id_field in operation:
+            record_id = operation[id_field]
+            endpoint = self._build_record_endpoint(validated_name, record_id)
+
+            response = self.client.delete(endpoint)
+            response.raise_for_status()
+
+            rollback_results["successful_rollbacks"] += 1
+            logger.debug("Rolled back insert operation for record %s", record_id)
+        else:
+            self._handle_rollback_failure(
+                rollback_results, f"Missing {id_field} in operation: {operation}",
+            )
+
+    def _rollback_update_operation(
+        self,
+        operation: dict[str, Any],
+        validated_name: str,
+        id_field: str,
+        rollback_results: dict[str, Any],
+    ) -> None:
+        """Rollback update by restoring original values."""
+        if "original_data" in operation:
+            original_data = operation["original_data"]
+            if original_data and id_field in original_data:
+                record_id = original_data[id_field]
+                endpoint = self._build_record_endpoint(validated_name, record_id)
+
+                response = self.client.put(endpoint, json=original_data)
+                response.raise_for_status()
+
+                rollback_results["successful_rollbacks"] += 1
+                logger.debug("Restored original data for record %s", record_id)
+            else:
+                self._handle_rollback_failure(
+                    rollback_results, f"Missing original data for update rollback: {operation}",
+                )
+        else:
+            self._handle_rollback_failure(
+                rollback_results, f"Missing original_data in operation: {operation}",
+            )
+
+    def _rollback_delete_operation(
+        self,
+        operation: dict[str, Any],
+        validated_name: str,
+        rollback_results: dict[str, Any],
+    ) -> None:
+        """Rollback delete by recreating the record."""
+        if "operation_data" in operation:
+            recreate_data = operation["operation_data"]
+            endpoint = self._build_entity_endpoint(validated_name)
+
+            response = self.client.post(endpoint, json=recreate_data)
+            response.raise_for_status()
+
+            rollback_results["successful_rollbacks"] += 1
+            logger.debug("Recreated deleted record for entity %s", validated_name)
+        else:
+            self._handle_rollback_failure(
+                rollback_results, f"Missing operation_data for recreate: {operation}",
+            )
+
+    def _build_record_endpoint(self, entity_name: str, record_id: str) -> str:
+        """Build endpoint for specific record operations."""
+        api_version = getattr(self.config, "api_version", "v10")
+        return f"/wms/lgfapi/{api_version}/entity/{entity_name}/{record_id}"
+
+    def _build_entity_endpoint(self, entity_name: str) -> str:
+        """Build endpoint for entity operations."""
+        api_version = getattr(self.config, "api_version", "v10")
+        return f"/wms/lgfapi/{api_version}/entity/{entity_name}"
+
+    def _handle_rollback_failure(
+        self,
+        rollback_results: dict[str, Any],
+        error_message: str,
+    ) -> None:
+        """Handle rollback failure by updating results."""
+        rollback_results["failed_rollbacks"] += 1
+        rollback_results["rollback_errors"].append(error_message)
 
     def bulk_rollback_tracked_operations(
         self,

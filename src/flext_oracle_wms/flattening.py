@@ -363,7 +363,7 @@ class FlextOracleWmsDeflattener:
             return
 
         keys = key.split(self.separator)
-        current = obj
+        current: dict[str, object] = obj
 
         for i, k in enumerate(keys[:-1]):
             # Handle array indices
@@ -376,10 +376,21 @@ class FlextOracleWmsDeflattener:
 
                     # Extend array if needed
                     index = int(k)
-                    while len(current[parent_key]) <= index:
-                        current[parent_key].append({})
-
-                    current = current[parent_key][index]
+                    parent_list = current[parent_key]
+                    if isinstance(parent_list, list):
+                        while len(parent_list) <= index:
+                            parent_list.append({})
+                        next_current = parent_list[index]
+                        if isinstance(next_current, dict):
+                            current = next_current
+                        else:
+                            # Create new dict and replace
+                            new_dict: dict[str, object] = {}
+                            parent_list[index] = new_dict
+                            current = new_dict
+                    else:
+                        # Fallback if not a list
+                        current[parent_key] = []
                 else:
                     # This shouldn't happen in well-formed flattened data
                     if self.strict_mode:
@@ -393,7 +404,15 @@ class FlextOracleWmsDeflattener:
                         current[k] = []
                     else:
                         current[k] = {}
-                current = current[k]
+
+                next_current = current[k]
+                if isinstance(next_current, dict):
+                    current = next_current
+                else:
+                    # Create new dict and replace
+                    replacement_dict: dict[str, object] = {}
+                    current[k] = replacement_dict
+                    current = replacement_dict
 
         # Set the final value
         final_key = keys[-1]
@@ -403,18 +422,26 @@ class FlextOracleWmsDeflattener:
             index = int(final_key)
             parent_key = keys[-2] if len(keys) > 1 else None
             if parent_key and parent_key in obj:
-                parent_obj = obj
+                parent_obj: dict[str, object] = obj
                 for k in keys[:-2]:
-                    parent_obj = parent_obj[k]
-                if parent_key in parent_obj and isinstance(
-                    parent_obj[parent_key],
-                    list,
-                ):
-                    while len(parent_obj[parent_key]) <= index:
-                        parent_obj[parent_key].append(None)
-                    parent_obj[parent_key][index] = value
+                    next_obj = parent_obj[k]
+                    if isinstance(next_obj, dict):
+                        parent_obj = next_obj
+                    else:
+                        # Should not happen with proper structure
+                        current[final_key] = value
+                        return
+
+                if parent_key in parent_obj:
+                    parent_list = parent_obj[parent_key]
+                    if isinstance(parent_list, list):
+                        while len(parent_list) <= index:
+                            parent_list.append(None)
+                        parent_list[index] = value
+                    else:
+                        # Fallback: treat as regular field
+                        current[final_key] = value
                 else:
-                    # Fallback: treat as regular field
                     current[final_key] = value
             else:
                 current[final_key] = value
@@ -525,14 +552,20 @@ def flext_oracle_wms_create_flattener(
     enabled: bool = True,
     max_depth: int = 5,
     separator: str = "__",
-    **kwargs: object,
+    preserve_types: bool = True,
+    preserve_null_values: bool = True,
+    preserve_empty_objects: bool = False,
+    preserve_empty_arrays: bool = False,
 ) -> FlextOracleWmsFlattener:
     """Create a configured Oracle WMS flattener."""
     return FlextOracleWmsFlattener(
         enabled=enabled,
         max_depth=max_depth,
         separator=separator,
-        **kwargs,
+        preserve_types=preserve_types,
+        preserve_null_values=preserve_null_values,
+        preserve_empty_objects=preserve_empty_objects,
+        preserve_empty_arrays=preserve_empty_arrays,
     )
 
 
@@ -540,13 +573,15 @@ def flext_oracle_wms_create_deflattener(
     *,
     separator: str = "__",
     strict_mode: bool = False,
-    **kwargs: object,
+    restore_types: bool = True,
+    validate_structure: bool = True,
 ) -> FlextOracleWmsDeflattener:
     """Create a configured Oracle WMS deflattener."""
     return FlextOracleWmsDeflattener(
         separator=separator,
         strict_mode=strict_mode,
-        **kwargs,
+        restore_types=restore_types,
+        validate_structure=validate_structure,
     )
 
 
@@ -554,20 +589,32 @@ def flext_oracle_wms_create_deflattener(
 def flext_oracle_wms_flatten_wms_record(
     record: WMSRecord,
     schema: WMSSchema | None = None,
-    **flattener_kwargs: object,
+    *,
+    enabled: bool = True,
+    max_depth: int = 5,
+    separator: str = "__",
 ) -> FlextResult[Any]:
     """Flatten a WMS record with default configuration."""
-    flattener = flext_oracle_wms_create_flattener(**flattener_kwargs)
+    flattener = flext_oracle_wms_create_flattener(
+        enabled=enabled,
+        max_depth=max_depth,
+        separator=separator,
+    )
     return flattener.flatten_record(record, schema)
 
 
 def flext_oracle_wms_deflattened_wms_record(
     flattened_record: WMSFlattenedRecord,
     original_schema: WMSSchema | None = None,
-    **deflattener_kwargs: object,
+    *,
+    separator: str = "__",
+    strict_mode: bool = False,
 ) -> FlextResult[Any]:
     """Deflattened a WMS record with default configuration."""
-    deflattener = flext_oracle_wms_create_deflattener(**deflattener_kwargs)
+    deflattener = flext_oracle_wms_create_deflattener(
+        separator=separator,
+        strict_mode=strict_mode,
+    )
     return deflattener.deflattened_record(flattened_record, original_schema)
 
 

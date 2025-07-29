@@ -9,13 +9,13 @@ Advanced entity discovery system with multiple endpoint support and caching.
 from __future__ import annotations
 
 import re
-from datetime import datetime
+from datetime import UTC, datetime
 from typing import TYPE_CHECKING, Any
 
 # Import from flext-core root namespace as required
 from flext_core import FlextResult, get_logger
 
-from flext_oracle_wms.constants import FlextOracleWmsEntityTypes
+from flext_oracle_wms.constants import HTTP_OK, FlextOracleWmsEntityTypes
 from flext_oracle_wms.models import FlextOracleWmsDiscoveryResult, FlextOracleWmsEntity
 
 if TYPE_CHECKING:
@@ -70,6 +70,7 @@ class FlextOracleWmsEntityDiscovery:
         self,
         include_patterns: list[str] | None = None,
         exclude_patterns: list[str] | None = None,
+        *,
         use_cache: bool = True,
     ) -> FlextResult[FlextOracleWmsDiscoveryResult]:
         """Discover all available Oracle WMS entities.
@@ -92,7 +93,11 @@ class FlextOracleWmsEntityDiscovery:
             cached_result = self.cache_manager.flext_oracle_wms_get_metadata(cache_key)
             if cached_result:
                 logger.debug("Using cached discovery results")
-                return FlextResult.ok(cached_result)
+                if isinstance(cached_result, dict):
+                    # Cast cached result back to proper type
+                    discovery_result = FlextOracleWmsDiscoveryResult(**cached_result)
+                    return FlextResult.ok(discovery_result)
+                return FlextResult.fail("Invalid cached result type")
 
         try:
             discovered_entities = []
@@ -103,7 +108,7 @@ class FlextOracleWmsEntityDiscovery:
                     logger.debug("Trying discovery endpoint: %s", endpoint)
                     response = self.client.get(endpoint)
 
-                    if response.status_code == 200:
+                    if response.status_code == HTTP_OK:
                         entities = self._parse_discovery_response(
                             response.json(),
                             endpoint,
@@ -162,12 +167,13 @@ class FlextOracleWmsEntityDiscovery:
             return FlextResult.ok(result)
 
         except Exception as e:
-            logger.exception("Entity discovery failed: %s", e)
+            logger.exception("Entity discovery failed")
             return FlextResult.fail(f"Discovery failed: {e}")
 
     def flext_oracle_wms_discover_entity_details(  # noqa: C901
         self,
         entity_name: str,
+        *,
         use_cache: bool = True,
     ) -> FlextResult[FlextOracleWmsEntity]:
         """Discover detailed information for a specific entity.
@@ -187,7 +193,11 @@ class FlextOracleWmsEntityDiscovery:
             cached_result = self.cache_manager.flext_oracle_wms_get_metadata(cache_key)
             if cached_result:
                 logger.debug("Using cached entity details for %s", entity_name)
-                return FlextResult.ok(cached_result)
+                if isinstance(cached_result, dict):
+                    # Cast cached result back to proper type
+                    entity_result = FlextOracleWmsEntity(**cached_result)
+                    return FlextResult.ok(entity_result)
+                return FlextResult.fail("Invalid cached entity result type")
 
         try:
             # Try different metadata endpoints for the entity
@@ -206,7 +216,7 @@ class FlextOracleWmsEntityDiscovery:
                     logger.debug("Trying entity metadata endpoint: %s", endpoint)
                     response = self.client.get(endpoint)
 
-                    if response.status_code == 200:
+                    if response.status_code == HTTP_OK:
                         metadata = response.json()
                         entity_details = self._parse_entity_metadata(
                             entity_name,
@@ -250,9 +260,8 @@ class FlextOracleWmsEntityDiscovery:
 
         except Exception as e:
             logger.exception(
-                "Entity detail discovery failed for %s: %s",
+                "Entity detail discovery failed for %s",
                 entity_name,
-                e,
             )
             return FlextResult.fail(f"Entity detail discovery failed: {e}")
 
@@ -295,7 +304,7 @@ class FlextOracleWmsEntityDiscovery:
     def _create_entity_from_item(
         self,
         item: object,
-        endpoint: str,
+        endpoint: str,  # noqa: ARG002
     ) -> FlextOracleWmsEntity | None:
         """Create entity from discovery response item."""
         try:
@@ -394,7 +403,7 @@ class FlextOracleWmsEntityDiscovery:
 
     def _get_current_timestamp(self) -> str:
         """Get current timestamp in ISO format."""
-        return datetime.now().isoformat()
+        return datetime.now(UTC).isoformat()
 
 
 def flext_oracle_wms_create_entity_discovery(

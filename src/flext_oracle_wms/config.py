@@ -10,12 +10,16 @@ Implements flext-core unified configuration standards.
 from __future__ import annotations
 
 from pathlib import Path
-from typing import Any
+from typing import Any, ClassVar, NewType
 
 from flext_core import FlextBaseSettings, get_logger
 
 # Import from flext-core root namespace as required
 from pydantic import Field, HttpUrl, field_validator
+
+# Type aliases for better type safety
+WMSAPIVersion = NewType("WMSAPIVersion", str)
+WMSRetryAttempts = NewType("WMSRetryAttempts", int)
 
 
 class FlextOracleWmsModuleConfig(FlextBaseSettings):
@@ -25,8 +29,8 @@ class FlextOracleWmsModuleConfig(FlextBaseSettings):
     with proper type safety and validation, following SOLID principles.
     """
 
-    model_config = {
-        "env_prefix": "FLEXT_ORACLE_WMS_",
+    model_config: ClassVar[dict[str, Any]] = {
+        "env_prefix": "ORACLE_WMS_",
         "env_file": ".env",
         "env_file_encoding": "utf-8",
         "env_nested_delimiter": "__",
@@ -211,12 +215,17 @@ class FlextOracleWmsModuleConfig(FlextBaseSettings):
         """Get the full endpoint URL for a specific entity."""
         return f"{self.wms_endpoint_base}{entity_name}"
 
-    def get_entity_params(self, **additional_params: Any) -> dict[str, Any]:
+    def get_entity_params(self, **additional_params: object) -> dict[str, Any]:
         """Generate standard entity query parameters."""
-        params = {
+        params: dict[str, Any] = {
             "page_size": self.batch_size,  # Using composition mixin field
         }
-        params.update(additional_params)
+        # Type-safe update of parameters
+        for key, value in additional_params.items():
+            if isinstance(value, (str, int, float, bool)):
+                params[key] = value
+            else:
+                params[key] = str(value)
         return params
 
     @classmethod
@@ -232,7 +241,7 @@ class FlextOracleWmsModuleConfig(FlextBaseSettings):
             environment="test",
             base_url=HttpUrl("https://test.example.com"),
             username="test_user",
-            password="test_password",
+            password="test_password",  # noqa: S106
             batch_size=10,  # Using composition mixin field
             timeout_seconds=5.0,  # Using composition mixin field
             max_retries=1,  # Using composition mixin field

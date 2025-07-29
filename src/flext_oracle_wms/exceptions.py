@@ -61,7 +61,12 @@ class FlextOracleWmsAuthenticationError(FlextAuthenticationError):
             **kwargs: Additional error context
 
         """
-        super().__init__(message, **kwargs)
+        # For FlextAuthenticationError, pass context properly
+        context = kwargs.get("context")
+        if isinstance(context, dict):
+            super().__init__(message, context=context)
+        else:
+            super().__init__(message, context=None)
         self.auth_method = auth_method
 
 
@@ -84,7 +89,23 @@ class FlextOracleWmsApiError(FlextOracleWmsError):
             **kwargs: Additional error context
 
         """
-        super().__init__(message, error_code="API_ERROR", **kwargs)
+        # Extract known parameters for parent class with proper typing
+        entity_name_raw = kwargs.pop("entity_name", None)
+        entity_name = entity_name_raw if isinstance(entity_name_raw, str) else None
+
+        details_raw = kwargs.pop("details", None)
+        details: dict[str, object] | None = None
+        if isinstance(details_raw, dict):
+            details = details_raw
+        elif kwargs:  # Add remaining kwargs to details
+            details = dict(kwargs.items())
+
+        super().__init__(
+            message,
+            error_code="API_ERROR",
+            entity_name=entity_name,
+            details=details,
+        )
         self.status_code = status_code
         self.response_body = response_body
 
@@ -106,7 +127,12 @@ class FlextOracleWmsConnectionError(FlextConnectionError):
             **kwargs: Additional error context
 
         """
-        super().__init__(message, **kwargs)
+        # For FlextConnectionError, pass context properly
+        context = kwargs.get("context")
+        if isinstance(context, dict):
+            super().__init__(message, context=context)
+        else:
+            super().__init__(message, context=None)
         self.retry_count = retry_count
 
 
@@ -129,7 +155,12 @@ class FlextOracleWmsDataValidationError(FlextValidationError):
             **kwargs: Additional error context
 
         """
-        super().__init__(message, **kwargs)
+        # Extract context from kwargs for proper type safety
+        context = kwargs.get("context")
+        if isinstance(context, dict):
+            super().__init__(message, context=context)
+        else:
+            super().__init__(message, context=None)
         self.field_name = field_name
         self.invalid_value = invalid_value
 
@@ -151,7 +182,12 @@ class FlextOracleWmsConfigurationError(FlextConfigurationError):
             **kwargs: Additional error context
 
         """
-        super().__init__(message, **kwargs)
+        # For FlextConfigurationError, pass context properly
+        context = kwargs.get("context")
+        if isinstance(context, dict):
+            super().__init__(message, context=context)
+        else:
+            super().__init__(message, context=None)
         self.config_key = config_key
 
 
@@ -173,7 +209,12 @@ class FlextOracleWmsEntityNotFoundError(FlextNotFoundError):
 
         """
         message = message or f"Oracle WMS entity '{entity_name}' not found"
-        super().__init__(message, **kwargs)
+        # For FlextNotFoundError, pass context properly
+        context = kwargs.get("context")
+        if isinstance(context, dict):
+            super().__init__(message, context=context)
+        else:
+            super().__init__(message, context=None)
         self.entity_name = entity_name
 
 
@@ -194,7 +235,23 @@ class FlextOracleWmsRateLimitError(FlextOracleWmsError):
             **kwargs: Additional error context
 
         """
-        super().__init__(message, error_code="RATE_LIMIT_EXCEEDED", **kwargs)
+        # Extract known parameters for parent class with proper typing
+        entity_name_raw = kwargs.pop("entity_name", None)
+        entity_name = entity_name_raw if isinstance(entity_name_raw, str) else None
+
+        details_raw = kwargs.pop("details", None)
+        details: dict[str, object] | None = None
+        if isinstance(details_raw, dict):
+            details = details_raw
+        elif kwargs:  # Add remaining kwargs to details
+            details = dict(kwargs.items())
+
+        super().__init__(
+            message,
+            error_code="RATE_LIMIT_EXCEEDED",
+            entity_name=entity_name,
+            details=details,
+        )
         self.retry_after_seconds = retry_after_seconds
 
 
@@ -217,7 +274,23 @@ class FlextOracleWmsSchemaFlatteningError(FlextOracleWmsError):
             **kwargs: Additional error context
 
         """
-        super().__init__(message, error_code="SCHEMA_PROCESSING_ERROR", **kwargs)
+        # Extract known parameters for parent class with proper typing
+        entity_name_raw = kwargs.pop("entity_name", None)
+        entity_name = entity_name_raw if isinstance(entity_name_raw, str) else None
+
+        details_raw = kwargs.pop("details", None)
+        details: dict[str, object] | None = None
+        if isinstance(details_raw, dict):
+            details = details_raw
+        elif kwargs:  # Add remaining kwargs to details
+            details = dict(kwargs.items())
+
+        super().__init__(
+            message,
+            error_code="SCHEMA_PROCESSING_ERROR",
+            entity_name=entity_name,
+            details=details,
+        )
         self.schema_operation = schema_operation
         self.depth_level = depth_level
 
@@ -241,7 +314,23 @@ class FilterError(FlextOracleWmsError):
             **kwargs: Additional error context
 
         """
-        super().__init__(message, error_code="FILTER_ERROR", **kwargs)
+        # Extract known parameters for parent class with proper typing
+        entity_name_raw = kwargs.pop("entity_name", None)
+        entity_name = entity_name_raw if isinstance(entity_name_raw, str) else None
+
+        details_raw = kwargs.pop("details", None)
+        details: dict[str, object] | None = None
+        if isinstance(details_raw, dict):
+            details = details_raw
+        elif kwargs:  # Add remaining kwargs to details
+            details = dict(kwargs.items())
+
+        super().__init__(
+            message,
+            error_code="FILTER_ERROR",
+            entity_name=entity_name,
+            details=details,
+        )
         self.filter_type = filter_type
         self.filter_value = filter_value
 
@@ -265,7 +354,23 @@ class FlextOracleWmsSchemaError(FlextOracleWmsError):
             **kwargs: Additional error context
 
         """
-        super().__init__(message, error_code="SCHEMA_ERROR", **kwargs)
+        # Extract known parameters for parent class with proper typing
+        entity_name_raw = kwargs.pop("entity_name", None)
+        entity_name = entity_name_raw if isinstance(entity_name_raw, str) else None
+
+        details_raw = kwargs.pop("details", None)
+        details: dict[str, object] | None = None
+        if isinstance(details_raw, dict):
+            details = details_raw
+        elif kwargs:  # Add remaining kwargs to details
+            details = dict(kwargs.items())
+
+        super().__init__(
+            message,
+            error_code="SCHEMA_ERROR",
+            entity_name=entity_name,
+            details=details,
+        )
         self.schema_name = schema_name
         self.validation_details = validation_details or {}
 

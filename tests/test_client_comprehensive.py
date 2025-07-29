@@ -6,10 +6,6 @@ import httpx
 import pytest
 from flext_core import get_logger
 
-from flext_oracle_wms.client import (
-    FlextOracleWmsAuth,
-    FlextOracleWmsLegacyClient,
-)
 from flext_oracle_wms.exceptions import (
     FlextOracleWmsApiError,
 )

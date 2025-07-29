@@ -253,7 +253,7 @@ class FlextOracleWmsTypeMapper:
         """
         try:
             self._custom_mappings[oracle_type.lower().strip()] = singer_schema
-            return FlextResult.ok(True)
+            return FlextResult.ok(data=True)
         except Exception as e:
             return FlextResult.fail(f"Custom mapping addition failed: {e}")
 

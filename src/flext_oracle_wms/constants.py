@@ -40,6 +40,13 @@ class FlextOracleWmsDefaults:
     DEFAULT_RATE_LIMIT_RPM: Final = 60
     MIN_REQUEST_DELAY: Final = 0.1
 
+    # HTTP Status codes
+    HTTP_OK: Final = 200
+    HTTP_UNAUTHORIZED: Final = 401
+    HTTP_FORBIDDEN: Final = 403
+    HTTP_BAD_REQUEST: Final = 400
+    REQUESTS_PER_MINUTE_LIMIT: Final = 60
+
     # Schema flattening
     DEFAULT_FLATTEN_ENABLED: Final = True
     DEFAULT_FLATTEN_MAX_DEPTH: Final = 5
@@ -211,10 +218,25 @@ class FlextOracleWmsSuccessMessages:
 
 
 # ==============================================================================
+# CONVENIENT EXPORTS - HTTP Status Codes
+# ==============================================================================
+
+# Export common HTTP constants from defaults class for convenience
+HTTP_OK: Final = FlextOracleWmsDefaults.HTTP_OK
+HTTP_UNAUTHORIZED: Final = FlextOracleWmsDefaults.HTTP_UNAUTHORIZED
+HTTP_FORBIDDEN: Final = FlextOracleWmsDefaults.HTTP_FORBIDDEN
+HTTP_BAD_REQUEST: Final = FlextOracleWmsDefaults.HTTP_BAD_REQUEST
+
+# ==============================================================================
 # EXPORTS
 # ==============================================================================
 
 __all__ = [
+    "HTTP_BAD_REQUEST",
+    "HTTP_FORBIDDEN",
+    # HTTP Status codes (convenient exports)
+    "HTTP_OK",
+    "HTTP_UNAUTHORIZED",
     # Constants with FlextOracleWms prefix
     "FlextOracleWmsDefaults",
     "FlextOracleWmsEntityTypes",

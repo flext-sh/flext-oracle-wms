@@ -11,7 +11,7 @@ for Oracle WMS integrations as required by the user specifications.
 from __future__ import annotations
 
 import re
-from datetime import datetime
+from datetime import UTC, datetime
 from typing import TYPE_CHECKING, Any, TypedDict, cast
 
 from flext_core import FlextResult, get_logger
@@ -69,6 +69,7 @@ class FlextOracleWmsDynamicSchemaProcessor:
         self,
         sample_size: int = 1000,
         confidence_threshold: float = 0.8,
+        *,
         enable_type_inference: bool = True,
         enable_schema_validation: bool = True,
         enable_field_analysis: bool = True,
@@ -137,7 +138,7 @@ class FlextOracleWmsDynamicSchemaProcessor:
                 sample_records=limited_sample[:10],  # Return small sample for reference
                 field_analysis=field_analysis,
                 schema_confidence=schema_confidence,
-                discovered_at=datetime.now(),
+                discovered_at=datetime.now(UTC),
                 discovery_metadata={
                     "sample_size": len(limited_sample),
                     "total_fields": len(discovered_schema),
@@ -158,6 +159,7 @@ class FlextOracleWmsDynamicSchemaProcessor:
         entity_name: OracleWMSEntityType,
         records: WMSRecordBatch,
         target_schema: WMSSchema,
+        *,
         validate_schema: bool = True,
         convert_types: bool = True,
     ) -> FlextResult[Any]:
@@ -223,7 +225,7 @@ class FlextOracleWmsDynamicSchemaProcessor:
                 "target_schema_fields": len(target_schema),
                 "validation_enabled": validate_schema,
                 "type_conversion_enabled": convert_types,
-                "processing_timestamp": datetime.now().isoformat(),
+                "processing_timestamp": datetime.now(UTC).isoformat(),
             },
         )
         return FlextResult.ok({"result": result})
@@ -268,7 +270,7 @@ class FlextOracleWmsDynamicSchemaProcessor:
             result = FlextOracleWmsDiscoveryResult(
                 entities=discovered_entities,
                 total_entities=len(discovered_entities),
-                discovery_time=datetime.now(),
+                discovery_time=datetime.now(UTC),
                 api_version=connection_info.get("api_version", "unknown"),
                 connection_info=connection_info,
             )
@@ -298,44 +300,76 @@ class FlextOracleWmsDynamicSchemaProcessor:
         if depth > self.max_schema_depth:
             return
         for field_name, field_value in record.items():
-            if field_name not in schema:
-                schema[field_name] = {
-                    "type": self._infer_field_type(field_value),
-                    "seen_count": 0,
-                    "null_count": 0,
-                    "sample_values": [],
-                }
-            field_schema = schema[field_name]
-            field_schema["seen_count"] += 1
-            if field_value is None:
-                field_schema["null_count"] += 1
-            else:
-                # Add sample values for analysis
-                if (
-                    len(field_schema["sample_values"]) < 10  # noqa: PLR2004
-                ):
-                    field_schema["sample_values"].append(field_value)
-                # Handle nested objects
-                if isinstance(field_value, dict) and depth < self.max_schema_depth:
-                    if "properties" not in field_schema:
-                        field_schema["properties"] = {}
-                    self._analyze_record_structure(
-                        field_value,
-                        field_schema["properties"],
-                        depth + 1,
-                    )
-                # Handle arrays
-                elif isinstance(field_value, list) and field_value:
-                    if "items" not in field_schema:
-                        field_schema["items"] = {"type": "object", "properties": {}}
-                    # Analyze array items
-                    for item in field_value[:5]:  # Limit to first 5 items
-                        if isinstance(item, dict):
-                            self._analyze_record_structure(
-                                item,
-                                field_schema["items"]["properties"],
-                                depth + 1,
-                            )
+            self._analyze_field(field_name, field_value, schema, depth)
+
+    def _analyze_field(
+        self,
+        field_name: str,
+        field_value: object,
+        schema: WMSSchema,
+        depth: int,
+    ) -> None:
+        """Analyze a single field in the record."""
+        if field_name not in schema:
+            schema[field_name] = self._create_field_schema(field_value)
+
+        field_schema = schema[field_name]
+        self._update_field_statistics(field_schema, field_value)
+
+        if field_value is not None:
+            self._handle_field_value(field_schema, field_value, depth)
+
+    def _create_field_schema(self, field_value: object) -> dict[str, Any]:
+        """Create initial field schema."""
+        return {
+            "type": self._infer_field_type(field_value),
+            "seen_count": 0,
+            "null_count": 0,
+            "sample_values": [],
+        }
+
+    def _update_field_statistics(
+        self, field_schema: dict[str, Any], field_value: object
+    ) -> None:
+        """Update field statistics."""
+        field_schema["seen_count"] += 1
+        if field_value is None:
+            field_schema["null_count"] += 1
+        # Add sample values for analysis
+        elif len(field_schema["sample_values"]) < 10:  # noqa: PLR2004
+            field_schema["sample_values"].append(field_value)
+
+    def _handle_field_value(
+        self, field_schema: dict[str, Any], field_value: object, depth: int
+    ) -> None:
+        """Handle different types of field values."""
+        if isinstance(field_value, dict) and depth < self.max_schema_depth:
+            self._handle_nested_object(field_schema, field_value, depth)
+        elif isinstance(field_value, list) and field_value:
+            self._handle_array_field(field_schema, field_value, depth)
+
+    def _handle_nested_object(
+        self, field_schema: dict[str, Any], field_value: dict[str, Any], depth: int
+    ) -> None:
+        """Handle nested object fields."""
+        if "properties" not in field_schema:
+            field_schema["properties"] = {}
+        self._analyze_record_structure(
+            field_value, field_schema["properties"], depth + 1
+        )
+
+    def _handle_array_field(
+        self, field_schema: dict[str, Any], field_value: list[Any], depth: int
+    ) -> None:
+        """Handle array fields."""
+        if "items" not in field_schema:
+            field_schema["items"] = {"type": "object", "properties": {}}
+        # Analyze array items
+        for item in field_value[:5]:  # Limit to first 5 items
+            if isinstance(item, dict):
+                self._analyze_record_structure(
+                    item, field_schema["items"]["properties"], depth + 1
+                )
 
     def _finalize_schema_types(
         self,
@@ -379,7 +413,7 @@ class FlextOracleWmsDynamicSchemaProcessor:
                 finalized_schema[field_name] = finalized_field
         return finalized_schema
 
-    def _infer_field_type(self, value: Any) -> str:
+    def _infer_field_type(self, value: object) -> str:
         """Infer field type from value."""
         if value is None:
             return "null"
@@ -640,9 +674,15 @@ class FlextOracleWmsDynamicSchemaProcessor:
             if target_type == "string":
                 return str(value)
             if target_type == "integer":
-                return int(float(value))
+                if isinstance(value, (int, float)):
+                    return int(value)
+                if isinstance(value, str):
+                    return int(float(value))
+                return int(float(str(value)))
             if target_type == "number":
-                return float(value)
+                if isinstance(value, (int, float, str)):
+                    return float(value)
+                return float(str(value))
             if target_type == "boolean":
                 if isinstance(value, bool):
                     return value
@@ -720,20 +760,46 @@ class FlextOracleWmsDynamicSchemaProcessor:
 
 # Factory function for easy instantiation
 def flext_oracle_wms_create_dynamic_schema_processor(
-    **kwargs: object,
+    sample_size: int = 1000,
+    confidence_threshold: float = 0.8,
+    *,
+    enable_type_inference: bool = True,
+    enable_schema_validation: bool = True,
+    enable_field_analysis: bool = True,
+    max_schema_depth: int = 10,
 ) -> FlextOracleWmsDynamicSchemaProcessor:
     """Create a configured dynamic schema processor."""
-    return FlextOracleWmsDynamicSchemaProcessor(**kwargs)
+    return FlextOracleWmsDynamicSchemaProcessor(
+        sample_size=sample_size,
+        confidence_threshold=confidence_threshold,
+        enable_type_inference=enable_type_inference,
+        enable_schema_validation=enable_schema_validation,
+        enable_field_analysis=enable_field_analysis,
+        max_schema_depth=max_schema_depth,
+    )
 
 
 # Convenience functions for common scenarios
 def flext_oracle_wms_discover_entity_schemas(
     entities_data: dict[str, WMSRecordBatch],
     connection_info: FlextOracleWmsConnectionInfo,
-    **processor_kwargs: object,
+    sample_size: int = 1000,
+    confidence_threshold: float = 0.8,
+    *,
+    enable_type_inference: bool = True,
+    enable_schema_validation: bool = True,
+    enable_field_analysis: bool = True,
+    max_schema_depth: int = 10,
 ) -> FlextResult[Any]:
     """Discover schemas for multiple entities."""
-    processor = flext_oracle_wms_create_dynamic_schema_processor(**processor_kwargs)
+    processor = flext_oracle_wms_create_dynamic_schema_processor(
+        sample_size=sample_size,
+        confidence_threshold=confidence_threshold,
+        enable_type_inference=enable_type_inference,
+        enable_schema_validation=enable_schema_validation,
+        enable_field_analysis=enable_field_analysis,
+        max_schema_depth=max_schema_depth,
+    )
     return processor.discover_all_entities(entities_data, connection_info)
 
 
@@ -741,10 +807,23 @@ def flext_oracle_wms_process_entity_with_schema(
     entity_name: OracleWMSEntityType,
     records: WMSRecordBatch,
     target_schema: WMSSchema,
-    **processor_kwargs: object,
+    sample_size: int = 1000,
+    confidence_threshold: float = 0.8,
+    *,
+    enable_type_inference: bool = True,
+    enable_schema_validation: bool = True,
+    enable_field_analysis: bool = True,
+    max_schema_depth: int = 10,
 ) -> FlextResult[Any]:
     """Process entity records with schema validation."""
-    processor = flext_oracle_wms_create_dynamic_schema_processor(**processor_kwargs)
+    processor = flext_oracle_wms_create_dynamic_schema_processor(
+        sample_size=sample_size,
+        confidence_threshold=confidence_threshold,
+        enable_type_inference=enable_type_inference,
+        enable_schema_validation=enable_schema_validation,
+        enable_field_analysis=enable_field_analysis,
+        max_schema_depth=max_schema_depth,
+    )
     return processor.process_entity_records(entity_name, records, target_schema)
 
 
