@@ -114,6 +114,10 @@ markers = [
     "slow: Slow tests",
     "smoke: Smoke tests",
     "e2e: End-to-end tests",
+    "declarative: Declarative integration tests",
+    "lgf_api: LGF API specific tests",
+    "automation: Automation tests",
+    "performance: Performance tests",
 ]
 filterwarnings = ["error", "ignore::UserWarning", "ignore::DeprecationWarning"]
 

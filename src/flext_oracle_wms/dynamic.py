@@ -202,7 +202,9 @@ class FlextOracleWmsDynamicSchemaProcessor:
             return "integer"
         if isinstance(value, float):
             return "number"
-        if isinstance(value, (dict, list)):
+        if isinstance(value, list):
+            return "array"
+        if isinstance(value, dict):
             return "object"
         return "string"
 

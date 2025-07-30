@@ -124,7 +124,7 @@ def handle_operation_exception(
     # Log the exception with context
     context_str = ", ".join(f"{k}={v}" for k, v in log_context.items())
     log.error(
-        "Failed to %s%s", operation_name, f" ({context_str})" if context_str else ""
+        "Failed to %s%s", operation_name, f" ({context_str})" if context_str else "",
     )
 
     # Create formatted error message

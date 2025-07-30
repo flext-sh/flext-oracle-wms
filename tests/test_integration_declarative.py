@@ -497,8 +497,4 @@ pytestmark = [
     pytest.mark.asyncio,
 ]
 
-# Add custom markers for test categories
-pytest.mark.declarative = pytest.mark.declarative
-pytest.mark.lgf_api = pytest.mark.lgf_api
-pytest.mark.automation = pytest.mark.automation
-pytest.mark.performance = pytest.mark.performance
+# Markers are configured in pyproject.toml

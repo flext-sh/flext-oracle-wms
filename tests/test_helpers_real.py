@@ -1,7 +1,11 @@
 """Real functional tests for Oracle WMS helpers module."""
 
+
 import pytest
-from datetime import datetime
+
+from flext_oracle_wms.exceptions import (
+    FlextOracleWmsError,
+)
 from flext_oracle_wms.helpers import (
     flext_oracle_wms_build_entity_url,
     flext_oracle_wms_chunk_records,
@@ -15,11 +19,6 @@ from flext_oracle_wms.helpers import (
     validate_dict_parameter,
     validate_records_list,
     validate_string_parameter,
-)
-from flext_oracle_wms.constants import FlextOracleWmsDefaults
-from flext_oracle_wms.exceptions import (
-    FlextOracleWmsDataValidationError,
-    FlextOracleWmsError,
 )
 
 
@@ -48,7 +47,7 @@ class TestRealScenarios:
                 "expected": "https://internal.invalid/REDACTED"
             }
         ]
-        
+
         for scenario in real_scenarios:
             result = flext_oracle_wms_build_entity_url(
                 scenario["base"],
@@ -66,7 +65,7 @@ class TestRealScenarios:
             ("https://wms.company.com/qa/wms/lgfapi", "qa"),
             ("https://internal.wms/prod/system", "prod"),
         ]
-        
+
         for url, expected_env in real_urls:
             result = flext_oracle_wms_extract_environment_from_url(url)
             assert result == expected_env
@@ -85,7 +84,7 @@ class TestRealScenarios:
             ("facility_master", "facility_master"),
             ("wave_hdr", "wave_hdr"),
         ]
-        
+
         for input_entity, expected in valid_entities:
             result = flext_oracle_wms_validate_entity_name(input_entity)
             assert result.is_success
@@ -114,11 +113,11 @@ class TestRealScenarios:
                 "timestamp": "2025-01-15T10:30:00Z"
             }
         ]
-        
+
         for response in success_responses:
             result = flext_oracle_wms_validate_api_response(response)
             assert result.is_success
-        
+
         # Error responses
         error_responses = [
             {"error": "Order not found"},
@@ -127,7 +126,7 @@ class TestRealScenarios:
             {"message": "System error occurred during processing"},
             {"status": "error", "message": "Invalid entity name provided"},
         ]
-        
+
         for response in error_responses:
             result = flext_oracle_wms_validate_api_response(response)
             assert result.is_failure
@@ -145,9 +144,9 @@ class TestRealScenarios:
             "next_page": "https://wms.company.com/api/orders?page=3",
             "previous_page": "https://wms.company.com/api/orders?page=1"
         }
-        
+
         result = flext_oracle_wms_extract_pagination_info(real_pagination)
-        
+
         assert result["current_page"] == 2
         assert result["total_pages"] == 5
         assert result["total_results"] == 500
@@ -170,19 +169,19 @@ class TestRealScenarios:
             }
             for i in range(1, 101)  # 100 records
         ]
-        
+
         # Test with typical batch size
         chunks = flext_oracle_wms_chunk_records(order_records, 25)
-        
+
         assert len(chunks) == 4
         assert all(len(chunk) == 25 for chunk in chunks[:3])
         assert len(chunks[3]) == 25  # Last chunk
-        
+
         # Verify record integrity
         all_records = []
         for chunk in chunks:
             all_records.extend(chunk)
-        
+
         assert len(all_records) == 100
         assert all_records[0]["order_id"] == "ORD0001"
         assert all_records[-1]["order_id"] == "ORD0100"
@@ -196,11 +195,11 @@ class TestRealScenarios:
             "2025-01-15 10:30:00",
             "2025-01-15T10:30:00.123456Z",
         ]
-        
+
         for timestamp in real_timestamps:
             result = flext_oracle_wms_format_timestamp(timestamp)
             assert result == timestamp
-        
+
         # Test with None (should return current time)
         current_result = flext_oracle_wms_format_timestamp(None)
         assert isinstance(current_result, str)
@@ -210,14 +209,14 @@ class TestRealScenarios:
     def test_real_url_normalization(self) -> None:
         """Test URL normalization with real Oracle WMS URL patterns."""
         real_scenarios = [
-            ("https://company.oraclecloud.com", "wms/lgfapi/v10/entity/orders", 
+            ("https://company.oraclecloud.com", "wms/lgfapi/v10/entity/orders",
              "https://company.oraclecloud.com/wms/lgfapi/v10/entity/orders"),
-            ("https://wms.company.com/", "/api/v2/orders/", 
+            ("https://wms.company.com/", "/api/v2/orders/",
              "https://wms.company.com/api/v2/orders/"),
-            ("https://internal.wms", "production/wms/lgfapi/v10/", 
+            ("https://internal.wms", "production/wms/lgfapi/v10/",
              "https://internal.wms/production/wms/lgfapi/v10/"),
         ]
-        
+
         for base_url, path, expected in real_scenarios:
             result = flext_oracle_wms_normalize_url(base_url, path)
             assert result == expected
@@ -230,7 +229,7 @@ class TestRealScenarios:
             {"order_id": "ORD002", "facility": "DC02"},
         ]
         validate_records_list(real_orders)  # Should pass
-        
+
         # Test with real configuration structure
         real_config = {
             "base_url": "https://wms.company.com",
@@ -239,7 +238,7 @@ class TestRealScenarios:
             "environment": "production"
         }
         validate_dict_parameter(real_config, "wms_config")  # Should pass
-        
+
         # Test with real entity names
         entity_names = ["order_hdr", "item_master", "inventory_balance"]
         for entity_name in entity_names:
@@ -249,7 +248,7 @@ class TestRealScenarios:
         """Test error handling with real-world exception scenarios."""
         # Simulate real database connection error
         db_error = ConnectionError("ORA-12541: TNS:no listener")
-        
+
         with pytest.raises(FlextOracleWmsError) as exc_info:
             handle_operation_exception(
                 db_error,
@@ -257,13 +256,13 @@ class TestRealScenarios:
                 facility="DC01",
                 retry_attempt=3
             )
-        
+
         assert "TNS:no listener" in str(exc_info.value)
         assert exc_info.value.__cause__ == db_error
-        
+
         # Simulate real API timeout error
         timeout_error = TimeoutError("Request timeout after 30 seconds")
-        
+
         with pytest.raises(FlextOracleWmsError) as exc_info:
             handle_operation_exception(
                 timeout_error,
@@ -271,7 +270,7 @@ class TestRealScenarios:
                 order_id="ORD001",
                 endpoint="/api/orders"
             )
-        
+
         assert "timeout" in str(exc_info.value).lower()
 
     def test_edge_cases_real_world(self) -> None:
@@ -280,20 +279,20 @@ class TestRealScenarios:
         long_entity = "a" * 200
         result = flext_oracle_wms_validate_entity_name(long_entity)
         assert result.is_failure
-        
+
         # Entity names with special characters (should fail)
         invalid_entities = ["order@hdr", "item-master", "inv.balance", "order hdr"]
         for entity in invalid_entities:
             result = flext_oracle_wms_validate_entity_name(entity)
             assert result.is_failure
-        
+
         # URLs with unusual but valid structures
         unusual_urls = [
             "https://internal.invalid/REDACTED.com/env1/api",
             "https://internal.invalid/REDACTED",
             "https://wms.company.co.uk/staging/v2",
         ]
-        
+
         for url in unusual_urls:
             # Should not raise exceptions
             env = flext_oracle_wms_extract_environment_from_url(url)
@@ -307,12 +306,12 @@ class TestRealScenarios:
             {"order_id": f"ORD{i:06d}", "status": "OPEN"}
             for i in range(10000)
         ]
-        
+
         # Test chunking large dataset
         chunks = flext_oracle_wms_chunk_records(large_dataset, 1000)
         assert len(chunks) == 10
         assert all(len(chunk) == 1000 for chunk in chunks)
-        
+
         # Verify no data loss
         total_records = sum(len(chunk) for chunk in chunks)
         assert total_records == 10000

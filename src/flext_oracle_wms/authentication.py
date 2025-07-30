@@ -31,7 +31,7 @@ class FlextOracleWmsAuthConfig(FlextValueObject):
 
     auth_type: OracleWMSAuthMethod = Field(
         default=OracleWMSAuthMethod.BASIC,
-        description="Authentication method"
+        description="Authentication method",
     )
     username: str = Field(default="", description="Username for basic auth")
     password: str = Field(default="", description="Password for basic auth")
@@ -39,7 +39,7 @@ class FlextOracleWmsAuthConfig(FlextValueObject):
     api_key: str = Field(default="", description="API key")
     timeout: float = Field(
         default=FlextOracleWmsDefaults.DEFAULT_TIMEOUT,
-        description="Request timeout in seconds"
+        description="Request timeout in seconds",
     )
 
     def validate_domain_rules(self) -> FlextResult[None]:

@@ -610,7 +610,7 @@ class FlextOracleWmsClient:
         client_result = self._ensure_client_initialized()
         if not client_result.is_success:
             return FlextResult.fail(
-                client_result.error or "Client initialization failed"
+                client_result.error or "Client initialization failed",
             )
 
         try:

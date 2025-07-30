@@ -324,13 +324,13 @@ class FlextOracleWmsEntityDiscovery:
                 item.get(
                     "endpoint",
                     f"/{self.environment}/wms/lgfapi/v10/entity/{name}/",
-                )
+                ),
             ),
             description=str(
                 item.get(
                     "description",
                     f"Oracle WMS entity: {name}",
-                )
+                ),
             ),
             primary_key=str(item.get("primary_key"))
             if item.get("primary_key")
@@ -356,7 +356,7 @@ class FlextOracleWmsEntityDiscovery:
             )
             if not entity_list_result.is_success:
                 return FlextResult.fail(
-                    entity_list_result.error or "Entity list extraction failed"
+                    entity_list_result.error or "Entity list extraction failed",
                 )
 
             # Convert items to FlextOracleWmsEntity objects
