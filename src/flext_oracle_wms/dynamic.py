@@ -9,11 +9,12 @@ Simplified dynamic schema processing for Oracle WMS operations.
 from __future__ import annotations
 
 from datetime import UTC, datetime
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, cast
 
 from flext_core import FlextResult, get_logger
 
 from flext_oracle_wms.constants import FlextOracleWmsDefaults
+from flext_oracle_wms.helpers import handle_operation_exception
 
 if TYPE_CHECKING:
     from flext_oracle_wms.constants import OracleWMSEntityType
@@ -53,7 +54,7 @@ class FlextOracleWmsDynamicSchemaProcessor:
         self,
         entity_name: OracleWMSEntityType,
         sample_records: TOracleWmsRecordBatch,
-    ) -> FlextResult[dict[str, Any]]:
+    ) -> FlextResult[dict[str, object]]:
         """Discover schema from sample records.
 
         Args:
@@ -103,7 +104,12 @@ class FlextOracleWmsDynamicSchemaProcessor:
             return FlextResult.ok(result)
 
         except Exception as e:
-            logger.exception("Schema discovery failed", entity_name=entity_name)
+            handle_operation_exception(
+                e,
+                "discover entity schema",
+                entity_name=entity_name,
+            )
+            # Never reached due to handle_operation_exception always raising
             return FlextResult.fail(f"Schema discovery failed: {e}")
 
     async def process_entity_records(
@@ -140,19 +146,22 @@ class FlextOracleWmsDynamicSchemaProcessor:
             return FlextResult.ok(processed_records)
 
         except Exception as e:
-            logger.exception("Record processing failed", entity_name=entity_name)
+            handle_operation_exception(
+                e,
+                "process entity records",
+                entity_name=entity_name,
+            )
+            # Never reached due to handle_operation_exception always raising
             return FlextResult.fail(f"Record processing failed: {e}")
 
     def _discover_schema_from_records(
-        self, records: TOracleWmsRecordBatch
+        self,
+        records: TOracleWmsRecordBatch,
     ) -> TOracleWmsSchema:
         """Discover schema from sample records."""
         schema: TOracleWmsSchema = {}
 
         for record in records:
-            if not isinstance(record, dict):
-                continue
-
             for field_name, field_value in record.items():
                 if field_name not in schema:
                     schema[field_name] = {
@@ -162,14 +171,15 @@ class FlextOracleWmsDynamicSchemaProcessor:
                     }
 
                 # Add sample value (limit to prevent memory issues)
-                sample_count = len(schema[field_name]["samples"])
-                if sample_count < FlextOracleWmsDefaults.DEFAULT_SAMPLE_SIZE:
-                    schema[field_name]["samples"].append(field_value)
+                samples = cast("list[object]", schema[field_name]["samples"])
+                if len(samples) < FlextOracleWmsDefaults.DEFAULT_SAMPLE_SIZE:
+                    samples.append(field_value)
 
                 # Update nullable if we see non-null value
                 if field_value is not None:
                     schema[field_name]["nullable"] = schema[field_name].get(
-                        "nullable", True
+                        "nullable",
+                        True,
                     )
 
         # Finalize schema
@@ -220,7 +230,9 @@ class FlextOracleWmsDynamicSchemaProcessor:
         return consistent_fields / total_fields
 
     def _check_field_consistency(
-        self, records: TOracleWmsRecordBatch, field_name: str
+        self,
+        records: TOracleWmsRecordBatch,
+        field_name: str,
     ) -> float:
         """Check consistency of a field across records."""
         if not records:
@@ -230,9 +242,6 @@ class FlextOracleWmsDynamicSchemaProcessor:
         records_with_field = 0
 
         for record in records:
-            if not isinstance(record, dict):
-                continue
-
             if field_name in record:
                 records_with_field += 1
                 field_value = record[field_name]
@@ -256,7 +265,9 @@ class FlextOracleWmsDynamicSchemaProcessor:
         return (type_consistency + presence_consistency) / 2
 
     def _process_single_record(
-        self, record: TOracleWmsRecord, target_schema: TOracleWmsSchema
+        self,
+        record: TOracleWmsRecord,
+        target_schema: TOracleWmsSchema,
     ) -> TOracleWmsRecord:
         """Process a single record according to target schema."""
         processed_record = {}
@@ -266,37 +277,42 @@ class FlextOracleWmsDynamicSchemaProcessor:
             if field_name in record:
                 # Convert value to target type if needed
                 processed_record[field_name] = self._convert_value_to_type(
-                    record[field_name], field_info.get("type", "string")
+                    record[field_name],
+                    str(field_info.get("type", "string")),
                 )
             elif not field_info.get("nullable", True):
                 # Add default value for required fields
                 processed_record[field_name] = self._get_default_value(
-                    field_info.get("type", "string")
+                    str(field_info.get("type", "string")),
                 )
 
         return processed_record
 
-    def _convert_value_to_type(self, value: Any, target_type: str) -> Any:
+    def _convert_value_to_type(self, value: object, target_type: str) -> object:
         """Convert value to target type."""
         if value is None:
             return value
 
         try:
+            converted_value: object
             if target_type == "integer":
-                return int(float(str(value)))
-            if target_type == "number":
-                return float(str(value))
-            if target_type == "boolean":
+                converted_value = int(float(str(value)))
+            elif target_type == "number":
+                converted_value = float(str(value))
+            elif target_type == "boolean":
                 if isinstance(value, str):
-                    return value.lower() in ("true", "1", "yes", "on")
-                return bool(value)
-            # string or object
-            return str(value)
+                    converted_value = value.lower() in {"true", "1", "yes", "on"}
+                else:
+                    converted_value = bool(value)
+            else:
+                # string or object
+                converted_value = str(value)
+            return converted_value
         except (ValueError, TypeError):
             # Return original value if conversion fails
             return value
 
-    def _get_default_value(self, field_type: str) -> Any:
+    def _get_default_value(self, field_type: str) -> object:
         """Get default value for a field type."""
         defaults = {
             "string": "",
@@ -324,5 +340,6 @@ def flext_oracle_wms_create_dynamic_schema_processor(
 
     """
     return FlextOracleWmsDynamicSchemaProcessor(
-        sample_size=sample_size, confidence_threshold=confidence_threshold
+        sample_size=sample_size,
+        confidence_threshold=confidence_threshold,
     )

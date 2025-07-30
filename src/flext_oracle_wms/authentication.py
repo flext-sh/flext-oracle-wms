@@ -10,14 +10,15 @@ flext-core and flext-api patterns.
 from __future__ import annotations
 
 import base64
-from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
 from flext_api import FlextApiPlugin
 from flext_core import FlextResult, FlextValueObject, get_logger
+from pydantic import Field
 
 from flext_oracle_wms.constants import FlextOracleWmsDefaults, OracleWMSAuthMethod
 from flext_oracle_wms.exceptions import FlextOracleWmsAuthenticationError
+from flext_oracle_wms.helpers import handle_operation_exception
 
 if TYPE_CHECKING:
     from flext_api.client import FlextApiClientRequest, FlextApiClientResponse
@@ -25,16 +26,21 @@ if TYPE_CHECKING:
 logger = get_logger(__name__)
 
 
-@dataclass(frozen=True)
 class FlextOracleWmsAuthConfig(FlextValueObject):
     """Oracle WMS authentication configuration."""
 
-    auth_type: OracleWMSAuthMethod = OracleWMSAuthMethod.BASIC
-    username: str = ""
-    password: str = ""
-    token: str = ""
-    api_key: str = ""
-    timeout: float = FlextOracleWmsDefaults.DEFAULT_TIMEOUT
+    auth_type: OracleWMSAuthMethod = Field(
+        default=OracleWMSAuthMethod.BASIC,
+        description="Authentication method"
+    )
+    username: str = Field(default="", description="Username for basic auth")
+    password: str = Field(default="", description="Password for basic auth")
+    token: str = Field(default="", description="Bearer token")
+    api_key: str = Field(default="", description="API key")
+    timeout: float = Field(
+        default=FlextOracleWmsDefaults.DEFAULT_TIMEOUT,
+        description="Request timeout in seconds"
+    )
 
     def validate_domain_rules(self) -> FlextResult[None]:
         """Validate authentication configuration."""
@@ -59,7 +65,7 @@ class FlextOracleWmsAuthenticator:
         if not validation_result.is_success:
             msg = f"Invalid authentication configuration: {validation_result.error}"
             raise FlextOracleWmsAuthenticationError(
-                msg
+                msg,
             )
         logger.debug("Oracle WMS authenticator initialized", auth_type=config.auth_type)
 
@@ -85,8 +91,9 @@ class FlextOracleWmsAuthenticator:
             return FlextResult.ok(headers)
 
         except Exception as e:
-            logger.exception("Failed to generate auth headers")
-            return FlextResult.fail(f"Auth header generation failed: {e}")
+            handle_operation_exception(e, "generate auth headers")
+            # Never reached due to handle_operation_exception always raising
+            return FlextResult.fail(f"Auth headers generation failed: {e}")
 
     async def validate_credentials(self) -> FlextResult[bool]:
         """Validate credentials."""
@@ -108,12 +115,14 @@ class FlextOracleWmsAuthenticator:
                 return FlextResult.fail("Invalid API key")
 
             logger.debug(
-                "Credentials validated successfully", auth_type=self.config.auth_type
+                "Credentials validated successfully",
+                auth_type=self.config.auth_type,
             )
             return FlextResult.ok(data=True)
         except Exception as e:
-            logger.exception("Credential validation failed")
-            return FlextResult.fail(f"Validation failed: {e}")
+            handle_operation_exception(e, "validate credentials")
+            # Never reached due to handle_operation_exception always raising
+            return FlextResult.fail(f"Credential validation failed: {e}")
 
 
 class FlextOracleWmsAuthPlugin(FlextApiPlugin):
@@ -129,7 +138,8 @@ class FlextOracleWmsAuthPlugin(FlextApiPlugin):
         raise FlextOracleWmsAuthenticationError(message)
 
     async def before_request(
-        self, request: FlextApiClientRequest
+        self,
+        request: FlextApiClientRequest,
     ) -> FlextApiClientRequest:
         """Add authentication headers before request."""
         try:
@@ -139,7 +149,11 @@ class FlextOracleWmsAuthPlugin(FlextApiPlugin):
                 self._raise_auth_error(msg)
 
             # Update request headers
-            if hasattr(request, "headers"):
+            if (
+                hasattr(request, "headers")
+                and request.headers is not None
+                and headers_result.data is not None
+            ):
                 request.headers.update(headers_result.data)
 
             logger.debug("Authentication headers added to request")
@@ -151,7 +165,8 @@ class FlextOracleWmsAuthPlugin(FlextApiPlugin):
             raise FlextOracleWmsAuthenticationError(msg) from e
 
     async def after_response(
-        self, response: FlextApiClientResponse
+        self,
+        response: FlextApiClientResponse,
     ) -> FlextApiClientResponse:
         """Process response after request."""
         # Check for auth errors in response

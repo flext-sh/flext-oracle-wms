@@ -10,20 +10,24 @@ from __future__ import annotations
 
 import re
 from datetime import UTC, datetime
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING
 from urllib.parse import urljoin, urlparse
 
 from flext_core import FlextResult, get_logger
 
 from flext_oracle_wms.constants import (
     FlextOracleWmsDefaults,
+    FlextOracleWmsErrorMessages,
     FlextOracleWmsResponseFields,
 )
 from flext_oracle_wms.exceptions import (
+    FlextOracleWmsDataValidationError,
     FlextOracleWmsError,
 )
 
 if TYPE_CHECKING:
+    from logging import Logger
+
     from flext_oracle_wms.types import (
         TOracleWmsApiVersion,
         TOracleWmsEnvironment,
@@ -31,6 +35,103 @@ if TYPE_CHECKING:
     )
 
 logger = get_logger(__name__)
+
+
+# ==============================================================================
+# DRY VALIDATION FUNCTIONS - Avoid code duplication across modules
+# ==============================================================================
+
+
+def validate_records_list(records: object, field_name: str = "records") -> None:
+    """DRY function to validate records parameter is a list.
+
+    Args:
+        records: Object to validate as list
+        field_name: Name of the field for error messages
+
+    Raises:
+        FlextOracleWmsDataValidationError: If records is not a list
+
+    """
+    if not isinstance(records, list):
+        msg = f"{field_name.capitalize()} must be a list"
+        raise FlextOracleWmsDataValidationError(msg)
+
+
+def validate_dict_parameter(param: object, field_name: str) -> None:
+    """DRY function to validate parameter is a dictionary.
+
+    Args:
+        param: Object to validate as dict
+        field_name: Name of the field for error messages
+
+    Raises:
+        FlextOracleWmsDataValidationError: If param is not a dict
+
+    """
+    if not isinstance(param, dict):
+        msg = f"{field_name.capitalize()} must be a dictionary"
+        raise FlextOracleWmsDataValidationError(msg)
+
+
+def validate_string_parameter(
+    param: object,
+    field_name: str,
+    *,
+    allow_empty: bool = False,
+) -> None:
+    """DRY function to validate parameter is a non-empty string.
+
+    Args:
+        param: Object to validate as string
+        field_name: Name of the field for error messages
+        allow_empty: Whether to allow empty strings
+
+    Raises:
+        FlextOracleWmsDataValidationError: If param is not a valid string
+
+    """
+    if not isinstance(param, str):
+        msg = f"{field_name.capitalize()} must be a string"
+        raise FlextOracleWmsDataValidationError(msg)
+
+    if not allow_empty and not param.strip():
+        msg = f"{field_name.capitalize()} must be a non-empty string"
+        raise FlextOracleWmsDataValidationError(msg)
+
+
+def handle_operation_exception(
+    exception: Exception,
+    operation_name: str,
+    logger_instance: Logger | None = None,
+    **log_context: object,
+) -> None:
+    """DRY function to handle operation exceptions with logging and re-raising.
+
+    Args:
+        exception: The original exception that occurred
+        operation_name: Name of the operation that failed
+        logger_instance: Logger instance to use (uses module logger if None)
+        **log_context: Additional context for logging
+
+    Raises:
+        FlextOracleWmsError: Always raises with formatted message
+
+    """
+    # Use provided logger or fall back to module logger
+    log = logger_instance if logger_instance is not None else logger
+
+    # Log the exception with context
+    context_str = ", ".join(f"{k}={v}" for k, v in log_context.items())
+    log.error(
+        "Failed to %s%s", operation_name, f" ({context_str})" if context_str else ""
+    )
+
+    # Create formatted error message
+    msg = f"{FlextOracleWmsErrorMessages.PROCESSING_FAILED}: {exception}"
+
+    # Re-raise as FlextOracleWmsError
+    raise FlextOracleWmsError(msg) from exception
 
 
 def flext_oracle_wms_normalize_url(base_url: str, path: str) -> str:
@@ -47,10 +148,6 @@ def flext_oracle_wms_normalize_url(base_url: str, path: str) -> str:
         FlextOracleWmsError: If URL normalization fails
 
     """
-    if not isinstance(base_url, str) or not isinstance(path, str):
-        msg = "URL and path must be strings"
-        raise FlextOracleWmsError(msg)
-
     if not base_url.strip():
         msg = "Base URL cannot be empty"
         raise FlextOracleWmsError(msg)
@@ -139,9 +236,6 @@ def flext_oracle_wms_validate_entity_name(entity_name: str) -> FlextResult[str]:
         FlextResult with validated and normalized entity name
 
     """
-    if not isinstance(entity_name, str):
-        return FlextResult.fail("Entity name must be a string")
-
     if not entity_name.strip():
         return FlextResult.fail("Entity name cannot be empty")
 
@@ -149,8 +243,9 @@ def flext_oracle_wms_validate_entity_name(entity_name: str) -> FlextResult[str]:
 
     # Use constants for validation
     if len(cleaned) > FlextOracleWmsDefaults.MAX_ENTITY_NAME_LENGTH:
+        max_length = FlextOracleWmsDefaults.MAX_ENTITY_NAME_LENGTH
         return FlextResult.fail(
-            f"Entity name too long (max {FlextOracleWmsDefaults.MAX_ENTITY_NAME_LENGTH} characters)"
+            f"Entity name too long (max {max_length} characters)",
         )
 
     if not re.match(FlextOracleWmsDefaults.ENTITY_NAME_PATTERN, cleaned):
@@ -160,8 +255,8 @@ def flext_oracle_wms_validate_entity_name(entity_name: str) -> FlextResult[str]:
 
 
 def flext_oracle_wms_validate_api_response(
-    response_data: dict[str, Any],
-) -> FlextResult[dict[str, Any]]:
+    response_data: dict[str, object],
+) -> FlextResult[dict[str, object]]:
     """Validate Oracle WMS API response structure.
 
     Args:
@@ -171,9 +266,6 @@ def flext_oracle_wms_validate_api_response(
         FlextResult with validated response data
 
     """
-    if not isinstance(response_data, dict):
-        return FlextResult.fail("Response must be a dictionary")
-
     # Check for error indicators using constants
     if "error" in response_data:
         error_msg = response_data.get("error", "Unknown error")
@@ -188,8 +280,8 @@ def flext_oracle_wms_validate_api_response(
 
 
 def flext_oracle_wms_extract_pagination_info(
-    response_data: dict[str, Any],
-) -> dict[str, Any]:
+    response_data: dict[str, object],
+) -> dict[str, object]:
     """Extract pagination information from API response.
 
     Args:
@@ -202,28 +294,27 @@ def flext_oracle_wms_extract_pagination_info(
         FlextOracleWmsError: If pagination extraction fails
 
     """
-    if not isinstance(response_data, dict):
-        msg = "Response data must be a dictionary"
-        raise FlextOracleWmsError(msg)
-
     try:
         return {
             "current_page": response_data.get(
-                FlextOracleWmsResponseFields.PAGE_NUMBER, 1
+                FlextOracleWmsResponseFields.PAGE_NUMBER,
+                1,
             ),
             "total_pages": response_data.get(
-                FlextOracleWmsResponseFields.PAGE_COUNT, 1
+                FlextOracleWmsResponseFields.PAGE_COUNT,
+                1,
             ),
             "total_results": response_data.get(
-                FlextOracleWmsResponseFields.RESULT_COUNT, 0
+                FlextOracleWmsResponseFields.RESULT_COUNT,
+                0,
             ),
             "has_next": bool(response_data.get(FlextOracleWmsResponseFields.NEXT_PAGE)),
             "has_previous": bool(
-                response_data.get(FlextOracleWmsResponseFields.PREVIOUS_PAGE)
+                response_data.get(FlextOracleWmsResponseFields.PREVIOUS_PAGE),
             ),
             "next_url": response_data.get(FlextOracleWmsResponseFields.NEXT_PAGE),
             "previous_url": response_data.get(
-                FlextOracleWmsResponseFields.PREVIOUS_PAGE
+                FlextOracleWmsResponseFields.PREVIOUS_PAGE,
             ),
         }
     except Exception as e:
@@ -269,9 +360,12 @@ def flext_oracle_wms_chunk_records(
         FlextOracleWmsError: If chunking parameters are invalid
 
     """
-    if not isinstance(records, list):
-        msg = "Records must be a list"
-        raise FlextOracleWmsError(msg)
+    # Use DRY validation function but catch the specific exception
+    try:
+        validate_records_list(records, "records")
+    except FlextOracleWmsDataValidationError as e:
+        # Convert to the expected exception type for this function
+        raise FlextOracleWmsError(str(e)) from e
 
     if chunk_size <= 0:
         msg = "Chunk size must be positive"

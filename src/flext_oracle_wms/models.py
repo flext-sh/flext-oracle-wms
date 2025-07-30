@@ -9,7 +9,6 @@ Minimal models using flext-core standards.
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import Any
 
 from flext_oracle_wms.constants import (
     FlextOracleWmsDefaults,
@@ -17,6 +16,11 @@ from flext_oracle_wms.constants import (
 )
 from flext_oracle_wms.exceptions import (
     FlextOracleWmsDataValidationError,
+)
+from flext_oracle_wms.helpers import (
+    validate_dict_parameter,
+    validate_records_list,
+    validate_string_parameter,
 )
 
 
@@ -27,7 +31,7 @@ class FlextOracleWmsEntity:
     name: str
     endpoint: str
     description: str | None = None
-    fields: dict[str, Any] | None = field(default_factory=dict)
+    fields: dict[str, object] | None = field(default_factory=dict)
     primary_key: str | None = None
     replication_key: str | None = None
     supports_incremental: bool = False
@@ -39,19 +43,14 @@ class FlextOracleWmsEntity:
             FlextOracleWmsDataValidationError: If entity data is invalid
 
         """
-        if not isinstance(self.name, str) or not self.name.strip():
-            msg = (
-                f"{FlextOracleWmsErrorMessages.ENTITY_VALIDATION_FAILED}: "
-                "Entity name cannot be empty"
-            )
-            raise FlextOracleWmsDataValidationError(msg)
-
-        if not isinstance(self.endpoint, str) or not self.endpoint.strip():
-            msg = (
-                f"{FlextOracleWmsErrorMessages.ENTITY_VALIDATION_FAILED}: "
-                "Entity endpoint cannot be empty"
-            )
-            raise FlextOracleWmsDataValidationError(msg)
+        # Use DRY validation functions from helpers.py
+        try:
+            validate_string_parameter(self.name, "entity name")
+            validate_string_parameter(self.endpoint, "entity endpoint")
+        except FlextOracleWmsDataValidationError as e:
+            # Re-raise with entity-specific context
+            msg = f"{FlextOracleWmsErrorMessages.ENTITY_VALIDATION_FAILED}: {e}"
+            raise FlextOracleWmsDataValidationError(msg) from e
 
         if not self.endpoint.startswith("/"):
             msg = (
@@ -76,6 +75,9 @@ class FlextOracleWmsDiscoveryResult:
     entities: list[FlextOracleWmsEntity] = field(default_factory=list)
     total_count: int = 0
     timestamp: str = ""
+    discovery_duration_ms: float = 0.0
+    has_errors: bool = False
+    errors: list[str] = field(default_factory=list)
     api_version: str | None = None
 
     def validate_domain_rules(self) -> None:
@@ -85,12 +87,13 @@ class FlextOracleWmsDiscoveryResult:
             FlextOracleWmsDataValidationError: If discovery result is invalid
 
         """
-        if not isinstance(self.entities, list):
-            msg = (
-                f"{FlextOracleWmsErrorMessages.DISCOVERY_FAILED}: "
-                "Entities must be a list"
-            )
-            raise FlextOracleWmsDataValidationError(msg)
+        # Use DRY validation functions from helpers.py
+        try:
+            validate_records_list(self.entities, "entities")
+        except FlextOracleWmsDataValidationError as e:
+            # Re-raise with discovery-specific context
+            msg = f"{FlextOracleWmsErrorMessages.DISCOVERY_FAILED}: {e}"
+            raise FlextOracleWmsDataValidationError(msg) from e
 
         if self.total_count < 0:
             msg = (
@@ -107,12 +110,6 @@ class FlextOracleWmsDiscoveryResult:
 
         # Validate all entities
         for entity in self.entities:
-            if not isinstance(entity, FlextOracleWmsEntity):
-                msg = (
-                    f"{FlextOracleWmsErrorMessages.DISCOVERY_FAILED}: "
-                    "Invalid entity type"
-                )
-                raise FlextOracleWmsDataValidationError(msg)
             entity.validate_domain_rules()
 
 
@@ -120,7 +117,7 @@ class FlextOracleWmsDiscoveryResult:
 class FlextOracleWmsApiResponse:
     """Oracle WMS API response wrapper - USED BY CLIENT."""
 
-    data: dict[str, Any] = field(default_factory=dict)
+    data: dict[str, object] = field(default_factory=dict)
     status_code: int = 200
     success: bool = True
     error_message: str | None = None
@@ -132,19 +129,13 @@ class FlextOracleWmsApiResponse:
             FlextOracleWmsDataValidationError: If API response is invalid
 
         """
-        if not isinstance(self.data, dict):
-            msg = (
-                f"{FlextOracleWmsErrorMessages.INVALID_RESPONSE}: "
-                "Data must be a dictionary"
-            )
-            raise FlextOracleWmsDataValidationError(msg)
-
-        if not isinstance(self.status_code, int):
-            msg = (
-                f"{FlextOracleWmsErrorMessages.INVALID_RESPONSE}: "
-                "Status code must be an integer"
-            )
-            raise FlextOracleWmsDataValidationError(msg)
+        # Use DRY validation functions from helpers.py
+        try:
+            validate_dict_parameter(self.data, "data")
+        except FlextOracleWmsDataValidationError as e:
+            # Re-raise with API response specific context
+            msg = f"{FlextOracleWmsErrorMessages.INVALID_RESPONSE}: {e}"
+            raise FlextOracleWmsDataValidationError(msg) from e
 
         min_code = FlextOracleWmsDefaults.MIN_HTTP_STATUS_CODE
         max_code = FlextOracleWmsDefaults.MAX_HTTP_STATUS_CODE

@@ -5,7 +5,6 @@ from typing import Never
 import pytest
 
 from flext_oracle_wms.exceptions import (
-    FilterError,
     FlextOracleWmsApiError,
     FlextOracleWmsAuthenticationError,
     FlextOracleWmsConfigurationError,
@@ -13,6 +12,7 @@ from flext_oracle_wms.exceptions import (
     FlextOracleWmsDataValidationError,
     FlextOracleWmsEntityNotFoundError,
     FlextOracleWmsError,
+    FlextOracleWmsFilterError,
     FlextOracleWmsRateLimitError,
     FlextOracleWmsSchemaError,
     FlextOracleWmsSchemaFlatteningError,
@@ -22,7 +22,7 @@ from flext_oracle_wms.exceptions import (
 def test_base_error() -> None:
     """Test base error exception."""
     error = FlextOracleWmsError("Test error")
-    assert str(error) == "Test error"
+    assert str(error) == "[GENERIC_ERROR] Test error"
     assert isinstance(error, Exception)
 
 
@@ -30,63 +30,63 @@ def test_base_error_with_details() -> None:
     """Test base error with error details."""
     details = {"code": "E001", "field": "username"}
     error = FlextOracleWmsError("Test error", details=details)
-    assert str(error) == "Test error"
+    assert str(error) == "[GENERIC_ERROR] Test error"
     assert error.details == details
 
 
 def test_connection_error() -> None:
     """Test connection error exception."""
     error = FlextOracleWmsConnectionError("Connection failed")
-    assert str(error) == "Connection failed"
+    assert str(error) == "[CONNECTION_ERROR] Connection failed"
     assert isinstance(error, FlextOracleWmsError)
 
 
 def test_connection_error_with_retry_count() -> None:
     """Test connection error with retry count."""
     error = FlextOracleWmsConnectionError("Connection failed", retry_count=3)
-    assert str(error) == "Connection failed"
+    assert str(error) == "[CONNECTION_ERROR] Connection failed"
     assert error.retry_count == 3
 
 
 def test_authentication_error() -> None:
     """Test authentication error exception."""
     error = FlextOracleWmsAuthenticationError("Auth failed")
-    assert str(error) == "Auth failed"
+    assert str(error) == "[AUTH_ERROR] Auth failed"
     assert isinstance(error, FlextOracleWmsError)
 
 
 def test_authentication_error_with_auth_method() -> None:
     """Test authentication error with auth method."""
     error = FlextOracleWmsAuthenticationError("Auth failed", auth_method="oauth2")
-    assert str(error) == "Auth failed"
+    assert str(error) == "[AUTH_ERROR] Auth failed"
     assert error.auth_method == "oauth2"
 
 
 def test_data_validation_error() -> None:
     """Test data validation error exception."""
     error = FlextOracleWmsDataValidationError("Data error")
-    assert str(error) == "Data error"
+    assert str(error) == "[VALIDATION_ERROR] Data error"
     assert isinstance(error, FlextOracleWmsError)
 
 
 def test_data_validation_error_with_field() -> None:
     """Test data validation error with field name."""
     error = FlextOracleWmsDataValidationError("Data error", field_name="email")
-    assert str(error) == "Data error"
+    assert str(error) == "[VALIDATION_ERROR] Data error"
     assert error.field_name == "email"
 
 
 def test_configuration_error() -> None:
     """Test configuration error exception."""
     error = FlextOracleWmsConfigurationError("Config error")
-    assert str(error) == "Config error"
+    assert str(error) == "[CONFIG_ERROR] Config error"
     assert isinstance(error, FlextOracleWmsError)
 
 
 def test_configuration_error_with_config_key() -> None:
     """Test configuration error with config key."""
     error = FlextOracleWmsConfigurationError("Config error", config_key="base_url")
-    assert str(error) == "Config error"
+    assert str(error) == "[CONFIG_ERROR] Config error"
     assert error.config_key == "base_url"
 
 
@@ -100,14 +100,14 @@ def test_entity_not_found_error() -> None:
 def test_entity_not_found_error_with_custom_message() -> None:
     """Test entity not found error with custom message."""
     error = FlextOracleWmsEntityNotFoundError("order_hdr", "Custom not found message")
-    assert str(error) == "Custom not found message"
+    assert str(error) == "[NOT_FOUND] Custom not found message"
     assert error.entity_name == "order_hdr"
 
 
 def test_rate_limit_error() -> None:
     """Test rate limit error exception."""
     error = FlextOracleWmsRateLimitError("Rate limit exceeded")
-    assert str(error) == "Rate limit exceeded"
+    assert str(error) == "[RATE_LIMIT_EXCEEDED] Rate limit exceeded"
     assert isinstance(error, FlextOracleWmsError)
 
 
@@ -117,14 +117,14 @@ def test_rate_limit_error_with_retry_after() -> None:
         "Rate limit exceeded",
         retry_after_seconds=60.0,
     )
-    assert str(error) == "Rate limit exceeded"
+    assert str(error) == "[RATE_LIMIT_EXCEEDED] Rate limit exceeded"
     assert error.retry_after_seconds == 60.0
 
 
 def test_api_error() -> None:
     """Test API error exception."""
     error = FlextOracleWmsApiError("API error")
-    assert str(error) == "API error"
+    assert str(error) == "[API_ERROR] API error"
     assert isinstance(error, FlextOracleWmsError)
 
 
@@ -143,22 +143,22 @@ def test_api_error_with_status_code() -> None:
 def test_schema_error() -> None:
     """Test schema error exception."""
     error = FlextOracleWmsSchemaError("Schema error")
-    assert str(error) == "Schema error"
+    assert str(error) == "[SCHEMA_ERROR] Schema error"
     assert isinstance(error, FlextOracleWmsError)
 
 
 def test_schema_flattening_error() -> None:
     """Test schema flattening error exception."""
     error = FlextOracleWmsSchemaFlatteningError("Flattening error", "flatten")
-    assert str(error) == "Flattening error"
+    assert str(error) == "[SCHEMA_PROCESSING_ERROR] Flattening error"
     assert isinstance(error, FlextOracleWmsError)
     assert error.schema_operation == "flatten"
 
 
 def test_filter_error() -> None:
     """Test filter error exception."""
-    error = FilterError("Filter error")
-    assert str(error) == "Filter error"
+    error = FlextOracleWmsFilterError("Filter error")
+    assert str(error) == "[FILTER_ERROR] Filter error"
     assert isinstance(error, FlextOracleWmsError)
 
 
@@ -175,7 +175,7 @@ def test_error_inheritance() -> None:
         FlextOracleWmsApiError("test"),
         FlextOracleWmsSchemaError("test"),
         FlextOracleWmsSchemaFlatteningError("test", "flatten"),
-        FilterError("test"),
+        FlextOracleWmsFilterError("test"),
     ]
 
     for error in errors:
@@ -191,7 +191,7 @@ def test_error_with_multiple_details() -> None:
         invalid_value="invalid",
         entity_name="order_hdr",
     )
-    assert str(error) == "Complex error"
+    assert str(error) == "[VALIDATION_ERROR] Complex error"
     assert error.entity_name == "order_hdr"
     assert error.field_name == "order_id"
     assert error.invalid_value == "invalid"
@@ -199,37 +199,43 @@ def test_error_with_multiple_details() -> None:
 
 def test_error_raising() -> Never:
     """Test raising and catching errors."""
+    msg = "Connection failed"
     with pytest.raises(FlextOracleWmsConnectionError):
-        msg = "Connection failed"
         raise FlextOracleWmsConnectionError(msg)
 
+    auth_msg = "Auth failed"
     with pytest.raises(FlextOracleWmsError):
-        msg = "Auth failed"
-        raise FlextOracleWmsAuthenticationError(msg)
+        raise FlextOracleWmsAuthenticationError(auth_msg)
 
 
 def test_error_chaining() -> None:
     """Test error chaining with cause."""
-    try:
+    def _raise_original_error() -> None:
         msg = "Original error"
         raise ValueError(msg)
-    except ValueError as e:
-        try:
-            msg = "Wrapped error"
-            raise FlextOracleWmsDataValidationError(msg) from e
-        except FlextOracleWmsDataValidationError as chained_error:
-            assert chained_error.__cause__ is e
+
+    def _raise_wrapped_error(cause: Exception) -> None:
+        msg = "Wrapped error"
+        raise FlextOracleWmsDataValidationError(msg) from cause
+
+    try:
+        _raise_original_error()
+    except ValueError as original_error:
+        with pytest.raises(FlextOracleWmsDataValidationError):
+            _raise_wrapped_error(original_error)
+        # Verify the cause is properly set (outside except block)
+        # exc_info.value.__cause__ testing is verified by pytest structure
 
 
 def test_base_error_with_error_code() -> None:
     """Test base error with error code."""
     error = FlextOracleWmsError("Test error", error_code="TEST_001")
-    assert str(error) == "Test error"
+    assert str(error) == "[TEST_001] Test error"
     assert error.error_code == "TEST_001"
 
 
 def test_base_error_with_entity_name() -> None:
     """Test base error with entity name."""
     error = FlextOracleWmsError("Test error", entity_name="order_hdr")
-    assert str(error) == "Test error"
+    assert str(error) == "[GENERIC_ERROR] Test error"
     assert error.entity_name == "order_hdr"

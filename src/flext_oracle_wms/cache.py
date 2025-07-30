@@ -13,11 +13,12 @@ import contextlib
 import threading
 import time
 from dataclasses import dataclass
-from typing import Any, TypeVar
+from typing import TypeVar
 
 from flext_core import FlextResult, FlextValueObject, get_logger
 
 from flext_oracle_wms.constants import FlextOracleWmsDefaults
+from flext_oracle_wms.helpers import handle_operation_exception
 
 logger = get_logger(__name__)
 
@@ -162,16 +163,16 @@ class FlextOracleWmsCacheManager:
 
         """
         self.config = config
-        self._entity_cache: dict[str, FlextOracleWmsCacheEntry] = {}
-        self._schema_cache: dict[str, FlextOracleWmsCacheEntry] = {}
-        self._metadata_cache: dict[str, FlextOracleWmsCacheEntry] = {}
+        self._entity_cache: dict[str, FlextOracleWmsCacheEntry[object]] = {}
+        self._schema_cache: dict[str, FlextOracleWmsCacheEntry[object]] = {}
+        self._metadata_cache: dict[str, FlextOracleWmsCacheEntry[object]] = {}
         self._cache_lock = threading.RLock()
 
         # Statistics
         self._stats = FlextOracleWmsCacheStats(last_cleanup=time.time())
 
         # Cleanup task
-        self._cleanup_task: asyncio.Task | None = None
+        self._cleanup_task: asyncio.Task[None] | None = None
         self._shutdown_event = asyncio.Event()
 
         logger.info(
@@ -189,8 +190,9 @@ class FlextOracleWmsCacheManager:
             logger.info("Oracle WMS cache manager started")
             return FlextResult.ok(None)
         except Exception as e:
-            logger.exception("Failed to start cache manager")
-            return FlextResult.fail(f"Cache manager startup failed: {e}")
+            handle_operation_exception(e, "start cache manager")
+            # Never reached due to handle_operation_exception always raising
+            return FlextResult.fail(f"Start cache manager failed: {e}")
 
     async def stop(self) -> FlextResult[None]:
         """Stop the cache manager and cleanup task."""
@@ -208,10 +210,11 @@ class FlextOracleWmsCacheManager:
             logger.info("Oracle WMS cache manager stopped")
             return FlextResult.ok(None)
         except Exception as e:
-            logger.exception("Failed to stop cache manager")
-            return FlextResult.fail(f"Cache manager stop failed: {e}")
+            handle_operation_exception(e, "stop cache manager")
+            # Never reached due to handle_operation_exception always raising
+            return FlextResult.fail(f"Stop cache manager failed: {e}")
 
-    async def get_entity(self, key: str) -> FlextResult[Any | None]:
+    async def get_entity(self, key: str) -> FlextResult[object | None]:
         """Get entity from cache with thread safety.
 
         Args:
@@ -224,7 +227,10 @@ class FlextOracleWmsCacheManager:
         return await self._get_from_cache(self._entity_cache, key, "entity")
 
     async def set_entity(
-        self, key: str, value: CacheValue, ttl_seconds: int | None = None
+        self,
+        key: str,
+        value: CacheValue,
+        ttl_seconds: int | None = None,
     ) -> FlextResult[bool]:
         """Set entity in cache with thread safety.
 
@@ -238,31 +244,49 @@ class FlextOracleWmsCacheManager:
 
         """
         return await self._set_in_cache(
-            self._entity_cache, key, value, ttl_seconds, "entity"
+            self._entity_cache,
+            key,
+            value,
+            ttl_seconds,
+            "entity",
         )
 
-    async def get_schema(self, key: str) -> FlextResult[Any | None]:
+    async def get_schema(self, key: str) -> FlextResult[object | None]:
         """Get schema from cache."""
         return await self._get_from_cache(self._schema_cache, key, "schema")
 
     async def set_schema(
-        self, key: str, value: CacheValue, ttl_seconds: int | None = None
+        self,
+        key: str,
+        value: CacheValue,
+        ttl_seconds: int | None = None,
     ) -> FlextResult[bool]:
         """Set schema in cache."""
         return await self._set_in_cache(
-            self._schema_cache, key, value, ttl_seconds, "schema"
+            self._schema_cache,
+            key,
+            value,
+            ttl_seconds,
+            "schema",
         )
 
-    async def get_metadata(self, key: str) -> FlextResult[Any | None]:
+    async def get_metadata(self, key: str) -> FlextResult[object | None]:
         """Get metadata from cache."""
         return await self._get_from_cache(self._metadata_cache, key, "metadata")
 
     async def set_metadata(
-        self, key: str, value: CacheValue, ttl_seconds: int | None = None
+        self,
+        key: str,
+        value: CacheValue,
+        ttl_seconds: int | None = None,
     ) -> FlextResult[bool]:
         """Set metadata in cache."""
         return await self._set_in_cache(
-            self._metadata_cache, key, value, ttl_seconds, "metadata"
+            self._metadata_cache,
+            key,
+            value,
+            ttl_seconds,
+            "metadata",
         )
 
     async def invalidate_key(self, key: str) -> FlextResult[bool]:
@@ -357,8 +381,11 @@ class FlextOracleWmsCacheManager:
             return FlextResult.fail(f"Statistics retrieval failed: {e}")
 
     async def _get_from_cache(
-        self, cache: dict[str, FlextOracleWmsCacheEntry], key: str, cache_type: str
-    ) -> FlextResult[Any | None]:
+        self,
+        cache: dict[str, FlextOracleWmsCacheEntry[object]],
+        key: str,
+        cache_type: str,
+    ) -> FlextResult[object | None]:
         """Get value from specific cache with thread safety."""
         try:
             with self._cache_lock:
@@ -397,7 +424,7 @@ class FlextOracleWmsCacheManager:
 
     async def _set_in_cache(
         self,
-        cache: dict[str, FlextOracleWmsCacheEntry],
+        cache: dict[str, FlextOracleWmsCacheEntry[object]],
         key: str,
         value: CacheValue,
         ttl_seconds: int | None,
@@ -412,9 +439,12 @@ class FlextOracleWmsCacheManager:
                 if len(cache) >= self.config.max_cache_entries:
                     await self._evict_oldest_entry(cache)
 
-                # Create cache entry
-                entry = FlextOracleWmsCacheEntry(
-                    key=key, value=value, timestamp=time.time(), ttl_seconds=ttl
+                # Create cache entry with proper typing
+                entry = FlextOracleWmsCacheEntry[object](
+                    key=key,
+                    value=value,
+                    timestamp=time.time(),
+                    ttl_seconds=ttl,
                 )
 
                 cache[key] = entry
@@ -435,12 +465,15 @@ class FlextOracleWmsCacheManager:
 
         except Exception as e:
             logger.exception(
-                "Failed to set cache entry", key=key, cache_type=cache_type
+                "Failed to set cache entry",
+                key=key,
+                cache_type=cache_type,
             )
             return FlextResult.fail(f"Cache set failed: {e}")
 
     async def _evict_oldest_entry(
-        self, cache: dict[str, FlextOracleWmsCacheEntry]
+        self,
+        cache: dict[str, FlextOracleWmsCacheEntry[object]],
     ) -> None:
         """Evict the oldest entry from cache."""
         if not cache:
@@ -536,9 +569,7 @@ def flext_oracle_wms_create_cache_manager(
 
     """
     config = FlextOracleWmsCacheConfig(
-        entity_ttl_seconds=entity_ttl,
-        schema_ttl_seconds=schema_ttl,
-        metadata_ttl_seconds=metadata_ttl,
-        max_size=max_size,
+        default_ttl_seconds=min(entity_ttl, schema_ttl, metadata_ttl),
+        max_cache_entries=max_size,
     )
     return FlextOracleWmsCacheManager(config)

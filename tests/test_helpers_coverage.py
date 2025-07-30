@@ -1,307 +1,309 @@
 """Tests for helpers module - focusing on coverage improvement."""
 
-from unittest.mock import Mock
-
+import pytest
+from unittest.mock import Mock, patch
 from flext_oracle_wms.helpers import (
-    flext_oracle_wms_build_filter_query,
-    flext_oracle_wms_calculate_pagination_info,
-    flext_oracle_wms_extract_entity_metadata,
-    flext_oracle_wms_format_wms_record,
-    flext_oracle_wms_sanitize_entity_name,
-    flext_oracle_wms_validate_connection,
+    flext_oracle_wms_build_entity_url,
+    flext_oracle_wms_chunk_records,
+    flext_oracle_wms_extract_environment_from_url,
+    flext_oracle_wms_extract_pagination_info,
+    flext_oracle_wms_format_timestamp,
+    flext_oracle_wms_normalize_url,
+    flext_oracle_wms_validate_api_response,
+    flext_oracle_wms_validate_entity_name,
+    handle_operation_exception,
+    validate_dict_parameter,
+    validate_records_list,
+    validate_string_parameter,
+)
+from flext_oracle_wms.constants import FlextOracleWmsDefaults
+from flext_oracle_wms.exceptions import (
+    FlextOracleWmsDataValidationError,
+    FlextOracleWmsError,
 )
 
 
-class TestConnectionHelpers:
-    """Test connection helper functions."""
+class TestHelpersCoverage:
+    """Test helper functions with comprehensive coverage."""
 
-    def test_validate_connection_basic(self) -> None:
-        """Test connection validation."""
-        # Create mock connection info
-        connection_info = Mock()
-        connection_info.base_url = "https://test.wms.com"
-        connection_info.timeout_seconds = 30
+    def test_validate_entity_name_comprehensive(self) -> None:
+        """Test entity name validation comprehensively."""
+        # Test successful cases
+        test_cases = [
+            ("order_hdr", "order_hdr"),
+            ("ORDER_HDR", "order_hdr"),
+            ("  ITEM_MASTER  ", "item_master"),
+            ("facility123", "facility123"),
+        ]
+        
+        for input_name, expected in test_cases:
+            result = flext_oracle_wms_validate_entity_name(input_name)
+            assert result.is_success
+            assert result.data == expected
 
-        result = flext_oracle_wms_validate_connection(connection_info)
-        assert hasattr(result, "success")
+        # Test failure cases
+        failure_cases = [
+            "",
+            "   ",
+            "a" * 300,  # Too long
+            "invalid@name",  # Invalid characters
+        ]
+        
+        for invalid_name in failure_cases:
+            result = flext_oracle_wms_validate_entity_name(invalid_name)
+            assert result.is_failure
 
-    def test_validate_connection_invalid_url(self) -> None:
-        """Test connection validation with invalid URL."""
-        connection_info = Mock()
-        connection_info.base_url = "not-a-url"
-        connection_info.timeout_seconds = 30
+    def test_normalize_url_edge_cases(self) -> None:
+        """Test URL normalization edge cases."""
+        # Test normal cases
+        assert flext_oracle_wms_normalize_url("https://api.com", "v1/orders") == "https://api.com/v1/orders"
+        assert flext_oracle_wms_normalize_url("https://api.com/", "/v1/orders") == "https://api.com/v1/orders"
+        
+        # Test empty base URL
+        with pytest.raises(FlextOracleWmsError):
+            flext_oracle_wms_normalize_url("", "v1/orders")
+        
+        # Test whitespace only base URL
+        with pytest.raises(FlextOracleWmsError):
+            flext_oracle_wms_normalize_url("   ", "v1/orders")
 
-        result = flext_oracle_wms_validate_connection(connection_info)
-        assert hasattr(result, "success")
+    def test_build_entity_url_comprehensive(self) -> None:
+        """Test entity URL building comprehensively."""
+        # Test normal case
+        result = flext_oracle_wms_build_entity_url(
+            "https://wms.com", "prod", "orders", "v2"
+        )
+        expected = "https://wms.com/prod/wms/lgfapi/v2/entity/orders/"
+        assert result == expected
+        
+        # Test with default version
+        result = flext_oracle_wms_build_entity_url(
+            "https://wms.com", "test", "items"
+        )
+        expected = "https://wms.com/test/wms/lgfapi/v10/entity/items/"
+        assert result == expected
+        
+        # Test with empty parameters
+        with pytest.raises(FlextOracleWmsError):
+            flext_oracle_wms_build_entity_url("", "prod", "orders")
+        
+        with pytest.raises(FlextOracleWmsError):
+            flext_oracle_wms_build_entity_url("https://wms.com", "", "orders")
+        
+        with pytest.raises(FlextOracleWmsError):
+            flext_oracle_wms_build_entity_url("https://wms.com", "prod", "")
 
-    def test_validate_connection_timeout(self) -> None:
-        """Test connection validation with timeout."""
-        connection_info = Mock()
-        connection_info.base_url = "https://test.wms.com"
-        connection_info.timeout_seconds = 0.001
+    def test_extract_environment_edge_cases(self) -> None:
+        """Test environment extraction edge cases."""
+        test_cases = [
+            ("https://wms.com/production/api", "production"),
+            ("https://wms.com/dev/v1", "dev"),
+            ("https://wms.com", FlextOracleWmsDefaults.DEFAULT_ENVIRONMENT),
+            ("https://wms.com/", FlextOracleWmsDefaults.DEFAULT_ENVIRONMENT),
+        ]
+        
+        for url, expected in test_cases:
+            result = flext_oracle_wms_extract_environment_from_url(url)
+            assert result == expected
+        
+        # Test invalid URLs
+        with pytest.raises(FlextOracleWmsError):
+            flext_oracle_wms_extract_environment_from_url("")
+        
+        with pytest.raises(FlextOracleWmsError):
+            flext_oracle_wms_extract_environment_from_url("   ")
 
-        result = flext_oracle_wms_validate_connection(connection_info)
-        assert hasattr(result, "success")
+    def test_validate_api_response_comprehensive(self) -> None:
+        """Test API response validation comprehensively."""
+        # Test successful responses
+        good_responses = [
+            {"data": [{"id": 1}]},
+            {"results": []},
+            {"message": "Success"},
+            {"status": "OK"},
+        ]
+        
+        for response in good_responses:
+            result = flext_oracle_wms_validate_api_response(response)
+            assert result.is_success
+        
+        # Test error responses
+        error_responses = [
+            {"error": "Not found"},
+            {"error": "Invalid request", "code": 400},
+            {"message": "Error: Failed to process"},
+            {"message": "Internal server error occurred"},
+        ]
+        
+        for response in error_responses:
+            result = flext_oracle_wms_validate_api_response(response)
+            assert result.is_failure
+            assert "API error" in result.error
 
-
-class TestEntityHelpers:
-    """Test entity helper functions."""
-
-    def test_sanitize_entity_name_valid(self) -> None:
-        """Test entity name sanitization with valid name."""
-        result = flext_oracle_wms_sanitize_entity_name("order_hdr")
-        assert hasattr(result, "success")
-        if result.success:
-            assert result.data == "order_hdr"
-
-    def test_sanitize_entity_name_invalid(self) -> None:
-        """Test entity name sanitization with invalid name."""
-        result = flext_oracle_wms_sanitize_entity_name("order@hdr")
-        assert hasattr(result, "success")
-
-    def test_sanitize_entity_name_empty(self) -> None:
-        """Test entity name sanitization with empty name."""
-        result = flext_oracle_wms_sanitize_entity_name("")
-        assert hasattr(result, "success")
-
-    def test_sanitize_entity_name_none(self) -> None:
-        """Test entity name sanitization with None."""
-        try:
-            result = flext_oracle_wms_sanitize_entity_name(None)
-            assert hasattr(result, "success")
-        except TypeError:
-            # Function might not handle None, which is acceptable
-            pass
-
-    def test_extract_entity_metadata_basic(self) -> None:
-        """Test entity metadata extraction."""
-        entity_info = Mock()
-        entity_info.entity_name = "order_hdr"
-        entity_info.fields = [{"name": "id", "type": "NUMBER"}]
-
-        result = flext_oracle_wms_extract_entity_metadata(entity_info)
-        assert hasattr(result, "success")
-
-    def test_extract_entity_metadata_empty(self) -> None:
-        """Test entity metadata extraction with empty data."""
-        entity_info = Mock()
-        entity_info.entity_name = "test"
-        entity_info.fields = []
-
-        result = flext_oracle_wms_extract_entity_metadata(entity_info)
-        assert hasattr(result, "success")
-
-    def test_format_wms_record_basic(self) -> None:
-        """Test WMS record formatting."""
-        record = Mock()
-        record.data = {"id": 1, "name": "test"}
-
-        result = flext_oracle_wms_format_wms_record(record, "order_hdr")
-        assert hasattr(result, "success")
-
-    def test_format_wms_record_empty(self) -> None:
-        """Test WMS record formatting with empty record."""
-        record = Mock()
-        record.data = {}
-
-        result = flext_oracle_wms_format_wms_record(record, "order_hdr")
-        assert hasattr(result, "success")
-
-
-class TestQueryHelpers:
-    """Test query helper functions."""
-
-    def test_build_filter_query_basic(self) -> None:
-        """Test filter query building."""
-        filters = [Mock(), Mock()]  # Mock filter conditions
-        for f in filters:
-            f.field = "status"
-            f.operator = "eq"
-            f.value = "active"
-
-        result = flext_oracle_wms_build_filter_query(filters)
-        assert hasattr(result, "success")
-
-    def test_build_filter_query_empty(self) -> None:
-        """Test filter query building with empty filters."""
-        result = flext_oracle_wms_build_filter_query([])
-        assert hasattr(result, "success")
-
-    def test_build_filter_query_complex(self) -> None:
-        """Test filter query building with complex filters."""
-        filters = []
-
-        # Create mock filter conditions
-        filter1 = Mock()
-        filter1.field = "status"
-        filter1.operator = "eq"
-        filter1.value = "active"
-        filters.append(filter1)
-
-        filter2 = Mock()
-        filter2.field = "created_date"
-        filter2.operator = "gte"
-        filter2.value = "2023-01-01"
-        filters.append(filter2)
-
-        result = flext_oracle_wms_build_filter_query(filters)
-        assert hasattr(result, "success")
-
-    def test_build_filter_query_none(self) -> None:
-        """Test filter query building with None filters."""
-        # Function might handle None gracefully, let's check the result
-        try:
-            result = flext_oracle_wms_build_filter_query(None)
-            assert hasattr(result, "success")
-        except TypeError:
-            # This is also acceptable if function doesn't handle None
-            pass
-
-
-class TestPaginationHelpers:
-    """Test pagination helper functions."""
-
-    def test_calculate_pagination_info_basic(self) -> None:
-        """Test pagination info calculation."""
-        result = flext_oracle_wms_calculate_pagination_info(1, 10, 100)
-        assert hasattr(result, "success")
-
-    def test_calculate_pagination_info_middle_page(self) -> None:
-        """Test pagination info calculation for middle page."""
-        result = flext_oracle_wms_calculate_pagination_info(5, 10, 100)
-        assert hasattr(result, "success")
-
-    def test_calculate_pagination_info_last_page(self) -> None:
-        """Test pagination info calculation for last page."""
-        result = flext_oracle_wms_calculate_pagination_info(10, 10, 95)
-        assert hasattr(result, "success")
-
-    def test_calculate_pagination_info_zero_total(self) -> None:
-        """Test pagination info calculation with zero total."""
-        result = flext_oracle_wms_calculate_pagination_info(1, 10, 0)
-        assert hasattr(result, "success")
-
-    def test_calculate_pagination_info_invalid_params(self) -> None:
-        """Test pagination info calculation with invalid parameters."""
-        result = flext_oracle_wms_calculate_pagination_info(-1, 0, -10)
-        assert hasattr(result, "success")
-
-    def test_calculate_pagination_info_large_numbers(self) -> None:
-        """Test pagination with large numbers."""
-        result = flext_oracle_wms_calculate_pagination_info(1000, 1000, 999999)
-        assert hasattr(result, "success")
-
-    def test_calculate_pagination_info_page_size_larger_than_total(self) -> None:
-        """Test pagination when page size is larger than total."""
-        result = flext_oracle_wms_calculate_pagination_info(1, 100, 10)
-        assert hasattr(result, "success")
-
-
-class TestEdgeCases:
-    """Test edge cases and error conditions."""
-
-    def test_helpers_with_invalid_types(self) -> None:
-        """Test helper functions with invalid input types."""
-        try:
-            result = flext_oracle_wms_sanitize_entity_name(123)  # Not a string
-            assert hasattr(result, "success")
-        except TypeError:
-            # Function might not handle non-strings, which is acceptable
-            pass
-
-    def test_validate_connection_edge_cases(self) -> None:
-        """Test connection validation edge cases."""
-        # Empty URL
-        connection_info = Mock()
-        connection_info.base_url = ""
-        connection_info.timeout_seconds = 30
-
-        result = flext_oracle_wms_validate_connection(connection_info)
-        assert hasattr(result, "success")
-
-        # Negative timeout
-        connection_info = Mock()
-        connection_info.base_url = "https://test.com"
-        connection_info.timeout_seconds = -1
-
-        result = flext_oracle_wms_validate_connection(connection_info)
-        assert hasattr(result, "success")
-
-    def test_entity_metadata_edge_cases(self) -> None:
-        """Test entity metadata extraction edge cases."""
-        # Mock entity with minimal info
-        entity_info = Mock()
-        entity_info.entity_name = ""
-        entity_info.fields = []
-
-        result = flext_oracle_wms_extract_entity_metadata(entity_info)
-        assert hasattr(result, "success")
-
-    def test_record_formatting_edge_cases(self) -> None:
-        """Test record formatting edge cases."""
-        # Complex nested record
-        record = Mock()
-        record.data = {
-            "id": 1,
-            "nested": {"data": "value"},
-            "list_field": [1, 2, 3],
+    def test_extract_pagination_info_comprehensive(self) -> None:
+        """Test pagination info extraction comprehensively."""
+        # Test complete pagination info
+        response = {
+            "page_nbr": 3,
+            "page_count": 10,
+            "result_count": 500,
+            "next_page": "https://api.com/next",
+            "previous_page": "https://api.com/prev",
         }
+        
+        result = flext_oracle_wms_extract_pagination_info(response)
+        
+        assert result["current_page"] == 3
+        assert result["total_pages"] == 10
+        assert result["total_results"] == 500
+        assert result["has_next"] is True
+        assert result["has_previous"] is True
+        assert result["next_url"] == "https://api.com/next"
+        assert result["previous_url"] == "https://api.com/prev"
+        
+        # Test minimal pagination info
+        minimal_response = {}
+        result = flext_oracle_wms_extract_pagination_info(minimal_response)
+        
+        assert result["current_page"] == 1
+        assert result["total_pages"] == 1
+        assert result["total_results"] == 0
+        assert result["has_next"] is False
+        assert result["has_previous"] is False
 
-        result = flext_oracle_wms_format_wms_record(record, "order_hdr")
-        assert hasattr(result, "success")
+    def test_format_timestamp_comprehensive(self) -> None:
+        """Test timestamp formatting comprehensively."""
+        # Test with valid timestamp
+        timestamp = "2025-01-15T10:30:00Z"
+        result = flext_oracle_wms_format_timestamp(timestamp)
+        assert result == timestamp
+        
+        # Test with None
+        result = flext_oracle_wms_format_timestamp(None)
+        assert isinstance(result, str)
+        assert "T" in result
+        
+        # Test with empty string
+        result = flext_oracle_wms_format_timestamp("")
+        assert isinstance(result, str)
+        assert "T" in result
+        
+        # Test with non-string timestamp (converts to string)
+        result = flext_oracle_wms_format_timestamp(123)  # Invalid type
+        assert result == "123"  # Converts to string
 
-    def test_function_consistency(self) -> None:
-        """Test that helper functions behave consistently."""
-        # Test that all functions return FlextResult objects
-        connection_info = Mock()
-        connection_info.base_url = "https://test.com"
-        connection_info.timeout_seconds = 30
-        result1 = flext_oracle_wms_validate_connection(connection_info)
+    def test_chunk_records_comprehensive(self) -> None:
+        """Test record chunking comprehensively."""
+        records = [{"id": i} for i in range(25)]
+        
+        # Test normal chunking
+        chunks = flext_oracle_wms_chunk_records(records, 10)
+        assert len(chunks) == 3
+        assert len(chunks[0]) == 10
+        assert len(chunks[1]) == 10
+        assert len(chunks[2]) == 5
+        
+        # Test exact division
+        chunks = flext_oracle_wms_chunk_records(records[:20], 10)
+        assert len(chunks) == 2
+        assert all(len(chunk) == 10 for chunk in chunks)
+        
+        # Test invalid parameters
+        with pytest.raises(FlextOracleWmsError):
+            flext_oracle_wms_chunk_records(records, 0)
+        
+        with pytest.raises(FlextOracleWmsError):
+            flext_oracle_wms_chunk_records(records, -1)
+        
+        with pytest.raises(FlextOracleWmsError):
+            flext_oracle_wms_chunk_records(records, 10000)  # Too large
+        
+        with pytest.raises(FlextOracleWmsError):
+            flext_oracle_wms_chunk_records("not a list", 10)  # Type: ignore[arg-type]
 
-        result2 = flext_oracle_wms_sanitize_entity_name("test")
+    def test_validation_functions_comprehensive(self) -> None:
+        """Test DRY validation functions comprehensively."""
+        # Test validate_records_list
+        validate_records_list([{"a": 1}, {"b": 2}])  # Should pass
+        
+        with pytest.raises(FlextOracleWmsDataValidationError, match="Records must be a list"):
+            validate_records_list("not a list")  # Type: ignore[arg-type]
+        
+        with pytest.raises(FlextOracleWmsDataValidationError, match="Records must be a list"):
+            validate_records_list({"not": "list"})  # Type: ignore[arg-type]
+        
+        # Test validate_dict_parameter
+        validate_dict_parameter({"key": "value"}, "config")  # Should pass
+        
+        with pytest.raises(FlextOracleWmsDataValidationError, match="Config must be a dictionary"):
+            validate_dict_parameter("not a dict", "config")  # Type: ignore[arg-type]
+        
+        with pytest.raises(FlextOracleWmsDataValidationError, match="Settings must be a dictionary"):
+            validate_dict_parameter(123, "settings")  # Type: ignore[arg-type]
+        
+        # Test validate_string_parameter
+        validate_string_parameter("valid string", "name")  # Should pass
+        validate_string_parameter("", "optional", allow_empty=True)  # Should pass
+        
+        with pytest.raises(FlextOracleWmsDataValidationError, match="Name must be a string"):
+            validate_string_parameter(123, "name")  # Type: ignore[arg-type]
+        
+        with pytest.raises(FlextOracleWmsDataValidationError, match="Title must be a non-empty string"):
+            validate_string_parameter("", "title", allow_empty=False)
+        
+        with pytest.raises(FlextOracleWmsDataValidationError, match="Description must be a non-empty string"):
+            validate_string_parameter("   ", "description", allow_empty=False)
 
-        result3 = flext_oracle_wms_build_filter_query([])
+    def test_handle_operation_exception_comprehensive(self) -> None:
+        """Test operation exception handling comprehensively."""
+        original_error = ValueError("Original problem")
+        
+        # Test with default logger
+        with pytest.raises(FlextOracleWmsError) as exc_info:
+            handle_operation_exception(original_error, "test operation")
+        
+        assert "Original problem" in str(exc_info.value)
+        assert exc_info.value.__cause__ == original_error
+        
+        # Test with custom logger
+        mock_logger = Mock()
+        with pytest.raises(FlextOracleWmsError):
+            handle_operation_exception(
+                original_error, 
+                "custom operation",
+                mock_logger,
+                entity_id="test123",
+                operation_type="validation"
+            )
+        
+        mock_logger.error.assert_called_once()
+        call_args = mock_logger.error.call_args
+        assert "custom operation" in call_args[0][1]
+        assert "entity_id=test123" in call_args[0][2]
+        assert "operation_type=validation" in call_args[0][2]
 
-        entity_info = Mock()
-        entity_info.entity_name = "test"
-        entity_info.fields = []
-        result4 = flext_oracle_wms_extract_entity_metadata(entity_info)
+    def test_error_message_formatting(self) -> None:
+        """Test error message formatting in validation functions."""
+        # Test field name capitalization in error messages
+        with pytest.raises(FlextOracleWmsDataValidationError, match="Test_field must be a list"):
+            validate_records_list("invalid", "test_field")
+        
+        with pytest.raises(FlextOracleWmsDataValidationError, match="User_config must be a dictionary"):
+            validate_dict_parameter("invalid", "user_config")  # Type: ignore[arg-type]
+        
+        with pytest.raises(FlextOracleWmsDataValidationError, match="Entity_name must be a string"):
+            validate_string_parameter(None, "entity_name")  # Type: ignore[arg-type]
 
-        record = Mock()
-        record.data = {}
-        result5 = flext_oracle_wms_format_wms_record(record, "test")
-
-        result6 = flext_oracle_wms_calculate_pagination_info(1, 5, 10)
-
-        # All should have success attribute
-        for result in [result1, result2, result3, result4, result5, result6]:
-            assert hasattr(result, "success")
-
-    def test_sanitize_entity_name_edge_cases(self) -> None:
-        """Test entity name sanitization edge cases."""
-        # Very long names
-        long_name = "a" * 1000
-        result = flext_oracle_wms_sanitize_entity_name(long_name)
-        assert hasattr(result, "success")
-
-        # Names with numbers
-        result = flext_oracle_wms_sanitize_entity_name("order123")
-        assert hasattr(result, "success")
-
-        # Names with underscores
-        result = flext_oracle_wms_sanitize_entity_name("order_hdr_dtl")
-        assert hasattr(result, "success")
-
-    def test_pagination_boundary_conditions(self) -> None:
-        """Test pagination with boundary conditions."""
-        # Page 0
-        result = flext_oracle_wms_calculate_pagination_info(0, 10, 100)
-        assert hasattr(result, "success")
-
-        # Page size 0
-        result = flext_oracle_wms_calculate_pagination_info(1, 0, 100)
-        assert hasattr(result, "success")
-
-        # Total records 1
-        result = flext_oracle_wms_calculate_pagination_info(1, 10, 1)
-        assert hasattr(result, "success")
+    def test_pagination_field_mappings(self) -> None:
+        """Test pagination field mapping constants."""
+        # Test that pagination extraction uses correct field constants
+        response = {
+            "page_nbr": 5,  # Using correct constant name
+            "page_count": 20,
+            "result_count": 1000,
+        }
+        
+        result = flext_oracle_wms_extract_pagination_info(response)
+        assert result["current_page"] == 5
+        assert result["total_pages"] == 20
+        assert result["total_results"] == 1000

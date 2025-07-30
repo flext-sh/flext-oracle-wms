@@ -50,7 +50,7 @@ class TestClientSimpleNew:
         """Test entity name validation with invalid names."""
         client = FlextOracleWmsClient(self.config)
 
-        with pytest.raises(ValueError):
+        with pytest.raises(ValueError, match="Invalid entity"):
             client.validate_entity_name("invalid_entity_name_that_does_not_exist")
 
     def test_build_api_url_basic(self) -> None:
@@ -209,7 +209,7 @@ class TestClientSimpleNew:
         client = FlextOracleWmsClient(self.config)
 
         # Test with special chars should fail
-        with pytest.raises(ValueError):
+        with pytest.raises(ValueError, match="Invalid entity"):
             client.validate_entity_name("order@hdr")
 
     def test_client_initialization_edge_cases(self) -> None:

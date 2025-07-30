@@ -9,7 +9,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from enum import StrEnum
 
-from flext_core import FlextValueObject
+from flext_core import FlextResult, FlextValueObject
 
 
 class FlextOracleWmsApiVersion(StrEnum):
@@ -46,26 +46,26 @@ class FlextOracleWmsApiEndpoint(FlextValueObject):
             return f"/{environment}/wms/lgfapi/v10{self.path}"
         return f"/{environment}/wms/api{self.path}"
 
-    def validate_domain_rules(self) -> None:
+    def validate_domain_rules(self) -> FlextResult[None]:
         """Validate Oracle WMS API endpoint domain rules."""
+        validation_errors = []
+
         if not self.name:
-            msg = "API name cannot be empty"
-            raise ValueError(msg)
+            validation_errors.append("API name cannot be empty")
         if not self.method:
-            msg = "HTTP method cannot be empty"
-            raise ValueError(msg)
+            validation_errors.append("HTTP method cannot be empty")
         if not self.path:
-            msg = "API path cannot be empty"
-            raise ValueError(msg)
-        if self.method not in ["GET", "POST", "PUT", "PATCH", "DELETE"]:
-            msg = f"Invalid HTTP method: {self.method}"
-            raise ValueError(msg)
+            validation_errors.append("API path cannot be empty")
+        if self.method not in {"GET", "POST", "PUT", "PATCH", "DELETE"}:
+            validation_errors.append(f"Invalid HTTP method: {self.method}")
         if not self.path.startswith("/"):
-            msg = "API path must start with /"
-            raise ValueError(msg)
+            validation_errors.append("API path must start with /")
         if not self.description:
-            msg = "API description cannot be empty"
-            raise ValueError(msg)
+            validation_errors.append("API description cannot be empty")
+
+        if validation_errors:
+            return FlextResult.fail("; ".join(validation_errors))
+        return FlextResult.ok(None)
 
 
 # ==============================================================================

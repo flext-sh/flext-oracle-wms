@@ -37,7 +37,7 @@ def test_context_manager() -> None:
 
 
 @patch("flext_oracle_wms.client.httpx")
-def test_get_request(mock_httpx) -> None:
+def test_get_request(mock_httpx: Mock) -> None:
     """Test GET request functionality."""
     config = FlextOracleWmsModuleConfig.for_testing()
     client = FlextOracleWmsClient(config)

@@ -8,16 +8,9 @@ Enterprise-grade exception hierarchy for Oracle WMS operations.
 
 from __future__ import annotations
 
-from typing import Any
-
 # Import from flext-core root namespace as required
 from flext_core import (
-    FlextAuthenticationError,
-    FlextConfigurationError,
-    FlextConnectionError,
     FlextError,
-    FlextNotFoundError,
-    FlextValidationError,
 )
 
 
@@ -42,9 +35,15 @@ class FlextOracleWmsError(FlextError):
         """
         super().__init__(message, error_code=error_code, context=details or {})
         self.entity_name = entity_name
+        self._details = details or {}
+
+    @property
+    def details(self) -> dict[str, object]:
+        """Get error details/context."""
+        return self._details
 
 
-class FlextOracleWmsAuthenticationError(FlextAuthenticationError):
+class FlextOracleWmsAuthenticationError(FlextOracleWmsError):
     """Oracle WMS authentication and authorization errors."""
 
     def __init__(
@@ -61,12 +60,10 @@ class FlextOracleWmsAuthenticationError(FlextAuthenticationError):
             **kwargs: Additional error context
 
         """
-        # For FlextAuthenticationError, pass context properly
-        context = kwargs.get("context")
-        if isinstance(context, dict):
-            super().__init__(message, context=context)
-        else:
-            super().__init__(message, context=None)
+        # Extract details from kwargs for parent class with proper typing
+        details_raw = kwargs.pop("details", None)
+        details = details_raw if isinstance(details_raw, dict) else None
+        super().__init__(message, error_code="AUTH_ERROR", details=details)
         self.auth_method = auth_method
 
 
@@ -110,7 +107,7 @@ class FlextOracleWmsApiError(FlextOracleWmsError):
         self.response_body = response_body
 
 
-class FlextOracleWmsConnectionError(FlextConnectionError):
+class FlextOracleWmsConnectionError(FlextOracleWmsError):
     """Oracle WMS connection and network errors."""
 
     def __init__(
@@ -127,16 +124,14 @@ class FlextOracleWmsConnectionError(FlextConnectionError):
             **kwargs: Additional error context
 
         """
-        # For FlextConnectionError, pass context properly
-        context = kwargs.get("context")
-        if isinstance(context, dict):
-            super().__init__(message, context=context)
-        else:
-            super().__init__(message, context=None)
+        # Extract details from kwargs for parent class with proper typing
+        details_raw = kwargs.pop("details", None)
+        details = details_raw if isinstance(details_raw, dict) else None
+        super().__init__(message, error_code="CONNECTION_ERROR", details=details)
         self.retry_count = retry_count
 
 
-class FlextOracleWmsDataValidationError(FlextValidationError):
+class FlextOracleWmsDataValidationError(FlextOracleWmsError):
     """Oracle WMS data validation and schema errors."""
 
     def __init__(
@@ -155,17 +150,22 @@ class FlextOracleWmsDataValidationError(FlextValidationError):
             **kwargs: Additional error context
 
         """
-        # Extract context from kwargs for proper type safety
-        context = kwargs.get("context")
-        if isinstance(context, dict):
-            super().__init__(message, context=context)
-        else:
-            super().__init__(message, context=None)
+        # Extract entity_name and details from kwargs for parent class
+        entity_name_raw = kwargs.pop("entity_name", None)
+        entity_name = entity_name_raw if isinstance(entity_name_raw, str) else None
+        details_raw = kwargs.pop("details", None)
+        details = details_raw if isinstance(details_raw, dict) else None
+        super().__init__(
+            message,
+            error_code="VALIDATION_ERROR",
+            entity_name=entity_name,
+            details=details,
+        )
         self.field_name = field_name
         self.invalid_value = invalid_value
 
 
-class FlextOracleWmsConfigurationError(FlextConfigurationError):
+class FlextOracleWmsConfigurationError(FlextOracleWmsError):
     """Oracle WMS configuration and setup errors."""
 
     def __init__(
@@ -182,16 +182,14 @@ class FlextOracleWmsConfigurationError(FlextConfigurationError):
             **kwargs: Additional error context
 
         """
-        # For FlextConfigurationError, pass context properly
-        context = kwargs.get("context")
-        if isinstance(context, dict):
-            super().__init__(message, context=context)
-        else:
-            super().__init__(message, context=None)
+        # Extract details from kwargs for parent class with proper typing
+        details_raw = kwargs.pop("details", None)
+        details = details_raw if isinstance(details_raw, dict) else None
+        super().__init__(message, error_code="CONFIG_ERROR", details=details)
         self.config_key = config_key
 
 
-class FlextOracleWmsEntityNotFoundError(FlextNotFoundError):
+class FlextOracleWmsEntityNotFoundError(FlextOracleWmsError):
     """Oracle WMS entity not found errors."""
 
     def __init__(
@@ -209,13 +207,12 @@ class FlextOracleWmsEntityNotFoundError(FlextNotFoundError):
 
         """
         message = message or f"Oracle WMS entity '{entity_name}' not found"
-        # For FlextNotFoundError, pass context properly
-        context = kwargs.get("context")
-        if isinstance(context, dict):
-            super().__init__(message, context=context)
-        else:
-            super().__init__(message, context=None)
-        self.entity_name = entity_name
+        # Extract details from kwargs for parent class with proper typing
+        details_raw = kwargs.pop("details", None)
+        details = details_raw if isinstance(details_raw, dict) else None
+        super().__init__(
+            message, error_code="NOT_FOUND", entity_name=entity_name, details=details
+        )
 
 
 class FlextOracleWmsRateLimitError(FlextOracleWmsError):
@@ -342,7 +339,7 @@ class FlextOracleWmsSchemaError(FlextOracleWmsError):
         self,
         message: str,
         schema_name: str | None = None,
-        validation_details: dict[str, Any] | None = None,
+        validation_details: dict[str, object] | None = None,
         **kwargs: object,
     ) -> None:
         """Initialize schema error.

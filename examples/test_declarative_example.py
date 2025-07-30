@@ -18,7 +18,7 @@ def load_env_config():
         return None
 
     config = {}
-    with open(env_path) as f:
+    with open(env_path, encoding="utf-8") as f:
         for line in f:
             line = line.strip()
             if line and not line.startswith("#") and "=" in line:
@@ -57,7 +57,7 @@ def load_env_config():
     }
 
 
-async def main():
+async def main() -> None:
     """Demonstrate declarative Oracle WMS Client usage."""
     print("🚀 Oracle WMS Cloud Client - Declarative Implementation Demo")
     print("=" * 60)

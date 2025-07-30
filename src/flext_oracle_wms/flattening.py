@@ -8,7 +8,7 @@ Simplified data flattening for Oracle WMS nested structures.
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, cast
 
 from flext_core import FlextResult, get_logger
 
@@ -65,12 +65,9 @@ class FlextOracleWmsDataFlattener:
             flattened_records = []
 
             for record in records:
-                if isinstance(record, dict):
-                    flattened_record = self._flatten_record(record)
-                    flattened_records.append(flattened_record)
-                else:
-                    # Skip non-dict records
-                    flattened_records.append(record)
+                # All records should be dicts based on type annotations
+                flattened_record = self._flatten_record(record)
+                flattened_records.append(flattened_record)
 
             logger.info(
                 "Records flattened successfully",
@@ -103,12 +100,9 @@ class FlextOracleWmsDataFlattener:
             unflattened_records = []
 
             for record in records:
-                if isinstance(record, dict):
-                    unflattened_record = self._unflatten_record(record)
-                    unflattened_records.append(unflattened_record)
-                else:
-                    # Skip non-dict records
-                    unflattened_records.append(record)
+                # All records should be dicts based on type annotations
+                unflattened_record = self._unflatten_record(record)
+                unflattened_records.append(unflattened_record)
 
             logger.info(
                 "Records unflattened successfully",
@@ -123,7 +117,10 @@ class FlextOracleWmsDataFlattener:
             return FlextResult.fail(f"Record unflattening failed: {e}")
 
     def _flatten_record(
-        self, record: TOracleWmsRecord, prefix: str = "", depth: int = 0
+        self,
+        record: TOracleWmsRecord,
+        prefix: str = "",
+        depth: int = 0,
     ) -> TOracleWmsRecord:
         """Flatten a single record recursively."""
         if depth > self.max_depth:
@@ -148,7 +145,12 @@ class FlextOracleWmsDataFlattener:
 
         return flattened
 
-    def _flatten_list(self, lst: list[Any], prefix: str, depth: int) -> dict[str, Any]:
+    def _flatten_list(
+        self,
+        lst: list[object],
+        prefix: str,
+        depth: int,
+    ) -> dict[str, object]:
         """Flatten a list into indexed keys."""
         flattened = {}
 
@@ -166,14 +168,19 @@ class FlextOracleWmsDataFlattener:
 
     def _unflatten_record(self, record: TOracleWmsRecord) -> TOracleWmsRecord:
         """Unflatten a single record by expanding dot-notation keys."""
-        unflattened: dict[str, Any] = {}
+        unflattened: dict[str, object] = {}
 
         for key, value in record.items():
             self._set_nested_value(unflattened, key, value)
 
         return unflattened
 
-    def _set_nested_value(self, target: dict[str, Any], key: str, value: Any) -> None:
+    def _set_nested_value(
+        self,
+        target: dict[str, object],
+        key: str,
+        value: object,
+    ) -> None:
         """Set a nested value in the target dictionary using dot notation.
 
         Simplified version to avoid complex type issues with dict/list union.
@@ -182,10 +189,10 @@ class FlextOracleWmsDataFlattener:
             target[key] = value
             return
 
-        # For complex nested structures with mixed dict/list, we'll use a simpler approach
+        # For complex nested structures with mixed dict/list, use simpler approach
         # that just creates nested dicts and converts the final key appropriately
         parts = key.split(".")
-        current: dict[str, Any] = target
+        current: dict[str, object] = target
 
         # Navigate through all parts except the last one, creating dicts
         for part in parts[:-1]:
@@ -193,7 +200,8 @@ class FlextOracleWmsDataFlattener:
                 current[part] = {}
             if not isinstance(current[part], dict):
                 current[part] = {}
-            current = current[part]
+            # Safe cast since we ensure current[part] is dict above
+            current = cast("dict[str, object]", current[part])
 
         # Set the final value
         final_part = parts[-1]
@@ -202,7 +210,7 @@ class FlextOracleWmsDataFlattener:
     async def get_flattening_stats(
         self,
         records: TOracleWmsRecordBatch,
-    ) -> FlextResult[dict[str, Any]]:
+    ) -> FlextResult[dict[str, object]]:
         """Get statistics about data structure complexity.
 
         Args:
@@ -234,7 +242,9 @@ class FlextOracleWmsDataFlattener:
             # Calculate averages (explicitly handling float results)
             if stats["total_records"] > 0:
                 avg_fields = stats["total_fields"] / stats["total_records"]
-                nested_percentage = (stats["nested_records"] / stats["total_records"]) * 100
+                nested_percentage = (
+                    stats["nested_records"] / stats["total_records"]
+                ) * 100
 
                 # Update stats with proper types
                 stats["avg_fields_per_record"] = avg_fields
@@ -245,14 +255,16 @@ class FlextOracleWmsDataFlattener:
 
             logger.info("Flattening statistics calculated", **stats)
 
-            return FlextResult.ok(stats)
+            return FlextResult.ok(cast("dict[str, object]", stats))
 
         except Exception as e:
-            logger.exception("Failed to calculate flattening statistics")
+            logger.exception("Failed to calculate stats")
             return FlextResult.fail(f"Statistics calculation failed: {e}")
 
     def _analyze_record_structure(
-        self, record: TOracleWmsRecord, depth: int = 1
+        self,
+        record: TOracleWmsRecord,
+        depth: int = 1,
     ) -> dict[str, int]:
         """Analyze the structure of a single record."""
         stats = {
@@ -306,5 +318,7 @@ def flext_oracle_wms_create_data_flattener(
 
     """
     return FlextOracleWmsDataFlattener(
-        separator=separator, max_depth=max_depth, preserve_lists=preserve_lists
+        separator=separator,
+        max_depth=max_depth,
+        preserve_lists=preserve_lists,
     )

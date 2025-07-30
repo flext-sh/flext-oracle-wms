@@ -9,6 +9,10 @@ Essential constants for Oracle WMS operations.
 from __future__ import annotations
 
 from enum import StrEnum
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from flext_oracle_wms.types import TOracleWmsApiVersion
 
 # =================================================================
 # API CONSTANTS
@@ -98,7 +102,7 @@ class FlextOracleWmsDefaults:
     """Default values for Oracle WMS operations."""
 
     # API Configuration
-    DEFAULT_API_VERSION = "v10"
+    DEFAULT_API_VERSION: TOracleWmsApiVersion = "v10"
     DEFAULT_TIMEOUT = 30.0
     DEFAULT_MAX_RETRIES = 3
     DEFAULT_RETRY_DELAY = 1.0

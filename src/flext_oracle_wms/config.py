@@ -11,10 +11,10 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, ClassVar, NewType
+from typing import ClassVar, NewType
 from urllib.parse import urlparse
 
-from flext_core import FlextBaseSettings, FlextValueObject, get_logger
+from flext_core import FlextBaseSettings, FlextResult, FlextValueObject, get_logger
 from pydantic import Field, HttpUrl, field_validator
 
 from flext_oracle_wms.api_catalog import FlextOracleWmsApiVersion
@@ -41,33 +41,34 @@ class FlextOracleWmsClientConfig(FlextValueObject):
     verify_ssl: bool = True
     enable_logging: bool = True
 
-    def validate_domain_rules(self) -> None:
+    def validate_domain_rules(self) -> FlextResult[None]:
         """Validate Oracle WMS client configuration domain rules."""
+        validation_errors = []
+
         if not self.base_url:
-            msg = "Base URL cannot be empty"
-            raise ValueError(msg)
-        if not self.base_url.startswith(("http://", "https://")):
-            msg = "Base URL must start with http:// or https://"
-            raise ValueError(msg)
+            validation_errors.append("Base URL cannot be empty")
+        elif not self.base_url.startswith(("http://", "https://")):
+            validation_errors.append("Base URL must start with http:// or https://")
+
         if not self.username:
-            msg = "Username cannot be empty"
-            raise ValueError(msg)
+            validation_errors.append("Username cannot be empty")
         if not self.password:
-            msg = "Password cannot be empty"
-            raise ValueError(msg)
+            validation_errors.append("Password cannot be empty")
         if not self.environment:
-            msg = "Environment cannot be empty"
-            raise ValueError(msg)
+            validation_errors.append("Environment cannot be empty")
         if self.timeout <= 0:
-            msg = "Timeout must be greater than 0"
-            raise ValueError(msg)
+            validation_errors.append("Timeout must be greater than 0")
         if self.max_retries < 0:
-            msg = "Max retries cannot be negative"
-            raise ValueError(msg)
+            validation_errors.append("Max retries cannot be negative")
+
+        if validation_errors:
+            return FlextResult.fail("; ".join(validation_errors))
+        return FlextResult.ok(None)
 
     @classmethod
     def from_legacy_config(
-        cls, legacy_config: FlextOracleWmsModuleConfig
+        cls,
+        legacy_config: FlextOracleWmsModuleConfig,
     ) -> FlextOracleWmsClientConfig:
         """Create declarative config from legacy config."""
         # Extract environment from base_url
@@ -103,7 +104,7 @@ class FlextOracleWmsModuleConfig(FlextBaseSettings):
     with proper type safety and validation, following SOLID principles.
     """
 
-    model_config: ClassVar[dict[str, Any]] = {
+    model_config: ClassVar[dict[str, object]] = {
         "env_prefix": "ORACLE_WMS_",
         "env_file": ".env",
         "env_file_encoding": "utf-8",
@@ -271,7 +272,7 @@ class FlextOracleWmsModuleConfig(FlextBaseSettings):
         }
 
     @property
-    def connection_config(self) -> dict[str, Any]:
+    def connection_config(self) -> dict[str, object]:
         """Generate connection configuration for HTTP client."""
         return {
             "base_url": str(self.base_url),
@@ -289,9 +290,9 @@ class FlextOracleWmsModuleConfig(FlextBaseSettings):
         """Get the full endpoint URL for a specific entity."""
         return f"{self.wms_endpoint_base}{entity_name}"
 
-    def get_entity_params(self, **additional_params: object) -> dict[str, Any]:
+    def get_entity_params(self, **additional_params: object) -> dict[str, object]:
         """Generate standard entity query parameters."""
-        params: dict[str, Any] = {
+        params: dict[str, object] = {
             "page_size": self.batch_size,  # Using composition mixin field
         }
         # Type-safe update of parameters

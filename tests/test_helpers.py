@@ -1,182 +1,228 @@
 """Test Oracle WMS helpers functionality."""
 
+import pytest
 from flext_oracle_wms.helpers import (
-    flext_oracle_wms_build_filter_query,
-    flext_oracle_wms_calculate_pagination_info,
-    flext_oracle_wms_extract_entity_metadata,
-    flext_oracle_wms_format_wms_record,
-    flext_oracle_wms_sanitize_entity_name,
-    flext_oracle_wms_validate_connection,
+    flext_oracle_wms_build_entity_url,
+    flext_oracle_wms_chunk_records,
+    flext_oracle_wms_extract_environment_from_url,
+    flext_oracle_wms_extract_pagination_info,
+    flext_oracle_wms_format_timestamp,
+    flext_oracle_wms_normalize_url,
+    flext_oracle_wms_validate_api_response,
+    flext_oracle_wms_validate_entity_name,
+    handle_operation_exception,
+    validate_dict_parameter,
+    validate_records_list,
+    validate_string_parameter,
+)
+from flext_oracle_wms.constants import FlextOracleWmsDefaults
+from flext_oracle_wms.exceptions import (
+    FlextOracleWmsDataValidationError,
+    FlextOracleWmsError,
 )
 
 
-def test_validate_connection() -> None:
-    """Test connection validation."""
-    config = {
-        "base_url": "https://test.example.com",
-        "username": "test",
-        "password": "test",
-    }
-    result = flext_oracle_wms_validate_connection(config)
-    assert result.is_success is True or result.is_success is False
-
-
-def test_sanitize_entity_name() -> None:
-    """Test entity name sanitization."""
+def test_validate_entity_name() -> None:
+    """Test entity name validation."""
     # Test valid entity name
-    result = flext_oracle_wms_sanitize_entity_name("order_hdr")
-    assert result.is_success is True or result.is_success is False
+    result = flext_oracle_wms_validate_entity_name("order_hdr")
+    assert result.is_success
+    assert result.data == "order_hdr"
 
-    # Test invalid entity name with special characters
-    result = flext_oracle_wms_sanitize_entity_name("invalid-entity@name")
-    assert result.is_success is True or result.is_success is False
+    # Test entity name with uppercase (should be normalized)
+    result = flext_oracle_wms_validate_entity_name("ORDER_HDR")
+    assert result.is_success
+    assert result.data == "order_hdr"
 
-
-def test_build_filter_query() -> None:
-    """Test filter query building."""
-    filters = [
-        {"field": "status", "operator": "eq", "value": "active"},
-        {"field": "created_date", "operator": "gte", "value": "2025-01-01"},
-        {"field": "priority", "operator": "in", "value": ["high", "medium"]},
-    ]
-    result = flext_oracle_wms_build_filter_query(filters)
-    assert result.is_success is True or result.is_success is False
+    # Test invalid entity name (empty)
+    result = flext_oracle_wms_validate_entity_name("")
+    assert result.is_failure
+    assert "cannot be empty" in result.error
 
 
-def test_extract_entity_metadata() -> None:
-    """Test entity metadata extraction."""
-    entity_data = {
-        "name": "order_hdr",
-        "fields": [
-            {"name": "order_id", "type": "string", "primary_key": True},
-            {"name": "status", "type": "string"},
-            {"name": "created_date", "type": "datetime"},
-        ],
-    }
-    result = flext_oracle_wms_extract_entity_metadata(entity_data)
-    assert result.is_success is True or result.is_success is False
+def test_normalize_url() -> None:
+    """Test URL normalization."""
+    # Test basic URL joining
+    result = flext_oracle_wms_normalize_url("https://test.example.com", "api/orders")
+    assert result == "https://test.example.com/api/orders"
+
+    # Test URL with trailing slash
+    result = flext_oracle_wms_normalize_url("https://test.example.com/", "/api/orders")
+    assert result == "https://test.example.com/api/orders"
+
+    # Test empty base URL
+    with pytest.raises(FlextOracleWmsError):
+        flext_oracle_wms_normalize_url("", "api/orders")
 
 
-def test_format_wms_record() -> None:
-    """Test WMS record formatting."""
-    record = {
-        "order_id": "123",
-        "status": "active",
-        "created_date": "2025-01-01T12:00:00Z",
-        "total_amount": 99.99,
-    }
-    result = flext_oracle_wms_format_wms_record(record, "order_hdr")
-    assert result.is_success is True or result.is_success is False
-
-
-def test_calculate_pagination_info() -> None:
-    """Test pagination info calculation."""
-    result = flext_oracle_wms_calculate_pagination_info(
-        current_page=1,
-        page_size=50,
-        total_records=250,
+def test_build_entity_url() -> None:
+    """Test entity URL building."""
+    result = flext_oracle_wms_build_entity_url(
+        "https://test.example.com",
+        "prod",
+        "order_hdr"
     )
-    assert result.is_success is True or result.is_success is False
+    expected = "https://test.example.com/prod/wms/lgfapi/v10/entity/order_hdr/"
+    assert result == expected
+
+    # Test with custom API version
+    result = flext_oracle_wms_build_entity_url(
+        "https://test.example.com",
+        "test",
+        "item_master",
+        "v2"
+    )
+    expected = "https://test.example.com/test/wms/lgfapi/v2/entity/item_master/"
+    assert result == expected
 
 
-def test_sanitize_entity_name_reserved_words() -> None:
-    """Test field name sanitization with SQL reserved words."""
-    reserved_names = ["select", "from", "where", "order", "group"]
-    for name in reserved_names:
-        result = flext_oracle_wms_sanitize_entity_name(name)
-        assert result.is_success is True or result.is_success is False
+def test_extract_environment_from_url() -> None:
+    """Test environment extraction from URL."""
+    # Test URL with environment
+    url = "https://test.example.com/prod/wms/lgfapi/v1"
+    result = flext_oracle_wms_extract_environment_from_url(url)
+    assert result == "prod"
+
+    # Test URL without environment (should return default)
+    url = "https://test.example.com"
+    result = flext_oracle_wms_extract_environment_from_url(url)
+    assert result == FlextOracleWmsDefaults.DEFAULT_ENVIRONMENT
+
+    # Test empty URL
+    with pytest.raises(FlextOracleWmsError):
+        flext_oracle_wms_extract_environment_from_url("")
 
 
-def test_sanitize_entity_name_edge_cases() -> None:
-    """Test entity name sanitization with edge cases."""
-    # Empty string
-    result = flext_oracle_wms_sanitize_entity_name("")
-    assert result.is_success is False
-
-    # Unicode characters
-    result = flext_oracle_wms_sanitize_entity_name("order_café_ñame")
-    assert result.is_success is True
-
-    # Very long name
-    long_name = "a" * 100
-    result = flext_oracle_wms_sanitize_entity_name(long_name)
-    assert result.is_success is True
-
-    # Names with numbers
-    result = flext_oracle_wms_sanitize_entity_name("123field")
-    assert result.is_success is True
-
-    # Mixed case
-    result = flext_oracle_wms_sanitize_entity_name("ORDER_HDR")
-    assert result.is_success is True
-
-
-def test_connection_validation_edge_cases() -> None:
-    """Test connection validation with edge cases."""
-    # Missing fields one by one
-    incomplete_configs = [
-        {"username": "test", "password": "test"},  # missing base_url
-        {"base_url": "https://test.com", "password": "test"},  # missing username
-        {"base_url": "https://test.com", "username": "test"},  # missing password
-        {
-            "base_url": "invalid-url",
-            "username": "test",
-            "password": "test",
-        },  # invalid URL
-    ]
-
-    for config in incomplete_configs:
-        result = flext_oracle_wms_validate_connection(config)
-        assert result.is_success is False
-
-
-def test_filter_query_complex_scenarios() -> None:
-    """Test filter query building with complex scenarios."""
-    # Test various operators
-    operators_test = [
-        {"field": "status", "operator": "eq", "value": "active"},
-        {"field": "count", "operator": "gt", "value": 10},
-        {"field": "date", "operator": "gte", "value": "2025-01-01"},
-        {"field": "priority", "operator": "in", "value": ["high", "medium"]},
-        {"field": "description", "operator": "like", "value": "%test%"},
-        {"field": "archived", "operator": "neq", "value": True},
-    ]
-
-    result = flext_oracle_wms_build_filter_query(operators_test)
-    assert result.is_success is True
-
-    # Test invalid filter (missing fields)
-    invalid_filter = [{"field": "status"}]  # missing operator and value
-    result = flext_oracle_wms_build_filter_query(invalid_filter)
-    assert result.is_success is False
-
-
-def test_metadata_extraction_scenarios() -> None:
-    """Test entity metadata extraction with various scenarios."""
-    # Complete entity info
-    complete_entity = {
-        "name": "order_hdr",
-        "description": "Order header entity",
-        "endpoint": "/api/orders",
-        "primary_key": "order_id",
-        "replication_key": "modified_date",
-        "supports_incremental": True,
-        "fields": {
-            "order_id": {"type": "string", "nullable": False},
-            "status": {"type": "string", "nullable": True},
-            "created_date": {"type": "datetime", "nullable": False},
-            "total_amount": {"type": "number", "nullable": True},
-        },
+def test_extract_pagination_info() -> None:
+    """Test pagination info extraction."""
+    response_data = {
+        "page_nbr": 2,
+        "page_count": 10,
+        "result_count": 250,
+        "next_page": "https://api.example.com/next",
+        "previous_page": "https://api.example.com/prev"
     }
+    
+    result = flext_oracle_wms_extract_pagination_info(response_data)
+    
+    assert result["current_page"] == 2
+    assert result["total_pages"] == 10
+    assert result["total_results"] == 250
+    assert result["has_next"] is True
+    assert result["has_previous"] is True
+    assert result["next_url"] == "https://api.example.com/next"
+    assert result["previous_url"] == "https://api.example.com/prev"
 
-    result = flext_oracle_wms_extract_entity_metadata(complete_entity)
-    assert result.is_success is True
-    assert result.data["name"] == "order_hdr"
-    assert result.data["field_count"] == 4
-    assert "string" in result.data["field_types_summary"]
 
-    # Minimal entity info
-    minimal_entity = {"name": "simple_entity"}
-    result = flext_oracle_wms_extract_entity_metadata(minimal_entity)
-    assert result.is_success is True
-    assert result.data["name"] == "simple_entity"
+def test_validate_api_response() -> None:
+    """Test API response validation."""
+    # Test successful response
+    good_response = {"data": [{"id": 1, "name": "test"}], "status": "success"}
+    result = flext_oracle_wms_validate_api_response(good_response)
+    assert result.is_success
+    
+    # Test response with error
+    error_response = {"error": "Invalid request"}
+    result = flext_oracle_wms_validate_api_response(error_response)
+    assert result.is_failure
+    assert "API error" in result.error
+    
+    # Test response with error message
+    error_message_response = {"message": "Error occurred during processing"}
+    result = flext_oracle_wms_validate_api_response(error_message_response)
+    assert result.is_failure
+    assert "API error" in result.error
+
+
+def test_format_timestamp() -> None:
+    """Test timestamp formatting."""
+    # Test with provided timestamp
+    result = flext_oracle_wms_format_timestamp("2025-01-01T12:00:00Z")
+    assert result == "2025-01-01T12:00:00Z"
+    
+    # Test with None (should return current timestamp)
+    result = flext_oracle_wms_format_timestamp(None)
+    assert isinstance(result, str)
+    assert "T" in result  # ISO format
+    
+    # Test with empty string
+    result = flext_oracle_wms_format_timestamp("")
+    assert isinstance(result, str)
+    assert "T" in result  # Should fallback to current time
+
+
+def test_chunk_records() -> None:
+    """Test record chunking."""
+    records = [{"id": i, "name": f"record_{i}"} for i in range(10)]
+    
+    # Test with default chunk size
+    chunks = flext_oracle_wms_chunk_records(records, 3)
+    assert len(chunks) == 4  # 10 records / 3 = 3 full chunks + 1 partial
+    assert len(chunks[0]) == 3
+    assert len(chunks[1]) == 3
+    assert len(chunks[2]) == 3
+    assert len(chunks[3]) == 1
+    
+    # Test with invalid chunk size
+    with pytest.raises(FlextOracleWmsError):
+        flext_oracle_wms_chunk_records(records, 0)
+    
+    # Test with non-list input
+    with pytest.raises(FlextOracleWmsError):
+        flext_oracle_wms_chunk_records("not a list", 3)  # type: ignore[arg-type]
+
+
+def test_validation_functions() -> None:
+    """Test DRY validation functions."""
+    # Test validate_records_list
+    valid_records = [{"id": 1}, {"id": 2}]
+    validate_records_list(valid_records)  # Should not raise
+    
+    with pytest.raises(FlextOracleWmsDataValidationError):
+        validate_records_list("not a list")  # type: ignore[arg-type]
+    
+    # Test validate_dict_parameter
+    valid_dict = {"key": "value"}
+    validate_dict_parameter(valid_dict, "test_param")  # Should not raise
+    
+    with pytest.raises(FlextOracleWmsDataValidationError):
+        validate_dict_parameter("not a dict", "test_param")  # type: ignore[arg-type]
+    
+    # Test validate_string_parameter
+    validate_string_parameter("valid string", "test_param")  # Should not raise
+    
+    with pytest.raises(FlextOracleWmsDataValidationError):
+        validate_string_parameter(123, "test_param")  # type: ignore[arg-type]
+    
+    with pytest.raises(FlextOracleWmsDataValidationError):
+        validate_string_parameter("", "test_param", allow_empty=False)
+
+
+def test_handle_operation_exception() -> None:
+    """Test operation exception handling."""
+    original_exception = ValueError("Original error")
+    
+    with pytest.raises(FlextOracleWmsError) as exc_info:
+        handle_operation_exception(original_exception, "test operation")
+    
+    assert "Original error" in str(exc_info.value)
+    assert exc_info.value.__cause__ == original_exception
+
+
+def test_entity_name_edge_cases() -> None:
+    """Test entity name validation edge cases."""
+    # Test very long name
+    long_name = "a" * 200
+    result = flext_oracle_wms_validate_entity_name(long_name)
+    assert result.is_failure
+    assert "too long" in result.error
+    
+    # Test whitespace handling
+    result = flext_oracle_wms_validate_entity_name("  order_hdr  ")
+    assert result.is_success
+    assert result.data == "order_hdr"
+    
+    # Test invalid characters
+    result = flext_oracle_wms_validate_entity_name("invalid@name")
+    assert result.is_failure
+    assert "Invalid entity name format" in result.error

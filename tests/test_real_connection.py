@@ -87,7 +87,7 @@ def test_real_connection() -> bool:
         return True
 
     except Exception as e:
-        logger.exception("❌ CRITICAL ERROR: %s", e)
+        logger.exception("❌ CRITICAL ERROR occurred")
         # Only fail if it's a structural issue, not network issues
         if (
             "ValidationError" in str(type(e))
@@ -95,7 +95,7 @@ def test_real_connection() -> bool:
             or "AttributeError" in str(type(e))
         ):
             msg = f"Structural test failed with error: {e}"
-            raise AssertionError(msg)
+            raise AssertionError(msg) from e
         logger.info(
             "✅ CODE STRUCTURE TEST PASSED (network errors expected with test config)",
         )

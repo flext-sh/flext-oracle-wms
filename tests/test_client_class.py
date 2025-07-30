@@ -32,7 +32,7 @@ def test_entity_name_validation() -> None:
     client = FlextOracleWmsClient(config)
 
     # This should raise ValueError for invalid entity
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="Invalid entity"):
         client.validate_entity_name("invalid_entity")
 
 
@@ -56,7 +56,7 @@ def test_context_manager_class() -> None:
 
 
 @patch("flext_oracle_wms.client.flext_api_create_client")
-def test_get_request_class(mock_create_client) -> None:
+def test_get_request_class(mock_create_client: Mock) -> None:
     """Test GET request functionality in class."""
     config = FlextOracleWmsModuleConfig.for_testing()
 

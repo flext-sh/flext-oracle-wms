@@ -16,6 +16,7 @@ from typing import TYPE_CHECKING
 from flext_core import FlextResult, get_logger
 
 from flext_oracle_wms.constants import FlextOracleWmsDefaults
+from flext_oracle_wms.helpers import handle_operation_exception
 from flext_oracle_wms.models import FlextOracleWmsDiscoveryResult, FlextOracleWmsEntity
 
 if TYPE_CHECKING:
@@ -102,7 +103,8 @@ class FlextOracleWmsEntityDiscovery:
 
             # Perform fresh discovery
             discovery_result = await self._perform_discovery(
-                include_patterns, exclude_patterns
+                include_patterns,
+                exclude_patterns,
             )
 
             if not discovery_result.is_success:
@@ -112,14 +114,17 @@ class FlextOracleWmsEntityDiscovery:
             duration_ms = (datetime.now(UTC) - start_time).total_seconds() * 1000
 
             # Update result with timing info
-            result_data = discovery_result.data
+            original_data = discovery_result.data
+            if original_data is None:
+                return FlextResult.fail("Discovery returned no data")
+
             result_data = FlextOracleWmsDiscoveryResult(
-                entities=result_data.entities,
-                total_count=result_data.total_count,
+                entities=original_data.entities,
+                total_count=original_data.total_count,
                 timestamp=start_time.isoformat(),
                 discovery_duration_ms=duration_ms,
-                has_errors=result_data.has_errors,
-                errors=result_data.errors,
+                has_errors=original_data.has_errors,
+                errors=original_data.errors,
             )
 
             # Cache the result
@@ -135,11 +140,15 @@ class FlextOracleWmsEntityDiscovery:
             return FlextResult.ok(result_data)
 
         except Exception as e:
-            logger.exception("Entity discovery failed")
+            handle_operation_exception(e, "discover all entities")
+            # Never reached due to handle_operation_exception always raising
             return FlextResult.fail(f"Discovery failed: {e}")
 
     async def discover_entity_schema(
-        self, entity_name: str, *, use_cache: bool = True
+        self,
+        entity_name: str,
+        *,
+        use_cache: bool = True,
     ) -> FlextResult[FlextOracleWmsEntity]:
         """Discover schema for a specific Oracle WMS entity.
 
@@ -167,14 +176,19 @@ class FlextOracleWmsEntityDiscovery:
                 return entity_result
 
             # Cache the result
-            if self.cache_manager:
+            if self.cache_manager and entity_result.data is not None:
                 await self._cache_entity_result(cache_key, entity_result.data)
 
             return entity_result
 
         except Exception as e:
-            logger.exception("Entity schema discovery failed", entity_name=entity_name)
-            return FlextResult.fail(f"Schema discovery failed for {entity_name}: {e}")
+            handle_operation_exception(
+                e,
+                "discover entity schema",
+                entity_name=entity_name,
+            )
+            # Never reached due to handle_operation_exception always raising
+            return FlextResult.fail(f"Schema discovery failed: {e}")
 
     async def _perform_discovery(
         self,
@@ -199,6 +213,11 @@ class FlextOracleWmsEntityDiscovery:
                     continue
 
                 response = response_result.data
+                if response is None:
+                    error_msg = f"No response data from {endpoint}"
+                    logger.warning(error_msg)
+                    errors.append(error_msg)
+                    continue
 
                 if response.status_code != FlextOracleWmsDefaults.HTTP_OK:
                     error_msg = f"HTTP {response.status_code} from {endpoint}"
@@ -208,7 +227,8 @@ class FlextOracleWmsEntityDiscovery:
 
                 # Parse entities from response
                 entities_result = await self._parse_entities_response(
-                    response.data, endpoint
+                    response.data,
+                    endpoint,
                 )
 
                 if entities_result.is_success and entities_result.data:
@@ -230,7 +250,9 @@ class FlextOracleWmsEntityDiscovery:
         # Filter entities based on patterns
         if include_patterns or exclude_patterns:
             all_entities = self._filter_entities(
-                all_entities, include_patterns, exclude_patterns
+                all_entities,
+                include_patterns,
+                exclude_patterns,
             )
 
         # Remove duplicates
@@ -248,17 +270,25 @@ class FlextOracleWmsEntityDiscovery:
         return FlextResult.ok(discovery_result)
 
     def _extract_entity_list_from_response(
-        self, response_data: dict[str, object] | list[object] | object, endpoint: str
+        self,
+        response_data: dict[str, object] | list[object] | object,
+        endpoint: str,
     ) -> FlextResult[list[object]]:
         """Extract entity list from API response."""
         if isinstance(response_data, dict):
-            # Handle different response formats
+            # Handle different response formats with type validation
             if "entities" in response_data:
-                return FlextResult.ok(response_data["entities"])
+                entities_data = response_data["entities"]
+                if isinstance(entities_data, list):
+                    return FlextResult.ok(entities_data)
             if "results" in response_data:
-                return FlextResult.ok(response_data["results"])
+                results_data = response_data["results"]
+                if isinstance(results_data, list):
+                    return FlextResult.ok(results_data)
             if "data" in response_data:
-                return FlextResult.ok(response_data["data"])
+                data_data = response_data["data"]
+                if isinstance(data_data, list):
+                    return FlextResult.ok(data_data)
             # Try to extract entity names from keys
             return FlextResult.ok(list(response_data.keys()))
         if isinstance(response_data, list):
@@ -274,60 +304,90 @@ class FlextOracleWmsEntityDiscovery:
         )
 
     def _create_entity_from_metadata(
-        self, item: dict[str, object]
+        self,
+        item: dict[str, object],
     ) -> FlextOracleWmsEntity | None:
         """Create entity from metadata dictionary."""
         name = item.get("name", item.get("entity_name", ""))
         if not name:
             return None
 
+        # Extract and validate fields with proper type casting
+        fields_data = item.get("fields")
+        entity_fields: dict[str, object] | None = (
+            fields_data if isinstance(fields_data, dict) else None
+        )
+
         return FlextOracleWmsEntity(
             name=str(name),
-            endpoint=str(item.get(
-                "endpoint",
-                f"/{self.environment}/wms/lgfapi/v10/entity/{name}/",
-            )),
-            description=str(item.get(
-                "description", f"Oracle WMS entity: {name}"
-            )),
-            primary_key=item.get("primary_key"),
-            replication_key=item.get("replication_key"),
-            supports_incremental=bool(item.get("supports_incremental", False)),
-            fields=dict(item.get("fields", {})),
+            endpoint=str(
+                item.get(
+                    "endpoint",
+                    f"/{self.environment}/wms/lgfapi/v10/entity/{name}/",
+                )
+            ),
+            description=str(
+                item.get(
+                    "description",
+                    f"Oracle WMS entity: {name}",
+                )
+            ),
+            primary_key=str(item.get("primary_key"))
+            if item.get("primary_key")
+            else None,
+            replication_key=str(item.get("replication_key"))
+            if item.get("replication_key")
+            else None,
+            supports_incremental=bool(item.get("supports_incremental")),
+            fields=entity_fields,
         )
 
     async def _parse_entities_response(
-        self, response_data: dict[str, object] | list[object] | object, endpoint: str
+        self,
+        response_data: dict[str, object] | list[object] | object,
+        endpoint: str,
     ) -> FlextResult[list[FlextOracleWmsEntity]]:
         """Parse entities from API response data."""
         try:
             # Extract entity list from response
-            entity_list_result = self._extract_entity_list_from_response(response_data, endpoint)
+            entity_list_result = self._extract_entity_list_from_response(
+                response_data,
+                endpoint,
+            )
             if not entity_list_result.is_success:
-                return entity_list_result
+                return FlextResult.fail(
+                    entity_list_result.error or "Entity list extraction failed"
+                )
 
             # Convert items to FlextOracleWmsEntity objects
             entities = []
+            if entity_list_result.data is None:
+                return FlextResult.ok([])
+
             for item in entity_list_result.data:
                 if isinstance(item, str):
                     entity = self._create_entity_from_string_name(item)
                     entities.append(entity)
                 elif isinstance(item, dict):
-                    entity = self._create_entity_from_metadata(item)
-                    if entity:
-                        entities.append(entity)
+                    entity_result = self._create_entity_from_metadata(item)
+                    if entity_result is not None:
+                        entities.append(entity_result)
 
             logger.debug(
-                "Parsed entities from response", count=len(entities), endpoint=endpoint
+                "Parsed entities from response",
+                count=len(entities),
+                endpoint=endpoint,
             )
             return FlextResult.ok(entities)
 
         except Exception as e:
-            logger.exception("Failed to parse entities response", endpoint=endpoint)
-            return FlextResult.fail(f"Failed to parse entities from {endpoint}: {e}")
+            handle_operation_exception(e, "parse entities response", endpoint=endpoint)
+            # Never reached due to handle_operation_exception always raising
+            return FlextResult.fail(f"Parse entities failed: {e}")
 
     async def _discover_single_entity(
-        self, entity_name: str
+        self,
+        entity_name: str,
     ) -> FlextResult[FlextOracleWmsEntity]:
         """Discover details for a single entity."""
         # Try to get entity details from LGF API
@@ -343,12 +403,15 @@ class FlextOracleWmsEntityDiscovery:
 
                 if (
                     response_result.is_success
+                    and response_result.data is not None
                     and response_result.data.status_code
                     == FlextOracleWmsDefaults.HTTP_OK
                 ):
                     # Try to extract schema information
                     schema_result = await self._extract_entity_schema(
-                        response_result.data.data, entity_name, endpoint
+                        response_result.data.data,
+                        entity_name,
+                        endpoint,
                     )
                     if schema_result.is_success:
                         return schema_result
@@ -375,28 +438,31 @@ class FlextOracleWmsEntityDiscovery:
         self,
         response_data: dict[str, object] | list[object] | object,
         entity_name: str,
-        endpoint: str
+        endpoint: str,
     ) -> FlextResult[FlextOracleWmsEntity]:
         """Extract entity schema from response data."""
         try:
-            fields = {}
+            fields: dict[str, object] = {}
 
             # Try to sample data to infer schema
             if isinstance(response_data, dict):
-                if response_data.get("results"):
-                    sample_record = response_data["results"][0]
+                results_data = response_data.get("results")
+                if isinstance(results_data, list) and results_data:
+                    sample_record = results_data[0]
                     if isinstance(sample_record, dict):
                         fields = {
                             key: {"type": self._infer_field_type(value)}
                             for key, value in sample_record.items()
                         }
-                elif response_data.get("data"):
-                    sample_record = response_data["data"][0]
-                    if isinstance(sample_record, dict):
-                        fields = {
-                            key: {"type": self._infer_field_type(value)}
-                            for key, value in sample_record.items()
-                        }
+                else:
+                    data_data = response_data.get("data")
+                    if isinstance(data_data, list) and data_data:
+                        sample_record = data_data[0]
+                        if isinstance(sample_record, dict):
+                            fields = {
+                                key: {"type": self._infer_field_type(value)}
+                                for key, value in sample_record.items()
+                            }
 
             entity = FlextOracleWmsEntity(
                 name=entity_name,
@@ -408,8 +474,13 @@ class FlextOracleWmsEntityDiscovery:
             return FlextResult.ok(entity)
 
         except Exception as e:
-            logger.exception("Failed to extract entity schema", entity_name=entity_name)
-            return FlextResult.fail(f"Schema extraction failed: {e}")
+            handle_operation_exception(
+                e,
+                "extract entity schema",
+                entity_name=entity_name,
+            )
+            # Never reached due to handle_operation_exception always raising
+            return FlextResult.fail(f"Extract schema failed: {e}")
 
     def _infer_field_type(self, value: object) -> str:
         """Infer field type from sample value."""
@@ -434,32 +505,33 @@ class FlextOracleWmsEntityDiscovery:
         """Filter entities based on include/exclude patterns."""
         filtered_entities = entities
 
-        # Apply include patterns
+        # Apply include patterns using list comprehension
         if include_patterns:
-            included = []
-            for entity in filtered_entities:
+            filtered_entities = [
+                entity
+                for entity in filtered_entities
                 if any(
                     re.search(pattern, entity.name, re.IGNORECASE)
                     for pattern in include_patterns
-                ):
-                    included.append(entity)
-            filtered_entities = included
+                )
+            ]
 
-        # Apply exclude patterns
+        # Apply exclude patterns using list comprehension
         if exclude_patterns:
-            excluded = []
-            for entity in filtered_entities:
+            filtered_entities = [
+                entity
+                for entity in filtered_entities
                 if not any(
                     re.search(pattern, entity.name, re.IGNORECASE)
                     for pattern in exclude_patterns
-                ):
-                    excluded.append(entity)
-            filtered_entities = excluded
+                )
+            ]
 
         return filtered_entities
 
     def _deduplicate_entities(
-        self, entities: list[FlextOracleWmsEntity]
+        self,
+        entities: list[FlextOracleWmsEntity],
     ) -> list[FlextOracleWmsEntity]:
         """Remove duplicate entities based on name."""
         seen_names = set()
@@ -473,27 +545,35 @@ class FlextOracleWmsEntityDiscovery:
         return unique_entities
 
     async def _get_cached_discovery(
-        self, cache_key: str
+        self,
+        cache_key: str,
     ) -> FlextResult[FlextOracleWmsDiscoveryResult]:
         """Get cached discovery result."""
         # Implementation would depend on cache manager interface
+        logger.debug("Cache lookup attempted", cache_key=cache_key)
         return FlextResult.fail("Cache not implemented")
 
     async def _cache_discovery_result(
-        self, cache_key: str, result: FlextOracleWmsDiscoveryResult
+        self,
+        cache_key: str,
+        result: FlextOracleWmsDiscoveryResult,
     ) -> None:
         """Cache discovery result."""
         # Implementation would depend on cache manager interface
 
     async def _get_cached_entity(
-        self, cache_key: str
+        self,
+        cache_key: str,
     ) -> FlextResult[FlextOracleWmsEntity]:
         """Get cached entity result."""
         # Implementation would depend on cache manager interface
+        logger.debug("Entity cache lookup attempted", cache_key=cache_key)
         return FlextResult.fail("Cache not implemented")
 
     async def _cache_entity_result(
-        self, cache_key: str, entity: FlextOracleWmsEntity
+        self,
+        cache_key: str,
+        entity: FlextOracleWmsEntity,
     ) -> None:
         """Cache entity result."""
         # Implementation would depend on cache manager interface
@@ -503,6 +583,7 @@ class FlextOracleWmsEntityDiscovery:
 def flext_oracle_wms_create_entity_discovery(
     api_client: FlextApiClient,
     environment: str,
+    *,
     enable_caching: bool = True,
     cache_ttl: int = 300,
 ) -> FlextOracleWmsEntityDiscovery:
@@ -518,9 +599,14 @@ def flext_oracle_wms_create_entity_discovery(
         Configured entity discovery
 
     """
+    # Create cache manager if caching is enabled
+    cache_manager = None
+    if enable_caching:
+        # Use basic object placeholder for cache manager
+        cache_manager = {"enabled": True, "ttl": cache_ttl}
+
     return FlextOracleWmsEntityDiscovery(
         api_client=api_client,
+        cache_manager=cache_manager,
         environment=environment,
-        enable_caching=enable_caching,
-        cache_ttl=cache_ttl,
     )

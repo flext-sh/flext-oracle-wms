@@ -1,150 +1,138 @@
 """Simple focused tests for authentication modules."""
 
+import pytest
 from unittest.mock import Mock
 
 from flext_oracle_wms.authentication import (
-    FlextOracleWmsAuth,
-    FlextOracleWmsOAuth2Auth,
-    flext_oracle_wms_create_authenticator,
-    flext_oracle_wms_create_oauth2_authenticator,
+    FlextOracleWmsAuthConfig,
+    FlextOracleWmsAuthenticator,
+    FlextOracleWmsAuthPlugin,
 )
+from flext_oracle_wms.constants import OracleWMSAuthMethod
 
 
 class TestAuthenticationSimple:
     """Simple tests for authentication functionality."""
 
-    def test_basic_auth_creation(self) -> None:
-        """Test basic authentication creation."""
-        auth = FlextOracleWmsAuth("user", "pass", "basic")
-        assert auth.username == "user"
-        assert auth.password == "pass"
-        assert auth.auth_method == "basic"
-
-    def test_basic_auth_flow(self) -> None:
-        """Test basic auth flow method."""
-        auth = FlextOracleWmsAuth("user", "pass", "basic")
-
-        # Mock request
-        mock_request = Mock()
-        mock_request.url = "https://example.com"
-        mock_request.headers = {}
-
-        # Get auth flow generator
-        auth_gen = auth.auth_flow(mock_request)
-
-        # Get first (and only) request from generator
-        authed_request = next(auth_gen)
-
-        # Verify Authorization header was added
-        assert "Authorization" in authed_request.headers
-        assert authed_request.headers["Authorization"].startswith("Basic ")
-
-    def test_oauth2_auth_creation(self) -> None:
-        """Test OAuth2 authentication creation."""
-        auth = FlextOracleWmsOAuth2Auth(
-            client_id="client123",
-            client_secret="secret456",
-            authorization_url="https://auth.example.com/authorize",
-            token_url="https://auth.example.com/token",
+    def test_basic_auth_config_creation(self):
+        """Test creating basic auth config."""
+        config = FlextOracleWmsAuthConfig(
+            auth_type=OracleWMSAuthMethod.BASIC,
+            username="testuser",
+            password="testpass"
         )
-        assert auth.client_id == "client123"
-        assert auth.client_secret == "secret456"
-        assert auth.authorization_url == "https://auth.example.com/authorize"
-        assert auth.token_url == "https://auth.example.com/token"
+        assert config.auth_type == OracleWMSAuthMethod.BASIC
+        assert config.username == "testuser"
+        assert config.password == "testpass"
 
-    def test_oauth2_authorization_url(self) -> None:
-        """Test OAuth2 authorization URL generation."""
-        auth = FlextOracleWmsOAuth2Auth(
-            client_id="client123",
-            client_secret="secret456",
-            authorization_url="https://auth.example.com/authorize",
-            token_url="https://auth.example.com/token",
+    def test_bearer_auth_config_creation(self):
+        """Test creating bearer token auth config."""
+        config = FlextOracleWmsAuthConfig(
+            auth_type=OracleWMSAuthMethod.BEARER,
+            token="test_bearer_token"
         )
+        assert config.auth_type == OracleWMSAuthMethod.BEARER
+        assert config.token == "test_bearer_token"
 
-        result = auth.get_authorization_url()
-        assert result.is_success is True
-        assert "client_id=client123" in result.data
-        assert "response_type=code" in result.data
-
-    def test_create_authenticator_basic(self) -> None:
-        """Test authenticator factory for basic auth."""
-        auth = flext_oracle_wms_create_authenticator("user", "pass")
-        assert isinstance(auth, FlextOracleWmsAuth)
-        assert auth.username == "user"
-        assert auth.password == "pass"
-
-    def test_create_oauth2_authenticator(self) -> None:
-        """Test OAuth2 authenticator factory."""
-        auth = flext_oracle_wms_create_oauth2_authenticator(
-            client_id="client123",
-            client_secret="secret456",
-            authorization_url="https://auth.example.com/authorize",
-            token_url="https://auth.example.com/token",
+    def test_api_key_auth_config_creation(self):
+        """Test creating API key auth config."""
+        config = FlextOracleWmsAuthConfig(
+            auth_type=OracleWMSAuthMethod.API_KEY,
+            api_key="test_api_key"
         )
-        assert isinstance(auth, FlextOracleWmsOAuth2Auth)
-        assert auth.client_id == "client123"
+        assert config.auth_type == OracleWMSAuthMethod.API_KEY
+        assert config.api_key == "test_api_key"
 
-    def test_basic_auth_with_different_methods(self) -> None:
-        """Test basic auth with different methods."""
-        # Test with digest method
-        auth = FlextOracleWmsAuth("user", "pass", "digest")
-        assert auth.auth_method == "digest"
-
-        # Test with bearer method
-        auth = FlextOracleWmsAuth("user", "pass", "bearer")
-        assert auth.auth_method == "bearer"
-
-    def test_oauth2_state_generation(self) -> None:
-        """Test OAuth2 state parameter generation."""
-        auth = FlextOracleWmsOAuth2Auth(
-            client_id="client123",
-            client_secret="secret456",
-            authorization_url="https://auth.example.com/authorize",
-            token_url="https://auth.example.com/token",
+    def test_authenticator_creation_with_valid_config(self):
+        """Test creating authenticator with valid config."""
+        config = FlextOracleWmsAuthConfig(
+            auth_type=OracleWMSAuthMethod.BASIC,
+            username="testuser",
+            password="testpass"
         )
+        authenticator = FlextOracleWmsAuthenticator(config)
+        assert authenticator.config == config
 
-        result1 = auth.get_authorization_url()
-        result2 = auth.get_authorization_url()
-
-        # Both should succeed
-        assert result1.is_success is True
-        assert result2.is_success is True
-
-        # Should contain different state parameters (random)
-        assert "state=" in result1.data
-        assert "state=" in result2.data
-
-    def test_auth_repr_methods(self) -> None:
-        """Test string representations of auth objects."""
-        basic_auth = FlextOracleWmsAuth("user", "pass", "basic")
-        repr_str = repr(basic_auth)
-        assert "FlextOracleWmsAuth" in repr_str
-        # Don't assume specific format of repr - just check class name
-
-        oauth2_auth = FlextOracleWmsOAuth2Auth(
-            client_id="client123",
-            client_secret="secret456",
-            authorization_url="https://auth.example.com/authorize",
-            token_url="https://auth.example.com/token",
+    def test_auth_plugin_creation(self):
+        """Test creating auth plugin."""
+        config = FlextOracleWmsAuthConfig(
+            auth_type=OracleWMSAuthMethod.BASIC,
+            username="testuser",
+            password="testpass"
         )
-        repr_str = repr(oauth2_auth)
-        assert "FlextOracleWmsOAuth2Auth" in repr_str
-        # Don't assume specific format of repr - just check class name
+        authenticator = FlextOracleWmsAuthenticator(config)
+        plugin = FlextOracleWmsAuthPlugin(authenticator)
+        assert plugin.authenticator == authenticator
 
-    def test_auth_edge_cases(self) -> None:
-        """Test authentication edge cases."""
-        # Test with empty credentials
-        auth = FlextOracleWmsAuth("", "", "basic")
-        assert auth.username == ""
-        assert auth.password == ""
-
-        # Test OAuth2 with minimal config
-        oauth2_auth = FlextOracleWmsOAuth2Auth(
-            client_id="client",
-            client_secret="secret",
-            authorization_url="https://example.com/auth",
-            token_url="https://example.com/token",
+    @pytest.mark.asyncio
+    async def test_basic_auth_headers_generation(self):
+        """Test basic auth headers are generated correctly."""
+        config = FlextOracleWmsAuthConfig(
+            auth_type=OracleWMSAuthMethod.BASIC,
+            username="testuser",
+            password="testpass"
         )
-        # Test that basic attributes exist
-        assert hasattr(oauth2_auth, "client_id")
-        assert oauth2_auth.client_id == "client"
+        authenticator = FlextOracleWmsAuthenticator(config)
+        
+        result = await authenticator.get_auth_headers()
+        assert result.is_success
+        headers = result.data
+        assert "Authorization" in headers
+        assert headers["Authorization"].startswith("Basic ")
+        assert headers["Content-Type"] == "application/json"
+
+    @pytest.mark.asyncio
+    async def test_bearer_auth_headers_generation(self):
+        """Test bearer auth headers are generated correctly."""
+        config = FlextOracleWmsAuthConfig(
+            auth_type=OracleWMSAuthMethod.BEARER,
+            token="test_token"
+        )
+        authenticator = FlextOracleWmsAuthenticator(config)
+        
+        result = await authenticator.get_auth_headers()
+        assert result.is_success
+        headers = result.data
+        assert headers["Authorization"] == "Bearer test_token"
+
+    @pytest.mark.asyncio
+    async def test_api_key_headers_generation(self):
+        """Test API key headers are generated correctly."""
+        config = FlextOracleWmsAuthConfig(
+            auth_type=OracleWMSAuthMethod.API_KEY,
+            api_key="test_api_key"
+        )
+        authenticator = FlextOracleWmsAuthenticator(config)
+        
+        result = await authenticator.get_auth_headers()
+        assert result.is_success
+        headers = result.data
+        assert headers["X-API-Key"] == "test_api_key"
+
+    def test_config_validation_success_basic(self):
+        """Test config validation succeeds for valid basic auth."""
+        config = FlextOracleWmsAuthConfig(
+            auth_type=OracleWMSAuthMethod.BASIC,
+            username="testuser",
+            password="testpass"
+        )
+        result = config.validate_domain_rules()
+        assert result.is_success
+
+    def test_config_validation_success_bearer(self):
+        """Test config validation succeeds for valid bearer auth."""
+        config = FlextOracleWmsAuthConfig(
+            auth_type=OracleWMSAuthMethod.BEARER,
+            token="valid_token"
+        )
+        result = config.validate_domain_rules()
+        assert result.is_success
+
+    def test_config_validation_success_api_key(self):
+        """Test config validation succeeds for valid API key auth."""
+        config = FlextOracleWmsAuthConfig(
+            auth_type=OracleWMSAuthMethod.API_KEY,
+            api_key="valid_api_key"
+        )
+        result = config.validate_domain_rules()
+        assert result.is_success

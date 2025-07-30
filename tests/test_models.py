@@ -1,23 +1,12 @@
 """Test Oracle WMS models functionality."""
 
+import pytest
 from flext_oracle_wms.models import (
+    FlextOracleWmsApiResponse,
     FlextOracleWmsDiscoveryResult,
     FlextOracleWmsEntity,
-    FlextOracleWmsRecordModel,
-    FlextOracleWmsResponse,
 )
-
-
-def test_record_model_creation() -> None:
-    """Test record model creation."""
-    record = FlextOracleWmsRecordModel(
-        entity="order_hdr",
-        record_id="123",
-        data={"order_id": "123", "status": "active"},
-    )
-    assert record.entity == "order_hdr"
-    assert record.record_id == "123"
-    assert record.data["order_id"] == "123"
+from flext_oracle_wms.exceptions import FlextOracleWmsDataValidationError
 
 
 def test_entity_creation() -> None:
@@ -25,15 +14,138 @@ def test_entity_creation() -> None:
     entity = FlextOracleWmsEntity(
         name="order_hdr",
         endpoint="/api/order_hdr",
+        description="Order header entity",
         fields={"order_id": {"type": "string"}, "status": {"type": "string"}},
+        primary_key="order_id",
+        supports_incremental=True
     )
     assert entity.name == "order_hdr"
+    assert entity.endpoint == "/api/order_hdr"
+    assert entity.description == "Order header entity"
+    assert entity.primary_key == "order_id"
+    assert entity.supports_incremental is True
+
+
+def test_entity_validation_success() -> None:
+    """Test entity validation with valid data."""
+    entity = FlextOracleWmsEntity(
+        name="item_master",
+        endpoint="/api/items"
+    )
+    # Should not raise exception
+    entity.validate_domain_rules()
+
+
+def test_entity_validation_empty_name() -> None:
+    """Test entity validation with empty name."""
+    entity = FlextOracleWmsEntity(
+        name="",
+        endpoint="/api/items"
+    )
+    with pytest.raises(FlextOracleWmsDataValidationError):
+        entity.validate_domain_rules()
+
+
+def test_entity_validation_empty_endpoint() -> None:
+    """Test entity validation with empty endpoint."""
+    entity = FlextOracleWmsEntity(
+        name="item_master",
+        endpoint=""
+    )
+    with pytest.raises(FlextOracleWmsDataValidationError):
+        entity.validate_domain_rules()
+
+
+def test_discovery_result_creation() -> None:
+    """Test discovery result creation."""
+    entities = [
+        FlextOracleWmsEntity(name="order_hdr", endpoint="/api/orders"),
+        FlextOracleWmsEntity(name="item_master", endpoint="/api/items")
+    ]
+    
+    result = FlextOracleWmsDiscoveryResult(
+        entities=entities,
+        total_count=2,
+        timestamp="2025-01-15T10:30:00Z",
+        discovery_duration_ms=150.5,
+        has_errors=False,
+        api_version="v10"
+    )
+    
+    assert len(result.entities) == 2
+    assert result.total_count == 2
+    assert result.timestamp == "2025-01-15T10:30:00Z"
+    assert result.discovery_duration_ms == 150.5
+    assert result.has_errors is False
+    assert result.api_version == "v10"
+
+
+def test_discovery_result_validation() -> None:
+    """Test discovery result validation."""
+    result = FlextOracleWmsDiscoveryResult(
+        entities=[FlextOracleWmsEntity(name="test", endpoint="/api/test")],
+        total_count=1,
+        timestamp="2025-01-15T10:30:00Z"
+    )
+    # Should not raise exception
+    result.validate_domain_rules()
+
+
+def test_discovery_result_validation_count_mismatch() -> None:
+    """Test discovery result validation with count mismatch."""
+    result = FlextOracleWmsDiscoveryResult(
+        entities=[FlextOracleWmsEntity(name="test", endpoint="/api/test")],
+        total_count=5,  # Mismatch: 1 entity but count says 5
+        timestamp="2025-01-15T10:30:00Z"
+    )
+    with pytest.raises(FlextOracleWmsDataValidationError):
+        result.validate_domain_rules()
+
+
+def test_api_response_creation() -> None:
+    """Test API response creation."""
+    response = FlextOracleWmsApiResponse(
+        data={"order_id": "ORD001", "status": "OPEN"},
+        status_code=200,
+        success=True,
+        error_message=None
+    )
+    
+    assert response.status_code == 200
+    assert response.data["order_id"] == "ORD001"
+    assert response.success is True
+    assert response.error_message is None
+
+
+def test_api_response_error() -> None:
+    """Test API response with error."""
+    response = FlextOracleWmsApiResponse(
+        data={},
+        status_code=404,
+        success=False,
+        error_message="Order not found"
+    )
+    
+    assert response.status_code == 404
+    assert response.success is False
+    assert response.error_message == "Order not found"
+
+
+def test_api_response_validation() -> None:
+    """Test API response validation."""
+    response = FlextOracleWmsApiResponse(
+        status_code=200,
+        data={"test": "data"},
+        message="Test response"
+    )
+    # Should not raise exception
+    response.validate_domain_rules()
     assert "order_id" in entity.fields
 
 
 def test_response_creation() -> None:
     """Test response creation."""
-    response = FlextOracleWmsResponse(
+    response = FlextOracleWmsApiResponse(
         data=[{"result": "success"}],
         total_count=1,
     )
@@ -56,16 +168,29 @@ def test_discovery_result_creation() -> None:
     assert result.total_count == 0  # Default value
 
 
-def test_record_model_with_metadata() -> None:
-    """Test record model with metadata."""
-    record = FlextOracleWmsRecordModel(
-        entity="order_hdr",
-        record_id="123",
-        data={"order_id": "123"},
+def test_entity_with_complex_fields() -> None:
+    """Test entity with complex field definitions."""
+    complex_fields = {
+        "order_id": {"type": "string", "maxLength": 50, "required": True},
+        "status": {"type": "string", "enum": ["OPEN", "CLOSED", "CANCELLED"]},
+        "total_amount": {"type": "number", "format": "decimal", "precision": 2},
+        "created_date": {"type": "string", "format": "date-time"}
+    }
+    
+    entity = FlextOracleWmsEntity(
+        name="order_hdr",
+        endpoint="/api/orders",
+        description="Order header with complex schema",
+        fields=complex_fields,
+        primary_key="order_id",
+        replication_key="created_date",
+        supports_incremental=True
     )
-    # Model doesn't have metadata field, test basic functionality
-    assert record.entity == "order_hdr"
-    assert record.data["order_id"] == "123"
+    
+    assert entity.name == "order_hdr"
+    assert entity.fields == complex_fields
+    assert entity.primary_key == "order_id"
+    assert entity.replication_key == "created_date"
 
 
 def test_entity_with_schema() -> None:
@@ -80,7 +205,7 @@ def test_entity_with_schema() -> None:
 
 def test_response_basic_creation() -> None:
     """Test basic response creation."""
-    response = FlextOracleWmsResponse()
+    response = FlextOracleWmsApiResponse()
     assert response.data == []
     assert response.records == []
     assert response.total_count == 0
@@ -103,17 +228,6 @@ def test_discovery_result_with_errors() -> None:
     assert "Connection failed" in result.errors
 
 
-def test_record_model_str_representation() -> None:
-    """Test record model string representation."""
-    record = FlextOracleWmsRecordModel(
-        entity="order_hdr",
-        record_id="123",
-        data={"order_id": "123"},
-    )
-    str_repr = str(record)
-    assert "order_hdr" in str_repr
-
-
 def test_entity_validation() -> None:
     """Test entity validation."""
     entity = FlextOracleWmsEntity(
@@ -128,7 +242,7 @@ def test_entity_validation() -> None:
 
 def test_response_with_headers() -> None:
     """Test response with headers."""
-    response = FlextOracleWmsResponse(
+    response = FlextOracleWmsApiResponse(
         data=[{"result": "success"}],
         total_count=1,
     )
@@ -152,17 +266,6 @@ def test_discovery_result_statistics() -> None:
     assert result.entities[0].name == "order_hdr"
 
 
-def test_record_model_data_validation() -> None:
-    """Test record model data validation."""
-    record = FlextOracleWmsRecordModel(
-        entity="order_hdr",
-        record_id="123",
-        data={"order_id": "123", "quantity": 10},
-    )
-    assert isinstance(record.data["quantity"], int)
-    assert record.data["quantity"] == 10
-
-
 def test_entity_field_count() -> None:
     """Test entity field count."""
     entity = FlextOracleWmsEntity(
@@ -180,7 +283,7 @@ def test_entity_field_count() -> None:
 
 def test_response_error_handling() -> None:
     """Test response error handling."""
-    response = FlextOracleWmsResponse(
+    response = FlextOracleWmsApiResponse(
         data=[{"error": "Not found"}],
         total_count=0,
     )

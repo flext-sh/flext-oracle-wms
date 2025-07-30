@@ -8,7 +8,7 @@ Minimal Oracle WMS types - only what's actually needed.
 
 from __future__ import annotations
 
-from typing import Annotated, Any, Literal, TypedDict
+from typing import Annotated, Literal, TypedDict
 
 # Import validation from Pydantic
 from pydantic import Field, StringConstraints
@@ -18,18 +18,19 @@ from pydantic import Field, StringConstraints
 # =================================================================
 
 # Core record types - USED EVERYWHERE
-TOracleWmsRecord = dict[str, Any]
+TOracleWmsRecord = dict[str, object]
 TOracleWmsRecordBatch = list[TOracleWmsRecord]
-TOracleWmsSchema = dict[str, dict[str, Any]]
+TOracleWmsSchema = dict[str, dict[str, object]]
 
 # API types - USED BY CLIENT
-TOracleWmsApiResponse = dict[str, Any]
+TOracleWmsApiResponse = dict[str, object]
 TOracleWmsApiVersion = Literal["v10", "v11", "legacy"]
 
 # Entity naming - USED BY CLIENT/DISCOVERY
 TOracleWmsEntityId = Annotated[str, StringConstraints(min_length=1, max_length=100)]
 TOracleWmsEntityName = Annotated[
-    str, StringConstraints(min_length=1, max_length=50, pattern=r"^[a-z0-9_]+$")
+    str,
+    StringConstraints(min_length=1, max_length=50, pattern=r"^[a-z0-9_]+$"),
 ]
 
 # Filter types - USED BY FILTERING MODULE
