@@ -211,7 +211,10 @@ class FlextOracleWmsEntityNotFoundError(FlextOracleWmsError):
         details_raw = kwargs.pop("details", None)
         details = details_raw if isinstance(details_raw, dict) else None
         super().__init__(
-            message, error_code="NOT_FOUND", entity_name=entity_name, details=details,
+            message,
+            error_code="NOT_FOUND",
+            entity_name=entity_name,
+            details=details,
         )
 
 

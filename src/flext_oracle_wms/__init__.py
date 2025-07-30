@@ -118,7 +118,7 @@ from flext_oracle_wms.types import (
 )
 
 # Version information
-__version__ = "0.7.0"
+__version__ = "0.9.0"
 __author__ = "FLEXT Contributors"
 __description__ = (
     "Oracle WMS integration library using flext-core and flext-api patterns"

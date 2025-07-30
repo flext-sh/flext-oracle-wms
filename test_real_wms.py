@@ -54,7 +54,11 @@ async def test_real_oracle_wms() -> bool | None:
 
         # Test 3: Get Entity Data (try company first)
         if entities_result.is_success and entities_result.data:
-            test_entity = "company" if "company" in entities_result.data else entities_result.data[0]
+            test_entity = (
+                "company"
+                if "company" in entities_result.data
+                else entities_result.data[0]
+            )
 
             entity_data_result = await client.get_entity_data(
                 entity_name=test_entity,
@@ -88,6 +92,7 @@ async def test_real_oracle_wms() -> bool | None:
 
         # List some API categories
         from flext_oracle_wms.api_catalog import FlextOracleWmsApiCategory
+
         for category in FlextOracleWmsApiCategory:
             category_apis = client.get_apis_by_category(category)
             if category_apis:
@@ -102,6 +107,7 @@ async def test_real_oracle_wms() -> bool | None:
 
     except Exception:
         import traceback
+
         traceback.print_exc()
         return False
 
@@ -110,10 +116,15 @@ async def main():
     """Main test function."""
     # Load environment variables from .env file
     from dotenv import load_dotenv
+
     load_dotenv()
 
     # Validate required environment variables
-    required_vars = ["ORACLE_WMS_BASE_URL", "ORACLE_WMS_USERNAME", "ORACLE_WMS_PASSWORD"]
+    required_vars = [
+        "ORACLE_WMS_BASE_URL",
+        "ORACLE_WMS_USERNAME",
+        "ORACLE_WMS_PASSWORD",
+    ]
     missing_vars = [var for var in required_vars if not os.getenv(var)]
 
     if missing_vars:
@@ -134,6 +145,7 @@ if __name__ == "__main__":
         import dotenv
     except ImportError:
         import subprocess
+
         subprocess.check_call(["pip", "install", "python-dotenv"])
 
     # Run the test

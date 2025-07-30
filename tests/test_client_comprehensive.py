@@ -41,7 +41,7 @@ class TestFlextOracleWmsAuth:
         config = FlextOracleWmsAuthConfig(
             auth_type=OracleWMSAuthMethod.BASIC,
             username="test_user",
-            password="test_pass"
+            password="test_pass",
         )
         assert config.username == "test_user"
         assert config.password == "test_pass"
@@ -52,7 +52,7 @@ class TestFlextOracleWmsAuth:
         config = FlextOracleWmsAuthConfig(
             auth_type=OracleWMSAuthMethod.BASIC,
             username="testuser",
-            password="testpass"
+            password="testpass",
         )
         authenticator = FlextOracleWmsAuthenticator(config)
         assert authenticator.config == config
@@ -63,7 +63,7 @@ class TestFlextOracleWmsAuth:
         config = FlextOracleWmsAuthConfig(
             auth_type=OracleWMSAuthMethod.BASIC,
             username="testuser",
-            password="testpass"
+            password="testpass",
         )
         authenticator = FlextOracleWmsAuthenticator(config)
 
@@ -77,9 +77,7 @@ class TestFlextOracleWmsAuth:
     def test_auth_validation_empty_credentials(self) -> None:
         """Test auth validation with empty credentials."""
         config = FlextOracleWmsAuthConfig(
-            auth_type=OracleWMSAuthMethod.BASIC,
-            username="",
-            password=""
+            auth_type=OracleWMSAuthMethod.BASIC, username="", password=""
         )
         result = config.validate_domain_rules()
         assert result.is_success is False
@@ -94,7 +92,7 @@ class TestFlextOracleWmsClient:
             base_url="https://test.wms.com",
             username="user",
             password="pass",
-            environment="test_env"
+            environment="test_env",
         )
         client = FlextOracleWmsClient(config)
         assert client.config == config
@@ -106,7 +104,7 @@ class TestFlextOracleWmsClient:
             base_url="https://test.wms.com",
             username="user",
             password="pass",
-            environment="test_env"
+            environment="test_env",
         )
         client = FlextOracleWmsClient(config)
 
@@ -127,15 +125,13 @@ class TestFlextOracleWmsClient:
             base_url="https://test.wms.com",
             username="user",
             password="pass",
-            environment="test_env"
+            environment="test_env",
         )
         client = FlextOracleWmsClient(config)
 
         with patch.object(client, "_call_api_direct") as mock_call:
             mock_call.return_value.is_success = True
-            mock_call.return_value.data = {
-                "entities": ["company", "facility", "item"]
-            }
+            mock_call.return_value.data = {"entities": ["company", "facility", "item"]}
 
             result = await client.discover_entities()
             assert result.is_success is True
@@ -148,7 +144,7 @@ class TestFlextOracleWmsClient:
             base_url="https://test.wms.com",
             username="user",
             password="pass",
-            environment="test_env"
+            environment="test_env",
         )
         client = FlextOracleWmsClient(config)
 
@@ -168,7 +164,7 @@ class TestFlextOracleWmsClient:
             base_url="https://test.wms.com",
             username="user",
             password="pass",
-            environment="test_env"
+            environment="test_env",
         )
         client = FlextOracleWmsClient(config)
 
@@ -176,13 +172,13 @@ class TestFlextOracleWmsClient:
             patch.object(client, "discover_entities") as mock_discover,
             patch.object(client, "get_entity_data") as mock_get,
         ):
-                mock_discover.return_value.is_success = True
-                mock_discover.return_value.data = ["company"]
-                mock_get.return_value.is_success = True
+            mock_discover.return_value.is_success = True
+            mock_discover.return_value.data = ["company"]
+            mock_get.return_value.is_success = True
 
-                result = await client.health_check()
-                assert result.is_success is True
-                assert result.data["service"] == "FlextOracleWmsClient"
+            result = await client.health_check()
+            assert result.is_success is True
+            assert result.data["service"] == "FlextOracleWmsClient"
 
     def test_get_available_apis(self) -> None:
         """Test getting available APIs."""
@@ -190,7 +186,7 @@ class TestFlextOracleWmsClient:
             base_url="https://test.wms.com",
             username="user",
             password="pass",
-            environment="test_env"
+            environment="test_env",
         )
         client = FlextOracleWmsClient(config)
 
@@ -250,7 +246,7 @@ class TestErrorHandling:
             base_url="https://invalid.url.com",
             username="user",
             password="pass",
-            environment="test_env"
+            environment="test_env",
         )
         client = FlextOracleWmsClient(config)
 
@@ -267,7 +263,7 @@ class TestErrorHandling:
             base_url="https://test.wms.com",
             username="user",
             password="pass",
-            environment="test_env"
+            environment="test_env",
         )
         client = FlextOracleWmsClient(config)
 

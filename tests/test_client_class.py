@@ -1,6 +1,5 @@
 """Test Oracle WMS client class functionality."""
 
-
 from flext_oracle_wms.client import FlextOracleWmsClient
 from flext_oracle_wms.config import FlextOracleWmsModuleConfig
 
@@ -181,9 +180,7 @@ def test_real_helper_functions() -> None:
     assert result.data == "order_hdr"
 
     # Test real URL building function
-    url = flext_oracle_wms_build_entity_url(
-        "https://test.com", "prod", "order_hdr"
-    )
+    url = flext_oracle_wms_build_entity_url("https://test.com", "prod", "order_hdr")
     assert "order_hdr" in url
     assert "wms/lgfapi" in url
 

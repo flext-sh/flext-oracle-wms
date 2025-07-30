@@ -36,7 +36,7 @@ class TestFlextOracleWmsDataFlattener:
         record: dict[str, object] = {
             "id": "123",
             "name": "Test Item",
-            "status": "active"
+            "status": "active",
         }
 
         result = await flattener.flatten_records([record])
@@ -54,11 +54,8 @@ class TestFlextOracleWmsDataFlattener:
             "id": "123",
             "details": {
                 "name": "Test Item",
-                "category": {
-                    "id": "cat1",
-                    "name": "Category 1"
-                }
-            }
+                "category": {"id": "cat1", "name": "Category 1"},
+            },
         }
 
         result = await flattener.flatten_records([record])
@@ -79,7 +76,7 @@ class TestFlextOracleWmsDataFlattener:
             "id": "123",
             "details_name": "Test Item",
             "details_category_id": "cat1",
-            "details_category_name": "Category 1"
+            "details_category_name": "Category 1",
         }
 
         result = await flattener.unflatten_records([flattened_record])
@@ -97,7 +94,7 @@ class TestFlextOracleWmsDataFlattener:
         records: list[dict[str, object]] = [
             {"id": "1", "name": "Item 1"},
             {"id": "2", "details": {"name": "Item 2", "type": "special"}},
-            {"id": "3", "info": {"nested": {"deep": "value"}}}
+            {"id": "3", "info": {"nested": {"deep": "value"}}},
         ]
 
         result = await flattener.get_flattening_stats(records)

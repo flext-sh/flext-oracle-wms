@@ -393,7 +393,9 @@ class TestAutomationApisIntegration:
 class TestErrorHandlingIntegration:
     """Integration tests for error handling and edge cases."""
 
-    async def test_invalid_entity_name(self, oracle_wms_client: FlextOracleWmsClient) -> None:
+    async def test_invalid_entity_name(
+        self, oracle_wms_client: FlextOracleWmsClient
+    ) -> None:
         """Test handling of invalid entity names."""
         result = await oracle_wms_client.get_entity_data("invalid_entity_xyz")
 
@@ -401,7 +403,9 @@ class TestErrorHandlingIntegration:
         assert "404" in result.error or "not found" in result.error.lower()
         logger.info("✅ Properly handled invalid entity: %s", result.error)
 
-    async def test_unknown_api_call(self, oracle_wms_client: FlextOracleWmsClient) -> None:
+    async def test_unknown_api_call(
+        self, oracle_wms_client: FlextOracleWmsClient
+    ) -> None:
         """Test handling of unknown API calls."""
         result = await oracle_wms_client._call_api("unknown_api_xyz")
 
@@ -409,7 +413,9 @@ class TestErrorHandlingIntegration:
         assert "Unknown API" in result.error
         logger.info("✅ Properly handled unknown API: %s", result.error)
 
-    async def test_malformed_lgf_call(self, oracle_wms_client: FlextOracleWmsClient) -> None:
+    async def test_malformed_lgf_call(
+        self, oracle_wms_client: FlextOracleWmsClient
+    ) -> None:
         """Test handling of malformed LGF API calls."""
         result = await oracle_wms_client._call_lgf_api(
             "/invalid/path/xyz/", method="GET"
@@ -427,7 +433,9 @@ class TestErrorHandlingIntegration:
 class TestPerformanceIntegration:
     """Performance and stress tests for Oracle WMS client."""
 
-    async def test_concurrent_entity_requests(self, oracle_wms_client: FlextOracleWmsClient) -> None:
+    async def test_concurrent_entity_requests(
+        self, oracle_wms_client: FlextOracleWmsClient
+    ) -> None:
         """Test concurrent requests to different entities."""
         import asyncio
 
@@ -461,7 +469,9 @@ class TestPerformanceIntegration:
             len(tasks),
         )
 
-    async def test_pagination_handling(self, oracle_wms_client: FlextOracleWmsClient) -> None:
+    async def test_pagination_handling(
+        self, oracle_wms_client: FlextOracleWmsClient
+    ) -> None:
         """Test pagination with different page sizes."""
         page_sizes = [1, 5, 10]
 

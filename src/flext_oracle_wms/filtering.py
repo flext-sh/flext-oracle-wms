@@ -502,7 +502,8 @@ async def flext_oracle_wms_filter_by_id_range(
         if min_id is not None and max_id is not None:
             # Range filter - use list of values with proper typing
             if isinstance(min_id, (str, int, float)) and isinstance(
-                max_id, (str, int, float),
+                max_id,
+                (str, int, float),
             ):
                 filters[id_field] = [min_id, max_id]
             else:

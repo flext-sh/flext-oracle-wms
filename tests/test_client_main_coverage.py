@@ -1,6 +1,5 @@
 """Comprehensive tests for client.py - targeting critical missing coverage."""
 
-
 import pytest
 from flext_core import get_logger
 
@@ -67,7 +66,7 @@ class TestFlextOracleWmsClient:
             base_url="https://test.example.com",
             username="testuser",
             password="testpass",
-            environment="test"
+            environment="test",
         )
         client = FlextOracleWmsClient(config)
         assert client.config == config
@@ -79,7 +78,7 @@ class TestFlextOracleWmsClient:
             base_url="invalid_url",  # Invalid URL
             username="testuser",
             password="testpass",
-            environment="test"
+            environment="test",
         )
         client = FlextOracleWmsClient(config)
 
@@ -93,7 +92,7 @@ class TestFlextOracleWmsClient:
             base_url="https://test.example.com",
             username="testuser",
             password="testpass",
-            environment="test"
+            environment="test",
         )
         client = FlextOracleWmsClient(config)
 
@@ -107,7 +106,7 @@ class TestFlextOracleWmsClient:
             base_url="https://test.example.com",
             username="testuser",
             password="testpass",
-            environment="test"
+            environment="test",
         )
         client = FlextOracleWmsClient(config)
 
@@ -127,7 +126,7 @@ class TestFlextOracleWmsClient:
             base_url="https://test.example.com",
             username="testuser",
             password="testpass",
-            environment="test"
+            environment="test",
         )
         client = FlextOracleWmsClient(config)
 
@@ -141,7 +140,7 @@ class TestFlextOracleWmsClient:
             base_url="https://test.example.com",
             username="testuser",
             password="testpass",
-            environment="test"
+            environment="test",
         )
         client = FlextOracleWmsClient(config)
 
@@ -155,7 +154,7 @@ class TestFlextOracleWmsClient:
             base_url="https://test.example.com",
             username="testuser",
             password="testpass",
-            environment="test"
+            environment="test",
         )
         client = FlextOracleWmsClient(config)
 
@@ -171,11 +170,13 @@ class TestFlextOracleWmsClient:
             base_url="https://test.example.com",
             username="testuser",
             password="testpass",
-            environment="test"
+            environment="test",
         )
         client = FlextOracleWmsClient(config)
 
-        setup_apis = client.get_apis_by_category(FlextOracleWmsApiCategory.SETUP_TRANSACTIONAL)
+        setup_apis = client.get_apis_by_category(
+            FlextOracleWmsApiCategory.SETUP_TRANSACTIONAL
+        )
         assert isinstance(setup_apis, dict)
 
     @pytest.mark.asyncio
@@ -185,7 +186,7 @@ class TestFlextOracleWmsClient:
             base_url="https://test.example.com",
             username="testuser",
             password="testpass",
-            environment="test"
+            environment="test",
         )
         client = FlextOracleWmsClient(config)
 
@@ -199,7 +200,7 @@ class TestFlextOracleWmsClient:
             base_url="https://test.example.com",
             username="testuser",
             password="testpass",
-            environment="test"
+            environment="test",
         )
         client = FlextOracleWmsClient(config)
 
@@ -217,7 +218,7 @@ class TestClientHelperMethods:
             base_url="https://test.example.com",
             username="testuser",
             password="testpass",
-            environment="test"
+            environment="test",
         )
         client = FlextOracleWmsClient(config)
 
@@ -231,13 +232,11 @@ class TestClientHelperMethods:
             base_url="https://test.example.com",
             username="testuser",
             password="testpass",
-            environment="test"
+            environment="test",
         )
         client = FlextOracleWmsClient(config)
 
-        response_data = {
-            "entities": ["entity1", "entity2", "entity3"]
-        }
+        response_data = {"entities": ["entity1", "entity2", "entity3"]}
         result = client._parse_entity_discovery_response(response_data)
         assert isinstance(result, list)
         assert "entity1" in result
@@ -250,7 +249,7 @@ class TestClientHelperMethods:
             base_url="https://test.example.com",
             username="testuser",
             password="testpass",
-            environment="test"
+            environment="test",
         )
         client = FlextOracleWmsClient(config)
 
@@ -258,7 +257,7 @@ class TestClientHelperMethods:
             "results": [
                 {"name": "entity1"},
                 {"name": "entity2"},
-                "entity3"  # String in results
+                "entity3",  # String in results
             ]
         }
         result = client._parse_entity_discovery_response(response_data)
@@ -273,7 +272,7 @@ class TestClientHelperMethods:
             base_url="https://test.example.com",
             username="testuser",
             password="testpass",
-            environment="test"
+            environment="test",
         )
         client = FlextOracleWmsClient(config)
 
@@ -290,7 +289,7 @@ class TestClientHelperMethods:
             base_url="https://test.example.com",
             username="testuser",
             password="testpass",
-            environment="test"
+            environment="test",
         )
         client = FlextOracleWmsClient(config)
 

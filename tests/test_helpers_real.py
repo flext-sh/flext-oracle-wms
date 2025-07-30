@@ -1,6 +1,5 @@
 """Real functional tests for Oracle WMS helpers module."""
 
-
 import pytest
 
 from flext_oracle_wms.exceptions import (
@@ -32,27 +31,25 @@ class TestRealScenarios:
                 "base": "https://company.oraclecloud.com",
                 "env": "production",
                 "entity": "order_hdr",
-                "expected": "https://company.oraclecloud.com/production/wms/lgfapi/v10/entity/order_hdr/"
+                "expected": "https://company.oraclecloud.com/production/wms/lgfapi/v10/entity/order_hdr/",
             },
             {
                 "base": "https://dev-wms.company.com",
                 "env": "dev",
                 "entity": "item_master",
-                "expected": "https://dev-wms.company.com/dev/wms/lgfapi/v10/entity/item_master/"
+                "expected": "https://dev-wms.company.com/dev/wms/lgfapi/v10/entity/item_master/",
             },
             {
                 "base": "https://internal.invalid/REDACTED",
                 "env": "test",
                 "entity": "inventory_balance",
-                "expected": "https://internal.invalid/REDACTED"
-            }
+                "expected": "https://internal.invalid/REDACTED",
+            },
         ]
 
         for scenario in real_scenarios:
             result = flext_oracle_wms_build_entity_url(
-                scenario["base"],
-                scenario["env"],
-                scenario["entity"]
+                scenario["base"], scenario["env"], scenario["entity"]
             )
             assert result == scenario["expected"]
 
@@ -97,21 +94,21 @@ class TestRealScenarios:
             {
                 "results": [
                     {"order_id": "ORD001", "status": "OPEN"},
-                    {"order_id": "ORD002", "status": "RELEASED"}
+                    {"order_id": "ORD002", "status": "RELEASED"},
                 ],
                 "page_nbr": 1,
                 "page_count": 1,
-                "result_count": 2
+                "result_count": 2,
             },
             {
                 "data": {"order_id": "ORD001", "status": "OPEN"},
-                "message": "Order retrieved successfully"
+                "message": "Order retrieved successfully",
             },
             {
                 "status": "success",
                 "entity_count": 150,
-                "timestamp": "2025-01-15T10:30:00Z"
-            }
+                "timestamp": "2025-01-15T10:30:00Z",
+            },
         ]
 
         for response in success_responses:
@@ -136,13 +133,13 @@ class TestRealScenarios:
         real_pagination = {
             "results": [
                 {"order_id": "ORD001", "status": "OPEN"},
-                {"order_id": "ORD002", "status": "RELEASED"}
+                {"order_id": "ORD002", "status": "RELEASED"},
             ],
             "page_nbr": 2,
             "page_count": 5,
             "result_count": 500,
             "next_page": "https://wms.company.com/api/orders?page=3",
-            "previous_page": "https://wms.company.com/api/orders?page=1"
+            "previous_page": "https://wms.company.com/api/orders?page=1",
         }
 
         result = flext_oracle_wms_extract_pagination_info(real_pagination)
@@ -165,7 +162,7 @@ class TestRealScenarios:
                 "status": "OPEN" if i % 2 == 0 else "RELEASED",
                 "order_date": "2025-01-15",
                 "total_lines": 5,
-                "priority": "HIGH" if i % 3 == 0 else "NORMAL"
+                "priority": "HIGH" if i % 3 == 0 else "NORMAL",
             }
             for i in range(1, 101)  # 100 records
         ]
@@ -209,12 +206,21 @@ class TestRealScenarios:
     def test_real_url_normalization(self) -> None:
         """Test URL normalization with real Oracle WMS URL patterns."""
         real_scenarios = [
-            ("https://company.oraclecloud.com", "wms/lgfapi/v10/entity/orders",
-             "https://company.oraclecloud.com/wms/lgfapi/v10/entity/orders"),
-            ("https://wms.company.com/", "/api/v2/orders/",
-             "https://wms.company.com/api/v2/orders/"),
-            ("https://internal.wms", "production/wms/lgfapi/v10/",
-             "https://internal.wms/production/wms/lgfapi/v10/"),
+            (
+                "https://company.oraclecloud.com",
+                "wms/lgfapi/v10/entity/orders",
+                "https://company.oraclecloud.com/wms/lgfapi/v10/entity/orders",
+            ),
+            (
+                "https://wms.company.com/",
+                "/api/v2/orders/",
+                "https://wms.company.com/api/v2/orders/",
+            ),
+            (
+                "https://internal.wms",
+                "production/wms/lgfapi/v10/",
+                "https://internal.wms/production/wms/lgfapi/v10/",
+            ),
         ]
 
         for base_url, path, expected in real_scenarios:
@@ -235,7 +241,7 @@ class TestRealScenarios:
             "base_url": "https://wms.company.com",
             "timeout": 30,
             "retry_count": 3,
-            "environment": "production"
+            "environment": "production",
         }
         validate_dict_parameter(real_config, "wms_config")  # Should pass
 
@@ -254,7 +260,7 @@ class TestRealScenarios:
                 db_error,
                 "connect to Oracle WMS database",
                 facility="DC01",
-                retry_attempt=3
+                retry_attempt=3,
             )
 
         assert "TNS:no listener" in str(exc_info.value)
@@ -268,7 +274,7 @@ class TestRealScenarios:
                 timeout_error,
                 "retrieve order data",
                 order_id="ORD001",
-                endpoint="/api/orders"
+                endpoint="/api/orders",
             )
 
         assert "timeout" in str(exc_info.value).lower()
@@ -303,8 +309,7 @@ class TestRealScenarios:
         """Test performance considerations with large real-world datasets."""
         # Large record set (simulating real warehouse data)
         large_dataset = [
-            {"order_id": f"ORD{i:06d}", "status": "OPEN"}
-            for i in range(10000)
+            {"order_id": f"ORD{i:06d}", "status": "OPEN"} for i in range(10000)
         ]
 
         # Test chunking large dataset

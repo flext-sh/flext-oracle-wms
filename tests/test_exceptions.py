@@ -210,6 +210,7 @@ def test_error_raising() -> Never:
 
 def test_error_chaining() -> None:
     """Test error chaining with cause."""
+
     def _raise_original_error() -> None:
         msg = "Original error"
         raise ValueError(msg)

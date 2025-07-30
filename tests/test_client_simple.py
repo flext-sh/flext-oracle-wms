@@ -1,6 +1,5 @@
 """Simple focused tests for FlextOracleWmsClient - high coverage without complex mocking."""
 
-
 from flext_oracle_wms.client import FlextOracleWmsClient
 from flext_oracle_wms.config import FlextOracleWmsModuleConfig
 

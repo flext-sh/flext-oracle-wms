@@ -84,7 +84,7 @@ class TestFlextOracleWmsDynamicSchemaProcessor:
         schema = {
             "id": {"type": "string"},
             "name": {"type": "string"},
-            "count": {"type": "integer"}
+            "count": {"type": "integer"},
         }
 
         result = await processor.process_entity_records("test_entity", records, schema)
@@ -128,10 +128,7 @@ class TestFlextOracleWmsDynamicSchemaProcessor:
             {"id": "1", "count": 10},
             {"id": "2", "count": 20},
         ]
-        schema = {
-            "id": {"type": "string"},
-            "count": {"type": "integer"}
-        }
+        schema = {"id": {"type": "string"}, "count": {"type": "integer"}}
 
         # Correct parameter order: records first, then schema
         confidence = processor._calculate_schema_confidence(records, schema)
@@ -167,8 +164,7 @@ class TestFactoryFunction:
     def test_create_schema_processor_custom(self) -> None:
         """Test creating schema processor with custom parameters."""
         processor = flext_oracle_wms_create_dynamic_schema_processor(
-            sample_size=100,
-            confidence_threshold=0.9
+            sample_size=100, confidence_threshold=0.9
         )
         assert isinstance(processor, FlextOracleWmsDynamicSchemaProcessor)
         assert processor.sample_size == 100
@@ -178,8 +174,7 @@ class TestFactoryFunction:
         """Test creating schema processor with edge case parameters."""
         # Test with minimum valid values
         processor = flext_oracle_wms_create_dynamic_schema_processor(
-            sample_size=1,
-            confidence_threshold=0.0
+            sample_size=1, confidence_threshold=0.0
         )
         assert isinstance(processor, FlextOracleWmsDynamicSchemaProcessor)
         assert processor.sample_size == 1
@@ -187,8 +182,7 @@ class TestFactoryFunction:
 
         # Test with maximum valid values
         processor = flext_oracle_wms_create_dynamic_schema_processor(
-            sample_size=10000,
-            confidence_threshold=1.0
+            sample_size=10000, confidence_threshold=1.0
         )
         assert isinstance(processor, FlextOracleWmsDynamicSchemaProcessor)
         assert processor.sample_size == 10000
