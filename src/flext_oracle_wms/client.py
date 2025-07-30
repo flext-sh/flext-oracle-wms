@@ -45,7 +45,7 @@ class FlextOracleWmsPlugin(FlextPlugin):
         """Initialize Oracle WMS plugin."""
         super().__init__(
             name="oracle-wms-plugin",
-            version="1.0.0",
+            version="0.9.0",
             config=config or {},
         )
         self._client: FlextOracleWmsClient | None = None

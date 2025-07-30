@@ -22,18 +22,14 @@ def test_basic_auth_config_creation() -> None:
     assert config.password == "pass"
 
 
-def test_oauth2_auth_config_creation() -> None:
-    """Test OAuth2 authentication config creation."""
+def test_api_key_auth_config_creation() -> None:
+    """Test API key authentication config creation."""
     config = FlextOracleWmsAuthConfig(
-        auth_type=OracleWMSAuthMethod.OAUTH2,
-        client_id="test_id",
-        client_secret="test_secret",
-        authorization_url="https://example.com/auth",
-        token_url="https://example.com/token"
+        auth_type=OracleWMSAuthMethod.API_KEY,
+        api_key="test_api_key_12345"
     )
-    assert config.auth_type == OracleWMSAuthMethod.OAUTH2
-    assert config.client_id == "test_id"
-    assert config.client_secret == "test_secret"
+    assert config.auth_type == OracleWMSAuthMethod.API_KEY
+    assert config.api_key == "test_api_key_12345"
 
 
 def test_authenticator_creation() -> None:
@@ -69,12 +65,11 @@ def test_basic_auth_validation_empty_credentials() -> None:
     assert result.is_success is False
 
 
-def test_oauth2_validation_missing_fields() -> None:
-    """Test OAuth2 validation with missing required fields."""
+def test_bearer_validation_missing_token() -> None:
+    """Test Bearer token validation with missing token."""
     config = FlextOracleWmsAuthConfig(
-        auth_type=OracleWMSAuthMethod.OAUTH2,
-        client_id="test_id",
-        # Missing client_secret, authorization_url, token_url
+        auth_type=OracleWMSAuthMethod.BEARER,
+        # Missing token
     )
     result = config.validate_domain_rules()
     assert result.is_success is False
@@ -90,7 +85,7 @@ async def test_authenticator_get_headers() -> None:
     )
     authenticator = FlextOracleWmsAuthenticator(config)
 
-    headers_result = await authenticator.get_headers()
+    headers_result = await authenticator.get_auth_headers()
     assert headers_result.is_success is True
 
     headers = headers_result.data
@@ -102,17 +97,18 @@ async def test_authenticator_get_headers() -> None:
 async def test_authenticator_oauth2_headers() -> None:
     """Test OAuth2 authentication headers."""
     config = FlextOracleWmsAuthConfig(
-        auth_type=OracleWMSAuthMethod.OAUTH2,
-        client_id="test_id",
-        client_secret="test_secret",
-        authorization_url="https://example.com/auth",
-        token_url="https://example.com/token"
+        auth_type=OracleWMSAuthMethod.BEARER,
+        token="test_bearer_token_12345"
     )
     authenticator = FlextOracleWmsAuthenticator(config)
 
-    # OAuth2 implementation would need token management
-    headers_result = await authenticator.get_headers()
+    # Bearer token implementation
+    headers_result = await authenticator.get_auth_headers()
     assert headers_result.is_success is True
+
+    headers = headers_result.data
+    assert "Authorization" in headers
+    assert headers["Authorization"].startswith("Bearer ")
 
 
 def test_auth_plugin_creation() -> None:
@@ -122,10 +118,12 @@ def test_auth_plugin_creation() -> None:
         username="user",
         password="pass"
     )
+    authenticator = FlextOracleWmsAuthenticator(config)
 
     # FlextOracleWmsAuthPlugin follows FlextApiPlugin interface
-    plugin = FlextOracleWmsAuthPlugin(config)
+    plugin = FlextOracleWmsAuthPlugin(authenticator)
     assert plugin is not None
+    assert plugin.authenticator == authenticator
 
 
 @pytest.mark.asyncio
@@ -136,9 +134,11 @@ async def test_plugin_request_processing() -> None:
         username="user",
         password="pass"
     )
-    plugin = FlextOracleWmsAuthPlugin(config)
+    authenticator = FlextOracleWmsAuthenticator(config)
+    plugin = FlextOracleWmsAuthPlugin(authenticator)
 
-    # Mock request object would be needed for full testing
-    # This tests the plugin instantiation and basic structure
-    assert hasattr(plugin, "process_request")
-    assert hasattr(plugin, "process_response")
+    # Test that real methods exist (using actual method names from FlextApiPlugin interface)
+    assert hasattr(plugin, "before_request")
+    assert hasattr(plugin, "after_response")
+    assert callable(plugin.before_request)
+    assert callable(plugin.after_response)

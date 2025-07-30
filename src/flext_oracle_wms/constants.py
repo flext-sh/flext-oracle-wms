@@ -1,15 +1,17 @@
-"""Oracle WMS Constants using flext-core patterns.
+"""Oracle WMS Constants extending flext-core platform constants.
 
 Copyright (c) 2025 FLEXT Contributors
 SPDX-License-Identifier: MIT
 
-Essential constants for Oracle WMS operations.
+Oracle WMS-specific constants that extend flext-core patterns.
 """
 
 from __future__ import annotations
 
 from enum import StrEnum
 from typing import TYPE_CHECKING
+
+# Import flext-core constants for inheritance
 
 if TYPE_CHECKING:
     from flext_oracle_wms.types import TOracleWmsApiVersion

@@ -205,7 +205,7 @@ class TestOracleWmsDeclarativeIntegration:
         assert health_result.is_success, f"Health check failed: {health_result.error}"
 
         health_data = health_result.data
-        assert health_data["service"] == "OracleWmsClient"
+        assert health_data["service"] == "FlextOracleWmsClient"
         assert health_data["status"] in {"healthy", "unhealthy"}
         assert "base_url" in health_data
         assert "api_version" in health_data

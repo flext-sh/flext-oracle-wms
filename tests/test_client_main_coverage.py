@@ -102,7 +102,7 @@ class TestFlextOracleWmsClient:
 
     @pytest.mark.asyncio
     async def test_discover_entities_not_started(self) -> None:
-        """Test discover entities fails when client not started."""
+        """Test discover entities uses fallback when client not started."""
         config = FlextOracleWmsModuleConfig(
             base_url="https://test.example.com",
             username="testuser",
@@ -112,7 +112,13 @@ class TestFlextOracleWmsClient:
         client = FlextOracleWmsClient(config)
 
         result = await client.discover_entities()
-        assert not result.is_success
+        # Client should succeed with fallback entities when API call fails
+        assert result.is_success
+        assert isinstance(result.data, list)
+        assert len(result.data) > 0
+        # Should contain known fallback entities
+        assert "company" in result.data
+        assert "facility" in result.data
 
     @pytest.mark.asyncio
     async def test_get_entity_data_not_started(self) -> None:

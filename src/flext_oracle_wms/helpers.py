@@ -271,6 +271,12 @@ def flext_oracle_wms_validate_api_response(
         error_msg = response_data.get("error", "Unknown error")
         return FlextResult.fail(f"API error: {error_msg}")
 
+    # Check for status error
+    status = response_data.get("status", "")
+    if isinstance(status, str) and status.lower() == "error":
+        message = response_data.get("message", "Unknown error")
+        return FlextResult.fail(f"API error: {message}")
+
     # Check for error messages
     message = response_data.get("message", "")
     if isinstance(message, str) and "error" in message.lower():

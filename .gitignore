@@ -1,82 +1,12 @@
-# ============================================================================
-# FLEXT-ORACLE-WMS - Oracle Warehouse Management System .gitignore
-# Python 3.13 | Poetry | Oracle WMS | Warehouse Operations | ERP Integration
-# ============================================================================
-
-# ============================================================================
-# JUNK FILES - NEVER COMMIT THESE
-# ============================================================================
-
-# Archive and backup directories  
-archive/
-archives/
-backup/
-backups/
-.backup/
-*_backup/
-*_backup_*/
-
-# AI-generated files and reports
-*_REPORT*.md
-*_ANALYSIS*.md
-*_SUMMARY*.md  
-*_FINDINGS*.md
-CLAUDE*.md
-CONFIG_MIGRATION*.md
-DEVELOPMENT_STANDARDS*.md
-DUPLICATION_REPORT*.md
-LINT_CORRECTIONS*.md
-*.ai.md
-*.ai.txt
-
-# Backup files with timestamps
-*_20250*.bak
-*_202507*.bak
-*_202506*.bak
-*.md_20250*
-README_20250*.bak
-
-# Generic backup patterns
-*.bak
-*.backup
-*.orig
-*.syntax_backup  
-*.broken
-*.tmp.bak
-*_temp.py
-*_temp.md
-
-# Fix scripts and validation files
-fix_*.py
-*_fix.py
-*_validation.py
-validate_*.py
-investigate_*.py
-temp_*.py
-debug_*.py
-
-# Tool reports and analysis
-*_analysis.txt
-*_report.txt
-*_output.txt
-analysis_temp/
-report_*/
-reports/
-reports_*/
-temp_test_*/
-
-# ============================================================================
-# PYTHON ARTIFACTS
-# ============================================================================
-
-# Python artifacts
+# Python
 __pycache__/
 *.py[cod]
 *.pyc
 *.pyo
 *.pyd
+*.so
 
-# Distribution / packaging
+# Build
 build/
 dist/
 *.egg-info/
@@ -84,7 +14,7 @@ dist/
 *.egg
 MANIFEST
 
-# Testing and coverage
+# Testing
 htmlcov/
 .tox/
 .nox/
@@ -95,7 +25,7 @@ coverage.xml
 .hypothesis/
 .pytest_cache/
 
-# Development tools
+# Tools
 .mypy_cache/
 .ruff_cache/
 .pyre/
@@ -108,23 +38,19 @@ env/
 venv/
 ENV/
 
-# IDEs and editors
+# Editors
 .vscode/
 .idea/
 *.swp
 *.swo
 *~
 
-# System files
+# System
 .DS_Store
 Thumbs.db
 Desktop.ini
 
-# ============================================================================
-# ORACLE WMS SPECIFIC
-# ============================================================================
-
-# Oracle WMS database files
+# Oracle WMS specific
 *.ora
 tnsnames.ora
 sqlnet.ora
@@ -134,202 +60,65 @@ sqlnet.ora
 *.wallet
 cwallet.sso
 ewallet.p12
-
-# Oracle WMS configuration
 wms_config/
 *.wms.conf
-wms_settings.json.bak
 
-# Oracle WMS logs
-wms.log
-oracle_wms.log
-wms_operations.log
-wms_interface.log
-wms_batch.log
-
-# Oracle WMS batch files
-*.bat.bak
-*.sh.bak
-wms_batch/
-batch_logs/
-
-# Oracle WMS reports
-wms_reports/
-warehouse_reports/
-inventory_reports/
-shipment_reports/
-
-# ============================================================================
-# WAREHOUSE MANAGEMENT DATA
-# ============================================================================
-
-# Inventory data
+# WMS data
 inventory_data/
-stock_levels/
-item_master/
-location_master/
-
-# Warehouse operations
-picking_data/
-packing_data/
-receiving_data/
-shipping_data/
-cycle_count_data/
-
-# Transaction logs
+warehouse_reports/
 transaction_logs/
-movement_history/
-audit_trail/
-
-# Performance data
 performance_metrics/
-kpi_data/
-dashboard_data/
-
-# ============================================================================
-# ERP INTEGRATION
-# ============================================================================
-
-# ERP interface files
-erp_interface/
-sap_interface/
-oracle_erp/
-integration_logs/
-
-# EDI files
-edi_inbound/
-edi_outbound/
-edi_archive/
-*.edi
-*.txt.processed
-
-# File transfers
-ftp_staging/
-sftp_staging/
-file_exchange/
-
-# Integration mapping
-mapping_files/
-transformation_rules/
-field_mappings/
-
-# ============================================================================
-# WMS OPERATIONS DATA
-# ============================================================================
-
-# Wave planning
-wave_data/
-wave_templates/
-wave_history/
-
-# Labor management
-labor_data/
-time_tracking/
-productivity_reports/
-
-# Equipment management
-equipment_logs/
-maintenance_logs/
-device_configs/
-
-# Quality control
-qc_data/
-inspection_logs/
-quality_reports/
-
-# ============================================================================
-# THIRD-PARTY INTEGRATIONS
-# ============================================================================
-
-# Carrier integrations
-carrier_data/
-shipping_labels/
-tracking_data/
-rate_shopping/
-
-# Vendor integrations
-vendor_catalogs/
-purchase_orders/
-receiving_schedules/
-
-# Customer integrations
-customer_orders/
-shipment_notifications/
-invoicing_data/
-
-# ============================================================================
-# MONITORING AND PERFORMANCE
-# ============================================================================
-
-# Performance monitoring
-performance_logs/
-system_metrics/
-database_stats/
-query_performance/
-
-# Error tracking
-error_logs/
-exception_logs/
-system_alerts/
-
-# Audit and compliance
-audit_logs/
-compliance_reports/
-security_logs/
-
-# ============================================================================
-# TEMPORARY AND CACHE FILES
-# ============================================================================
-
-# Logs
-*.log
-logs/
-wms_logs/
-
-# Temporary files
-*.tmp
-temp/
-tmp/
 wms_temp/
-
-# Cache files
-cache/
-.cache/
 wms_cache/
 
-# Data files
-data/
-export/
-import/
-staging/
+# ERP integration
+erp_interface/
+edi_inbound/
+edi_outbound/
+*.edi
+integration_logs/
 
-# ============================================================================
-# SECURITY AND CREDENTIALS
-# ============================================================================
-
-# Database credentials
-*.key
-*.pem
-*.crt
-database_credentials.json
+# Security
 wms_credentials.json
 oracle_creds.json
-
-# Environment files
-.env.wms
-.env.oracle
-.env.production
-
-# Certificate stores
+database_credentials.json
 certificates/
 *.p12
 *.jks
 *.keystore
 
-# Force include critical files
-!pyproject.toml
-!Makefile
-!README.md
-!docker-compose.yml
-!wms_config.example.json
-!oracle_config.template.ora
+# Documentation
+docs/_build/
+site/
+
+# Logs
+*.log
+wms.log
+oracle_wms.log
+wms_operations.log
+error_logs/
+audit_logs/
+
+# Temporary files
+*.tmp
+temp/
+staging/
+cache/
+data/
+export/
+import/
+
+# Archive/backup
+archive/
+backup/
+*.bak
+*.backup
+*.orig
+*_temp.*
+temp_*
+fix_*
+
+# Reports
+*_REPORT*.md
+*_ANALYSIS*.md
+*_SUMMARY*.md

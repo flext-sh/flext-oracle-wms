@@ -169,7 +169,7 @@ class FlextOracleWmsModuleConfig(FlextBaseSettings):
         description="Connection pool timeout",
     )
     # === Version Information ===
-    version: str = Field(default="1.0.0", description="Client version")
+    version: str = Field(default="0.9.0", description="Client version")
 
     # === Enterprise Cache Configuration ===
     enable_cache: bool = Field(default=True, description="Enable enterprise caching")

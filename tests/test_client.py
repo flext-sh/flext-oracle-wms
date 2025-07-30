@@ -55,14 +55,19 @@ def test_get_request(mock_httpx: Mock) -> None:
 
 
 def test_connection_info() -> None:
-    """Test connection info generation."""
+    """Test client configuration and available APIs."""
     config = FlextOracleWmsModuleConfig.for_testing()
     client = FlextOracleWmsClient(config)
 
-    info = client.get_connection_info()
-    assert "base_url" in info
-    assert "timeout" in info
-    assert "auth_method" in info
+    # Test configuration is accessible
+    assert client.config is not None
+    assert hasattr(client.config, "base_url")
+    assert hasattr(client.config, "timeout")
+
+    # Test available APIs
+    apis = client.get_available_apis()
+    assert isinstance(apis, dict)
+    assert len(apis) > 0
 
 
 def test_cache_stats() -> None:

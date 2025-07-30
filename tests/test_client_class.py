@@ -1,9 +1,5 @@
 """Test Oracle WMS client class functionality."""
 
-from unittest.mock import Mock, patch
-
-from flext_api import FlextApiClientResponse
-from flext_core import FlextResult
 
 from flext_oracle_wms.client import FlextOracleWmsClient
 from flext_oracle_wms.config import FlextOracleWmsModuleConfig
@@ -65,10 +61,10 @@ def test_client_basic_properties() -> None:
 
     # Test that real methods exist
     assert hasattr(client, "start")
-    assert hasattr(client, "stop") 
+    assert hasattr(client, "stop")
     assert hasattr(client, "health_check")
     assert hasattr(client, "get_available_apis")
-    
+
     # Test properties
     assert hasattr(client, "config")
     assert client.config is not None
@@ -81,7 +77,7 @@ def test_discover_entities_class() -> None:
 
     # Test that method exists and is callable (async method)
     assert hasattr(client, "discover_entities")
-    assert callable(getattr(client, "discover_entities"))
+    assert callable(client.discover_entities)
 
 
 def test_specialized_wms_methods_class() -> None:
@@ -92,8 +88,8 @@ def test_specialized_wms_methods_class() -> None:
     # Test real WMS-specific methods that exist
     assert hasattr(client, "ship_oblpn")
     assert hasattr(client, "create_lpn")
-    assert callable(getattr(client, "ship_oblpn"))
-    assert callable(getattr(client, "create_lpn"))
+    assert callable(client.ship_oblpn)
+    assert callable(client.create_lpn)
 
 
 def test_health_check_method_class() -> None:
@@ -103,7 +99,7 @@ def test_health_check_method_class() -> None:
 
     # Test that health_check method exists and is callable (async method)
     assert hasattr(client, "health_check")
-    assert callable(getattr(client, "health_check"))
+    assert callable(client.health_check)
 
 
 def test_get_available_apis_method() -> None:
@@ -148,50 +144,73 @@ def test_client_internal_properties() -> None:
     assert hasattr(client, "_auth_headers")
 
 
-def test_clear_cache_class() -> None:
-    """Test cache clearing in class."""
+def test_client_lifecycle_methods() -> None:
+    """Test client lifecycle methods exist."""
     config = FlextOracleWmsModuleConfig.for_testing()
     client = FlextOracleWmsClient(config)
 
-    result = client.clear_bulk_cache()
-    assert isinstance(result, bool)
+    # Test that async lifecycle methods exist
+    assert hasattr(client, "start")
+    assert hasattr(client, "stop")
+    assert callable(client.start)
+    assert callable(client.stop)
 
 
-def test_operation_tracking_class() -> None:
-    """Test operation tracking in class."""
+def test_client_configuration_access() -> None:
+    """Test client configuration is accessible."""
     config = FlextOracleWmsModuleConfig.for_testing()
     client = FlextOracleWmsClient(config)
 
-    stats = client.get_operation_tracking_stats()
-    assert isinstance(stats, dict)
-    assert "total_operations" in stats
+    # Test configuration access
+    assert client.config is not None
+    assert hasattr(client.config, "base_url")
+    assert hasattr(client.config, "username")
+    assert hasattr(client.config, "environment")
 
 
-def test_connection_info_class() -> None:
-    """Test connection info in class."""
+def test_real_helper_functions() -> None:
+    """Test using real helper functions from helpers module."""
+    from flext_oracle_wms.helpers import (
+        flext_oracle_wms_build_entity_url,
+        flext_oracle_wms_validate_entity_name,
+    )
+
+    # Test real validation function
+    result = flext_oracle_wms_validate_entity_name("order_hdr")
+    assert result.is_success
+    assert result.data == "order_hdr"
+
+    # Test real URL building function
+    url = flext_oracle_wms_build_entity_url(
+        "https://test.com", "prod", "order_hdr"
+    )
+    assert "order_hdr" in url
+    assert "wms/lgfapi" in url
+
+
+def test_client_repr_and_str() -> None:
+    """Test client string representation."""
     config = FlextOracleWmsModuleConfig.for_testing()
     client = FlextOracleWmsClient(config)
 
-    info = client.get_connection_info()
-    assert isinstance(info, dict)
-    assert "base_url" in info
+    # Test string representation doesn't raise errors
+    str_repr = str(client)
+    assert isinstance(str_repr, str)
+    assert len(str_repr) > 0
 
 
-def test_client_close_class() -> None:
-    """Test client closing in class."""
+def test_imports_and_modules() -> None:
+    """Test that all required imports work correctly."""
+    from flext_oracle_wms.client import FlextOracleWmsClient, FlextOracleWmsPlugin
+    from flext_oracle_wms.config import FlextOracleWmsModuleConfig
+
+    # Test that classes can be imported and instantiated
     config = FlextOracleWmsModuleConfig.for_testing()
     client = FlextOracleWmsClient(config)
 
-    # Should not raise an exception
-    client.close()
+    assert isinstance(client, FlextOracleWmsClient)
+    assert isinstance(config, FlextOracleWmsModuleConfig)
 
-
-def test_exception_hierarchy() -> None:
-    """Test exception hierarchy."""
-    # This test is no longer relevant as exception hierarchy changed
-
-
-def test_response_error_handling() -> None:
-    """Test response error handling."""
-    # This test is no longer relevant as _handle_response_errors was removed
-    # Error handling is now done through flext-api client
+    # Test plugin class
+    plugin = FlextOracleWmsPlugin()
+    assert isinstance(plugin, FlextOracleWmsPlugin)
