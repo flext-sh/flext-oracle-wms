@@ -13,6 +13,56 @@ from flext_core import (
     FlextError,
 )
 
+# =============================================================================
+# SOLID REFACTORING: DRY Principle - Centralized kwargs extraction pattern
+# =============================================================================
+
+
+def _extract_error_details(
+    kwargs: dict[str, object],
+) -> tuple[str | None, dict[str, object] | None]:
+    """Extract entity_name and details from kwargs using DRY principle.
+
+    SOLID REFACTORING: Eliminates 28 lines of duplicated kwargs extraction code
+    by centralizing the pattern in a single function.
+
+    Args:
+        kwargs: Keyword arguments dictionary from exception constructors
+
+    Returns:
+        Tuple of (entity_name, details) with proper type safety
+
+    """
+    # Extract entity_name with type validation
+    entity_name_raw = kwargs.pop("entity_name", None)
+    entity_name = entity_name_raw if isinstance(entity_name_raw, str) else None
+
+    # Extract details with type validation and kwargs fallback
+    details_raw = kwargs.pop("details", None)
+    details: dict[str, object] | None = None
+    if isinstance(details_raw, dict):
+        details = details_raw
+    elif kwargs:  # Add remaining kwargs to details if any exist
+        details = dict(kwargs.items())
+
+    return entity_name, details
+
+
+def _extract_simple_details(kwargs: dict[str, object]) -> dict[str, object] | None:
+    """Extract details for simple exceptions without entity_name.
+
+    SOLID REFACTORING: Reduces simple details extraction to single function call.
+
+    Args:
+        kwargs: Keyword arguments dictionary
+
+    Returns:
+        Details dictionary with proper type safety
+
+    """
+    details_raw = kwargs.pop("details", None)
+    return details_raw if isinstance(details_raw, dict) else None
+
 
 class FlextOracleWmsError(FlextError):
     """Base exception for Oracle WMS operations using flext-core standards."""
@@ -60,9 +110,8 @@ class FlextOracleWmsAuthenticationError(FlextOracleWmsError):
             **kwargs: Additional error context
 
         """
-        # Extract details from kwargs for parent class with proper typing
-        details_raw = kwargs.pop("details", None)
-        details = details_raw if isinstance(details_raw, dict) else None
+        # SOLID REFACTORING: Use DRY principle - centralized details extraction
+        details = _extract_simple_details(kwargs)
         super().__init__(message, error_code="AUTH_ERROR", details=details)
         self.auth_method = auth_method
 
@@ -86,16 +135,8 @@ class FlextOracleWmsApiError(FlextOracleWmsError):
             **kwargs: Additional error context
 
         """
-        # Extract known parameters for parent class with proper typing
-        entity_name_raw = kwargs.pop("entity_name", None)
-        entity_name = entity_name_raw if isinstance(entity_name_raw, str) else None
-
-        details_raw = kwargs.pop("details", None)
-        details: dict[str, object] | None = None
-        if isinstance(details_raw, dict):
-            details = details_raw
-        elif kwargs:  # Add remaining kwargs to details
-            details = dict(kwargs.items())
+        # SOLID REFACTORING: Use DRY principle - centralized kwargs extraction
+        entity_name, details = _extract_error_details(kwargs)
 
         super().__init__(
             message,
@@ -124,9 +165,8 @@ class FlextOracleWmsConnectionError(FlextOracleWmsError):
             **kwargs: Additional error context
 
         """
-        # Extract details from kwargs for parent class with proper typing
-        details_raw = kwargs.pop("details", None)
-        details = details_raw if isinstance(details_raw, dict) else None
+        # SOLID REFACTORING: Use DRY principle - centralized details extraction
+        details = _extract_simple_details(kwargs)
         super().__init__(message, error_code="CONNECTION_ERROR", details=details)
         self.retry_count = retry_count
 
@@ -150,11 +190,8 @@ class FlextOracleWmsDataValidationError(FlextOracleWmsError):
             **kwargs: Additional error context
 
         """
-        # Extract entity_name and details from kwargs for parent class
-        entity_name_raw = kwargs.pop("entity_name", None)
-        entity_name = entity_name_raw if isinstance(entity_name_raw, str) else None
-        details_raw = kwargs.pop("details", None)
-        details = details_raw if isinstance(details_raw, dict) else None
+        # SOLID REFACTORING: Use DRY principle - centralized kwargs extraction
+        entity_name, details = _extract_error_details(kwargs)
         super().__init__(
             message,
             error_code="VALIDATION_ERROR",
@@ -182,9 +219,8 @@ class FlextOracleWmsConfigurationError(FlextOracleWmsError):
             **kwargs: Additional error context
 
         """
-        # Extract details from kwargs for parent class with proper typing
-        details_raw = kwargs.pop("details", None)
-        details = details_raw if isinstance(details_raw, dict) else None
+        # SOLID REFACTORING: Use DRY principle - centralized details extraction
+        details = _extract_simple_details(kwargs)
         super().__init__(message, error_code="CONFIG_ERROR", details=details)
         self.config_key = config_key
 
@@ -207,9 +243,8 @@ class FlextOracleWmsEntityNotFoundError(FlextOracleWmsError):
 
         """
         message = message or f"Oracle WMS entity '{entity_name}' not found"
-        # Extract details from kwargs for parent class with proper typing
-        details_raw = kwargs.pop("details", None)
-        details = details_raw if isinstance(details_raw, dict) else None
+        # SOLID REFACTORING: Use DRY principle - centralized details extraction
+        details = _extract_simple_details(kwargs)
         super().__init__(
             message,
             error_code="NOT_FOUND",
@@ -235,16 +270,8 @@ class FlextOracleWmsRateLimitError(FlextOracleWmsError):
             **kwargs: Additional error context
 
         """
-        # Extract known parameters for parent class with proper typing
-        entity_name_raw = kwargs.pop("entity_name", None)
-        entity_name = entity_name_raw if isinstance(entity_name_raw, str) else None
-
-        details_raw = kwargs.pop("details", None)
-        details: dict[str, object] | None = None
-        if isinstance(details_raw, dict):
-            details = details_raw
-        elif kwargs:  # Add remaining kwargs to details
-            details = dict(kwargs.items())
+        # SOLID REFACTORING: Use DRY principle - centralized kwargs extraction
+        entity_name, details = _extract_error_details(kwargs)
 
         super().__init__(
             message,
@@ -274,16 +301,8 @@ class FlextOracleWmsSchemaFlatteningError(FlextOracleWmsError):
             **kwargs: Additional error context
 
         """
-        # Extract known parameters for parent class with proper typing
-        entity_name_raw = kwargs.pop("entity_name", None)
-        entity_name = entity_name_raw if isinstance(entity_name_raw, str) else None
-
-        details_raw = kwargs.pop("details", None)
-        details: dict[str, object] | None = None
-        if isinstance(details_raw, dict):
-            details = details_raw
-        elif kwargs:  # Add remaining kwargs to details
-            details = dict(kwargs.items())
+        # SOLID REFACTORING: Use DRY principle - centralized kwargs extraction
+        entity_name, details = _extract_error_details(kwargs)
 
         super().__init__(
             message,
@@ -314,16 +333,8 @@ class FlextOracleWmsFilterError(FlextOracleWmsError):
             **kwargs: Additional error context
 
         """
-        # Extract known parameters for parent class with proper typing
-        entity_name_raw = kwargs.pop("entity_name", None)
-        entity_name = entity_name_raw if isinstance(entity_name_raw, str) else None
-
-        details_raw = kwargs.pop("details", None)
-        details: dict[str, object] | None = None
-        if isinstance(details_raw, dict):
-            details = details_raw
-        elif kwargs:  # Add remaining kwargs to details
-            details = dict(kwargs.items())
+        # SOLID REFACTORING: Use DRY principle - centralized kwargs extraction
+        entity_name, details = _extract_error_details(kwargs)
 
         super().__init__(
             message,
@@ -354,16 +365,8 @@ class FlextOracleWmsSchemaError(FlextOracleWmsError):
             **kwargs: Additional error context
 
         """
-        # Extract known parameters for parent class with proper typing
-        entity_name_raw = kwargs.pop("entity_name", None)
-        entity_name = entity_name_raw if isinstance(entity_name_raw, str) else None
-
-        details_raw = kwargs.pop("details", None)
-        details: dict[str, object] | None = None
-        if isinstance(details_raw, dict):
-            details = details_raw
-        elif kwargs:  # Add remaining kwargs to details
-            details = dict(kwargs.items())
+        # SOLID REFACTORING: Use DRY principle - centralized kwargs extraction
+        entity_name, details = _extract_error_details(kwargs)
 
         super().__init__(
             message,

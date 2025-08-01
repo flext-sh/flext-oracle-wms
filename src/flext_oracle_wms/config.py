@@ -16,6 +16,7 @@ from urllib.parse import urlparse
 
 from flext_core import FlextBaseSettings, FlextResult, FlextValueObject, get_logger
 from pydantic import Field, HttpUrl, field_validator
+from pydantic_settings import SettingsConfigDict
 
 from flext_oracle_wms.api_catalog import FlextOracleWmsApiVersion
 
@@ -104,16 +105,16 @@ class FlextOracleWmsModuleConfig(FlextBaseSettings):
     with proper type safety and validation, following SOLID principles.
     """
 
-    model_config: ClassVar[dict[str, object]] = {
-        "env_prefix": "ORACLE_WMS_",
-        "env_file": ".env",
-        "env_file_encoding": "utf-8",
-        "env_nested_delimiter": "__",
-        "case_sensitive": False,
-        "extra": "ignore",  # Allow extra fields in .env
-        "validate_assignment": True,
-        "str_strip_whitespace": True,
-    }
+    model_config: ClassVar[SettingsConfigDict] = SettingsConfigDict(
+        env_prefix="ORACLE_WMS_",
+        env_file=".env",
+        env_file_encoding="utf-8",
+        env_nested_delimiter="__",
+        case_sensitive=False,
+        extra="ignore",  # Allow extra fields in .env
+        validate_assignment=True,
+        str_strip_whitespace=True,
+    )
     # === Oracle WMS API Configuration (additional to WMSConfigMixin) ===
     base_url: HttpUrl = Field(
         ...,

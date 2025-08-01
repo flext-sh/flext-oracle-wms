@@ -144,8 +144,8 @@ def test_response_creation() -> None:
     assert response.error_message is None
 
 
-def test_discovery_result_creation() -> None:
-    """Test discovery result creation."""
+def test_discovery_result_creation_extended() -> None:
+    """Test discovery result creation (extended version)."""
     entity1 = FlextOracleWmsEntity(name="order_hdr", endpoint="/api/order_hdr")
     entity2 = FlextOracleWmsEntity(name="order_line", endpoint="/api/order_line")
 

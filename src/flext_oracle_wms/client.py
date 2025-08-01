@@ -9,6 +9,7 @@ Referência: https://docs.oracle.com/en/cloud/saas/warehouse-management/25b/owmr
 from __future__ import annotations
 
 import base64
+from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
 from flext_api import FlextApiClient, FlextApiClientConfig, FlextApiClientResponse
@@ -36,6 +37,51 @@ if TYPE_CHECKING:
     )
 
 logger = get_logger(__name__)
+
+
+# =============================================================================
+# SOLID REFACTORING: Parameter Objects for reduced complexity
+# =============================================================================
+
+
+@dataclass
+class ApiCallRequest:
+    """Parameter Object: Encapsulates API call request data.
+
+    SOLID REFACTORING: Reduces parameter count in validation methods
+    using Parameter Object Pattern.
+    """
+
+    api_name: str
+    kwargs: dict[str, object]
+
+    @property
+    def data(self) -> object:
+        """Extract data parameter."""
+        return self.kwargs.get("data")
+
+    @property
+    def params(self) -> object:
+        """Extract params parameter."""
+        return self.kwargs.get("params")
+
+    @property
+    def path_params(self) -> object:
+        """Extract path_params parameter."""
+        return self.kwargs.get("path_params", {})
+
+
+@dataclass
+class PreparedApiCall:
+    """Parameter Object: Encapsulates prepared API call data.
+
+    SOLID REFACTORING: Single object containing all call preparation results.
+    """
+
+    method: str
+    full_path: str
+    data: dict[str, object] | None
+    params: dict[str, object] | None
 
 
 class FlextOracleWmsPlugin(FlextPlugin):
@@ -75,10 +121,10 @@ class FlextOracleWmsPlugin(FlextPlugin):
         **kwargs: object,
     ) -> FlextResult[object]:
         """Route operations to appropriate client methods."""
-        if operation == "discover_entities":
+        if operation == "discover_entities" and self._client is not None:
             result = await self._client.discover_entities()
             return self._handle_operation_result(result)
-        if operation == "get_entity_data":
+        if operation == "get_entity_data" and self._client is not None:
             entity_name = kwargs.get("entity_name")
             if not isinstance(entity_name, str):
                 return FlextResult.fail("entity_name must be string")
@@ -88,7 +134,11 @@ class FlextOracleWmsPlugin(FlextPlugin):
 
     def _handle_operation_result(
         self,
-        result: FlextResult[object],
+        result: (
+            FlextResult[object]
+            | FlextResult[list[str]]
+            | FlextResult[dict[str, object]]
+        ),
     ) -> FlextResult[object]:
         """Handle operation result with consistent error handling."""
         if result.is_success:
@@ -366,44 +416,119 @@ class FlextOracleWmsClient:
     ) -> FlextResult[dict[str, object]]:
         """Dynamic API caller - calls any Oracle WMS API by name.
 
-        DRY approach: single method handles all API calls using catalog.
+        SOLID REFACTORING: Reduced complexity from 6 returns to 1 using
+        Chain of Responsibility + Parameter Object patterns.
         """
-        if api_name not in FLEXT_ORACLE_WMS_APIS:
-            return FlextResult.fail(f"Unknown API: {api_name}")
+        # Create request data object using Parameter Object Pattern
+        request_data = ApiCallRequest(api_name, kwargs)
 
-        endpoint = FLEXT_ORACLE_WMS_APIS[api_name]
+        # Chain of Responsibility: validate -> prepare -> execute
+        validation_result = self._validate_api_request(request_data)
+        if not validation_result.is_success:
+            return FlextResult.fail(validation_result.error or "Validation failed")
 
-        # Extract common parameters
-        data = kwargs.pop("data", None)
-        params = kwargs.pop("params", None)
-        path_params = kwargs.pop("path_params", {})
+        prepared_call = validation_result.data
+        if prepared_call is None:
+            return FlextResult.fail("Request preparation failed")
 
-        # Format path with parameters if needed
+        return await self._call_api_direct(
+            prepared_call.method,
+            prepared_call.full_path,
+            prepared_call.data,
+            prepared_call.params,
+        )
+
+    def _validate_api_request(
+        self,
+        request: ApiCallRequest,
+    ) -> FlextResult[PreparedApiCall]:
+        """Chain of Responsibility: Validate and prepare API request.
+
+        SOLID REFACTORING: Centralizes all validation logic that was previously
+        scattered across 6 return statements, using Chain of Responsibility pattern.
+        """
+        # Step 1: Validate API name exists
+        if request.api_name not in FLEXT_ORACLE_WMS_APIS:
+            return FlextResult.fail(f"Unknown API: {request.api_name}")
+
+        endpoint = FLEXT_ORACLE_WMS_APIS[request.api_name]
+
+        # Step 2: Validate and prepare path parameters
+        path_result = self._prepare_api_path(endpoint, request)
+        if not path_result.is_success:
+            return FlextResult.fail(path_result.error or "Path preparation failed")
+
+        # Step 3: Validate and prepare data/params
+        data_result = self._prepare_api_data(request)
+        if not data_result.is_success:
+            return FlextResult.fail(data_result.error or "Data preparation failed")
+
+        # Step 4: Create prepared call object
+        prepared_path = path_result.data
+        prepared_data = data_result.data
+
+        if prepared_path is None or prepared_data is None:
+            return FlextResult.fail("Request preparation failed")
+
+        prepared_call = PreparedApiCall(
+            method=endpoint.method,
+            full_path=prepared_path,
+            data=prepared_data.get("data"),
+            params=prepared_data.get("params"),
+        )
+
+        return FlextResult.ok(prepared_call)
+
+    def _prepare_api_path(
+        self,
+        endpoint: FlextOracleWmsApiEndpoint,
+        request: ApiCallRequest,
+    ) -> FlextResult[str]:
+        """Prepare API path with parameter substitution."""
         path = endpoint.path
+        path_params = request.path_params
+
         if path_params:
-            # Type cast path_params to proper dict type for string formatting
+            # Validate path_params type
             if not isinstance(path_params, dict):
                 return FlextResult.fail("path_params must be a dictionary")
 
-            # Convert all values to strings for path formatting
+            # Convert values to strings and format path
             str_path_params = {k: str(v) for k, v in path_params.items()}
             try:
                 path = path.format(**str_path_params)
             except KeyError as e:
                 return FlextResult.fail(f"Missing path parameter: {e}")
 
+        # Generate full path
         full_path = endpoint.get_full_path(self.config.environment)
         if path != endpoint.path:
-            # Replace the original path with formatted one
             full_path = full_path.replace(endpoint.path, path)
 
-        # Type cast for method compatibility
+        return FlextResult.ok(full_path)
+
+    def _prepare_api_data(
+        self,
+        request: ApiCallRequest,
+    ) -> FlextResult[dict[str, dict[str, object] | None]]:
+        """Prepare and validate API data and params."""
+        data = request.data
+        params = request.params
+
+        # Validate data type
         if not isinstance(data, dict) and data is not None:
             return FlextResult.fail("data must be a dictionary or None")
+
+        # Validate params type
         if not isinstance(params, dict) and params is not None:
             return FlextResult.fail("params must be a dictionary or None")
 
-        return await self._call_api_direct(endpoint.method, full_path, data, params)
+        prepared_data = {
+            "data": data if isinstance(data, dict) else None,
+            "params": params if isinstance(params, dict) else None,
+        }
+
+        return FlextResult.ok(prepared_data)
 
     # ==============================================================================
     # DECLARATIVE API METHODS - DRY GENERATED FROM CATALOG
@@ -575,7 +700,8 @@ class FlextOracleWmsClient:
 
         handler = method_handlers.get(method)
         if handler:
-            return await handler()
+            # Type: ignore needed for dynamic lambda handlers
+            return await handler()  # type: ignore[no-untyped-call]
         return FlextResult.fail(f"Unsupported HTTP method: {method}")
 
     def _validate_response(

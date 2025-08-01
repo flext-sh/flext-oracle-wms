@@ -75,8 +75,8 @@ class TestClientSimpleNew:
         assert "order_hdr" in url
         assert "/wms/lgfapi/v11/" in url
 
-    def test_client_creation(self) -> None:
-        """Test client creation and basic properties."""
+    def test_client_creation_extended(self) -> None:
+        """Test client creation and basic properties (extended)."""
         client = FlextOracleWmsClient(self.config)
         assert isinstance(client, FlextOracleWmsClient)
         assert client.config is not None
@@ -160,8 +160,8 @@ class TestClientSimpleNew:
         assert client.config.timeout_seconds == 60.0
         assert client.config.batch_size == 150
 
-    def test_discover_entities_method_exists(self) -> None:
-        """Test that discover_entities method exists."""
+    def test_discover_entities_method_validation(self) -> None:
+        """Test that discover_entities method exists and is callable."""
         client = FlextOracleWmsClient(self.config)
 
         # Test that the method exists and is callable

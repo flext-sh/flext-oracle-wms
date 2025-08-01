@@ -8,14 +8,36 @@ Simplified data flattening for Oracle WMS nested structures.
 
 from __future__ import annotations
 
+from dataclasses import dataclass
 from typing import TYPE_CHECKING, cast
 
 from flext_core import FlextResult, get_logger
 
 if TYPE_CHECKING:
+    from collections.abc import Callable
+
     from flext_oracle_wms.types import TOracleWmsRecord, TOracleWmsRecordBatch
 
 logger = get_logger(__name__)
+
+
+# =============================================================================
+# SOLID REFACTORING: Parameter Object Pattern to reduce method complexity
+# =============================================================================
+
+
+@dataclass
+class RecordProcessingConfig:
+    """Parameter Object: Configuration for record processing operations.
+
+    SOLID REFACTORING: Reduces method parameter count from 6 to 2 using
+    Parameter Object Pattern.
+    """
+
+    processor_fn: Callable[[TOracleWmsRecord], TOracleWmsRecord]
+    operation_name: str
+    success_message: str
+    error_message: str
 
 
 class FlextOracleWmsDataFlattener:
@@ -61,25 +83,14 @@ class FlextOracleWmsDataFlattener:
             FlextResult with flattened records
 
         """
-        try:
-            flattened_records = []
-
-            for record in records:
-                # All records should be dicts based on type annotations
-                flattened_record = self._flatten_record(record)
-                flattened_records.append(flattened_record)
-
-            logger.info(
-                "Records flattened successfully",
-                entity_name=entity_name,
-                record_count=len(flattened_records),
-            )
-
-            return FlextResult.ok(flattened_records)
-
-        except Exception as e:
-            logger.exception("Record flattening failed", entity_name=entity_name)
-            return FlextResult.fail(f"Record flattening failed: {e}")
+        # SOLID REFACTORING: Use Template Method Pattern - DRY principle
+        config = RecordProcessingConfig(
+            processor_fn=self._flatten_record,
+            operation_name="flattening",
+            success_message="Records flattened successfully",
+            error_message="Record flattening failed",
+        )
+        return await self._process_records_template(records, entity_name, config)
 
     async def unflatten_records(
         self,
@@ -96,25 +107,47 @@ class FlextOracleWmsDataFlattener:
             FlextResult with unflattened records
 
         """
+        # SOLID REFACTORING: Use Template Method Pattern - DRY principle
+        config = RecordProcessingConfig(
+            processor_fn=self._unflatten_record,
+            operation_name="unflattening",
+            success_message="Records unflattened successfully",
+            error_message="Record unflattening failed",
+        )
+        return await self._process_records_template(records, entity_name, config)
+
+    async def _process_records_template(
+        self,
+        records: TOracleWmsRecordBatch,
+        entity_name: str | None,
+        config: RecordProcessingConfig,
+    ) -> FlextResult[TOracleWmsRecordBatch]:
+        """Template Method Pattern: Common record processing logic.
+
+        SOLID REFACTORING: Eliminates 34 lines of duplicated code between
+        flatten_records and unflatten_records using Template Method + Parameter Object.
+        """
         try:
-            unflattened_records = []
+            processed_records = []
 
             for record in records:
                 # All records should be dicts based on type annotations
-                unflattened_record = self._unflatten_record(record)
-                unflattened_records.append(unflattened_record)
+                processed_record = config.processor_fn(record)
+                processed_records.append(processed_record)
 
             logger.info(
-                "Records unflattened successfully",
+                config.success_message,
                 entity_name=entity_name,
-                record_count=len(unflattened_records),
+                record_count=len(processed_records),
             )
 
-            return FlextResult.ok(unflattened_records)
+            return FlextResult.ok(processed_records)
 
         except Exception as e:
-            logger.exception("Record unflattening failed", entity_name=entity_name)
-            return FlextResult.fail(f"Record unflattening failed: {e}")
+            logger.exception(
+                f"Record {config.operation_name} failed", entity_name=entity_name
+            )
+            return FlextResult.fail(f"{config.error_message}: {e}")
 
     def _flatten_record(
         self,
@@ -279,24 +312,33 @@ class FlextOracleWmsDataFlattener:
 
             if isinstance(value, dict):
                 stats["nested_fields"] += 1
-                # Recursively analyze nested structure
-                nested_stats = self._analyze_record_structure(value, depth + 1)
-                stats["depth"] = max(stats["depth"], nested_stats["depth"])
-                stats["total_fields"] += nested_stats["total_fields"]
-                stats["nested_fields"] += nested_stats["nested_fields"]
-                stats["list_fields"] += nested_stats["list_fields"]
+                # SOLID REFACTORING: Use DRY helper method
+                self._merge_nested_stats(stats, value, depth + 1)
             elif isinstance(value, list):
                 stats["list_fields"] += 1
-                # Analyze list items
+                # Analyze list items using DRY helper
                 for item in value:
                     if isinstance(item, dict):
-                        nested_stats = self._analyze_record_structure(item, depth + 1)
-                        stats["depth"] = max(stats["depth"], nested_stats["depth"])
-                        stats["total_fields"] += nested_stats["total_fields"]
-                        stats["nested_fields"] += nested_stats["nested_fields"]
-                        stats["list_fields"] += nested_stats["list_fields"]
+                        self._merge_nested_stats(stats, item, depth + 1)
 
         return stats
+
+    def _merge_nested_stats(
+        self,
+        parent_stats: dict[str, int],
+        nested_record: TOracleWmsRecord,
+        nested_depth: int,
+    ) -> None:
+        """DRY Helper: Merge nested statistics into parent stats.
+
+        SOLID REFACTORING: Eliminates duplicated stats merging code that
+        appeared in both dict and list processing branches.
+        """
+        nested_stats = self._analyze_record_structure(nested_record, nested_depth)
+        parent_stats["depth"] = max(parent_stats["depth"], nested_stats["depth"])
+        parent_stats["total_fields"] += nested_stats["total_fields"]
+        parent_stats["nested_fields"] += nested_stats["nested_fields"]
+        parent_stats["list_fields"] += nested_stats["list_fields"]
 
 
 # Factory function for easy usage

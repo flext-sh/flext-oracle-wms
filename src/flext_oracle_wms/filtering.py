@@ -308,52 +308,64 @@ class FlextOracleWmsFilter:
         ) != self._normalize_for_comparison(filter_value)
 
     def _op_greater_than(self, field_value: object, filter_value: object) -> bool:
-        """Greater than operator."""
+        """Greater than operator with proper type safety."""
         try:
-            # Type guard for comparable types - same types only
+            # Type guard for numeric comparisons
             if (
                 isinstance(field_value, (int, float))
                 and isinstance(filter_value, (int, float))
-            ) or (isinstance(field_value, str) and isinstance(filter_value, str)):
+            ):
+                return field_value > filter_value
+            # Type guard for string comparisons
+            if isinstance(field_value, str) and isinstance(filter_value, str):
                 return field_value > filter_value
             return False
         except (TypeError, ValueError):
             return False
 
     def _op_greater_equal(self, field_value: object, filter_value: object) -> bool:
-        """Greater than or equal operator."""
+        """Greater than or equal operator with proper type safety."""
         try:
-            # Type guard for comparable types - same types only
+            # Type guard for numeric comparisons
             if (
                 isinstance(field_value, (int, float))
                 and isinstance(filter_value, (int, float))
-            ) or (isinstance(field_value, str) and isinstance(filter_value, str)):
+            ):
+                return field_value >= filter_value
+            # Type guard for string comparisons
+            if isinstance(field_value, str) and isinstance(filter_value, str):
                 return field_value >= filter_value
             return False
         except (TypeError, ValueError):
             return False
 
     def _op_less_than(self, field_value: object, filter_value: object) -> bool:
-        """Less than operator."""
+        """Less than operator with proper type safety."""
         try:
-            # Type guard for comparable types - same types only
+            # Type guard for numeric comparisons
             if (
                 isinstance(field_value, (int, float))
                 and isinstance(filter_value, (int, float))
-            ) or (isinstance(field_value, str) and isinstance(filter_value, str)):
+            ):
+                return field_value < filter_value
+            # Type guard for string comparisons
+            if isinstance(field_value, str) and isinstance(filter_value, str):
                 return field_value < filter_value
             return False
         except (TypeError, ValueError):
             return False
 
     def _op_less_equal(self, field_value: object, filter_value: object) -> bool:
-        """Less than or equal operator."""
+        """Less than or equal operator with proper type safety."""
         try:
-            # Type guard for comparable types - same types only
+            # Type guard for numeric comparisons
             if (
                 isinstance(field_value, (int, float))
                 and isinstance(filter_value, (int, float))
-            ) or (isinstance(field_value, str) and isinstance(filter_value, str)):
+            ):
+                return field_value <= filter_value
+            # Type guard for string comparisons
+            if isinstance(field_value, str) and isinstance(filter_value, str):
                 return field_value <= filter_value
             return False
         except (TypeError, ValueError):

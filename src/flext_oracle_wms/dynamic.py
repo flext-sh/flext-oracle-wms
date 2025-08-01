@@ -8,6 +8,7 @@ Simplified dynamic schema processing for Oracle WMS operations.
 
 from __future__ import annotations
 
+from abc import ABC, abstractmethod
 from datetime import UTC, datetime
 from typing import TYPE_CHECKING, cast
 
@@ -27,6 +28,136 @@ if TYPE_CHECKING:
 logger = get_logger(__name__)
 
 
+# =============================================================================
+# SOLID REFACTORING: Strategy Pattern for type inference
+# =============================================================================
+
+
+class TypeInferenceStrategy(ABC):
+    """Strategy Pattern: Abstract base for type inference strategies."""
+
+    @abstractmethod
+    def can_handle(self, value: object) -> bool:
+        """Check if this strategy can handle the given value type."""
+
+    @abstractmethod
+    def infer_type(self, value: object) -> str:
+        """Infer the JSON schema type for the value."""
+
+
+class NullTypeStrategy(TypeInferenceStrategy):
+    """Strategy for handling None/null values."""
+
+    def can_handle(self, value: object) -> bool:
+        """Check if value is None."""
+        return value is None
+
+    def infer_type(self, value: object) -> str:  # noqa: ARG002
+        """Return string type for null values."""
+        return "string"  # Default for null values
+
+
+class BooleanTypeStrategy(TypeInferenceStrategy):
+    """Strategy for handling boolean values."""
+
+    def can_handle(self, value: object) -> bool:
+        """Check if value is boolean."""
+        return isinstance(value, bool)
+
+    def infer_type(self, value: object) -> str:  # noqa: ARG002
+        """Return boolean type."""
+        return "boolean"
+
+
+class IntegerTypeStrategy(TypeInferenceStrategy):
+    """Strategy for handling integer values."""
+
+    def can_handle(self, value: object) -> bool:
+        """Check if value is integer."""
+        return isinstance(value, int)
+
+    def infer_type(self, value: object) -> str:  # noqa: ARG002
+        """Return integer type."""
+        return "integer"
+
+
+class FloatTypeStrategy(TypeInferenceStrategy):
+    """Strategy for handling float values."""
+
+    def can_handle(self, value: object) -> bool:
+        """Check if value is float."""
+        return isinstance(value, float)
+
+    def infer_type(self, value: object) -> str:  # noqa: ARG002
+        """Return number type."""
+        return "number"
+
+
+class ListTypeStrategy(TypeInferenceStrategy):
+    """Strategy for handling list values."""
+
+    def can_handle(self, value: object) -> bool:
+        """Check if value is list."""
+        return isinstance(value, list)
+
+    def infer_type(self, value: object) -> str:  # noqa: ARG002
+        """Return array type."""
+        return "array"
+
+
+class DictTypeStrategy(TypeInferenceStrategy):
+    """Strategy for handling dictionary values."""
+
+    def can_handle(self, value: object) -> bool:
+        """Check if value is dictionary."""
+        return isinstance(value, dict)
+
+    def infer_type(self, value: object) -> str:  # noqa: ARG002
+        """Return object type."""
+        return "object"
+
+
+class DefaultTypeStrategy(TypeInferenceStrategy):
+    """Default strategy for unknown types."""
+
+    def can_handle(self, value: object) -> bool:  # noqa: ARG002
+        """Always returns True as fallback strategy."""
+        return True
+
+    def infer_type(self, value: object) -> str:  # noqa: ARG002
+        """Return string type as default."""
+        return "string"
+
+
+class TypeInferenceContext:
+    """Context class that manages type inference strategies.
+
+    SOLID REFACTORING: Eliminates 7 return statements by using Strategy Pattern
+    to encapsulate type inference logic into separate, testable strategies.
+    """
+
+    def __init__(self) -> None:
+        """Initialize with all available strategies in priority order."""
+        self.strategies: list[TypeInferenceStrategy] = [
+            NullTypeStrategy(),
+            BooleanTypeStrategy(),
+            IntegerTypeStrategy(),
+            FloatTypeStrategy(),
+            ListTypeStrategy(),
+            DictTypeStrategy(),
+            DefaultTypeStrategy(),  # Must be last as fallback
+        ]
+
+    def infer_type(self, value: object) -> str:
+        """Infer type using the first applicable strategy."""
+        for strategy in self.strategies:
+            if strategy.can_handle(value):
+                return strategy.infer_type(value)
+
+        # This should never be reached due to DefaultTypeStrategy
+        return "string"
+
+
 class FlextOracleWmsDynamicSchemaProcessor:
     """Simplified dynamic schema processor for Oracle WMS using flext-core patterns."""
 
@@ -44,6 +175,10 @@ class FlextOracleWmsDynamicSchemaProcessor:
         """
         self.sample_size = sample_size
         self.confidence_threshold = confidence_threshold
+
+        # SOLID REFACTORING: Initialize Strategy Pattern context
+        self._type_inference_context = TypeInferenceContext()
+
         logger.info(
             "Dynamic schema processor initialized",
             sample_size=sample_size,
@@ -193,20 +328,13 @@ class FlextOracleWmsDynamicSchemaProcessor:
         return schema
 
     def _infer_field_type(self, value: object) -> str:
-        """Infer JSON schema type from value."""
-        if value is None:
-            return "string"  # Default for null values
-        if isinstance(value, bool):
-            return "boolean"
-        if isinstance(value, int):
-            return "integer"
-        if isinstance(value, float):
-            return "number"
-        if isinstance(value, list):
-            return "array"
-        if isinstance(value, dict):
-            return "object"
-        return "string"
+        """Infer JSON schema type from value using Strategy Pattern.
+
+        SOLID REFACTORING: Reduced complexity from 7 returns to 1 using Strategy.
+        Each type inference is now handled by a dedicated strategy, improving
+        maintainability and testability.
+        """
+        return self._type_inference_context.infer_type(value)
 
     def _calculate_schema_confidence(
         self,
