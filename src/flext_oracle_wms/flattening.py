@@ -22,7 +22,7 @@ logger = get_logger(__name__)
 
 
 # =============================================================================
-# SOLID REFACTORING: Parameter Object Pattern to reduce method complexity
+# REFACTORING: Parameter Object Pattern to reduce method complexity
 # =============================================================================
 
 
@@ -83,7 +83,7 @@ class FlextOracleWmsDataFlattener:
             FlextResult with flattened records
 
         """
-        # SOLID REFACTORING: Use Template Method Pattern - DRY principle
+        # REFACTORING: Use Template Method Pattern - DRY principle
         config = RecordProcessingConfig(
             processor_fn=self._flatten_record,
             operation_name="flattening",
@@ -107,7 +107,7 @@ class FlextOracleWmsDataFlattener:
             FlextResult with unflattened records
 
         """
-        # SOLID REFACTORING: Use Template Method Pattern - DRY principle
+        # REFACTORING: Use Template Method Pattern - DRY principle
         config = RecordProcessingConfig(
             processor_fn=self._unflatten_record,
             operation_name="unflattening",
@@ -312,7 +312,7 @@ class FlextOracleWmsDataFlattener:
 
             if isinstance(value, dict):
                 stats["nested_fields"] += 1
-                # SOLID REFACTORING: Use DRY helper method
+                # REFACTORING: Use DRY helper method
                 self._merge_nested_stats(stats, value, depth + 1)
             elif isinstance(value, list):
                 stats["list_fields"] += 1

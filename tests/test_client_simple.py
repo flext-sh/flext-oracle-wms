@@ -21,8 +21,8 @@ class TestClientSimpleNew:
         """Test basic client creation."""
         client = FlextOracleWmsClient(self.config)
         assert client.config == self.config
-        assert hasattr(client, "client")
-        assert hasattr(client, "_cache_manager")
+        assert hasattr(client, "_client")
+        assert hasattr(client, "_discovered_entities")
 
     def test_client_repr(self) -> None:
         """Test client string representation."""

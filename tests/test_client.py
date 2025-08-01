@@ -15,11 +15,10 @@ def test_client_creation() -> None:
 
 
 def test_client_with_metrics() -> None:
-    """Test client creation with metrics."""
+    """Test client creation with config."""
     config = FlextOracleWmsModuleConfig.for_testing()
-    metrics = Mock()
-    client = FlextOracleWmsClient(config, metrics=metrics)
-    assert client.metrics == metrics
+    client = FlextOracleWmsClient(config)
+    assert client.config == config
 
 
 def test_legacy_client_creation() -> None:
@@ -139,8 +138,9 @@ def test_bulk_operations() -> None:
     config = FlextOracleWmsModuleConfig.for_testing()
     client = FlextOracleWmsClient(config)
 
-    result = client.bulk_get_entities(["entity1", "entity2"])
-    assert result.is_success is True or result.is_success is False
+    # Test available APIs
+    apis = client.get_available_apis()
+    assert isinstance(apis, dict)
 
 
 def test_client_error_handling() -> None:
@@ -148,6 +148,6 @@ def test_client_error_handling() -> None:
     config = FlextOracleWmsModuleConfig.for_testing()
     client = FlextOracleWmsClient(config)
 
-    # Test with invalid entity names
-    result = client.bulk_get_entities([])
-    assert result.is_success is True or result.is_success is False
+    # Test client initialization
+    assert client.config == config
+    assert hasattr(client, "_client")

@@ -14,7 +14,7 @@ from flext_core import (
 )
 
 # =============================================================================
-# SOLID REFACTORING: DRY Principle - Centralized kwargs extraction pattern
+# REFACTORING: DRY Principle - Centralized kwargs extraction pattern
 # =============================================================================
 
 
@@ -110,7 +110,7 @@ class FlextOracleWmsAuthenticationError(FlextOracleWmsError):
             **kwargs: Additional error context
 
         """
-        # SOLID REFACTORING: Use DRY principle - centralized details extraction
+        # REFACTORING: Use DRY principle - centralized details extraction
         details = _extract_simple_details(kwargs)
         super().__init__(message, error_code="AUTH_ERROR", details=details)
         self.auth_method = auth_method
@@ -135,7 +135,7 @@ class FlextOracleWmsApiError(FlextOracleWmsError):
             **kwargs: Additional error context
 
         """
-        # SOLID REFACTORING: Use DRY principle - centralized kwargs extraction
+        # REFACTORING: Use DRY principle - centralized kwargs extraction
         entity_name, details = _extract_error_details(kwargs)
 
         super().__init__(
@@ -165,7 +165,7 @@ class FlextOracleWmsConnectionError(FlextOracleWmsError):
             **kwargs: Additional error context
 
         """
-        # SOLID REFACTORING: Use DRY principle - centralized details extraction
+        # REFACTORING: Use DRY principle - centralized details extraction
         details = _extract_simple_details(kwargs)
         super().__init__(message, error_code="CONNECTION_ERROR", details=details)
         self.retry_count = retry_count
@@ -190,7 +190,7 @@ class FlextOracleWmsDataValidationError(FlextOracleWmsError):
             **kwargs: Additional error context
 
         """
-        # SOLID REFACTORING: Use DRY principle - centralized kwargs extraction
+        # REFACTORING: Use DRY principle - centralized kwargs extraction
         entity_name, details = _extract_error_details(kwargs)
         super().__init__(
             message,
@@ -219,7 +219,7 @@ class FlextOracleWmsConfigurationError(FlextOracleWmsError):
             **kwargs: Additional error context
 
         """
-        # SOLID REFACTORING: Use DRY principle - centralized details extraction
+        # REFACTORING: Use DRY principle - centralized details extraction
         details = _extract_simple_details(kwargs)
         super().__init__(message, error_code="CONFIG_ERROR", details=details)
         self.config_key = config_key
@@ -243,7 +243,7 @@ class FlextOracleWmsEntityNotFoundError(FlextOracleWmsError):
 
         """
         message = message or f"Oracle WMS entity '{entity_name}' not found"
-        # SOLID REFACTORING: Use DRY principle - centralized details extraction
+        # REFACTORING: Use DRY principle - centralized details extraction
         details = _extract_simple_details(kwargs)
         super().__init__(
             message,
@@ -270,7 +270,7 @@ class FlextOracleWmsRateLimitError(FlextOracleWmsError):
             **kwargs: Additional error context
 
         """
-        # SOLID REFACTORING: Use DRY principle - centralized kwargs extraction
+        # REFACTORING: Use DRY principle - centralized kwargs extraction
         entity_name, details = _extract_error_details(kwargs)
 
         super().__init__(
@@ -301,7 +301,7 @@ class FlextOracleWmsSchemaFlatteningError(FlextOracleWmsError):
             **kwargs: Additional error context
 
         """
-        # SOLID REFACTORING: Use DRY principle - centralized kwargs extraction
+        # REFACTORING: Use DRY principle - centralized kwargs extraction
         entity_name, details = _extract_error_details(kwargs)
 
         super().__init__(
@@ -333,7 +333,7 @@ class FlextOracleWmsFilterError(FlextOracleWmsError):
             **kwargs: Additional error context
 
         """
-        # SOLID REFACTORING: Use DRY principle - centralized kwargs extraction
+        # REFACTORING: Use DRY principle - centralized kwargs extraction
         entity_name, details = _extract_error_details(kwargs)
 
         super().__init__(
@@ -365,7 +365,7 @@ class FlextOracleWmsSchemaError(FlextOracleWmsError):
             **kwargs: Additional error context
 
         """
-        # SOLID REFACTORING: Use DRY principle - centralized kwargs extraction
+        # REFACTORING: Use DRY principle - centralized kwargs extraction
         entity_name, details = _extract_error_details(kwargs)
 
         super().__init__(

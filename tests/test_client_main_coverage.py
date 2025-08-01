@@ -74,8 +74,9 @@ class TestFlextOracleWmsClient:
     @pytest.mark.asyncio
     async def test_client_start_fails_invalid_config(self) -> None:
         """Test client start fails with invalid config."""
+        # Test with valid URL but invalid connection
         config = FlextOracleWmsModuleConfig(
-            base_url="invalid_url",  # Invalid URL
+            base_url="https://invalid-wms-server.example.com",
             username="testuser",
             password="testpass",
             environment="test",

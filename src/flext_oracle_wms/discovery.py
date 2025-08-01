@@ -36,7 +36,7 @@ DISCOVERY_FAILURE = False
 
 
 # =============================================================================
-# SOLID REFACTORING: Strategy + Command Patterns for complexity reduction
+# REFACTORING: Strategy + Command Patterns for complexity reduction
 # =============================================================================
 
 
@@ -106,9 +106,7 @@ class EndpointDiscoveryStrategy(DiscoveryStrategy):
             if validated_response.data is None:
                 return FlextResult.fail("Validated response data is None")
             return await self._process_entities_response(
-                context,
-                validated_response.data,
-                endpoint
+                context, validated_response.data, endpoint
             )
 
         except Exception as e:
@@ -116,7 +114,6 @@ class EndpointDiscoveryStrategy(DiscoveryStrategy):
             logger.exception(error_msg)
             context.errors.append(error_msg)
             return FlextResult.ok(DISCOVERY_FAILURE)
-
 
     async def _make_api_request(
         self,

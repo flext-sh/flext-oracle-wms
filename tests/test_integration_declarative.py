@@ -399,8 +399,8 @@ class TestErrorHandlingIntegration:
         """Test handling of invalid entity names."""
         result = await oracle_wms_client.get_entity_data("invalid_entity_xyz")
 
-        assert not result.success
-        assert "404" in result.error or "not found" in result.error.lower()
+        assert not result.is_success
+        assert result.error and ("404" in result.error or "not found" in result.error.lower())
         logger.info("✅ Properly handled invalid entity: %s", result.error)
 
     async def test_unknown_api_call(

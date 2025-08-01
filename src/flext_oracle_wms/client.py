@@ -40,7 +40,7 @@ logger = get_logger(__name__)
 
 
 # =============================================================================
-# SOLID REFACTORING: Parameter Objects for reduced complexity
+# REFACTORING: Parameter Objects for reduced complexity
 # =============================================================================
 
 

@@ -29,7 +29,7 @@ logger = get_logger(__name__)
 
 
 # =============================================================================
-# SOLID REFACTORING: Strategy Pattern for type inference
+# REFACTORING: Strategy Pattern for type inference
 # =============================================================================
 
 
@@ -176,7 +176,7 @@ class FlextOracleWmsDynamicSchemaProcessor:
         self.sample_size = sample_size
         self.confidence_threshold = confidence_threshold
 
-        # SOLID REFACTORING: Initialize Strategy Pattern context
+        # REFACTORING: Initialize Strategy Pattern context
         self._type_inference_context = TypeInferenceContext()
 
         logger.info(
