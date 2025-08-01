@@ -77,12 +77,12 @@ FLEXT_ORACLE_WMS_APIS = {
     "lgf_init_stage_interface": FlextOracleWmsApiEndpoint(
         name="lgf_init_stage_interface",
         method="POST",
-        path="/wms/lgfapi/v10/init_stage_interface/{entity_name}/",
-        version=FlextOracleWmsApiVersion.LEGACY,
+        path="/init_stage_interface/{entity_name}/",
+        version=FlextOracleWmsApiVersion.LGF_V10,
         category=FlextOracleWmsApiCategory.SETUP_TRANSACTIONAL,
         description="Main API for input data integration. "
-        "Pass data in to validate and process",
-        since_version="6.4.0",
+        "Pass data in to validate and process (Oracle v10 LGF API)",
+        since_version="10.0",
     ),
     "run_stage_interface": FlextOracleWmsApiEndpoint(
         name="run_stage_interface",
@@ -249,6 +249,34 @@ FLEXT_ORACLE_WMS_APIS = {
         version=FlextOracleWmsApiVersion.LGF_V10,
         category=FlextOracleWmsApiCategory.DATA_EXTRACT,
         description="Check aggregated async task status",
+        since_version="25A",
+    ),
+    # === ORACLE 2025 ADDITIONAL ENDPOINTS FROM LATEST DOCUMENTATION ===
+    "lgf_async_task_entity": FlextOracleWmsApiEndpoint(
+        name="lgf_async_task_entity",
+        method="GET",
+        path="/entity/lgf_async_task/{id}/",
+        version=FlextOracleWmsApiVersion.LGF_V10,
+        category=FlextOracleWmsApiCategory.ENTITY_OPERATIONS,
+        description="Get specific async task entity by ID (Oracle 2025 documentation)",
+        since_version="25A",
+    ),
+    "lgf_async_task_head": FlextOracleWmsApiEndpoint(
+        name="lgf_async_task_head",
+        method="HEAD",
+        path="/entity/lgf_async_task/{id}/",
+        version=FlextOracleWmsApiVersion.LGF_V10,
+        category=FlextOracleWmsApiCategory.ENTITY_OPERATIONS,
+        description="Check async task entity existence (Oracle 2025 documentation)",
+        since_version="25A",
+    ),
+    "lgf_async_task_list": FlextOracleWmsApiEndpoint(
+        name="lgf_async_task_list",
+        method="GET",
+        path="/entity/lgf_async_task/",
+        version=FlextOracleWmsApiVersion.LGF_V10,
+        category=FlextOracleWmsApiCategory.ENTITY_OPERATIONS,
+        description="List all async task entities (Oracle 2025 documentation)",
         since_version="25A",
     ),
 }

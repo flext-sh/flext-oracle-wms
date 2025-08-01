@@ -311,9 +311,8 @@ class FlextOracleWmsFilter:
         """Greater than operator with proper type safety."""
         try:
             # Type guard for numeric comparisons
-            if (
-                isinstance(field_value, (int, float))
-                and isinstance(filter_value, (int, float))
+            if isinstance(field_value, (int, float)) and isinstance(
+                filter_value, (int, float)
             ):
                 return field_value > filter_value
             # Type guard for string comparisons
@@ -327,9 +326,8 @@ class FlextOracleWmsFilter:
         """Greater than or equal operator with proper type safety."""
         try:
             # Type guard for numeric comparisons
-            if (
-                isinstance(field_value, (int, float))
-                and isinstance(filter_value, (int, float))
+            if isinstance(field_value, (int, float)) and isinstance(
+                filter_value, (int, float)
             ):
                 return field_value >= filter_value
             # Type guard for string comparisons
@@ -343,9 +341,8 @@ class FlextOracleWmsFilter:
         """Less than operator with proper type safety."""
         try:
             # Type guard for numeric comparisons
-            if (
-                isinstance(field_value, (int, float))
-                and isinstance(filter_value, (int, float))
+            if isinstance(field_value, (int, float)) and isinstance(
+                filter_value, (int, float)
             ):
                 return field_value < filter_value
             # Type guard for string comparisons
@@ -359,9 +356,8 @@ class FlextOracleWmsFilter:
         """Less than or equal operator with proper type safety."""
         try:
             # Type guard for numeric comparisons
-            if (
-                isinstance(field_value, (int, float))
-                and isinstance(filter_value, (int, float))
+            if isinstance(field_value, (int, float)) and isinstance(
+                filter_value, (int, float)
             ):
                 return field_value <= filter_value
             # Type guard for string comparisons

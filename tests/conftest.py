@@ -31,7 +31,7 @@ def set_test_environment() -> Generator[None]:
 
 # Oracle WMS connection fixtures
 @pytest.fixture
-def oracle_wms_config() -> dict[str, Any]:
+def oracle_wms_config() -> dict[str, object]:
     """Oracle WMS connection configuration for testing."""
     return {
         "host": "localhost",
@@ -48,7 +48,7 @@ def oracle_wms_config() -> dict[str, Any]:
 
 @pytest.fixture
 async def oracle_wms_connection(
-    oracle_wms_config: dict[str, Any],
+    oracle_wms_config: dict[str, object],
 ) -> AsyncGenerator[Any]:
     """Oracle WMS connection for testing."""
     # Convert dict config to proper OracleWMSConfig object
@@ -74,7 +74,7 @@ async def oracle_wms_connection(
 
 # WMS API fixtures
 @pytest.fixture
-def wms_api_config() -> dict[str, Any]:
+def wms_api_config() -> dict[str, object]:
     """WMS API configuration for testing."""
     return {
         "base_url": "http://localhost:8080/wms",
@@ -90,12 +90,12 @@ def wms_api_config() -> dict[str, Any]:
 
 
 @pytest.fixture
-async def wms_api_client(wms_api_config: dict[str, Any]) -> AsyncGenerator[Any]:
+async def wms_api_client(wms_api_config: dict[str, object]) -> AsyncGenerator[Any]:
     """WMS API client for testing."""
 
     # Mock WMS API client for testing since api_client module doesn't exist
     class MockWMSAPIClient:
-        def __init__(self, config: dict[str, Any]) -> None:
+        def __init__(self, config: dict[str, object]) -> None:
             self.config = config
 
         async def close(self) -> None:
@@ -108,7 +108,7 @@ async def wms_api_client(wms_api_config: dict[str, Any]) -> AsyncGenerator[Any]:
 
 # WMS entity fixtures
 @pytest.fixture
-def sample_inventory_data() -> list[dict[str, Any]]:
+def sample_inventory_data() -> list[dict[str, object]]:
     """Sample inventory data for testing."""
     return [
         {
@@ -139,7 +139,7 @@ def sample_inventory_data() -> list[dict[str, Any]]:
 
 
 @pytest.fixture
-def sample_shipment_data() -> dict[str, Any]:
+def sample_shipment_data() -> dict[str, object]:
     """Sample shipment data for testing."""
     return {
         "shipment_id": "SHIP001",
@@ -166,7 +166,7 @@ def sample_shipment_data() -> dict[str, Any]:
 
 
 @pytest.fixture
-def sample_receipt_data() -> dict[str, Any]:
+def sample_receipt_data() -> dict[str, object]:
     """Sample receipt data for testing."""
     return {
         "receipt_id": "REC001",
@@ -229,7 +229,7 @@ def wms_queries() -> dict[str, str]:
 
 # WMS operation fixtures
 @pytest.fixture
-def allocation_request() -> dict[str, Any]:
+def allocation_request() -> dict[str, object]:
     """Allocation request for testing."""
     return {
         "order_id": "ORD002",
@@ -251,7 +251,7 @@ def allocation_request() -> dict[str, Any]:
 
 
 @pytest.fixture
-def picking_list_data() -> dict[str, Any]:
+def picking_list_data() -> dict[str, object]:
     """Provide picking list data for testing."""
     return {
         "pick_list_id": "PICK001",
@@ -281,7 +281,7 @@ def picking_list_data() -> dict[str, Any]:
 
 # Integration test fixtures
 @pytest.fixture
-def integration_test_config() -> dict[str, Any]:
+def integration_test_config() -> dict[str, object]:
     """Integration test configuration."""
     return {
         "test_database": "WMS_TEST",
@@ -293,7 +293,7 @@ def integration_test_config() -> dict[str, Any]:
 
 
 @pytest.fixture
-def performance_test_config() -> dict[str, Any]:
+def performance_test_config() -> dict[str, object]:
     """Provide performance test configuration."""
     return {
         "concurrent_operations": 10,
@@ -306,7 +306,7 @@ def performance_test_config() -> dict[str, Any]:
 
 # Error simulation fixtures
 @pytest.fixture
-def error_scenarios() -> list[dict[str, Any]]:
+def error_scenarios() -> list[dict[str, object]]:
     """Error scenarios for testing."""
     return [
         {
@@ -338,7 +338,7 @@ def error_scenarios() -> list[dict[str, Any]]:
 
 # Data validation fixtures
 @pytest.fixture
-def validation_rules() -> dict[str, Any]:
+def validation_rules() -> dict[str, object]:
     """Provide data validation rules for testing."""
     return {
         "item_id": {
@@ -384,11 +384,11 @@ def mock_wms_service() -> object:
 
     class MockWMSService:
         def __init__(self) -> None:
-            self.inventory: dict[str, dict[str, Any]] = {}
-            self.shipments: dict[str, dict[str, Any]] = {}
-            self.allocations: dict[str, dict[str, Any]] = {}
+            self.inventory: dict[str, dict[str, object]] = {}
+            self.shipments: dict[str, dict[str, object]] = {}
+            self.allocations: dict[str, dict[str, object]] = {}
 
-        async def get_inventory(self, item_id: str) -> dict[str, Any]:
+        async def get_inventory(self, item_id: str) -> dict[str, object]:
             return self.inventory.get(
                 item_id,
                 {
@@ -402,8 +402,8 @@ def mock_wms_service() -> object:
         async def allocate_inventory(
             self,
             order_id: str,
-            items: list[dict[str, Any]],
-        ) -> dict[str, Any]:
+            items: list[dict[str, object]],
+        ) -> dict[str, object]:
             allocation_id = f"ALLOC_{len(self.allocations) + 1:03d}"
 
             allocation = {
@@ -419,8 +419,8 @@ def mock_wms_service() -> object:
 
         async def create_shipment(
             self,
-            shipment_data: dict[str, Any],
-        ) -> dict[str, Any]:
+            shipment_data: dict[str, object],
+        ) -> dict[str, object]:
             shipment_id = f"SHIP_{len(self.shipments) + 1:03d}"
             shipment = {
                 **shipment_data,
@@ -435,7 +435,7 @@ def mock_wms_service() -> object:
             item_id: str,
             location: str,
             quantity_change: float,
-        ) -> dict[str, Any]:
+        ) -> dict[str, object]:
             key = f"{item_id}_{location}"
             current = self.inventory.get(
                 key,
@@ -462,7 +462,7 @@ def mock_oracle_wms_adapter() -> object:
     class MockOracleWMSAdapter:
         def __init__(self) -> None:
             self.connected = False
-            self.queries_executed: list[dict[str, Any]] = []
+            self.queries_executed: list[dict[str, object]] = []
 
         async def connect(self) -> bool:
             self.connected = True
@@ -475,8 +475,8 @@ def mock_oracle_wms_adapter() -> object:
         async def execute_query(
             self,
             query: str,
-            parameters: dict[str, Any] | None = None,
-        ) -> list[dict[str, Any]]:
+            parameters: dict[str, object] | None = None,
+        ) -> list[dict[str, object]]:
             self.queries_executed.append(
                 {
                     "query": query,
@@ -508,8 +508,8 @@ def mock_oracle_wms_adapter() -> object:
         async def execute_procedure(
             self,
             procedure_name: str,
-            parameters: dict[str, Any] | None = None,
-        ) -> dict[str, Any]:
+            parameters: dict[str, object] | None = None,
+        ) -> dict[str, object]:
             return {
                 "procedure": procedure_name,
                 "parameters": parameters,

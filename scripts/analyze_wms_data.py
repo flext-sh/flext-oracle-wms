@@ -4,7 +4,6 @@
 from __future__ import annotations
 
 from collections import defaultdict
-from typing import Any
 
 from flext_core import FlextLoggerFactory, FlextLoggerName
 from pydantic import HttpUrl
@@ -45,9 +44,9 @@ def analyze_data_types(data: object, path: str = "") -> dict[str, set[str]]:
     return type_analysis
 
 
-def analyze_complex_structures(record: dict[str, Any]) -> dict[str, Any]:
+def analyze_complex_structures(record: dict[str, object]) -> dict[str, object]:
     """Analisa estruturas complexas em um registro."""
-    analysis: dict[str, Any] = {
+    analysis: dict[str, object] = {
         "complex_fields": {},
         "array_fields": {},
         "object_fields": {},

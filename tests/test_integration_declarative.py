@@ -6,7 +6,6 @@ Skips tests if .env is not available.
 
 from collections.abc import AsyncGenerator
 from pathlib import Path
-from typing import Any
 
 import pytest
 import structlog
@@ -40,7 +39,7 @@ def find_env_file() -> Path | None:
     return None
 
 
-def load_env_config() -> dict[str, Any] | None:
+def load_env_config() -> dict[str, object] | None:
     """Load Oracle WMS configuration from .env file."""
     env_path = find_env_file()
     if not env_path:
@@ -93,7 +92,7 @@ def load_env_config() -> dict[str, Any] | None:
 
 
 @pytest.fixture
-def env_config() -> dict[str, Any] | None:
+def env_config() -> dict[str, object] | None:
     """Fixture that provides .env configuration or skips test."""
     config = load_env_config()
     if not config or not all(
@@ -105,7 +104,7 @@ def env_config() -> dict[str, Any] | None:
 
 @pytest.fixture
 async def oracle_wms_client(
-    env_config: dict[str, Any],
+    env_config: dict[str, object],
 ) -> AsyncGenerator[FlextOracleWmsClient]:
     """Fixture that provides configured Oracle WMS client."""
     config = FlextOracleWmsClientConfig(**env_config)
@@ -176,7 +175,7 @@ class TestOracleWmsDeclarativeIntegration:
         ]
         assert len(lgf_apis) >= 5, "Should have multiple LGF v10 APIs"
 
-    async def test_client_configuration(self, env_config: dict[str, Any]) -> None:
+    async def test_client_configuration(self, env_config: dict[str, object]) -> None:
         """Test client configuration and initialization."""
         config = FlextOracleWmsClientConfig(**env_config)
 
@@ -400,7 +399,9 @@ class TestErrorHandlingIntegration:
         result = await oracle_wms_client.get_entity_data("invalid_entity_xyz")
 
         assert not result.is_success
-        assert result.error and ("404" in result.error or "not found" in result.error.lower())
+        assert result.error and (
+            "404" in result.error or "not found" in result.error.lower()
+        )
         logger.info("✅ Properly handled invalid entity: %s", result.error)
 
     async def test_unknown_api_call(

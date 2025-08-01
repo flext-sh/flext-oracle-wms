@@ -26,7 +26,11 @@ from flext_oracle_wms.cache import (
     FlextOracleWmsCacheConfig,
     FlextOracleWmsCacheManager,
 )
-from flext_oracle_wms.client import FlextOracleWmsClient
+from flext_oracle_wms.client import (
+    FlextOracleWmsClient,
+    FlextOracleWmsClientMock,
+    create_oracle_wms_client,
+)
 
 # Configuration - essential for setup
 from flext_oracle_wms.config import (
@@ -146,6 +150,8 @@ __all__ = [
     "FlextOracleWmsCacheManager",
     # Core client
     "FlextOracleWmsClient",
+    "FlextOracleWmsClientMock",
+    "create_oracle_wms_client",
     # Configuration
     "FlextOracleWmsClientConfig",
     "FlextOracleWmsConnectionError",
