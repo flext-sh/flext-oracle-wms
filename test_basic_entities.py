@@ -113,7 +113,8 @@ async def test_basic_entities() -> None:
             # Test a more complex query with a working entity
             if successful_extractions:
                 best_entity = max(
-                    successful_extractions, key=operator.itemgetter("count"),
+                    successful_extractions,
+                    key=operator.itemgetter("count"),
                 )
                 entity_name = best_entity["entity"]
 

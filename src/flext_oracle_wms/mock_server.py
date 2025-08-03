@@ -219,7 +219,11 @@ class OracleWmsMockServer:
                 limit = int(limit_value) if isinstance(limit_value, (int, str)) else 10
                 return FlextResult.ok(self.mock_entity_data(entity_name, limit))
             if api_name == "lgf_async_task_status":
-                task_id = str(kwargs.get("task_id")) if kwargs.get("task_id") is not None else None
+                task_id = (
+                    str(kwargs.get("task_id"))
+                    if kwargs.get("task_id") is not None
+                    else None
+                )
                 return FlextResult.ok(self.mock_async_task_status(task_id))
             if api_name == "lgf_data_extract":
                 return FlextResult.ok(self.mock_data_extract_response())

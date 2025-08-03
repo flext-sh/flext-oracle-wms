@@ -898,7 +898,11 @@ class FlextOracleWmsClientMock(FlextOracleWmsClient):
             if isinstance(data, dict):
                 results = data.get("results", [])
                 if isinstance(results, list):
-                    entities = [result["name"] for result in results if isinstance(result, dict) and "name" in result]
+                    entities = [
+                        result["name"]
+                        for result in results
+                        if isinstance(result, dict) and "name" in result
+                    ]
                     logger.info(f"Mock: Discovered {len(entities)} entities")
                     return FlextResult.ok(entities)
 
