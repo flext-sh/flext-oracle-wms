@@ -1,0 +1,50 @@
+{
+  "pipeline_execution": {
+    "timestamp": "20250801_215740",
+    "mode": "COMPLETE_MOCK_PIPELINE",
+    "duration_target": "FAST_EXECUTION",
+    "environment": "MOCK_REALISTIC_DATA"
+  },
+  "oracle_wms": {
+    "entities_count": 10,
+    "total_records": 148017,
+    "entities": [
+      "company",
+      "facility",
+      "item",
+      "location",
+      "inventory",
+      "order_hdr",
+      "order_dtl",
+      "allocation",
+      "container",
+      "lpn"
+    ]
+  },
+  "singer_integration": {
+    "schemas_generated": 10,
+    "catalog_streams": 10,
+    "tap_records_extracted": 50,
+    "replication_methods": ["INCREMENTAL"]
+  },
+  "target_loading": {
+    "tables_created": 10,
+    "total_records_loaded": 50
+  },
+  "dbt_transformations": {
+    "models_created": 7,
+    "model_types": ["SCD_TYPE_1", "SCD_TYPE_2", "TRANSACTION", "SNAPSHOT"],
+    "business_value": [
+      "Executive Dashboards",
+      "Inventory Analytics",
+      "Order Performance",
+      "Operational KPIs"
+    ]
+  },
+  "validation_results": {
+    "singer_protocol_compliance": true,
+    "meltano_catalog_ready": true,
+    "end_to_end_pipeline_flow": true,
+    "business_intelligence_ready": true
+  }
+}

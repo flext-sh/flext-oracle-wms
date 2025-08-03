@@ -90,7 +90,9 @@ class EndpointDiscoveryStrategy(DiscoveryStrategy):
             response_result = await self._make_api_request(api_client, endpoint)
             if not response_result.is_success:
                 return self._handle_discovery_error(
-                    context, response_result.error or "Request failed", endpoint
+                    context,
+                    response_result.error or "Request failed",
+                    endpoint,
                 )
 
             validated_response = self._validate_response(response_result.data, endpoint)
@@ -106,7 +108,9 @@ class EndpointDiscoveryStrategy(DiscoveryStrategy):
             if validated_response.data is None:
                 return FlextResult.fail("Validated response data is None")
             return await self._process_entities_response(
-                context, validated_response.data, endpoint
+                context,
+                validated_response.data,
+                endpoint,
             )
 
         except Exception as e:
@@ -124,7 +128,7 @@ class EndpointDiscoveryStrategy(DiscoveryStrategy):
         response_result = await api_client.get(endpoint)
         if not response_result.is_success:
             return FlextResult.fail(
-                f"Failed to call {endpoint}: {response_result.error}"
+                f"Failed to call {endpoint}: {response_result.error}",
             )
         # Type assertion: FlextApiClient.get() returns FlextResult[Response]
         # (guaranteed by flext_api contract)
@@ -392,7 +396,9 @@ class FlextOracleWmsEntityDiscovery:
         # Execute discovery across endpoints using strategy
         for endpoint in self.discovery_endpoints:
             result = await discovery_strategy.execute_discovery_step(
-                context, self.api_client, endpoint
+                context,
+                self.api_client,
+                endpoint,
             )
 
             if result.is_success and result.data:

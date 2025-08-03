@@ -1,0 +1,65 @@
+{
+  "dim_company": {
+    "model_name": "dim_company",
+    "model_type": "SCD_TYPE_1",
+    "description": "Company dimension with business hierarchy",
+    "source_tables": ["raw_oracle_wms_company"],
+    "rows_processed": 5,
+    "transformation_timestamp": "2025-08-01T21:57:40.346114+00:00",
+    "status": "SUCCESS"
+  },
+  "dim_facility": {
+    "model_name": "dim_facility",
+    "model_type": "SCD_TYPE_1",
+    "description": "Facility dimension with geographic data",
+    "source_tables": ["raw_oracle_wms_facility"],
+    "rows_processed": 5,
+    "transformation_timestamp": "2025-08-01T21:57:40.346123+00:00",
+    "status": "SUCCESS"
+  },
+  "dim_item": {
+    "model_name": "dim_item",
+    "model_type": "SCD_TYPE_2",
+    "description": "Item master with product hierarchy",
+    "source_tables": ["raw_oracle_wms_item"],
+    "rows_processed": 5,
+    "transformation_timestamp": "2025-08-01T21:57:40.346130+00:00",
+    "status": "SUCCESS"
+  },
+  "dim_location": {
+    "model_name": "dim_location",
+    "model_type": "SCD_TYPE_1",
+    "description": "Storage location dimension",
+    "source_tables": ["raw_oracle_wms_location"],
+    "rows_processed": 5,
+    "transformation_timestamp": "2025-08-01T21:57:40.346136+00:00",
+    "status": "SUCCESS"
+  },
+  "fact_inventory": {
+    "model_name": "fact_inventory",
+    "model_type": "SNAPSHOT",
+    "description": "Daily inventory snapshot fact table",
+    "source_tables": ["raw_oracle_wms_inventory"],
+    "rows_processed": 5,
+    "transformation_timestamp": "2025-08-01T21:57:40.346141+00:00",
+    "status": "SUCCESS"
+  },
+  "fact_orders": {
+    "model_name": "fact_orders",
+    "model_type": "TRANSACTION",
+    "description": "Order transaction fact table",
+    "source_tables": ["raw_oracle_wms_order_hdr", "raw_oracle_wms_order_dtl"],
+    "rows_processed": 10,
+    "transformation_timestamp": "2025-08-01T21:57:40.346147+00:00",
+    "status": "SUCCESS"
+  },
+  "fact_allocations": {
+    "model_name": "fact_allocations",
+    "model_type": "TRANSACTION",
+    "description": "Allocation and picking fact table",
+    "source_tables": ["raw_oracle_wms_allocation"],
+    "rows_processed": 5,
+    "transformation_timestamp": "2025-08-01T21:57:40.346153+00:00",
+    "status": "SUCCESS"
+  }
+}

@@ -312,7 +312,8 @@ class FlextOracleWmsFilter:
         try:
             # Type guard for numeric comparisons
             if isinstance(field_value, (int, float)) and isinstance(
-                filter_value, (int, float)
+                filter_value,
+                (int, float),
             ):
                 return field_value > filter_value
             # Type guard for string comparisons
@@ -327,7 +328,8 @@ class FlextOracleWmsFilter:
         try:
             # Type guard for numeric comparisons
             if isinstance(field_value, (int, float)) and isinstance(
-                filter_value, (int, float)
+                filter_value,
+                (int, float),
             ):
                 return field_value >= filter_value
             # Type guard for string comparisons
@@ -342,7 +344,8 @@ class FlextOracleWmsFilter:
         try:
             # Type guard for numeric comparisons
             if isinstance(field_value, (int, float)) and isinstance(
-                filter_value, (int, float)
+                filter_value,
+                (int, float),
             ):
                 return field_value < filter_value
             # Type guard for string comparisons
@@ -357,7 +360,8 @@ class FlextOracleWmsFilter:
         try:
             # Type guard for numeric comparisons
             if isinstance(field_value, (int, float)) and isinstance(
-                filter_value, (int, float)
+                filter_value,
+                (int, float),
             ):
                 return field_value <= filter_value
             # Type guard for string comparisons

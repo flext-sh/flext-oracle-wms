@@ -9,7 +9,6 @@ Referência: https://docs.oracle.com/en/cloud/saas/warehouse-management/25a/owmr
 
 from __future__ import annotations
 
-import json
 from datetime import UTC, datetime
 from typing import Any
 from uuid import uuid4
@@ -32,7 +31,7 @@ class OracleWmsMockServer:
         return {
             "entities": [
                 "company",
-                "facility", 
+                "facility",
                 "item",
                 "order_hdr",
                 "order_dtl",
@@ -46,7 +45,7 @@ class OracleWmsMockServer:
                 "container",
                 "lpn",
                 "pick_slip",
-                "manifest"
+                "manifest",
             ],
             "company_data": [
                 {
@@ -56,17 +55,17 @@ class OracleWmsMockServer:
                     "create_date": "2024-01-01T00:00:00Z",
                     "mod_date": "2024-12-01T10:30:00Z",
                     "create_user": "SYSTEM",
-                    "mod_user": "ADMIN"
+                    "mod_user": "ADMIN",
                 },
                 {
                     "company_code": "TEST_CO",
                     "company_name": "Test Company Ltd",
-                    "status": "Active", 
+                    "status": "Active",
                     "create_date": "2024-01-15T08:00:00Z",
                     "mod_date": "2024-11-15T14:20:00Z",
                     "create_user": "SYSTEM",
-                    "mod_user": "SETUP_USER"
-                }
+                    "mod_user": "SETUP_USER",
+                },
             ],
             "facility_data": [
                 {
@@ -76,17 +75,17 @@ class OracleWmsMockServer:
                     "status": "Active",
                     "address": "123 Warehouse Ave, City, State",
                     "create_date": "2024-01-01T00:00:00Z",
-                    "mod_date": "2024-12-01T10:30:00Z"
+                    "mod_date": "2024-12-01T10:30:00Z",
                 },
                 {
-                    "facility_code": "WH002", 
+                    "facility_code": "WH002",
                     "facility_name": "Warehouse 002",
                     "company_code": "TEST_CO",
                     "status": "Active",
                     "address": "456 Storage Blvd, City, State",
                     "create_date": "2024-01-15T08:00:00Z",
-                    "mod_date": "2024-11-20T16:45:00Z"
-                }
+                    "mod_date": "2024-11-20T16:45:00Z",
+                },
             ],
             "inventory_data": [
                 {
@@ -97,19 +96,19 @@ class OracleWmsMockServer:
                     "qty_allocated": 25.0,
                     "qty_available": 125.0,
                     "unit_of_measure": "EA",
-                    "last_count_date": "2024-12-01T09:00:00Z"
+                    "last_count_date": "2024-12-01T09:00:00Z",
                 },
                 {
                     "item_code": "ITEM002",
-                    "facility_code": "DC001", 
+                    "facility_code": "DC001",
                     "location": "B-02-03",
                     "qty_on_hand": 75.0,
                     "qty_allocated": 10.0,
                     "qty_available": 65.0,
                     "unit_of_measure": "EA",
-                    "last_count_date": "2024-11-28T14:30:00Z"
-                }
-            ]
+                    "last_count_date": "2024-11-28T14:30:00Z",
+                },
+            ],
         }
 
     def mock_health_check(self) -> dict[str, Any]:
@@ -124,7 +123,7 @@ class OracleWmsMockServer:
             "available_apis": 22,
             "discovered_entities": len(self.mock_data["entities"]),
             "mock_mode": True,
-            "timestamp": datetime.now(UTC).isoformat()
+            "timestamp": datetime.now(UTC).isoformat(),
         }
 
     def mock_entity_discovery(self) -> dict[str, Any]:
@@ -138,7 +137,7 @@ class OracleWmsMockServer:
             "page_number": 1,
             "page_count": 1,
             "next_page": None,
-            "previous_page": None
+            "previous_page": None,
         }
 
     def mock_entity_data(self, entity_name: str, limit: int = 10) -> dict[str, Any]:
@@ -157,7 +156,7 @@ class OracleWmsMockServer:
                     "name": f"Mock {entity_name.title()} {i}",
                     "status": "Active",
                     "create_date": "2024-01-01T00:00:00Z",
-                    "mod_date": "2024-12-01T10:30:00Z"
+                    "mod_date": "2024-12-01T10:30:00Z",
                 }
                 for i in range(1, min(limit + 1, 6))
             ]
@@ -170,13 +169,13 @@ class OracleWmsMockServer:
             "next_page": None,
             "previous_page": None,
             "entity_type": entity_name,
-            "extracted_at": datetime.now(UTC).isoformat()
+            "extracted_at": datetime.now(UTC).isoformat(),
         }
 
     def mock_async_task_status(self, task_id: str | None = None) -> dict[str, Any]:
         """Mock async task status response following Oracle 25A format."""
         mock_task_id = task_id or str(uuid4())
-        
+
         return {
             "task_id": mock_task_id,
             "status": "COMPLETED",
@@ -188,42 +187,46 @@ class OracleWmsMockServer:
             "end_time": "2024-12-01T10:02:30Z",
             "duration_seconds": 150,
             "output_location": f"https://objectstore.oracle.com/exports/{mock_task_id}.json",
-            "format": "JSON"
+            "format": "JSON",
         }
 
     def mock_data_extract_response(self) -> dict[str, Any]:
         """Mock data extract to object store response (Oracle 25A feature)."""
         task_id = str(uuid4())
-        
+
         return {
             "task_id": task_id,
             "status": "SUBMITTED",
             "message": "Data extraction task submitted successfully",
             "estimated_completion": "2024-12-01T10:05:00Z",
-            "status_check_url": f"/lgfapi/v10/data_extract/export_async_status?task_id={task_id}"
+            "status_check_url": f"/lgfapi/v10/data_extract/export_async_status?task_id={task_id}",
         }
 
-    def get_mock_response(self, api_name: str, **kwargs: Any) -> FlextResult[dict[str, Any]]:
+    def get_mock_response(
+        self,
+        api_name: str,
+        **kwargs: object,
+    ) -> FlextResult[dict[str, object]]:
         """Get mock response for specified API."""
         try:
             if api_name == "health_check":
                 return FlextResult.ok(self.mock_health_check())
-            elif api_name == "discover_entities":
+            if api_name == "discover_entities":
                 return FlextResult.ok(self.mock_entity_discovery())
-            elif api_name == "get_entity_data":
-                entity_name = kwargs.get("entity_name", "company")
-                limit = kwargs.get("limit", 10)
+            if api_name == "get_entity_data":
+                entity_name = str(kwargs.get("entity_name", "company"))
+                limit_value = kwargs.get("limit", 10)
+                limit = int(limit_value) if isinstance(limit_value, (int, str)) else 10
                 return FlextResult.ok(self.mock_entity_data(entity_name, limit))
-            elif api_name == "lgf_async_task_status":
-                task_id = kwargs.get("task_id")
+            if api_name == "lgf_async_task_status":
+                task_id = str(kwargs.get("task_id")) if kwargs.get("task_id") is not None else None
                 return FlextResult.ok(self.mock_async_task_status(task_id))
-            elif api_name == "lgf_data_extract":
+            if api_name == "lgf_data_extract":
                 return FlextResult.ok(self.mock_data_extract_response())
-            else:
-                return FlextResult.fail(f"Mock not implemented for API: {api_name}")
+            return FlextResult.fail(f"Mock not implemented for API: {api_name}")
 
         except Exception as e:
-            logger.error(f"Mock response generation failed for {api_name}: {e}")
+            logger.exception(f"Mock response generation failed for {api_name}: {e}")
             return FlextResult.fail(f"Mock error: {e}")
 
 

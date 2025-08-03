@@ -858,9 +858,10 @@ class FlextOracleWmsClient:
 # MOCK MODE SUPPORT FOR TESTING WITHOUT CREDENTIALS
 # =============================================================================
 
+
 class FlextOracleWmsClientMock(FlextOracleWmsClient):
     """Oracle WMS Client with realistic mock responses for testing.
-    
+
     This class provides the same interface as FlextOracleWmsClient but returns
     realistic mock data based on Oracle WMS documentation instead of making
     real API calls. Useful for testing when valid credentials are not available.
@@ -870,7 +871,9 @@ class FlextOracleWmsClientMock(FlextOracleWmsClient):
         """Initialize mock Oracle WMS client."""
         super().__init__(config)
         self._mock_mode = True
-        logger.info("Oracle WMS Client initialized in MOCK MODE - using realistic test data")
+        logger.info(
+            "Oracle WMS Client initialized in MOCK MODE - using realistic test data",
+        )
 
     async def start(self) -> FlextResult[None]:
         """Start mock client (always succeeds)."""
@@ -885,66 +888,76 @@ class FlextOracleWmsClientMock(FlextOracleWmsClient):
     async def discover_entities(self) -> FlextResult[list[TOracleWmsEntityName]]:
         """Mock entity discovery with realistic Oracle WMS entities."""
         from flext_oracle_wms.mock_server import get_mock_server
-        
+
         mock_server = get_mock_server(self.config.environment)
         response = mock_server.get_mock_response("discover_entities")
-        
+
         if response.is_success and response.data:
-            # Extract entity names from mock response
-            entities = [result["name"] for result in response.data.get("results", [])]
-            logger.info(f"Mock: Discovered {len(entities)} entities")
-            return FlextResult.ok(entities)
-        
+            # Extract entity names from mock response - type-safe conversion
+            data = response.data
+            if isinstance(data, dict):
+                results = data.get("results", [])
+                if isinstance(results, list):
+                    entities = [result["name"] for result in results if isinstance(result, dict) and "name" in result]
+                    logger.info(f"Mock: Discovered {len(entities)} entities")
+                    return FlextResult.ok(entities)
+
         return FlextResult.fail("Mock entity discovery failed")
 
     async def get_entity_data(
         self,
-        entity_name: TOracleWmsEntityName,
-        limit: int = 100,
+        entity_name: str,
+        limit: int | None = None,
+        offset: int | None = None,
         fields: str | None = None,
         filters: dict[str, object] | None = None,
     ) -> FlextResult[dict[str, object]]:
         """Mock entity data with realistic Oracle WMS data."""
         from flext_oracle_wms.mock_server import get_mock_server
-        
+
         mock_server = get_mock_server(self.config.environment)
         response = mock_server.get_mock_response(
-            "get_entity_data", 
-            entity_name=entity_name, 
-            limit=limit
+            "get_entity_data",
+            entity_name=entity_name,
+            limit=limit,
         )
-        
-        if response.is_success:
+
+        if response.is_success and response.data is not None:
             logger.info(f"Mock: Retrieved {entity_name} data with {limit} limit")
-            return FlextResult.ok(response.data)
-        
+            # Ensure type safety for FlextResult.ok
+            data = response.data if isinstance(response.data, dict) else {}
+            return FlextResult.ok(data)
+
         return FlextResult.fail(f"Mock entity data failed for {entity_name}")
 
     async def health_check(self) -> FlextResult[dict[str, object]]:
         """Mock health check (always healthy in mock mode)."""
         from flext_oracle_wms.mock_server import get_mock_server
-        
+
         mock_server = get_mock_server(self.config.environment)
         response = mock_server.get_mock_response("health_check")
-        
-        if response.is_success:
-            return FlextResult.ok(response.data)
-        
+
+        if response.is_success and response.data is not None:
+            # Ensure type safety for FlextResult.ok
+            data = response.data if isinstance(response.data, dict) else {}
+            return FlextResult.ok(data)
+
         return FlextResult.fail("Mock health check failed")
 
 
 def create_oracle_wms_client(
-    config: FlextOracleWmsClientConfig, 
-    mock_mode: bool = False
+    config: FlextOracleWmsClientConfig,
+    mock_mode: bool = False,
 ) -> FlextOracleWmsClient:
     """Factory function to create Oracle WMS client with optional mock mode.
-    
+
     Args:
         config: Oracle WMS client configuration
         mock_mode: If True, returns mock client with realistic test data
-        
+
     Returns:
         FlextOracleWmsClient or FlextOracleWmsClientMock instance
+
     """
     if mock_mode:
         return FlextOracleWmsClientMock(config)

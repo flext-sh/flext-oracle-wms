@@ -150,10 +150,9 @@ __all__ = [
     "FlextOracleWmsCacheManager",
     # Core client
     "FlextOracleWmsClient",
-    "FlextOracleWmsClientMock",
-    "create_oracle_wms_client",
     # Configuration
     "FlextOracleWmsClientConfig",
+    "FlextOracleWmsClientMock",
     "FlextOracleWmsConnectionError",
     # Data flattening (imported selectively as needed)
     "FlextOracleWmsDataValidationError",
@@ -197,6 +196,7 @@ __all__ = [
     "__description__",
     # Metadata
     "__version__",
+    "create_oracle_wms_client",
     # Helper functions
     "flext_oracle_wms_build_entity_url",
     "flext_oracle_wms_chunk_records",
