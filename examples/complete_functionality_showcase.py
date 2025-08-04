@@ -71,8 +71,9 @@ def load_config_from_environment() -> FlextOracleWmsClientConfig:
     environment = os.getenv("ORACLE_WMS_ENVIRONMENT", "production")
 
     if not all([base_url, username, password]):
+        msg = "Missing required environment variables: ORACLE_WMS_BASE_URL, ORACLE_WMS_USERNAME, ORACLE_WMS_PASSWORD"
         raise ValueError(
-            "Missing required environment variables: ORACLE_WMS_BASE_URL, ORACLE_WMS_USERNAME, ORACLE_WMS_PASSWORD"
+            msg
         )
 
     return FlextOracleWmsClientConfig(
@@ -114,7 +115,8 @@ async def showcase_1_client_initialization(
         print("   ✅ Client started successfully")
     else:
         print(f"   ❌ Client start failed: {start_result.error}")
-        raise FlextOracleWmsError(f"Failed to start client: {start_result.error}")
+        msg = f"Failed to start client: {start_result.error}"
+        raise FlextOracleWmsError(msg)
 
     print()
     return client
@@ -376,6 +378,7 @@ async def showcase_7_health_monitoring(client: FlextOracleWmsClient) -> dict[str
     return {}
 
     print()
+    return None
 
 
 async def showcase_8_performance_tracking(
