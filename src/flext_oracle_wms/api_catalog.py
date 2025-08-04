@@ -1,7 +1,30 @@
 """Oracle WMS Cloud API Catalog - Declarative API Definitions.
 
-Catálogo completo das APIs da Oracle WMS Cloud conforme documentação oficial 25B.
-Referência: https://docs.oracle.com/en/cloud/saas/warehouse-management/25b/owmre/index.html
+Comprehensive catalog of Oracle WMS Cloud APIs based on official 25B documentation.
+Provides declarative endpoint definitions with categorization, versioning, and
+comprehensive metadata for enterprise Oracle WMS integration.
+
+Key Features:
+    - Complete API endpoint catalog with official Oracle WMS Cloud paths
+    - Categorized APIs (Setup, Automation, Data Extract, Entity Operations)
+    - Version-aware endpoint management (Legacy and LGF v10)
+    - Type-safe API definitions with comprehensive validation
+    - Enterprise integration patterns with FLEXT ecosystem
+
+Architecture:
+    Built on FLEXT ValueObject patterns with comprehensive domain validation:
+    - FlextOracleWmsApiEndpoint: Individual API definitions with metadata
+    - FlextOracleWmsApiCategory: Logical grouping of related operations
+    - FlextOracleWmsApiVersion: Version management for API evolution
+    - Declarative catalog supporting dynamic API discovery
+
+Reference:
+    Oracle WMS Cloud REST API Documentation
+    https://docs.oracle.com/en/cloud/saas/warehouse-management/25b/owmre/index.html
+
+Author: FLEXT Development Team
+Version: 0.9.0
+License: MIT
 """
 
 from __future__ import annotations

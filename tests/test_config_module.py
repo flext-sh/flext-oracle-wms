@@ -1,4 +1,28 @@
-"""Test Oracle WMS configuration module functionality."""
+"""Oracle WMS Configuration Module - Comprehensive Testing Suite.
+
+This module provides comprehensive testing for Oracle WMS configuration
+management, including Pydantic-based configuration validation, environment
+variable handling, and enterprise configuration patterns.
+
+Test Coverage:
+    - Configuration object creation with various parameter combinations
+    - Pydantic validation and type checking for configuration fields
+    - Environment variable loading and precedence testing
+    - Configuration defaults and override behavior validation
+    - Security configuration patterns and credential handling
+    - Configuration serialization and deserialization testing
+
+Test Categories:
+    - Unit tests for configuration object instantiation
+    - Validation tests for required and optional fields
+    - Environment variable integration and override testing
+    - Security and credential management validation
+    - Configuration compatibility and migration testing
+
+Author: FLEXT Development Team
+Version: 0.9.0
+License: MIT
+"""
 
 from flext_oracle_wms.config import (
     FlextOracleWmsModuleConfig,

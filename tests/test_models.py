@@ -1,4 +1,42 @@
-"""Test Oracle WMS models functionality."""
+"""Oracle WMS Data Models - Comprehensive Testing Suite.
+
+This module provides comprehensive testing for Oracle WMS data models and
+value objects, including entity definitions, discovery results, API responses,
+and domain model validation patterns.
+
+Test Coverage:
+    - Oracle WMS entity model creation and validation testing
+    - Discovery result processing and metadata validation
+    - API response wrapper testing with various response scenarios
+    - Domain rule validation and business logic constraint testing
+    - Data model serialization and deserialization verification
+    - Value object immutability and equality testing
+
+Test Categories:
+    - Unit tests for individual model creation and validation
+    - Domain validation tests for business rule enforcement
+    - Model integration tests with Oracle WMS API structures
+    - Error handling tests for invalid model states
+    - Performance tests for model operations and validation
+
+Data Models Tested:
+    - FlextOracleWmsEntity: Oracle WMS entity definitions with metadata
+    - FlextOracleWmsDiscoveryResult: Entity discovery operation results
+    - FlextOracleWmsApiResponse: API response wrapper with validation
+    - Domain validation patterns and business rule enforcement
+    - Value object patterns and immutability constraints
+
+Validation Testing:
+    - Required field validation and constraint enforcement
+    - Data type validation and conversion testing
+    - Business rule validation for Oracle WMS domain logic
+    - Error handling for invalid model states and data
+    - Integration testing with Oracle WMS API response structures
+
+Author: FLEXT Development Team
+Version: 0.9.0
+License: MIT
+"""
 
 import pytest
 

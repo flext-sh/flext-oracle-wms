@@ -1,10 +1,48 @@
-"""Oracle WMS Authentication - Enterprise authentication mechanisms.
+"""Oracle WMS Authentication - Enterprise Security Implementation.
 
-Copyright (c) 2025 FLEXT Contributors
-SPDX-License-Identifier: MIT
+This module provides comprehensive authentication mechanisms for Oracle WMS Cloud
+API integration, supporting multiple authentication methods with enterprise security
+patterns and compliance with FLEXT ecosystem standards.
 
-Provides enterprise authentication mechanisms for Oracle WMS API using
-flext-core and flext-api patterns.
+Key Features:
+    - Multi-method authentication (Basic, Bearer Token, API Key)
+    - Enterprise security patterns with credential management
+    - Token lifecycle management and automatic renewal
+    - Authentication plugin architecture for extensibility
+    - Integration with Oracle WMS Cloud security standards
+    - Comprehensive error handling and security logging
+
+Architecture:
+    Built on FLEXT foundation patterns with enterprise security compliance:
+    - FlextOracleWmsAuthConfig: Type-safe authentication configuration
+    - FlextOracleWmsAuthenticator: Main authentication interface
+    - FlextOracleWmsAuthPlugin: Plugin-based authentication extension
+    - Enterprise credential management with secure storage patterns
+    - Integration with flext-api authentication frameworks
+
+Authentication Methods:
+    - Basic Authentication: Username/password with secure encoding
+    - Bearer Token Authentication: OAuth/JWT token-based security
+    - API Key Authentication: Service-to-service API key management
+    - Enterprise SSO Integration: Support for corporate authentication
+    - Multi-factor Authentication: Enhanced security for enterprise environments
+
+Security Features:
+    - Secure credential storage and transmission
+    - Token expiration and automatic renewal mechanisms
+    - Authentication failure handling and retry policies
+    - Security audit logging and compliance reporting
+    - Integration with enterprise identity management systems
+
+Integration:
+    - Native Oracle WMS Cloud authentication protocols
+    - FLEXT ecosystem security pattern compliance
+    - Enterprise monitoring and audit trail integration
+    - Corporate security policy enforcement
+
+Author: FLEXT Development Team
+Version: 0.9.0
+License: MIT
 """
 
 from __future__ import annotations

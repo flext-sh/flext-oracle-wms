@@ -1,9 +1,41 @@
-"""Oracle WMS Essential Types - Only what's actually used.
+"""Oracle WMS Type Definitions and Aliases.
 
-Copyright (c) 2025 FLEXT Contributors
-SPDX-License-Identifier: MIT
+This module provides comprehensive type definitions for Oracle WMS Cloud integration,
+including type aliases, typed dictionaries, and validation constraints for enterprise
+data processing and API operations.
 
-Minimal Oracle WMS types - only what's actually needed.
+Key Features:
+    - Type-safe aliases for Oracle WMS data structures
+    - Pydantic-based validation constraints for data integrity
+    - Comprehensive type definitions for API responses and entities
+    - Type safety for Oracle WMS entity operations and discovery
+    - Integration with Python's typing system for IDE support
+
+Architecture:
+    Provides foundation type definitions used throughout the FLEXT Oracle WMS library:
+    - Record and batch processing types for data operations
+    - API response and version type definitions
+    - Entity identification and naming constraints
+    - Schema and metadata type definitions
+    - Type-safe configuration and validation patterns
+
+Type Categories:
+    - Core Data Types: Record processing and batch operations
+    - API Types: Response structures and version management
+    - Entity Types: Entity identification and discovery operations
+    - Schema Types: Dynamic schema and metadata processing
+    - Validation Types: Type constraints and data validation
+
+Integration:
+    - Native Python typing system compatibility
+    - Pydantic validation framework integration
+    - MyPy static type checking support
+    - IDE intellisense and type hint support
+    - Enterprise development tooling compatibility
+
+Author: FLEXT Development Team
+Version: 0.9.0
+License: MIT
 """
 
 from __future__ import annotations

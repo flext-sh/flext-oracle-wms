@@ -1,9 +1,49 @@
-"""Oracle WMS Cloud Client - Enterprise Declarative Implementation.
+"""Oracle WMS Cloud Client - Enterprise Integration Implementation.
 
-Cliente dinâmico para Oracle WMS Cloud usando infraestrutura flext-api.
-Implementa descoberta automática de entidades e APIs declarativas.
+This module provides the primary client interface for Oracle Warehouse Management
+System (WMS) Cloud integration. It implements enterprise-grade patterns including
+declarative API discovery, automatic entity detection, and comprehensive error
+handling using FLEXT ecosystem foundations.
 
-Referência: https://docs.oracle.com/en/cloud/saas/warehouse-management/25b/owmre/index.html
+Key Features:
+    - Declarative API catalog with endpoint discovery
+    - Multi-method authentication (Basic, Bearer, API Key)
+    - Automatic entity and schema discovery
+    - Type-safe configuration management
+    - Railway-oriented programming with FlextResult
+    - Enterprise caching and performance optimization
+    - Comprehensive error handling and logging
+
+Architecture:
+    Built on flext-api foundation with proper separation of concerns:
+    - Client interface handles user-facing operations
+    - API catalog provides declarative endpoint definitions
+    - Authentication module manages enterprise auth patterns
+    - Discovery service handles entity and schema detection
+
+Integration:
+    - Uses FlextApiClient for HTTP communication
+    - Integrates with FLEXT logging and error handling
+    - Supports FLEXT dependency injection container
+    - Compatible with Singer protocol for data pipelines
+
+Example:
+    Basic client initialization and entity discovery:
+
+    >>> config = FlextOracleWmsClientConfig(
+    ...     base_url="https://your-wms.oraclecloud.com",
+    ...     username="api_user",
+    ...     password="secure_password"
+    ... )
+    >>> client = FlextOracleWmsClient(config)
+    >>> result = await client.discover_entities()
+    >>> if result.is_success:
+    ...     entities = result.data
+    ...     print(f"Found {len(entities)} WMS entities")
+
+Reference: Oracle WMS Cloud REST API Documentation
+https://docs.oracle.com/en/cloud/saas/warehouse-management/25b/owmre/index.html
+
 """
 
 from __future__ import annotations
@@ -149,8 +189,39 @@ class FlextOracleWmsPlugin(FlextPlugin):
 class FlextOracleWmsClient:
     """Oracle WMS Cloud Client - Dynamic & Declarative Implementation.
 
-    Cliente dinâmico que descobre entidades via API real e implementa todas as
-    25+ APIs da Oracle WMS Cloud de forma declarativa usando flext-api.
+    Enterprise Oracle WMS Cloud client that dynamically discovers entities via real API
+    calls and implements 25+ Oracle WMS Cloud APIs declaratively using flext-api patterns.
+
+    Features:
+        - Dynamic entity discovery through Oracle WMS Cloud REST API
+        - Declarative API implementation with comprehensive endpoint catalog
+        - Type-safe configuration management with Pydantic validation
+        - Railway-oriented programming with FlextResult error handling
+        - Enterprise authentication supporting Basic, Bearer, and API Key methods
+        - Intelligent caching with configurable TTL and performance optimization
+        - Comprehensive error handling with Oracle WMS-specific categorization
+
+    Architecture:
+        Built on FLEXT ecosystem foundations with Clean Architecture principles:
+        - Uses FlextApiClient for HTTP communication with connection pooling
+        - Implements FlextResult pattern for consistent error handling
+        - Integrates with FLEXT observability for monitoring and logging
+        - Supports FLEXT dependency injection container patterns
+
+    Example:
+        Basic client usage with entity discovery:
+
+        >>> config = FlextOracleWmsClientConfig(
+        ...     base_url="https://your-wms.oraclecloud.com",
+        ...     username="wms_user",
+        ...     password="secure_password"
+        ... )
+        >>> client = FlextOracleWmsClient(config)
+        >>> await client.start()
+        >>> result = await client.discover_entities()
+        >>> if result.is_success:
+        ...     print(f"Discovered {len(result.data)} WMS entities")
+
     """
 
     def __init__(self, config: FlextOracleWmsClientConfig) -> None:

@@ -29,18 +29,40 @@ WMSRetryAttempts = NewType("WMSRetryAttempts", int)
 class FlextOracleWmsClientConfig(FlextValueObject):
     """Oracle WMS Declarative Client Configuration.
 
-    Configuração simplificada para o cliente declarativo Oracle WMS Cloud.
+    Simplified configuration management for declarative Oracle WMS Cloud client
+    operations with comprehensive validation and type safety using FLEXT patterns.
+
+    Features:
+        - Type-safe configuration with domain validation
+        - Environment-driven settings with sensible defaults
+        - SSL verification and security controls
+        - Timeout and retry configuration for reliability
+        - Integration with FLEXT logging and observability
+
+    Example:
+        Basic configuration setup:
+
+        >>> config = FlextOracleWmsClientConfig(
+        ...     base_url="https://your-wms.oraclecloud.com",
+        ...     username="api_user",
+        ...     password="secure_password",
+        ...     environment="production"
+        ... )
+        >>> validation = config.validate_domain_rules()
+        >>> if validation.is_success:
+        ...     print("Configuration is valid")
+
     """
 
     base_url: str
     username: str
     password: str
-    environment: str = "default"
-    api_version: FlextOracleWmsApiVersion = FlextOracleWmsApiVersion.LGF_V10
-    timeout: float = 30.0
-    max_retries: int = 3
-    verify_ssl: bool = True
-    enable_logging: bool = True
+    environment: str = Field(default="default")
+    api_version: FlextOracleWmsApiVersion = Field(default=FlextOracleWmsApiVersion.LGF_V10)
+    timeout: float = Field(default=30.0)
+    max_retries: int = Field(default=3)
+    verify_ssl: bool = Field(default=True)
+    enable_logging: bool = Field(default=True)
 
     def validate_domain_rules(self) -> FlextResult[None]:
         """Validate Oracle WMS client configuration domain rules."""

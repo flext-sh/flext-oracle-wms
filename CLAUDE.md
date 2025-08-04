@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-**flext-oracle-wms** is an enterprise Oracle Warehouse Management System (WMS) integration library built with Python 3.13 and designed for the FLEXT data integration platform. It provides comprehensive WMS operations including inventory management, shipping, receiving, picking, putaway, and cycle counting through Oracle WMS Cloud APIs.
+**flext-oracle-wms** is an enterprise Oracle Warehouse Management System (WMS) integration library built with Python 3.13 and designed for the FLEXT data integration platform. It provides a comprehensive client library for Oracle WMS Cloud REST API integration with support for entity discovery, schema processing, and data operations.
 
 ## Architecture
 
@@ -13,17 +13,39 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - **Clean Architecture**: Domain-driven design with clear layer separation using flext-core patterns
 - **Enterprise Integration**: Built on flext-api and flext-core foundation libraries
 - **Declarative APIs**: API catalog-driven approach for endpoint discovery and management
-- **FlextResult Pattern**: Railway-oriented programming for error handling
+- **FlextResult Pattern**: Railway-oriented programming for error handling (from flext-core)
 - **Type Safety**: Strict MyPy configuration with comprehensive type annotations
 
 ### Key Components
 
-- **Client Layer**: `FlextOracleWmsClient` - Main client interface using flext-api patterns
-- **Authentication**: Enterprise auth patterns with multiple authentication methods
-- **Configuration**: Unified config management eliminating tap/target duplication
-- **Discovery**: Automatic entity discovery and schema processing
-- **Cache Management**: Enterprise caching using flext-core patterns
-- **API Catalog**: Declarative API definitions with endpoint categorization
+- **Client Layer**: `FlextOracleWmsClient` in `src/flext_oracle_wms/client.py` - Main client interface
+- **API Catalog**: `src/flext_oracle_wms/api_catalog.py` - Declarative API endpoint definitions
+- **Authentication**: `src/flext_oracle_wms/authentication.py` - Multiple auth methods (basic, bearer, API key)
+- **Configuration**: `src/flext_oracle_wms/config.py` - Unified config management with Pydantic
+- **Discovery**: `src/flext_oracle_wms/discovery.py` - Automatic entity discovery and schema processing
+- **Cache Management**: `src/flext_oracle_wms/cache.py` - Enterprise caching using flext-core patterns
+- **Error Handling**: `src/flext_oracle_wms/exceptions.py` - Comprehensive exception hierarchy
+
+### Source Structure
+
+```
+src/flext_oracle_wms/
+├── __init__.py           # Public API exports (comprehensive)
+├── client.py             # Main WMS client implementation
+├── api_catalog.py        # Declarative API endpoint definitions
+├── authentication.py    # Authentication providers
+├── config.py            # Configuration classes with Pydantic
+├── discovery.py         # Entity discovery functionality
+├── cache.py             # Caching implementation
+├── dynamic.py           # Dynamic schema processing
+├── filtering.py         # Record filtering utilities
+├── flattening.py        # Nested data flattening
+├── helpers.py           # Utility functions
+├── models.py            # Data models and value objects
+├── types.py             # Type definitions and aliases
+├── constants.py         # Enums and constants
+└── exceptions.py        # Exception hierarchy
+```
 
 ### Dependencies
 
@@ -32,8 +54,8 @@ Core dependencies are managed through flext ecosystem libraries:
 - `flext-core`: Base patterns, logging, result handling, dependency injection
 - `flext-api`: API client patterns and enterprise authentication
 - `flext-observability`: Monitoring and observability features
-- `pydantic`: Data validation and settings management
-- `httpx`: Async HTTP client for API communications
+- `pydantic`: Data validation and settings management (v2.11.7+)
+- `httpx`: Async HTTP client for API communications (v0.28.1+)
 
 ## Development Commands
 
@@ -48,164 +70,128 @@ make test             # Run tests with 90% coverage requirement
 ### Code Quality
 
 ```bash
-make lint             # Ruff linting (ALL 17 rule categories enabled)
+make lint             # Ruff linting (comprehensive rule set)
 make type-check       # MyPy strict mode type checking (zero errors tolerated)
-make security         # Security scans: bandit + pip-audit + detect-secrets
+make security         # Security scans: bandit + pip-audit
 make format           # Format code with ruff
 make fix              # Auto-fix all issues: format + imports + lint
-
-## TODO: GAPS DE ARQUITETURA IDENTIFICADOS - PRIORIDADE ALTA
-
-### 🚨 GAP 1: Oracle DB Integration Duplication
-**Status**: ALTO - Duplicação de patterns com flext-db-oracle
-**Problema**:
-- WMS-specific Oracle patterns não reutilizam flext-db-oracle
-- Connection management duplicado
-- Oracle type handling não shared
-
-**TODO**:
-- [ ] Integrar com flext-db-oracle como base library
-- [ ] Reutilizar Oracle connection patterns de flext-db-oracle
-- [ ] Extend flext-db-oracle com WMS-specific optimizations
-- [ ] Documentar Oracle WMS specialization strategy
-
-### 🚨 GAP 2: Singer Integration Incomplete
-**Status**: ALTO - WMS operations não expostas via Singer
-**Problema**:
-- Não integra com flext-tap-oracle-wms e flext-target-oracle-wms
-- WMS catalog não generated via Singer patterns
-- Real-time inventory streaming não implemented
-
-**TODO**:
-- [ ] Integrar completamente com WMS Singer projects
-- [ ] Implementar WMS catalog generation
-- [ ] Criar real-time inventory Singer streams
-- [ ] Documentar WMS Singer integration patterns
-
-### 🚨 GAP 3: Business Logic vs Infrastructure Mix
-**Status**: ALTO - WMS business logic misturado com infrastructure
-**Problema**:
-- Inventory management, shipping, picking são business domains
-- API client patterns mixed com business rules
-- Domain entities não clearly separated
-
-**TODO**:
-- [ ] Refatorar para separar WMS domain logic de infrastructure
-- [ ] Criar WMS domain entities (Inventory, Shipment, Pick, etc.)
-- [ ] Implementar WMS business services usando Clean Architecture
-- [ ] Documentar WMS domain model
 ```
 
 ### Testing Commands
 
 ```bash
 # Core testing
-make test             # Full test suite with coverage
-make test-unit        # Unit tests only
-make test-integration # Integration tests only
+make test             # Full test suite with coverage (90% minimum)
+make test-unit        # Unit tests (pytest -m "not integration")
+make test-integration # Integration tests (pytest -m integration)
+make test-fast        # Run tests without coverage for quick feedback
+make coverage-html    # Generate HTML coverage report
 
-# WMS-specific testing
-make test-wms         # WMS-specific functionality tests
-make test-oracle      # Oracle database connectivity tests
-make test-inventory   # Inventory management tests
-make test-shipping    # Shipping operations tests
-make test-performance # Performance benchmarks
-
-# Coverage reporting
-make coverage         # Generate detailed coverage report
-make coverage-html    # Generate and open HTML coverage report
+# Advanced testing patterns
+pytest tests/test_client.py -v                    # Test specific file
+pytest tests/test_client.py::TestClass::test_method -v -s  # Single test with output
+pytest -k "authentication" -v                     # Tests matching pattern
+pytest --lf                                       # Run only last failed tests
 ```
 
-### Oracle WMS Operations
+### Development Workflow Commands
 
 ```bash
-# Core WMS operations
-make wms-test         # Test WMS connectivity and functionality
-make wms-validate     # Validate WMS configuration
-make wms-schema       # Validate WMS database schema
-make wms-sync         # Synchronize WMS data
-
-# Warehouse operations
-make wms-inventory    # Test inventory operations
-make wms-shipping     # Test shipping operations
-make wms-receiving    # Test receiving operations
-make wms-picking      # Test picking operations
-make wms-putaway      # Test putaway operations
-make wms-cycle-count  # Test cycle counting
-
-# Oracle database operations
-make oracle-connect   # Test Oracle WMS database connection
-make oracle-schema    # Validate Oracle WMS schema
-make oracle-performance # Run Oracle performance tests
-```
-
-### Development Setup
-
-```bash
+# Environment setup
 make setup            # Complete development setup (install + pre-commit)
 make install          # Install dependencies with Poetry
-make dev-install      # Development environment setup
-make pre-commit       # Setup pre-commit hooks
+make pre-commit       # Run pre-commit hooks on all files
+
+# Build and package
+make build            # Build package with Poetry
+make build-clean      # Clean and build
+make clean            # Clean build artifacts
+make clean-all        # Deep clean including virtual environment
+
+# Diagnostics and maintenance
+make diagnose         # Project diagnostics (Python, Poetry, dependencies)
+make doctor           # Health check combining diagnose + check
+make deps-show        # Show dependency tree
+make deps-update      # Update dependencies
+make deps-audit       # Security audit of dependencies
 ```
 
-### Running Individual Tests
+### Actual Test Structure
+
+The test suite uses pytest with these actual markers:
 
 ```bash
-# Run specific test files
-pytest tests/test_client.py -v
-pytest tests/test_authentication.py -v
-pytest tests/test_integration_declarative.py -v
-
-# Run tests with specific markers
-pytest -m unit -v           # Unit tests only
-pytest -m integration -v    # Integration tests only
-pytest -m declarative -v    # Declarative integration tests
-pytest -m lgf_api -v        # LGF API specific tests
-pytest -m automation -v     # Automation tests
-pytest -m performance -v    # Performance tests
-
-# Run single test with debugging
-pytest tests/test_client.py::TestFlextOracleWmsClient::test_initialization -v -s
+# Available test markers (from pyproject.toml)
+pytest -m unit              # Unit tests
+pytest -m integration       # Integration tests
+pytest -m slow              # Slow tests
+pytest -m smoke             # Smoke tests
+pytest -m e2e               # End-to-end tests
+pytest -m declarative       # Declarative integration tests
+pytest -m lgf_api           # LGF API specific tests
+pytest -m automation        # Automation tests
+pytest -m performance       # Performance tests
 ```
 
 ## Code Architecture
 
 ### Main Client Interface
 
-The `FlextOracleWmsClient` in `src/flext_oracle_wms/client.py` is the primary interface, implementing:
+The `FlextOracleWmsClient` in `src/flext_oracle_wms/client.py` is the primary interface:
 
-- Declarative API catalog-driven operations
-- Enterprise authentication patterns
-- Automatic entity discovery and schema processing
-- Comprehensive error handling with FlextResult patterns
+```python
+from flext_oracle_wms import FlextOracleWmsClient, FlextOracleWmsClientConfig
 
-### Configuration Management
+# Create configuration
+config = FlextOracleWmsClientConfig(
+    base_url="https://your-wms-instance.oraclecloud.com",
+    username="your_username",
+    password="your_password"
+)
 
-Unified configuration through `FlextOracleWmsClientConfig` and `FlextOracleWmsModuleConfig`:
+# Initialize client
+client = FlextOracleWmsClient(config)
 
-- Environment-specific settings
-- Authentication configuration
-- API version management
-- Connection pooling and timeout settings
+# Discover entities (returns FlextResult from flext-core)
+result = await client.discover_entities()
+if result.is_success:
+    entities = result.data
+```
 
-### API Catalog System
+### Key Architecture Components
 
-`src/flext_oracle_wms/api_catalog.py` provides declarative API definitions:
+#### Configuration Management
 
-- Categorized endpoints (inventory, shipping, receiving, etc.)
-- Version-specific API paths
-- Standardized request/response patterns
+- `FlextOracleWmsClientConfig`: Main client configuration using Pydantic
+- `FlextOracleWmsModuleConfig`: Module-level configuration
+- Environment variable support with `FLEXT_ORACLE_WMS_*` prefix
+- Type-safe configuration validation
 
-### Authentication Patterns
+#### Authentication System
 
-Multiple authentication methods supported:
+Multiple authentication methods in `src/flext_oracle_wms/authentication.py`:
 
-- Basic Authentication
-- Bearer Token Authentication
-- API Key Authentication
-- Enterprise SSO integration
+- `FlextOracleWmsAuthenticator`: Main authenticator interface
+- Basic Authentication, Bearer Token, API Key support
+- Pluggable authentication system via `FlextOracleWmsAuthPlugin`
 
-### Error Handling
+#### API Catalog System
+
+Declarative API definitions in `src/flext_oracle_wms/api_catalog.py`:
+
+- `FLEXT_ORACLE_WMS_APIS`: Centralized API endpoint catalog
+- `FlextOracleWmsApiCategory`: Categorized endpoints
+- `FlextOracleWmsApiEndpoint`: Individual endpoint definitions
+
+#### Entity Discovery
+
+`src/flext_oracle_wms/discovery.py` provides:
+
+- `FlextOracleWmsEntityDiscovery`: Automatic entity discovery
+- Schema processing and validation
+- Integration with flext-core patterns
+
+#### Error Handling
 
 Comprehensive exception hierarchy in `src/flext_oracle_wms/exceptions.py`:
 
@@ -214,39 +200,43 @@ Comprehensive exception hierarchy in `src/flext_oracle_wms/exceptions.py`:
 - `FlextOracleWmsAuthenticationError`: Authentication failures
 - `FlextOracleWmsApiError`: API operation errors
 - `FlextOracleWmsDataValidationError`: Data validation errors
+- `FlextOracleWmsEntityNotFoundError`: Entity not found errors
+- `FlextOracleWmsSchemaError`: Schema processing errors
 
 ## Testing Strategy
 
-### Test Structure
+### Actual Test Structure
+
+The test suite contains these key test files:
 
 ```
 tests/
-├── test_authentication.py        # Authentication testing
-├── test_client.py                # Core client functionality
-├── test_client_class.py          # Client class testing
-├── test_integration_declarative.py # Declarative integration tests
-├── test_helpers.py               # Helper function tests
-├── test_models.py                # Data model validation
-└── conftest.py                   # Shared test fixtures
+├── conftest.py                           # Shared test fixtures and configuration
+├── test_authentication.py               # Authentication testing
+├── test_authentication_coverage.py      # Extended authentication coverage
+├── test_authentication_simple.py        # Simple authentication tests
+├── test_client.py                       # Core client functionality
+├── test_client_class.py                 # Client class testing
+├── test_client_comprehensive.py         # Comprehensive client tests
+├── test_client_main_coverage.py         # Main client coverage tests
+├── test_client_simple.py               # Simple client tests
+├── test_config_module.py                # Configuration module tests
+├── test_exceptions.py                   # Exception handling tests
+├── test_helpers.py                      # Helper function tests
+├── test_helpers_coverage.py            # Extended helper coverage
+├── test_helpers_real.py                # Real helper tests
+├── test_integration_declarative.py     # Declarative integration tests
+├── test_models.py                       # Data model validation
+├── test_real_connection.py             # Real connection tests
+├── test_schema_dynamic.py              # Dynamic schema tests
+└── test_singer_flattening_comprehensive.py # Singer flattening tests
 ```
-
-### Test Markers
-
-The project uses pytest markers for test categorization:
-
-- `unit`: Unit tests for individual components
-- `integration`: Integration tests with external systems
-- `declarative`: Declarative integration tests
-- `lgf_api`: LGF API specific tests
-- `automation`: Automation workflow tests
-- `performance`: Performance benchmarking tests
-- `slow`: Tests that take longer to execute
 
 ### Quality Requirements
 
-- **90% minimum test coverage** (enforced by CI)
-- **Zero MyPy errors** in strict mode
-- **All Ruff rules enabled** for comprehensive linting
+- **90% minimum test coverage** (enforced by pytest with `--cov-fail-under=90`)
+- **Strict MyPy configuration** (zero errors tolerated)
+- **Comprehensive Ruff linting** (all rule categories enabled)
 - **Security scanning** with bandit and pip-audit
 - **Pre-commit hooks** for automated quality gates
 
@@ -256,42 +246,147 @@ The project uses pytest markers for test categorization:
 
 1. Run `make check` to ensure current state is clean
 2. Create feature branch from main
-3. Set up development environment with `make dev-install`
+3. Set up development environment: `make setup`
 
 ### During Development
 
 1. Write tests first following TDD principles
 2. Implement changes using established patterns from flext-core
 3. Run `make validate` frequently during development
-4. Use type hints throughout for better IDE support
+4. Use type hints throughout (required by strict MyPy)
 
 ### Before Committing
 
 1. Run `make validate` to ensure all quality gates pass
 2. Verify test coverage meets 90% requirement
-3. Check that no sensitive information is included
-4. Pre-commit hooks will run automatically
+3. Pre-commit hooks will run automatically
 
-## Integration Points
+## Key Integration Patterns
+
+### FlextResult Pattern Usage
+
+All operations return `FlextResult` from flext-core for type-safe error handling:
+
+```python
+from flext_oracle_wms import FlextOracleWmsClient
+from flext_core import FlextResult
+
+# All client operations return FlextResult
+result: FlextResult = await client.discover_entities()
+if result.is_success:
+    entities = result.data
+    print(f"Found {len(entities)} entities")
+else:
+    logger.error(f"Discovery failed: {result.error}")
+```
 
 ### FLEXT Ecosystem Integration
 
 This library integrates with the broader FLEXT ecosystem:
 
-- **flext-core**: Provides foundational patterns and utilities
-- **flext-api**: Enterprise API client patterns
+- **flext-core**: FlextResult pattern, logging, dependency injection
+- **flext-api**: Enterprise API client patterns and authentication
 - **flext-observability**: Monitoring and metrics collection
-- Uses standard FLEXT configuration and logging patterns
+- Standard FLEXT configuration and logging patterns
 
-### Oracle WMS Cloud APIs
+### Oracle WMS Integration Architecture
 
-Integration with Oracle WMS Cloud REST APIs:
+The library provides these integration layers:
 
-- Inventory management operations
-- Shipping and receiving workflows
-- Warehouse operations (picking, putaway, cycle counting)
-- Real-time data synchronization
-- Performance-optimized batch operations
+1. **API Client Layer**: HTTP client with retry logic and connection pooling
+2. **Authentication Layer**: Multiple auth methods (basic, bearer, API key)
+3. **Discovery Layer**: Automatic entity and schema discovery
+4. **Processing Layer**: Data transformation and flattening
+5. **Caching Layer**: Enterprise caching for performance optimization
+
+## Common Development Patterns
+
+### Configuration with Environment Variables
+
+```python
+import os
+from flext_oracle_wms import FlextOracleWmsClientConfig
+
+# Configuration can be loaded from environment
+config = FlextOracleWmsClientConfig(
+    base_url=os.getenv("FLEXT_ORACLE_WMS_BASE_URL"),
+    username=os.getenv("FLEXT_ORACLE_WMS_USERNAME"),
+    password=os.getenv("FLEXT_ORACLE_WMS_PASSWORD"),
+    timeout=int(os.getenv("FLEXT_ORACLE_WMS_TIMEOUT", "30"))
+)
+```
+
+### Error Handling Patterns
+
+```python
+from flext_oracle_wms.exceptions import (
+    FlextOracleWmsError,
+    FlextOracleWmsConnectionError,
+    FlextOracleWmsAuthenticationError
+)
+
+try:
+    result = await client.discover_entities()
+    if result.is_failure:
+        # Handle business logic errors via FlextResult
+        logger.error(f"Discovery failed: {result.error}")
+except FlextOracleWmsConnectionError:
+    # Handle connection issues
+    logger.error("Failed to connect to Oracle WMS")
+except FlextOracleWmsAuthenticationError:
+    # Handle authentication failures
+    logger.error("Authentication failed")
+```
+
+## Architecture Gaps - High Priority Items
+
+### 🚨 GAP 1: Oracle Database Integration Duplication
+
+**Status**: HIGH - Pattern duplication with flext-db-oracle
+**Problem**:
+
+- WMS-specific Oracle patterns do not reuse flext-db-oracle
+- Duplicated connection management code
+- Oracle type handling not shared across ecosystem
+
+**Required Actions**:
+
+- [ ] Integrate with flext-db-oracle as base library
+- [ ] Reuse Oracle connection patterns from flext-db-oracle
+- [ ] Extend flext-db-oracle with WMS-specific optimizations
+- [ ] Document Oracle WMS specialization strategy
+
+### 🚨 GAP 2: Singer Integration Incomplete
+
+**Status**: HIGH - WMS operations not exposed via Singer
+**Problem**:
+
+- Limited integration with flext-tap-oracle-wms and flext-target-oracle-wms
+- WMS catalog not generated via Singer patterns
+- Real-time inventory streaming not implemented
+
+**Required Actions**:
+
+- [ ] Complete integration with WMS Singer projects
+- [ ] Implement WMS catalog generation
+- [ ] Create real-time inventory Singer streams
+- [ ] Document WMS Singer integration patterns
+
+### 🚨 GAP 3: Business Logic vs Infrastructure Mix
+
+**Status**: HIGH - WMS business logic mixed with infrastructure
+**Problem**:
+
+- Inventory management, shipping, picking are business domains
+- API client patterns mixed with business rules
+- Domain entities not clearly separated
+
+**Required Actions**:
+
+- [ ] Refactor to separate WMS domain logic from infrastructure
+- [ ] Create WMS domain entities (Inventory, Shipment, Pick, etc.)
+- [ ] Implement WMS business services using Clean Architecture
+- [ ] Document WMS domain model
 
 ## Common Patterns
 

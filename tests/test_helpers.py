@@ -1,4 +1,38 @@
-"""Test Oracle WMS helpers functionality."""
+"""Oracle WMS Helper Functions - Comprehensive Testing Suite.
+
+This module provides comprehensive testing for Oracle WMS utility functions
+and helper methods, including URL processing, data validation, pagination
+handling, and enterprise utility operations.
+
+Test Coverage:
+    - URL construction and normalization testing for Oracle WMS endpoints
+    - Data validation functions with comprehensive error scenario testing
+    - Pagination information extraction and processing validation
+    - Timestamp formatting and date handling utility testing
+    - Record batching and chunking operations for performance optimization
+    - Exception handling and error management utility testing
+
+Test Categories:
+    - Unit tests for individual helper function operations
+    - Validation tests for data integrity and type checking
+    - URL processing tests for Oracle WMS endpoint construction
+    - Error handling tests for comprehensive exception scenarios
+    - Performance tests for batch processing and optimization utilities
+
+Helper Functions Tested:
+    - flext_oracle_wms_build_entity_url: Oracle WMS entity URL construction
+    - flext_oracle_wms_chunk_records: Record batching for performance
+    - flext_oracle_wms_extract_environment_from_url: Environment detection
+    - flext_oracle_wms_extract_pagination_info: Pagination data processing
+    - flext_oracle_wms_format_timestamp: Date and time formatting utilities
+    - flext_oracle_wms_normalize_url: URL standardization and validation
+    - flext_oracle_wms_validate_api_response: API response validation
+    - Additional specialized helper functions for Oracle WMS operations
+
+Author: FLEXT Development Team
+Version: 0.9.0
+License: MIT
+"""
 
 import pytest
 

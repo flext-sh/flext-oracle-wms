@@ -1,10 +1,34 @@
 """Oracle WMS Mock Server - Realistic responses based on Oracle documentation.
 
 This module provides realistic mock responses for Oracle WMS Cloud API v10 (LGF)
-based on the official Oracle documentation 25A. Used for testing when real
-credentials are not available.
+based on the official Oracle documentation 25B. Used for testing and development
+scenarios when real Oracle WMS credentials are not available.
 
-Referência: https://docs.oracle.com/en/cloud/saas/warehouse-management/25a/owmre/
+Key Features:
+    - Realistic mock data based on official Oracle WMS Cloud documentation
+    - Support for all major Oracle WMS entities (company, facility, item, etc.)
+    - Dynamic response generation with configurable data scenarios
+    - Complete LGF API v10 endpoint simulation
+    - Enterprise testing patterns with comprehensive coverage
+
+Architecture:
+    Built for testing enterprise Oracle WMS integration scenarios:
+    - OracleWmsMockServer: Main mock server with realistic response generation
+    - Environment-specific mock data for different testing scenarios
+    - FlextResult integration for consistent error handling patterns
+    - Comprehensive entity simulation supporting discovery and data operations
+
+Usage:
+    Primarily used for testing Oracle WMS client functionality without requiring
+    valid Oracle WMS Cloud credentials or network connectivity.
+
+Reference:
+    Oracle WMS Cloud REST API Documentation 25B
+    https://docs.oracle.com/en/cloud/saas/warehouse-management/25b/owmre/
+
+Author: FLEXT Development Team
+Version: 0.9.0
+License: MIT
 """
 
 from __future__ import annotations

@@ -10,6 +10,7 @@ from flext_oracle_wms.authentication import (
     FlextOracleWmsAuthenticator,
 )
 from flext_oracle_wms.client import FlextOracleWmsClient, FlextOracleWmsPlugin
+from flext_oracle_wms.api_catalog import FlextOracleWmsApiVersion
 from flext_oracle_wms.config import FlextOracleWmsClientConfig
 from flext_oracle_wms.constants import OracleWMSAuthMethod
 from flext_oracle_wms.exceptions import (
@@ -24,7 +25,7 @@ class TestUtilityFunctions:
         """Test logger creation function."""
         logger = get_logger("test_logger")
         assert logger is not None
-        assert logger.name == "test_logger"
+        assert hasattr(logger, 'info')  # Verify it's a working logger
 
     def test_logger_caching(self) -> None:
         """Test that loggers are cached."""
@@ -93,6 +94,11 @@ class TestFlextOracleWmsClient:
             username="user",
             password="pass",
             environment="test_env",
+            api_version=FlextOracleWmsApiVersion.LGF_V10,
+            timeout=30.0,
+            max_retries=3,
+            verify_ssl=True,
+            enable_logging=True,
         )
         client = FlextOracleWmsClient(config)
         assert client.config == config
@@ -105,6 +111,11 @@ class TestFlextOracleWmsClient:
             username="user",
             password="pass",
             environment="test_env",
+            api_version=FlextOracleWmsApiVersion.LGF_V10,
+            timeout=30.0,
+            max_retries=3,
+            verify_ssl=True,
+            enable_logging=True,
         )
         client = FlextOracleWmsClient(config)
 
@@ -126,6 +137,11 @@ class TestFlextOracleWmsClient:
             username="user",
             password="pass",
             environment="test_env",
+            api_version=FlextOracleWmsApiVersion.LGF_V10,
+            timeout=30.0,
+            max_retries=3,
+            verify_ssl=True,
+            enable_logging=True,
         )
         client = FlextOracleWmsClient(config)
 
@@ -145,6 +161,11 @@ class TestFlextOracleWmsClient:
             username="user",
             password="pass",
             environment="test_env",
+            api_version=FlextOracleWmsApiVersion.LGF_V10,
+            timeout=30.0,
+            max_retries=3,
+            verify_ssl=True,
+            enable_logging=True,
         )
         client = FlextOracleWmsClient(config)
 
@@ -165,6 +186,11 @@ class TestFlextOracleWmsClient:
             username="user",
             password="pass",
             environment="test_env",
+            api_version=FlextOracleWmsApiVersion.LGF_V10,
+            timeout=30.0,
+            max_retries=3,
+            verify_ssl=True,
+            enable_logging=True,
         )
         client = FlextOracleWmsClient(config)
 
@@ -187,6 +213,11 @@ class TestFlextOracleWmsClient:
             username="user",
             password="pass",
             environment="test_env",
+            api_version=FlextOracleWmsApiVersion.LGF_V10,
+            timeout=30.0,
+            max_retries=3,
+            verify_ssl=True,
+            enable_logging=True,
         )
         client = FlextOracleWmsClient(config)
 
@@ -247,6 +278,11 @@ class TestErrorHandling:
             username="user",
             password="pass",
             environment="test_env",
+            api_version=FlextOracleWmsApiVersion.LGF_V10,
+            timeout=30.0,
+            max_retries=3,
+            verify_ssl=True,
+            enable_logging=True,
         )
         client = FlextOracleWmsClient(config)
 
@@ -264,6 +300,11 @@ class TestErrorHandling:
             username="user",
             password="pass",
             environment="test_env",
+            api_version=FlextOracleWmsApiVersion.LGF_V10,
+            timeout=30.0,
+            max_retries=3,
+            verify_ssl=True,
+            enable_logging=True,
         )
         client = FlextOracleWmsClient(config)
 

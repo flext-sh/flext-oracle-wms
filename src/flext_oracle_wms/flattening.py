@@ -1,9 +1,47 @@
-"""Oracle WMS Data Flattening using flext-core patterns.
+"""Oracle WMS Data Flattening and Structure Normalization.
 
-Copyright (c) 2025 FLEXT Contributors
-SPDX-License-Identifier: MIT
+This module provides comprehensive data flattening capabilities for Oracle WMS
+Cloud nested data structures. Implements enterprise-grade data transformation
+patterns for Singer protocol compatibility and tabular data formats.
 
-Simplified data flattening for Oracle WMS nested structures.
+Key Features:
+    - Nested JSON structure flattening with configurable depth limits
+    - Singer protocol compatibility with proper field naming conventions
+    - Type preservation during flattening operations
+    - Configurable flattening strategies and customization options
+    - Performance-optimized batch flattening for large datasets
+    - Memory-efficient streaming flattening patterns
+
+Architecture:
+    Built on FLEXT foundation patterns with enterprise data transformation:
+    - FlextOracleWmsFlattener: Main flattening interface with strategy patterns
+    - Configurable flattening depth and field naming conventions
+    - Type-safe flattening with proper data type preservation
+    - Performance monitoring and memory optimization
+    - Integration with Singer protocol data pipeline patterns
+
+Data Transformation:
+    - Nested object flattening with dot notation field names
+    - Array flattening with indexed field naming patterns
+    - Complex data type handling (dates, numbers, booleans)
+    - Null value handling and missing field management
+    - Custom flattening rules for Oracle WMS specific structures
+
+Performance:
+    - Streaming flattening for memory efficiency
+    - Batch processing optimization for high-volume data
+    - Configurable processing limits and resource management
+    - Memory usage monitoring and optimization patterns
+
+Integration:
+    - Native Singer protocol compatibility
+    - Oracle WMS entity structure awareness
+    - FLEXT data pipeline integration patterns
+    - Enterprise monitoring and observability support
+
+Author: FLEXT Development Team
+Version: 0.9.0
+License: MIT
 """
 
 from __future__ import annotations

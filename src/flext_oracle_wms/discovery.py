@@ -1,10 +1,48 @@
-"""Enterprise Entity Discovery for Oracle WMS.
+"""Oracle WMS Entity Discovery - Enterprise Discovery System.
 
-Copyright (c) 2025 FLEXT Contributors
-SPDX-License-Identifier: MIT
+This module provides comprehensive entity discovery capabilities for Oracle WMS
+Cloud systems, implementing intelligent discovery patterns with caching,
+metadata extraction, and schema analysis for enterprise data integration.
 
-Advanced entity discovery system using flext-api client with caching and intelligent
-discovery.
+Key Features:
+    - Intelligent entity discovery with automatic metadata extraction
+    - Schema analysis and field type inference for discovered entities
+    - Performance-optimized discovery with caching and batch processing
+    - Entity relationship mapping and dependency analysis
+    - Discovery result validation and quality assessment
+    - Integration with Oracle WMS Cloud API discovery endpoints
+
+Architecture:
+    Built on FLEXT foundation patterns with enterprise discovery capabilities:
+    - FlextOracleWmsEntityDiscoverer: Main discovery interface with caching
+    - Intelligent entity metadata extraction and schema analysis
+    - Discovery result aggregation and validation patterns
+    - Performance optimization with configurable discovery strategies
+    - Integration with Oracle WMS Cloud REST API discovery endpoints
+
+Discovery Capabilities:
+    - Automatic entity discovery from Oracle WMS Cloud API endpoints
+    - Schema inference and field type analysis for discovered entities
+    - Entity metadata extraction including descriptions and relationships
+    - Discovery result caching and performance optimization
+    - Incremental discovery with change detection and updates
+
+Data Processing:
+    - Entity metadata normalization and standardization
+    - Schema validation and consistency checking across entities
+    - Discovery result aggregation and reporting patterns
+    - Integration with Singer protocol catalog generation
+    - Performance monitoring and discovery optimization
+
+Integration:
+    - Native Oracle WMS Cloud API integration for entity discovery
+    - Singer protocol compatibility for data pipeline integration
+    - FLEXT ecosystem integration with caching and observability
+    - Enterprise monitoring and discovery result reporting
+
+Author: FLEXT Development Team
+Version: 0.9.0
+License: MIT
 """
 
 from __future__ import annotations

@@ -1,9 +1,41 @@
-"""Oracle WMS Filtering - Essential filtering capabilities using flext-core patterns.
+"""Oracle WMS Advanced Filtering and Query Processing.
 
-Copyright (c) 2025 FLEXT Contributors
-SPDX-License-Identifier: MIT
+This module provides comprehensive filtering and query processing capabilities
+for Oracle WMS Cloud data operations. Implements enterprise-grade filtering
+patterns with performance optimization and query validation.
 
-Simplified but powerful filtering for Oracle WMS records.
+Key Features:
+    - Advanced filter expression parsing and validation
+    - Multiple filter operator support (eq, ne, gt, lt, like, in, etc.)
+    - Nested filter conditions with logical operators (AND, OR, NOT)
+    - Query optimization and performance tuning
+    - Filter condition caching and reuse patterns
+    - Integration with Oracle WMS API query parameters
+
+Architecture:
+    Built on FLEXT foundation patterns with enterprise query processing:
+    - FlextOracleWmsFilterProcessor: Main filtering interface
+    - Expression parsing with validation and optimization
+    - Filter condition compilation and caching
+    - Performance monitoring and query optimization
+    - Integration with Oracle WMS entity operations
+
+Query Processing:
+    - SQL-like filter expression syntax support
+    - Type-safe filter value validation and conversion
+    - Query parameter generation for Oracle WMS API calls
+    - Filter condition optimization and indexing strategies
+    - Batch filtering for high-volume data processing
+
+Performance:
+    - Filter expression compilation and caching
+    - Query optimization with performance profiling
+    - Memory-efficient filter application patterns
+    - Batch processing optimization for large datasets
+
+Author: FLEXT Development Team
+Version: 0.9.0
+License: MIT
 """
 
 from __future__ import annotations

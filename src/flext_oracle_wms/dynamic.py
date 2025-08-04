@@ -1,9 +1,41 @@
-"""Oracle WMS Dynamic Schema Processing using flext-core patterns.
+"""Oracle WMS Dynamic Schema Processing and Data Transformation.
 
-Copyright (c) 2025 FLEXT Contributors
-SPDX-License-Identifier: MIT
+This module provides comprehensive dynamic schema processing capabilities for
+Oracle WMS Cloud data operations. Implements intelligent schema discovery,
+data transformation, and type inference for enterprise data integration.
 
-Simplified dynamic schema processing for Oracle WMS operations.
+Key Features:
+    - Dynamic schema discovery from Oracle WMS API responses
+    - Intelligent type inference with confidence scoring
+    - Schema evolution and compatibility management
+    - Data transformation and normalization patterns
+    - Singer protocol schema generation and validation
+    - Performance-optimized batch processing capabilities
+
+Architecture:
+    Built on FLEXT foundation patterns with enterprise data processing:
+    - FlextOracleWmsSchemaProcessor: Main schema processing interface
+    - Dynamic type inference with statistical analysis
+    - Schema caching and performance optimization
+    - Integration with Oracle WMS entity discovery
+    - Singer protocol compatibility and catalog generation
+
+Data Processing:
+    - Nested data structure flattening for tabular formats
+    - Type inference with confidence thresholds and validation
+    - Schema evolution detection and compatibility checking
+    - Batch processing for high-volume data transformation
+    - Memory-efficient streaming processing patterns
+
+Integration:
+    - Native integration with Oracle WMS entity discovery
+    - Singer protocol schema catalog generation
+    - FLEXT data pipeline compatibility
+    - Enterprise monitoring and observability patterns
+
+Author: FLEXT Development Team
+Version: 0.9.0
+License: MIT
 """
 
 from __future__ import annotations

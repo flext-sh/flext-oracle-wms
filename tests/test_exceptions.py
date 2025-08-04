@@ -1,4 +1,37 @@
-"""Test Oracle WMS exception functionality."""
+"""Oracle WMS Exception Hierarchy - Comprehensive Testing Suite.
+
+This module provides comprehensive testing for the Oracle WMS exception
+hierarchy, including error handling patterns, exception metadata, and
+enterprise error management compliance.
+
+Test Coverage:
+    - Base exception class functionality and inheritance hierarchy
+    - Specific exception types for different Oracle WMS error scenarios
+    - Exception metadata handling (error codes, entity names, details)
+    - Error context preservation and error chain management
+    - Exception serialization and error reporting patterns
+    - Integration with FLEXT error handling patterns
+
+Test Categories:
+    - Unit tests for individual exception class creation and behavior
+    - Exception hierarchy validation and inheritance testing
+    - Error metadata and context preservation testing
+    - Exception handling pattern verification
+    - Error reporting and serialization validation
+
+Exception Types Tested:
+    - FlextOracleWmsError: Base exception with comprehensive metadata
+    - FlextOracleWmsApiError: API-specific errors with HTTP context
+    - FlextOracleWmsAuthenticationError: Authentication and authorization failures
+    - FlextOracleWmsConnectionError: Network and connectivity issues
+    - FlextOracleWmsDataValidationError: Data validation and schema errors
+    - FlextOracleWmsEntityNotFoundError: Entity discovery and access errors
+    - Additional specialized exceptions for specific Oracle WMS scenarios
+
+Author: FLEXT Development Team
+Version: 0.9.0
+License: MIT
+"""
 
 from typing import Never
 

@@ -146,8 +146,9 @@ class TestFlextOracleWmsClient:
         client = FlextOracleWmsClient(config)
 
         result = await client.health_check()
-        assert not result.is_success
-        assert "Health check failed" in result.error
+        assert result.is_success  # Health check succeeds but reports unhealthy status
+        assert result.data["status"] == "unhealthy"
+        assert "Client not initialized" in result.data.get("error", "")
 
     def test_get_available_apis(self) -> None:
         """Test getting available APIs."""

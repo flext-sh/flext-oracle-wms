@@ -324,61 +324,92 @@ class CompleteMockPipeline:
 
         for entity_name, entity_info in self.mock_entities.items():
             sample_data = entity_info["sample_data"]
-
-            properties = {}
-            key_properties = []
-
-            # Generate Singer properties from sample data
-            for field, value in sample_data.items():
-                if field == "id":
-                    properties[field] = {"type": "integer"}
-                    key_properties.append(field)
-                elif field.endswith("_code"):
-                    properties[field] = {"type": ["string", "null"]}
-                    if not key_properties:  # Use as key if no id
-                        key_properties.append(field)
-                elif field.endswith("_ts"):
-                    properties[field] = {
-                        "type": ["string", "null"],
-                        "format": "date-time",
-                    }
-                elif field.endswith("_date"):
-                    properties[field] = {"type": ["string", "null"], "format": "date"}
-                elif field.endswith(("_qty", "_weight_kg", "_volume_liters")):
-                    properties[field] = {"type": ["number", "null"]}
-                elif field.endswith("_nbr"):
-                    properties[field] = {"type": ["string", "null"]}
-                elif isinstance(value, bool):
-                    properties[field] = {"type": ["boolean", "null"]}
-                elif isinstance(value, int):
-                    properties[field] = {"type": ["integer", "null"]}
-                elif isinstance(value, float):
-                    properties[field] = {"type": ["number", "null"]}
-                elif isinstance(value, str):
-                    properties[field] = {"type": ["string", "null"]}
-                else:
-                    properties[field] = {"type": ["string", "null"]}
-
-            # Add Singer metadata
-            properties.update(
-                {
-                    "_sdc_extracted_at": {"type": "string", "format": "date-time"},
-                    "_sdc_entity": {"type": "string"},
-                    "_sdc_sequence": {"type": "integer"},
-                    "_sdc_record_hash": {"type": ["string", "null"]},
-                },
-            )
-
-            schema = {
-                "type": "object",
-                "properties": properties,
-                "additionalProperties": False,
-                "key_properties": key_properties or ["id"],
-            }
-
+            properties, key_properties = self._create_entity_properties(sample_data)
+            self._add_singer_metadata(properties)
+            schema = self._build_singer_schema(properties, key_properties)
             schemas[entity_name] = schema
 
         return schemas
+
+    def _create_entity_properties(
+        self, sample_data: dict[str, Any],
+    ) -> tuple[dict[str, Any], list[str]]:
+        """Create properties and key properties from sample data - SRP compliance."""
+        properties = {}
+        key_properties = []
+
+        for field, value in sample_data.items():
+            field_property = self._infer_field_type(field, value)
+            properties[field] = field_property
+
+            if self._is_key_field(field, key_properties):
+                key_properties.append(field)
+
+        return properties, key_properties
+
+    def _infer_field_type(self, field: str, value: Any) -> dict[str, Any]:
+        """Infer Singer type from field name and value - Strategy Pattern."""
+        # Try field name patterns first
+        field_type = self._infer_type_from_field_name(field)
+        if field_type:
+            return field_type
+
+        # Fallback to value-based inference
+        return self._infer_type_from_value(value)
+
+    def _infer_type_from_field_name(self, field: str) -> dict[str, Any] | None:
+        """Infer type from field name patterns - Template Method Pattern."""
+        if field == "id":
+            return {"type": "integer"}
+        if field.endswith("_code"):
+            return {"type": ["string", "null"]}
+        if field.endswith("_ts"):
+            return {"type": ["string", "null"], "format": "date-time"}
+        if field.endswith("_date"):
+            return {"type": ["string", "null"], "format": "date"}
+        if field.endswith(("_qty", "_weight_kg", "_volume_liters")):
+            return {"type": ["number", "null"]}
+        if field.endswith("_nbr"):
+            return {"type": ["string", "null"]}
+        return None
+
+    def _infer_type_from_value(self, value: Any) -> dict[str, Any]:
+        """Infer type from Python value type - Template Method Pattern."""
+        if isinstance(value, bool):
+            return {"type": ["boolean", "null"]}
+        if isinstance(value, int):
+            return {"type": ["integer", "null"]}
+        if isinstance(value, float):
+            return {"type": ["number", "null"]}
+        if isinstance(value, str):
+            return {"type": ["string", "null"]}
+        return {"type": ["string", "null"]}
+
+    def _is_key_field(self, field: str, existing_keys: list[str]) -> bool:
+        """Determine if field should be a key property."""
+        return field == "id" or (field.endswith("_code") and not existing_keys)
+
+    def _add_singer_metadata(self, properties: dict[str, Any]) -> None:
+        """Add Singer metadata properties - SRP compliance."""
+        properties.update(
+            {
+                "_sdc_extracted_at": {"type": "string", "format": "date-time"},
+                "_sdc_entity": {"type": "string"},
+                "_sdc_sequence": {"type": "integer"},
+                "_sdc_record_hash": {"type": ["string", "null"]},
+            },
+        )
+
+    def _build_singer_schema(
+        self, properties: dict[str, Any], key_properties: list[str],
+    ) -> dict[str, Any]:
+        """Build complete Singer schema - SRP compliance."""
+        return {
+            "type": "object",
+            "properties": properties,
+            "additionalProperties": False,
+            "key_properties": key_properties or ["id"],
+        }
 
     def _create_complete_singer_catalog(
         self,

@@ -1,0 +1,268 @@
+"""Real Integration Tests - Validates ACTUAL Oracle WMS functionality.
+
+These tests use REAL Oracle WMS credentials from .env to validate that the code
+actually works in practice, not just passes mocked unit tests.
+
+CRITICAL: These tests validate BUSINESS FUNCTIONALITY, not just code coverage.
+"""
+
+import os
+from pathlib import Path
+
+import pytest
+
+from flext_oracle_wms import FlextOracleWmsClient, FlextOracleWmsClientConfig
+
+
+class TestRealOracleWMSIntegration:
+    """Integration tests with REAL Oracle WMS using .env credentials."""
+
+    @classmethod
+    def setup_class(cls):
+        """Load real environment for integration tests."""
+        try:
+            from dotenv import load_dotenv
+            project_root = Path(__file__).parent.parent
+            env_file = project_root / ".env"
+            if env_file.exists():
+                load_dotenv(env_file)
+                print(f"✅ Loaded real Oracle WMS environment from {env_file}")
+            else:
+                pytest.skip("No .env file found - skipping real integration tests")
+        except ImportError:
+            pytest.skip("python-dotenv not available - skipping real integration tests")
+
+    def test_real_environment_loaded(self):
+        """Test that real Oracle WMS environment is properly loaded."""
+        required_vars = [
+            "ORACLE_WMS_BASE_URL",
+            "ORACLE_WMS_USERNAME",
+            "ORACLE_WMS_PASSWORD",
+            "ORACLE_WMS_ENVIRONMENT",
+        ]
+
+        missing_vars = [var for var in required_vars if not os.getenv(var)]
+        if missing_vars:
+            pytest.skip(f"Missing required environment variables: {missing_vars}")
+
+        # Validate that we have real Oracle WMS credentials
+        base_url = os.getenv("ORACLE_WMS_BASE_URL")
+        assert "oraclecloud.com" in base_url
+        assert os.getenv("ORACLE_WMS_USERNAME") != ""
+        assert os.getenv("ORACLE_WMS_PASSWORD") != ""
+
+    def test_real_client_configuration(self):
+        """Test that client configuration works with real environment."""
+        from flext_oracle_wms.api_catalog import FlextOracleWmsApiVersion
+
+        config = FlextOracleWmsClientConfig(
+            base_url=os.getenv("ORACLE_WMS_BASE_URL"),
+            username=os.getenv("ORACLE_WMS_USERNAME"),
+            password=os.getenv("ORACLE_WMS_PASSWORD"),
+            environment=os.getenv("ORACLE_WMS_ENVIRONMENT"),
+            api_version=FlextOracleWmsApiVersion.LGF_V10,
+            timeout=float(os.getenv("ORACLE_WMS_TIMEOUT", "30")),
+            max_retries=int(os.getenv("ORACLE_WMS_MAX_RETRIES", "3")),
+            verify_ssl=os.getenv("ORACLE_WMS_VERIFY_SSL", "true").lower() == "true",
+            enable_logging=True,
+        )
+
+        # Validate configuration is properly set
+        assert "oraclecloud.com" in config.base_url
+        assert config.username != ""
+        assert config.password != ""
+        assert config.environment != ""
+        assert config.timeout > 0
+
+    @pytest.mark.asyncio
+    async def test_real_client_lifecycle(self):
+        """Test complete client lifecycle with REAL Oracle WMS."""
+        # Skip if no environment
+        if not os.getenv("ORACLE_WMS_BASE_URL"):
+            pytest.skip("No real Oracle WMS environment configured")
+
+        from flext_oracle_wms.api_catalog import FlextOracleWmsApiVersion
+
+        config = FlextOracleWmsClientConfig(
+            base_url=os.getenv("ORACLE_WMS_BASE_URL"),
+            username=os.getenv("ORACLE_WMS_USERNAME"),
+            password=os.getenv("ORACLE_WMS_PASSWORD"),
+            environment=os.getenv("ORACLE_WMS_ENVIRONMENT"),
+            api_version=FlextOracleWmsApiVersion.LGF_V10,
+            timeout=30.0,
+            max_retries=3,
+            verify_ssl=True,
+            enable_logging=True,
+        )
+
+        client = FlextOracleWmsClient(config)
+
+        try:
+            # Test client start
+            await client.start()
+
+            # Test health check with REAL Oracle WMS
+            health_result = await client.health_check()
+            assert health_result.is_success
+            assert isinstance(health_result.data, dict)
+            health_data = health_result.data
+            assert health_data.get("service") == "FlextOracleWmsClient"
+            # In real environment, should be healthy if connection works
+
+            # Test entity discovery with REAL Oracle WMS
+            entities_result = await client.discover_entities()
+            assert entities_result.is_success
+            assert isinstance(entities_result.data, list)
+            entities = entities_result.data
+            assert len(entities) > 0  # Should discover real entities
+
+            # Validate we got real Oracle WMS entities (not fallback)
+            expected_entities = ["company", "facility", "item", "order_hdr"]
+            found_entities = [e for e in expected_entities if e in entities]
+            assert len(found_entities) > 0, f"Expected Oracle WMS entities not found in {entities[:10]}"
+
+        finally:
+            # Always cleanup
+            await client.stop()
+
+    @pytest.mark.asyncio
+    async def test_real_entity_data_retrieval(self):
+        """Test retrieving REAL data from Oracle WMS entities."""
+        if not os.getenv("ORACLE_WMS_BASE_URL"):
+            pytest.skip("No real Oracle WMS environment configured")
+
+        from flext_oracle_wms.api_catalog import FlextOracleWmsApiVersion
+
+        config = FlextOracleWmsClientConfig(
+            base_url=os.getenv("ORACLE_WMS_BASE_URL"),
+            username=os.getenv("ORACLE_WMS_USERNAME"),
+            password=os.getenv("ORACLE_WMS_PASSWORD"),
+            environment=os.getenv("ORACLE_WMS_ENVIRONMENT"),
+            api_version=FlextOracleWmsApiVersion.LGF_V10,
+            timeout=30.0,
+            max_retries=3,
+            verify_ssl=True,
+            enable_logging=True,
+        )
+
+        client = FlextOracleWmsClient(config)
+
+        try:
+            await client.start()
+
+            # Test with a known working entity (from basic_usage.py results)
+            entity_result = await client.get_entity_data("action_code", limit=5)
+            assert entity_result.is_success
+            assert isinstance(entity_result.data, dict)
+
+            # Validate we got real Oracle WMS data structure
+            data = entity_result.data
+            assert "result_count" in data or "results" in data or len(data) > 0
+
+        finally:
+            await client.stop()
+
+    @pytest.mark.asyncio
+    async def test_real_error_handling(self):
+        """Test error handling with REAL Oracle WMS (non-existent entity)."""
+        if not os.getenv("ORACLE_WMS_BASE_URL"):
+            pytest.skip("No real Oracle WMS environment configured")
+
+        from flext_oracle_wms.api_catalog import FlextOracleWmsApiVersion
+
+        config = FlextOracleWmsClientConfig(
+            base_url=os.getenv("ORACLE_WMS_BASE_URL"),
+            username=os.getenv("ORACLE_WMS_USERNAME"),
+            password=os.getenv("ORACLE_WMS_PASSWORD"),
+            environment=os.getenv("ORACLE_WMS_ENVIRONMENT"),
+            api_version=FlextOracleWmsApiVersion.LGF_V10,
+            timeout=30.0,
+            max_retries=3,
+            verify_ssl=True,
+            enable_logging=True,
+        )
+
+        client = FlextOracleWmsClient(config)
+
+        try:
+            await client.start()
+
+            # Test with non-existent entity - should fail gracefully
+            bad_result = await client.get_entity_data("non_existent_entity_xyz")
+            assert bad_result.is_failure
+            assert "404" in bad_result.error or "not found" in bad_result.error.lower()
+
+        finally:
+            await client.stop()
+
+    def test_real_api_catalog_availability(self):
+        """Test that API catalog has real Oracle WMS endpoints."""
+        from flext_oracle_wms.api_catalog import FlextOracleWmsApiVersion
+
+        config = FlextOracleWmsClientConfig(
+            base_url="https://test.example.com",  # Dummy URL for catalog test
+            username="test",
+            password="test",
+            environment="test",
+            api_version=FlextOracleWmsApiVersion.LGF_V10,
+            timeout=30.0,
+            max_retries=3,
+            verify_ssl=True,
+            enable_logging=True,
+        )
+
+        client = FlextOracleWmsClient(config)
+
+        # Test API catalog
+        apis = client.get_available_apis()
+        assert isinstance(apis, dict)
+        assert len(apis) > 0
+
+        # Validate we have real Oracle WMS APIs
+        api_names = list(apis.keys())
+        expected_apis = ["lgf_entity_list", "lgf_init_stage_interface", "ship_oblpn"]
+        found_apis = [api for api in expected_apis if api in api_names]
+        assert len(found_apis) > 0, f"Expected Oracle WMS APIs not found in {api_names}"
+
+
+@pytest.mark.integration
+class TestExamplesIntegration:
+    """Test that examples/ actually work with real functionality."""
+
+    def test_basic_usage_example_works(self):
+        """Test that basic_usage.py actually executes successfully."""
+        import subprocess
+        import sys
+
+        # Run basic_usage.py as subprocess to validate it works
+        result = subprocess.run([
+            sys.executable, "examples/basic_usage.py"
+        ], capture_output=True, text=True, cwd="/home/marlonsc/flext/flext-oracle-wms")
+
+        # Should complete successfully
+        assert result.returncode == 0, f"basic_usage.py failed: {result.stderr}"
+
+        # Should contain expected success messages
+        output = result.stdout
+        assert "Successfully discovered" in output
+        assert "entities" in output.lower()
+        assert "completed successfully" in output.lower()
+
+    def test_configuration_example_works(self):
+        """Test that configuration.py now works after refactoring."""
+        import subprocess
+        import sys
+
+        # Run configuration.py to test it works
+        result = subprocess.run([
+            sys.executable, "examples/configuration.py"
+        ], capture_output=True, text=True, cwd="/home/marlonsc/flext/flext-oracle-wms")
+
+        # Should now succeed after refactoring
+        assert result.returncode == 0, f"configuration.py failed: {result.stderr}"
+
+        # Should contain expected success messages
+        output = result.stdout
+        assert "Configuration examples completed successfully" in output
+        assert "Environment configuration created successfully" in output
+        assert "Configuration is valid and ready for use" in output

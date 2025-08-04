@@ -1,4 +1,27 @@
-"""Test Oracle WMS authentication functionality."""
+"""Oracle WMS Authentication - Comprehensive Testing Suite.
+
+This module provides comprehensive testing for Oracle WMS Cloud authentication
+patterns, including multi-method authentication, configuration validation,
+and enterprise security compliance.
+
+Test Coverage:
+    - Basic authentication with username/password credentials
+    - Bearer token authentication for OAuth/JWT scenarios
+    - API key authentication for service-to-service integration
+    - Authentication configuration validation and error handling
+    - Enterprise security patterns and compliance verification
+
+Test Categories:
+    - Unit tests for authentication configuration creation
+    - Authentication method validation tests
+    - Security credential handling verification
+    - Integration tests with mock Oracle WMS endpoints
+    - Error handling for authentication failures
+
+Author: FLEXT Development Team
+Version: 0.9.0
+License: MIT
+"""
 
 import pytest
 

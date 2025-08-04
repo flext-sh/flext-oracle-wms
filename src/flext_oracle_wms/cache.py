@@ -1,9 +1,39 @@
-"""Enterprise Cache Manager for Oracle WMS.
+"""Enterprise Cache Manager for Oracle WMS Operations.
 
-Copyright (c) 2025 FLEXT Contributors
-SPDX-License-Identifier: MIT
+This module provides a comprehensive, thread-safe caching system optimized for
+Oracle WMS Cloud integration operations. Implements enterprise caching patterns
+with TTL management, cache invalidation, and performance monitoring.
 
-Thread-safe caching system for Oracle WMS operations using flext-core patterns.
+Key Features:
+    - Thread-safe cache operations with proper synchronization
+    - Configurable TTL (Time-To-Live) with automatic expiration
+    - Cache invalidation patterns for data consistency
+    - Performance monitoring and cache hit/miss statistics
+    - Memory management with configurable size limits
+    - Integration with FLEXT observability patterns
+
+Architecture:
+    Built on FLEXT foundation patterns with enterprise reliability:
+    - FlextOracleWmsCacheManager: Main cache interface with enterprise patterns
+    - Thread-safe operations using asyncio and threading primitives
+    - TTL-based expiration with background cleanup processes
+    - Cache statistics and performance monitoring integration
+    - Memory-efficient storage with automatic cleanup
+
+Usage:
+    Primarily used for caching Oracle WMS API responses, entity discovery
+    results, and schema information to improve performance and reduce
+    API call overhead.
+
+Performance:
+    - Sub-millisecond cache lookup operations
+    - Configurable memory limits and cleanup strategies
+    - Automatic background expiration and memory management
+    - Cache hit rate monitoring and optimization
+
+Author: FLEXT Development Team
+Version: 0.9.0
+License: MIT
 """
 
 from __future__ import annotations

@@ -147,6 +147,42 @@ diagnose: ## Project diagnostics
 
 doctor: diagnose check ## Health check
 
+# Docker Operations - MAXIMUM CONTAINER USAGE AS REQUESTED
+docker-build: ## Build Docker images
+	docker-compose build --no-cache
+
+docker-up: ## Start all Docker services
+	docker-compose up -d
+
+docker-down: ## Stop all Docker services
+	docker-compose down --volumes --remove-orphans
+
+docker-examples: ## Run Oracle WMS examples in Docker (COMPLETE FUNCTIONALITY)
+	./docker-run.sh examples
+
+docker-test: ## Run complete test suite in Docker with real Oracle WMS
+	./docker-run.sh test
+
+docker-validate: ## Complete Oracle WMS validation using Docker (USER REQUESTED)
+	./docker-run.sh all
+
+docker-logs: ## Show Docker container logs
+	docker-compose logs -f
+
+docker-clean: ## Clean Docker resources
+	./docker-run.sh clean
+
+docker-shell: ## Access Docker container shell
+	docker-compose run --rm flext-oracle-wms /bin/bash
+
+docker-coverage: ## Generate coverage report using Docker
+	docker-compose run --rm flext-oracle-wms-test
+
+# Complete Docker workflow (USER'S MAIN REQUEST)
+docker-full-validation: docker-build docker-validate ## Complete Docker validation workflow
+	@echo "🎉 COMPLETE DOCKER VALIDATION FINISHED!"
+	@echo "📊 Check ./reports/ for detailed results"
+
 # Aliases
 t: test
 l: lint
@@ -155,6 +191,9 @@ tc: type-check
 c: clean
 i: install
 v: validate
+dv: docker-validate
+dt: docker-test
+de: docker-examples
 
 .DEFAULT_GOAL := help
-.PHONY: help install install-dev setup validate check lint format type-check security fix test test-unit test-integration test-wms test-oracle test-inventory test-shipping test-fast coverage-html wms-test wms-schema wms-inventory wms-shipping oracle-connect oracle-schema build build-clean docs docs-serve deps-update deps-show deps-audit shell pre-commit clean clean-all reset diagnose doctor t l f tc c i v
+.PHONY: help install install-dev setup validate check lint format type-check security fix test test-unit test-integration test-wms test-oracle test-inventory test-shipping test-fast coverage-html wms-test wms-schema wms-inventory wms-shipping oracle-connect oracle-schema build build-clean docs docs-serve deps-update deps-show deps-audit shell pre-commit clean clean-all reset diagnose doctor docker-build docker-up docker-down docker-examples docker-test docker-validate docker-logs docker-clean docker-shell docker-coverage docker-full-validation t l f tc c i v dv dt de
