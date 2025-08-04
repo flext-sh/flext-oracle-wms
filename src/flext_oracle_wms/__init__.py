@@ -32,11 +32,11 @@ Example:
     >>> config = FlextOracleWmsClientConfig(
     ...     base_url="https://your-wms.oraclecloud.com",
     ...     username="your_username",
-    ...     password="your_password"
+    ...     password="your_password",
     ... )
     >>> client = FlextOracleWmsClient(config)
     >>> result = await client.discover_entities()
-    >>> if result.is_success:
+    >>> if result.success:
     ...     print(f"Discovered {len(result.data)} WMS entities")
 
 Author: FLEXT Development Team
@@ -168,7 +168,7 @@ __description__ = (
 )
 
 # Public API - explicitly defined for clarity
-__all__ = [
+__all__: list[str] = [
     # API Catalog
     "FLEXT_ORACLE_WMS_APIS",
     "FlextOracleWmsApiCategory",

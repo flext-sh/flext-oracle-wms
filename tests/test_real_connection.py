@@ -94,7 +94,7 @@ def test_real_connection() -> bool:
             or "ImportError" in str(type(e))
             or "AttributeError" in str(type(e))
         ):
-            msg = f"Structural test failed with error: {e}"
+            msg: str = f"Structural test failed with error: {e}"
             raise AssertionError(msg) from e
         logger.info(
             "✅ CODE STRUCTURE TEST PASSED (network errors expected with test config)",

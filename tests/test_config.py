@@ -49,7 +49,7 @@ def test_config_validation_success() -> None:
 
     # This should not raise an exception
     result = config.validate_domain_rules()
-    assert result.is_success
+    assert result.success
 
 
 @pytest.mark.unit

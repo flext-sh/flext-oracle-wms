@@ -37,7 +37,7 @@ async def discover_real_fields() -> None:
 
         # Get entities
         entities_result = await real_client.discover_entities()
-        if not entities_result.is_success:
+        if not entities_result.success:
             return
 
         entities = entities_result.data[:10]  # Test first 10 entities
@@ -52,7 +52,7 @@ async def discover_real_fields() -> None:
                     limit=1,  # Just 1 record to see structure
                 )
 
-                if data_result.is_success:
+                if data_result.success:
                     data = data_result.data
                     if isinstance(data, dict):
                         count = data.get("count", 0)

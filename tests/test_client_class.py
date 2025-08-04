@@ -176,7 +176,7 @@ def test_real_helper_functions() -> None:
 
     # Test real validation function
     result = flext_oracle_wms_validate_entity_name("order_hdr")
-    assert result.is_success
+    assert result.success
     assert result.data == "order_hdr"
 
     # Test real URL building function

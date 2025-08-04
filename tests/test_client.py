@@ -21,7 +21,6 @@ Version: 0.9.0
 License: MIT
 """
 
-
 from flext_oracle_wms.client import FlextOracleWmsClient
 from flext_oracle_wms.config import FlextOracleWmsModuleConfig
 
@@ -63,8 +62,8 @@ def test_get_request() -> None:
 
     # Test that client has proper configuration
     assert client.config is not None
-    assert hasattr(client.config, 'base_url')
-    assert hasattr(client.config, 'timeout')
+    assert hasattr(client.config, "base_url")
+    assert hasattr(client.config, "timeout")
 
 
 def test_connection_info() -> None:
@@ -117,7 +116,7 @@ async def test_discovery_entities() -> None:
     client = FlextOracleWmsClient(config)
 
     result = await client.discover_entities()
-    assert result.is_success is True or result.is_success is False
+    assert result.success is True or result.success is False
 
 
 async def test_connection_test() -> None:
@@ -126,7 +125,7 @@ async def test_connection_test() -> None:
     client = FlextOracleWmsClient(config)
 
     result = await client.health_check()
-    assert result.is_success is True or result.is_success is False
+    assert result.success is True or result.success is False
 
 
 async def test_client_close() -> None:
@@ -136,7 +135,7 @@ async def test_client_close() -> None:
 
     # Should not raise an exception
     result = await client.stop()
-    assert result.is_success is True or result.is_success is False
+    assert result.success is True or result.success is False
 
 
 async def test_entity_data_fetch() -> None:
@@ -145,7 +144,7 @@ async def test_entity_data_fetch() -> None:
     client = FlextOracleWmsClient(config)
 
     result = await client.get_entity_data("test_entity")
-    assert result.is_success is True or result.is_success is False
+    assert result.success is True or result.success is False
 
 
 def test_bulk_operations() -> None:

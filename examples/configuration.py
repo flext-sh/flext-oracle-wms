@@ -74,19 +74,22 @@ def get_environment_configs() -> dict[Environment, WmsEnvironmentConfig]:
 
 def create_config_from_environment() -> FlextOracleWmsClientConfig:
     """Create Oracle WMS client configuration from environment variables.
-    
+
     This uses the REAL .env file with working Oracle WMS credentials.
-    
+
     Returns:
         FlextOracleWmsClientConfig configured from environment
-    
+
     Raises:
         ValueError: If required environment variables are missing
+
     """
     # Load environment from .env if available
     try:
-        from dotenv import load_dotenv
         from pathlib import Path
+
+        from dotenv import load_dotenv
+
         project_root = Path(__file__).parent.parent
         env_file = project_root / ".env"
         if env_file.exists():
@@ -102,14 +105,19 @@ def create_config_from_environment() -> FlextOracleWmsClientConfig:
 
     if not all([base_url, username, password, environment]):
         missing = [
-            name for name, value in [
+            name
+            for name, value in [
                 ("ORACLE_WMS_BASE_URL", base_url),
                 ("ORACLE_WMS_USERNAME", username),
                 ("ORACLE_WMS_PASSWORD", password),
                 ("ORACLE_WMS_ENVIRONMENT", environment),
-            ] if not value
+            ]
+            if not value
         ]
-        raise ValueError(f"Missing required environment variables: {', '.join(missing)}")
+        msg = f"Missing required environment variables: {', '.join(missing)}"
+        raise ValueError(
+            msg
+        )
 
     return FlextOracleWmsClientConfig(
         base_url=base_url,
@@ -126,12 +134,13 @@ def create_config_from_environment() -> FlextOracleWmsClientConfig:
 
 def create_demo_config() -> FlextOracleWmsClientConfig:
     """Create a demo Oracle WMS configuration for testing.
-    
+
     Returns:
         FlextOracleWmsClientConfig with demo values
-    
+
     Note:
         This is for demonstration only. Use real credentials from .env in practice.
+
     """
     return FlextOracleWmsClientConfig(
         base_url="https://demo-wms.oraclecloud.com/demo",
@@ -148,12 +157,13 @@ def create_demo_config() -> FlextOracleWmsClientConfig:
 
 def validate_configuration(config: FlextOracleWmsClientConfig) -> dict[str, Any]:
     """Validate Oracle WMS client configuration.
-    
+
     Args:
         config: Oracle WMS client configuration to validate
-    
+
     Returns:
         Dictionary containing validation results
+
     """
     validation_results = {
         "valid": True,
@@ -179,7 +189,9 @@ def validate_configuration(config: FlextOracleWmsClientConfig) -> dict[str, Any]
         validation_results["errors"].append("Timeout must be positive")
         validation_results["valid"] = False
     elif config.timeout < 10:
-        validation_results["warnings"].append("Timeout less than 10 seconds may cause issues")
+        validation_results["warnings"].append(
+            "Timeout less than 10 seconds may cause issues"
+        )
 
     if config.max_retries < 0:
         validation_results["errors"].append("Max retries cannot be negative")
@@ -204,12 +216,13 @@ def validate_configuration(config: FlextOracleWmsClientConfig) -> dict[str, Any]
 
 async def test_configuration(config: FlextOracleWmsClientConfig) -> dict[str, Any]:
     """Test Oracle WMS configuration by attempting connection.
-    
+
     Args:
         config: Configuration to test
-    
+
     Returns:
         Dictionary with test results
+
     """
     test_results = {
         "connection_success": False,
@@ -227,12 +240,12 @@ async def test_configuration(config: FlextOracleWmsClientConfig) -> dict[str, An
 
         # Test health check
         health_result = await client.health_check()
-        if health_result.is_success:
+        if health_result.success:
             test_results["health_check_success"] = True
 
         # Test entity discovery
         entities_result = await client.discover_entities()
-        if entities_result.is_success and entities_result.data:
+        if entities_result.success and entities_result.data:
             test_results["entities_discovered"] = len(entities_result.data)
 
     except Exception as e:

@@ -3,7 +3,6 @@
 Based on actual module structure and working patterns.
 """
 
-
 import pytest
 
 from flext_oracle_wms.authentication import (
@@ -84,7 +83,7 @@ class TestAuthenticationConfig:
         )
 
         result = config.validate_domain_rules()
-        assert result.is_success
+        assert result.success
 
     def test_config_validation_success_bearer(self) -> None:
         """Test config validation succeeds for valid bearer auth."""
@@ -93,7 +92,7 @@ class TestAuthenticationConfig:
         )
 
         result = config.validate_domain_rules()
-        assert result.is_success
+        assert result.success
 
     def test_config_validation_success_api_key(self) -> None:
         """Test config validation succeeds for valid API key auth."""
@@ -102,7 +101,7 @@ class TestAuthenticationConfig:
         )
 
         result = config.validate_domain_rules()
-        assert result.is_success
+        assert result.success
 
     def test_config_validation_failure_basic_missing_username(self) -> None:
         """Test config validation fails for basic auth missing username."""

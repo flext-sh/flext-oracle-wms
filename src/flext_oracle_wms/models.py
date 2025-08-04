@@ -49,7 +49,7 @@ class FlextOracleWmsEntity:
             validate_string_parameter(self.endpoint, "entity endpoint")
         except FlextOracleWmsDataValidationError as e:
             # Re-raise with entity-specific context
-            msg = f"{FlextOracleWmsErrorMessages.ENTITY_VALIDATION_FAILED}: {e}"
+            msg: str = f"{FlextOracleWmsErrorMessages.ENTITY_VALIDATION_FAILED}: {e}"
             raise FlextOracleWmsDataValidationError(msg) from e
 
         if not self.endpoint.startswith("/"):
@@ -92,7 +92,7 @@ class FlextOracleWmsDiscoveryResult:
             validate_records_list(self.entities, "entities")
         except FlextOracleWmsDataValidationError as e:
             # Re-raise with discovery-specific context
-            msg = f"{FlextOracleWmsErrorMessages.DISCOVERY_FAILED}: {e}"
+            msg: str = f"{FlextOracleWmsErrorMessages.DISCOVERY_FAILED}: {e}"
             raise FlextOracleWmsDataValidationError(msg) from e
 
         if self.total_count < 0:
@@ -134,7 +134,7 @@ class FlextOracleWmsApiResponse:
             validate_dict_parameter(self.data, "data")
         except FlextOracleWmsDataValidationError as e:
             # Re-raise with API response specific context
-            msg = f"{FlextOracleWmsErrorMessages.INVALID_RESPONSE}: {e}"
+            msg: str = f"{FlextOracleWmsErrorMessages.INVALID_RESPONSE}: {e}"
             raise FlextOracleWmsDataValidationError(msg) from e
 
         min_code = FlextOracleWmsDefaults.MIN_HTTP_STATUS_CODE

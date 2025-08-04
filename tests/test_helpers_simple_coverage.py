@@ -144,7 +144,9 @@ class TestUrlHelpers:
         entity_name = "item"
         api_version = "v1.0"
 
-        result = flext_oracle_wms_build_entity_url(base_url, environment, entity_name, api_version)
+        result = flext_oracle_wms_build_entity_url(
+            base_url, environment, entity_name, api_version
+        )
 
         assert isinstance(result, str)
         assert "item" in result
@@ -157,7 +159,7 @@ class TestUrlHelpers:
 
         for name in valid_names:
             result = flext_oracle_wms_validate_entity_name(name)
-            assert result.is_success
+            assert result.success
 
     def test_validate_entity_name_invalid(self) -> None:
         """Test entity name validation with invalid names."""
@@ -166,12 +168,12 @@ class TestUrlHelpers:
         for name in invalid_names:
             result = flext_oracle_wms_validate_entity_name(name)
             # Should either fail validation or handle gracefully
-            assert result.is_failure or result.is_success
+            assert result.is_failure or result.success
 
         # Test None separately as it may raise an exception
         try:
             result = flext_oracle_wms_validate_entity_name(None)
-            assert result.is_failure or result.is_success
+            assert result.is_failure or result.success
         except (AttributeError, TypeError):
             # This is acceptable behavior for None input
             pass
@@ -194,7 +196,7 @@ class TestDataProcessingHelpers:
         response = {"results": [{"id": 1, "name": "Test 1"}], "count": 1}
 
         result = flext_oracle_wms_validate_api_response(response)
-        assert result.is_success
+        assert result.success
 
     def test_validate_api_response_invalid(self) -> None:
         """Test API response validation with invalid data."""

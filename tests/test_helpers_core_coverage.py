@@ -3,7 +3,6 @@
 Based on working code patterns and real Oracle WMS URL structures.
 """
 
-
 import pytest
 
 from flext_oracle_wms.helpers import (
@@ -13,8 +12,8 @@ from flext_oracle_wms.helpers import (
     flext_oracle_wms_extract_pagination_info,
     flext_oracle_wms_format_timestamp,
     flext_oracle_wms_normalize_url,
-    flext_oracle_wms_validate_entity_name,
     flext_oracle_wms_validate_api_response,
+    flext_oracle_wms_validate_entity_name,
 )
 
 
@@ -40,9 +39,13 @@ class TestUrlHelpers:
         entity_name = "item"
         api_version = "v1.0"
 
-        result = flext_oracle_wms_build_entity_url(base_url, environment, entity_name, api_version)
+        result = flext_oracle_wms_build_entity_url(
+            base_url, environment, entity_name, api_version
+        )
 
-        expected = f"{base_url}/{environment}/wms/lgfapi/{api_version}/entity/{entity_name}/"
+        expected = (
+            f"{base_url}/{environment}/wms/lgfapi/{api_version}/entity/{entity_name}/"
+        )
         assert result == expected
 
     def test_build_entity_url_with_trailing_slash(self) -> None:
@@ -62,7 +65,9 @@ class TestUrlHelpers:
         base_url = "https://test.wms.oraclecloud.com"
         environment = "test_env"
 
-        with pytest.raises(Exception, match="All URL components must be non-empty strings"):
+        with pytest.raises(
+            Exception, match="All URL components must be non-empty strings"
+        ):
             flext_oracle_wms_build_entity_url(base_url, environment, "")
 
     def test_build_entity_url_invalid_base_url(self) -> None:
@@ -70,7 +75,9 @@ class TestUrlHelpers:
         environment = "test_env"
         entity_name = "facility"
 
-        with pytest.raises(Exception, match="All URL components must be non-empty strings"):
+        with pytest.raises(
+            Exception, match="All URL components must be non-empty strings"
+        ):
             flext_oracle_wms_build_entity_url("", environment, entity_name)
 
     def test_normalize_url_basic(self) -> None:
@@ -144,7 +151,7 @@ class TestValidationHelpers:
 
         for name in valid_names:
             result = flext_oracle_wms_validate_entity_name(name)
-            assert result.is_success
+            assert result.success
             assert result.data == name.lower()
 
     def test_validate_entity_name_invalid(self) -> None:
@@ -165,19 +172,16 @@ class TestValidationHelpers:
         response = {
             "results": [{"id": 1, "name": "Test 1"}],
             "status": "success",
-            "message": "Data retrieved successfully"
+            "message": "Data retrieved successfully",
         }
 
         result = flext_oracle_wms_validate_api_response(response)
-        assert result.is_success
+        assert result.success
         assert result.data == response
 
     def test_validate_api_response_error_field(self) -> None:
         """Test API response validation with error field."""
-        response = {
-            "error": "Database connection failed",
-            "status": "error"
-        }
+        response = {"error": "Database connection failed", "status": "error"}
 
         result = flext_oracle_wms_validate_api_response(response)
         assert result.is_failure
@@ -185,10 +189,7 @@ class TestValidationHelpers:
 
     def test_validate_api_response_error_status(self) -> None:
         """Test API response validation with error status."""
-        response = {
-            "status": "error",
-            "message": "Invalid authentication"
-        }
+        response = {"status": "error", "message": "Invalid authentication"}
 
         result = flext_oracle_wms_validate_api_response(response)
         assert result.is_failure
@@ -252,7 +253,6 @@ class TestDataProcessingHelpers:
 
         with pytest.raises(Exception, match="Chunk size must be positive"):
             flext_oracle_wms_chunk_records(records, -1)
-
 
     def test_extract_pagination_info_complete(self) -> None:
         """Test extracting pagination info with all fields."""

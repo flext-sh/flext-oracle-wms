@@ -45,14 +45,14 @@ async def test_honest_mock_framework() -> None:
 
         # Test entity discovery with mock data
         entities_result = await mock_client.discover_entities()
-        if entities_result.is_success:
+        if entities_result.success:
             pass
 
         # Test entity data retrieval with mock data
-        if entities_result.is_success and entities_result.data:
+        if entities_result.success and entities_result.data:
             entity_name = entities_result.data[0]
             data_result = await mock_client.get_entity_data(entity_name, limit=3)
-            if data_result.is_success:
+            if data_result.success:
                 data = data_result.data
                 data.get("count", 0) if isinstance(data, dict) else 0
                 if isinstance(data, dict) and "results" in data:
@@ -62,7 +62,7 @@ async def test_honest_mock_framework() -> None:
 
         # Test health check with mock data
         health_result = await mock_client.health_check()
-        if health_result.is_success:
+        if health_result.success:
             health_data = health_result.data
             if isinstance(health_data, dict):
                 health_data.get("status", "unknown")
@@ -80,10 +80,10 @@ async def test_honest_mock_framework() -> None:
     try:
         # Attempt to start real client
         start_result = await real_client.start()
-        if start_result.is_success:
+        if start_result.success:
             # Test real entity discovery
             entities_result = await real_client.discover_entities()
-            if entities_result.is_success:
+            if entities_result.success:
                 pass
 
             await real_client.stop()

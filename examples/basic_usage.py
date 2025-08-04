@@ -67,9 +67,7 @@ def create_client_config() -> FlextOracleWmsClientConfig:
             "- ORACLE_WMS_USERNAME (or FLEXT_ORACLE_WMS_USERNAME)\n"
             "- ORACLE_WMS_PASSWORD (or FLEXT_ORACLE_WMS_PASSWORD)"
         )
-        raise ValueError(
-            msg
-        )
+        raise ValueError(msg)
 
     # Create configuration with environment-driven settings
     from flext_oracle_wms.api_catalog import FlextOracleWmsApiVersion
@@ -103,7 +101,7 @@ async def discover_wms_entities(
 
     result = await client.discover_entities()
 
-    if result.is_success:
+    if result.success:
         entities = result.data
         print(f"✅ Successfully discovered {len(entities)} WMS entities")
 
@@ -151,7 +149,7 @@ async def query_entity_data(
         limit=10,  # Limit results for example
     )
 
-    if result.is_success:
+    if result.success:
         data = result.data
         print(
             f"✅ Successfully retrieved {len(data) if data else 0} records from {entity_name}"
@@ -257,7 +255,7 @@ async def main() -> None:
 
         # Start the client (required for API operations)
         start_result = await client.start()
-        if start_result.is_success:
+        if start_result.success:
             print("   Client started successfully")
         else:
             print(f"   ❌ Failed to start client: {start_result.error}")
@@ -267,7 +265,7 @@ async def main() -> None:
         print("\n" + "=" * 50)
         entities_result = await discover_wms_entities(client)
 
-        if entities_result.is_success:
+        if entities_result.success:
             entities = entities_result.data
 
             # Step 4: Query data from first available entity

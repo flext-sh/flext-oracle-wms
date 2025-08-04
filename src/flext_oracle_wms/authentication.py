@@ -100,8 +100,10 @@ class FlextOracleWmsAuthenticator:
         """Initialize authenticator with configuration."""
         self.config = config
         validation_result = self.config.validate_domain_rules()
-        if not validation_result.is_success:
-            msg = f"Invalid authentication configuration: {validation_result.error}"
+        if not validation_result.success:
+            msg: str = (
+                f"Invalid authentication configuration: {validation_result.error}"
+            )
             raise FlextOracleWmsAuthenticationError(
                 msg,
             )
@@ -182,8 +184,8 @@ class FlextOracleWmsAuthPlugin(FlextApiPlugin):
         """Add authentication headers before request."""
         try:
             headers_result = await self.authenticator.get_auth_headers()
-            if not headers_result.is_success:
-                msg = f"Failed to get auth headers: {headers_result.error}"
+            if not headers_result.success:
+                msg: str = f"Failed to get auth headers: {headers_result.error}"
                 self._raise_auth_error(msg)
 
             # Update request headers
@@ -199,7 +201,7 @@ class FlextOracleWmsAuthPlugin(FlextApiPlugin):
 
         except Exception as e:
             logger.exception("Authentication plugin failed")
-            msg = f"Auth plugin failed: {e}"
+            msg: str = f"Auth plugin failed: {e}"
             raise FlextOracleWmsAuthenticationError(msg) from e
 
     async def after_response(
@@ -213,7 +215,7 @@ class FlextOracleWmsAuthPlugin(FlextApiPlugin):
             and response.status_code in FlextOracleWmsDefaults.AUTH_ERROR_CODES
         ):
             logger.warning("Authentication failed", status_code=response.status_code)
-            msg = f"Authentication failed with status {response.status_code}"
+            msg: str = f"Authentication failed with status {response.status_code}"
             raise FlextOracleWmsAuthenticationError(msg)
 
         return response

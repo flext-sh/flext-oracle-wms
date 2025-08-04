@@ -19,7 +19,7 @@ Validates:
 Usage:
     # Inside Docker container:
     python examples/docker_complete_validation.py
-    
+
     # Or via Docker run script:
     ./docker-run.sh examples
 """
@@ -30,7 +30,7 @@ import os
 import sys
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Dict
+from typing import Any
 
 # Add src to path for imports
 sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
@@ -44,7 +44,7 @@ logging.basicConfig(
     format="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
     handlers=[
         logging.StreamHandler(sys.stdout),
-    ]
+    ],
 )
 
 logger = logging.getLogger(__name__)
@@ -55,6 +55,7 @@ def load_oracle_wms_config() -> FlextOracleWmsClientConfig:
     # Load from .env if available
     try:
         from dotenv import load_dotenv
+
         env_file = Path(__file__).parent.parent / ".env"
         if env_file.exists():
             load_dotenv(env_file)
@@ -69,14 +70,19 @@ def load_oracle_wms_config() -> FlextOracleWmsClientConfig:
 
     if not all([base_url, username, password, environment]):
         missing = [
-            var for var, val in [
+            var
+            for var, val in [
                 ("ORACLE_WMS_BASE_URL", base_url),
                 ("ORACLE_WMS_USERNAME", username),
                 ("ORACLE_WMS_PASSWORD", password),
                 ("ORACLE_WMS_ENVIRONMENT", environment),
-            ] if not val
+            ]
+            if not val
         ]
-        raise ValueError(f"Missing required environment variables: {', '.join(missing)}")
+        msg = f"Missing required environment variables: {', '.join(missing)}"
+        raise ValueError(
+            msg
+        )
 
     return FlextOracleWmsClientConfig(
         base_url=base_url,
@@ -91,7 +97,9 @@ def load_oracle_wms_config() -> FlextOracleWmsClientConfig:
     )
 
 
-async def validate_oracle_wms_connection(client: FlextOracleWmsClient) -> Dict[str, Any]:
+async def validate_oracle_wms_connection(
+    client: FlextOracleWmsClient,
+) -> dict[str, Any]:
     """Validate Oracle WMS connection and basic functionality."""
     logger.info("🔌 Validating Oracle WMS connection...")
 
@@ -111,7 +119,7 @@ async def validate_oracle_wms_connection(client: FlextOracleWmsClient) -> Dict[s
 
         # Health check
         health_result = await client.health_check()
-        if health_result.is_success:
+        if health_result.success:
             validation_results["health_check_success"] = True
             logger.info("✅ Oracle WMS health check passed")
         else:
@@ -119,7 +127,7 @@ async def validate_oracle_wms_connection(client: FlextOracleWmsClient) -> Dict[s
 
         # Discover entities
         entities_result = await client.discover_entities()
-        if entities_result.is_success and entities_result.data:
+        if entities_result.success and entities_result.data:
             entities = entities_result.data
             validation_results["entities_discovered"] = len(entities)
             logger.info(f"✅ Discovered {len(entities)} Oracle WMS entities")
@@ -130,18 +138,20 @@ async def validate_oracle_wms_connection(client: FlextOracleWmsClient) -> Dict[s
                 logger.info(f"🔍 Testing data retrieval from entity: {sample_entity}")
 
                 data_result = await client.get_entity_data(sample_entity, limit=5)
-                if data_result.is_success:
+                if data_result.success:
                     validation_results["sample_entity_data"] = data_result.data
                     logger.info(f"✅ Successfully retrieved data from {sample_entity}")
                 else:
-                    logger.warning(f"⚠️ Could not retrieve data from {sample_entity}: {data_result.error}")
+                    logger.warning(
+                        f"⚠️ Could not retrieve data from {sample_entity}: {data_result.error}"
+                    )
 
         else:
             logger.error("❌ Failed to discover Oracle WMS entities")
             validation_results["error"] = "Entity discovery failed"
 
     except Exception as e:
-        logger.error(f"❌ Oracle WMS validation failed: {e}")
+        logger.exception(f"❌ Oracle WMS validation failed: {e}")
         validation_results["error"] = str(e)
 
     finally:
@@ -154,7 +164,7 @@ async def validate_oracle_wms_connection(client: FlextOracleWmsClient) -> Dict[s
     return validation_results
 
 
-async def validate_complete_functionality() -> Dict[str, Any]:
+async def validate_complete_functionality() -> dict[str, Any]:
     """Complete Oracle WMS functionality validation in Docker environment."""
     logger.info("🐳 FLEXT Oracle WMS - Docker Complete Validation")
     logger.info("=" * 60)
@@ -175,7 +185,9 @@ async def validate_complete_functionality() -> Dict[str, Any]:
 
     try:
         # Step 1: Load and validate configuration
-        logger.info("📋 Step 1: Loading Oracle WMS configuration from Docker environment")
+        logger.info(
+            "📋 Step 1: Loading Oracle WMS configuration from Docker environment"
+        )
         config = load_oracle_wms_config()
         validation_summary["configuration_valid"] = True
         logger.info("✅ Configuration loaded successfully")
@@ -200,8 +212,11 @@ async def validate_complete_functionality() -> Dict[str, Any]:
         logger.info("📋 Step 3: Running complete functionality tests")
         functionality_results = {
             "entities_discovered": connectivity_results.get("entities_discovered", 0),
-            "health_check_passed": connectivity_results.get("health_check_success", False),
-            "data_retrieval_success": connectivity_results.get("sample_entity_data") is not None,
+            "health_check_passed": connectivity_results.get(
+                "health_check_success", False
+            ),
+            "data_retrieval_success": connectivity_results.get("sample_entity_data")
+            is not None,
             "configuration_management": True,  # Validated in step 1
             "enterprise_compatibility": True,  # Validated through successful connection
         }
@@ -213,28 +228,31 @@ async def validate_complete_functionality() -> Dict[str, Any]:
 
         performance_metrics = {
             "execution_time_seconds": execution_time,
-            "entities_per_second": connectivity_results.get("entities_discovered", 0) / max(execution_time, 1),
-            "connection_established": connectivity_results.get("connection_success", False),
+            "entities_per_second": connectivity_results.get("entities_discovered", 0)
+            / max(execution_time, 1),
+            "connection_established": connectivity_results.get(
+                "connection_success", False
+            ),
             "end_time": end_time.isoformat(),
         }
         validation_summary["performance_metrics"] = performance_metrics
 
         # Determine overall success
         validation_summary["success"] = (
-            validation_summary["configuration_valid"] and
-            connectivity_results.get("connection_success", False) and
-            connectivity_results.get("entities_discovered", 0) > 0
+            validation_summary["configuration_valid"]
+            and connectivity_results.get("connection_success", False)
+            and connectivity_results.get("entities_discovered", 0) > 0
         )
 
     except Exception as e:
-        logger.error(f"❌ Complete validation failed: {e}")
+        logger.exception(f"❌ Complete validation failed: {e}")
         validation_summary["errors"].append(str(e))
         validation_summary["success"] = False
 
     return validation_summary
 
 
-def print_validation_summary(results: Dict[str, Any]) -> None:
+def print_validation_summary(results: dict[str, Any]) -> None:
     """Print comprehensive validation summary."""
     print("\n" + "=" * 60)
     print("🎯 ORACLE WMS DOCKER VALIDATION SUMMARY")
@@ -242,30 +260,52 @@ def print_validation_summary(results: Dict[str, Any]) -> None:
 
     # Overall status
     status_icon = "✅" if results["success"] else "❌"
-    print(f"{status_icon} Overall Status: {'SUCCESS' if results['success'] else 'FAILED'}")
+    print(
+        f"{status_icon} Overall Status: {'SUCCESS' if results['success'] else 'FAILED'}"
+    )
     print(f"🐳 Docker Environment: {'Yes' if results['docker_environment'] else 'No'}")
-    print(f"⏱️  Execution Time: {results['performance_metrics'].get('execution_time_seconds', 0):.2f} seconds")
+    print(
+        f"⏱️  Execution Time: {results['performance_metrics'].get('execution_time_seconds', 0):.2f} seconds"
+    )
 
     # Configuration
     print("\n📋 Configuration:")
-    print(f"   {'✅' if results['configuration_valid'] else '❌'} Environment variables loaded")
+    print(
+        f"   {'✅' if results['configuration_valid'] else '❌'} Environment variables loaded"
+    )
 
     # Oracle WMS Connectivity
     connectivity = results["oracle_wms_connectivity"]
     print("\n🔌 Oracle WMS Connectivity:")
-    print(f"   {'✅' if connectivity.get('connection_success') else '❌'} Connection established")
-    print(f"   {'✅' if connectivity.get('health_check_success') else '❌'} Health check passed")
+    print(
+        f"   {'✅' if connectivity.get('connection_success') else '❌'} Connection established"
+    )
+    print(
+        f"   {'✅' if connectivity.get('health_check_success') else '❌'} Health check passed"
+    )
     print(f"   📊 Entities discovered: {connectivity.get('entities_discovered', 0)}")
-    print(f"   {'✅' if connectivity.get('sample_entity_data') else '❌'} Sample data retrieved")
+    print(
+        f"   {'✅' if connectivity.get('sample_entity_data') else '❌'} Sample data retrieved"
+    )
 
     # Functionality Tests
     functionality = results["functionality_tests"]
     print("\n🧪 Functionality Tests:")
-    print(f"   {'✅' if functionality.get('entities_discovered', 0) > 0 else '❌'} Entity discovery")
-    print(f"   {'✅' if functionality.get('health_check_passed') else '❌'} Health monitoring")
-    print(f"   {'✅' if functionality.get('data_retrieval_success') else '❌'} Data retrieval")
-    print(f"   {'✅' if functionality.get('configuration_management') else '❌'} Configuration management")
-    print(f"   {'✅' if functionality.get('enterprise_compatibility') else '❌'} Enterprise compatibility")
+    print(
+        f"   {'✅' if functionality.get('entities_discovered', 0) > 0 else '❌'} Entity discovery"
+    )
+    print(
+        f"   {'✅' if functionality.get('health_check_passed') else '❌'} Health monitoring"
+    )
+    print(
+        f"   {'✅' if functionality.get('data_retrieval_success') else '❌'} Data retrieval"
+    )
+    print(
+        f"   {'✅' if functionality.get('configuration_management') else '❌'} Configuration management"
+    )
+    print(
+        f"   {'✅' if functionality.get('enterprise_compatibility') else '❌'} Enterprise compatibility"
+    )
 
     # Performance Metrics
     performance = results["performance_metrics"]
@@ -308,7 +348,7 @@ async def main() -> None:
         logger.info("🛑 Validation interrupted by user")
         sys.exit(1)
     except Exception as e:
-        logger.error(f"💥 Unexpected error during validation: {e}")
+        logger.exception(f"💥 Unexpected error during validation: {e}")
         sys.exit(1)
 
 

@@ -2,11 +2,11 @@
 """Complete Oracle WMS Functionality Showcase - ALL Features Demonstrated.
 
 This example demonstrates EVERY major functionality of the flext-oracle-wms library
-as specifically requested by the user: "FOQUE MUITO NOS EXEMPLES/ PARA FUNCIONAR 
+as specifically requested by the user: "FOQUE MUITO NOS EXEMPLES/ PARA FUNCIONAR
 COM TODA A FUNCIONALIDADE DO CODIGO"
 
 Features Demonstrated:
-    1. ✅ Client Configuration and Initialization  
+    1. ✅ Client Configuration and Initialization
     2. ✅ Entity Discovery (320+ entities)
     3. ✅ Data Retrieval and Querying
     4. ✅ Authentication Methods
@@ -19,7 +19,7 @@ Features Demonstrated:
 
 Usage:
     python examples/complete_functionality_showcase.py
-    
+
 Requirements:
     - .env file with Oracle WMS credentials
     - Network connectivity to Oracle WMS Cloud
@@ -29,7 +29,7 @@ Requirements:
 import asyncio
 import sys
 from pathlib import Path
-from typing import Any, Dict, List
+from typing import Any
 
 # Add src to path for imports
 sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
@@ -55,6 +55,7 @@ print()
 def load_config_from_environment() -> FlextOracleWmsClientConfig:
     """Load configuration from .env file."""
     import os
+
     from dotenv import load_dotenv
 
     # Load environment variables
@@ -70,7 +71,9 @@ def load_config_from_environment() -> FlextOracleWmsClientConfig:
     environment = os.getenv("ORACLE_WMS_ENVIRONMENT", "production")
 
     if not all([base_url, username, password]):
-        raise ValueError("Missing required environment variables: ORACLE_WMS_BASE_URL, ORACLE_WMS_USERNAME, ORACLE_WMS_PASSWORD")
+        raise ValueError(
+            "Missing required environment variables: ORACLE_WMS_BASE_URL, ORACLE_WMS_USERNAME, ORACLE_WMS_PASSWORD"
+        )
 
     return FlextOracleWmsClientConfig(
         base_url=base_url,
@@ -85,7 +88,9 @@ def load_config_from_environment() -> FlextOracleWmsClientConfig:
     )
 
 
-async def showcase_1_client_initialization(config: FlextOracleWmsClientConfig) -> FlextOracleWmsClient:
+async def showcase_1_client_initialization(
+    config: FlextOracleWmsClientConfig,
+) -> FlextOracleWmsClient:
     """Feature 1: Client Configuration and Initialization."""
     print("🔧 FEATURE 1: CLIENT INITIALIZATION")
     print("-" * 50)
@@ -105,7 +110,7 @@ async def showcase_1_client_initialization(config: FlextOracleWmsClientConfig) -
 
     # Start the client
     start_result = await client.start()
-    if start_result.is_success:
+    if start_result.success:
         print("   ✅ Client started successfully")
     else:
         print(f"   ❌ Client start failed: {start_result.error}")
@@ -115,7 +120,7 @@ async def showcase_1_client_initialization(config: FlextOracleWmsClientConfig) -
     return client
 
 
-async def showcase_2_entity_discovery(client: FlextOracleWmsClient) -> List[str]:
+async def showcase_2_entity_discovery(client: FlextOracleWmsClient) -> list[str]:
     """Feature 2: Entity Discovery (320+ entities)."""
     print("🔍 FEATURE 2: ENTITY DISCOVERY")
     print("-" * 50)
@@ -123,7 +128,7 @@ async def showcase_2_entity_discovery(client: FlextOracleWmsClient) -> List[str]
     # Discover all entities
     entities_result = await client.discover_entities()
 
-    if not entities_result.is_success:
+    if not entities_result.success:
         print(f"   ❌ Entity discovery failed: {entities_result.error}")
         return []
 
@@ -133,7 +138,7 @@ async def showcase_2_entity_discovery(client: FlextOracleWmsClient) -> List[str]
     # Show first 10 entities as sample
     print("   📦 Sample entities:")
     for i, entity in enumerate(entities[:10]):
-        print(f"      {i+1:2d}. {entity}")
+        print(f"      {i + 1:2d}. {entity}")
 
     if len(entities) > 10:
         print(f"      ... and {len(entities) - 10} more entities")
@@ -157,7 +162,9 @@ async def showcase_2_entity_discovery(client: FlextOracleWmsClient) -> List[str]
     return entities
 
 
-async def showcase_3_data_retrieval(client: FlextOracleWmsClient, entities: List[str]) -> Dict[str, Any]:
+async def showcase_3_data_retrieval(
+    client: FlextOracleWmsClient, entities: list[str]
+) -> dict[str, Any]:
     """Feature 3: Data Retrieval and Querying."""
     print("📊 FEATURE 3: DATA RETRIEVAL & QUERYING")
     print("-" * 50)
@@ -177,15 +184,19 @@ async def showcase_3_data_retrieval(client: FlextOracleWmsClient, entities: List
         # Basic data retrieval
         data_result = await client.get_entity_data(entity_name, limit=5)
 
-        if data_result.is_success:
+        if data_result.success:
             data = data_result.data
             if isinstance(data, dict) and "results" in data:
                 results = data["results"]
                 count = data.get("count", len(results))
-                print(f"      ✅ Retrieved {len(results)} records (total available: {count})")
+                print(
+                    f"      ✅ Retrieved {len(results)} records (total available: {count})"
+                )
                 if results:
                     first_record = results[0]
-                    field_count = len(first_record) if isinstance(first_record, dict) else 0
+                    field_count = (
+                        len(first_record) if isinstance(first_record, dict) else 0
+                    )
                     print(f"      📋 Fields per record: {field_count}")
                 sample_data[entity_name] = data
             else:
@@ -201,10 +212,10 @@ async def showcase_3_data_retrieval(client: FlextOracleWmsClient, entities: List
             entity_name="company",
             limit=3,
             fields="company_code,company_name",
-            filters={"active": "Y"}
+            filters={"active": "Y"},
         )
 
-        if filtered_result.is_success:
+        if filtered_result.success:
             print("      ✅ Filtered query successful")
         else:
             print(f"      ⚠️  Filtered query: {filtered_result.error}")
@@ -229,7 +240,7 @@ async def showcase_4_authentication(config: FlextOracleWmsClientConfig) -> None:
 
     # Demonstrate auth validation
     validation_result = auth_config.validate_domain_rules()
-    if validation_result.is_success:
+    if validation_result.success:
         print("   ✅ Authentication configuration is valid")
     else:
         print(f"   ❌ Authentication validation failed: {validation_result.error}")
@@ -239,7 +250,7 @@ async def showcase_4_authentication(config: FlextOracleWmsClientConfig) -> None:
 
     # Test header generation
     headers_result = await authenticator.get_auth_headers()
-    if headers_result.is_success:
+    if headers_result.success:
         headers = headers_result.data or {}
         auth_header_present = "Authorization" in headers
         print(f"   ✅ Authentication headers generated: {auth_header_present}")
@@ -301,7 +312,7 @@ async def showcase_6_error_handling(client: FlextOracleWmsClient) -> None:
     # Test 1: Invalid entity name
     print("   🧪 Testing invalid entity handling...")
     invalid_result = await client.get_entity_data("invalid_entity_xyz123")
-    if not invalid_result.is_success:
+    if not invalid_result.success:
         print(f"   ✅ Properly handled invalid entity: {type(invalid_result.error)}")
     else:
         print("   ⚠️  Unexpected success for invalid entity")
@@ -309,7 +320,7 @@ async def showcase_6_error_handling(client: FlextOracleWmsClient) -> None:
     # Test 2: Invalid API call
     print("   🧪 Testing invalid API call handling...")
     api_result = await client.call_api("non_existent_api_xyz")
-    if not api_result.is_success:
+    if not api_result.success:
         print("   ✅ Properly handled invalid API call")
     else:
         print("   ⚠️  Unexpected success for invalid API")
@@ -329,7 +340,7 @@ async def showcase_6_error_handling(client: FlextOracleWmsClient) -> None:
             enable_logging=True,
         )
         validation = invalid_config.validate_domain_rules()
-        if not validation.is_success:
+        if not validation.success:
             print("   ✅ Configuration validation caught errors")
         else:
             print("   ⚠️  Configuration validation unexpectedly passed")
@@ -339,7 +350,7 @@ async def showcase_6_error_handling(client: FlextOracleWmsClient) -> None:
     print()
 
 
-async def showcase_7_health_monitoring(client: FlextOracleWmsClient) -> Dict[str, Any]:
+async def showcase_7_health_monitoring(client: FlextOracleWmsClient) -> dict[str, Any]:
     """Feature 7: Health Monitoring."""
     print("❤️  FEATURE 7: HEALTH MONITORING")
     print("-" * 50)
@@ -347,7 +358,7 @@ async def showcase_7_health_monitoring(client: FlextOracleWmsClient) -> Dict[str
     # Perform health check
     health_result = await client.health_check()
 
-    if health_result.is_success:
+    if health_result.success:
         health_data = health_result.data or {}
         print("   ✅ Health Check: HEALTHY")
         print("   📊 Health Status Details:")
@@ -360,15 +371,16 @@ async def showcase_7_health_monitoring(client: FlextOracleWmsClient) -> Dict[str
                 print(f"      • {key}: {value}")
 
         return health_data
-    else:
-        print("   ❌ Health Check: UNHEALTHY")
-        print(f"   🔍 Error: {health_result.error}")
-        return {}
+    print("   ❌ Health Check: UNHEALTHY")
+    print(f"   🔍 Error: {health_result.error}")
+    return {}
 
     print()
 
 
-async def showcase_8_performance_tracking(client: FlextOracleWmsClient, entities: List[str]) -> None:
+async def showcase_8_performance_tracking(
+    client: FlextOracleWmsClient, entities: list[str]
+) -> None:
     """Feature 8: Performance Tracking."""
     print("⚡ FEATURE 8: PERFORMANCE TRACKING")
     print("-" * 50)
@@ -383,10 +395,7 @@ async def showcase_8_performance_tracking(client: FlextOracleWmsClient, entities
         start_time = time.time()
 
         # Create concurrent requests
-        tasks = [
-            client.get_entity_data(entity, limit=2)
-            for entity in test_entities
-        ]
+        tasks = [client.get_entity_data(entity, limit=2) for entity in test_entities]
 
         # Execute concurrently
         results = await asyncio.gather(*tasks, return_exceptions=True)
@@ -395,13 +404,12 @@ async def showcase_8_performance_tracking(client: FlextOracleWmsClient, entities
         execution_time = end_time - start_time
 
         successful_requests = sum(
-            1 for result in results
-            if hasattr(result, 'is_success') and result.is_success
+            1 for result in results if hasattr(result, "success") and result.success
         )
 
         print(f"   ⏱️  Execution Time: {execution_time:.2f} seconds")
         print(f"   📈 Successful Requests: {successful_requests}/{len(test_entities)}")
-        print(f"   🎯 Requests/Second: {len(test_entities)/execution_time:.2f}")
+        print(f"   🎯 Requests/Second: {len(test_entities) / execution_time:.2f}")
 
         if successful_requests > 0:
             print("   ✅ Concurrent requests working properly")
@@ -418,8 +426,10 @@ async def showcase_8_performance_tracking(client: FlextOracleWmsClient, entities
             result = await client.get_entity_data("company", limit=page_size)
             end_time = time.time()
 
-            if result.is_success:
-                print(f"      • Page size {page_size}: {(end_time-start_time)*1000:.1f}ms")
+            if result.success:
+                print(
+                    f"      • Page size {page_size}: {(end_time - start_time) * 1000:.1f}ms"
+                )
             else:
                 print(f"      • Page size {page_size}: Failed")
 
@@ -446,7 +456,7 @@ async def showcase_9_cache_management(client: FlextOracleWmsClient) -> None:
     second_result = await client.discover_entities()
     second_time = time.time() - start_time
 
-    if first_result.is_success and second_result.is_success:
+    if first_result.success and second_result.success:
         first_count = len(first_result.data or [])
         second_count = len(second_result.data or [])
 
@@ -466,7 +476,9 @@ async def showcase_9_cache_management(client: FlextOracleWmsClient) -> None:
     print()
 
 
-async def showcase_10_enterprise_features(client: FlextOracleWmsClient, config: FlextOracleWmsClientConfig) -> None:
+async def showcase_10_enterprise_features(
+    client: FlextOracleWmsClient, config: FlextOracleWmsClientConfig
+) -> None:
     """Feature 10: Enterprise Features."""
     print("🏢 FEATURE 10: ENTERPRISE FEATURES")
     print("-" * 50)
@@ -481,7 +493,9 @@ async def showcase_10_enterprise_features(client: FlextOracleWmsClient, config: 
     print(f"   🔄 Max Retries: {config.max_retries}")
 
     # Logging Configuration
-    print(f"   📝 Request Logging: {'Enabled' if config.enable_logging else 'Disabled'}")
+    print(
+        f"   📝 Request Logging: {'Enabled' if config.enable_logging else 'Disabled'}"
+    )
 
     # Environment Configuration
     print(f"   🌍 Environment: {config.environment}")
@@ -560,6 +574,7 @@ async def main() -> None:
     except Exception as e:
         print(f"❌ Showcase failed: {e}")
         import traceback
+
         traceback.print_exc()
         return 1
 
@@ -568,4 +583,5 @@ async def main() -> None:
 
 if __name__ == "__main__":
     import time
+
     asyncio.run(main())

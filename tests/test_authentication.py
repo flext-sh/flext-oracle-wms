@@ -67,7 +67,7 @@ def test_basic_auth_validation() -> None:
         auth_type=OracleWMSAuthMethod.BASIC, username="user", password="pass"
     )
     result = config.validate_domain_rules()
-    assert result.is_success is True
+    assert result.success is True
 
 
 def test_basic_auth_validation_empty_credentials() -> None:
@@ -76,7 +76,7 @@ def test_basic_auth_validation_empty_credentials() -> None:
         auth_type=OracleWMSAuthMethod.BASIC, username="", password=""
     )
     result = config.validate_domain_rules()
-    assert result.is_success is False
+    assert result.success is False
 
 
 def test_bearer_validation_missing_token() -> None:
@@ -86,7 +86,7 @@ def test_bearer_validation_missing_token() -> None:
         # Missing token
     )
     result = config.validate_domain_rules()
-    assert result.is_success is False
+    assert result.success is False
 
 
 @pytest.mark.asyncio
@@ -98,7 +98,7 @@ async def test_authenticator_get_headers() -> None:
     authenticator = FlextOracleWmsAuthenticator(config)
 
     headers_result = await authenticator.get_auth_headers()
-    assert headers_result.is_success is True
+    assert headers_result.success is True
 
     headers = headers_result.data
     assert "Authorization" in headers
@@ -115,7 +115,7 @@ async def test_authenticator_oauth2_headers() -> None:
 
     # Bearer token implementation
     headers_result = await authenticator.get_auth_headers()
-    assert headers_result.is_success is True
+    assert headers_result.success is True
 
     headers = headers_result.data
     assert "Authorization" in headers

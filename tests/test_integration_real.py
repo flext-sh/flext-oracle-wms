@@ -18,21 +18,21 @@ class TestRealOracleWMSIntegration:
     """Integration tests with REAL Oracle WMS using .env credentials."""
 
     @classmethod
-    def setup_class(cls):
+    def setup_class(cls) -> None:
         """Load real environment for integration tests."""
         try:
             from dotenv import load_dotenv
+
             project_root = Path(__file__).parent.parent
             env_file = project_root / ".env"
             if env_file.exists():
                 load_dotenv(env_file)
-                print(f"✅ Loaded real Oracle WMS environment from {env_file}")
             else:
                 pytest.skip("No .env file found - skipping real integration tests")
         except ImportError:
             pytest.skip("python-dotenv not available - skipping real integration tests")
 
-    def test_real_environment_loaded(self):
+    def test_real_environment_loaded(self) -> None:
         """Test that real Oracle WMS environment is properly loaded."""
         required_vars = [
             "ORACLE_WMS_BASE_URL",
@@ -51,7 +51,7 @@ class TestRealOracleWMSIntegration:
         assert os.getenv("ORACLE_WMS_USERNAME") != ""
         assert os.getenv("ORACLE_WMS_PASSWORD") != ""
 
-    def test_real_client_configuration(self):
+    def test_real_client_configuration(self) -> None:
         """Test that client configuration works with real environment."""
         from flext_oracle_wms.api_catalog import FlextOracleWmsApiVersion
 
@@ -75,7 +75,7 @@ class TestRealOracleWMSIntegration:
         assert config.timeout > 0
 
     @pytest.mark.asyncio
-    async def test_real_client_lifecycle(self):
+    async def test_real_client_lifecycle(self) -> None:
         """Test complete client lifecycle with REAL Oracle WMS."""
         # Skip if no environment
         if not os.getenv("ORACLE_WMS_BASE_URL"):
@@ -103,7 +103,7 @@ class TestRealOracleWMSIntegration:
 
             # Test health check with REAL Oracle WMS
             health_result = await client.health_check()
-            assert health_result.is_success
+            assert health_result.success
             assert isinstance(health_result.data, dict)
             health_data = health_result.data
             assert health_data.get("service") == "FlextOracleWmsClient"
@@ -111,7 +111,7 @@ class TestRealOracleWMSIntegration:
 
             # Test entity discovery with REAL Oracle WMS
             entities_result = await client.discover_entities()
-            assert entities_result.is_success
+            assert entities_result.success
             assert isinstance(entities_result.data, list)
             entities = entities_result.data
             assert len(entities) > 0  # Should discover real entities
@@ -119,14 +119,16 @@ class TestRealOracleWMSIntegration:
             # Validate we got real Oracle WMS entities (not fallback)
             expected_entities = ["company", "facility", "item", "order_hdr"]
             found_entities = [e for e in expected_entities if e in entities]
-            assert len(found_entities) > 0, f"Expected Oracle WMS entities not found in {entities[:10]}"
+            assert len(found_entities) > 0, (
+                f"Expected Oracle WMS entities not found in {entities[:10]}"
+            )
 
         finally:
             # Always cleanup
             await client.stop()
 
     @pytest.mark.asyncio
-    async def test_real_entity_data_retrieval(self):
+    async def test_real_entity_data_retrieval(self) -> None:
         """Test retrieving REAL data from Oracle WMS entities."""
         if not os.getenv("ORACLE_WMS_BASE_URL"):
             pytest.skip("No real Oracle WMS environment configured")
@@ -152,7 +154,7 @@ class TestRealOracleWMSIntegration:
 
             # Test with a known working entity (from basic_usage.py results)
             entity_result = await client.get_entity_data("action_code", limit=5)
-            assert entity_result.is_success
+            assert entity_result.success
             assert isinstance(entity_result.data, dict)
 
             # Validate we got real Oracle WMS data structure
@@ -163,7 +165,7 @@ class TestRealOracleWMSIntegration:
             await client.stop()
 
     @pytest.mark.asyncio
-    async def test_real_error_handling(self):
+    async def test_real_error_handling(self) -> None:
         """Test error handling with REAL Oracle WMS (non-existent entity)."""
         if not os.getenv("ORACLE_WMS_BASE_URL"):
             pytest.skip("No real Oracle WMS environment configured")
@@ -195,7 +197,7 @@ class TestRealOracleWMSIntegration:
         finally:
             await client.stop()
 
-    def test_real_api_catalog_availability(self):
+    def test_real_api_catalog_availability(self) -> None:
         """Test that API catalog has real Oracle WMS endpoints."""
         from flext_oracle_wms.api_catalog import FlextOracleWmsApiVersion
 
@@ -229,15 +231,19 @@ class TestRealOracleWMSIntegration:
 class TestExamplesIntegration:
     """Test that examples/ actually work with real functionality."""
 
-    def test_basic_usage_example_works(self):
+    def test_basic_usage_example_works(self) -> None:
         """Test that basic_usage.py actually executes successfully."""
         import subprocess
         import sys
 
         # Run basic_usage.py as subprocess to validate it works
-        result = subprocess.run([
-            sys.executable, "examples/basic_usage.py"
-        ], capture_output=True, text=True, cwd="/home/marlonsc/flext/flext-oracle-wms")
+        result = subprocess.run(
+            [sys.executable, "examples/basic_usage.py"],
+            check=False,
+            capture_output=True,
+            text=True,
+            cwd="/home/marlonsc/flext/flext-oracle-wms",
+        )
 
         # Should complete successfully
         assert result.returncode == 0, f"basic_usage.py failed: {result.stderr}"
@@ -248,15 +254,19 @@ class TestExamplesIntegration:
         assert "entities" in output.lower()
         assert "completed successfully" in output.lower()
 
-    def test_configuration_example_works(self):
+    def test_configuration_example_works(self) -> None:
         """Test that configuration.py now works after refactoring."""
         import subprocess
         import sys
 
         # Run configuration.py to test it works
-        result = subprocess.run([
-            sys.executable, "examples/configuration.py"
-        ], capture_output=True, text=True, cwd="/home/marlonsc/flext/flext-oracle-wms")
+        result = subprocess.run(
+            [sys.executable, "examples/configuration.py"],
+            check=False,
+            capture_output=True,
+            text=True,
+            cwd="/home/marlonsc/flext/flext-oracle-wms",
+        )
 
         # Should now succeed after refactoring
         assert result.returncode == 0, f"configuration.py failed: {result.stderr}"

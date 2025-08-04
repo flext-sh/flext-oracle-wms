@@ -95,7 +95,7 @@ class FlextOracleWmsFilter:
 
         if max_conditions > FlextOracleWmsDefaults.MAX_FILTER_CONDITIONS:
             max_conditions_limit = FlextOracleWmsDefaults.MAX_FILTER_CONDITIONS
-            msg = f"Max conditions cannot exceed {max_conditions_limit}"
+            msg: str = f"Max conditions cannot exceed {max_conditions_limit}"
             raise FlextOracleWmsError(msg)
 
         self.case_sensitive = case_sensitive
@@ -220,7 +220,7 @@ class FlextOracleWmsFilter:
 
             # Validate filter conditions count using helper method
             validation_result = self._validate_filter_conditions_count(filters)
-            if not validation_result.is_success:
+            if not validation_result.success:
                 # Cast to proper return type since validation returns FlextResult[None]
                 return FlextResult.fail(validation_result.error or "Validation failed")
 
@@ -460,7 +460,7 @@ def flext_oracle_wms_create_filter(
 
     if max_conditions > FlextOracleWmsDefaults.MAX_FILTER_CONDITIONS:
         max_limit = FlextOracleWmsDefaults.MAX_FILTER_CONDITIONS
-        msg = f"Max conditions cannot exceed {max_limit}"
+        msg: str = f"Max conditions cannot exceed {max_limit}"
         raise FlextOracleWmsError(msg)
 
     return FlextOracleWmsFilter(

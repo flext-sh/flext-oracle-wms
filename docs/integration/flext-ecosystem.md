@@ -61,7 +61,7 @@ async def discover_wms_entities() -> FlextResult[List[WmsEntity]]:
     # All operations return FlextResult for consistent error handling
     result = await client.discover_entities()
 
-    if result.is_success:
+    if result.success:
         entities = result.data
         print(f"Discovered {len(entities)} WMS entities")
         return FlextResult.success(entities)
@@ -205,7 +205,7 @@ class FlextOracleWmsClient(EnterpriseApiClient):
         # Inherit enterprise patterns: retries, circuit breaker, metrics
         response = await self.get("/entities", track_metrics=True)
 
-        if response.is_success:
+        if response.success:
             entities = self._parse_entities(response.data)
             return FlextResult.success(entities)
         else:
@@ -293,7 +293,7 @@ class WmsHealthCheck(HealthCheck):
             result = await self._client.health_check()
 
             return {
-                "status": "healthy" if result.is_success else "unhealthy",
+                "status": "healthy" if result.success else "unhealthy",
                 "connection": "ok",
                 "api_version": result.data.get("version"),
                 "response_time_ms": result.duration_ms
@@ -406,7 +406,7 @@ async def generate_singer_catalog(client: FlextOracleWmsClient) -> Catalog:
     streams = []
     for entity in entities_result.data:
         schema_result = await client.get_entity_schema(entity.name)
-        if schema_result.is_success:
+        if schema_result.success:
             schema = Schema.from_dict(schema_result.data)
             stream = Stream(
                 tap_stream_id=entity.name,
@@ -433,7 +433,7 @@ async def stream_wms_changes(
             since=last_sync_time
         )
 
-        if changes_result.is_success:
+        if changes_result.success:
             for change in changes_result.data:
                 yield {
                     "type": "RECORD",

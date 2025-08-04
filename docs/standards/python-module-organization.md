@@ -336,7 +336,7 @@ class InventoryRepositoryImpl(InventoryRepository):
 
         # Try cache first
         cached_result = await self._cache.get(cache_key)
-        if cached_result.is_success and cached_result.data:
+        if cached_result.success and cached_result.data:
             self._logger.debug("Inventory data retrieved from cache", cache_key=cache_key)
             return FlextResult.success(cached_result.data)
 
@@ -354,7 +354,7 @@ class InventoryRepositoryImpl(InventoryRepository):
         inventory_items = []
         for item_data in api_result.data:
             entity_result = InventoryItem.from_api_response(item_data)
-            if entity_result.is_success:
+            if entity_result.success:
                 inventory_items.append(entity_result.data)
             else:
                 self._logger.warning(
@@ -602,7 +602,7 @@ async def process_wms_data(
     wms_client = container.resolve(FlextOracleWmsClient)
     result = await wms_client.query_inventory_data("INVENTORY")
 
-    if result.is_success:
+    if result.success:
         logger.info("Successfully processed WMS data", count=len(result.data))
     return result
 ```
@@ -1175,7 +1175,7 @@ class TestInventoryItem:
 
         result = inventory_item.adjust_quantity(adjustment)
 
-        assert result.is_success
+        assert result.success
         assert inventory_item.quantity.value == 150
         assert len(inventory_item.domain_events) == 1
         assert inventory_item.domain_events[0].type == "InventoryAdjusted"
@@ -1203,7 +1203,7 @@ class TestInventoryItem:
 
         result = inventory_item.reserve_quantity(reservation)
 
-        assert result.is_success
+        assert result.success
         assert inventory_item.reserved_quantity.value == 30
         assert inventory_item.available_quantity.value == 70
         assert len(inventory_item.domain_events) == 1
@@ -1275,7 +1275,7 @@ class TestOracleWmsApiClient:
             date_to=datetime(2025, 1, 4)
         )
 
-        assert result.is_success
+        assert result.success
         assert len(result.data) == 1
         assert result.data[0]["ItemNumber"] == "ITEM-001"
 
@@ -1324,7 +1324,7 @@ class TestOracleWmsApiClient:
         client = OracleWmsApiClient(config)
         result = await client.discover_entities()
 
-        assert result.is_success
+        assert result.success
         assert len(result.data) > 0
         # Verify we get expected Oracle WMS entities
         entity_names = [entity["name"] for entity in result.data]
@@ -1358,7 +1358,7 @@ class TestOracleWmsWorkflows:
 
         # Step 1: Discover entities
         entities_result = await test_client.discover_entities()
-        assert entities_result.is_success
+        assert entities_result.success
 
         inventory_entities = [
             entity for entity in entities_result.data
@@ -1373,7 +1373,7 @@ class TestOracleWmsWorkflows:
                 filters={"OrganizationCode": "TEST"}
             )
 
-            if data_result.is_success:
+            if data_result.success:
                 assert isinstance(data_result.data, list)
                 # Verify Oracle WMS data structure
                 if data_result.data:
@@ -1391,7 +1391,7 @@ class TestOracleWmsWorkflows:
             organization_code="TEST"
         )
 
-        assert catalog_result.is_success
+        assert catalog_result.success
         catalog = catalog_result.data
 
         # Verify Singer catalog structure

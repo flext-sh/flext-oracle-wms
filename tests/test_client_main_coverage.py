@@ -39,21 +39,21 @@ class TestFlextOracleWmsPlugin:
         """Test plugin start functionality without client."""
         plugin = FlextOracleWmsPlugin()
         result = await plugin.start()
-        assert result.is_success
+        assert result.success
 
     @pytest.mark.asyncio
     async def test_plugin_stop_without_client(self) -> None:
         """Test plugin stop functionality without client."""
         plugin = FlextOracleWmsPlugin()
         result = await plugin.stop()
-        assert result.is_success
+        assert result.success
 
     @pytest.mark.asyncio
     async def test_plugin_execute_without_client(self) -> None:
         """Test plugin execute fails without client."""
         plugin = FlextOracleWmsPlugin()
         result = await plugin.execute("discover_entities")
-        assert not result.is_success
+        assert not result.success
         assert "not initialized" in result.error
 
 
@@ -98,7 +98,7 @@ class TestFlextOracleWmsClient:
         client = FlextOracleWmsClient(config)
 
         result = await client.stop()
-        assert result.is_success
+        assert result.success
 
     @pytest.mark.asyncio
     async def test_discover_entities_not_started(self) -> None:
@@ -113,7 +113,7 @@ class TestFlextOracleWmsClient:
 
         result = await client.discover_entities()
         # Client should succeed with fallback entities when API call fails
-        assert result.is_success
+        assert result.success
         assert isinstance(result.data, list)
         assert len(result.data) > 0
         # Should contain known fallback entities
@@ -132,7 +132,7 @@ class TestFlextOracleWmsClient:
         client = FlextOracleWmsClient(config)
 
         result = await client.get_entity_data("test_entity")
-        assert not result.is_success
+        assert not result.success
 
     @pytest.mark.asyncio
     async def test_health_check_not_started(self) -> None:
@@ -146,7 +146,7 @@ class TestFlextOracleWmsClient:
         client = FlextOracleWmsClient(config)
 
         result = await client.health_check()
-        assert result.is_success  # Health check succeeds but reports unhealthy status
+        assert result.success  # Health check succeeds but reports unhealthy status
         assert result.data["status"] == "unhealthy"
         assert "Client not initialized" in result.data.get("error", "")
 
@@ -193,7 +193,7 @@ class TestFlextOracleWmsClient:
         client = FlextOracleWmsClient(config)
 
         result = await client.call_api("non_existent_api")
-        assert not result.is_success
+        assert not result.success
 
     @pytest.mark.asyncio
     async def test_call_api_unknown_api(self) -> None:
@@ -207,7 +207,7 @@ class TestFlextOracleWmsClient:
         client = FlextOracleWmsClient(config)
 
         result = await client.call_api("non_existent_api")
-        assert not result.is_success
+        assert not result.success
         assert "Unknown API" in result.error
 
 

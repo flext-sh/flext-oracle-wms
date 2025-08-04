@@ -33,11 +33,11 @@ Example:
     >>> config = FlextOracleWmsClientConfig(
     ...     base_url="https://your-wms.oraclecloud.com",
     ...     username="api_user",
-    ...     password="secure_password"
+    ...     password="secure_password",
     ... )
     >>> client = FlextOracleWmsClient(config)
     >>> result = await client.discover_entities()
-    >>> if result.is_success:
+    >>> if result.success:
     ...     entities = result.data
     ...     print(f"Found {len(entities)} WMS entities")
 
@@ -181,7 +181,7 @@ class FlextOracleWmsPlugin(FlextPlugin):
         ),
     ) -> FlextResult[object]:
         """Handle operation result with consistent error handling."""
-        if result.is_success:
+        if result.success:
             return FlextResult.ok(result.data)
         return FlextResult.fail(result.error or "Unknown error")
 
@@ -214,12 +214,12 @@ class FlextOracleWmsClient:
         >>> config = FlextOracleWmsClientConfig(
         ...     base_url="https://your-wms.oraclecloud.com",
         ...     username="wms_user",
-        ...     password="secure_password"
+        ...     password="secure_password",
         ... )
         >>> client = FlextOracleWmsClient(config)
         >>> await client.start()
         >>> result = await client.discover_entities()
-        >>> if result.is_success:
+        >>> if result.success:
         ...     print(f"Discovered {len(result.data)} WMS entities")
 
     """
@@ -279,7 +279,7 @@ class FlextOracleWmsClient:
 
             # Start the client
             start_result = await self._client.start()
-            if not start_result.is_success:
+            if not start_result.success:
                 error_msg = (
                     f"{FlextOracleWmsErrorMessages.CONNECTION_FAILED}: "
                     f"{start_result.error}"
@@ -291,7 +291,7 @@ class FlextOracleWmsClient:
 
             # Configure authentication
             auth_result = self._configure_authentication()
-            if not auth_result.is_success:
+            if not auth_result.success:
                 error_msg = (
                     f"{FlextOracleWmsErrorMessages.AUTHENTICATION_FAILED}: "
                     f"{auth_result.error}"
@@ -308,7 +308,7 @@ class FlextOracleWmsClient:
         except FlextOracleWmsConnectionError:
             raise
         except Exception as e:
-            error_msg = f"{FlextOracleWmsErrorMessages.CONNECTION_FAILED}: {e}"
+            error_msg: str = f"{FlextOracleWmsErrorMessages.CONNECTION_FAILED}: {e}"
             logger.exception("Failed to start Oracle WMS client")
             raise FlextOracleWmsConnectionError(error_msg) from e
 
@@ -380,7 +380,7 @@ class FlextOracleWmsClient:
 
             response = await self._call_api_direct("GET", discovery_path)
 
-            if not response.is_success:
+            if not response.success:
                 logger.warning(
                     "Entity discovery failed, using fallback",
                     error=response.error,
@@ -495,7 +495,7 @@ class FlextOracleWmsClient:
 
         # Chain of Responsibility: validate -> prepare -> execute
         validation_result = self._validate_api_request(request_data)
-        if not validation_result.is_success:
+        if not validation_result.success:
             return FlextResult.fail(validation_result.error or "Validation failed")
 
         prepared_call = validation_result.data
@@ -526,12 +526,12 @@ class FlextOracleWmsClient:
 
         # Step 2: Validate and prepare path parameters
         path_result = self._prepare_api_path(endpoint, request)
-        if not path_result.is_success:
+        if not path_result.success:
             return FlextResult.fail(path_result.error or "Path preparation failed")
 
         # Step 3: Validate and prepare data/params
         data_result = self._prepare_api_data(request)
-        if not data_result.is_success:
+        if not data_result.success:
             return FlextResult.fail(data_result.error or "Data preparation failed")
 
         # Step 4: Create prepared call object
@@ -715,7 +715,7 @@ class FlextOracleWmsClient:
     ) -> FlextResult[FlextApiClientResponse]:
         """Execute HTTP method call with DRY client validation."""
         client_result = self._ensure_client_initialized()
-        if not client_result.is_success:
+        if not client_result.success:
             error_msg = client_result.error or "Client initialization failed"
             return FlextResult.fail(error_msg)
 
@@ -780,7 +780,7 @@ class FlextOracleWmsClient:
         response_result: FlextResult[FlextApiClientResponse],
     ) -> FlextResult[object]:
         """Validate HTTP response - DRY pattern using real flext-api types."""
-        if not response_result.is_success:
+        if not response_result.success:
             return FlextResult.fail(f"HTTP request failed: {response_result.error}")
 
         response = response_result.data
@@ -788,7 +788,7 @@ class FlextOracleWmsClient:
             return FlextResult.fail("No response data received")
 
         if response.status_code >= FlextOracleWmsDefaults.HTTP_BAD_REQUEST:
-            error_msg = f"Oracle WMS API error: {response.status_code}"
+            error_msg: str = f"Oracle WMS API error: {response.status_code}"
             if response.data:
                 error_msg += f" - {response.data}"
             return FlextResult.fail(error_msg)
@@ -805,7 +805,7 @@ class FlextOracleWmsClient:
         """Direct API call using flext-api client - DRY HTTP implementation."""
         # Use DRY client validation
         client_result = self._ensure_client_initialized()
-        if not client_result.is_success:
+        if not client_result.success:
             return FlextResult.fail(
                 client_result.error or "Client initialization failed",
             )
@@ -832,7 +832,7 @@ class FlextOracleWmsClient:
 
             # Validate response
             validation_result = self._validate_response(response_result)
-            if not validation_result.is_success:
+            if not validation_result.success:
                 return FlextResult.fail(validation_result.error or "Validation failed")
 
             # Type cast validation_result.data to dict for return type
@@ -864,7 +864,7 @@ class FlextOracleWmsClient:
         """Get list of all available entities from Oracle WMS - DYNAMIC discovery."""
         # Use DRY approach by delegating to discover_entities
         discover_result = await self.discover_entities()
-        if not discover_result.is_success:
+        if not discover_result.success:
             return FlextResult.fail(discover_result.error or "Discovery failed")
 
         # Type cast to ensure compatibility
@@ -880,7 +880,7 @@ class FlextOracleWmsClient:
             entities_result = await self.discover_entities()
             test_entity = "company"  # Default fallback
 
-            if entities_result.is_success and entities_result.data:
+            if entities_result.success and entities_result.data:
                 test_entity = entities_result.data[0]
 
             # Test with a simple entity query
@@ -888,18 +888,18 @@ class FlextOracleWmsClient:
 
             health_data = {
                 "service": "FlextOracleWmsClient",
-                "status": "healthy" if result.is_success else "unhealthy",
+                "status": "healthy" if result.success else "unhealthy",
                 "base_url": self.config.base_url,
                 "environment": self.config.environment,
                 "api_version": self.config.api_version,
-                "test_call_success": result.is_success,
+                "test_call_success": result.success,
                 "available_apis": len(FLEXT_ORACLE_WMS_APIS),
                 "discovered_entities": len(entities_result.data)
-                if entities_result.is_success and entities_result.data
+                if entities_result.success and entities_result.data
                 else 0,
             }
 
-            if not result.is_success:
+            if not result.success:
                 health_data["error"] = result.error or "Unknown error"
 
             # Convert to proper type for return
@@ -963,7 +963,7 @@ class FlextOracleWmsClientMock(FlextOracleWmsClient):
         mock_server = get_mock_server(self.config.environment)
         response = mock_server.get_mock_response("discover_entities")
 
-        if response.is_success and response.data:
+        if response.success and response.data:
             # Extract entity names from mock response - type-safe conversion
             data = response.data
             if isinstance(data, dict):
@@ -997,7 +997,7 @@ class FlextOracleWmsClientMock(FlextOracleWmsClient):
             limit=limit,
         )
 
-        if response.is_success and response.data is not None:
+        if response.success and response.data is not None:
             logger.info(f"Mock: Retrieved {entity_name} data with {limit} limit")
             # Ensure type safety for FlextResult.ok
             data = response.data if isinstance(response.data, dict) else {}
@@ -1012,7 +1012,7 @@ class FlextOracleWmsClientMock(FlextOracleWmsClient):
         mock_server = get_mock_server(self.config.environment)
         response = mock_server.get_mock_response("health_check")
 
-        if response.is_success and response.data is not None:
+        if response.success and response.data is not None:
             # Ensure type safety for FlextResult.ok
             data = response.data if isinstance(response.data, dict) else {}
             return FlextResult.ok(data)

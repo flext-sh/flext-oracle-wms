@@ -51,7 +51,7 @@ async def test_real_oracle_wms():
         # Test 1: Client Initialization and Authentication
 
         start_result = await real_client.start()
-        if start_result.is_success:
+        if start_result.success:
             test_results["client_start"] = True
         else:
             return test_results
@@ -59,7 +59,7 @@ async def test_real_oracle_wms():
         # Test 2: Entity Discovery from REAL Oracle WMS
 
         entities_result = await real_client.discover_entities()
-        if entities_result.is_success:
+        if entities_result.success:
             entities = entities_result.data
             test_results["entity_discovery"] = True
             discovered_entities = entities
@@ -78,7 +78,7 @@ async def test_real_oracle_wms():
                 fields="id,create_ts,mod_ts",  # Basic fields
             )
 
-            if data_result.is_success:
+            if data_result.success:
                 data = data_result.data
                 if isinstance(data, dict):
                     data.get("count", 0)
@@ -97,7 +97,7 @@ async def test_real_oracle_wms():
         # Test 4: Health Check with Real Connection
 
         health_result = await real_client.health_check()
-        if health_result.is_success:
+        if health_result.success:
             health_data = health_result.data
             if isinstance(health_data, dict):
                 health_data.get("status", "unknown")

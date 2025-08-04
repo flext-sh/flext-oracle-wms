@@ -57,7 +57,7 @@ class OracleWmsCompleteDiscovery:
     async def start_discovery(self) -> FlextResult[None]:
         """Start complete discovery process."""
         start_result = await self.client.start()
-        if not start_result.is_success:
+        if not start_result.success:
             return FlextResult.fail(f"Client start failed: {start_result.error}")
 
         return FlextResult.ok(None)
@@ -98,7 +98,7 @@ class OracleWmsCompleteDiscovery:
                     "tested_at": datetime.now(UTC).isoformat(),
                 }
 
-                if result.is_success and result.data:
+                if result.success and result.data:
                     self._summarize_api_response(result.data)
 
             except Exception as e:
@@ -108,7 +108,7 @@ class OracleWmsCompleteDiscovery:
                     "tested_at": datetime.now(UTC).isoformat(),
                 }
 
-        sum(1 for r in api_results.values() if r["result"].is_success)
+        sum(1 for r in api_results.values() if r["result"].success)
 
         return FlextResult.ok(api_results)
 
@@ -123,7 +123,7 @@ class OracleWmsCompleteDiscovery:
                 # Need entity name - use first discovered entity
                 if not self.discovered_entities:
                     entities_result = await self.client.discover_entities()
-                    if entities_result.is_success:
+                    if entities_result.success:
                         self.discovered_entities = entities_result.data
 
                 if self.discovered_entities:
@@ -162,7 +162,7 @@ class OracleWmsCompleteDiscovery:
                 # Need entity name
                 if not self.discovered_entities:
                     entities_result = await self.client.discover_entities()
-                    if entities_result.is_success:
+                    if entities_result.success:
                         self.discovered_entities = entities_result.data
 
                 if self.discovered_entities:
@@ -208,13 +208,13 @@ class OracleWmsCompleteDiscovery:
             # First find entities with data
             if not self.discovered_entities:
                 entities_result = await self.client.discover_entities()
-                if entities_result.is_success:
+                if entities_result.success:
                     self.discovered_entities = entities_result.data
 
             # Try to find an entity with actual records
             for entity_name in self.discovered_entities[:10]:  # Test first 10
                 list_result = await self.client.get_entity_data(entity_name, limit=1)
-                if list_result.is_success:
+                if list_result.success:
                     data = list_result.data
                     if isinstance(data, dict) and data.get("results"):
                         results = data["results"]
@@ -271,7 +271,7 @@ class OracleWmsCompleteDiscovery:
         try:
             # Get entity data to find valid ID
             list_result = await self.client.get_entity_data(entity_name, limit=1)
-            if list_result.is_success:
+            if list_result.success:
                 data = list_result.data
                 if isinstance(data, dict) and data.get("results"):
                     results = data["results"]
@@ -315,7 +315,7 @@ class OracleWmsCompleteDiscovery:
         """Discover complete metadata for all entities using Oracle WMS APIs."""
         if not self.discovered_entities:
             entities_result = await self.client.discover_entities()
-            if entities_result.is_success:
+            if entities_result.success:
                 self.discovered_entities = entities_result.data
             else:
                 return FlextResult.fail("Entity discovery failed")
@@ -340,7 +340,7 @@ class OracleWmsCompleteDiscovery:
                     offset=0,
                 )
 
-                if entity_result.is_success:
+                if entity_result.success:
                     data = entity_result.data
                     if isinstance(data, dict):
                         count = data.get("count", 0)
@@ -631,27 +631,27 @@ async def run_complete_discovery() -> None:
     try:
         # Phase 1: Start discovery
         start_result = await discovery.start_discovery()
-        if not start_result.is_success:
+        if not start_result.success:
             return
 
         # Phase 2: Test all APIs
         api_result = await discovery.discover_all_apis()
-        if not api_result.is_success:
+        if not api_result.success:
             return
 
         # Phase 3: Complete entity metadata discovery
         metadata_result = await discovery.discover_complete_entity_metadata()
-        if not metadata_result.is_success:
+        if not metadata_result.success:
             return
 
         # Phase 4: Generate Singer schemas with flattening
         schema_result = await discovery.generate_singer_schemas_with_flattening()
-        if not schema_result.is_success:
+        if not schema_result.success:
             return
 
         # Phase 5: Save results
         save_result = await discovery.save_complete_discovery_results()
-        if not save_result.is_success:
+        if not save_result.success:
             return
 
         metadata_data = metadata_result.data

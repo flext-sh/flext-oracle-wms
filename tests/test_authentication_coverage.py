@@ -53,7 +53,7 @@ class TestFlextOracleWmsAuthConfig:
             password="test_pass",
         )
         result = config.validate_domain_rules()
-        assert not result.is_success
+        assert not result.success
         assert "Username and password required" in result.error
 
     def test_validation_basic_auth_missing_password(self) -> None:
@@ -64,7 +64,7 @@ class TestFlextOracleWmsAuthConfig:
             password="",
         )
         result = config.validate_domain_rules()
-        assert not result.is_success
+        assert not result.success
         assert "Username and password required" in result.error
 
     def test_validation_bearer_auth_missing_token(self) -> None:
@@ -74,7 +74,7 @@ class TestFlextOracleWmsAuthConfig:
             token="",
         )
         result = config.validate_domain_rules()
-        assert not result.is_success
+        assert not result.success
         assert "Token required" in result.error
 
     def test_validation_api_key_missing(self) -> None:
@@ -84,7 +84,7 @@ class TestFlextOracleWmsAuthConfig:
             api_key="",
         )
         result = config.validate_domain_rules()
-        assert not result.is_success
+        assert not result.success
         assert "API key required" in result.error
 
     def test_validation_success(self) -> None:
@@ -95,7 +95,7 @@ class TestFlextOracleWmsAuthConfig:
             password="test_pass",
         )
         result = config.validate_domain_rules()
-        assert result.is_success
+        assert result.success
 
 
 class TestFlextOracleWmsAuthenticator:
@@ -132,7 +132,7 @@ class TestFlextOracleWmsAuthenticator:
         authenticator = FlextOracleWmsAuthenticator(config)
 
         result = await authenticator.get_auth_headers()
-        assert result.is_success
+        assert result.success
         headers = result.data
         assert "Authorization" in headers
         assert headers["Authorization"].startswith("Basic ")
@@ -149,7 +149,7 @@ class TestFlextOracleWmsAuthenticator:
         authenticator = FlextOracleWmsAuthenticator(config)
 
         result = await authenticator.get_auth_headers()
-        assert result.is_success
+        assert result.success
         headers = result.data
         assert headers["Authorization"] == "Bearer test_token"
 
@@ -163,7 +163,7 @@ class TestFlextOracleWmsAuthenticator:
         authenticator = FlextOracleWmsAuthenticator(config)
 
         result = await authenticator.get_auth_headers()
-        assert result.is_success
+        assert result.success
         headers = result.data
         assert headers["X-API-Key"] == "test_api_key"
 
@@ -178,7 +178,7 @@ class TestFlextOracleWmsAuthenticator:
         authenticator = FlextOracleWmsAuthenticator(config)
 
         result = await authenticator.validate_credentials()
-        assert result.is_success
+        assert result.success
         assert result.data is True
 
     @pytest.mark.asyncio
@@ -191,7 +191,7 @@ class TestFlextOracleWmsAuthenticator:
         authenticator = FlextOracleWmsAuthenticator(config)
 
         result = await authenticator.validate_credentials()
-        assert result.is_success
+        assert result.success
         assert result.data is True
 
     @pytest.mark.asyncio
@@ -204,7 +204,7 @@ class TestFlextOracleWmsAuthenticator:
         authenticator = FlextOracleWmsAuthenticator(config)
 
         result = await authenticator.validate_credentials()
-        assert not result.is_success
+        assert not result.success
         assert "Invalid bearer token" in result.error
 
     @pytest.mark.asyncio
@@ -217,7 +217,7 @@ class TestFlextOracleWmsAuthenticator:
         authenticator = FlextOracleWmsAuthenticator(config)
 
         result = await authenticator.validate_credentials()
-        assert result.is_success
+        assert result.success
         assert result.data is True
 
     @pytest.mark.asyncio
@@ -230,7 +230,7 @@ class TestFlextOracleWmsAuthenticator:
         authenticator = FlextOracleWmsAuthenticator(config)
 
         result = await authenticator.validate_credentials()
-        assert not result.is_success
+        assert not result.success
         assert "Invalid API key" in result.error
 
 

@@ -39,7 +39,7 @@ class TestFlextOracleWmsDynamicSchemaProcessor:
         ]
 
         result = await processor.discover_entity_schema("order_hdr", records)
-        assert result.is_success
+        assert result.success
 
     @pytest.mark.asyncio
     async def test_discover_entity_schema_complex(self) -> None:
@@ -63,7 +63,7 @@ class TestFlextOracleWmsDynamicSchemaProcessor:
 
         result = await processor.discover_entity_schema("order_hdr", records)
         # May succeed or fail depending on implementation complexity
-        assert result.is_success or result.is_failure
+        assert result.success or result.is_failure
 
     @pytest.mark.asyncio
     async def test_discover_entity_schema_empty_records(self) -> None:
@@ -88,7 +88,7 @@ class TestFlextOracleWmsDynamicSchemaProcessor:
         }
 
         result = await processor.process_entity_records("test_entity", records, schema)
-        assert result.is_success or result.is_failure  # Depends on implementation
+        assert result.success or result.is_failure  # Depends on implementation
 
     def test_private_methods_field_type_inference(self) -> None:
         """Test private methods for field type inference."""
@@ -200,7 +200,7 @@ class TestEdgeCases:
 
         result = await processor.discover_entity_schema("", records)
         # Implementation allows empty entity name, so test that it succeeds
-        assert result.is_success
+        assert result.success
 
     @pytest.mark.asyncio
     async def test_process_records_invalid_schema(self) -> None:
@@ -210,7 +210,7 @@ class TestEdgeCases:
 
         # Empty schema
         result = await processor.process_entity_records("test", records, {})
-        assert result.is_failure or result.is_success  # Depends on implementation
+        assert result.is_failure or result.success  # Depends on implementation
 
     def test_type_inference_edge_cases(self) -> None:
         """Test type inference with edge cases."""

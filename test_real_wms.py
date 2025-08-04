@@ -39,21 +39,21 @@ async def test_real_oracle_wms() -> bool | None:
         client = FlextOracleWmsClient(config)
 
         start_result = await client.start()
-        if not start_result.is_success:
+        if not start_result.success:
             return False
 
         # Test 1: Entity Discovery
         entities_result = await client.discover_entities()
-        if entities_result.is_success:
+        if entities_result.success:
             pass
 
         # Test 2: Health Check
         health_result = await client.health_check()
-        if health_result.is_success:
+        if health_result.success:
             pass
 
         # Test 3: Get Entity Data (try company first)
-        if entities_result.is_success and entities_result.data:
+        if entities_result.success and entities_result.data:
             test_entity = (
                 "company"
                 if "company" in entities_result.data
@@ -65,13 +65,13 @@ async def test_real_oracle_wms() -> bool | None:
                 limit=5,
             )
 
-            if entity_data_result.is_success:
+            if entity_data_result.success:
                 data = entity_data_result.data
                 if isinstance(data, dict):
                     pass
 
         # Test 4: Test Specific Entity by ID (if we have data)
-        if entities_result.is_success and entities_result.data:
+        if entities_result.success and entities_result.data:
             # Try to get a specific record by ID for the first entity
             test_entity = entities_result.data[0]
 
@@ -82,7 +82,7 @@ async def test_real_oracle_wms() -> bool | None:
                     entity_id="1",
                 )
 
-                if entity_by_id_result.is_success:
+                if entity_by_id_result.success:
                     data = entity_by_id_result.data
             except Exception:
                 pass
@@ -100,7 +100,7 @@ async def test_real_oracle_wms() -> bool | None:
 
         # Cleanup
         stop_result = await client.stop()
-        if stop_result.is_success:
+        if stop_result.success:
             pass
 
         return True

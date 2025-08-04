@@ -72,7 +72,7 @@ class TestAuthenticationSimple:
         authenticator = FlextOracleWmsAuthenticator(config)
 
         result = await authenticator.get_auth_headers()
-        assert result.is_success
+        assert result.success
         headers = result.data
         assert "Authorization" in headers
         assert headers["Authorization"].startswith("Basic ")
@@ -87,7 +87,7 @@ class TestAuthenticationSimple:
         authenticator = FlextOracleWmsAuthenticator(config)
 
         result = await authenticator.get_auth_headers()
-        assert result.is_success
+        assert result.success
         headers = result.data
         assert headers["Authorization"] == "Bearer test_token"
 
@@ -100,7 +100,7 @@ class TestAuthenticationSimple:
         authenticator = FlextOracleWmsAuthenticator(config)
 
         result = await authenticator.get_auth_headers()
-        assert result.is_success
+        assert result.success
         headers = result.data
         assert headers["X-API-Key"] == "test_api_key"
 
@@ -112,7 +112,7 @@ class TestAuthenticationSimple:
             password="testpass",
         )
         result = config.validate_domain_rules()
-        assert result.is_success
+        assert result.success
 
     def test_config_validation_success_bearer(self) -> None:
         """Test config validation succeeds for valid bearer auth."""
@@ -120,7 +120,7 @@ class TestAuthenticationSimple:
             auth_type=OracleWMSAuthMethod.BEARER, token="valid_token"
         )
         result = config.validate_domain_rules()
-        assert result.is_success
+        assert result.success
 
     def test_config_validation_success_api_key(self) -> None:
         """Test config validation succeeds for valid API key auth."""
@@ -128,4 +128,4 @@ class TestAuthenticationSimple:
             auth_type=OracleWMSAuthMethod.API_KEY, api_key="valid_api_key"
         )
         result = config.validate_domain_rules()
-        assert result.is_success
+        assert result.success

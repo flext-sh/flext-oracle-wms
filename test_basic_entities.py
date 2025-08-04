@@ -50,7 +50,7 @@ async def test_basic_entities() -> None:
 
         # Get all entities and find basic ones
         entities_result = await real_client.discover_entities()
-        if entities_result.is_success:
+        if entities_result.success:
             all_entities = entities_result.data
             available_basic = [e for e in basic_entities if e in all_entities]
         else:
@@ -63,7 +63,7 @@ async def test_basic_entities() -> None:
                 # Test simple extraction without field filters
                 data_result = await real_client.get_entity_data(entity_name, limit=2)
 
-                if data_result.is_success:
+                if data_result.success:
                     data = data_result.data
                     if isinstance(data, dict):
                         count = data.get("count", 0)
@@ -121,14 +121,14 @@ async def test_basic_entities() -> None:
                 try:
                     # Test with larger limit
                     advanced_result = await real_client.start()
-                    if advanced_result.is_success:
+                    if advanced_result.success:
                         big_data_result = await real_client.get_entity_data(
                             entity_name,
                             limit=10,
                             offset=0,
                         )
 
-                        if big_data_result.is_success:
+                        if big_data_result.success:
                             big_data = big_data_result.data
                             if isinstance(big_data, dict):
                                 big_data.get("count", 0)

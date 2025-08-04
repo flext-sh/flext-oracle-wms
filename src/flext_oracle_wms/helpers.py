@@ -54,7 +54,7 @@ def validate_records_list(records: object, field_name: str = "records") -> None:
 
     """
     if not isinstance(records, list):
-        msg = f"{field_name.capitalize()} must be a list"
+        msg: str = f"{field_name.capitalize()} must be a list"
         raise FlextOracleWmsDataValidationError(msg)
 
 
@@ -70,7 +70,7 @@ def validate_dict_parameter(param: object, field_name: str) -> None:
 
     """
     if not isinstance(param, dict):
-        msg = f"{field_name.capitalize()} must be a dictionary"
+        msg: str = f"{field_name.capitalize()} must be a dictionary"
         raise FlextOracleWmsDataValidationError(msg)
 
 
@@ -92,11 +92,11 @@ def validate_string_parameter(
 
     """
     if not isinstance(param, str):
-        msg = f"{field_name.capitalize()} must be a string"
+        msg: str = f"{field_name.capitalize()} must be a string"
         raise FlextOracleWmsDataValidationError(msg)
 
     if not allow_empty and not param.strip():
-        msg = f"{field_name.capitalize()} must be a non-empty string"
+        msg: str = f"{field_name.capitalize()} must be a non-empty string"
         raise FlextOracleWmsDataValidationError(msg)
 
 
@@ -130,7 +130,7 @@ def handle_operation_exception(
     )
 
     # Create formatted error message
-    msg = f"{FlextOracleWmsErrorMessages.PROCESSING_FAILED}: {exception}"
+    msg: str = f"{FlextOracleWmsErrorMessages.PROCESSING_FAILED}: {exception}"
 
     # Re-raise as FlextOracleWmsError
     raise FlextOracleWmsError(msg) from exception
@@ -160,7 +160,7 @@ def flext_oracle_wms_normalize_url(base_url: str, path: str) -> str:
         path = path.lstrip("/")
         return urljoin(base_url, path)
     except Exception as e:
-        msg = f"Failed to normalize URL: {e}"
+        msg: str = f"Failed to normalize URL: {e}"
         raise FlextOracleWmsError(msg) from e
 
 
@@ -224,7 +224,7 @@ def flext_oracle_wms_build_entity_url(
         path = f"/{environment}/wms/lgfapi/{api_version}/entity/{entity_name}/"
         return flext_oracle_wms_normalize_url(base_url, path)
     except Exception as e:
-        msg = f"Failed to build entity URL: {e}"
+        msg: str = f"Failed to build entity URL: {e}"
         raise FlextOracleWmsError(msg) from e
 
 
@@ -326,7 +326,7 @@ def flext_oracle_wms_extract_pagination_info(
             ),
         }
     except Exception as e:
-        msg = f"Failed to extract pagination info: {e}"
+        msg: str = f"Failed to extract pagination info: {e}"
         raise FlextOracleWmsError(msg) from e
 
 
@@ -380,7 +380,7 @@ def flext_oracle_wms_chunk_records(
         raise FlextOracleWmsError(msg)
 
     if chunk_size > FlextOracleWmsDefaults.MAX_PAGE_SIZE:
-        msg = f"Chunk size cannot exceed {FlextOracleWmsDefaults.MAX_PAGE_SIZE}"
+        msg: str = f"Chunk size cannot exceed {FlextOracleWmsDefaults.MAX_PAGE_SIZE}"
         raise FlextOracleWmsError(msg)
 
     try:
@@ -390,5 +390,5 @@ def flext_oracle_wms_chunk_records(
             chunks.append(chunk)
         return chunks
     except Exception as e:
-        msg = f"Failed to chunk records: {e}"
+        msg: str = f"Failed to chunk records: {e}"
         raise FlextOracleWmsError(msg) from e

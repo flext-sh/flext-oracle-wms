@@ -112,9 +112,7 @@ class UltraFastDiscovery:
                     "duration_seconds": duration,
                     "entities_with_data": len(self.entities_with_data),
                     "schemas_generated": len(self.singer_schemas),
-                    "results_path": results_path.data
-                    if results_path.is_success
-                    else None,
+                    "results_path": results_path.data if results_path.success else None,
                 },
             )
 
@@ -148,7 +146,7 @@ class UltraFastDiscovery:
         try:
             result = await self.client.get_entity_data(entity_name, limit=1)
 
-            if result.is_success:
+            if result.success:
                 data = result.data
                 if isinstance(data, dict):
                     count = data.get("count", 0)
@@ -160,7 +158,7 @@ class UltraFastDiscovery:
                             entity_name,
                             limit=2,
                         )
-                        if detail_result.is_success:
+                        if detail_result.success:
                             detail_data = detail_result.data
                             if isinstance(detail_data, dict):
                                 detail_results = detail_data.get("results", [])
@@ -215,7 +213,7 @@ class UltraFastDiscovery:
         for entity_name in self.critical_entities[:5]:
             try:
                 result = await self.client.get_entity_data(entity_name, limit=1)
-                if result.is_success:
+                if result.success:
                     data = result.data
                     if isinstance(data, dict):
                         results = data.get("results", [])
@@ -433,7 +431,7 @@ async def main() -> None:
     discovery = UltraFastDiscovery()
     result = await discovery.ultra_fast_run()
 
-    if result.is_success:
+    if result.success:
         pass
 
 

@@ -82,7 +82,7 @@ async def main() -> None:
         # Start the client
         print("🔧 Starting Oracle WMS client...")
         start_result = await client.start()
-        if not start_result.is_success:
+        if not start_result.success:
             print(f"❌ Failed to start client: {start_result.error}")
             return
         print("✅ Client started successfully")
@@ -105,7 +105,7 @@ async def main() -> None:
         # Health check
         print("\n🏥 Health Check...")
         health_result = await client.health_check()
-        if health_result.is_success:
+        if health_result.success:
             health_data = health_result.data
             print(
                 f"✅ Service: {health_data['service']} - Status: {health_data['status']}"
@@ -116,7 +116,7 @@ async def main() -> None:
         # Get available entities
         print("\n📋 Available Entities...")
         entities_result = await client.get_all_entities()
-        if entities_result.is_success:
+        if entities_result.success:
             entities = entities_result.data
             print(f"✅ Found {len(entities)} entities: {', '.join(entities[:5])}...")
         else:
@@ -128,7 +128,7 @@ async def main() -> None:
             print(f"  🔍 Testing {entity}...")
             result = await client.get_entity_data(entity, limit=3)
 
-            if result.is_success:
+            if result.success:
                 data = result.data
                 count = data.get("count", len(data.get("results", [])))
                 print(f"    ✅ {entity}: {count} records available")
@@ -141,7 +141,7 @@ async def main() -> None:
         # Test entity status
         status_result = await client.get_entity_status(entity="company", key="test")
         print(
-            f"  📊 Entity Status: {'✅ OK' if status_result.is_success else '⚠️ Expected failure'}"
+            f"  📊 Entity Status: {'✅ OK' if status_result.success else '⚠️ Expected failure'}"
         )
 
         # Test OBLPN tracking (will fail, but tests structure)
@@ -152,13 +152,13 @@ async def main() -> None:
             tracking_nbr="TRACK123",
         )
         print(
-            f"  📦 OBLPN Tracking: {'✅ OK' if tracking_result.is_success else '⚠️ Expected failure'}"
+            f"  📦 OBLPN Tracking: {'✅ OK' if tracking_result.success else '⚠️ Expected failure'}"
         )
 
         # Test LPN creation (will fail, but tests structure)
         lpn_result = await client.create_lpn(lpn_nbr="TEST_LPN", qty=10)
         print(
-            f"  📋 LPN Creation: {'✅ OK' if lpn_result.is_success else '⚠️ Expected failure'}"
+            f"  📋 LPN Creation: {'✅ OK' if lpn_result.success else '⚠️ Expected failure'}"
         )
 
         print("\n🎉 Declarative Oracle WMS Client Demo Complete!")

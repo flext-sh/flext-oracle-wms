@@ -90,7 +90,7 @@ class OptimizedOracleWmsDiscovery:
     async def start_discovery(self) -> FlextResult[None]:
         """Start optimized discovery."""
         start_result = await self.client.start()
-        if not start_result.is_success:
+        if not start_result.success:
             return FlextResult.fail(f"Client start failed: {start_result.error}")
 
         return FlextResult.ok(None)
@@ -99,7 +99,7 @@ class OptimizedOracleWmsDiscovery:
         """Fast discovery of priority entities with data."""
         # Get all entities first
         entities_result = await self.client.discover_entities()
-        if not entities_result.is_success:
+        if not entities_result.success:
             return FlextResult.fail(f"Entity discovery failed: {entities_result.error}")
 
         all_entities = entities_result.data
@@ -217,7 +217,7 @@ class OptimizedOracleWmsDiscovery:
                 offset=0,
             )
 
-            if data_result.is_success:
+            if data_result.success:
                 data = data_result.data
                 if isinstance(data, dict):
                     count = data.get("count", 0)
@@ -638,22 +638,22 @@ async def run_optimized_discovery() -> None:
     try:
         # Start discovery
         start_result = await discovery.start_discovery()
-        if not start_result.is_success:
+        if not start_result.success:
             return
 
         # Discover priority entities with data
         entities_result = await discovery.discover_priority_entities_fast()
-        if not entities_result.is_success:
+        if not entities_result.success:
             return
 
         # Generate Singer schemas
         schemas_result = await discovery.generate_complete_singer_schemas()
-        if not schemas_result.is_success:
+        if not schemas_result.success:
             return
 
         # Save results
         save_result = await discovery.save_optimized_results()
-        if not save_result.is_success:
+        if not save_result.success:
             return
 
         # Final results

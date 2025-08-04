@@ -23,9 +23,9 @@ class TestFlextOracleWmsClientCore:
 
         assert client.config == mock_config
         assert client.config.base_url == mock_config.base_url
-        assert hasattr(client, '_client')
+        assert hasattr(client, "_client")
         assert client._client is None  # Should be None before start()
-        assert hasattr(client, '_discovered_entities')
+        assert hasattr(client, "_discovered_entities")
 
     def test_client_string_representation(self, mock_config) -> None:
         """Test client string representation."""
@@ -59,7 +59,7 @@ class TestFlextOracleWmsClientCore:
             client = FlextOracleWmsClient(mock_config)
             result = await client.start()
 
-            assert result.is_success
+            assert result.success
             assert client._client is not None  # Client should be set after start
             mock_api_client.start.assert_called_once()
 
@@ -70,9 +70,7 @@ class TestFlextOracleWmsClientCore:
 
         with patch("flext_oracle_wms.client.FlextApiClient") as mock_api_client_class:
             mock_api_client = AsyncMock()
-            mock_api_client.start.return_value = FlextResult.fail(
-                "Connection failed"
-            )
+            mock_api_client.start.return_value = FlextResult.fail("Connection failed")
             mock_api_client_class.return_value = mock_api_client
 
             client = FlextOracleWmsClient(mock_config)
@@ -95,11 +93,11 @@ class TestFlextOracleWmsClientCore:
 
             # Start first time
             result1 = await client.start()
-            assert result1.is_success
+            assert result1.success
 
             # Start second time - current implementation allows multiple starts
             result2 = await client.start()
-            assert result2.is_success
+            assert result2.success
 
             # Current implementation calls start each time (no deduplication)
             assert mock_api_client.start.call_count == 2
@@ -110,7 +108,9 @@ class TestFlextOracleWmsClientCore:
         with patch("flext_oracle_wms.client.FlextApiClient") as mock_api_client_class:
             mock_api_client = AsyncMock()
             mock_api_client.start.return_value = FlextResult.ok(None)
-            mock_api_client.close.return_value = None  # close() returns None, not FlextResult
+            mock_api_client.close.return_value = (
+                None  # close() returns None, not FlextResult
+            )
             mock_api_client_class.return_value = mock_api_client
 
             client = FlextOracleWmsClient(mock_config)
@@ -119,7 +119,7 @@ class TestFlextOracleWmsClientCore:
             await client.start()
             result = await client.stop()
 
-            assert result.is_success
+            assert result.success
             mock_api_client.close.assert_called_once()  # stop() calls close(), not stop()
 
     @pytest.mark.asyncio
@@ -128,18 +128,18 @@ class TestFlextOracleWmsClientCore:
         client = FlextOracleWmsClient(mock_config)
         result = await client.stop()
 
-        assert result.is_success  # Should succeed even if not started
+        assert result.success  # Should succeed even if not started
 
     def test_client_has_expected_methods(self, mock_config) -> None:
         """Test client has expected methods."""
         client = FlextOracleWmsClient(mock_config)
 
         # Verify client has key methods
-        assert hasattr(client, 'start')
-        assert hasattr(client, 'stop')
-        assert hasattr(client, 'discover_entities')
-        assert hasattr(client, 'get_entity_data')
-        assert hasattr(client, 'health_check')
+        assert hasattr(client, "start")
+        assert hasattr(client, "stop")
+        assert hasattr(client, "discover_entities")
+        assert hasattr(client, "get_entity_data")
+        assert hasattr(client, "health_check")
         assert callable(client.start)
         assert callable(client.stop)
 
@@ -179,7 +179,7 @@ class TestFlextOracleWmsClientCore:
         result = await client.health_check()
 
         # Health check returns success but with unhealthy status
-        assert result.is_success
+        assert result.success
         assert isinstance(result.data, dict)
         health_data = result.data
         assert health_data.get("status") == "unhealthy"
@@ -192,7 +192,10 @@ class TestFlextOracleWmsClientCore:
             # Create a mock response object that simulates FlextApiClientResponse
             mock_response = AsyncMock()
             mock_response.status_code = 200
-            mock_response.data = {"status": "healthy", "timestamp": "2025-01-01T00:00:00Z"}
+            mock_response.data = {
+                "status": "healthy",
+                "timestamp": "2025-01-01T00:00:00Z",
+            }
 
             mock_api_client = AsyncMock()
             mock_api_client.start.return_value = FlextResult.ok(None)
@@ -203,7 +206,7 @@ class TestFlextOracleWmsClientCore:
             await client.start()
 
             result = await client.health_check()
-            assert result.is_success
+            assert result.success
             # Health check calls discover_entities AND get_entity_data, so expect 2 calls
             assert mock_api_client.get.call_count >= 1
 
@@ -214,18 +217,23 @@ class TestFlextOracleWmsClientCore:
         result = await client.discover_entities()
 
         # Should use fallback entity list when not started
-        assert result.is_success
+        assert result.success
         assert isinstance(result.data, list)
         assert len(result.data) > 0
 
     @pytest.mark.asyncio
-    async def test_discover_entities_success(self, mock_config, sample_entities) -> None:
+    async def test_discover_entities_success(
+        self, mock_config, sample_entities
+    ) -> None:
         """Test successful entity discovery."""
         with patch("flext_oracle_wms.client.FlextApiClient") as mock_api_client_class:
             # Create a mock response object that simulates FlextApiClientResponse
             mock_response = AsyncMock()
             mock_response.status_code = 200
-            mock_response.data = {"entities": sample_entities, "count": len(sample_entities)}
+            mock_response.data = {
+                "entities": sample_entities,
+                "count": len(sample_entities),
+            }
 
             mock_api_client = AsyncMock()
             mock_api_client.start.return_value = FlextResult.ok(None)
@@ -236,7 +244,7 @@ class TestFlextOracleWmsClientCore:
             await client.start()
 
             result = await client.discover_entities()
-            assert result.is_success
+            assert result.success
             assert isinstance(result.data, list)
             assert len(result.data) == len(sample_entities)
 
@@ -250,7 +258,9 @@ class TestFlextOracleWmsClientCore:
         assert "not initialized" in result.error.lower()
 
     @pytest.mark.asyncio
-    async def test_get_entity_data_success(self, mock_config, sample_entity_data) -> None:
+    async def test_get_entity_data_success(
+        self, mock_config, sample_entity_data
+    ) -> None:
         """Test successful entity data retrieval."""
         with patch("flext_oracle_wms.client.FlextApiClient") as mock_api_client_class:
             # Create a mock response object that simulates FlextApiClientResponse
@@ -267,7 +277,7 @@ class TestFlextOracleWmsClientCore:
             await client.start()
 
             result = await client.get_entity_data("test_entity", limit=10)
-            assert result.is_success
+            assert result.success
             assert result.data == sample_entity_data
             mock_api_client.get.assert_called_once()
 
@@ -290,8 +300,9 @@ class TestFlextOracleWmsClientCore:
     async def test_call_api_without_client(self, mock_config) -> None:
         """Test calling API without initialized client."""
         client = FlextOracleWmsClient(mock_config)
-        result = await client.call_api("lgf_init_stage_interface",
-                                      path_params={"entity_name": "test"})
+        result = await client.call_api(
+            "lgf_init_stage_interface", path_params={"entity_name": "test"}
+        )
 
         assert result.is_failure
         assert "not initialized" in result.error.lower()

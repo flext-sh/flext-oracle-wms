@@ -111,7 +111,7 @@ client = FlextOracleWmsClient(config)
 
 # All operations return FlextResult for type-safe error handling
 entities_result: FlextResult = await client.discover_entities()
-if entities_result.is_success:
+if entities_result.success:
     print(f"Discovered {len(entities_result.data)} WMS entities")
     for entity in entities_result.data:
         print(f"- {entity.name}: {entity.description}")
@@ -140,7 +140,7 @@ config = FlextOracleWmsClientConfig(
 async def safe_wms_operation():
     result = await client.get_inventory_data("INVENTORY_ENTITY")
 
-    if result.is_success:
+    if result.success:
         # Process inventory data
         inventory_data = result.data
         print(f"Retrieved {len(inventory_data)} inventory records")

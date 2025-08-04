@@ -46,10 +46,10 @@ class FlextOracleWmsClientConfig(FlextValueObject):
         ...     base_url="https://your-wms.oraclecloud.com",
         ...     username="api_user",
         ...     password="secure_password",
-        ...     environment="production"
+        ...     environment="production",
         ... )
         >>> validation = config.validate_domain_rules()
-        >>> if validation.is_success:
+        >>> if validation.success:
         ...     print("Configuration is valid")
 
     """
@@ -58,7 +58,9 @@ class FlextOracleWmsClientConfig(FlextValueObject):
     username: str
     password: str
     environment: str = Field(default="default")
-    api_version: FlextOracleWmsApiVersion = Field(default=FlextOracleWmsApiVersion.LGF_V10)
+    api_version: FlextOracleWmsApiVersion = Field(
+        default=FlextOracleWmsApiVersion.LGF_V10,
+    )
     timeout: float = Field(default=30.0)
     max_retries: int = Field(default=3)
     verify_ssl: bool = Field(default=True)
@@ -243,7 +245,7 @@ class FlextOracleWmsModuleConfig(FlextBaseSettings):
         """Validate Oracle WMS base URL format."""
         url_str = str(v)
         if not url_str.startswith(("http://", "https://")):
-            msg = f"Invalid Oracle WMS base URL: {url_str} (must start with http:// or https://)"
+            msg: str = f"Invalid Oracle WMS base URL: {url_str} (must start with http:// or https://)"
             raise ValueError(msg)
         # Validate Oracle WMS URL pattern - more flexible for different environments
         oracle_patterns = [
@@ -272,7 +274,7 @@ class FlextOracleWmsModuleConfig(FlextBaseSettings):
         if not (is_oracle_url or is_dev_url):
             # Allow any HTTPS URL for maximum flexibility
             if not url_str.startswith("https://"):
-                msg = f"Oracle WMS URL should use HTTPS for security: {url_str}"
+                msg: str = f"Oracle WMS URL should use HTTPS for security: {url_str}"
                 raise ValueError(msg)
             # For non-Oracle URLs, just issue a warning in logs but allow it
 

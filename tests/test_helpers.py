@@ -61,12 +61,12 @@ def test_validate_entity_name() -> None:
     """Test entity name validation."""
     # Test valid entity name
     result = flext_oracle_wms_validate_entity_name("order_hdr")
-    assert result.is_success
+    assert result.success
     assert result.data == "order_hdr"
 
     # Test entity name with uppercase (should be normalized)
     result = flext_oracle_wms_validate_entity_name("ORDER_HDR")
-    assert result.is_success
+    assert result.success
     assert result.data == "order_hdr"
 
     # Test invalid entity name (empty)
@@ -149,7 +149,7 @@ def test_validate_api_response() -> None:
     # Test successful response
     good_response = {"data": [{"id": 1, "name": "test"}], "status": "success"}
     result = flext_oracle_wms_validate_api_response(good_response)
-    assert result.is_success
+    assert result.success
 
     # Test response with error
     error_response = {"error": "Invalid request"}
@@ -249,7 +249,7 @@ def test_entity_name_edge_cases() -> None:
 
     # Test whitespace handling
     result = flext_oracle_wms_validate_entity_name("  order_hdr  ")
-    assert result.is_success
+    assert result.success
     assert result.data == "order_hdr"
 
     # Test invalid characters

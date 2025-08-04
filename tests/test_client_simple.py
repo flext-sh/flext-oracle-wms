@@ -42,7 +42,7 @@ class TestClientSimpleNew:
 
         # Test with common WMS entity name
         result = flext_oracle_wms_validate_entity_name("order_hdr")
-        assert result.is_success
+        assert result.success
         assert result.data == "order_hdr"
 
     def test_validate_entity_name_invalid(self) -> None:

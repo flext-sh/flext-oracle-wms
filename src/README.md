@@ -76,7 +76,7 @@ client = FlextOracleWmsClient(config)
 result = await client.discover_entities()
 
 # Railway-oriented programming with FlextResult
-if result.is_success:
+if result.success:
     entities = result.data
     print(f"Discovered {len(entities)} WMS entities")
 else:

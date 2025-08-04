@@ -40,7 +40,7 @@ class TestHelpersCoverage:
 
         for input_name, expected in test_cases:
             result = flext_oracle_wms_validate_entity_name(input_name)
-            assert result.is_success
+            assert result.success
             assert result.data == expected
 
         # Test failure cases
@@ -131,7 +131,7 @@ class TestHelpersCoverage:
 
         for response in good_responses:
             result = flext_oracle_wms_validate_api_response(response)
-            assert result.is_success
+            assert result.success
 
         # Test error responses
         error_responses = [

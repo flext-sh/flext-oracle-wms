@@ -154,7 +154,7 @@ client = FlextOracleWmsClient(config)
 
 # Discover entities (returns FlextResult from flext-core)
 result = await client.discover_entities()
-if result.is_success:
+if result.success:
     entities = result.data
 ```
 
@@ -273,7 +273,7 @@ from flext_core import FlextResult
 
 # All client operations return FlextResult
 result: FlextResult = await client.discover_entities()
-if result.is_success:
+if result.success:
     entities = result.data
     print(f"Found {len(entities)} entities")
 else:
@@ -412,7 +412,7 @@ from flext_oracle_wms import FlextOracleWmsClient
 
 async def safe_operation():
     result = await client.get_inventory_data("entity_name")
-    if result.is_success:
+    if result.success:
         return result.data
     else:
         logger.error(f"Operation failed: {result.error}")

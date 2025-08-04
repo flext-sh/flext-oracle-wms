@@ -86,7 +86,7 @@ class TestAuthenticationConfig:
         )
 
         result = config.validate_domain_rules()
-        assert result.is_success
+        assert result.success
 
     def test_config_validation_success_bearer(self) -> None:
         """Test config validation succeeds for valid bearer auth."""
@@ -95,7 +95,7 @@ class TestAuthenticationConfig:
         )
 
         result = config.validate_domain_rules()
-        assert result.is_success
+        assert result.success
 
     def test_config_validation_success_api_key(self) -> None:
         """Test config validation succeeds for valid API key auth."""
@@ -105,7 +105,7 @@ class TestAuthenticationConfig:
         )
 
         result = config.validate_domain_rules()
-        assert result.is_success
+        assert result.success
 
     def test_config_validation_failure_basic_missing_username(self) -> None:
         """Test config validation fails for basic auth missing username."""
@@ -291,7 +291,7 @@ class TestAuthenticator:
             mock_request.return_value = FlextResult.success({"status": "authenticated"})
 
             result = await authenticator.validate_authentication()
-            assert result.is_success
+            assert result.success
 
     @pytest.mark.asyncio
     async def test_validate_authentication_failure(self) -> None:
@@ -357,13 +357,13 @@ class TestAuthPlugin:
         plugin = FlextOracleWmsAuthPlugin(authenticator)
 
         # Mock authenticator validation
-        with patch.object(
-            plugin.authenticator, "get_auth_headers"
-        ) as mock_headers:
-            mock_headers.return_value = FlextResult.success({"Authorization": "Basic dGVzdA=="})
+        with patch.object(plugin.authenticator, "get_auth_headers") as mock_headers:
+            mock_headers.return_value = FlextResult.success(
+                {"Authorization": "Basic dGVzdA=="}
+            )
 
             result = await plugin.authenticator.get_auth_headers()
-            assert result.is_success
+            assert result.success
             mock_headers.assert_called_once()
 
     @pytest.mark.asyncio
@@ -417,10 +417,12 @@ class TestAuthPlugin:
 
         # Mock the authenticator's get_auth_headers method
         with patch.object(plugin.authenticator, "get_auth_headers") as mock_headers:
-            mock_headers.return_value = FlextResult.success({"Authorization": "Basic dGVzdA=="})
+            mock_headers.return_value = FlextResult.success(
+                {"Authorization": "Basic dGVzdA=="}
+            )
 
             result = await plugin.authenticator.get_auth_headers()
-            assert result.is_success
+            assert result.success
             assert "Authorization" in result.data
 
     @pytest.mark.asyncio
@@ -443,7 +445,7 @@ class TestAuthPlugin:
 
             result = await plugin.authenticator.validate_credentials()
 
-            assert result.is_success
+            assert result.success
             assert result.data is True
 
     @pytest.mark.asyncio

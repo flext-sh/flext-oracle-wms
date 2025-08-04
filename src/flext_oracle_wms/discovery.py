@@ -126,7 +126,7 @@ class EndpointDiscoveryStrategy(DiscoveryStrategy):
 
             # Chain of validations using Railway-Oriented Programming
             response_result = await self._make_api_request(api_client, endpoint)
-            if not response_result.is_success:
+            if not response_result.success:
                 return self._handle_discovery_error(
                     context,
                     response_result.error or "Request failed",
@@ -134,7 +134,7 @@ class EndpointDiscoveryStrategy(DiscoveryStrategy):
                 )
 
             validated_response = self._validate_response(response_result.data, endpoint)
-            if not validated_response.is_success:
+            if not validated_response.success:
                 return self._handle_discovery_error(
                     context,
                     validated_response.error or "Response validation failed",
@@ -152,7 +152,7 @@ class EndpointDiscoveryStrategy(DiscoveryStrategy):
             )
 
         except Exception as e:
-            error_msg = f"Exception calling {endpoint}: {e}"
+            error_msg: str = f"Exception calling {endpoint}: {e}"
             logger.exception(error_msg)
             context.errors.append(error_msg)
             return FlextResult.ok(DISCOVERY_FAILURE)
@@ -164,7 +164,7 @@ class EndpointDiscoveryStrategy(DiscoveryStrategy):
     ) -> FlextResult[FlextApiClientResponse]:
         """Make API request with proper error handling."""
         response_result = await api_client.get(endpoint)
-        if not response_result.is_success:
+        if not response_result.success:
             return FlextResult.fail(
                 f"Failed to call {endpoint}: {response_result.error}",
             )
@@ -204,7 +204,7 @@ class EndpointDiscoveryStrategy(DiscoveryStrategy):
             endpoint,
         )
 
-        if entities_result.is_success and entities_result.data:
+        if entities_result.success and entities_result.data:
             context.all_entities.extend(entities_result.data)
             logger.info(
                 "Successfully discovered entities",
@@ -317,7 +317,7 @@ class FlextOracleWmsEntityDiscovery:
             # Try cache first if enabled
             if use_cache and self.cache_manager:
                 cached_result = await self._get_cached_discovery(cache_key)
-                if cached_result.is_success:
+                if cached_result.success:
                     logger.debug("Using cached discovery results")
                     return cached_result
 
@@ -327,7 +327,7 @@ class FlextOracleWmsEntityDiscovery:
                 exclude_patterns,
             )
 
-            if not discovery_result.is_success:
+            if not discovery_result.success:
                 return discovery_result
 
             # Calculate duration
@@ -386,13 +386,13 @@ class FlextOracleWmsEntityDiscovery:
             # Try cache first
             if use_cache and self.cache_manager:
                 cached_result = await self._get_cached_entity(cache_key)
-                if cached_result.is_success:
+                if cached_result.success:
                     return cached_result
 
             # Try to get entity details from different endpoints
             entity_result = await self._discover_single_entity(entity_name)
 
-            if not entity_result.is_success:
+            if not entity_result.success:
                 return entity_result
 
             # Cache the result
@@ -439,7 +439,7 @@ class FlextOracleWmsEntityDiscovery:
                 endpoint,
             )
 
-            if result.is_success and result.data:
+            if result.success and result.data:
                 # Break on first successful endpoint
                 break
 
@@ -568,7 +568,7 @@ class FlextOracleWmsEntityDiscovery:
                 response_data,
                 endpoint,
             )
-            if not entity_list_result.is_success:
+            if not entity_list_result.success:
                 return FlextResult.fail(
                     entity_list_result.error or "Entity list extraction failed",
                 )
@@ -616,7 +616,7 @@ class FlextOracleWmsEntityDiscovery:
                 response_result = await self.api_client.get(endpoint)
 
                 if (
-                    response_result.is_success
+                    response_result.success
                     and response_result.data is not None
                     and response_result.data.status_code
                     == FlextOracleWmsDefaults.HTTP_OK
@@ -627,7 +627,7 @@ class FlextOracleWmsEntityDiscovery:
                         entity_name,
                         endpoint,
                     )
-                    if schema_result.is_success:
+                    if schema_result.success:
                         return schema_result
 
             except Exception as e:

@@ -84,7 +84,7 @@ class TestRealScenarios:
 
         for input_entity, expected in valid_entities:
             result = flext_oracle_wms_validate_entity_name(input_entity)
-            assert result.is_success
+            assert result.success
             assert result.data == expected
 
     def test_real_api_responses(self) -> None:
@@ -113,7 +113,7 @@ class TestRealScenarios:
 
         for response in success_responses:
             result = flext_oracle_wms_validate_api_response(response)
-            assert result.is_success
+            assert result.success
 
         # Error responses
         error_responses = [

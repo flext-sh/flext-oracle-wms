@@ -55,7 +55,7 @@ client = FlextOracleWmsClient(config)
 
 # Discover available entities
 result = await client.discover_entities()
-if result.is_success:
+if result.success:
     print(f"Found {len(result.data)} WMS entities")
     for entity in result.data:
         print(f"- {entity.name}: {entity.description}")

@@ -107,7 +107,7 @@ client = FlextOracleWmsClient(config)
 
 # FlextResult integration
 result: FlextResult = await client.discover_entities()
-if result.is_success:
+if result.success:
     entities = result.data
     print(f"Discovered {len(entities)} WMS entities")
 ```

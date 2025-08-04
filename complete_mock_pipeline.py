@@ -308,9 +308,7 @@ class CompleteMockPipeline:
                     "tap_records": len(tap_records),
                     "target_tables": len(target_results),
                     "dbt_models": len(dbt_results),
-                    "results_path": save_result.data
-                    if save_result.is_success
-                    else None,
+                    "results_path": save_result.data if save_result.success else None,
                 },
             )
 
@@ -332,7 +330,8 @@ class CompleteMockPipeline:
         return schemas
 
     def _create_entity_properties(
-        self, sample_data: dict[str, Any],
+        self,
+        sample_data: dict[str, Any],
     ) -> tuple[dict[str, Any], list[str]]:
         """Create properties and key properties from sample data - SRP compliance."""
         properties = {}
@@ -401,7 +400,9 @@ class CompleteMockPipeline:
         )
 
     def _build_singer_schema(
-        self, properties: dict[str, Any], key_properties: list[str],
+        self,
+        properties: dict[str, Any],
+        key_properties: list[str],
     ) -> dict[str, Any]:
         """Build complete Singer schema - SRP compliance."""
         return {
@@ -706,7 +707,7 @@ def main() -> None:
     pipeline = CompleteMockPipeline()
     result = pipeline.run_complete_pipeline()
 
-    if result.is_success:
+    if result.success:
         pass
 
 

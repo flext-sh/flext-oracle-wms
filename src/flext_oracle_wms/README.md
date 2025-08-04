@@ -83,7 +83,7 @@ await client.start()
 
 # Discover entities
 result = await client.discover_entities()
-if result.is_success:
+if result.success:
     print(f"Discovered {len(result.data)} WMS entities")
     for entity in result.data:
         print(f"- {entity}")
@@ -100,7 +100,7 @@ result = await client.get_entity_data(
     filters={"status": "active"}
 )
 
-if result.is_success:
+if result.success:
     data = result.data
     print(f"Retrieved {len(data.get('results', []))} records")
 ```

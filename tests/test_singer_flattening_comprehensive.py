@@ -40,7 +40,7 @@ class TestFlextOracleWmsDataFlattener:
         }
 
         result = await flattener.flatten_records([record])
-        assert result.is_success
+        assert result.success
         assert result.data is not None
         assert len(result.data) == 1
         assert result.data[0]["id"] == "123"
@@ -59,7 +59,7 @@ class TestFlextOracleWmsDataFlattener:
         }
 
         result = await flattener.flatten_records([record])
-        assert result.is_success
+        assert result.success
         assert result.data is not None
         assert len(result.data) == 1
         flattened = result.data[0]
@@ -80,7 +80,7 @@ class TestFlextOracleWmsDataFlattener:
         }
 
         result = await flattener.unflatten_records([flattened_record])
-        assert result.is_success
+        assert result.success
         assert result.data is not None
         assert len(result.data) == 1
         unflattened = result.data[0]
@@ -98,7 +98,7 @@ class TestFlextOracleWmsDataFlattener:
         ]
 
         result = await flattener.get_flattening_stats(records)
-        assert result.is_success
+        assert result.success
         assert result.data is not None
         stats = result.data
         assert stats["total_records"] == 3
@@ -137,7 +137,7 @@ class TestFlattenerErrorHandling:
         flattener = FlextOracleWmsDataFlattener()
 
         result = await flattener.flatten_records([])
-        assert result.is_success
+        assert result.success
         assert result.data is not None
         assert len(result.data) == 0
 
@@ -147,7 +147,7 @@ class TestFlattenerErrorHandling:
         flattener = FlextOracleWmsDataFlattener()
 
         result = await flattener.unflatten_records([])
-        assert result.is_success
+        assert result.success
         assert result.data is not None
         assert len(result.data) == 0
 
@@ -157,7 +157,7 @@ class TestFlattenerErrorHandling:
         flattener = FlextOracleWmsDataFlattener()
 
         result = await flattener.get_flattening_stats([])
-        assert result.is_success
+        assert result.success
         assert result.data is not None
         stats = result.data
         assert stats["total_records"] == 0
