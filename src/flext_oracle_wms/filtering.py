@@ -90,13 +90,13 @@ class FlextOracleWmsFilter:
 
         """
         if max_conditions <= 0:
-            msg = "Max conditions must be positive"
-            raise FlextOracleWmsError(msg)
+            positive_conditions_msg = "Max conditions must be positive"
+            raise FlextOracleWmsError(positive_conditions_msg)
 
         if max_conditions > FlextOracleWmsDefaults.MAX_FILTER_CONDITIONS:
             max_conditions_limit = FlextOracleWmsDefaults.MAX_FILTER_CONDITIONS
-            msg: str = f"Max conditions cannot exceed {max_conditions_limit}"
-            raise FlextOracleWmsError(msg)
+            max_limit_msg: str = f"Max conditions cannot exceed {max_conditions_limit}"
+            raise FlextOracleWmsError(max_limit_msg)
 
         self.case_sensitive = case_sensitive
         self.max_conditions = max_conditions
@@ -455,13 +455,13 @@ def flext_oracle_wms_create_filter(
 
     """
     if max_conditions <= 0:
-        msg = "Max conditions must be positive"
-        raise FlextOracleWmsError(msg)
+        positive_error_msg = "Max conditions must be positive"
+        raise FlextOracleWmsError(positive_error_msg)
 
     if max_conditions > FlextOracleWmsDefaults.MAX_FILTER_CONDITIONS:
         max_limit = FlextOracleWmsDefaults.MAX_FILTER_CONDITIONS
-        msg: str = f"Max conditions cannot exceed {max_limit}"
-        raise FlextOracleWmsError(msg)
+        limit_error_msg: str = f"Max conditions cannot exceed {max_limit}"
+        raise FlextOracleWmsError(limit_error_msg)
 
     return FlextOracleWmsFilter(
         case_sensitive=case_sensitive,

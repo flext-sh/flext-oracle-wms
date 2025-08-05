@@ -69,6 +69,7 @@ from flext_oracle_wms.exceptions import (
     FlextOracleWmsConnectionError,
     FlextOracleWmsError,
 )
+from flext_oracle_wms.mock_server import get_mock_server
 
 if TYPE_CHECKING:
     from flext_oracle_wms.config import FlextOracleWmsClientConfig
@@ -189,8 +190,9 @@ class FlextOracleWmsPlugin(FlextPlugin):
 class FlextOracleWmsClient:
     """Oracle WMS Cloud Client - Dynamic & Declarative Implementation.
 
-    Enterprise Oracle WMS Cloud client that dynamically discovers entities via real API
-    calls and implements 25+ Oracle WMS Cloud APIs declaratively using flext-api patterns.
+    Enterprise Oracle WMS Cloud client that dynamically discovers entities via real
+    API calls and implements 25+ Oracle WMS Cloud APIs declaratively using flext-api
+    patterns.
 
     Features:
         - Dynamic entity discovery through Oracle WMS Cloud REST API
@@ -280,19 +282,19 @@ class FlextOracleWmsClient:
             # Start the client
             start_result = await self._client.start()
             if not start_result.success:
-                error_msg = (
+                start_error_msg = (
                     f"{FlextOracleWmsErrorMessages.CONNECTION_FAILED}: "
                     f"{start_result.error}"
                 )
                 logger.error("Failed to create HTTP client", error=start_result.error)
-                self._raise_connection_error(error_msg)
+                self._raise_connection_error(start_error_msg)
 
             # Client is already assigned above
 
             # Configure authentication
             auth_result = self._configure_authentication()
             if not auth_result.success:
-                error_msg = (
+                auth_error_msg = (
                     f"{FlextOracleWmsErrorMessages.AUTHENTICATION_FAILED}: "
                     f"{auth_result.error}"
                 )
@@ -300,7 +302,7 @@ class FlextOracleWmsClient:
                     "Authentication configuration failed",
                     error=auth_result.error,
                 )
-                self._raise_connection_error(error_msg)
+                self._raise_connection_error(auth_error_msg)
 
             logger.info("Oracle WMS Client started successfully")
             return FlextResult.ok(None)
@@ -616,13 +618,13 @@ class FlextOracleWmsClient:
     ) -> FlextResult[dict[str, object]]:
         """Get entity data using LGF API v10."""
         params: dict[str, object] = {}
-        if limit:
+        if limit is not None:
             params["limit"] = limit
-        if offset:
+        if offset is not None:
             params["offset"] = offset
-        if fields:
+        if fields is not None:
             params["fields"] = fields
-        if filters:
+        if filters is not None:
             params.update(filters)
 
         return await self.call_api(
@@ -639,7 +641,7 @@ class FlextOracleWmsClient:
     ) -> FlextResult[dict[str, object]]:
         """Get specific entity record by ID."""
         params: dict[str, object] = {}
-        if fields:
+        if fields is not None:
             params["fields"] = fields
 
         return await self.call_api(
@@ -772,7 +774,7 @@ class FlextOracleWmsClient:
         handler = method_handlers.get(method)
         if handler:
             # Type: ignore needed for dynamic lambda handlers
-            return await handler()  # type: ignore[no-untyped-call]
+            return await handler()
         return FlextResult.fail(f"Unsupported HTTP method: {method}")
 
     def _validate_response(
@@ -958,8 +960,6 @@ class FlextOracleWmsClientMock(FlextOracleWmsClient):
 
     async def discover_entities(self) -> FlextResult[list[TOracleWmsEntityName]]:
         """Mock entity discovery with realistic Oracle WMS entities."""
-        from flext_oracle_wms.mock_server import get_mock_server
-
         mock_server = get_mock_server(self.config.environment)
         response = mock_server.get_mock_response("discover_entities")
 
@@ -988,17 +988,20 @@ class FlextOracleWmsClientMock(FlextOracleWmsClient):
         filters: dict[str, object] | None = None,
     ) -> FlextResult[dict[str, object]]:
         """Mock entity data with realistic Oracle WMS data."""
-        from flext_oracle_wms.mock_server import get_mock_server
-
         mock_server = get_mock_server(self.config.environment)
         response = mock_server.get_mock_response(
             "get_entity_data",
             entity_name=entity_name,
             limit=limit,
+            offset=offset,
+            fields=fields,
+            filters=filters,
         )
 
         if response.success and response.data is not None:
-            logger.info(f"Mock: Retrieved {entity_name} data with {limit} limit")
+            logger.info(
+                f"Mock: Retrieved {entity_name} data with limit={limit}, offset={offset}",
+            )
             # Ensure type safety for FlextResult.ok
             data = response.data if isinstance(response.data, dict) else {}
             return FlextResult.ok(data)
@@ -1007,8 +1010,6 @@ class FlextOracleWmsClientMock(FlextOracleWmsClient):
 
     async def health_check(self) -> FlextResult[dict[str, object]]:
         """Mock health check (always healthy in mock mode)."""
-        from flext_oracle_wms.mock_server import get_mock_server
-
         mock_server = get_mock_server(self.config.environment)
         response = mock_server.get_mock_response("health_check")
 
@@ -1022,6 +1023,7 @@ class FlextOracleWmsClientMock(FlextOracleWmsClient):
 
 def create_oracle_wms_client(
     config: FlextOracleWmsClientConfig,
+    *,
     mock_mode: bool = False,
 ) -> FlextOracleWmsClient:
     """Factory function to create Oracle WMS client with optional mock mode.

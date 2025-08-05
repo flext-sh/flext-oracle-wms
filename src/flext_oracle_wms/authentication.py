@@ -185,8 +185,8 @@ class FlextOracleWmsAuthPlugin(FlextApiPlugin):
         try:
             headers_result = await self.authenticator.get_auth_headers()
             if not headers_result.success:
-                msg: str = f"Failed to get auth headers: {headers_result.error}"
-                self._raise_auth_error(msg)
+                headers_error_msg: str = f"Failed to get auth headers: {headers_result.error}"
+                self._raise_auth_error(headers_error_msg)
 
             # Update request headers
             if (
@@ -201,8 +201,8 @@ class FlextOracleWmsAuthPlugin(FlextApiPlugin):
 
         except Exception as e:
             logger.exception("Authentication plugin failed")
-            msg: str = f"Auth plugin failed: {e}"
-            raise FlextOracleWmsAuthenticationError(msg) from e
+            plugin_error_msg: str = f"Auth plugin failed: {e}"
+            raise FlextOracleWmsAuthenticationError(plugin_error_msg) from e
 
     async def after_response(
         self,

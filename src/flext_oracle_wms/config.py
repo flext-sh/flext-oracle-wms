@@ -245,8 +245,8 @@ class FlextOracleWmsModuleConfig(FlextBaseSettings):
         """Validate Oracle WMS base URL format."""
         url_str = str(v)
         if not url_str.startswith(("http://", "https://")):
-            msg: str = f"Invalid Oracle WMS base URL: {url_str} (must start with http:// or https://)"
-            raise ValueError(msg)
+            invalid_protocol_msg: str = f"Invalid Oracle WMS base URL: {url_str} (must start with http:// or https://)"
+            raise ValueError(invalid_protocol_msg)
         # Validate Oracle WMS URL pattern - more flexible for different environments
         oracle_patterns = [
             ".wms.ocs.oraclecloud.com",  # Production Oracle Cloud
@@ -274,8 +274,8 @@ class FlextOracleWmsModuleConfig(FlextBaseSettings):
         if not (is_oracle_url or is_dev_url):
             # Allow any HTTPS URL for maximum flexibility
             if not url_str.startswith("https://"):
-                msg: str = f"Oracle WMS URL should use HTTPS for security: {url_str}"
-                raise ValueError(msg)
+                https_security_msg: str = f"Oracle WMS URL should use HTTPS for security: {url_str}"
+                raise ValueError(https_security_msg)
             # For non-Oracle URLs, just issue a warning in logs but allow it
 
             logger = get_logger(__name__)
