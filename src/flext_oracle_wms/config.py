@@ -48,7 +48,7 @@ class FlextOracleWmsClientConfig(FlextValueObject):
         ...     password="secure_password",
         ...     environment="production",
         ... )
-        >>> validation = config.validate_domain_rules()
+        >>> validation = config.validate_business_rules()
         >>> if validation.success:
         ...     print("Configuration is valid")
 
@@ -57,17 +57,15 @@ class FlextOracleWmsClientConfig(FlextValueObject):
     base_url: str
     username: str
     password: str
-    environment: str = Field(default="default")
-    api_version: FlextOracleWmsApiVersion = Field(
-        default=FlextOracleWmsApiVersion.LGF_V10,
-    )
+    environment: str = "default"
+    api_version: FlextOracleWmsApiVersion = FlextOracleWmsApiVersion.LGF_V10
     timeout: float = Field(default=30.0)
     max_retries: int = Field(default=3)
     verify_ssl: bool = Field(default=True)
     enable_logging: bool = Field(default=True)
 
-    def validate_domain_rules(self) -> FlextResult[None]:
-        """Validate Oracle WMS client configuration domain rules."""
+    def validate_business_rules(self) -> FlextResult[None]:
+        """Validate Oracle WMS client configuration business rules."""
         validation_errors = []
 
         if not self.base_url:
@@ -274,7 +272,9 @@ class FlextOracleWmsModuleConfig(FlextBaseSettings):
         if not (is_oracle_url or is_dev_url):
             # Allow any HTTPS URL for maximum flexibility
             if not url_str.startswith("https://"):
-                https_security_msg: str = f"Oracle WMS URL should use HTTPS for security: {url_str}"
+                https_security_msg: str = (
+                    f"Oracle WMS URL should use HTTPS for security: {url_str}"
+                )
                 raise ValueError(https_security_msg)
             # For non-Oracle URLs, just issue a warning in logs but allow it
 

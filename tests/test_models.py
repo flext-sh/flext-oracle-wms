@@ -69,21 +69,21 @@ def test_entity_validation_success() -> None:
     """Test entity validation with valid data."""
     entity = FlextOracleWmsEntity(name="item_master", endpoint="/api/items")
     # Should not raise exception
-    entity.validate_domain_rules()
+    entity.validate_business_rules()
 
 
 def test_entity_validation_empty_name() -> None:
     """Test entity validation with empty name."""
     entity = FlextOracleWmsEntity(name="", endpoint="/api/items")
     with pytest.raises(FlextOracleWmsDataValidationError):
-        entity.validate_domain_rules()
+        entity.validate_business_rules()
 
 
 def test_entity_validation_empty_endpoint() -> None:
     """Test entity validation with empty endpoint."""
     entity = FlextOracleWmsEntity(name="item_master", endpoint="")
     with pytest.raises(FlextOracleWmsDataValidationError):
-        entity.validate_domain_rules()
+        entity.validate_business_rules()
 
 
 def test_discovery_result_creation() -> None:
@@ -118,7 +118,7 @@ def test_discovery_result_validation() -> None:
         timestamp="2025-01-15T10:30:00Z",
     )
     # Should not raise exception
-    result.validate_domain_rules()
+    result.validate_business_rules()
 
 
 def test_discovery_result_validation_count_mismatch() -> None:
@@ -129,7 +129,7 @@ def test_discovery_result_validation_count_mismatch() -> None:
         timestamp="2025-01-15T10:30:00Z",
     )
     with pytest.raises(FlextOracleWmsDataValidationError):
-        result.validate_domain_rules()
+        result.validate_business_rules()
 
 
 def test_api_response_creation() -> None:
@@ -164,7 +164,7 @@ def test_api_response_validation() -> None:
         status_code=200, data={"test": "data"}, success=True, error_message=None
     )
     # Should not raise exception
-    response.validate_domain_rules()
+    response.validate_business_rules()
 
 
 def test_response_creation() -> None:

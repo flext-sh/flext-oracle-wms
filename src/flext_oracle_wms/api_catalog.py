@@ -69,8 +69,8 @@ class FlextOracleWmsApiEndpoint(FlextValueObject):
             return f"/{environment}/wms/lgfapi/v10{self.path}"
         return f"/{environment}/wms/api{self.path}"
 
-    def validate_domain_rules(self) -> FlextResult[None]:
-        """Validate Oracle WMS API endpoint domain rules."""
+    def validate_business_rules(self) -> FlextResult[None]:
+        """Validate Oracle WMS API endpoint business rules."""
         validation_errors = []
 
         if not self.name:

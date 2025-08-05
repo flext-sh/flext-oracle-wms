@@ -82,7 +82,7 @@ class TestAuthenticationConfig:
             password="test_password",
         )
 
-        result = config.validate_domain_rules()
+        result = config.validate_business_rules()
         assert result.success
 
     def test_config_validation_success_bearer(self) -> None:
@@ -91,7 +91,7 @@ class TestAuthenticationConfig:
             auth_type=OracleWMSAuthMethod.BEARER, token="valid_token"
         )
 
-        result = config.validate_domain_rules()
+        result = config.validate_business_rules()
         assert result.success
 
     def test_config_validation_success_api_key(self) -> None:
@@ -100,7 +100,7 @@ class TestAuthenticationConfig:
             auth_type=OracleWMSAuthMethod.API_KEY, api_key="valid_key"
         )
 
-        result = config.validate_domain_rules()
+        result = config.validate_business_rules()
         assert result.success
 
     def test_config_validation_failure_basic_missing_username(self) -> None:
@@ -111,7 +111,7 @@ class TestAuthenticationConfig:
             password="test_password",
         )
 
-        result = config.validate_domain_rules()
+        result = config.validate_business_rules()
         assert result.is_failure
         assert "username" in result.error.lower() or "password" in result.error.lower()
 
@@ -123,7 +123,7 @@ class TestAuthenticationConfig:
             password="",  # Empty password
         )
 
-        result = config.validate_domain_rules()
+        result = config.validate_business_rules()
         assert result.is_failure
         assert "username" in result.error.lower() or "password" in result.error.lower()
 
@@ -134,7 +134,7 @@ class TestAuthenticationConfig:
             token="",  # Empty token
         )
 
-        result = config.validate_domain_rules()
+        result = config.validate_business_rules()
         assert result.is_failure
         assert "token" in result.error.lower()
 
@@ -145,7 +145,7 @@ class TestAuthenticationConfig:
             api_key="",  # Empty API key
         )
 
-        result = config.validate_domain_rules()
+        result = config.validate_business_rules()
         assert result.is_failure
         assert "api" in result.error.lower() or "key" in result.error.lower()
 

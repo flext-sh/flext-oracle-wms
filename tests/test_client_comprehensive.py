@@ -3,7 +3,7 @@
 from unittest.mock import AsyncMock, Mock, patch
 
 import pytest
-from flext_core import get_logger
+from flext_core import FlextResult, get_logger
 
 from flext_oracle_wms.api_catalog import FlextOracleWmsApiVersion
 from flext_oracle_wms.authentication import (
@@ -68,7 +68,7 @@ class TestFlextOracleWmsAuth:
         )
         authenticator = FlextOracleWmsAuthenticator(config)
 
-        headers_result = await authenticator.get_headers()
+        headers_result = await authenticator.get_auth_headers()
         assert headers_result.success is True
 
         headers = headers_result.data
@@ -80,7 +80,7 @@ class TestFlextOracleWmsAuth:
         config = FlextOracleWmsAuthConfig(
             auth_type=OracleWMSAuthMethod.BASIC, username="", password=""
         )
-        result = config.validate_domain_rules()
+        result = config.validate_business_rules()
         assert result.success is False
 
 
@@ -231,14 +231,14 @@ class TestFlextOracleWmsPlugin:
 
     def test_plugin_creation(self) -> None:
         """Test plugin creation."""
-        config = Mock()
+        config = {"test_key": "test_value"}
         plugin = FlextOracleWmsPlugin(config)
         assert plugin.config == config
 
     @pytest.mark.asyncio
     async def test_plugin_lifecycle(self) -> None:
         """Test plugin start and stop."""
-        config = Mock()
+        config = {"lifecycle_test": True}
         plugin = FlextOracleWmsPlugin(config)
 
         start_result = await plugin.start()
@@ -250,7 +250,7 @@ class TestFlextOracleWmsPlugin:
     @pytest.mark.asyncio
     async def test_plugin_execute(self) -> None:
         """Test plugin execute method."""
-        config = Mock()
+        config = {"execute_test": True}
         plugin = FlextOracleWmsPlugin(config)
 
         # Test without client initialized
@@ -286,8 +286,11 @@ class TestErrorHandling:
         )
         client = FlextOracleWmsClient(config)
 
-        with patch.object(client, "_client") as mock_client:
-            mock_client.start.side_effect = Exception("Connection failed")
+        # Mock the FlextApiClient constructor to return a failing client
+        with patch("flext_oracle_wms.client.FlextApiClient") as mock_api_client_class:
+            mock_api_client = AsyncMock()
+            mock_api_client.start.return_value = FlextResult.fail("Connection failed")
+            mock_api_client_class.return_value = mock_api_client
 
             with pytest.raises(FlextOracleWmsConnectionError):
                 await client.start()

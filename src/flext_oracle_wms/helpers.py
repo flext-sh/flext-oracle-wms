@@ -380,7 +380,9 @@ def flext_oracle_wms_chunk_records(
         raise FlextOracleWmsError(positive_error_msg)
 
     if chunk_size > FlextOracleWmsDefaults.MAX_PAGE_SIZE:
-        max_size_error_msg: str = f"Chunk size cannot exceed {FlextOracleWmsDefaults.MAX_PAGE_SIZE}"
+        max_size_error_msg: str = (
+            f"Chunk size cannot exceed {FlextOracleWmsDefaults.MAX_PAGE_SIZE}"
+        )
         raise FlextOracleWmsError(max_size_error_msg)
 
     try:

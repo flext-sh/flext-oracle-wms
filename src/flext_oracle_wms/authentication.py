@@ -80,7 +80,7 @@ class FlextOracleWmsAuthConfig(FlextValueObject):
         description="Request timeout in seconds",
     )
 
-    def validate_domain_rules(self) -> FlextResult[None]:
+    def validate_business_rules(self) -> FlextResult[None]:
         """Validate authentication configuration."""
         if self.auth_type == OracleWMSAuthMethod.BASIC:
             if not self.username or not self.password:
@@ -99,7 +99,7 @@ class FlextOracleWmsAuthenticator:
     def __init__(self, config: FlextOracleWmsAuthConfig) -> None:
         """Initialize authenticator with configuration."""
         self.config = config
-        validation_result = self.config.validate_domain_rules()
+        validation_result = self.config.validate_business_rules()
         if not validation_result.success:
             msg: str = (
                 f"Invalid authentication configuration: {validation_result.error}"
@@ -185,7 +185,9 @@ class FlextOracleWmsAuthPlugin(FlextApiPlugin):
         try:
             headers_result = await self.authenticator.get_auth_headers()
             if not headers_result.success:
-                headers_error_msg: str = f"Failed to get auth headers: {headers_result.error}"
+                headers_error_msg: str = (
+                    f"Failed to get auth headers: {headers_result.error}"
+                )
                 self._raise_auth_error(headers_error_msg)
 
             # Update request headers

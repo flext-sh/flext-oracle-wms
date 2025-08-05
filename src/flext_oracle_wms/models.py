@@ -36,8 +36,8 @@ class FlextOracleWmsEntity:
     replication_key: str | None = None
     supports_incremental: bool = False
 
-    def validate_domain_rules(self) -> None:
-        """Validate entity domain rules.
+    def validate_business_rules(self) -> None:
+        """Validate entity business rules.
 
         Raises:
             FlextOracleWmsDataValidationError: If entity data is invalid
@@ -80,7 +80,7 @@ class FlextOracleWmsDiscoveryResult:
     errors: list[str] = field(default_factory=list)
     api_version: str | None = None
 
-    def validate_domain_rules(self) -> None:
+    def validate_business_rules(self) -> None:
         """Validate discovery result.
 
         Raises:
@@ -110,7 +110,7 @@ class FlextOracleWmsDiscoveryResult:
 
         # Validate all entities
         for entity in self.entities:
-            entity.validate_domain_rules()
+            entity.validate_business_rules()
 
 
 @dataclass(frozen=True)
@@ -122,7 +122,7 @@ class FlextOracleWmsApiResponse:
     success: bool = True
     error_message: str | None = None
 
-    def validate_domain_rules(self) -> None:
+    def validate_business_rules(self) -> None:
         """Validate API response.
 
         Raises:

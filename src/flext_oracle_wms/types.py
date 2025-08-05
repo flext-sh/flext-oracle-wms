@@ -56,7 +56,7 @@ TOracleWmsSchema = dict[str, dict[str, object]]
 
 # API types - USED BY CLIENT
 TOracleWmsApiResponse = dict[str, object]
-TOracleWmsApiVersion = Literal["v10", "v11", "legacy"]
+TOracleWmsApiVersion = Literal["v10", "v9", "v8", "legacy"]
 
 # Entity naming - USED BY CLIENT/DISCOVERY
 TOracleWmsEntityId = Annotated[str, StringConstraints(min_length=1, max_length=100)]

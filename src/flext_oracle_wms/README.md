@@ -6,7 +6,7 @@ This directory contains the core implementation of the **flext-oracle-wms** libr
 
 ### 🎯 **Core Interface**
 
-- **[**init**.py](__init__.py)** - Public API gateway with comprehensive exports and version information
+- **[**init**.py](**init**.py)** - Public API gateway with comprehensive exports and version information
 - **[client.py](client.py)** - Primary FlextOracleWmsClient interface for Oracle WMS operations
 - **[config.py](config.py)** - Type-safe configuration management with Pydantic validation
 

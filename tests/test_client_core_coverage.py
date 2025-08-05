@@ -159,18 +159,13 @@ class TestFlextOracleWmsClientCore:
         """Test getting APIs filtered by category."""
         client = FlextOracleWmsClient(mock_config)
 
-        # Test with valid category (need to check what categories exist)
-        # For now, just test the method returns a dict
-        try:
-            inventory_apis = client.get_apis_by_category("inventory")
-            assert isinstance(inventory_apis, dict)
-        except Exception:
-            # Category might not exist, test with any value
-            pass
-
-        # Test method exists and returns dict
-        result = client.get_apis_by_category("any_category")
+        # Test method exists and returns dict for any category (even if empty/invalid)
+        result = client.get_apis_by_category("inventory")
         assert isinstance(result, dict)
+
+        # Test with another category to verify consistent behavior
+        result2 = client.get_apis_by_category("any_category")
+        assert isinstance(result2, dict)
 
     @pytest.mark.asyncio
     async def test_health_check_not_started(self, mock_config) -> None:

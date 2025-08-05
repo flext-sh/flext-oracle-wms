@@ -48,7 +48,7 @@ def test_config_validation_success() -> None:
     )
 
     # This should not raise an exception
-    result = config.validate_domain_rules()
+    result = config.validate_business_rules()
     assert result.success
 
 
@@ -67,7 +67,7 @@ def test_config_validation_invalid_url() -> None:
         enable_logging=True,
     )
 
-    result = config.validate_domain_rules()
+    result = config.validate_business_rules()
     assert result.is_failure
     assert "http://" in result.error or "https://" in result.error
 
@@ -87,7 +87,7 @@ def test_config_validation_empty_username() -> None:
         enable_logging=True,
     )
 
-    result = config.validate_domain_rules()
+    result = config.validate_business_rules()
     assert result.is_failure
     assert "username" in result.error.lower()
 
@@ -107,7 +107,7 @@ def test_config_validation_empty_password() -> None:
         enable_logging=True,
     )
 
-    result = config.validate_domain_rules()
+    result = config.validate_business_rules()
     assert result.is_failure
     assert "password" in result.error.lower()
 
@@ -127,7 +127,7 @@ def test_config_validation_invalid_timeout() -> None:
         enable_logging=True,
     )
 
-    result = config.validate_domain_rules()
+    result = config.validate_business_rules()
     assert result.is_failure
     assert "timeout" in result.error.lower()
 
@@ -147,6 +147,6 @@ def test_config_validation_invalid_retries() -> None:
         enable_logging=True,
     )
 
-    result = config.validate_domain_rules()
+    result = config.validate_business_rules()
     assert result.is_failure
     assert "retries" in result.error.lower()

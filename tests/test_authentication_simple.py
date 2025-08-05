@@ -111,7 +111,7 @@ class TestAuthenticationSimple:
             username="testuser",
             password="testpass",
         )
-        result = config.validate_domain_rules()
+        result = config.validate_business_rules()
         assert result.success
 
     def test_config_validation_success_bearer(self) -> None:
@@ -119,7 +119,7 @@ class TestAuthenticationSimple:
         config = FlextOracleWmsAuthConfig(
             auth_type=OracleWMSAuthMethod.BEARER, token="valid_token"
         )
-        result = config.validate_domain_rules()
+        result = config.validate_business_rules()
         assert result.success
 
     def test_config_validation_success_api_key(self) -> None:
@@ -127,5 +127,5 @@ class TestAuthenticationSimple:
         config = FlextOracleWmsAuthConfig(
             auth_type=OracleWMSAuthMethod.API_KEY, api_key="valid_api_key"
         )
-        result = config.validate_domain_rules()
+        result = config.validate_business_rules()
         assert result.success

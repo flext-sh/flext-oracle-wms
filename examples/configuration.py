@@ -115,9 +115,7 @@ def create_config_from_environment() -> FlextOracleWmsClientConfig:
             if not value
         ]
         msg = f"Missing required environment variables: {', '.join(missing)}"
-        raise ValueError(
-            msg
-        )
+        raise ValueError(msg)
 
     return FlextOracleWmsClientConfig(
         base_url=base_url,

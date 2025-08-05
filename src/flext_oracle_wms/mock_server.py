@@ -233,41 +233,50 @@ class OracleWmsMockServer:
     ) -> FlextResult[dict[str, object]]:
         """Get mock response for specified API."""
         try:
-            if api_name == "health_check":
-                return FlextResult.ok(self.mock_health_check())
-            if api_name == "discover_entities":
-                return FlextResult.ok(self.mock_entity_discovery())
-            if api_name == "get_entity_data":
-                entity_name = str(kwargs.get("entity_name", "company"))
-                limit_value = kwargs.get("limit", 10)
-                limit = int(limit_value) if isinstance(limit_value, (int, str)) else 10
-                return FlextResult.ok(self.mock_entity_data(entity_name, limit))
-            if api_name == "lgf_async_task_status":
-                task_id = (
-                    str(kwargs.get("task_id"))
-                    if kwargs.get("task_id") is not None
-                    else None
-                )
-                return FlextResult.ok(self.mock_async_task_status(task_id))
-            if api_name == "lgf_data_extract":
-                return FlextResult.ok(self.mock_data_extract_response())
+            # API handlers mapping
+            handlers = {
+                "health_check": self.mock_health_check,
+                "discover_entities": self.mock_entity_discovery,
+                "get_entity_data": lambda: self._handle_get_entity_data(kwargs),
+                "lgf_async_task_status": lambda: self._handle_async_task_status(kwargs),
+                "lgf_data_extract": self.mock_data_extract_response,
+            }
+
+            handler = handlers.get(api_name)
+            if handler:
+                return FlextResult.ok(handler())
             return FlextResult.fail(f"Mock not implemented for API: {api_name}")
 
         except Exception as e:
-            logger.exception(f"Mock response generation failed for {api_name}: {e}")
+            logger.exception("Mock response generation failed for %s", api_name)
             return FlextResult.fail(f"Mock error: {e}")
 
+    def _handle_get_entity_data(self, kwargs: dict[str, object]) -> dict[str, object]:
+        """Handle get_entity_data API mock."""
+        entity_name = str(kwargs.get("entity_name", "company"))
+        limit_value = kwargs.get("limit", 10)
+        limit = int(limit_value) if isinstance(limit_value, (int, str)) else 10
+        return self.mock_entity_data(entity_name, limit)
 
-# Global mock server instance
-_mock_server: OracleWmsMockServer | None = None
+    def _handle_async_task_status(self, kwargs: dict[str, object]) -> dict[str, object]:
+        """Handle async task status API mock."""
+        task_id = (
+            str(kwargs.get("task_id"))
+            if kwargs.get("task_id") is not None
+            else None
+        )
+        return self.mock_async_task_status(task_id)
+
+
+# Mock server cache
+_mock_servers: dict[str, OracleWmsMockServer] = {}
 
 
 def get_mock_server(environment: str = "mock_test") -> OracleWmsMockServer:
-    """Get global mock server instance."""
-    global _mock_server
-    if _mock_server is None:
-        _mock_server = OracleWmsMockServer(environment)
-    return _mock_server
+    """Get mock server instance for environment."""
+    if environment not in _mock_servers:
+        _mock_servers[environment] = OracleWmsMockServer(environment)
+    return _mock_servers[environment]
 
 
 def enable_mock_mode() -> None:

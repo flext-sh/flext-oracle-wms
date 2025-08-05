@@ -72,9 +72,7 @@ def load_config_from_environment() -> FlextOracleWmsClientConfig:
 
     if not all([base_url, username, password]):
         msg = "Missing required environment variables: ORACLE_WMS_BASE_URL, ORACLE_WMS_USERNAME, ORACLE_WMS_PASSWORD"
-        raise ValueError(
-            msg
-        )
+        raise ValueError(msg)
 
     return FlextOracleWmsClientConfig(
         base_url=base_url,
@@ -241,7 +239,7 @@ async def showcase_4_authentication(config: FlextOracleWmsClientConfig) -> None:
     print(f"   🔑 Current Authentication Method: {auth_config.auth_type.value}")
 
     # Demonstrate auth validation
-    validation_result = auth_config.validate_domain_rules()
+    validation_result = auth_config.validate_business_rules()
     if validation_result.success:
         print("   ✅ Authentication configuration is valid")
     else:
@@ -341,7 +339,7 @@ async def showcase_6_error_handling(client: FlextOracleWmsClient) -> None:
             verify_ssl=True,
             enable_logging=True,
         )
-        validation = invalid_config.validate_domain_rules()
+        validation = invalid_config.validate_business_rules()
         if not validation.success:
             print("   ✅ Configuration validation caught errors")
         else:

@@ -80,9 +80,7 @@ def load_oracle_wms_config() -> FlextOracleWmsClientConfig:
             if not val
         ]
         msg = f"Missing required environment variables: {', '.join(missing)}"
-        raise ValueError(
-            msg
-        )
+        raise ValueError(msg)
 
     return FlextOracleWmsClientConfig(
         base_url=base_url,

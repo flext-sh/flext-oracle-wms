@@ -26,12 +26,17 @@ from typing import Any
 
 from flext_core import FlextResult
 
+# Display configuration constants
+MAX_ENTITIES_TO_SHOW = 5
+MAX_VALUE_DISPLAY_LENGTH = 50
+
 from flext_oracle_wms import (
     FlextOracleWmsClient,
     FlextOracleWmsClientConfig,
     FlextOracleWmsEntity,
     FlextOracleWmsError,
 )
+from flext_oracle_wms.api_catalog import FlextOracleWmsApiVersion
 
 # Load .env file from project root
 try:
@@ -70,8 +75,6 @@ def create_client_config() -> FlextOracleWmsClientConfig:
         raise ValueError(msg)
 
     # Create configuration with environment-driven settings
-    from flext_oracle_wms.api_catalog import FlextOracleWmsApiVersion
-
     return FlextOracleWmsClientConfig(
         base_url=base_url,
         username=username,
@@ -120,8 +123,8 @@ async def discover_wms_entities(
             if hasattr(entity, "entity_type"):
                 print(f"      Type: {entity.entity_type}")
 
-        if len(entities) > 5:
-            print(f"   ... and {len(entities) - 5} more entities")
+        if len(entities) > MAX_ENTITIES_TO_SHOW:
+            print(f"   ... and {len(entities) - MAX_ENTITIES_TO_SHOW} more entities")
 
         return result
     print(f"❌ Entity discovery failed: {result.error}")
@@ -184,8 +187,8 @@ async def query_entity_data(
                         )
                         # Truncate long values for display
                         display_value = (
-                            str(value)[:50] + "..."
-                            if len(str(value)) > 50
+                            str(value)[:MAX_VALUE_DISPLAY_LENGTH] + "..."
+                            if len(str(value)) > MAX_VALUE_DISPLAY_LENGTH
                             else str(value)
                         )
                         print(f"      {field}: {display_value}")

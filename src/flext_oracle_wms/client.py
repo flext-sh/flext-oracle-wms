@@ -130,12 +130,28 @@ class FlextOracleWmsPlugin(FlextPlugin):
 
     def __init__(self, config: dict[str, object] | None = None) -> None:
         """Initialize Oracle WMS plugin."""
+        # Type hint already ensures config is dict | None, so no runtime validation needed
+
+        final_config = config or {}
+        plugin_config = {
+            "description": "Oracle WMS Cloud integration plugin",
+            "author": "FLEXT Team",
+            **final_config,
+        }
+
+        # Call parent constructor with named arguments to avoid the bug
         super().__init__(
             name="oracle-wms-plugin",
             version="0.9.0",
-            config=config or {},
+            config=plugin_config,
         )
         self._client: FlextOracleWmsClient | None = None
+        self._original_config = config  # Store original config for compatibility
+
+    @property
+    def config(self) -> dict[str, object] | None:
+        """Get original config for compatibility."""
+        return self._original_config
 
     async def start(self) -> FlextResult[None]:
         """Start Oracle WMS plugin."""
@@ -774,7 +790,7 @@ class FlextOracleWmsClient:
         handler = method_handlers.get(method)
         if handler:
             # Type: ignore needed for dynamic lambda handlers
-            return await handler()
+            return await handler()  # type: ignore[no-untyped-call]
         return FlextResult.fail(f"Unsupported HTTP method: {method}")
 
     def _validate_response(

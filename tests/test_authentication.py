@@ -66,7 +66,7 @@ def test_basic_auth_validation() -> None:
     config = FlextOracleWmsAuthConfig(
         auth_type=OracleWMSAuthMethod.BASIC, username="user", password="pass"
     )
-    result = config.validate_domain_rules()
+    result = config.validate_business_rules()
     assert result.success is True
 
 
@@ -75,7 +75,7 @@ def test_basic_auth_validation_empty_credentials() -> None:
     config = FlextOracleWmsAuthConfig(
         auth_type=OracleWMSAuthMethod.BASIC, username="", password=""
     )
-    result = config.validate_domain_rules()
+    result = config.validate_business_rules()
     assert result.success is False
 
 
@@ -85,7 +85,7 @@ def test_bearer_validation_missing_token() -> None:
         auth_type=OracleWMSAuthMethod.BEARER,
         # Missing token
     )
-    result = config.validate_domain_rules()
+    result = config.validate_business_rules()
     assert result.success is False
 
 

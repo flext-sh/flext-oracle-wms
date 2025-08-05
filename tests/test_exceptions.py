@@ -55,7 +55,7 @@ from flext_oracle_wms.exceptions import (
 def test_base_error() -> None:
     """Test base error exception."""
     error = FlextOracleWmsError("Test error")
-    assert str(error) == "[GENERIC_ERROR] Test error"
+    assert str(error) == "[FLEXT_0001] Test error"
     assert isinstance(error, Exception)
 
 
@@ -63,7 +63,7 @@ def test_base_error_with_details() -> None:
     """Test base error with error details."""
     details = {"code": "E001", "field": "username"}
     error = FlextOracleWmsError("Test error", details=details)
-    assert str(error) == "[GENERIC_ERROR] Test error"
+    assert str(error) == "[FLEXT_0001] Test error"
     assert error.details == details
 
 
@@ -271,5 +271,5 @@ def test_base_error_with_error_code() -> None:
 def test_base_error_with_entity_name() -> None:
     """Test base error with entity name."""
     error = FlextOracleWmsError("Test error", entity_name="order_hdr")
-    assert str(error) == "[GENERIC_ERROR] Test error"
+    assert str(error) == "[FLEXT_0001] Test error"
     assert error.entity_name == "order_hdr"

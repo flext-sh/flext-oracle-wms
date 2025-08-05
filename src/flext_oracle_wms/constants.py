@@ -9,7 +9,7 @@ Oracle WMS-specific constants that extend flext-core patterns.
 from __future__ import annotations
 
 from enum import StrEnum
-from typing import ClassVar
+from typing import ClassVar, Literal
 
 from flext_core.constants import FlextSemanticConstants
 
@@ -32,13 +32,14 @@ class FlextOracleWmsSemanticConstants(FlextSemanticConstants):
         NAME = "flext-oracle-wms"
         VERSION = "0.9.0"
         ECOSYSTEM_SIZE = 33
+        DEFAULT_ENVIRONMENT = "default"
 
     class Api:
         """API configuration constants."""
 
         # API versions
         VERSIONS: ClassVar[list[str]] = ["v10", "v9", "v8"]
-        DEFAULT_VERSION = "v10"
+        DEFAULT_VERSION: Literal["v10"] = "v10"
 
         # Base paths
         LGF_API_BASE = "/wms/lgfapi"
@@ -53,6 +54,8 @@ class FlextOracleWmsSemanticConstants(FlextSemanticConstants):
         HTTP_BAD_REQUEST = 400
         HTTP_UNAUTHORIZED = 401
         HTTP_FORBIDDEN = 403
+        MIN_HTTP_STATUS_CODE = 100
+        MAX_HTTP_STATUS_CODE = 599
 
         AUTH_ERROR_CODES: ClassVar[tuple[int, ...]] = (401, 403)
 
@@ -67,23 +70,30 @@ class FlextOracleWmsSemanticConstants(FlextSemanticConstants):
         """Oracle WMS entity type constants."""
 
         CORE_ENTITIES: ClassVar[list[str]] = [
-            "company", "facility", "location", "item"
+            "company",
+            "facility",
+            "location",
+            "item",
         ]
 
         ORDER_ENTITIES: ClassVar[list[str]] = [
-            "order_hdr", "order_dtl"
+            "order_hdr",
+            "order_dtl",
         ]
 
         INVENTORY_ENTITIES: ClassVar[list[str]] = [
-            "inventory", "allocation"
+            "inventory",
+            "allocation",
         ]
 
         MOVEMENT_ENTITIES: ClassVar[list[str]] = [
-            "pick_hdr", "pick_dtl"
+            "pick_hdr",
+            "pick_dtl",
         ]
 
         SHIPMENT_ENTITIES: ClassVar[list[str]] = [
-            "shipment", "oblpn"
+            "shipment",
+            "oblpn",
         ]
 
         # Entity validation
@@ -94,8 +104,16 @@ class FlextOracleWmsSemanticConstants(FlextSemanticConstants):
         """Data filtering constants."""
 
         OPERATORS: ClassVar[list[str]] = [
-            "eq", "ne", "gt", "ge", "lt", "le",
-            "in", "not_in", "like", "not_like"
+            "eq",
+            "ne",
+            "gt",
+            "ge",
+            "lt",
+            "le",
+            "in",
+            "not_in",
+            "like",
+            "not_like",
         ]
 
         MAX_FILTER_CONDITIONS = 50
@@ -331,7 +349,9 @@ class FlextOracleWmsDefaults:
 
     # Authentication
     MIN_TOKEN_LENGTH = FlextOracleWmsSemanticConstants.Authentication.MIN_TOKEN_LENGTH
-    MIN_API_KEY_LENGTH = FlextOracleWmsSemanticConstants.Authentication.MIN_API_KEY_LENGTH
+    MIN_API_KEY_LENGTH = (
+        FlextOracleWmsSemanticConstants.Authentication.MIN_API_KEY_LENGTH
+    )
 
     # Pagination
     DEFAULT_PAGE_SIZE = FlextOracleWmsSemanticConstants.Pagination.DEFAULT_PAGE_SIZE
@@ -348,31 +368,46 @@ class FlextOracleWmsDefaults:
 
     # Schema Discovery
     DEFAULT_SAMPLE_SIZE = FlextOracleWmsSemanticConstants.Processing.DEFAULT_SAMPLE_SIZE
-    MIN_CONFIDENCE_THRESHOLD = FlextOracleWmsSemanticConstants.Processing.MIN_CONFIDENCE_THRESHOLD
+    MIN_CONFIDENCE_THRESHOLD = (
+        FlextOracleWmsSemanticConstants.Processing.MIN_CONFIDENCE_THRESHOLD
+    )
     MAX_SCHEMA_DEPTH = FlextOracleWmsSemanticConstants.Processing.MAX_SCHEMA_DEPTH
 
     # Connections
     DEFAULT_POOL_SIZE = FlextOracleWmsSemanticConstants.Connections.DEFAULT_POOL_SIZE
     MAX_POOL_SIZE = FlextOracleWmsSemanticConstants.Connections.MAX_POOL_SIZE
-    DEFAULT_CONNECT_TIMEOUT = FlextOracleWmsSemanticConstants.Connections.DEFAULT_CONNECT_TIMEOUT
-    DEFAULT_READ_TIMEOUT = FlextOracleWmsSemanticConstants.Connections.DEFAULT_READ_TIMEOUT
+    DEFAULT_CONNECT_TIMEOUT = (
+        FlextOracleWmsSemanticConstants.Connections.DEFAULT_CONNECT_TIMEOUT
+    )
+    DEFAULT_READ_TIMEOUT = (
+        FlextOracleWmsSemanticConstants.Connections.DEFAULT_READ_TIMEOUT
+    )
 
     # Caching
     DEFAULT_CACHE_TTL = FlextOracleWmsSemanticConstants.Caching.DEFAULT_CACHE_TTL
     MAX_CACHE_SIZE = FlextOracleWmsSemanticConstants.Caching.MAX_CACHE_SIZE
 
     # Entity Validation
-    MAX_ENTITY_NAME_LENGTH = FlextOracleWmsSemanticConstants.Entities.MAX_ENTITY_NAME_LENGTH
+    MAX_ENTITY_NAME_LENGTH = (
+        FlextOracleWmsSemanticConstants.Entities.MAX_ENTITY_NAME_LENGTH
+    )
     ENTITY_NAME_PATTERN = FlextOracleWmsSemanticConstants.Entities.ENTITY_NAME_PATTERN
 
     # Filter Limits
-    MAX_FILTER_CONDITIONS = FlextOracleWmsSemanticConstants.Filtering.MAX_FILTER_CONDITIONS
+    MAX_FILTER_CONDITIONS = (
+        FlextOracleWmsSemanticConstants.Filtering.MAX_FILTER_CONDITIONS
+    )
 
     # HTTP status codes
     HTTP_OK = FlextOracleWmsSemanticConstants.Api.HTTP_OK
     HTTP_BAD_REQUEST = FlextOracleWmsSemanticConstants.Api.HTTP_BAD_REQUEST
     HTTP_UNAUTHORIZED = FlextOracleWmsSemanticConstants.Api.HTTP_UNAUTHORIZED
     HTTP_FORBIDDEN = FlextOracleWmsSemanticConstants.Api.HTTP_FORBIDDEN
+    MIN_HTTP_STATUS_CODE = FlextOracleWmsSemanticConstants.Api.MIN_HTTP_STATUS_CODE
+    MAX_HTTP_STATUS_CODE = FlextOracleWmsSemanticConstants.Api.MAX_HTTP_STATUS_CODE
+
+    # Core constants
+    DEFAULT_ENVIRONMENT = FlextOracleWmsSemanticConstants.Core.DEFAULT_ENVIRONMENT
 
     # Authentication status codes
     AUTH_ERROR_CODES = FlextOracleWmsSemanticConstants.Api.AUTH_ERROR_CODES

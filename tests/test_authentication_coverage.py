@@ -52,7 +52,7 @@ class TestFlextOracleWmsAuthConfig:
             username="",
             password="test_pass",
         )
-        result = config.validate_domain_rules()
+        result = config.validate_business_rules()
         assert not result.success
         assert "Username and password required" in result.error
 
@@ -63,7 +63,7 @@ class TestFlextOracleWmsAuthConfig:
             username="test_user",
             password="",
         )
-        result = config.validate_domain_rules()
+        result = config.validate_business_rules()
         assert not result.success
         assert "Username and password required" in result.error
 
@@ -73,7 +73,7 @@ class TestFlextOracleWmsAuthConfig:
             auth_type=OracleWMSAuthMethod.BEARER,
             token="",
         )
-        result = config.validate_domain_rules()
+        result = config.validate_business_rules()
         assert not result.success
         assert "Token required" in result.error
 
@@ -83,7 +83,7 @@ class TestFlextOracleWmsAuthConfig:
             auth_type=OracleWMSAuthMethod.API_KEY,
             api_key="",
         )
-        result = config.validate_domain_rules()
+        result = config.validate_business_rules()
         assert not result.success
         assert "API key required" in result.error
 
@@ -94,7 +94,7 @@ class TestFlextOracleWmsAuthConfig:
             username="test_user",
             password="test_pass",
         )
-        result = config.validate_domain_rules()
+        result = config.validate_business_rules()
         assert result.success
 
 

@@ -1254,7 +1254,7 @@ optional = false
 python-versions = ">=3.13,<3.14"
 groups = ["main"]
 files = []
-develop = true
+develop = false
 
 [package.dependencies]
 pydantic = ">=2.11.7"
@@ -4913,4 +4913,4 @@ type = ["pytest-mypy"]
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.13,<3.14"
-content-hash = "ecc3cdf9120ba60c6738577950e176410c79d1095e367f196deede0447787489"
+content-hash = "07520aa17770fa6888e2ca745e1cdb9da97530b5a496ea131676fec17c8111df"

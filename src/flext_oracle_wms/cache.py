@@ -72,8 +72,8 @@ class FlextOracleWmsCacheConfig(FlextValueObject):
     enable_statistics: bool = True
     enable_async_cleanup: bool = True
 
-    def validate_domain_rules(self) -> FlextResult[None]:
-        """Validate Oracle WMS cache configuration domain rules."""
+    def validate_business_rules(self) -> FlextResult[None]:
+        """Validate Oracle WMS cache configuration business rules."""
         if self.default_ttl_seconds <= 0:
             return FlextResult.fail("Default TTL must be positive")
         if self.max_cache_entries <= 0:
@@ -99,7 +99,7 @@ class FlextOracleWmsCacheEntry[T](FlextValueObject):
         if self.last_accessed == 0.0:
             object.__setattr__(self, "last_accessed", time.time())
 
-    def validate_domain_rules(self) -> FlextResult[None]:
+    def validate_business_rules(self) -> FlextResult[None]:
         """Validate Oracle WMS cache entry domain rules."""
         if not self.key:
             return FlextResult.fail("Cache key cannot be empty")
@@ -139,7 +139,7 @@ class FlextOracleWmsCacheStats(FlextValueObject):
     memory_usage_bytes: int = 0
     last_cleanup: float = 0.0
 
-    def validate_domain_rules(self) -> FlextResult[None]:
+    def validate_business_rules(self) -> FlextResult[None]:
         """Validate Oracle WMS cache statistics domain rules."""
         if self.hits < 0 or self.misses < 0 or self.evictions < 0:
             return FlextResult.fail("Statistics counters cannot be negative")
@@ -199,7 +199,15 @@ class FlextOracleWmsCacheManager:
         self._cache_lock = threading.RLock()
 
         # Statistics
-        self._stats = FlextOracleWmsCacheStats(last_cleanup=time.time())
+        self._stats = FlextOracleWmsCacheStats(
+            hits=0,
+            misses=0,
+            evictions=0,
+            expired_entries=0,
+            total_entries=0,
+            memory_usage_bytes=0,
+            last_cleanup=time.time(),
+        )
 
         # Cleanup task
         self._cleanup_task: asyncio.Task[None] | None = None
@@ -369,7 +377,15 @@ class FlextOracleWmsCacheManager:
                 self._schema_cache.clear()
                 self._metadata_cache.clear()
 
-                self._stats = FlextOracleWmsCacheStats(last_cleanup=time.time())
+                self._stats = FlextOracleWmsCacheStats(
+                    hits=0,
+                    misses=0,
+                    evictions=0,
+                    expired_entries=0,
+                    total_entries=0,
+                    memory_usage_bytes=0,
+                    last_cleanup=time.time(),
+                )
 
             logger.info("All caches cleared")
             return FlextResult.ok(None)
@@ -475,6 +491,8 @@ class FlextOracleWmsCacheManager:
                     value=value,
                     timestamp=time.time(),
                     ttl_seconds=ttl,
+                    access_count=0,
+                    last_accessed=time.time(),
                 )
 
                 cache[key] = entry
@@ -601,5 +619,8 @@ def flext_oracle_wms_create_cache_manager(
     config = FlextOracleWmsCacheConfig(
         default_ttl_seconds=min(entity_ttl, schema_ttl, metadata_ttl),
         max_cache_entries=max_size,
+        cleanup_interval_seconds=300,  # 5 minutes default
+        enable_statistics=True,
+        enable_async_cleanup=True,
     )
     return FlextOracleWmsCacheManager(config)
