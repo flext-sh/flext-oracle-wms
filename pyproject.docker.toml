@@ -136,24 +136,6 @@ markers = [
     "slow: Slow-running tests",
 ]
 
-[tool.ruff]
-target-version = "py313"
-line-length = 88
-
-[tool.ruff.lint]
-select = ["ALL"]
-ignore = [
-    "D100", "D101", "D102", "D103", "D104", "D105", "D106", "D107",
-    "ANN101", "ANN102", "ANN401",
-    "S101", "S603", 
-    "ERA001",
-    "FBT001", "FBT002", "FBT003",
-    "ARG001", "ARG002", "ARG003", "ARG004", "ARG005",
-    "PLR0913", "PLR2004",
-    "C901", "PLR0911", "PLR0912", "PLR0915",
-    "UP007",
-]
-
 [tool.mypy]
 python_version = "3.13"
 strict = true

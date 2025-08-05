@@ -98,7 +98,7 @@ class TestFlextOracleWmsDynamicSchemaProcessor:
         assert processor._infer_field_type("test") == "string"
         assert processor._infer_field_type(123) == "integer"
         assert processor._infer_field_type(123.45) == "number"
-        assert processor._infer_field_type(True) == "boolean"  # noqa: FBT003
+        assert processor._infer_field_type(True) == "boolean"
 
     def test_private_methods_default_values(self) -> None:
         """Test private methods for default value generation."""
