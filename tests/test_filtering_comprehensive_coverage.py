@@ -38,7 +38,9 @@ class TestFlextOracleWmsFilterConstruction:
         """Test filter creation with default parameters."""
         filter_engine = FlextOracleWmsFilter()
         assert filter_engine.case_sensitive is False
-        assert filter_engine.max_conditions == FlextOracleWmsDefaults.MAX_FILTER_CONDITIONS
+        assert (
+            filter_engine.max_conditions == FlextOracleWmsDefaults.MAX_FILTER_CONDITIONS
+        )
 
     def test_filter_custom_construction(self) -> None:
         """Test filter creation with custom parameters."""
@@ -61,7 +63,9 @@ class TestFlextOracleWmsFilterConstruction:
     def test_filter_max_conditions_limit_exceeded(self) -> None:
         """Test filter creation fails when exceeding maximum limit."""
         with pytest.raises(FlextOracleWmsError) as exc:
-            FlextOracleWmsFilter(max_conditions=FlextOracleWmsDefaults.MAX_FILTER_CONDITIONS + 1)
+            FlextOracleWmsFilter(
+                max_conditions=FlextOracleWmsDefaults.MAX_FILTER_CONDITIONS + 1
+            )
         assert "cannot exceed" in str(exc.value)
 
     def test_filter_operators_initialized(self) -> None:
@@ -102,7 +106,7 @@ class TestFilterValidation:
         filters = {
             "status": "active",
             "type": ["A", "B", "C"],  # 3 conditions
-            "id": 123,                # 1 condition
+            "id": 123,  # 1 condition
         }
         result = filter_engine._validate_filter_conditions_count(filters)
         assert result.success
@@ -111,7 +115,12 @@ class TestFilterValidation:
         """Test validation fails when conditions exceed limit."""
         filter_engine = FlextOracleWmsFilter(max_conditions=3)
         filters = {
-            "status": ["active", "inactive", "pending", "archived"],  # 4 conditions > 3 limit
+            "status": [
+                "active",
+                "inactive",
+                "pending",
+                "archived",
+            ],  # 4 conditions > 3 limit
         }
         result = filter_engine._validate_filter_conditions_count(filters)
         assert result.is_failure
@@ -208,7 +217,9 @@ class TestRecordFiltering:
         """Test filtering with result limit."""
         filter_engine = FlextOracleWmsFilter()
         filters = {"status": "active"}
-        result = await filter_engine.filter_records(self.sample_records, filters, limit=1)
+        result = await filter_engine.filter_records(
+            self.sample_records, filters, limit=1
+        )
 
         assert result.success
         assert len(result.data) == 1
@@ -361,7 +372,9 @@ class TestNestedValueAccess:
     def test_get_nested_value_two_levels_deep(self) -> None:
         """Test getting two levels nested value."""
         filter_engine = FlextOracleWmsFilter()
-        value = filter_engine._get_nested_value(self.nested_record, "company.address.city")
+        value = filter_engine._get_nested_value(
+            self.nested_record, "company.address.city"
+        )
         assert value == "New York"
 
     def test_get_nested_value_nonexistent_field(self) -> None:
@@ -373,7 +386,9 @@ class TestNestedValueAccess:
     def test_get_nested_value_nonexistent_nested_field(self) -> None:
         """Test getting nonexistent nested field returns None."""
         filter_engine = FlextOracleWmsFilter()
-        value = filter_engine._get_nested_value(self.nested_record, "company.nonexistent")
+        value = filter_engine._get_nested_value(
+            self.nested_record, "company.nonexistent"
+        )
         assert value is None
 
     def test_get_nested_value_invalid_path(self) -> None:
@@ -519,7 +534,9 @@ class TestFactoryFunction:
         """Test creating filter with default parameters."""
         filter_engine = flext_oracle_wms_create_filter()
         assert filter_engine.case_sensitive is False
-        assert filter_engine.max_conditions == FlextOracleWmsDefaults.MAX_FILTER_CONDITIONS
+        assert (
+            filter_engine.max_conditions == FlextOracleWmsDefaults.MAX_FILTER_CONDITIONS
+        )
 
     def test_create_filter_custom(self) -> None:
         """Test creating filter with custom parameters."""
@@ -570,9 +587,7 @@ class TestConvenienceFunctions:
     @pytest.mark.asyncio
     async def test_filter_by_field_numeric_value(self) -> None:
         """Test filter by field with numeric value."""
-        result = await flext_oracle_wms_filter_by_field(
-            self.sample_records, "id", 2
-        )
+        result = await flext_oracle_wms_filter_by_field(self.sample_records, "id", 2)
 
         assert result.success
         assert len(result.data) == 1
@@ -732,26 +747,8 @@ class TestPerformanceAndEdgeCases:
     async def test_filter_with_complex_nested_data(self) -> None:
         """Test filtering with deeply nested data structures."""
         complex_records = [
-            {
-                "id": 1,
-                "data": {
-                    "level1": {
-                        "level2": {
-                            "level3": {"value": "target"}
-                        }
-                    }
-                }
-            },
-            {
-                "id": 2,
-                "data": {
-                    "level1": {
-                        "level2": {
-                            "level3": {"value": "other"}
-                        }
-                    }
-                }
-            },
+            {"id": 1, "data": {"level1": {"level2": {"level3": {"value": "target"}}}}},
+            {"id": 2, "data": {"level1": {"level2": {"level3": {"value": "other"}}}}},
         ]
 
         filter_engine = FlextOracleWmsFilter()
@@ -780,8 +777,12 @@ class TestPerformanceAndEdgeCases:
 
         # None values in path
         record_with_none = {"level1": None}
-        assert filter_engine._get_nested_value(record_with_none, "level1.level2") is None
+        assert (
+            filter_engine._get_nested_value(record_with_none, "level1.level2") is None
+        )
 
         # Non-dict intermediate values
         record_with_scalar = {"level1": "string_value"}
-        assert filter_engine._get_nested_value(record_with_scalar, "level1.level2") is None
+        assert (
+            filter_engine._get_nested_value(record_with_scalar, "level1.level2") is None
+        )

@@ -22,6 +22,8 @@ from flext_core import FlextResult, get_logger
 
 from flext_oracle_wms import (
     FLEXT_ORACLE_WMS_APIS,
+    FlextOracleWmsApiEndpoint,
+    FlextOracleWmsClient,
     FlextOracleWmsClientConfig,
     create_oracle_wms_client,
 )
@@ -38,7 +40,7 @@ class OracleWmsCompleteDiscovery:
 
     def __init__(self) -> None:
         """Initialize with ADMINISTRATOR credentials."""
-        self.config = FlextOracleWmsClientConfig(
+        self.config: FlextOracleWmsClientConfig = FlextOracleWmsClientConfig(
             base_url="https://ta29.wms.ocs.oraclecloud.com",
             username="USER_WMS_INTEGRA",  # ADMINISTRATOR TOTAL
             password="jmCyS7BK94YvhS@",
@@ -49,10 +51,10 @@ class OracleWmsCompleteDiscovery:
             verify_ssl=True,
             enable_logging=True,
         )
-        self.client = create_oracle_wms_client(self.config, mock_mode=False)
-        self.discovered_entities = []
-        self.entity_metadata = {}
-        self.complete_schemas = {}
+        self.client: FlextOracleWmsClient = create_oracle_wms_client(self.config, mock_mode=False)
+        self.discovered_entities: list[str] = []
+        self.entity_metadata: dict[str, Any] = {}
+        self.complete_schemas: dict[str, Any] = {}
 
     async def start_discovery(self) -> FlextResult[None]:
         """Start complete discovery process."""
@@ -62,20 +64,20 @@ class OracleWmsCompleteDiscovery:
 
         return FlextResult.ok(None)
 
-    async def discover_all_apis(self) -> FlextResult[dict[str, Any]]:
+    async def discover_all_apis(self) -> FlextResult[dict[str, dict[str, object | FlextResult[Any]]]]:
         """Discover and test ALL 22+ Oracle WMS APIs."""
-        api_results = {}
-        all_apis = FLEXT_ORACLE_WMS_APIS
+        api_results: dict[str, dict[str, object | FlextResult[Any]]] = {}
+        all_apis: dict[str, FlextOracleWmsApiEndpoint] = FLEXT_ORACLE_WMS_APIS
 
         for api_name, api_endpoint in all_apis.items():
             try:
                 # Test API based on its type and requirements
                 if api_endpoint.category == FlextOracleWmsApiCategory.DATA_EXTRACT:
-                    result = await self._test_data_extract_api(api_name, api_endpoint)
+                    result: FlextResult[Any] = await self._test_data_extract_api(api_name, api_endpoint)
                 elif (
                     api_endpoint.category == FlextOracleWmsApiCategory.ENTITY_OPERATIONS
                 ):
-                    result = await self._test_entity_operations_api(
+                    result: FlextResult[Any] = await self._test_entity_operations_api(
                         api_name,
                         api_endpoint,
                     )
@@ -83,14 +85,14 @@ class OracleWmsCompleteDiscovery:
                     api_endpoint.category
                     == FlextOracleWmsApiCategory.SETUP_TRANSACTIONAL
                 ):
-                    result = await self._test_setup_api(api_name, api_endpoint)
+                    result: FlextResult[Any] = await self._test_setup_api(api_name, api_endpoint)
                 elif (
                     api_endpoint.category
                     == FlextOracleWmsApiCategory.AUTOMATION_OPERATIONS
                 ):
-                    result = await self._test_automation_api(api_name, api_endpoint)
+                    result: FlextResult[Any] = await self._test_automation_api(api_name, api_endpoint)
                 else:
-                    result = FlextResult.fail("Unknown API category")
+                    result: FlextResult[Any] = FlextResult.fail("Unknown API category")
 
                 api_results[api_name] = {
                     "endpoint": api_endpoint,
@@ -108,11 +110,11 @@ class OracleWmsCompleteDiscovery:
                     "tested_at": datetime.now(UTC).isoformat(),
                 }
 
-        sum(1 for r in api_results.values() if r["result"].success)
+        _ = sum(1 for r in api_results.values() if r["result"].success)
 
         return FlextResult.ok(api_results)
 
-    async def _test_data_extract_api(self, api_name: str, endpoint) -> FlextResult[Any]:
+    async def _test_data_extract_api(self, api_name: str, endpoint: FlextOracleWmsApiEndpoint) -> FlextResult[Any]:
         """Test data extraction APIs."""
         try:
             if api_name == "lgf_entity_discovery":
@@ -380,7 +382,8 @@ class OracleWmsCompleteDiscovery:
                                         (str, int, float, bool, type(None)),
                                     ):
                                         if (
-                                            isinstance(v, str) and len(v) < MAX_STRING_LENGTH
+                                            isinstance(v, str)
+                                            and len(v) < MAX_STRING_LENGTH
                                         ) or not isinstance(v, str):
                                             safe_sample[k] = v
                                         else:
@@ -499,7 +502,7 @@ class OracleWmsCompleteDiscovery:
             }
 
         except Exception as e:
-            logger.exception(f"Schema generation failed for {entity_name}: {e}")
+            logger.exception("Schema generation failed for %s: %s", entity_name, e)
             return None
 
     def _map_to_singer_type(

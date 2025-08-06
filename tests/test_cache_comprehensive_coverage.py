@@ -48,7 +48,7 @@ def create_test_cache_entry(
     value: object = "test_value",
     ttl_seconds: int = 3600,
     access_count: int = 0,
-    **overrides
+    **overrides,
 ) -> FlextOracleWmsCacheEntry[object]:
     """Helper function to create cache entry with defaults."""
     defaults = {
@@ -73,7 +73,7 @@ class TestFlextOracleWmsCacheConfig:
             max_cache_entries=1000,
             cleanup_interval_seconds=300,
             enable_statistics=True,
-            enable_async_cleanup=True
+            enable_async_cleanup=True,
         )
 
         assert config.default_ttl_seconds == 3600  # 1 hour
@@ -89,7 +89,7 @@ class TestFlextOracleWmsCacheConfig:
             max_cache_entries=500,
             cleanup_interval_seconds=600,
             enable_statistics=False,
-            enable_async_cleanup=False
+            enable_async_cleanup=False,
         )
 
         assert config.default_ttl_seconds == 7200
@@ -105,7 +105,7 @@ class TestFlextOracleWmsCacheConfig:
             max_cache_entries=1000,
             cleanup_interval_seconds=300,
             enable_statistics=True,
-            enable_async_cleanup=True
+            enable_async_cleanup=True,
         )
 
         result = config.validate_business_rules()
@@ -172,7 +172,7 @@ class TestFlextOracleWmsCacheEntry:
             timestamp=timestamp,
             ttl_seconds=3600,
             access_count=0,
-            last_accessed=timestamp
+            last_accessed=timestamp,
         )
 
         assert entry.key == "test_key"
@@ -193,7 +193,7 @@ class TestFlextOracleWmsCacheEntry:
             timestamp=timestamp,
             ttl_seconds=1800,
             access_count=5,
-            last_accessed=last_accessed
+            last_accessed=last_accessed,
         )
 
         assert entry.access_count == 5
@@ -209,7 +209,7 @@ class TestFlextOracleWmsCacheEntry:
             timestamp=before_time,
             ttl_seconds=3600,
             access_count=0,
-            last_accessed=0.0  # This should trigger post_init to set it
+            last_accessed=0.0,  # This should trigger post_init to set it
         )
 
         after_time = time.time()
@@ -224,7 +224,7 @@ class TestFlextOracleWmsCacheEntry:
             timestamp=current_time,
             ttl_seconds=3600,
             access_count=1,
-            last_accessed=current_time
+            last_accessed=current_time,
         )
 
         result = entry.validate_business_rules()
@@ -238,7 +238,7 @@ class TestFlextOracleWmsCacheEntry:
             timestamp=time.time(),
             ttl_seconds=3600,
             access_count=0,
-            last_accessed=time.time()
+            last_accessed=time.time(),
         )
 
         result = entry.validate_business_rules()
@@ -248,10 +248,7 @@ class TestFlextOracleWmsCacheEntry:
     def test_cache_entry_validation_negative_ttl(self) -> None:
         """Test cache entry validation with negative TTL."""
         entry = FlextOracleWmsCacheEntry[str](
-            key="test",
-            value="value",
-            timestamp=time.time(),
-            ttl_seconds=-1
+            key="test", value="value", timestamp=time.time(), ttl_seconds=-1
         )
 
         result = entry.validate_business_rules()
@@ -266,7 +263,7 @@ class TestFlextOracleWmsCacheEntry:
             timestamp=time.time(),
             ttl_seconds=0,
             access_count=0,
-            last_accessed=time.time()
+            last_accessed=time.time(),
         )
 
         result = entry.validate_business_rules()
@@ -281,7 +278,7 @@ class TestFlextOracleWmsCacheEntry:
             timestamp=-1,
             ttl_seconds=3600,
             access_count=0,
-            last_accessed=time.time()
+            last_accessed=time.time(),
         )
 
         result = entry.validate_business_rules()
@@ -296,7 +293,7 @@ class TestFlextOracleWmsCacheEntry:
             timestamp=0,
             ttl_seconds=3600,
             access_count=0,
-            last_accessed=time.time()
+            last_accessed=time.time(),
         )
 
         result = entry.validate_business_rules()
@@ -310,7 +307,7 @@ class TestFlextOracleWmsCacheEntry:
             value="value",
             timestamp=time.time(),
             ttl_seconds=3600,
-            access_count=-1
+            access_count=-1,
         )
 
         result = entry.validate_business_rules()
@@ -324,7 +321,7 @@ class TestFlextOracleWmsCacheEntry:
             key="test",
             value="value",
             timestamp=old_timestamp,
-            ttl_seconds=3600  # 1 hour TTL
+            ttl_seconds=3600,  # 1 hour TTL
         )
 
         assert entry.is_expired() is True
@@ -338,7 +335,7 @@ class TestFlextOracleWmsCacheEntry:
             timestamp=recent_timestamp,
             ttl_seconds=3600,  # 1 hour TTL
             access_count=0,
-            last_accessed=recent_timestamp
+            last_accessed=recent_timestamp,
         )
 
         assert entry.is_expired() is False
@@ -353,7 +350,7 @@ class TestFlextOracleWmsCacheEntry:
             timestamp=timestamp,
             ttl_seconds=1,
             access_count=0,
-            last_accessed=timestamp
+            last_accessed=timestamp,
         )
 
         # Should not be expired yet
@@ -367,7 +364,7 @@ class TestFlextOracleWmsCacheEntry:
             timestamp=time.time(),
             ttl_seconds=3600,
             access_count=2,
-            last_accessed=time.time() - 100
+            last_accessed=time.time() - 100,
         )
 
         before_update = time.time()
@@ -393,8 +390,13 @@ class TestFlextOracleWmsCacheStats:
         """Test creating cache statistics with default values."""
         last_cleanup_time = time.time()
         stats = FlextOracleWmsCacheStats(
-            hits=0, misses=0, evictions=0, expired_entries=0,
-            total_entries=0, memory_usage_bytes=0, last_cleanup=last_cleanup_time
+            hits=0,
+            misses=0,
+            evictions=0,
+            expired_entries=0,
+            total_entries=0,
+            memory_usage_bytes=0,
+            last_cleanup=last_cleanup_time,
         )
 
         assert stats.hits == 0
@@ -415,7 +417,7 @@ class TestFlextOracleWmsCacheStats:
             expired_entries=10,
             total_entries=200,
             memory_usage_bytes=1024,
-            last_cleanup=last_cleanup
+            last_cleanup=last_cleanup,
         )
 
         assert stats.hits == 100
@@ -435,7 +437,7 @@ class TestFlextOracleWmsCacheStats:
             expired_entries=1,
             total_entries=20,
             memory_usage_bytes=512,
-            last_cleanup=time.time()
+            last_cleanup=time.time(),
         )
 
         result = stats.validate_business_rules()
@@ -443,7 +445,15 @@ class TestFlextOracleWmsCacheStats:
 
     def test_cache_stats_validation_negative_hits(self) -> None:
         """Test cache statistics validation with negative hits."""
-        stats = FlextOracleWmsCacheStats(hits=-1, misses=0, evictions=0, expired_entries=0, total_entries=0, memory_usage_bytes=0, last_cleanup=time.time())
+        stats = FlextOracleWmsCacheStats(
+            hits=-1,
+            misses=0,
+            evictions=0,
+            expired_entries=0,
+            total_entries=0,
+            memory_usage_bytes=0,
+            last_cleanup=time.time(),
+        )
 
         result = stats.validate_business_rules()
         assert result.is_failure
@@ -451,7 +461,15 @@ class TestFlextOracleWmsCacheStats:
 
     def test_cache_stats_validation_negative_misses(self) -> None:
         """Test cache statistics validation with negative misses."""
-        stats = FlextOracleWmsCacheStats(hits=0, misses=-1, evictions=0, expired_entries=0, total_entries=0, memory_usage_bytes=0, last_cleanup=time.time())
+        stats = FlextOracleWmsCacheStats(
+            hits=0,
+            misses=-1,
+            evictions=0,
+            expired_entries=0,
+            total_entries=0,
+            memory_usage_bytes=0,
+            last_cleanup=time.time(),
+        )
 
         result = stats.validate_business_rules()
         assert result.is_failure
@@ -459,7 +477,15 @@ class TestFlextOracleWmsCacheStats:
 
     def test_cache_stats_validation_negative_evictions(self) -> None:
         """Test cache statistics validation with negative evictions."""
-        stats = FlextOracleWmsCacheStats(hits=0, misses=0, evictions=-1, expired_entries=0, total_entries=0, memory_usage_bytes=0, last_cleanup=time.time())
+        stats = FlextOracleWmsCacheStats(
+            hits=0,
+            misses=0,
+            evictions=-1,
+            expired_entries=0,
+            total_entries=0,
+            memory_usage_bytes=0,
+            last_cleanup=time.time(),
+        )
 
         result = stats.validate_business_rules()
         assert result.is_failure
@@ -468,8 +494,13 @@ class TestFlextOracleWmsCacheStats:
     def test_cache_stats_validation_negative_expired_entries(self) -> None:
         """Test cache statistics validation with negative expired entries."""
         stats = FlextOracleWmsCacheStats(
-            hits=0, misses=0, evictions=0, expired_entries=-1,
-            total_entries=0, memory_usage_bytes=0, last_cleanup=time.time()
+            hits=0,
+            misses=0,
+            evictions=0,
+            expired_entries=-1,
+            total_entries=0,
+            memory_usage_bytes=0,
+            last_cleanup=time.time(),
         )
 
         result = stats.validate_business_rules()
@@ -478,7 +509,15 @@ class TestFlextOracleWmsCacheStats:
 
     def test_cache_stats_validation_negative_total_entries(self) -> None:
         """Test cache statistics validation with negative total entries."""
-        stats = FlextOracleWmsCacheStats(hits=0, misses=0, evictions=0, expired_entries=0, total_entries=-1, memory_usage_bytes=0, last_cleanup=time.time())
+        stats = FlextOracleWmsCacheStats(
+            hits=0,
+            misses=0,
+            evictions=0,
+            expired_entries=0,
+            total_entries=-1,
+            memory_usage_bytes=0,
+            last_cleanup=time.time(),
+        )
 
         result = stats.validate_business_rules()
         assert result.is_failure
@@ -486,7 +525,15 @@ class TestFlextOracleWmsCacheStats:
 
     def test_cache_stats_validation_negative_memory_usage(self) -> None:
         """Test cache statistics validation with negative memory usage."""
-        stats = FlextOracleWmsCacheStats(hits=0, misses=0, evictions=0, expired_entries=0, total_entries=0, memory_usage_bytes=-1, last_cleanup=time.time())
+        stats = FlextOracleWmsCacheStats(
+            hits=0,
+            misses=0,
+            evictions=0,
+            expired_entries=0,
+            total_entries=0,
+            memory_usage_bytes=-1,
+            last_cleanup=time.time(),
+        )
 
         result = stats.validate_business_rules()
         assert result.is_failure
@@ -494,7 +541,15 @@ class TestFlextOracleWmsCacheStats:
 
     def test_cache_stats_get_hit_ratio_no_requests(self) -> None:
         """Test hit ratio calculation with no requests."""
-        stats = FlextOracleWmsCacheStats(hits=0, misses=0, evictions=0, expired_entries=0, total_entries=0, memory_usage_bytes=0, last_cleanup=time.time())
+        stats = FlextOracleWmsCacheStats(
+            hits=0,
+            misses=0,
+            evictions=0,
+            expired_entries=0,
+            total_entries=0,
+            memory_usage_bytes=0,
+            last_cleanup=time.time(),
+        )
 
         assert stats.get_hit_ratio() == 0.0
 
@@ -507,7 +562,7 @@ class TestFlextOracleWmsCacheStats:
             expired_entries=0,
             total_entries=10,
             memory_usage_bytes=1024,
-            last_cleanup=time.time()
+            last_cleanup=time.time(),
         )
 
         assert stats.get_hit_ratio() == 1.0
@@ -521,7 +576,7 @@ class TestFlextOracleWmsCacheStats:
             expired_entries=0,
             total_entries=0,
             memory_usage_bytes=0,
-            last_cleanup=time.time()
+            last_cleanup=time.time(),
         )
 
         assert stats.get_hit_ratio() == 0.0
@@ -535,7 +590,7 @@ class TestFlextOracleWmsCacheStats:
             expired_entries=0,
             total_entries=100,
             memory_usage_bytes=2048,
-            last_cleanup=time.time()
+            last_cleanup=time.time(),
         )
 
         assert stats.get_hit_ratio() == 0.8
@@ -549,7 +604,7 @@ class TestFlextOracleWmsCacheStats:
             expired_entries=1,
             total_entries=20,
             memory_usage_bytes=512,
-            last_cleanup=time.time()
+            last_cleanup=time.time(),
         )
 
         updated_stats = original_stats.update_hit()
@@ -575,7 +630,7 @@ class TestFlextOracleWmsCacheStats:
             expired_entries=1,
             total_entries=20,
             memory_usage_bytes=512,
-            last_cleanup=time.time()
+            last_cleanup=time.time(),
         )
 
         updated_stats = original_stats.update_miss()
@@ -603,7 +658,7 @@ class TestFlextOracleWmsCacheManager:
             max_cache_entries=100,
             cleanup_interval_seconds=300,
             enable_statistics=True,
-            enable_async_cleanup=True
+            enable_async_cleanup=True,
         )
         self.cache_manager = FlextOracleWmsCacheManager(self.config)
 
@@ -676,7 +731,9 @@ class TestFlextOracleWmsCacheManager:
         await self.cache_manager.start()
 
         # Test set operation
-        set_result = await self.cache_manager.set_entity("entity_1", {"name": "Test Entity"})
+        set_result = await self.cache_manager.set_entity(
+            "entity_1", {"name": "Test Entity"}
+        )
         assert set_result.success
         assert set_result.data is True
 
@@ -720,10 +777,7 @@ class TestFlextOracleWmsCacheManager:
         await self.cache_manager.start()
 
         schema_data = {
-            "fields": {
-                "id": {"type": "integer"},
-                "name": {"type": "string"}
-            }
+            "fields": {"id": {"type": "integer"}, "name": {"type": "string"}}
         }
 
         set_result = await self.cache_manager.set_schema("schema_1", schema_data)
@@ -916,7 +970,7 @@ class TestFlextOracleWmsCacheManager:
             max_cache_entries=10,
             cleanup_interval_seconds=1,  # Quick cleanup interval
             enable_statistics=True,
-            enable_async_cleanup=True
+            enable_async_cleanup=True,
         )
         cache_manager = FlextOracleWmsCacheManager(config)
         await cache_manager.start()
@@ -956,19 +1010,28 @@ class TestFlextOracleWmsCacheManager:
         timestamp3 = time.time()
 
         entry1 = FlextOracleWmsCacheEntry[str](
-            key="old_key", value="old_value", timestamp=timestamp1, ttl_seconds=3600,
+            key="old_key",
+            value="old_value",
+            timestamp=timestamp1,
+            ttl_seconds=3600,
             access_count=0,
-            last_accessed=time.time()
+            last_accessed=time.time(),
         )
         entry2 = FlextOracleWmsCacheEntry[str](
-            key="newer_key", value="newer_value", timestamp=timestamp2, ttl_seconds=3600,
+            key="newer_key",
+            value="newer_value",
+            timestamp=timestamp2,
+            ttl_seconds=3600,
             access_count=0,
-            last_accessed=time.time()
+            last_accessed=time.time(),
         )
         entry3 = FlextOracleWmsCacheEntry[str](
-            key="newest_key", value="newest_value", timestamp=timestamp3, ttl_seconds=3600,
+            key="newest_key",
+            value="newest_value",
+            timestamp=timestamp3,
+            ttl_seconds=3600,
             access_count=0,
-            last_accessed=time.time()
+            last_accessed=time.time(),
         )
 
         self.cache_manager._entity_cache["old_key"] = entry1
@@ -993,16 +1056,22 @@ class TestFlextOracleWmsCacheManager:
         # Add expired entries
         expired_time = time.time() - 7200  # 2 hours ago
         expired_entry = FlextOracleWmsCacheEntry[str](
-            key="expired_key", value="expired_value", timestamp=expired_time, ttl_seconds=3600,
+            key="expired_key",
+            value="expired_value",
+            timestamp=expired_time,
+            ttl_seconds=3600,
             access_count=0,
-            last_accessed=time.time()
+            last_accessed=time.time(),
         )
 
         # Add valid entry
         valid_entry = FlextOracleWmsCacheEntry[str](
-            key="valid_key", value="valid_value", timestamp=time.time(), ttl_seconds=3600,
+            key="valid_key",
+            value="valid_value",
+            timestamp=time.time(),
+            ttl_seconds=3600,
             access_count=0,
-            last_accessed=time.time()
+            last_accessed=time.time(),
         )
 
         self.cache_manager._entity_cache["expired_key"] = expired_entry
@@ -1070,16 +1139,19 @@ class TestFactoryFunction:
         cache_manager = flext_oracle_wms_create_cache_manager()
 
         assert isinstance(cache_manager, FlextOracleWmsCacheManager)
-        assert cache_manager.config.default_ttl_seconds == FlextOracleWmsDefaults.DEFAULT_CACHE_TTL
-        assert cache_manager.config.max_cache_entries == FlextOracleWmsDefaults.MAX_CACHE_SIZE
+        assert (
+            cache_manager.config.default_ttl_seconds
+            == FlextOracleWmsDefaults.DEFAULT_CACHE_TTL
+        )
+        assert (
+            cache_manager.config.max_cache_entries
+            == FlextOracleWmsDefaults.MAX_CACHE_SIZE
+        )
 
     def test_create_cache_manager_custom_all_same_ttl(self) -> None:
         """Test creating cache manager with same TTL for all cache types."""
         cache_manager = flext_oracle_wms_create_cache_manager(
-            entity_ttl=1800,
-            schema_ttl=1800,
-            metadata_ttl=1800,
-            max_size=500
+            entity_ttl=1800, schema_ttl=1800, metadata_ttl=1800, max_size=500
         )
 
         assert cache_manager.config.default_ttl_seconds == 1800
@@ -1091,7 +1163,7 @@ class TestFactoryFunction:
             entity_ttl=3600,
             schema_ttl=1800,  # Minimum
             metadata_ttl=7200,
-            max_size=200
+            max_size=200,
         )
 
         # Should use minimum TTL
@@ -1103,7 +1175,10 @@ class TestFactoryFunction:
         cache_manager = flext_oracle_wms_create_cache_manager(max_size=750)
 
         assert cache_manager.config.max_cache_entries == 750
-        assert cache_manager.config.default_ttl_seconds == FlextOracleWmsDefaults.DEFAULT_CACHE_TTL
+        assert (
+            cache_manager.config.default_ttl_seconds
+            == FlextOracleWmsDefaults.DEFAULT_CACHE_TTL
+        )
 
 
 class TestErrorHandling:
@@ -1116,7 +1191,7 @@ class TestErrorHandling:
             max_cache_entries=1000,
             cleanup_interval_seconds=300,
             enable_statistics=True,
-            enable_async_cleanup=True
+            enable_async_cleanup=True,
         )
         self.cache_manager = FlextOracleWmsCacheManager(self.config)
 
@@ -1252,7 +1327,7 @@ class TestThreadSafety:
             max_cache_entries=1000,
             cleanup_interval_seconds=300,
             enable_statistics=True,
-            enable_async_cleanup=True
+            enable_async_cleanup=True,
         )
         self.cache_manager = FlextOracleWmsCacheManager(self.config)
 
@@ -1297,10 +1372,7 @@ class TestThreadSafety:
             await self.cache_manager.set_entity(f"concurrent_{i}", f"value_{i}")
 
         # Concurrent invalidation operations
-        tasks = [
-            self.cache_manager.invalidate_key(f"concurrent_{i}")
-            for i in range(5)
-        ]
+        tasks = [self.cache_manager.invalidate_key(f"concurrent_{i}") for i in range(5)]
 
         results = await asyncio.gather(*tasks, return_exceptions=True)
 
@@ -1322,7 +1394,7 @@ class TestPerformanceAndEdgeCases:
             max_cache_entries=1000,
             cleanup_interval_seconds=300,
             enable_statistics=True,
-            enable_async_cleanup=True
+            enable_async_cleanup=True,
         )
         self.cache_manager = FlextOracleWmsCacheManager(self.config)
 
@@ -1337,10 +1409,7 @@ class TestPerformanceAndEdgeCases:
         await self.cache_manager.start()
 
         # Create large data structure
-        large_data = {
-            f"field_{i}": f"value_{i}" * 100
-            for i in range(100)
-        }
+        large_data = {f"field_{i}": f"value_{i}" * 100 for i in range(100)}
 
         set_result = await self.cache_manager.set_entity("large_data", large_data)
         assert set_result.success
@@ -1363,7 +1432,7 @@ class TestPerformanceAndEdgeCases:
             "key.with.dots",
             "key/with/slashes",
             "key@with@symbols",
-            "key:with:colons"
+            "key:with:colons",
         ]
 
         for key in special_keys:
@@ -1416,7 +1485,7 @@ class TestPerformanceAndEdgeCases:
             timestamp=time.time(),
             ttl_seconds=3600,
             access_count=1,
-            last_accessed=time.time()
+            last_accessed=time.time(),
         )
 
         # Attempt to modify should fail (frozen dataclass)

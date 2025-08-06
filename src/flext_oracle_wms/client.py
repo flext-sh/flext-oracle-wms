@@ -132,18 +132,18 @@ class FlextOracleWmsPlugin(FlextPlugin):
         """Initialize Oracle WMS plugin."""
         # Type hint already ensures config is dict | None, so no runtime validation needed
 
-        final_config = config or {}
-        plugin_config = {
-            "description": "Oracle WMS Cloud integration plugin",
-            "author": "FLEXT Team",
-            **final_config,
-        }
+        # final_config = config or {}
+        # # plugin_config = {
+        # #     "description": "Oracle WMS Cloud integration plugin",
+        # #     "author": "FLEXT Team",
+        # #     **final_config,
+        # # }
 
         # Call parent constructor with named arguments to avoid the bug
         super().__init__(
+            id="oracle-wms-plugin",
             name="oracle-wms-plugin",
-            version="0.9.0",
-            config=plugin_config,
+            plugin_version="1.0.0",
         )
         self._client: FlextOracleWmsClient | None = None
         self._original_config = config  # Store original config for compatibility
@@ -789,8 +789,7 @@ class FlextOracleWmsClient:
 
         handler = method_handlers.get(method)
         if handler:
-
-            return await handler()
+            return await handler()  # type: ignore[no-untyped-call]
         return FlextResult.fail(f"Unsupported HTTP method: {method}")
 
     def _validate_response(
@@ -990,7 +989,7 @@ class FlextOracleWmsClientMock(FlextOracleWmsClient):
                         for result in results
                         if isinstance(result, dict) and "name" in result
                     ]
-                    logger.info(f"Mock: Discovered {len(entities)} entities")
+                    logger.info("Mock: Discovered %d entities", len(entities))
                     return FlextResult.ok(entities)
 
         return FlextResult.fail("Mock entity discovery failed")
@@ -1016,7 +1015,8 @@ class FlextOracleWmsClientMock(FlextOracleWmsClient):
 
         if response.success and response.data is not None:
             logger.info(
-                f"Mock: Retrieved {entity_name} data with limit={limit}, offset={offset}",
+                "Mock: Retrieved %s data with limit=%s, offset=%s",
+                entity_name, limit, offset,
             )
             # Ensure type safety for FlextResult.ok
             data = response.data if isinstance(response.data, dict) else {}

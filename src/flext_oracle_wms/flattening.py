@@ -183,7 +183,8 @@ class FlextOracleWmsDataFlattener:
 
         except Exception as e:
             logger.exception(
-                f"Record {config.operation_name} failed",
+                "Record %s failed",
+                config.operation_name,
                 entity_name=entity_name,
             )
             return FlextResult.fail(f"{config.error_message}: {e}")

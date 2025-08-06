@@ -388,7 +388,7 @@ class OptimizedOracleWmsDiscovery:
             }
 
         except Exception as e:
-            logger.exception(f"Schema generation failed for {entity_name}: {e}")
+            logger.exception("Schema generation failed for %s: %s", entity_name, e)
             return None
 
     def _oracle_to_singer_type(

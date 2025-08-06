@@ -14,9 +14,14 @@ from pathlib import Path
 from typing import ClassVar, NewType
 from urllib.parse import urlparse
 
-from flext_core import FlextBaseSettings, FlextResult, FlextValueObject, get_logger
+from flext_core import (
+    FlextBaseSettings,
+    FlextResult,
+    FlextValueObject,
+    SettingsConfigDict,
+    get_logger,
+)
 from pydantic import Field, HttpUrl, field_validator
-from pydantic_settings import SettingsConfigDict
 
 from flext_oracle_wms.api_catalog import FlextOracleWmsApiVersion
 

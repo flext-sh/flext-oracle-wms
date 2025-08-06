@@ -188,7 +188,7 @@ def flext_oracle_wms_extract_environment_from_url(url: str) -> TOracleWmsEnviron
             path_parts[0] if path_parts else FlextOracleWmsDefaults.DEFAULT_ENVIRONMENT
         )
     except Exception as e:
-        logger.warning(f"Failed to parse environment from URL {url}: {e}")
+        logger.warning("Failed to parse environment from URL %s: %s", url, e)
         return FlextOracleWmsDefaults.DEFAULT_ENVIRONMENT
 
 
@@ -346,7 +346,7 @@ def flext_oracle_wms_format_timestamp(timestamp: str | None = None) -> str:
                 return timestamp.strip()
             return str(timestamp)
         except Exception:
-            logger.warning(f"Failed to format provided timestamp: {timestamp}")
+            logger.warning("Failed to format provided timestamp: %s", timestamp)
 
     return datetime.now(UTC).isoformat()
 

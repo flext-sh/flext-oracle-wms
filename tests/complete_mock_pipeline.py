@@ -345,7 +345,9 @@ class CompleteMockPipeline:
 
         return properties, key_properties
 
-    def _infer_field_type(self, field: str, value: str | float | bool | None) -> dict[str, str | list[str]]:
+    def _infer_field_type(
+        self, field: str, value: str | float | bool | None,
+    ) -> dict[str, str | list[str]]:
         """Infer Singer type from field name and value - Strategy Pattern."""
         # Try field name patterns first
         field_type = self._infer_type_from_field_name(field)
@@ -355,7 +357,9 @@ class CompleteMockPipeline:
         # Fallback to value-based inference
         return self._infer_type_from_value(value)
 
-    def _infer_type_from_field_name(self, field: str) -> dict[str, str | list[str]] | None:
+    def _infer_type_from_field_name(
+        self, field: str,
+    ) -> dict[str, str | list[str]] | None:
         """Infer type from field name patterns - Template Method Pattern."""
         if field == "id":
             return {"type": "integer"}
@@ -371,7 +375,9 @@ class CompleteMockPipeline:
             return {"type": ["string", "null"]}
         return None
 
-    def _infer_type_from_value(self, value: str | float | bool | None) -> dict[str, str | list[str]]:
+    def _infer_type_from_value(
+        self, value: str | float | bool | None,
+    ) -> dict[str, str | list[str]]:
         """Infer type from Python value type - Template Method Pattern."""
         if isinstance(value, bool):
             return {"type": ["boolean", "null"]}

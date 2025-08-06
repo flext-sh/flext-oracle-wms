@@ -261,9 +261,7 @@ class OracleWmsMockServer:
     def _handle_async_task_status(self, kwargs: dict[str, object]) -> dict[str, object]:
         """Handle async task status API mock."""
         task_id = (
-            str(kwargs.get("task_id"))
-            if kwargs.get("task_id") is not None
-            else None
+            str(kwargs.get("task_id")) if kwargs.get("task_id") is not None else None
         )
         return self.mock_async_task_status(task_id)
 
