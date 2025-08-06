@@ -372,12 +372,15 @@ class OracleWmsCompleteDiscovery:
                                 # Store first record as sample (safe data only)
                                 safe_sample = {}
                                 for k, v in sample_record.items():
+                                    # Constants for string truncation
+                                    MAX_STRING_LENGTH = 200
+
                                     if isinstance(
                                         v,
                                         (str, int, float, bool, type(None)),
                                     ):
                                         if (
-                                            isinstance(v, str) and len(v) < 200
+                                            isinstance(v, str) and len(v) < MAX_STRING_LENGTH
                                         ) or not isinstance(v, str):
                                             safe_sample[k] = v
                                         else:

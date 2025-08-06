@@ -341,7 +341,7 @@ class FlextOracleWmsModuleConfig(FlextBaseSettings):
             environment="test",
             base_url=HttpUrl("https://test.example.com"),
             username="test_user",
-            password="test_password",  # noqa: S106
+            password="test_password",
             batch_size=10,  # Using composition mixin field
             timeout_seconds=5.0,  # Using composition mixin field
             max_retries=1,  # Using composition mixin field

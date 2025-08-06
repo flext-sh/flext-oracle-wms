@@ -321,7 +321,7 @@ class OracleWMSPageMode(StrEnum):
 
     OFFSET = "offset"
     CURSOR = "cursor"
-    TOKEN = "token"  # noqa: S105
+    TOKEN = "token"
 
 
 class OracleWMSWriteMode(StrEnum):

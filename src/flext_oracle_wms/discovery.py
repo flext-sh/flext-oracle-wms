@@ -220,7 +220,7 @@ class EndpointDiscoveryStrategy(DiscoveryStrategy):
         self,
         context: DiscoveryContext,
         error_message: str,
-        endpoint: str,  # noqa: ARG002
+        endpoint: str,
     ) -> FlextResult[bool]:
         """Handle discovery errors consistently."""
         logger.warning(error_message)

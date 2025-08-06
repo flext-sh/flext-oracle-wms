@@ -182,19 +182,25 @@ def validate_configuration(config: FlextOracleWmsClientConfig) -> dict[str, Any]
         validation_results["errors"].append("Username and password are required")
         validation_results["valid"] = False
 
+    # Constants for validation
+    MIN_TIMEOUT_SECONDS = 10
+
     # Validate timeouts and retries
     if config.timeout <= 0:
         validation_results["errors"].append("Timeout must be positive")
         validation_results["valid"] = False
-    elif config.timeout < 10:
+    elif config.timeout < MIN_TIMEOUT_SECONDS:
         validation_results["warnings"].append(
             "Timeout less than 10 seconds may cause issues"
         )
 
+    # Constants for validation
+    MAX_RETRIES_WARNING_THRESHOLD = 5
+
     if config.max_retries < 0:
         validation_results["errors"].append("Max retries cannot be negative")
         validation_results["valid"] = False
-    elif config.max_retries > 5:
+    elif config.max_retries > MAX_RETRIES_WARNING_THRESHOLD:
         validation_results["warnings"].append("High retry count may cause delays")
 
     # Create configuration summary

@@ -137,11 +137,14 @@ async def showcase_2_entity_discovery(client: FlextOracleWmsClient) -> list[str]
 
     # Show first 10 entities as sample
     print("   📦 Sample entities:")
-    for i, entity in enumerate(entities[:10]):
+    # Constants for display
+    MAX_ENTITIES_TO_SHOW = 10
+
+    for i, entity in enumerate(entities[:MAX_ENTITIES_TO_SHOW]):
         print(f"      {i + 1:2d}. {entity}")
 
-    if len(entities) > 10:
-        print(f"      ... and {len(entities) - 10} more entities")
+    if len(entities) > MAX_ENTITIES_TO_SHOW:
+        print(f"      ... and {len(entities) - MAX_ENTITIES_TO_SHOW} more entities")
 
     # Show entity categories
     sample_entities = {
@@ -284,12 +287,15 @@ async def showcase_5_api_catalog(client: FlextOracleWmsClient) -> None:
 
     print("   🏷️  APIs by Category:")
     for category, apis in categories.items():
+        # Constants for API display
+        MAX_APIS_TO_SHOW = 3
+
         print(f"      • {category}: {len(apis)} APIs")
         # Show first 3 APIs as sample
-        for api in apis[:3]:
+        for api in apis[:MAX_APIS_TO_SHOW]:
             print(f"        - {api}")
-        if len(apis) > 3:
-            print(f"        - ... and {len(apis) - 3} more")
+        if len(apis) > MAX_APIS_TO_SHOW:
+            print(f"        - ... and {len(apis) - MAX_APIS_TO_SHOW} more")
 
     # Show API versions
     versions = {api.version for api in available_apis.values()}
@@ -386,11 +392,14 @@ async def showcase_8_performance_tracking(
     print("⚡ FEATURE 8: PERFORMANCE TRACKING")
     print("-" * 50)
 
+    # Constants for performance testing
+    MIN_ENTITIES_FOR_CONCURRENT_TEST = 3
+
     import time
 
     # Test concurrent requests
-    if len(entities) >= 3:
-        test_entities = entities[:3]
+    if len(entities) >= MIN_ENTITIES_FOR_CONCURRENT_TEST:
+        test_entities = entities[:MIN_ENTITIES_FOR_CONCURRENT_TEST]
         print(f"   🚀 Testing concurrent requests to {len(test_entities)} entities...")
 
         start_time = time.time()

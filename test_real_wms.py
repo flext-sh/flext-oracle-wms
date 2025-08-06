@@ -142,7 +142,8 @@ async def main():
 if __name__ == "__main__":
     # Install python-dotenv if not available
     try:
-        import dotenv
+        # import dotenv  # Unused import removed
+        pass
     except ImportError:
         import subprocess
 

@@ -789,8 +789,8 @@ class FlextOracleWmsClient:
 
         handler = method_handlers.get(method)
         if handler:
-            # Type: ignore needed for dynamic lambda handlers
-            return await handler()  # type: ignore[no-untyped-call]
+
+            return await handler()
         return FlextResult.fail(f"Unsupported HTTP method: {method}")
 
     def _validate_response(
