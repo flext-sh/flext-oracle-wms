@@ -114,7 +114,7 @@ class OracleWmsCompleteDiscovery:
 
         return FlextResult.ok(api_results)
 
-    async def _test_data_extract_api(self, api_name: str, endpoint: FlextOracleWmsApiEndpoint) -> FlextResult[Any]:
+    async def _test_data_extract_api(self, api_name: str, endpoint: FlextOracleWmsApiEndpoint) -> FlextResult[Any]:  # noqa: PLR0911
         """Test data extraction APIs."""
         try:
             if api_name == "lgf_entity_discovery":
@@ -294,7 +294,7 @@ class OracleWmsCompleteDiscovery:
         except Exception as e:
             return FlextResult.fail(f"Entity with ID test failed: {e}")
 
-    def _summarize_api_response(self, data: object) -> str:
+    def _summarize_api_response(self, data: object) -> str:  # noqa: PLR0911
         """Summarize API response data."""
         if isinstance(data, dict):
             if "count" in data:
@@ -375,7 +375,7 @@ class OracleWmsCompleteDiscovery:
                                 safe_sample = {}
                                 for k, v in sample_record.items():
                                     # Constants for string truncation
-                                    MAX_STRING_LENGTH = 200
+                                    max_string_length = 200
 
                                     if isinstance(
                                         v,
@@ -383,7 +383,7 @@ class OracleWmsCompleteDiscovery:
                                     ):
                                         if (
                                             isinstance(v, str)
-                                            and len(v) < MAX_STRING_LENGTH
+                                            and len(v) < max_string_length
                                         ) or not isinstance(v, str):
                                             safe_sample[k] = v
                                         else:
@@ -422,7 +422,7 @@ class OracleWmsCompleteDiscovery:
                 key=operator.itemgetter(1),
                 reverse=True,
             )
-            for name, count in sorted_entities[:10]:
+            for name, _count in sorted_entities[:10]:
                 len(metadata_results[name]["fields"])
 
         return FlextResult.ok(
@@ -501,11 +501,11 @@ class OracleWmsCompleteDiscovery:
                 "additionalProperties": False,
             }
 
-        except Exception as e:
-            logger.exception("Schema generation failed for %s: %s", entity_name, e)
+        except Exception:
+            logger.exception("Schema generation failed for %s", entity_name)
             return None
 
-    def _map_to_singer_type(
+    def _map_to_singer_type(  # noqa: PLR0911
         self,
         python_type: str,
         sample_value: object,

@@ -9,6 +9,7 @@ Implements flext-core unified configuration standards.
 
 from __future__ import annotations
 
+import os
 from dataclasses import dataclass
 from pathlib import Path
 from typing import ClassVar, NewType
@@ -107,7 +108,7 @@ class FlextOracleWmsClientConfig(FlextValueObject):
             path_parts = parsed.path.strip("/").split("/")
             if path_parts and path_parts[-1]:
                 environment = path_parts[-1]
-        except Exception:
+        except (ValueError, TypeError, AttributeError, IndexError):
             environment = "default"
 
         return cls(
@@ -346,7 +347,7 @@ class FlextOracleWmsModuleConfig(FlextBaseSettings):
             environment="test",
             base_url=HttpUrl("https://test.example.com"),
             username="test_user",
-            password="test_password",
+            password=os.environ.get("FLEXT_ORACLE_WMS_TEST_PASSWORD", "test_password"),
             batch_size=10,  # Using composition mixin field
             timeout_seconds=5.0,  # Using composition mixin field
             max_retries=1,  # Using composition mixin field

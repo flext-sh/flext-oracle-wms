@@ -223,7 +223,7 @@ class FocusedOracleWmsDiscovery:
                                     data_entities[entity_name] = entity_info
 
             except Exception:
-                pass
+                logger.debug("Failed to process entity %s", entity_name)
 
         return data_entities
 
@@ -251,7 +251,7 @@ class FocusedOracleWmsDiscovery:
                                 }
 
             except Exception:
-                pass
+                logger.debug("Failed to get structure for entity %s", entity_name)
 
         return structures
 
@@ -343,11 +343,11 @@ class FocusedOracleWmsDiscovery:
                 "oracle_wms_environment": self.config.environment,
             }
 
-        except Exception as e:
-            logger.exception("Schema creation failed for %s: %s", entity_name, e)
+        except Exception:
+            logger.exception("Schema creation failed for %s", entity_name)
             return None
 
-    def _oracle_field_to_singer_type(
+    def _oracle_field_to_singer_type(  # noqa: PLR0911
         self,
         field_name: str,
         python_type: str,

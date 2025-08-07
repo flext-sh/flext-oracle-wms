@@ -223,8 +223,8 @@ class EndpointDiscoveryStrategy(DiscoveryStrategy):
         endpoint: str,
     ) -> FlextResult[bool]:
         """Handle discovery errors consistently."""
-        logger.warning(error_message)
-        context.errors.append(error_message)
+        logger.warning(error_message, endpoint=endpoint)
+        context.errors.append(f"{error_message} (endpoint: {endpoint})")
         return FlextResult.ok(DISCOVERY_FAILURE)
 
 
@@ -359,7 +359,7 @@ class FlextOracleWmsEntityDiscovery:
 
             return FlextResult.ok(result_data)
 
-        except Exception as e:
+        except (ValueError, TypeError, AttributeError, KeyError, OSError) as e:
             handle_operation_exception(e, "discover all entities")
             # Never reached due to handle_operation_exception always raising
             return FlextResult.fail(f"Discovery failed: {e}")

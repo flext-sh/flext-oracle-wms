@@ -84,7 +84,7 @@ class NullTypeStrategy(TypeInferenceStrategy):
         """Check if value is None."""
         return value is None
 
-    def infer_type(self, value: object) -> str:
+    def infer_type(self, _value: object) -> str:
         """Return string type for null values."""
         return "string"  # Default for null values
 
@@ -96,7 +96,7 @@ class BooleanTypeStrategy(TypeInferenceStrategy):
         """Check if value is boolean."""
         return isinstance(value, bool)
 
-    def infer_type(self, value: object) -> str:
+    def infer_type(self, _value: object) -> str:
         """Return boolean type."""
         return "boolean"
 
@@ -108,7 +108,7 @@ class IntegerTypeStrategy(TypeInferenceStrategy):
         """Check if value is integer."""
         return isinstance(value, int)
 
-    def infer_type(self, value: object) -> str:
+    def infer_type(self, _value: object) -> str:
         """Return integer type."""
         return "integer"
 
@@ -120,7 +120,7 @@ class FloatTypeStrategy(TypeInferenceStrategy):
         """Check if value is float."""
         return isinstance(value, float)
 
-    def infer_type(self, value: object) -> str:
+    def infer_type(self, _value: object) -> str:
         """Return number type."""
         return "number"
 
@@ -132,7 +132,7 @@ class ListTypeStrategy(TypeInferenceStrategy):
         """Check if value is list."""
         return isinstance(value, list)
 
-    def infer_type(self, value: object) -> str:
+    def infer_type(self, _value: object) -> str:
         """Return array type."""
         return "array"
 
@@ -144,7 +144,7 @@ class DictTypeStrategy(TypeInferenceStrategy):
         """Check if value is dictionary."""
         return isinstance(value, dict)
 
-    def infer_type(self, value: object) -> str:
+    def infer_type(self, _value: object) -> str:
         """Return object type."""
         return "object"
 
@@ -152,11 +152,11 @@ class DictTypeStrategy(TypeInferenceStrategy):
 class DefaultTypeStrategy(TypeInferenceStrategy):
     """Default strategy for unknown types."""
 
-    def can_handle(self, value: object) -> bool:
+    def can_handle(self, _value: object) -> bool:
         """Always returns True as fallback strategy."""
         return True
 
-    def infer_type(self, value: object) -> str:
+    def infer_type(self, _value: object) -> str:
         """Return string type as default."""
         return "string"
 

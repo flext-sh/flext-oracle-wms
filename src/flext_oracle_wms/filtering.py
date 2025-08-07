@@ -352,7 +352,11 @@ class FlextOracleWmsFilter:
             if isinstance(field_value, str) and isinstance(filter_value, str):
                 return field_value > filter_value
             return False
-        except (TypeError, ValueError):
+        except (TypeError, ValueError) as e:
+            # EXPLICIT TRANSPARENCY: Comparison operation fallback for incompatible types
+            logger.debug(f"Greater than comparison failed: {type(e).__name__}: {e}")
+            logger.debug(f"field_value type: {type(field_value)}, filter_value type: {type(filter_value)}")
+            logger.info("Returning False for incompatible comparison types - expected behavior")
             return False
 
     def _op_greater_equal(self, field_value: object, filter_value: object) -> bool:
@@ -368,7 +372,11 @@ class FlextOracleWmsFilter:
             if isinstance(field_value, str) and isinstance(filter_value, str):
                 return field_value >= filter_value
             return False
-        except (TypeError, ValueError):
+        except (TypeError, ValueError) as e:
+            # EXPLICIT TRANSPARENCY: Comparison operation fallback for incompatible types
+            logger.debug(f"Greater than or equal comparison failed: {type(e).__name__}: {e}")
+            logger.debug(f"field_value type: {type(field_value)}, filter_value type: {type(filter_value)}")
+            logger.info("Returning False for incompatible comparison types - expected behavior")
             return False
 
     def _op_less_than(self, field_value: object, filter_value: object) -> bool:
@@ -384,7 +392,11 @@ class FlextOracleWmsFilter:
             if isinstance(field_value, str) and isinstance(filter_value, str):
                 return field_value < filter_value
             return False
-        except (TypeError, ValueError):
+        except (TypeError, ValueError) as e:
+            # EXPLICIT TRANSPARENCY: Comparison operation fallback for incompatible types
+            logger.debug(f"Less than comparison failed: {type(e).__name__}: {e}")
+            logger.debug(f"field_value type: {type(field_value)}, filter_value type: {type(filter_value)}")
+            logger.info("Returning False for incompatible comparison types - expected behavior")
             return False
 
     def _op_less_equal(self, field_value: object, filter_value: object) -> bool:
@@ -400,7 +412,11 @@ class FlextOracleWmsFilter:
             if isinstance(field_value, str) and isinstance(filter_value, str):
                 return field_value <= filter_value
             return False
-        except (TypeError, ValueError):
+        except (TypeError, ValueError) as e:
+            # EXPLICIT TRANSPARENCY: Comparison operation fallback for incompatible types
+            logger.debug(f"Less than or equal comparison failed: {type(e).__name__}: {e}")
+            logger.debug(f"field_value type: {type(field_value)}, filter_value type: {type(filter_value)}")
+            logger.info("Returning False for incompatible comparison types - expected behavior")
             return False
 
     def _op_in(self, field_value: object, filter_value: object) -> bool:

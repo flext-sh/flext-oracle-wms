@@ -227,7 +227,7 @@ class FlextOracleWmsCacheManager:
 
             logger.info("Oracle WMS cache manager started")
             return FlextResult.ok(None)
-        except Exception as e:
+        except (ValueError, TypeError, AttributeError, OSError, RuntimeError) as e:
             handle_operation_exception(e, "start cache manager")
             # Never reached due to handle_operation_exception always raising
             return FlextResult.fail(f"Start cache manager failed: {e}")
@@ -247,7 +247,7 @@ class FlextOracleWmsCacheManager:
 
             logger.info("Oracle WMS cache manager stopped")
             return FlextResult.ok(None)
-        except Exception as e:
+        except (ValueError, TypeError, AttributeError, OSError, RuntimeError, asyncio.CancelledError) as e:
             handle_operation_exception(e, "stop cache manager")
             # Never reached due to handle_operation_exception always raising
             return FlextResult.fail(f"Stop cache manager failed: {e}")

@@ -142,6 +142,15 @@ from flext_oracle_wms.models import (
     FlextOracleWmsEntity,
 )
 
+# Plugin Implementation - clean architecture patterns
+from flext_oracle_wms.plugin_implementation import (
+    FlextOracleWmsDataPlugin,
+    FlextOracleWmsPluginContext,
+    FlextOracleWmsPluginRegistry,
+    create_oracle_wms_data_plugin,
+    create_oracle_wms_plugin_registry,
+)
+
 # Types - standardized type definitions
 from flext_oracle_wms.types import (
     TOracleWmsApiResponse,
@@ -193,6 +202,8 @@ __all__: list[str] = [
     "FlextOracleWmsClientConfig",
     "FlextOracleWmsClientMock",
     "FlextOracleWmsConnectionError",
+    # Plugin Implementation
+    "FlextOracleWmsDataPlugin",
     # Data flattening (imported selectively as needed)
     "FlextOracleWmsDataValidationError",
     "FlextOracleWmsDefaults",
@@ -208,6 +219,8 @@ __all__: list[str] = [
     # Filtering
     "FlextOracleWmsFilter",
     "FlextOracleWmsModuleConfig",
+    "FlextOracleWmsPluginContext",
+    "FlextOracleWmsPluginRegistry",
     "FlextOracleWmsResponseFields",
     "FlextOracleWmsSchemaError",
     "FlextOracleWmsSchemaFlatteningError",
@@ -236,6 +249,9 @@ __all__: list[str] = [
     # Metadata
     "__version__",
     "create_oracle_wms_client",
+    # Plugin factory functions
+    "create_oracle_wms_data_plugin",
+    "create_oracle_wms_plugin_registry",
     # Helper functions
     "flext_oracle_wms_build_entity_url",
     "flext_oracle_wms_chunk_records",

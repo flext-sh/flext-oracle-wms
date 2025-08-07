@@ -54,7 +54,6 @@ from typing import TYPE_CHECKING
 
 from flext_api import FlextApiClient, FlextApiClientConfig, FlextApiClientResponse
 from flext_core import FlextResult, get_logger
-from flext_plugin import FlextPlugin
 
 from flext_oracle_wms.api_catalog import (
     FLEXT_ORACLE_WMS_APIS,
@@ -123,84 +122,6 @@ class PreparedApiCall:
     full_path: str
     data: dict[str, object] | None
     params: dict[str, object] | None
-
-
-class FlextOracleWmsPlugin(FlextPlugin):
-    """Oracle WMS Plugin for FLEXT ecosystem - production ready."""
-
-    def __init__(self, config: dict[str, object] | None = None) -> None:
-        """Initialize Oracle WMS plugin."""
-        # Type hint already ensures config is dict | None, so no runtime validation needed
-
-        # final_config = config or {}
-        # # plugin_config = {
-        # #     "description": "Oracle WMS Cloud integration plugin",
-        # #     "author": "FLEXT Team",
-        # #     **final_config,
-        # # }
-
-        # Call parent constructor with named arguments to avoid the bug
-        super().__init__(
-            id="oracle-wms-plugin",
-            name="oracle-wms-plugin",
-            plugin_version="1.0.0",
-        )
-        self._client: FlextOracleWmsClient | None = None
-        self._original_config = config  # Store original config for compatibility
-
-    @property
-    def config(self) -> dict[str, object] | None:
-        """Get original config for compatibility."""
-        return self._original_config
-
-    async def start(self) -> FlextResult[None]:
-        """Start Oracle WMS plugin."""
-        # Implementation using real config
-        return FlextResult.ok(None)
-
-    async def stop(self) -> FlextResult[None]:
-        """Stop Oracle WMS plugin."""
-        if self._client:
-            await self._client.stop()
-        return FlextResult.ok(None)
-
-    async def execute(self, operation: str, **kwargs: object) -> FlextResult[object]:
-        """Execute Oracle WMS operations via plugin interface."""
-        if not self._client:
-            return FlextResult.fail("Oracle WMS client not initialized")
-
-        # Route operations to client methods using helper
-        return await self._route_operation(operation, **kwargs)
-
-    async def _route_operation(
-        self,
-        operation: str,
-        **kwargs: object,
-    ) -> FlextResult[object]:
-        """Route operations to appropriate client methods."""
-        if operation == "discover_entities" and self._client is not None:
-            result = await self._client.discover_entities()
-            return self._handle_operation_result(result)
-        if operation == "get_entity_data" and self._client is not None:
-            entity_name = kwargs.get("entity_name")
-            if not isinstance(entity_name, str):
-                return FlextResult.fail("entity_name must be string")
-            entity_result = await self._client.get_entity_data(entity_name)
-            return self._handle_operation_result(entity_result)
-        return FlextResult.fail(f"Unknown operation: {operation}")
-
-    def _handle_operation_result(
-        self,
-        result: (
-            FlextResult[object]
-            | FlextResult[list[str]]
-            | FlextResult[dict[str, object]]
-        ),
-    ) -> FlextResult[object]:
-        """Handle operation result with consistent error handling."""
-        if result.success:
-            return FlextResult.ok(result.data)
-        return FlextResult.fail(result.error or "Unknown error")
 
 
 class FlextOracleWmsClient:
@@ -438,7 +359,7 @@ class FlextOracleWmsClient:
         try:
             entities = self._extract_entities_from_data(data)
             return self._filter_valid_entities(entities)
-        except Exception as e:
+        except (ValueError, TypeError, AttributeError, KeyError) as e:
             logger.warning(
                 "Failed to parse entity discovery response",
                 error=e,
@@ -923,7 +844,7 @@ class FlextOracleWmsClient:
             health_data_typed: dict[str, object] = dict(health_data.items())
             return FlextResult.ok(health_data_typed)
 
-        except Exception as e:
+        except (ValueError, TypeError, AttributeError, OSError, RuntimeError) as e:
             return FlextResult.fail(f"Health check failed: {e}")
 
     def get_available_apis(self) -> dict[str, FlextOracleWmsApiEndpoint]:
