@@ -391,7 +391,7 @@ class OptimizedOracleWmsDiscovery:
             logger.exception("Schema generation failed for %s", entity_name)
             return None
 
-    def _oracle_to_singer_type(  # noqa: PLR0911
+    def _oracle_to_singer_type(
         self,
         field_name: str,
         python_type: str,

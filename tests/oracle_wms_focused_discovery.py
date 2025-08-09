@@ -347,7 +347,7 @@ class FocusedOracleWmsDiscovery:
             logger.exception("Schema creation failed for %s", entity_name)
             return None
 
-    def _oracle_field_to_singer_type(  # noqa: PLR0911
+    def _oracle_field_to_singer_type(
         self,
         field_name: str,
         python_type: str,

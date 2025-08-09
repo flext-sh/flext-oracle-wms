@@ -11,15 +11,15 @@ from __future__ import annotations
 from enum import StrEnum
 from typing import ClassVar, Literal
 
-from flext_core.constants import FlextSemanticConstants
+from flext_core.constants import FlextConstants
 
 # =============================================================================
 # ORACLE WMS-SPECIFIC SEMANTIC CONSTANTS - Modern Python 3.13 Structure
 # =============================================================================
 
 
-class FlextOracleWmsSemanticConstants(FlextSemanticConstants):
-    """Oracle WMS semantic constants extending FlextSemanticConstants.
+class FlextOracleWmsSemanticConstants(FlextConstants):
+    """Oracle WMS semantic constants extending FlextConstants.
 
     Modern Python 3.13 constants following semantic grouping patterns.
     Extends the FLEXT ecosystem constants with Oracle WMS-specific
@@ -321,7 +321,7 @@ class OracleWMSPageMode(StrEnum):
 
     OFFSET = "offset"
     CURSOR = "cursor"
-    TOKEN = "token"  # noqa: S105
+    TOKEN = "token"
 
 
 class OracleWMSWriteMode(StrEnum):

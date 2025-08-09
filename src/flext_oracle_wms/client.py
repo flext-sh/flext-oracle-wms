@@ -710,7 +710,7 @@ class FlextOracleWmsClient:
 
         handler = method_handlers.get(method)
         if handler:
-            return await handler()  # type: ignore[no-untyped-call]
+            return await handler()
         return FlextResult.fail(f"Unsupported HTTP method: {method}")
 
     def _validate_response(
@@ -937,7 +937,9 @@ class FlextOracleWmsClientMock(FlextOracleWmsClient):
         if response.success and response.data is not None:
             logger.info(
                 "Mock: Retrieved %s data with limit=%s, offset=%s",
-                entity_name, limit, offset,
+                entity_name,
+                limit,
+                offset,
             )
             # Ensure type safety for FlextResult.ok
             data = response.data if isinstance(response.data, dict) else {}
