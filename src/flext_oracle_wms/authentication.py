@@ -154,7 +154,7 @@ class FlextOracleWmsAuthenticator:
                 "Credentials validated successfully",
                 auth_type=self.config.auth_type,
             )
-            return FlextResult.ok(data=True)
+            return FlextResult.ok(True)
         except (ValueError, TypeError, AttributeError, KeyError) as e:
             handle_operation_exception(e, "validate credentials")
             # Never reached due to handle_operation_exception always raising
