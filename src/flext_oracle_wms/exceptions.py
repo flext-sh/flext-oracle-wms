@@ -19,7 +19,7 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from flext_core import create_module_exception_classes
+from flext_core.exceptions import create_module_exception_classes
 
 # 🚨 DRY PATTERN: Use create_module_exception_classes to eliminate exception duplication
 _oracle_wms_exceptions = create_module_exception_classes("flext_oracle_wms")

@@ -49,8 +49,13 @@ from __future__ import annotations
 
 import base64
 
-from flext_core import FlextResult, FlextValueObject, get_logger
-from flext_core.interfaces import FlextPlugin, FlextPluginContext
+from flext_core import (
+    FlextPlugin,
+    FlextPluginContext,
+    FlextResult,
+    FlextValueObject,
+    get_logger,
+)
 from pydantic import Field
 
 from flext_oracle_wms.constants import FlextOracleWmsDefaults, OracleWMSAuthMethod
@@ -154,7 +159,7 @@ class FlextOracleWmsAuthenticator:
                 "Credentials validated successfully",
                 auth_type=self.config.auth_type,
             )
-            return FlextResult.ok(True)
+            return FlextResult.ok(data=True)
         except (ValueError, TypeError, AttributeError, KeyError) as e:
             handle_operation_exception(e, "validate credentials")
             # Never reached due to handle_operation_exception always raising

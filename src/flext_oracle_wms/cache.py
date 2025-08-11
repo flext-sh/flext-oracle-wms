@@ -509,7 +509,7 @@ class FlextOracleWmsCacheManager:
                 )
 
             logger.debug("Cache entry set", key=key, cache_type=cache_type, ttl=ttl)
-            return FlextResult.ok(True)
+            return FlextResult.ok(data=True)
 
         except Exception as e:
             logger.exception(

@@ -35,11 +35,12 @@ from __future__ import annotations
 from collections.abc import Mapping
 from typing import TYPE_CHECKING
 
-from flext_core import FlextResult, get_logger
-from flext_core.interfaces import (
+from flext_core import (
     FlextDataPlugin,
     FlextPlugin,
     FlextPluginContext,
+    FlextResult,
+    get_logger,
 )
 
 from flext_oracle_wms.client import FlextOracleWmsClient
