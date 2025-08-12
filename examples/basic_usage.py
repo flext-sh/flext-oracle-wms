@@ -61,7 +61,7 @@ def create_client_config() -> FlextOracleWmsClientConfig:
     username = os.getenv("ORACLE_WMS_USERNAME") or os.getenv(
         "FLEXT_ORACLE_WMS_USERNAME"
     )
-    password = os.getenv("ORACLE_WMS_PASSWORD") or os.getenv(
+    password = os.getenv("ORACLE_WMS_PASSWORD"  # noqa: S105) or os.getenv(
         "FLEXT_ORACLE_WMS_PASSWORD"
     )
 

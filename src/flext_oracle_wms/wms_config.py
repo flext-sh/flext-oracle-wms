@@ -1,7 +1,9 @@
-"""Enterprise configuration management for Oracle WMS integrations.
+"""Oracle WMS Configuration - Consolidated Configuration Management.
 
 Copyright (c) 2025 FLEXT Contributors
 SPDX-License-Identifier: MIT
+
+Enterprise configuration management for Oracle WMS integrations.
 This module provides unified configuration management for all Oracle WMS operations,
 eliminating duplication between tap and target implementations.
 Implements flext-core unified configuration standards.
@@ -19,12 +21,12 @@ from flext_core import (
     FlextResult,
     FlextSettings,
     FlextValueObject,
-    SettingsConfigDict,
     get_logger,
 )
 from pydantic import Field, HttpUrl, field_validator
+from pydantic_settings import SettingsConfigDict
 
-from flext_oracle_wms.api_catalog import FlextOracleWmsApiVersion
+from flext_oracle_wms.wms_constants import FlextOracleWmsApiVersion
 
 # Type aliases for better type safety
 WMSAPIVersion = NewType("WMSAPIVersion", str)
@@ -378,3 +380,16 @@ def load_config() -> FlextOracleWmsModuleConfig:
 
 # Rebuild the model to ensure all types are properly resolved
 FlextOracleWmsModuleConfig.model_rebuild()
+
+
+# =============================================================================
+# EXPORTS
+# =============================================================================
+
+__all__: list[str] = [
+    "FlextOracleWmsClientConfig",
+    "FlextOracleWmsModuleConfig",
+    "WMSAPIVersion",
+    "WMSRetryAttempts",
+    "load_config",
+]

@@ -1,35 +1,96 @@
-"""🚨 ARCHITECTURAL COMPLIANCE: ELIMINATED MASSIVE EXCEPTION DUPLICATION using DRY.
+"""Oracle WMS Exceptions - Consolidated Exception Hierarchy.
 
-REFATORADO COMPLETO usando create_module_exception_classes:
-- ZERO code duplication através do DRY exception factory pattern de flext-core
-- USA create_module_exception_classes() para eliminar exception boilerplate massivo
-- Elimina 350+ linhas duplicadas de código boilerplate por exception class
-- SOLID: Single source of truth para module exception patterns
-- Redução de 378+ linhas para <150 linhas (60%+ reduction)
-
-Oracle WMS Exception Hierarchy - Enterprise Error Handling.
-
-Enterprise-grade exception hierarchy for Oracle WMS operations using factory pattern
-to eliminate code duplication.
-
-Copyright (c) 2025 FLEXT Team. All rights reserved.
+Copyright (c) 2025 FLEXT Contributors
 SPDX-License-Identifier: MIT
 
+Enterprise-grade exception hierarchy for Oracle WMS operations with explicit
+class definitions for type safety. This module consolidates all Oracle WMS-specific
+exceptions into a single coherent hierarchy compatible with MyPy static analysis.
 """
 
 from __future__ import annotations
 
-from flext_core.exceptions import create_module_exception_classes
+from flext_core import (
+    FlextAuthenticationError,
+    FlextConfigurationError,
+    FlextConnectionError,
+    FlextError,
+    FlextProcessingError,
+    FlextTimeoutError,
+    FlextValidationError,
+)
 
-# 🚨 DRY PATTERN: Use create_module_exception_classes to eliminate exception duplication
-_oracle_wms_exceptions = create_module_exception_classes("flext_oracle_wms")
-
-# Extract factory-created exception classes
-FlextOracleWmsError = _oracle_wms_exceptions["FlextOracleWmsError"]
-FlextOracleWmsValidationError = _oracle_wms_exceptions["FlextOracleWmsValidationError"]
+# =============================================================================
+# ORACLE WMS BASE EXCEPTION HIERARCHY
+# =============================================================================
 
 
-# Data validation error (manually defined - not in factory)
+class FlextOracleWmsError(FlextError):
+    """Base exception for all Oracle WMS operations.
+
+    Root exception class for the Oracle WMS error hierarchy, providing
+    a common base for all Oracle WMS-specific exceptions. Extends the
+    flext-core FlextError foundation while enabling specific Oracle WMS
+    error handling patterns.
+    """
+
+
+class FlextOracleWmsValidationError(FlextValidationError):
+    """Oracle WMS validation error with comprehensive field context.
+
+    Specialized validation error for Oracle WMS entity and configuration
+    validation failures. Provides detailed context about validation failures
+    including field names, validation rules, and error details.
+    """
+
+
+class FlextOracleWmsConfigurationError(FlextConfigurationError):
+    """Oracle WMS configuration error with comprehensive configuration context.
+
+    Specialized configuration error for Oracle WMS setup and configuration
+    validation failures. Provides detailed context about configuration issues.
+    """
+
+
+class FlextOracleWmsConnectionError(FlextConnectionError):
+    """Oracle WMS connection error with comprehensive network context.
+
+    Specialized connection error for Oracle WMS network communication failures.
+    Provides detailed context about connection issues including API endpoints,
+    network conditions, and error details.
+    """
+
+
+class FlextOracleWmsProcessingError(FlextProcessingError):
+    """Oracle WMS processing error with comprehensive operation context.
+
+    Specialized processing error for Oracle WMS business logic and data
+    processing operations. Provides detailed context about processing
+    failures and business rule violations.
+    """
+
+
+class FlextOracleWmsAuthenticationError(FlextAuthenticationError):
+    """Oracle WMS authentication error with comprehensive auth context.
+
+    Specialized authentication error for Oracle WMS authentication and
+    authorization failures. Provides detailed context about auth issues.
+    """
+
+
+class FlextOracleWmsTimeoutError(FlextTimeoutError):
+    """Oracle WMS timeout error with comprehensive deadline context.
+
+    Specialized timeout error for Oracle WMS operation deadline violations.
+    Provides detailed context about timeout conditions and API call timing.
+    """
+
+
+# =============================================================================
+# DOMAIN-SPECIFIC EXCEPTIONS - Oracle WMS Business Logic
+# =============================================================================
+
+
 class FlextOracleWmsDataValidationError(FlextOracleWmsValidationError):
     """Data validation error for Oracle WMS operations."""
 
@@ -38,25 +99,8 @@ class FlextOracleWmsDataValidationError(FlextOracleWmsValidationError):
         super().__init__(message)
 
 
-FlextOracleWmsConfigurationError = _oracle_wms_exceptions[
-    "FlextOracleWmsConfigurationError"
-]
-FlextOracleWmsConnectionError = _oracle_wms_exceptions["FlextOracleWmsConnectionError"]
-FlextOracleWmsProcessingError = _oracle_wms_exceptions["FlextOracleWmsProcessingError"]
-FlextOracleWmsAuthenticationError = _oracle_wms_exceptions[
-    "FlextOracleWmsAuthenticationError"
-]
-FlextOracleWmsTimeoutError = _oracle_wms_exceptions["FlextOracleWmsTimeoutError"]
-
-
-# Domain-specific exceptions for Oracle WMS business logic
-# ========================================================
-# REFACTORING: Template Method Pattern - eliminates massive duplication
-# ========================================================
-
-
 class FlextOracleWmsApiError(FlextOracleWmsError):
-    """Oracle WMS API request and response errors using DRY foundation."""
+    """Oracle WMS API request and response errors with HTTP context."""
 
     def __init__(
         self,
@@ -76,11 +120,11 @@ class FlextOracleWmsApiError(FlextOracleWmsError):
         if entity_name is not None:
             context["entity_name"] = entity_name
 
-        super().__init__(f"API Error: {message}", **context)
+        super().__init__(f"API Error: {message}", context=context)
 
 
 class FlextOracleWmsInventoryError(FlextOracleWmsProcessingError):
-    """Oracle WMS inventory-specific errors using DRY foundation."""
+    """Oracle WMS inventory-specific errors with WMS context."""
 
     def __init__(
         self,
@@ -100,11 +144,11 @@ class FlextOracleWmsInventoryError(FlextOracleWmsProcessingError):
         if item_id is not None:
             context["item_id"] = item_id
 
-        super().__init__(f"Inventory: {message}", **context)
+        super().__init__(f"Inventory: {message}", context=context)
 
 
 class FlextOracleWmsShipmentError(FlextOracleWmsProcessingError):
-    """Oracle WMS shipment-specific errors using DRY foundation."""
+    """Oracle WMS shipment-specific errors with WMS context."""
 
     def __init__(
         self,
@@ -124,11 +168,11 @@ class FlextOracleWmsShipmentError(FlextOracleWmsProcessingError):
         if carrier_id is not None:
             context["carrier_id"] = carrier_id
 
-        super().__init__(f"Shipment: {message}", **context)
+        super().__init__(f"Shipment: {message}", context=context)
 
 
 class FlextOracleWmsPickingError(FlextOracleWmsProcessingError):
-    """Oracle WMS picking-specific errors using DRY foundation."""
+    """Oracle WMS picking-specific errors with WMS context."""
 
     def __init__(
         self,
@@ -148,11 +192,11 @@ class FlextOracleWmsPickingError(FlextOracleWmsProcessingError):
         if task_id is not None:
             context["task_id"] = task_id
 
-        super().__init__(f"Picking: {message}", **context)
+        super().__init__(f"Picking: {message}", context=context)
 
 
 class FlextOracleWmsEntityNotFoundError(FlextOracleWmsValidationError):
-    """Oracle WMS entity not found errors using DRY foundation."""
+    """Oracle WMS entity not found errors with entity context."""
 
     def __init__(
         self,
@@ -169,11 +213,11 @@ class FlextOracleWmsEntityNotFoundError(FlextOracleWmsValidationError):
         if entity_id is not None:
             context["entity_id"] = entity_id
 
-        super().__init__(f"Entity Not Found: {message}", **context)
+        super().__init__(f"Entity Not Found: {message}", context=context)
 
 
 class FlextOracleWmsSchemaError(FlextOracleWmsValidationError):
-    """Oracle WMS schema processing errors using DRY foundation."""
+    """Oracle WMS schema processing errors with schema context."""
 
     def __init__(
         self,
@@ -190,7 +234,7 @@ class FlextOracleWmsSchemaError(FlextOracleWmsValidationError):
         if field_name is not None:
             context["field_name"] = field_name
 
-        super().__init__(f"Schema: {message}", **context)
+        super().__init__(f"Schema: {message}", context=context)
 
 
 class FlextOracleWmsSchemaFlatteningError(FlextOracleWmsSchemaError):
@@ -201,14 +245,19 @@ class FlextOracleWmsSchemaFlatteningError(FlextOracleWmsSchemaError):
         super().__init__(message)
 
 
+# =============================================================================
+# EXPORTS
+# =============================================================================
+
 __all__: list[str] = [
-    # Factory-created base exceptions (from flext-core)
     "FlextOracleWmsApiError",
     "FlextOracleWmsAuthenticationError",
     "FlextOracleWmsConfigurationError",
     "FlextOracleWmsConnectionError",
+    # Domain-specific exceptions
     "FlextOracleWmsDataValidationError",
     "FlextOracleWmsEntityNotFoundError",
+    # Factory-created base exceptions
     "FlextOracleWmsError",
     "FlextOracleWmsInventoryError",
     "FlextOracleWmsPickingError",

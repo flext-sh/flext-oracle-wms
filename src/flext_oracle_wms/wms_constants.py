@@ -1,9 +1,10 @@
-"""Oracle WMS Constants extending flext-core platform constants.
+"""Oracle WMS Constants - Consolidated Constants and Enums.
 
 Copyright (c) 2025 FLEXT Contributors
 SPDX-License-Identifier: MIT
 
-Oracle WMS-specific constants that extend flext-core patterns.
+Consolidated constants extending flext-core platform constants.
+This module consolidates all Oracle WMS-specific constants, enums, and default values.
 """
 
 from __future__ import annotations
@@ -255,7 +256,7 @@ class FlextOracleWmsConstants(FlextOracleWmsSemanticConstants):
 
 
 # =================================================================
-# LEGACY ENUM CLASSES - Backward compatibility (DEPRECATED - use semantic access)
+# ENUM CLASSES - Core Oracle WMS Enums
 # =================================================================
 
 
@@ -273,6 +274,7 @@ class FlextOracleWmsApiVersion(StrEnum):
     LGF_V10 = "v10"
     LGF_V9 = "v9"
     LGF_V8 = "v8"
+    LEGACY = "legacy"
 
 
 class OracleWMSEntityType(StrEnum):
@@ -334,7 +336,7 @@ class OracleWMSWriteMode(StrEnum):
 
 
 # =============================================================================
-# LEGACY CLASSES - Backward compatibility (DEPRECATED - use semantic access)
+# LEGACY COMPATIBILITY CLASSES
 # =============================================================================
 
 
@@ -413,27 +415,27 @@ class FlextOracleWmsDefaults:
     AUTH_ERROR_CODES = FlextOracleWmsSemanticConstants.Api.AUTH_ERROR_CODES
 
 
-# Legacy class aliases (DEPRECATED - use FlextOracleWmsConstants.* semantic access)
+# Legacy class aliases for backward compatibility
 FlextOracleWmsErrorMessages = FlextOracleWmsSemanticConstants.ErrorMessages
 FlextOracleWmsApiPaths = FlextOracleWmsSemanticConstants.Paths
 FlextOracleWmsResponseFields = FlextOracleWmsSemanticConstants.ResponseFields
 
 
 # =============================================================================
-# EXPORTS - Oracle WMS constants API
+# EXPORTS
 # =============================================================================
 
 __all__: list[str] = [
     "FlextOracleWmsApiPaths",
-    # Legacy enum classes (deprecated)
     "FlextOracleWmsApiVersion",
-    # Legacy Compatibility (Backward Compatibility)
     "FlextOracleWmsConstants",
+    # Legacy Compatibility
     "FlextOracleWmsDefaults",
     "FlextOracleWmsErrorMessages",
     "FlextOracleWmsResponseFields",
     # Modern Semantic Constants (Primary API)
     "FlextOracleWmsSemanticConstants",
+    # Enum Classes
     "OracleWMSAuthMethod",
     "OracleWMSEntityType",
     "OracleWMSFilterOperator",

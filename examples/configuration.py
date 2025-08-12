@@ -100,7 +100,7 @@ def create_config_from_environment() -> FlextOracleWmsClientConfig:
     # Get required values
     base_url = os.getenv("ORACLE_WMS_BASE_URL")
     username = os.getenv("ORACLE_WMS_USERNAME")
-    password = os.getenv("ORACLE_WMS_PASSWORD")
+    password = os.getenv("ORACLE_WMS_PASSWORD"  # noqa: S105)
     environment = os.getenv("ORACLE_WMS_ENVIRONMENT")
 
     if not all([base_url, username, password, environment]):
@@ -143,7 +143,7 @@ def create_demo_config() -> FlextOracleWmsClientConfig:
     return FlextOracleWmsClientConfig(
         base_url="https://demo-wms.oraclecloud.com/demo",
         username="demo_user",
-        password="demo_password",
+        password="demo_password"  # noqa: S105,
         environment="demo",
         api_version=FlextOracleWmsApiVersion.LGF_V10,
         timeout=30.0,

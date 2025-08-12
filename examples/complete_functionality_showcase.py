@@ -67,7 +67,7 @@ def load_config_from_environment() -> FlextOracleWmsClientConfig:
     # Get required environment variables
     base_url = os.getenv("ORACLE_WMS_BASE_URL")
     username = os.getenv("ORACLE_WMS_USERNAME")
-    password = os.getenv("ORACLE_WMS_PASSWORD")
+    password = os.getenv("ORACLE_WMS_PASSWORD"  # noqa: S105)
     environment = os.getenv("ORACLE_WMS_ENVIRONMENT", "production")
 
     if not all([base_url, username, password]):
@@ -337,7 +337,7 @@ async def showcase_6_error_handling(client: FlextOracleWmsClient) -> None:
         invalid_config = FlextOracleWmsClientConfig(
             base_url="invalid-url",  # Invalid URL format
             username="",  # Empty username
-            password="",  # Empty password
+            password=""  # noqa: S105,  # Empty password
             environment="test",
             api_version=FlextOracleWmsApiVersion.LGF_V10,
             timeout=30.0,
