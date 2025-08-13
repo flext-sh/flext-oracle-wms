@@ -176,6 +176,7 @@ addopts = [
     "--tb=short",
 ]
 testpaths = ["tests"]
+pythonpath = ["src"]
 markers = [
     "unit: Unit tests",
     "integration: Integration tests",

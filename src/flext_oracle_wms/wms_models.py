@@ -21,6 +21,11 @@ from flext_oracle_wms.wms_constants import (
     FlextOracleWmsDefaults,
     FlextOracleWmsErrorMessages,
 )
+from flext_oracle_wms.wms_operations import (
+    validate_dict_parameter,
+    validate_records_list,
+    validate_string_parameter,
+)
 
 # =============================================================================
 # TYPE DEFINITIONS - Core Oracle WMS Types
@@ -132,10 +137,6 @@ class FlextOracleWmsEntity(FlextValueObject):
 
     def validate_business_rules(self) -> FlextResult[None]:
         """Validate entity business rules."""
-        from flext_oracle_wms.wms_operations import (
-            validate_string_parameter,
-        )
-
         validation_errors = []
 
         try:
@@ -174,10 +175,6 @@ class FlextOracleWmsDiscoveryResult(FlextValueObject):
 
     def validate_business_rules(self) -> FlextResult[None]:
         """Validate discovery result."""
-        from flext_oracle_wms.wms_operations import (
-            validate_records_list,
-        )
-
         validation_errors = []
 
         try:
@@ -217,10 +214,6 @@ class FlextOracleWmsApiResponse(FlextValueObject):
 
     def validate_business_rules(self) -> FlextResult[None]:
         """Validate API response."""
-        from flext_oracle_wms.wms_operations import (
-            validate_dict_parameter,
-        )
-
         validation_errors = []
 
         try:

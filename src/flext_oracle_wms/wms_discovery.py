@@ -20,21 +20,21 @@ from typing import TYPE_CHECKING, Generic, TypeVar
 
 from flext_core import FlextResult, FlextValueObject, get_logger
 
-from flext_oracle_wms.wms_constants import FlextOracleWmsDefaults
-from flext_oracle_wms.wms_models import (
+from flext_oracle_wms.models import (
     FlextOracleWmsDiscoveryResult,
     FlextOracleWmsEntity,
 )
+from flext_oracle_wms.wms_constants import FlextOracleWmsDefaults
 from flext_oracle_wms.wms_operations import handle_operation_exception
 
 if TYPE_CHECKING:
     from flext_api import FlextApiClient
 
-    from flext_oracle_wms.wms_constants import OracleWMSEntityType
-    from flext_oracle_wms.wms_models import (
+    from flext_oracle_wms.models import (
         TOracleWmsRecordBatch,
         TOracleWmsSchema,
     )
+    from flext_oracle_wms.wms_constants import OracleWMSEntityType
 
 logger = get_logger(__name__)
 
@@ -226,7 +226,8 @@ class FlextOracleWmsCacheManager:
             return FlextResult.ok(None)
 
         except Exception as e:
-            return handle_operation_exception("cache set", e, logger)
+            handle_operation_exception("cache set", e, logger)
+            return FlextResult.fail(f"Cache set failed: {e}")
 
     def invalidate(self, key: str) -> None:
         """Invalidate specific cache entry."""
@@ -494,43 +495,13 @@ class EntityListDiscoveryStrategy(DiscoveryStrategy):
     ) -> FlextResult[None]:
         """Discover entities from Oracle WMS API."""
         try:
-            # Minimal legitimate use to avoid unused-arg: check client capabilities
-            has_get = hasattr(api_client, "get")
-            if not has_get:
-                logger.debug("API client does not expose 'get' method; using defaults")
-            # Mock implementation for entity list discovery
-            # In real implementation, this would call the Oracle WMS API
-            default_entities = [
-                "company",
-                "facility",
-                "item",
-                "order_hdr",
-                "order_dtl",
-                "allocation",
-                "inventory",
-                "location",
-                "wave",
-                "shipment",
-                "receipt",
-                "task",
-                "container",
-                "lpn",
-                "pick_slip",
-                "manifest",
-            ]
+            # Se o cliente não expõe 'get', não invente dados
+            if not hasattr(api_client, "get"):
+                logger.debug("API client does not expose 'get' method; skipping discovery step")
+                return FlextResult.ok(None)
 
-            for entity_name in default_entities:
-                entity = FlextOracleWmsEntity(
-                    name=entity_name,
-                    endpoint=f"/entity/{entity_name}/",
-                    description=f"Oracle WMS {entity_name} entity",
-                    fields={},
-                    primary_key=f"{entity_name}_id",
-                    replication_key="mod_date",
-                    supports_incremental=True,
-                )
-                context.all_entities.append(entity)
-
+            # Nesta estratégia, não inventamos entidades. Outras estratégias ou o cliente real
+            # são responsáveis pela descoberta. Mantemos consistente e sem dados falsos.
             return FlextResult.ok(None)
 
         except Exception as e:
@@ -569,12 +540,35 @@ class FlextOracleWmsEntityDiscovery:
             if use_cache and self.cache_manager:
                 cached_result = await self.cache_manager.get(cache_key)
                 if cached_result.success and isinstance(cached_result.data, dict):
+                    data = cached_result.data
+                    raw_entities: list[dict[str, object]] = []
+                    entities_data: list[object] = []
+                    if isinstance(data, dict):
+                        raw_data: object = data.get("entities", [])
+                        if isinstance(raw_data, list):
+                            entities_data = raw_data
+                    if isinstance(entities_data, list):
+                        raw_entities = [item for item in entities_data if isinstance(item, dict)]
+                    entities: list[FlextOracleWmsEntity] = []
+                    for item in raw_entities:
+                        if isinstance(item, dict) and item.get("name") and item.get("endpoint"):
+                            entities.append(
+                                FlextOracleWmsEntity(
+                                    name=str(item.get("name")),
+                                    endpoint=str(item.get("endpoint")),
+                                    description=str(item.get("description")) if isinstance(item.get("description"), str) else None,
+                                    fields=item.get("fields") if isinstance(item.get("fields"), dict) else {},  # type: ignore[arg-type]
+                                    primary_key=str(item.get("primary_key")) if item.get("primary_key") else None,
+                                    replication_key=str(item.get("replication_key")) if item.get("replication_key") else None,
+                                    supports_incremental=bool(item.get("supports_incremental", False)),
+                                )
+                            )
                     logger.debug("Using cached discovery result")
                     return FlextResult.ok(
                         FlextOracleWmsDiscoveryResult(
-                            entities=[],  # Type-safe empty list for now
-                            total_count=0,
-                            timestamp=str(cached_result.data.get("timestamp", "")),
+                            entities=entities,
+                            total_count=len(entities),
+                            timestamp=str(data.get("timestamp", "")),
                             discovery_duration_ms=0.0,
                             api_version="v10",
                         ),
@@ -593,7 +587,7 @@ class FlextOracleWmsEntityDiscovery:
             for strategy in self.strategies:
                 result = await strategy.execute_discovery_step(context, self.api_client)
                 if not result.success:
-                    logger.warning(f"Discovery strategy failed: {result.error}")
+                    logger.warning("Discovery strategy failed", error=result.error)
 
             # Apply filters
             filtered_entities = self._apply_entity_filters(
@@ -620,13 +614,11 @@ class FlextOracleWmsEntityDiscovery:
             # Cache the result
             if use_cache and self.cache_manager:
                 cache_data = {
-                    "entities": filtered_entities,
+                    "entities": [e.to_dict_basic() for e in filtered_entities],
                     "total_count": len(filtered_entities),
                     "timestamp": discovery_result.timestamp,
                 }
-                # Convert cache_data to proper type for cache
-                cache_value = str(cache_data)  # Convert to string for cache
-                await self.cache_manager.set(cache_key, cache_value)
+                await self.cache_manager.set(cache_key, cache_data)  # type: ignore[arg-type]
 
             return FlextResult.ok(discovery_result)
 

@@ -14,6 +14,8 @@ from typing import ClassVar, Literal
 
 from flext_core.constants import FlextConstants
 
+from flext_oracle_wms.wms_models import FlextOracleWmsApiVersion as _ModelsApiVersion
+
 # =============================================================================
 # ORACLE WMS-SPECIFIC SEMANTIC CONSTANTS - Modern Python 3.13 Structure
 # =============================================================================
@@ -268,13 +270,8 @@ class OracleWMSAuthMethod(StrEnum):
     API_KEY = "api_key"
 
 
-class FlextOracleWmsApiVersion(StrEnum):
-    """Oracle WMS API versions."""
-
-    LGF_V10 = "v10"
-    LGF_V9 = "v9"
-    LGF_V8 = "v8"
-    LEGACY = "legacy"
+# Backward-compatible alias to the single source of truth in wms_models
+FlextOracleWmsApiVersion = _ModelsApiVersion
 
 
 class OracleWMSEntityType(StrEnum):
@@ -323,7 +320,7 @@ class OracleWMSPageMode(StrEnum):
 
     OFFSET = "offset"
     CURSOR = "cursor"
-    TOKEN_NAME = "tok" + "en"
+    TOKEN = "token"
 
 
 class OracleWMSWriteMode(StrEnum):

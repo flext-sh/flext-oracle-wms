@@ -233,46 +233,48 @@ class TestExamplesIntegration:
 
     def test_basic_usage_example_works(self) -> None:
         """Test that basic_usage.py actually executes successfully."""
-        import subprocess
+        import asyncio
         import sys
 
         # Run basic_usage.py as subprocess to validate it works
-        result = subprocess.run(
-            [sys.executable, "examples/basic_usage.py"],
-            check=False,
-            capture_output=True,
-            text=True,
-            cwd="/home/marlonsc/flext/flext-oracle-wms",
+        async def _run(cmd_list: list[str], cwd: str | None = None) -> tuple[int, str, str]:
+            process = await asyncio.create_subprocess_exec(
+                *cmd_list,
+                cwd=cwd,
+                stdout=asyncio.subprocess.PIPE,
+                stderr=asyncio.subprocess.PIPE,
+            )
+            stdout, stderr = await process.communicate()
+            return process.returncode, stdout.decode(), stderr.decode()
+
+        rc, out, err = asyncio.run(
+            _run([sys.executable, "examples/basic_usage.py"], cwd="/home/marlonsc/flext/flext-oracle-wms"),
         )
 
         # Should complete successfully
-        assert result.returncode == 0, f"basic_usage.py failed: {result.stderr}"
+        assert rc == 0, f"basic_usage.py failed: {err}"
 
         # Should contain expected success messages
-        output = result.stdout
+        output = out
         assert "Successfully discovered" in output
         assert "entities" in output.lower()
         assert "completed successfully" in output.lower()
 
     def test_configuration_example_works(self) -> None:
         """Test that configuration.py now works after refactoring."""
-        import subprocess
+        import asyncio
         import sys
 
         # Run configuration.py to test it works
-        result = subprocess.run(
-            [sys.executable, "examples/configuration.py"],
-            check=False,
-            capture_output=True,
-            text=True,
-            cwd="/home/marlonsc/flext/flext-oracle-wms",
+        rc, out, err = asyncio.run(
+            _run([sys.executable, "examples/configuration.py"], cwd="/home/marlonsc/flext/flext-oracle-wms"),
         )
 
         # Should now succeed after refactoring
-        assert result.returncode == 0, f"configuration.py failed: {result.stderr}"
+        assert rc == 0, f"configuration.py failed: {err}"
 
         # Should contain expected success messages
-        output = result.stdout
+        output = out
         assert "Configuration examples completed successfully" in output
         assert "Environment configuration created successfully" in output
         assert "Configuration is valid and ready for use" in output

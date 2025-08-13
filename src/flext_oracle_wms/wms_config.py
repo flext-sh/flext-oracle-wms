@@ -12,7 +12,6 @@ Implements flext-core unified configuration standards.
 from __future__ import annotations
 
 import os
-from dataclasses import dataclass
 from pathlib import Path
 from typing import ClassVar, NewType
 from urllib.parse import urlparse
@@ -33,7 +32,6 @@ WMSAPIVersion = NewType("WMSAPIVersion", str)
 WMSRetryAttempts = NewType("WMSRetryAttempts", int)
 
 
-@dataclass(frozen=True)
 class FlextOracleWmsClientConfig(FlextValueObject):
     """Oracle WMS Declarative Client Configuration.
 
@@ -58,7 +56,8 @@ class FlextOracleWmsClientConfig(FlextValueObject):
         ... )
         >>> validation = config.validate_business_rules()
         >>> if validation.success:
-        ...     print("Configuration is valid")
+        ...     from flext_core import get_logger
+        ...     get_logger(__name__).info("Configuration is valid")
 
     """
 
@@ -71,6 +70,10 @@ class FlextOracleWmsClientConfig(FlextValueObject):
     max_retries: int = Field(default=3)
     verify_ssl: bool = Field(default=True)
     enable_logging: bool = Field(default=True)
+    use_mock: bool = Field(
+        default=False,
+        description="Use internal mock server explicitly (testing only)",
+    )
 
     def validate_business_rules(self) -> FlextResult[None]:
         """Validate Oracle WMS client configuration business rules."""
@@ -91,6 +94,9 @@ class FlextOracleWmsClientConfig(FlextValueObject):
             validation_errors.append("Timeout must be greater than 0")
         if self.max_retries < 0:
             validation_errors.append("Max retries cannot be negative")
+        # Explicit mock must be intentional; no auto-mock by URL heuristics
+        if self.use_mock and not self.base_url:
+            validation_errors.append("Base URL is required even when using mock")
 
         if validation_errors:
             return FlextResult.fail("; ".join(validation_errors))

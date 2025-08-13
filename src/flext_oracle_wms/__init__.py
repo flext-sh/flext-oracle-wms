@@ -37,7 +37,9 @@ Example:
     >>> client = FlextOracleWmsClient(config)
     >>> result = await client.discover_entities()
     >>> if result.success:
-    ...     print(f"Discovered {len(result.data)} WMS entities")
+    ...     # Use a proper logger in real code; prints here are for doc illustration only
+    ...     logger = get_logger(__name__)
+    ...     logger.info("Discovered WMS entities", count=len(result.data))
 
 Author: FLEXT Development Team
 Version: 0.9.0
@@ -172,6 +174,7 @@ from flext_oracle_wms.wms_api import (
 
 # Version information
 __version__ = "0.9.0"
+__version_info__ = tuple(int(x) for x in __version__.split(".") if x.isdigit())
 __author__ = "FLEXT Contributors"
 __description__ = (
     "Oracle WMS integration library using flext-core and flext-api patterns"
@@ -285,6 +288,7 @@ __all__: list[str] = [
     "flext_oracle_wms_validate_entity_name",
     # Metadata
     "__version__",
+    "__version_info__",
     "__author__",
     "__description__",
 ]

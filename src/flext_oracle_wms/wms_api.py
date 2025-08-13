@@ -20,7 +20,7 @@ from uuid import uuid4
 
 from flext_core import FlextResult, get_logger
 
-from flext_oracle_wms.wms_models import (
+from flext_oracle_wms.models import (
     FlextOracleWmsApiCategory,
     FlextOracleWmsApiEndpoint,
     FlextOracleWmsApiVersion,
