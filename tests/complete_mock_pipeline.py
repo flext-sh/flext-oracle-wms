@@ -365,18 +365,27 @@ class CompleteMockPipeline:
         field: str,
     ) -> dict[str, str | list[str]] | None:
         """Infer type from field name patterns - Template Method Pattern."""
-        if field == "id":
-            return {"type": "integer"}
-        if field.endswith("_code"):
-            return {"type": ["string", "null"]}
-        if field.endswith("_ts"):
-            return {"type": ["string", "null"], "format": "date-time"}
-        if field.endswith("_date"):
-            return {"type": ["string", "null"], "format": "date"}
-        if field.endswith(("_qty", "_weight_kg", "_volume_liters")):
-            return {"type": ["number", "null"]}
-        if field.endswith("_nbr"):
-            return {"type": ["string", "null"]}
+        # Field type mapping to reduce return statements
+        field_type_mapping = {
+            "id": {"type": "integer"},
+            "_code": {"type": ["string", "null"]},
+            "_ts": {"type": ["string", "null"], "format": "date-time"},
+            "_date": {"type": ["string", "null"], "format": "date"},
+            "_qty": {"type": ["number", "null"]},
+            "_weight_kg": {"type": ["number", "null"]},
+            "_volume_liters": {"type": ["number", "null"]},
+            "_nbr": {"type": ["string", "null"]},
+        }
+
+        # Check exact match first
+        if field in field_type_mapping:
+            return field_type_mapping[field]
+
+        # Check suffix matches
+        for suffix, type_info in field_type_mapping.items():
+            if field.endswith(suffix):
+                return type_info
+
         return None
 
     def _infer_type_from_value(

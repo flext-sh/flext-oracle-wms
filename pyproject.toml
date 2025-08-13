@@ -21,11 +21,8 @@ classifiers = [
 ]
 dependencies = [
     "pydantic (>=2.11.7)",
-    "flext-core @ file:///home/marlonsc/flext/flext-core",
-    "flext-observability @ file:///home/marlonsc/flext/flext-observability",
     "httpx (>=0.28.1)",
     "pydantic-settings (>=2.10.1)",
-    "flext-api @ file:///home/marlonsc/flext/flext-api",
     "python-dotenv (>=1.1.1,<2.0.0)",
 ]
 [[project.authors]]
@@ -145,6 +142,19 @@ warn_required_dynamic_aliases = true
 [[tool.poetry.packages]]
 include = "flext_oracle_wms"
 from = "src"
+
+# Local workspace dependencies (path-based)
+[tool.poetry.dependencies.flext-core]
+path = "../flext-core"
+develop = true
+
+[tool.poetry.dependencies.flext-observability]
+path = "../flext-observability"
+develop = true
+
+[tool.poetry.dependencies.flext-api]
+path = "../flext-api"
+develop = true
 
 [tool.deptry]
 known_first_party = ["flext_oracle_wms"]

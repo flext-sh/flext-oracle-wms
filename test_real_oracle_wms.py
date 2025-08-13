@@ -15,8 +15,12 @@ import contextlib
 
 from flext_core import get_logger
 
-from flext_oracle_wms import FlextOracleWmsClientConfig, create_oracle_wms_client
-from flext_oracle_wms.api_catalog import FlextOracleWmsApiVersion
+# Use public enum re-exported by package
+from flext_oracle_wms import (
+    FlextOracleWmsApiVersion,
+    FlextOracleWmsClientConfig,
+    create_oracle_wms_client,
+)
 
 logger = get_logger(__name__)
 
