@@ -1,10 +1,10 @@
 # flext-oracle-wms
 
-**Type**: Infrastructure Library | **Status**: Development | **Dependencies**: flext-core
+**Type**: Infrastructure Library | **Status**: Active Development | **Dependencies**: flext-core
 
 Oracle WMS Cloud integration library providing REST API connectivity and data operations for the FLEXT ecosystem.
 
-> **⚠️ Development Status**: API client working, entity discovery functional, Singer integration incomplete, business domain separation needed
+> ⚠️ Development Status: API client working; entity discovery functional; Singer integration incomplete; business domain separation needed.
 
 ## Quick Start
 
@@ -164,10 +164,10 @@ export FLEXT_ORACLE_WMS_MAX_RETRIES="3"
 
 ## Quality Standards
 
-### **Zero Tolerance Quality Gates**
+### **Quality Targets**
 
-- **Coverage**: 90% test coverage enforced
-- **Type Safety**: Strict MyPy configuration
+- **Coverage**: 90% target
+- **Type Safety**: MyPy strict mode adoption
 - **Linting**: Ruff with comprehensive rules
 - **Security**: Bandit + pip-audit scanning
 

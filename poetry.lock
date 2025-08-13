@@ -1179,6 +1179,7 @@ develop = false
 
 [package.dependencies]
 aiohttp = ">=3.12.14"
+ecdsa = ">=0.19.1,<0.20.0"
 fastapi = ">=0.116.0"
 flext-auth = {path = "/home/marlonsc/flext/flext-auth"}
 flext-core = {path = "/home/marlonsc/flext/flext-core"}
@@ -1260,6 +1261,7 @@ develop = false
 pydantic = ">=2.11.7"
 pydantic-settings = ">=2.10.1"
 structlog = ">=25.4.0"
+typing-extensions = ">=4.12.0"
 
 [package.extras]
 dev = ["autoflake (>=2.3.1)", "black (>=25.1.0)", "codespell (>=2.3.0)", "deptry (>=0.23.0)", "isort (>=6.0.1)", "mypy (>=1.13.0)", "pre-commit (>=4.0.1)", "pylint (>=3.3.0)", "pyupgrade (>=3.19.0)", "radon (>=6.0.1)", "ruff (>=0.12.3)", "vulture (>=2.13)"]
@@ -1282,8 +1284,8 @@ files = []
 develop = false
 
 [package.dependencies]
-flext-core = {path = "../flext-core"}
-flext-observability = {path = "../flext-observability"}
+flext-core = {path = "/home/marlonsc/flext/flext-core"}
+flext-observability = {path = "/home/marlonsc/flext/flext-observability"}
 grpcio = ">=1.50.0"
 grpcio-tools = "1.71.2"
 prometheus-client = ">=0.22.1"
@@ -1347,8 +1349,8 @@ develop = false
 
 [package.dependencies]
 aiofiles = ">=24.1.0"
-flext-core = {path = "../flext-core"}
-flext-observability = {path = "../flext-observability"}
+flext-core = {path = "/home/marlonsc/flext/flext-core"}
+flext-observability = {path = "/home/marlonsc/flext/flext-observability"}
 jsonschema = ">=4.25.0"
 psutil = ">=7.0.0"
 pydantic = ">=2.11.7"

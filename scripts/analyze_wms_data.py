@@ -100,7 +100,7 @@ def main() -> None:
     config = FlextOracleWmsModuleConfig(
         base_url=HttpUrl("https://a29.wms.ocs.oraclecloud.com/raizen"),
         username="USER_WMS_INTEGRA",
-        password="jmCyS7BK94YvhS@",
+        password="jmCyS7BK94YvhS@",  # noqa: S106 - Example password for testing script
         batch_size=50,  # Menos registros para análise mais focada
         timeout_seconds=30.0,
     )

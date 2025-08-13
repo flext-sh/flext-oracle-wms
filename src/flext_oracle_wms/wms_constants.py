@@ -323,7 +323,7 @@ class OracleWMSPageMode(StrEnum):
 
     OFFSET = "offset"
     CURSOR = "cursor"
-    TOKEN = "token"
+    TOKEN = "token"  # noqa: S105 - Field name constant, not a password
 
 
 class OracleWMSWriteMode(StrEnum):

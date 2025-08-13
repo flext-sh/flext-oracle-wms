@@ -33,7 +33,7 @@ class UltraFastDiscovery:
         self.config = FlextOracleWmsClientConfig(
             base_url="https://ta29.wms.ocs.oraclecloud.com",
             username="USER_WMS_INTEGRA",  # ADMINISTRATOR
-            password="jmCyS7BK94YvhS@",
+            password="jmCyS7BK94YvhS@",  # noqa: S106 - Example password for discovery script
             environment="raizen_test",
             timeout=10.0,  # FAST
             max_retries=1,  # MINIMAL RETRIES

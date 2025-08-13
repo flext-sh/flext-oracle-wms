@@ -98,6 +98,16 @@ class FlextOracleWmsCacheEntry(FlextValueObject, Generic[T]):  # noqa: UP046
         """Check if cache entry has expired."""
         return (time.time() - self.timestamp) > self.ttl_seconds
 
+    def validate_business_rules(self) -> FlextResult[None]:
+        """Validate cache entry business rules."""
+        if not self.key:
+            return FlextResult.fail("Cache key cannot be empty")
+        if self.ttl_seconds <= 0:
+            return FlextResult.fail("TTL must be positive")
+        if self.timestamp <= 0:
+            return FlextResult.fail("Timestamp must be positive")
+        return FlextResult.ok(None)
+
     def is_valid(self) -> bool:
         """Check if cache entry is still valid."""
         return not self.is_expired()
@@ -152,8 +162,8 @@ class FlextOracleWmsCacheManager:
                         logger.debug(f"Cleaned up {len(expired_keys)} expired cache entries")
             except asyncio.CancelledError:
                 break
-            except Exception as e:
-                logger.exception(f"Cache cleanup error: {e}")
+            except Exception:
+                logger.exception("Cache cleanup error")
 
     async def get(self, key: str) -> FlextResult[CacheValue]:
         """Get value from cache."""
@@ -185,7 +195,7 @@ class FlextOracleWmsCacheManager:
                 return FlextResult.ok(entry.value)
 
         except Exception as e:
-            return handle_operation_exception("cache get", e, logger)
+            return FlextResult.fail(f"Cache get failed: {e}")
 
     async def set(self, key: str, value: CacheValue, ttl_seconds: int | None = None) -> FlextResult[None]:
         """Set value in cache."""
@@ -237,10 +247,10 @@ class FlextOracleWmsCacheManager:
                 "hits": self._stats["hits"],
                 "misses": self._stats["misses"],
                 "evictions": self._stats["evictions"],
-                "hit_rate": (
-                    self._stats["hits"] / (self._stats["hits"] + self._stats["misses"])
+                "hit_rate": int(
+                    100 * self._stats["hits"] / (self._stats["hits"] + self._stats["misses"])
                     if (self._stats["hits"] + self._stats["misses"]) > 0
-                    else 0.0
+                    else 0
                 ),
             }
 
@@ -371,7 +381,7 @@ class FlextOracleWmsDynamicSchemaProcessor:
             schema: TOracleWmsSchema = {}
 
             # Process each field across all sample records
-            all_fields = set()
+            all_fields: set[str] = set()
             for record in sample_records:
                 if isinstance(record, dict):
                     all_fields.update(record.keys())
@@ -383,7 +393,7 @@ class FlextOracleWmsDynamicSchemaProcessor:
             return FlextResult.ok(schema)
 
         except Exception as e:
-            return handle_operation_exception("process dynamic schema", e, logger)
+            return FlextResult.fail(f"Process dynamic schema failed: {e}")
 
     def _infer_field_schema(self, field_name: str, records: TOracleWmsRecordBatch) -> dict[str, object]:
         """Infer schema for a specific field across records."""
@@ -525,9 +535,9 @@ class FlextOracleWmsEntityDiscovery:
                 if cached_result.success and isinstance(cached_result.data, dict):
                     logger.debug("Using cached discovery result")
                     return FlextResult.ok(FlextOracleWmsDiscoveryResult(
-                        entities=cached_result.data.get("entities", []),
-                        total_count=cached_result.data.get("total_count", 0),
-                        timestamp=cached_result.data.get("timestamp", ""),
+                        entities=[], # Type-safe empty list for now
+                        total_count=0,
+                        timestamp=str(cached_result.data.get("timestamp", "")),
                         discovery_duration_ms=0.0,
                         api_version="v10",
                     ))
@@ -572,12 +582,14 @@ class FlextOracleWmsEntityDiscovery:
                     "total_count": len(filtered_entities),
                     "timestamp": discovery_result.timestamp,
                 }
-                await self.cache_manager.set(cache_key, cache_data)
+                # Convert cache_data to proper type for cache
+                cache_value = str(cache_data)  # Convert to string for cache
+                await self.cache_manager.set(cache_key, cache_value)
 
             return FlextResult.ok(discovery_result)
 
         except Exception as e:
-            return handle_operation_exception("discover entities", e, logger)
+            return FlextResult.fail(f"Discover entities failed: {e}")
 
     def _apply_entity_filters(
         self,

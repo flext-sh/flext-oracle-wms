@@ -65,7 +65,7 @@ def load_oracle_wms_config() -> FlextOracleWmsClientConfig:
     # Get required environment variables
     base_url = os.getenv("ORACLE_WMS_BASE_URL")
     username = os.getenv("ORACLE_WMS_USERNAME")
-    password = os.getenv("ORACLE_WMS_PASSWORD"  # noqa: S105)
+    password = os.getenv("ORACLE_WMS_PASSWORD")
     environment = os.getenv("ORACLE_WMS_ENVIRONMENT")
 
     if not all([base_url, username, password, environment]):

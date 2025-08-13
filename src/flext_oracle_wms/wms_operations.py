@@ -13,7 +13,7 @@ from __future__ import annotations
 import re
 from dataclasses import dataclass
 from datetime import UTC, datetime
-from typing import TYPE_CHECKING, cast
+from typing import TYPE_CHECKING
 from urllib.parse import urljoin, urlparse
 
 from flext_core import (
@@ -125,13 +125,13 @@ def flext_oracle_wms_extract_environment_from_url(url: str) -> TOracleWmsEnviron
         # Look for environment in path structure
         for part in path_parts:
             if part and not part.startswith(("wms", "lgfapi", "api", "v")):
-                return cast("TOracleWmsEnvironment", part)
+                return str(part)
 
-        return cast("TOracleWmsEnvironment", "default")
+        return "default"
 
     except (ValueError, TypeError, AttributeError, FlextOracleWmsDataValidationError):
         logger.warning(f"Could not extract environment from URL: {url}")
-        return cast("TOracleWmsEnvironment", "default")
+        return "default"
 
 
 def flext_oracle_wms_build_entity_url(
@@ -203,10 +203,20 @@ def flext_oracle_wms_extract_pagination_info(
 
     fields = FlextOracleWmsResponseFields
 
+    # Safe extraction of pagination fields with proper type checking
+    page_num_val = response_data.get(fields.PAGE_NUMBER, 1)
+    current_page = int(page_num_val) if isinstance(page_num_val, (int, str)) else 1
+
+    page_count_val = response_data.get(fields.PAGE_COUNT, 1)
+    total_pages = int(page_count_val) if isinstance(page_count_val, (int, str)) else 1
+
+    result_count_val = response_data.get(fields.RESULT_COUNT, 0)
+    total_results = int(result_count_val) if isinstance(result_count_val, (int, str)) else 0
+
     return TOracleWmsPaginationInfo(
-        current_page=int(response_data.get(fields.PAGE_NUMBER, 1)),
-        total_pages=int(response_data.get(fields.PAGE_COUNT, 1)),
-        total_results=int(response_data.get(fields.RESULT_COUNT, 0)),
+        current_page=current_page,
+        total_pages=total_pages,
+        total_results=total_results,
         has_next=bool(response_data.get(fields.NEXT_PAGE)),
         has_previous=bool(response_data.get(fields.PREVIOUS_PAGE)),
         next_url=str(response_data.get(fields.NEXT_PAGE)) if response_data.get(fields.NEXT_PAGE) else None,
@@ -291,7 +301,7 @@ class FlextOracleWmsFilter:
         # Handle different filter value types
         if isinstance(filter_value, dict):
             # Advanced filter with operator
-            operator = filter_value.get("operator", "eq")
+            operator = str(filter_value.get("operator", "eq"))
             value = filter_value.get("value")
             return self._apply_operator(field_value, operator, value)
         # Simple equality check
@@ -300,7 +310,7 @@ class FlextOracleWmsFilter:
     def _get_nested_value(self, record: TOracleWmsRecord, field_path: str) -> object:
         """Get nested field value from record using dot notation."""
         try:
-            value = record
+            value: object = record
             for field_part in field_path.split("."):
                 if isinstance(value, dict):
                     value = value.get(field_part)
@@ -312,7 +322,8 @@ class FlextOracleWmsFilter:
 
     def _apply_operator(self, field_value: object, operator: str, filter_value: object) -> bool:
         """Apply filter operator to field value."""
-        operator_map = {
+        from collections.abc import Callable
+        operator_map: dict[str, Callable[[object, object], bool]] = {
             OracleWMSFilterOperator.EQ: self._op_equals,
             OracleWMSFilterOperator.NE: self._op_not_equals,
             OracleWMSFilterOperator.GT: self._op_greater_than,
@@ -326,7 +337,7 @@ class FlextOracleWmsFilter:
         }
 
         op_func = operator_map.get(operator, self._op_equals)
-        return op_func(field_value, filter_value)
+        return bool(op_func(field_value, filter_value))
 
     def _op_equals(self, field_value: object, filter_value: object) -> bool:
         """Equality operator."""
