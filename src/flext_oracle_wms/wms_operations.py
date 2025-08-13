@@ -31,13 +31,7 @@ from flext_oracle_wms.wms_exceptions import (
     FlextOracleWmsError,
     FlextOracleWmsSchemaFlatteningError,
 )
-from flext_oracle_wms.wms_models import (
-    TOracleWmsFilters,
-    TOracleWmsFilterValue,
-    TOracleWmsPaginationInfo,
-    TOracleWmsRecord,
-    TOracleWmsRecordBatch,
-)
+# Import typing-only symbols under TYPE_CHECKING to avoid circular imports
 
 if TYPE_CHECKING:
     from collections.abc import Callable, Mapping
@@ -48,6 +42,11 @@ if TYPE_CHECKING:
     from flext_oracle_wms.wms_models import (
         TOracleWmsApiVersion,
         TOracleWmsEnvironment,
+        TOracleWmsFilters,
+        TOracleWmsFilterValue,
+        TOracleWmsPaginationInfo,
+        TOracleWmsRecord,
+        TOracleWmsRecordBatch,
     )
 
 logger = get_logger(__name__)

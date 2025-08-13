@@ -12,6 +12,7 @@ from .wms_constants import (
     FlextOracleWmsDefaults,
     FlextOracleWmsErrorMessages,
     FlextOracleWmsResponseFields,
+    OracleWMSAuthMethod,
 )
 
 __all__ = [
@@ -21,4 +22,5 @@ __all__ = [
     "FlextOracleWmsDefaults",
     "FlextOracleWmsErrorMessages",
     "FlextOracleWmsResponseFields",
+    "OracleWMSAuthMethod",
 ]

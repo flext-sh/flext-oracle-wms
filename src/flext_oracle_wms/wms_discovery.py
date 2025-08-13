@@ -113,6 +113,56 @@ class FlextOracleWmsCacheEntry(FlextValueObject, Generic[T]):  # noqa: UP046
         return not self.is_expired()
 
 
+@dataclass(frozen=True)
+class FlextOracleWmsCacheStats(FlextValueObject):
+    """Cache statistics snapshot using flext-core standards."""
+
+    hits: int
+    misses: int
+    evictions: int
+    expired_entries: int
+    total_entries: int
+    memory_usage_bytes: int
+    last_cleanup: float
+
+    def validate_business_rules(self) -> FlextResult[None]:
+        if self.hits < 0 or self.misses < 0:
+            return FlextResult.fail("Statistics counters cannot be negative")
+        if self.evictions < 0:
+            return FlextResult.fail("Statistics counters cannot be negative")
+        if self.expired_entries < 0 or self.total_entries < 0:
+            return FlextResult.fail("Entry counts cannot be negative")
+        if self.memory_usage_bytes < 0:
+            return FlextResult.fail("Memory usage cannot be negative")
+        return FlextResult.ok(None)
+
+    def get_hit_ratio(self) -> float:
+        total = self.hits + self.misses
+        return 0.0 if total == 0 else self.hits / total
+
+    def update_hit(self) -> "FlextOracleWmsCacheStats":
+        return FlextOracleWmsCacheStats(
+            hits=self.hits + 1,
+            misses=self.misses,
+            evictions=self.evictions,
+            expired_entries=self.expired_entries,
+            total_entries=self.total_entries,
+            memory_usage_bytes=self.memory_usage_bytes,
+            last_cleanup=self.last_cleanup,
+        )
+
+    def update_miss(self) -> "FlextOracleWmsCacheStats":
+        return FlextOracleWmsCacheStats(
+            hits=self.hits,
+            misses=self.misses + 1,
+            evictions=self.evictions,
+            expired_entries=self.expired_entries,
+            total_entries=self.total_entries,
+            memory_usage_bytes=self.memory_usage_bytes,
+            last_cleanup=self.last_cleanup,
+        )
+
+
 class FlextOracleWmsCacheManager:
     """Enterprise cache manager for Oracle WMS operations."""
 
@@ -122,7 +172,15 @@ class FlextOracleWmsCacheManager:
         self._cache: dict[str, FlextOracleWmsCacheEntry[CacheValue]] = {}
         self._lock = threading.RLock()
         self._cleanup_task: asyncio.Task[None] | None = None
-        self._stats = {"hits": 0, "misses": 0, "evictions": 0}
+        self._stats = FlextOracleWmsCacheStats(
+            hits=0,
+            misses=0,
+            evictions=0,
+            expired_entries=0,
+            total_entries=0,
+            memory_usage_bytes=0,
+            last_cleanup=time.time(),
+        )
 
         # Validate configuration
         validation_result = self.config.validate_business_rules()
@@ -155,7 +213,19 @@ class FlextOracleWmsCacheManager:
                     ]
                     for key in expired_keys:
                         del self._cache[key]
-                        self._stats["evictions"] += 1
+                        object.__setattr__(
+                            self,
+                            "_stats",
+                            self._stats.__class__(
+                                hits=self._stats.hits,
+                                misses=self._stats.misses,
+                                evictions=self._stats.evictions + 1,
+                                expired_entries=self._stats.expired_entries + 1,
+                                total_entries=max(0, self._stats.total_entries - 1),
+                                memory_usage_bytes=self._stats.memory_usage_bytes,
+                                last_cleanup=time.time(),
+                            ),
+                        )
 
                     if expired_keys:
                         logger.debug(
@@ -172,13 +242,20 @@ class FlextOracleWmsCacheManager:
             with self._lock:
                 entry = self._cache.get(key)
                 if entry is None:
-                    self._stats["misses"] += 1
+                    self._stats = self._stats.update_miss()
                     return FlextResult.fail(f"Cache miss for key: {key}")
 
                 if entry.is_expired():
                     del self._cache[key]
-                    self._stats["misses"] += 1
-                    self._stats["evictions"] += 1
+                    self._stats = FlextOracleWmsCacheStats(
+                        hits=self._stats.hits,
+                        misses=self._stats.misses + 1,
+                        evictions=self._stats.evictions + 1,
+                        expired_entries=self._stats.expired_entries + 1,
+                        total_entries=max(0, self._stats.total_entries - 1),
+                        memory_usage_bytes=self._stats.memory_usage_bytes,
+                        last_cleanup=self._stats.last_cleanup,
+                    )
                     return FlextResult.fail(f"Cache expired for key: {key}")
 
                 # Update access statistics
@@ -192,7 +269,7 @@ class FlextOracleWmsCacheManager:
                 )
                 self._cache[key] = updated_entry
 
-                self._stats["hits"] += 1
+                self._stats = self._stats.update_hit()
                 return FlextResult.ok(entry.value)
 
         except Exception as e:
@@ -213,7 +290,15 @@ class FlextOracleWmsCacheManager:
                         key=lambda k: self._cache[k].last_accessed,
                     )
                     del self._cache[oldest_key]
-                    self._stats["evictions"] += 1
+                    self._stats = FlextOracleWmsCacheStats(
+                        hits=self._stats.hits,
+                        misses=self._stats.misses,
+                        evictions=self._stats.evictions + 1,
+                        expired_entries=self._stats.expired_entries,
+                        total_entries=max(0, self._stats.total_entries - 1),
+                        memory_usage_bytes=self._stats.memory_usage_bytes,
+                        last_cleanup=self._stats.last_cleanup,
+                    )
 
                 entry = FlextOracleWmsCacheEntry(
                     key=key,
@@ -222,6 +307,15 @@ class FlextOracleWmsCacheManager:
                     ttl_seconds=ttl,
                 )
                 self._cache[key] = entry
+                self._stats = FlextOracleWmsCacheStats(
+                    hits=self._stats.hits,
+                    misses=self._stats.misses,
+                    evictions=self._stats.evictions,
+                    expired_entries=self._stats.expired_entries,
+                    total_entries=len(self._cache),
+                    memory_usage_bytes=self._stats.memory_usage_bytes,
+                    last_cleanup=self._stats.last_cleanup,
+                )
 
             return FlextResult.ok(None)
 
@@ -234,31 +328,43 @@ class FlextOracleWmsCacheManager:
         with self._lock:
             if key in self._cache:
                 del self._cache[key]
-                self._stats["evictions"] += 1
+                self._stats = FlextOracleWmsCacheStats(
+                    hits=self._stats.hits,
+                    misses=self._stats.misses,
+                    evictions=self._stats.evictions + 1,
+                    expired_entries=self._stats.expired_entries,
+                    total_entries=len(self._cache),
+                    memory_usage_bytes=self._stats.memory_usage_bytes,
+                    last_cleanup=self._stats.last_cleanup,
+                )
 
     def clear(self) -> None:
         """Clear all cache entries."""
         with self._lock:
             evicted_count = len(self._cache)
             self._cache.clear()
-            self._stats["evictions"] += evicted_count
+            self._stats = FlextOracleWmsCacheStats(
+                hits=self._stats.hits,
+                misses=self._stats.misses,
+                evictions=self._stats.evictions + evicted_count,
+                expired_entries=self._stats.expired_entries,
+                total_entries=0,
+                memory_usage_bytes=self._stats.memory_usage_bytes,
+                last_cleanup=self._stats.last_cleanup,
+            )
 
-    def get_stats(self) -> dict[str, int]:
-        """Get cache statistics."""
+    def get_stats(self) -> FlextOracleWmsCacheStats:
+        """Get cache statistics snapshot."""
         with self._lock:
-            return {
-                "entries": len(self._cache),
-                "hits": self._stats["hits"],
-                "misses": self._stats["misses"],
-                "evictions": self._stats["evictions"],
-                "hit_rate": int(
-                    100
-                    * self._stats["hits"]
-                    / (self._stats["hits"] + self._stats["misses"])
-                    if (self._stats["hits"] + self._stats["misses"]) > 0
-                    else 0,
-                ),
-            }
+            return FlextOracleWmsCacheStats(
+                hits=self._stats.hits,
+                misses=self._stats.misses,
+                evictions=self._stats.evictions,
+                expired_entries=self._stats.expired_entries,
+                total_entries=len(self._cache),
+                memory_usage_bytes=self._stats.memory_usage_bytes,
+                last_cleanup=self._stats.last_cleanup,
+            )
 
 
 # =============================================================================
@@ -694,6 +800,7 @@ __all__: list[str] = [
     # Cache Management
     "FlextOracleWmsCacheConfig",
     "FlextOracleWmsCacheEntry",
+    "FlextOracleWmsCacheStats",
     "FlextOracleWmsCacheManager",
     # Dynamic Schema Processing
     "FlextOracleWmsDynamicSchemaProcessor",

@@ -18,6 +18,7 @@ from flext_core import FlextResult, FlextValueObject
 from pydantic import Field, StringConstraints
 
 from flext_oracle_wms.wms_constants import (
+    FlextOracleWmsApiVersion,
     FlextOracleWmsDefaults,
     FlextOracleWmsErrorMessages,
 )
@@ -100,13 +101,6 @@ class TOracleWmsDiscoveryResult(TypedDict):
 # =============================================================================
 # API CATALOG ENUMS - API Classification
 # =============================================================================
-
-
-class FlextOracleWmsApiVersion(StrEnum):
-    """Oracle WMS API versions."""
-
-    LEGACY = "legacy"  # /wms/api/
-    LGF_V10 = "v10"  # /wms/lgfapi/v10/
 
 
 class FlextOracleWmsApiCategory(StrEnum):
