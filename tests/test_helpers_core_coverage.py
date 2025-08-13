@@ -40,7 +40,7 @@ class TestUrlHelpers:
         api_version = "v1.0"
 
         result = flext_oracle_wms_build_entity_url(
-            base_url, environment, entity_name, api_version
+            base_url, environment, entity_name, api_version,
         )
 
         expected = (
@@ -66,7 +66,7 @@ class TestUrlHelpers:
         environment = "test_env"
 
         with pytest.raises(
-            Exception, match="All URL components must be non-empty strings"
+            Exception, match="All URL components must be non-empty strings",
         ):
             flext_oracle_wms_build_entity_url(base_url, environment, "")
 
@@ -76,7 +76,7 @@ class TestUrlHelpers:
         entity_name = "facility"
 
         with pytest.raises(
-            Exception, match="All URL components must be non-empty strings"
+            Exception, match="All URL components must be non-empty strings",
         ):
             flext_oracle_wms_build_entity_url("", environment, entity_name)
 

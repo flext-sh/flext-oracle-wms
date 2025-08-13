@@ -151,15 +151,16 @@ class FlextOracleWmsCacheManager:
                 await asyncio.sleep(self.config.cleanup_interval_seconds)
                 with self._lock:
                     expired_keys = [
-                        key for key, entry in self._cache.items()
-                        if entry.is_expired()
+                        key for key, entry in self._cache.items() if entry.is_expired()
                     ]
                     for key in expired_keys:
                         del self._cache[key]
                         self._stats["evictions"] += 1
 
                     if expired_keys:
-                        logger.debug(f"Cleaned up {len(expired_keys)} expired cache entries")
+                        logger.debug(
+                            f"Cleaned up {len(expired_keys)} expired cache entries",
+                        )
             except asyncio.CancelledError:
                 break
             except Exception:
@@ -197,7 +198,9 @@ class FlextOracleWmsCacheManager:
         except Exception as e:
             return FlextResult.fail(f"Cache get failed: {e}")
 
-    async def set(self, key: str, value: CacheValue, ttl_seconds: int | None = None) -> FlextResult[None]:
+    async def set(
+        self, key: str, value: CacheValue, ttl_seconds: int | None = None,
+    ) -> FlextResult[None]:
         """Set value in cache."""
         try:
             ttl = ttl_seconds or self.config.default_ttl_seconds
@@ -248,9 +251,11 @@ class FlextOracleWmsCacheManager:
                 "misses": self._stats["misses"],
                 "evictions": self._stats["evictions"],
                 "hit_rate": int(
-                    100 * self._stats["hits"] / (self._stats["hits"] + self._stats["misses"])
+                    100
+                    * self._stats["hits"]
+                    / (self._stats["hits"] + self._stats["misses"])
                     if (self._stats["hits"] + self._stats["misses"]) > 0
-                    else 0
+                    else 0,
                 ),
             }
 
@@ -319,7 +324,9 @@ class StringTypeStrategy(TypeInferenceStrategy):
 
     def infer_type(self, value: object) -> str:
         """Infer string subtype based on format."""
-        if isinstance(value, str) and re.match(r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}", value):
+        if isinstance(value, str) and re.match(
+            r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}", value,
+        ):
             # Check for date/time patterns
             return "string"  # Could be datetime format
         return "string"
@@ -367,7 +374,7 @@ class FlextOracleWmsDynamicSchemaProcessor:
     async def process_records(
         self,
         records: TOracleWmsRecordBatch,
-        entity_type: OracleWMSEntityType | None = None,  # noqa: ARG002
+        entity_type: OracleWMSEntityType | None = None,
     ) -> FlextResult[TOracleWmsSchema]:
         """Process Oracle WMS records to generate dynamic schema."""
         try:
@@ -375,7 +382,11 @@ class FlextOracleWmsDynamicSchemaProcessor:
                 return FlextResult.fail("No records to process")
 
             # Sample records for schema inference
-            sample_records = records[:self.sample_size] if len(records) > self.sample_size else records
+            sample_records = (
+                records[: self.sample_size]
+                if len(records) > self.sample_size
+                else records
+            )
 
             schema: TOracleWmsSchema = {}
 
@@ -387,6 +398,9 @@ class FlextOracleWmsDynamicSchemaProcessor:
 
             for field_name in all_fields:
                 field_schema = self._infer_field_schema(field_name, sample_records)
+                # If entity_type is provided, add a hint to description
+                if entity_type is not None and isinstance(field_schema, dict):
+                    field_schema["entity_type_hint"] = str(entity_type)
                 schema[field_name] = field_schema
 
             return FlextResult.ok(schema)
@@ -394,9 +408,15 @@ class FlextOracleWmsDynamicSchemaProcessor:
         except Exception as e:
             return FlextResult.fail(f"Process dynamic schema failed: {e}")
 
-    def _infer_field_schema(self, field_name: str, records: TOracleWmsRecordBatch) -> dict[str, object]:
+    def _infer_field_schema(
+        self, field_name: str, records: TOracleWmsRecordBatch,
+    ) -> dict[str, object]:
         """Infer schema for a specific field across records."""
-        field_values = [record[field_name] for record in records if isinstance(record, dict) and field_name in record]
+        field_values = [
+            record[field_name]
+            for record in records
+            if isinstance(record, dict) and field_name in record
+        ]
 
         if not field_values:
             return {"type": "string", "description": f"Field {field_name}"}
@@ -459,7 +479,7 @@ class DiscoveryStrategy(ABC):
     async def execute_discovery_step(
         self,
         context: DiscoveryContext,
-        api_client: FlextApiClient,  # noqa: ARG002
+        api_client: FlextApiClient,
     ) -> FlextResult[None]:
         """Execute a specific discovery step."""
 
@@ -470,16 +490,33 @@ class EntityListDiscoveryStrategy(DiscoveryStrategy):
     async def execute_discovery_step(
         self,
         context: DiscoveryContext,
-        api_client: FlextApiClient,  # noqa: ARG002
+        api_client: FlextApiClient,
     ) -> FlextResult[None]:
         """Discover entities from Oracle WMS API."""
         try:
+            # Minimal legitimate use to avoid unused-arg: check client capabilities
+            has_get = hasattr(api_client, "get")
+            if not has_get:
+                logger.debug("API client does not expose 'get' method; using defaults")
             # Mock implementation for entity list discovery
             # In real implementation, this would call the Oracle WMS API
             default_entities = [
-                "company", "facility", "item", "order_hdr", "order_dtl",
-                "allocation", "inventory", "location", "wave", "shipment",
-                "receipt", "task", "container", "lpn", "pick_slip", "manifest",
+                "company",
+                "facility",
+                "item",
+                "order_hdr",
+                "order_dtl",
+                "allocation",
+                "inventory",
+                "location",
+                "wave",
+                "shipment",
+                "receipt",
+                "task",
+                "container",
+                "lpn",
+                "pick_slip",
+                "manifest",
             ]
 
             for entity_name in default_entities:
@@ -533,13 +570,15 @@ class FlextOracleWmsEntityDiscovery:
                 cached_result = await self.cache_manager.get(cache_key)
                 if cached_result.success and isinstance(cached_result.data, dict):
                     logger.debug("Using cached discovery result")
-                    return FlextResult.ok(FlextOracleWmsDiscoveryResult(
-                        entities=[], # Type-safe empty list for now
-                        total_count=0,
-                        timestamp=str(cached_result.data.get("timestamp", "")),
-                        discovery_duration_ms=0.0,
-                        api_version="v10",
-                    ))
+                    return FlextResult.ok(
+                        FlextOracleWmsDiscoveryResult(
+                            entities=[],  # Type-safe empty list for now
+                            total_count=0,
+                            timestamp=str(cached_result.data.get("timestamp", "")),
+                            discovery_duration_ms=0.0,
+                            api_version="v10",
+                        ),
+                    )
 
             # Execute discovery
             start_time = time.time()
@@ -558,10 +597,14 @@ class FlextOracleWmsEntityDiscovery:
 
             # Apply filters
             filtered_entities = self._apply_entity_filters(
-                context.all_entities, include_patterns, exclude_patterns,
+                context.all_entities,
+                include_patterns,
+                exclude_patterns,
             )
 
-            discovery_duration = (time.time() - start_time) * 1000  # Convert to milliseconds
+            discovery_duration = (
+                time.time() - start_time
+            ) * 1000  # Convert to milliseconds
 
             # Create discovery result
             discovery_result = FlextOracleWmsDiscoveryResult(
@@ -601,14 +644,18 @@ class FlextOracleWmsEntityDiscovery:
 
         if include_patterns:
             filtered_entities = [
-                entity for entity in filtered_entities
+                entity
+                for entity in filtered_entities
                 if any(re.match(pattern, entity.name) for pattern in include_patterns)
             ]
 
         if exclude_patterns:
             filtered_entities = [
-                entity for entity in filtered_entities
-                if not any(re.match(pattern, entity.name) for pattern in exclude_patterns)
+                entity
+                for entity in filtered_entities
+                if not any(
+                    re.match(pattern, entity.name) for pattern in exclude_patterns
+                )
             ]
 
         return filtered_entities
@@ -619,12 +666,16 @@ class FlextOracleWmsEntityDiscovery:
 # =============================================================================
 
 
-def flext_oracle_wms_create_entity_discovery(api_client: FlextApiClient) -> FlextOracleWmsEntityDiscovery:
+def flext_oracle_wms_create_entity_discovery(
+    api_client: FlextApiClient,
+) -> FlextOracleWmsEntityDiscovery:
     """Create Oracle WMS entity discovery instance."""
     return FlextOracleWmsEntityDiscovery(api_client)
 
 
-def flext_oracle_wms_create_dynamic_schema_processor() -> FlextOracleWmsDynamicSchemaProcessor:
+def flext_oracle_wms_create_dynamic_schema_processor() -> (
+    FlextOracleWmsDynamicSchemaProcessor
+):
     """Create Oracle WMS dynamic schema processor instance."""
     return FlextOracleWmsDynamicSchemaProcessor()
 

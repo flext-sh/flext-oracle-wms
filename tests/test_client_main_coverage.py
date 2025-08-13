@@ -177,7 +177,7 @@ class TestFlextOracleWmsClient:
         client = FlextOracleWmsClient(config)
 
         setup_apis = client.get_apis_by_category(
-            FlextOracleWmsApiCategory.SETUP_TRANSACTIONAL
+            FlextOracleWmsApiCategory.SETUP_TRANSACTIONAL,
         )
         assert isinstance(setup_apis, dict)
 
@@ -260,7 +260,7 @@ class TestClientHelperMethods:
                 {"name": "entity1"},
                 {"name": "entity2"},
                 "entity3",  # String in results
-            ]
+            ],
         }
         result = client._parse_entity_discovery_response(response_data)
         assert isinstance(result, list)

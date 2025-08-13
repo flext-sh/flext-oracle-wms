@@ -56,13 +56,13 @@ def create_client_config() -> FlextOracleWmsClientConfig:
     """Create Oracle WMS client configuration from environment variables."""
     # Validate required environment variables
     base_url = os.getenv("ORACLE_WMS_BASE_URL") or os.getenv(
-        "FLEXT_ORACLE_WMS_BASE_URL"
+        "FLEXT_ORACLE_WMS_BASE_URL",
     )
     username = os.getenv("ORACLE_WMS_USERNAME") or os.getenv(
-        "FLEXT_ORACLE_WMS_USERNAME"
+        "FLEXT_ORACLE_WMS_USERNAME",
     )
     password = os.getenv("ORACLE_WMS_PASSWORD") or os.getenv(
-        "FLEXT_ORACLE_WMS_PASSWORD"
+        "FLEXT_ORACLE_WMS_PASSWORD",
     )
 
     if not all([base_url, username, password]):
@@ -132,7 +132,7 @@ async def discover_wms_entities(
 
 
 async def query_entity_data(
-    client: FlextOracleWmsClient, entity_name: str
+    client: FlextOracleWmsClient, entity_name: str,
 ) -> FlextResult[list[dict[str, Any]]]:
     """Query data from a specific Oracle WMS entity.
 
@@ -155,7 +155,7 @@ async def query_entity_data(
     if result.success:
         data = result.data
         print(
-            f"✅ Successfully retrieved {len(data) if data else 0} records from {entity_name}"
+            f"✅ Successfully retrieved {len(data) if data else 0} records from {entity_name}",
         )
 
         # Display sample data structure with safety checks
@@ -298,7 +298,7 @@ async def main() -> None:
         print("\n💡 Setup instructions:")
         print("   1. Set required environment variables:")
         print(
-            "      export FLEXT_ORACLE_WMS_BASE_URL='https://your-wms.oraclecloud.com'"
+            "      export FLEXT_ORACLE_WMS_BASE_URL='https://your-wms.oraclecloud.com'",
         )
         print("      export FLEXT_ORACLE_WMS_USERNAME='your_username'")
         print("      export FLEXT_ORACLE_WMS_PASSWORD='your_password'")

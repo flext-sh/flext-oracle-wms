@@ -6,6 +6,7 @@ Based on working authentication patterns and enterprise security requirements.
 from unittest.mock import patch
 
 import pytest
+from flext_api.constants import FlextApiConstants
 from flext_core import FlextResult
 
 from flext_oracle_wms.authentication import (
@@ -55,7 +56,7 @@ class TestAuthenticationConfig:
     def test_bearer_auth_config_creation(self) -> None:
         """Test creating bearer token auth configuration."""
         config = FlextOracleWmsAuthConfig(
-            auth_type=OracleWMSAuthMethod.BEARER, token="bearer_token_123"
+            auth_type=OracleWMSAuthMethod.BEARER, token="bearer_token_123",
         )
 
         assert config.auth_type == OracleWMSAuthMethod.BEARER
@@ -91,7 +92,7 @@ class TestAuthenticationConfig:
     def test_config_validation_success_bearer(self) -> None:
         """Test config validation succeeds for valid bearer auth."""
         config = FlextOracleWmsAuthConfig(
-            auth_type=OracleWMSAuthMethod.BEARER, token="valid_token"
+            auth_type=OracleWMSAuthMethod.BEARER, token="valid_token",
         )
 
         result = config.validate_business_rules()
@@ -231,7 +232,7 @@ class TestAuthenticator:
     async def test_bearer_auth_headers_generation(self) -> None:
         """Test bearer auth headers are generated correctly."""
         config = FlextOracleWmsAuthConfig(
-            auth_type=OracleWMSAuthMethod.BEARER, token="test_bearer_token"
+            auth_type=OracleWMSAuthMethod.BEARER, token="test_bearer_token",
         )
 
         authenticator = FlextOracleWmsAuthenticator(config)
@@ -264,7 +265,10 @@ class TestAuthenticator:
         )
 
         authenticator = FlextOracleWmsAuthenticator(config)
-        custom_headers = {"Content-Type": FlextApiConstants.ContentTypes.JSON, "X-Custom": "value"}
+        custom_headers = {
+            "Content-Type": FlextApiConstants.ContentTypes.JSON,
+            "X-Custom": "value",
+        }
 
         headers = await authenticator.get_auth_headers(custom_headers)
 
@@ -360,7 +364,7 @@ class TestAuthPlugin:
         # Mock authenticator validation
         with patch.object(plugin.authenticator, "get_auth_headers") as mock_headers:
             mock_headers.return_value = FlextResult.success(
-                {"Authorization": "Basic dGVzdA=="}
+                {"Authorization": "Basic dGVzdA=="},
             )
 
             result = await plugin.authenticator.get_auth_headers()
@@ -381,7 +385,7 @@ class TestAuthPlugin:
 
         # Mock authenticator validation to fail
         with patch.object(
-            plugin.authenticator, "validate_credentials"
+            plugin.authenticator, "validate_credentials",
         ) as mock_validate:
             mock_validate.return_value = FlextResult.failure("Auth failed")
 
@@ -419,7 +423,7 @@ class TestAuthPlugin:
         # Mock the authenticator's get_auth_headers method
         with patch.object(plugin.authenticator, "get_auth_headers") as mock_headers:
             mock_headers.return_value = FlextResult.success(
-                {"Authorization": "Basic dGVzdA=="}
+                {"Authorization": "Basic dGVzdA=="},
             )
 
             result = await plugin.authenticator.get_auth_headers()
@@ -440,7 +444,7 @@ class TestAuthPlugin:
 
         # Mock validation
         with patch.object(
-            plugin.authenticator, "validate_credentials"
+            plugin.authenticator, "validate_credentials",
         ) as mock_validate:
             mock_validate.return_value = FlextResult.success(True)
 

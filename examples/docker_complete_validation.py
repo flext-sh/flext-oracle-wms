@@ -25,37 +25,25 @@ Usage:
 """
 
 import asyncio
-import logging
 import os
 import sys
-from datetime import datetime
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
-# Add src to path for imports
-sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
+from dotenv import load_dotenv
+from flext_core import get_logger
 
 from flext_oracle_wms import FlextOracleWmsClient, FlextOracleWmsClientConfig
 from flext_oracle_wms.api_catalog import FlextOracleWmsApiVersion
 
-# Configure logging for Docker environment
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
-    handlers=[
-        logging.StreamHandler(sys.stdout),
-    ],
-)
-
-logger = logging.getLogger(__name__)
+logger = get_logger(__name__)
 
 
 def load_oracle_wms_config() -> FlextOracleWmsClientConfig:
     """Load Oracle WMS configuration from Docker environment."""
     # Load from .env if available
     try:
-        from dotenv import load_dotenv
-
         env_file = Path(__file__).parent.parent / ".env"
         if env_file.exists():
             load_dotenv(env_file)
@@ -141,7 +129,7 @@ async def validate_oracle_wms_connection(
                     logger.info(f"✅ Successfully retrieved data from {sample_entity}")
                 else:
                     logger.warning(
-                        f"⚠️ Could not retrieve data from {sample_entity}: {data_result.error}"
+                        f"⚠️ Could not retrieve data from {sample_entity}: {data_result.error}",
                     )
 
         else:
@@ -167,7 +155,7 @@ async def validate_complete_functionality() -> dict[str, Any]:
     logger.info("🐳 FLEXT Oracle WMS - Docker Complete Validation")
     logger.info("=" * 60)
 
-    start_time = datetime.now()
+    start_time = datetime.now(UTC)
 
     # Overall validation results
     validation_summary = {
@@ -184,7 +172,7 @@ async def validate_complete_functionality() -> dict[str, Any]:
     try:
         # Step 1: Load and validate configuration
         logger.info(
-            "📋 Step 1: Loading Oracle WMS configuration from Docker environment"
+            "📋 Step 1: Loading Oracle WMS configuration from Docker environment",
         )
         config = load_oracle_wms_config()
         validation_summary["configuration_valid"] = True
@@ -211,7 +199,7 @@ async def validate_complete_functionality() -> dict[str, Any]:
         functionality_results = {
             "entities_discovered": connectivity_results.get("entities_discovered", 0),
             "health_check_passed": connectivity_results.get(
-                "health_check_success", False
+                "health_check_success", False,
             ),
             "data_retrieval_success": connectivity_results.get("sample_entity_data")
             is not None,
@@ -221,7 +209,7 @@ async def validate_complete_functionality() -> dict[str, Any]:
         validation_summary["functionality_tests"] = functionality_results
 
         # Step 4: Performance metrics
-        end_time = datetime.now()
+        end_time = datetime.now(UTC)
         execution_time = (end_time - start_time).total_seconds()
 
         performance_metrics = {
@@ -229,7 +217,7 @@ async def validate_complete_functionality() -> dict[str, Any]:
             "entities_per_second": connectivity_results.get("entities_discovered", 0)
             / max(execution_time, 1),
             "connection_established": connectivity_results.get(
-                "connection_success", False
+                "connection_success", False,
             ),
             "end_time": end_time.isoformat(),
         }
@@ -259,50 +247,50 @@ def print_validation_summary(results: dict[str, Any]) -> None:
     # Overall status
     status_icon = "✅" if results["success"] else "❌"
     print(
-        f"{status_icon} Overall Status: {'SUCCESS' if results['success'] else 'FAILED'}"
+        f"{status_icon} Overall Status: {'SUCCESS' if results['success'] else 'FAILED'}",
     )
     print(f"🐳 Docker Environment: {'Yes' if results['docker_environment'] else 'No'}")
     print(
-        f"⏱️  Execution Time: {results['performance_metrics'].get('execution_time_seconds', 0):.2f} seconds"
+        f"⏱️  Execution Time: {results['performance_metrics'].get('execution_time_seconds', 0):.2f} seconds",
     )
 
     # Configuration
     print("\n📋 Configuration:")
     print(
-        f"   {'✅' if results['configuration_valid'] else '❌'} Environment variables loaded"
+        f"   {'✅' if results['configuration_valid'] else '❌'} Environment variables loaded",
     )
 
     # Oracle WMS Connectivity
     connectivity = results["oracle_wms_connectivity"]
     print("\n🔌 Oracle WMS Connectivity:")
     print(
-        f"   {'✅' if connectivity.get('connection_success') else '❌'} Connection established"
+        f"   {'✅' if connectivity.get('connection_success') else '❌'} Connection established",
     )
     print(
-        f"   {'✅' if connectivity.get('health_check_success') else '❌'} Health check passed"
+        f"   {'✅' if connectivity.get('health_check_success') else '❌'} Health check passed",
     )
     print(f"   📊 Entities discovered: {connectivity.get('entities_discovered', 0)}")
     print(
-        f"   {'✅' if connectivity.get('sample_entity_data') else '❌'} Sample data retrieved"
+        f"   {'✅' if connectivity.get('sample_entity_data') else '❌'} Sample data retrieved",
     )
 
     # Functionality Tests
     functionality = results["functionality_tests"]
     print("\n🧪 Functionality Tests:")
     print(
-        f"   {'✅' if functionality.get('entities_discovered', 0) > 0 else '❌'} Entity discovery"
+        f"   {'✅' if functionality.get('entities_discovered', 0) > 0 else '❌'} Entity discovery",
     )
     print(
-        f"   {'✅' if functionality.get('health_check_passed') else '❌'} Health monitoring"
+        f"   {'✅' if functionality.get('health_check_passed') else '❌'} Health monitoring",
     )
     print(
-        f"   {'✅' if functionality.get('data_retrieval_success') else '❌'} Data retrieval"
+        f"   {'✅' if functionality.get('data_retrieval_success') else '❌'} Data retrieval",
     )
     print(
-        f"   {'✅' if functionality.get('configuration_management') else '❌'} Configuration management"
+        f"   {'✅' if functionality.get('configuration_management') else '❌'} Configuration management",
     )
     print(
-        f"   {'✅' if functionality.get('enterprise_compatibility') else '❌'} Enterprise compatibility"
+        f"   {'✅' if functionality.get('enterprise_compatibility') else '❌'} Enterprise compatibility",
     )
 
     # Performance Metrics

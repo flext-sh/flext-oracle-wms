@@ -65,7 +65,6 @@ FLEXT_ORACLE_WMS_APIS = {
         ),
         since_version="8.0.0",
     ),
-
     # === AUTOMATION & OPERATIONS APIS ===
     "update_oblpn_tracking_number": FlextOracleWmsApiEndpoint(
         name="update_oblpn_tracking_number",
@@ -112,7 +111,6 @@ FLEXT_ORACLE_WMS_APIS = {
         description="Get status of an entity",
         since_version="7.0.0",
     ),
-
     # === DATA EXTRACT APIS ===
     "lgf_entity_extract": FlextOracleWmsApiEndpoint(
         name="lgf_entity_extract",
@@ -132,7 +130,6 @@ FLEXT_ORACLE_WMS_APIS = {
         description="Legacy entity data extraction",
         since_version="6.1",
     ),
-
     # === ENTITY OPERATIONS APIS ===
     "entity_discovery": FlextOracleWmsApiEndpoint(
         name="entity_discovery",
@@ -261,7 +258,9 @@ class OracleWmsMockServer:
             ],
         }
 
-    def get_mock_response(self, endpoint: str, entity_name: str | None = None) -> FlextResult[dict[str, object]]:
+    def get_mock_response(
+        self, endpoint: str, entity_name: str | None = None,
+    ) -> FlextResult[dict[str, object]]:
         """Generate mock response for Oracle WMS API endpoint."""
         try:
             if endpoint == "entity_discovery":
@@ -277,29 +276,42 @@ class OracleWmsMockServer:
 
     def _mock_entity_discovery(self) -> FlextResult[dict[str, object]]:
         """Mock entity discovery response."""
-        entities = [{
+        entities = [
+            {
                 "name": entity_name,
                 "description": f"Oracle WMS {entity_name} entity",
                 "endpoint": f"/entity/{entity_name}/",
                 "supports_extract": True,
                 "supports_insert": entity_name in {"order_hdr", "order_dtl", "item"},
                 "primary_key": self._get_mock_primary_key(entity_name),
-            } for entity_name in (self.mock_data["entities"] if isinstance(self.mock_data["entities"], list) else [])]
+            }
+            for entity_name in (
+                self.mock_data["entities"]
+                if isinstance(self.mock_data["entities"], list)
+                else []
+            )
+        ]
 
-        return FlextResult.ok({
-            "entities": entities,
-            "total_count": len(entities),
-            "discovered_at": datetime.now(UTC).isoformat(),
-            "api_version": "v10",
-            "mock_environment": self.environment,
-        })
+        return FlextResult.ok(
+            {
+                "entities": entities,
+                "total_count": len(entities),
+                "discovered_at": datetime.now(UTC).isoformat(),
+                "api_version": "v10",
+                "mock_environment": self.environment,
+            },
+        )
 
     def _mock_entity_data(self, entity_name: str) -> FlextResult[dict[str, object]]:
         """Mock entity data response."""
         data_key = f"{entity_name}_data"
         mock_records = self.mock_data.get(data_key, [])
 
-        entities_list = self.mock_data["entities"] if isinstance(self.mock_data["entities"], list) else []
+        entities_list = (
+            self.mock_data["entities"]
+            if isinstance(self.mock_data["entities"], list)
+            else []
+        )
         if not mock_records and entity_name in entities_list:
             # Generate generic mock data for entities without specific mock data
             mock_records = [
@@ -315,21 +327,31 @@ class OracleWmsMockServer:
                 },
             ]
 
-        return FlextResult.ok({
-            "results": mock_records,
-            "result_count": len(mock_records) if hasattr(mock_records, "__len__") else 0,
-            "page_count": 1,
-            "page_nbr": 1,
-            "entity_name": entity_name,
-            "extracted_at": datetime.now(UTC).isoformat(),
-        })
+        return FlextResult.ok(
+            {
+                "results": mock_records,
+                "result_count": len(mock_records)
+                if hasattr(mock_records, "__len__")
+                else 0,
+                "page_count": 1,
+                "page_nbr": 1,
+                "entity_name": entity_name,
+                "extracted_at": datetime.now(UTC).isoformat(),
+            },
+        )
 
     def _mock_entity_metadata(self, entity_name: str) -> FlextResult[dict[str, object]]:
         """Mock entity metadata response."""
         base_fields = {
             "id": {"type": "string", "description": "Unique identifier"},
-            f"{entity_name}_code": {"type": "string", "description": f"{entity_name} code"},
-            f"{entity_name}_name": {"type": "string", "description": f"{entity_name} name"},
+            f"{entity_name}_code": {
+                "type": "string",
+                "description": f"{entity_name} code",
+            },
+            f"{entity_name}_name": {
+                "type": "string",
+                "description": f"{entity_name} name",
+            },
             "status": {"type": "string", "description": "Status"},
             "create_date": {"type": "datetime", "description": "Creation date"},
             "mod_date": {"type": "datetime", "description": "Modification date"},
@@ -341,14 +363,16 @@ class OracleWmsMockServer:
         entity_specific_fields = self._get_entity_specific_fields(entity_name)
         base_fields.update(entity_specific_fields)
 
-        return FlextResult.ok({
-            "entity_name": entity_name,
-            "fields": base_fields,
-            "primary_key": self._get_mock_primary_key(entity_name),
-            "replication_key": "mod_date",
-            "supports_incremental": True,
-            "description": f"Oracle WMS {entity_name} entity metadata",
-        })
+        return FlextResult.ok(
+            {
+                "entity_name": entity_name,
+                "fields": base_fields,
+                "primary_key": self._get_mock_primary_key(entity_name),
+                "replication_key": "mod_date",
+                "supports_incremental": True,
+                "description": f"Oracle WMS {entity_name} entity metadata",
+            },
+        )
 
     def _get_mock_primary_key(self, entity_name: str) -> str:
         """Get mock primary key for entity."""
@@ -363,7 +387,9 @@ class OracleWmsMockServer:
         }
         return primary_key_map.get(entity_name, f"{entity_name}_id")
 
-    def _get_entity_specific_fields(self, entity_name: str) -> dict[str, dict[str, str]]:
+    def _get_entity_specific_fields(
+        self, entity_name: str,
+    ) -> dict[str, dict[str, str]]:
         """Get entity-specific mock fields."""
         entity_fields = {
             "company": {
@@ -373,12 +399,18 @@ class OracleWmsMockServer:
             "facility": {
                 "facility_code": {"type": "string", "description": "Facility code"},
                 "facility_name": {"type": "string", "description": "Facility name"},
-                "company_code": {"type": "string", "description": "Parent company code"},
+                "company_code": {
+                    "type": "string",
+                    "description": "Parent company code",
+                },
                 "address": {"type": "string", "description": "Facility address"},
             },
             "item": {
                 "item_id": {"type": "string", "description": "Item identifier"},
-                "item_description": {"type": "string", "description": "Item description"},
+                "item_description": {
+                    "type": "string",
+                    "description": "Item description",
+                },
                 "item_type": {"type": "string", "description": "Item type"},
                 "unit_of_measure": {"type": "string", "description": "Unit of measure"},
                 "weight": {"type": "number", "description": "Item weight"},

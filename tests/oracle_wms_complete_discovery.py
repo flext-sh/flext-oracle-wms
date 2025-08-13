@@ -52,7 +52,7 @@ class OracleWmsCompleteDiscovery:
             enable_logging=True,
         )
         self.client: FlextOracleWmsClient = create_oracle_wms_client(
-            self.config, mock_mode=False
+            self.config, mock_mode=False,
         )
         self.discovered_entities: list[str] = []
         self.entity_metadata: dict[str, Any] = {}
@@ -78,7 +78,7 @@ class OracleWmsCompleteDiscovery:
                 # Test API based on its type and requirements
                 if api_endpoint.category == FlextOracleWmsApiCategory.DATA_EXTRACT:
                     result: FlextResult[Any] = await self._test_data_extract_api(
-                        api_name, api_endpoint
+                        api_name, api_endpoint,
                     )
                 elif (
                     api_endpoint.category == FlextOracleWmsApiCategory.ENTITY_OPERATIONS
@@ -92,14 +92,14 @@ class OracleWmsCompleteDiscovery:
                     == FlextOracleWmsApiCategory.SETUP_TRANSACTIONAL
                 ):
                     result: FlextResult[Any] = await self._test_setup_api(
-                        api_name, api_endpoint
+                        api_name, api_endpoint,
                     )
                 elif (
                     api_endpoint.category
                     == FlextOracleWmsApiCategory.AUTOMATION_OPERATIONS
                 ):
                     result: FlextResult[Any] = await self._test_automation_api(
-                        api_name, api_endpoint
+                        api_name, api_endpoint,
                     )
                 else:
                     result: FlextResult[Any] = FlextResult.fail("Unknown API category")
@@ -125,7 +125,7 @@ class OracleWmsCompleteDiscovery:
         return FlextResult.ok(api_results)
 
     async def _test_data_extract_api(
-        self, api_name: str, endpoint: FlextOracleWmsApiEndpoint
+        self, api_name: str, endpoint: FlextOracleWmsApiEndpoint,
     ) -> FlextResult[Any]:
         """Test data extraction APIs."""
         try:

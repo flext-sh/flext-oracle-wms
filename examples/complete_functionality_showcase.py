@@ -27,12 +27,8 @@ Requirements:
 """
 
 import asyncio
-import sys
 from pathlib import Path
 from typing import Any
-
-# Add src to path for imports
-sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
 
 from flext_oracle_wms import FlextOracleWmsClient, FlextOracleWmsClientConfig
 from flext_oracle_wms.api_catalog import (
@@ -138,13 +134,13 @@ async def showcase_2_entity_discovery(client: FlextOracleWmsClient) -> list[str]
     # Show first 10 entities as sample
     print("   📦 Sample entities:")
     # Constants for display
-    MAX_ENTITIES_TO_SHOW = 10
+    max_entities_to_show = 10
 
-    for i, entity in enumerate(entities[:MAX_ENTITIES_TO_SHOW]):
+    for i, entity in enumerate(entities[:max_entities_to_show]):
         print(f"      {i + 1:2d}. {entity}")
 
-    if len(entities) > MAX_ENTITIES_TO_SHOW:
-        print(f"      ... and {len(entities) - MAX_ENTITIES_TO_SHOW} more entities")
+    if len(entities) > max_entities_to_show:
+        print(f"      ... and {len(entities) - max_entities_to_show} more entities")
 
     # Show entity categories
     sample_entities = {
@@ -166,7 +162,7 @@ async def showcase_2_entity_discovery(client: FlextOracleWmsClient) -> list[str]
 
 
 async def showcase_3_data_retrieval(
-    client: FlextOracleWmsClient, entities: list[str]
+    client: FlextOracleWmsClient, entities: list[str],
 ) -> dict[str, Any]:
     """Feature 3: Data Retrieval and Querying."""
     print("📊 FEATURE 3: DATA RETRIEVAL & QUERYING")
@@ -193,7 +189,7 @@ async def showcase_3_data_retrieval(
                 results = data["results"]
                 count = data.get("count", len(results))
                 print(
-                    f"      ✅ Retrieved {len(results)} records (total available: {count})"
+                    f"      ✅ Retrieved {len(results)} records (total available: {count})",
                 )
                 if results:
                     first_record = results[0]
@@ -288,14 +284,14 @@ async def showcase_5_api_catalog(client: FlextOracleWmsClient) -> None:
     print("   🏷️  APIs by Category:")
     for category, apis in categories.items():
         # Constants for API display
-        MAX_APIS_TO_SHOW = 3
+        max_apis_to_show = 3
 
         print(f"      • {category}: {len(apis)} APIs")
         # Show first 3 APIs as sample
-        for api in apis[:MAX_APIS_TO_SHOW]:
+        for api in apis[:max_apis_to_show]:
             print(f"        - {api}")
-        if len(apis) > MAX_APIS_TO_SHOW:
-            print(f"        - ... and {len(apis) - MAX_APIS_TO_SHOW} more")
+        if len(apis) > max_apis_to_show:
+            print(f"        - ... and {len(apis) - max_apis_to_show} more")
 
     # Show API versions
     versions = {api.version for api in available_apis.values()}
@@ -386,20 +382,20 @@ async def showcase_7_health_monitoring(client: FlextOracleWmsClient) -> dict[str
 
 
 async def showcase_8_performance_tracking(
-    client: FlextOracleWmsClient, entities: list[str]
+    client: FlextOracleWmsClient, entities: list[str],
 ) -> None:
     """Feature 8: Performance Tracking."""
     print("⚡ FEATURE 8: PERFORMANCE TRACKING")
     print("-" * 50)
 
     # Constants for performance testing
-    MIN_ENTITIES_FOR_CONCURRENT_TEST = 3
+    min_entities_for_concurrent_test = 3
 
     import time
 
     # Test concurrent requests
-    if len(entities) >= MIN_ENTITIES_FOR_CONCURRENT_TEST:
-        test_entities = entities[:MIN_ENTITIES_FOR_CONCURRENT_TEST]
+    if len(entities) >= min_entities_for_concurrent_test:
+        test_entities = entities[:min_entities_for_concurrent_test]
         print(f"   🚀 Testing concurrent requests to {len(test_entities)} entities...")
 
         start_time = time.time()
@@ -438,7 +434,7 @@ async def showcase_8_performance_tracking(
 
             if result.success:
                 print(
-                    f"      • Page size {page_size}: {(end_time - start_time) * 1000:.1f}ms"
+                    f"      • Page size {page_size}: {(end_time - start_time) * 1000:.1f}ms",
                 )
             else:
                 print(f"      • Page size {page_size}: Failed")
@@ -476,7 +472,7 @@ async def showcase_9_cache_management(client: FlextOracleWmsClient) -> None:
         if second_time < first_time:
             print("   ✅ Second call faster - caching likely working")
         else:
-            print("   ℹ️  Cache behavior varies by implementation")
+            print("   ℹ️  Cache behavior varies by implementation")  # noqa: RUF001
 
         if first_count == second_count:
             print("   ✅ Consistent results between calls")
@@ -487,7 +483,7 @@ async def showcase_9_cache_management(client: FlextOracleWmsClient) -> None:
 
 
 async def showcase_10_enterprise_features(
-    client: FlextOracleWmsClient, config: FlextOracleWmsClientConfig
+    client: FlextOracleWmsClient, config: FlextOracleWmsClientConfig,
 ) -> None:
     """Feature 10: Enterprise Features."""
     print("🏢 FEATURE 10: ENTERPRISE FEATURES")
@@ -504,7 +500,7 @@ async def showcase_10_enterprise_features(
 
     # Logging Configuration
     print(
-        f"   📝 Request Logging: {'Enabled' if config.enable_logging else 'Disabled'}"
+        f"   📝 Request Logging: {'Enabled' if config.enable_logging else 'Disabled'}",
     )
 
     # Environment Configuration

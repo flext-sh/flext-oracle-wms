@@ -152,8 +152,10 @@ def flext_oracle_wms_build_entity_url(
         return flext_oracle_wms_normalize_url(base_url, api_path)
 
     except FlextOracleWmsDataValidationError:
-        logger.exception("Failed to build entity URL",
-                    extra={"base_url": base_url, "entity_name": entity_name})
+        logger.exception(
+            "Failed to build entity URL",
+            extra={"base_url": base_url, "entity_name": entity_name},
+        )
         return ""
 
 
@@ -165,7 +167,9 @@ def flext_oracle_wms_validate_entity_name(entity_name: str) -> FlextResult[str]:
         # Check length
         max_length = FlextOracleWmsDefaults.MAX_ENTITY_NAME_LENGTH
         if len(entity_name) > max_length:
-            return FlextResult.fail(f"Entity name too long (max {max_length} characters)")
+            return FlextResult.fail(
+                f"Entity name too long (max {max_length} characters)",
+            )
 
         # Check pattern
         pattern = FlextOracleWmsDefaults.ENTITY_NAME_PATTERN
@@ -211,7 +215,9 @@ def flext_oracle_wms_extract_pagination_info(
     total_pages = int(page_count_val) if isinstance(page_count_val, (int, str)) else 1
 
     result_count_val = response_data.get(fields.RESULT_COUNT, 0)
-    total_results = int(result_count_val) if isinstance(result_count_val, (int, str)) else 0
+    total_results = (
+        int(result_count_val) if isinstance(result_count_val, (int, str)) else 0
+    )
 
     return TOracleWmsPaginationInfo(
         current_page=current_page,
@@ -219,8 +225,12 @@ def flext_oracle_wms_extract_pagination_info(
         total_results=total_results,
         has_next=bool(response_data.get(fields.NEXT_PAGE)),
         has_previous=bool(response_data.get(fields.PREVIOUS_PAGE)),
-        next_url=str(response_data.get(fields.NEXT_PAGE)) if response_data.get(fields.NEXT_PAGE) else None,
-        previous_url=str(response_data.get(fields.PREVIOUS_PAGE)) if response_data.get(fields.PREVIOUS_PAGE) else None,
+        next_url=str(response_data.get(fields.NEXT_PAGE))
+        if response_data.get(fields.NEXT_PAGE)
+        else None,
+        previous_url=str(response_data.get(fields.PREVIOUS_PAGE))
+        if response_data.get(fields.PREVIOUS_PAGE)
+        else None,
     )
 
 
@@ -242,7 +252,7 @@ def flext_oracle_wms_chunk_records(
         if chunk_size <= 0:
             chunk_size = FlextOracleWmsDefaults.DEFAULT_BATCH_SIZE
 
-        return [records[i:i + chunk_size] for i in range(0, len(records), chunk_size)]
+        return [records[i : i + chunk_size] for i in range(0, len(records), chunk_size)]
 
     except FlextOracleWmsDataValidationError:
         logger.exception("Failed to chunk records")
@@ -271,7 +281,9 @@ class FlextOracleWmsFilter:
             msg = f"Too many filter conditions. Max: {self.max_conditions}, Got: {len(self.filters)}"
             raise FlextOracleWmsDataValidationError(msg)
 
-    async def filter_records(self, records: TOracleWmsRecordBatch) -> TOracleWmsRecordBatch:
+    async def filter_records(
+        self, records: TOracleWmsRecordBatch,
+    ) -> TOracleWmsRecordBatch:
         """Apply filters to records."""
         try:
             validate_records_list(records, "records")
@@ -280,7 +292,9 @@ class FlextOracleWmsFilter:
             logger.exception("Record filtering failed", extra={"error": str(e)})
             return []
 
-    def _apply_record_filters(self, records: TOracleWmsRecordBatch) -> TOracleWmsRecordBatch:
+    def _apply_record_filters(
+        self, records: TOracleWmsRecordBatch,
+    ) -> TOracleWmsRecordBatch:
         """Apply all filter conditions to records."""
         if not self.filters:
             return records
@@ -294,7 +308,9 @@ class FlextOracleWmsFilter:
                 return False
         return True
 
-    def _matches_condition(self, record: TOracleWmsRecord, field: str, filter_value: TOracleWmsFilterValue) -> bool:
+    def _matches_condition(
+        self, record: TOracleWmsRecord, field: str, filter_value: TOracleWmsFilterValue,
+    ) -> bool:
         """Check if record field matches filter condition."""
         field_value = self._get_nested_value(record, field)
 
@@ -320,9 +336,12 @@ class FlextOracleWmsFilter:
         except (AttributeError, KeyError, TypeError):
             return None
 
-    def _apply_operator(self, field_value: object, operator: str, filter_value: object) -> bool:
+    def _apply_operator(
+        self, field_value: object, operator: str, filter_value: object,
+    ) -> bool:
         """Apply filter operator to field value."""
         from collections.abc import Callable  # noqa: TC003
+
         operator_map: dict[str, Callable[[object, object], bool]] = {
             OracleWMSFilterOperator.EQ: self._op_equals,
             OracleWMSFilterOperator.NE: self._op_not_equals,
@@ -341,7 +360,9 @@ class FlextOracleWmsFilter:
 
     def _op_equals(self, field_value: object, filter_value: object) -> bool:
         """Equality operator."""
-        return self._normalize_for_comparison(field_value) == self._normalize_for_comparison(filter_value)
+        return self._normalize_for_comparison(
+            field_value,
+        ) == self._normalize_for_comparison(filter_value)
 
     def _op_not_equals(self, field_value: object, filter_value: object) -> bool:
         """Not equals operator."""
@@ -439,22 +460,32 @@ class FlextOracleWmsFlattener:
             msg = f"Batch flattening failed: {e}"
             raise FlextOracleWmsSchemaFlatteningError(msg) from e
 
-    def _flatten_dict(self, data: dict[str, object], prefix: str = "", depth: int = 0) -> dict[str, object]:
+    def _flatten_dict(
+        self, data: dict[str, object], prefix: str = "", depth: int = 0,
+    ) -> dict[str, object]:
         """Recursively flatten dictionary structure."""
         if depth >= self.max_depth:
             return {prefix.rstrip(self.separator): data}
 
         result = {}
         for key, value in data.items():
-            new_key = f"{prefix}{key}" if not prefix else f"{prefix}{self.separator}{key}"
+            new_key = (
+                f"{prefix}{key}" if not prefix else f"{prefix}{self.separator}{key}"
+            )
 
             if isinstance(value, dict):
-                result.update(self._flatten_dict(value, new_key + self.separator, depth + 1))
+                result.update(
+                    self._flatten_dict(value, new_key + self.separator, depth + 1),
+                )
             elif isinstance(value, list) and not self.preserve_arrays:
                 for i, item in enumerate(value):
                     array_key = f"{new_key}{self.separator}{i}"
                     if isinstance(item, dict):
-                        result.update(self._flatten_dict(item, array_key + self.separator, depth + 1))
+                        result.update(
+                            self._flatten_dict(
+                                item, array_key + self.separator, depth + 1,
+                            ),
+                        )
                     else:
                         result[array_key] = item
             else:
@@ -490,10 +521,20 @@ class FlextOracleWmsPlugin:
         self.version = version
         self._logger = get_logger(__name__)
 
-    async def initialize(self, context: FlextOracleWmsPluginContext) -> FlextResult[None]:  # noqa: ARG002
+    async def initialize(
+        self, context: FlextOracleWmsPluginContext,
+    ) -> FlextResult[None]:
         """Initialize Oracle WMS plugin with context."""
         try:
-            self._logger.info("Initializing Oracle WMS plugin", extra={"plugin_name": self.name})
+            # Use context minimally (e.g., to record if a logger was provided)
+            has_external_logger = bool(getattr(context, "logger", None))
+            self._logger.info(
+                "Initializing Oracle WMS plugin",
+                extra={
+                    "plugin_name": self.name,
+                    "has_external_logger": has_external_logger,
+                },
+            )
             return FlextResult.ok(None)
         except (TypeError, ValueError, AttributeError, RuntimeError) as e:
             return FlextResult.fail(f"Oracle WMS plugin initialization failed: {e}")
@@ -501,7 +542,9 @@ class FlextOracleWmsPlugin:
     async def cleanup(self) -> FlextResult[None]:
         """Cleanup Oracle WMS plugin resources."""
         try:
-            self._logger.info("Cleaning up Oracle WMS plugin", extra={"plugin_name": self.name})
+            self._logger.info(
+                "Cleaning up Oracle WMS plugin", extra={"plugin_name": self.name},
+            )
             return FlextResult.ok(None)
         except (OSError, RuntimeError, AttributeError) as e:
             return FlextResult.fail(f"Oracle WMS plugin cleanup failed: {e}")
@@ -548,20 +591,28 @@ def flext_oracle_wms_create_filter(filters: TOracleWmsFilters) -> FlextOracleWms
     return FlextOracleWmsFilter(filters=filters)
 
 
-def flext_oracle_wms_filter_by_field(field: str, value: TOracleWmsFilterValue) -> FlextOracleWmsFilter:
+def flext_oracle_wms_filter_by_field(
+    field: str, value: TOracleWmsFilterValue,
+) -> FlextOracleWmsFilter:
     """Create simple field filter."""
     return FlextOracleWmsFilter(filters={field: value})
 
 
-def flext_oracle_wms_filter_by_id_range(start_id: int, end_id: int) -> FlextOracleWmsFilter:
+def flext_oracle_wms_filter_by_id_range(
+    start_id: int, end_id: int,
+) -> FlextOracleWmsFilter:
     """Create ID range filter."""
-    return FlextOracleWmsFilter(filters={
-        "id": {"operator": "ge", "value": start_id},
-        "id_max": {"operator": "le", "value": end_id},
-    })
+    return FlextOracleWmsFilter(
+        filters={
+            "id": {"operator": "ge", "value": start_id},
+            "id_max": {"operator": "le", "value": end_id},
+        },
+    )
 
 
-def create_oracle_wms_data_plugin(name: str, version: str = "0.9.0") -> FlextOracleWmsDataPlugin:
+def create_oracle_wms_data_plugin(
+    name: str, version: str = "0.9.0",
+) -> FlextOracleWmsDataPlugin:
     """Create Oracle WMS data plugin instance."""
     return FlextOracleWmsDataPlugin(name, version)
 

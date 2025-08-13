@@ -47,13 +47,13 @@ def mock_config():
 def real_config(load_test_env):
     """Real config from .env - EXACTLY like working basic_usage.py example."""
     base_url = os.getenv("ORACLE_WMS_BASE_URL") or os.getenv(
-        "FLEXT_ORACLE_WMS_BASE_URL"
+        "FLEXT_ORACLE_WMS_BASE_URL",
     )
     username = os.getenv("ORACLE_WMS_USERNAME") or os.getenv(
-        "FLEXT_ORACLE_WMS_USERNAME"
+        "FLEXT_ORACLE_WMS_USERNAME",
     )
     password = os.getenv("ORACLE_WMS_PASSWORD") or os.getenv(
-        "FLEXT_ORACLE_WMS_PASSWORD"
+        "FLEXT_ORACLE_WMS_PASSWORD",
     )
 
     if not all([base_url, username, password]):
@@ -106,7 +106,7 @@ def pytest_configure(config) -> None:
     """Configure pytest markers for test categorization."""
     config.addinivalue_line("markers", "unit: Unit tests (fast)")
     config.addinivalue_line(
-        "markers", "integration: Integration tests with real Oracle"
+        "markers", "integration: Integration tests with real Oracle",
     )
     config.addinivalue_line("markers", "real: Tests using real .env credentials")
     config.addinivalue_line("markers", "mock: Tests using mock data only")

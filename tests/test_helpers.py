@@ -93,14 +93,14 @@ def test_normalize_url() -> None:
 def test_build_entity_url() -> None:
     """Test entity URL building."""
     result = flext_oracle_wms_build_entity_url(
-        "https://test.example.com", "prod", "order_hdr"
+        "https://test.example.com", "prod", "order_hdr",
     )
     expected = "https://test.example.com/prod/wms/lgfapi/v10/entity/order_hdr/"
     assert result == expected
 
     # Test with custom API version
     result = flext_oracle_wms_build_entity_url(
-        "https://test.example.com", "test", "item_master", "v2"
+        "https://test.example.com", "test", "item_master", "v2",
     )
     expected = "https://test.example.com/test/wms/lgfapi/v2/entity/item_master/"
     assert result == expected

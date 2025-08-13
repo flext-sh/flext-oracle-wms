@@ -145,7 +145,7 @@ class TestUrlHelpers:
         api_version = "v1.0"
 
         result = flext_oracle_wms_build_entity_url(
-            base_url, environment, entity_name, api_version
+            base_url, environment, entity_name, api_version,
         )
 
         assert isinstance(result, str)

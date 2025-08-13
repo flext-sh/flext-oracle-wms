@@ -84,13 +84,17 @@ async def test_real_oracle_wms():
                     data.get("count", 0)
                     results = data.get("results", [])
 
-                    if results and isinstance(results, list) and len(results) > 0:
+                    if (
+                        results
+                        and isinstance(results, list)
+                        and len(results) > 0
+                        and isinstance(results[0], dict)
+                    ):
                         sample_record = results[0]
-                        if isinstance(sample_record, dict):
-                            list(sample_record.keys())
+                        list(sample_record.keys())
 
-                            # Show sample data (first few fields only)
-                            dict(list(sample_record.items())[:3])
+                        # Show sample data (first few fields only)
+                        dict(list(sample_record.items())[:3])
 
                     test_results["entity_data"] = True
 

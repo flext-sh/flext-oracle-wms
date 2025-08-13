@@ -43,7 +43,9 @@ TOracleWmsEntityName = Annotated[
 ]
 
 # Filter types - USED BY FILTERING MODULE
-TOracleWmsFilterValue = str | int | float | bool | list[str | int | float] | dict[str, object]
+TOracleWmsFilterValue = (
+    str | int | float | bool | list[str | int | float] | dict[str, object]
+)
 TOracleWmsFilters = dict[str, TOracleWmsFilterValue]
 
 # Configuration essentials - USED BY CONFIG
@@ -193,7 +195,9 @@ class FlextOracleWmsDiscoveryResult(FlextValueObject):
         for entity in self.entities:
             entity_validation = entity.validate_business_rules()
             if not entity_validation.success:
-                validation_errors.append(f"Entity {entity.name}: {entity_validation.error}")
+                validation_errors.append(
+                    f"Entity {entity.name}: {entity_validation.error}",
+                )
 
         if validation_errors:
             return FlextResult.fail(

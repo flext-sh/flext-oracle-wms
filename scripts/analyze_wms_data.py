@@ -138,9 +138,8 @@ def main() -> None:
             sample_fields = list(first_record.keys())[:10]  # Primeiros 10 campos
             for field in sample_fields:
                 value = first_record[field]
-                if isinstance(value, (dict, list)):
-                    if isinstance(value, dict):
-                        pass
+                if isinstance(value, (dict, list)) and isinstance(value, dict):
+                    pass
 
             # Análise de todos os registros para padrões
             all_types = analyze_data_types(records)

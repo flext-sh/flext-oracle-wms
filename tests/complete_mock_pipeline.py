@@ -348,6 +348,7 @@ class CompleteMockPipeline:
     def _infer_field_type(
         self,
         field: str,
+        *,
         value: str | float | bool | None,
     ) -> dict[str, str | list[str]]:
         """Infer Singer type from field name and value - Strategy Pattern."""
@@ -380,6 +381,7 @@ class CompleteMockPipeline:
 
     def _infer_type_from_value(
         self,
+        *,
         value: str | float | bool | None,
     ) -> dict[str, str | list[str]]:
         """Infer type from Python value type - Template Method Pattern."""

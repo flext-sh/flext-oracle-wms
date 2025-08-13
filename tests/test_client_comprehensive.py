@@ -78,7 +78,7 @@ class TestFlextOracleWmsAuth:
     def test_auth_validation_empty_credentials(self) -> None:
         """Test auth validation with empty credentials."""
         config = FlextOracleWmsAuthConfig(
-            auth_type=OracleWMSAuthMethod.BASIC, username="", password=""
+            auth_type=OracleWMSAuthMethod.BASIC, username="", password="",
         )
         result = config.validate_business_rules()
         assert result.success is False
@@ -172,7 +172,7 @@ class TestFlextOracleWmsClient:
         with patch.object(client, "call_api") as mock_call:
             mock_call.return_value.success = True
             mock_call.return_value.data = {
-                "results": [{"id": "1", "name": "Test Company"}]
+                "results": [{"id": "1", "name": "Test Company"}],
             }
 
             result = await client.get_entity_data("company", limit=10)

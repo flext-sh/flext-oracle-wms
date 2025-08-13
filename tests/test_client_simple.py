@@ -59,7 +59,7 @@ class TestClientSimpleNew:
         from flext_oracle_wms.helpers import flext_oracle_wms_build_entity_url
 
         url = flext_oracle_wms_build_entity_url(
-            "https://test.wms.com", "prod", "order_hdr"
+            "https://test.wms.com", "prod", "order_hdr",
         )
         assert "order_hdr" in url
         assert url.startswith("https://test.wms.com")
@@ -70,7 +70,7 @@ class TestClientSimpleNew:
         from flext_oracle_wms.helpers import flext_oracle_wms_build_entity_url
 
         url = flext_oracle_wms_build_entity_url(
-            "https://test.wms.com", "prod", "order_hdr", "v11"
+            "https://test.wms.com", "prod", "order_hdr", "v11",
         )
         assert "order_hdr" in url
         assert "/wms/lgfapi/v11/" in url
@@ -244,7 +244,7 @@ class TestClientSimpleNew:
 
         # Test with different entity
         url = flext_oracle_wms_build_entity_url(
-            "https://test.wms.com", "prod", "allocation"
+            "https://test.wms.com", "prod", "allocation",
         )
         assert "allocation" in url
         assert url.startswith("https://test.wms.com")

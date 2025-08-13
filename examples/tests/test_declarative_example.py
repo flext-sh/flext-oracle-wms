@@ -51,7 +51,7 @@ def load_env_config():
         "max_retries": int(config.get("ORACLE_WMS_MAX_RETRIES", "3")),
         "verify_ssl": config.get("ORACLE_WMS_VERIFY_SSL", "true").lower() == "true",
         "enable_logging": config.get(
-            "ORACLE_WMS_ENABLE_REQUEST_LOGGING", "true"
+            "ORACLE_WMS_ENABLE_REQUEST_LOGGING", "true",
         ).lower()
         == "true",
     }
@@ -69,7 +69,7 @@ async def main() -> None:
             env_config.get("base_url"),
             env_config.get("username"),
             env_config.get("password"),
-        ]
+        ],
     ):
         print("❌ No valid .env configuration found - skipping demo")
         return
@@ -89,7 +89,7 @@ async def main() -> None:
 
         # Show API catalog
         print(
-            f"\n�� API Catalog: {len(FLEXT_ORACLE_WMS_APIS)} Oracle WMS Cloud APIs loaded"
+            f"\n�� API Catalog: {len(FLEXT_ORACLE_WMS_APIS)} Oracle WMS Cloud APIs loaded",
         )
 
         # Categorize APIs
@@ -108,7 +108,7 @@ async def main() -> None:
         if health_result.success:
             health_data = health_result.data
             print(
-                f"✅ Service: {health_data['service']} - Status: {health_data['status']}"
+                f"✅ Service: {health_data['service']} - Status: {health_data['status']}",
             )
         else:
             print(f"❌ Health check failed: {health_result.error}")
@@ -141,7 +141,7 @@ async def main() -> None:
         # Test entity status
         status_result = await client.get_entity_status(entity="company", key="test")
         print(
-            f"  📊 Entity Status: {'✅ OK' if status_result.success else '⚠️ Expected failure'}"
+            f"  📊 Entity Status: {'✅ OK' if status_result.success else '⚠️ Expected failure'}",
         )
 
         # Test OBLPN tracking (will fail, but tests structure)
@@ -152,13 +152,13 @@ async def main() -> None:
             tracking_nbr="TRACK123",
         )
         print(
-            f"  📦 OBLPN Tracking: {'✅ OK' if tracking_result.success else '⚠️ Expected failure'}"
+            f"  📦 OBLPN Tracking: {'✅ OK' if tracking_result.success else '⚠️ Expected failure'}",
         )
 
         # Test LPN creation (will fail, but tests structure)
         lpn_result = await client.create_lpn(lpn_nbr="TEST_LPN", qty=10)
         print(
-            f"  📋 LPN Creation: {'✅ OK' if lpn_result.success else '⚠️ Expected failure'}"
+            f"  📋 LPN Creation: {'✅ OK' if lpn_result.success else '⚠️ Expected failure'}",
         )
 
         print("\n🎉 Declarative Oracle WMS Client Demo Complete!")
