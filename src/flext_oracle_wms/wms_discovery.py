@@ -319,10 +319,9 @@ class StringTypeStrategy(TypeInferenceStrategy):
 
     def infer_type(self, value: object) -> str:
         """Infer string subtype based on format."""
-        if isinstance(value, str):
+        if isinstance(value, str) and re.match(r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}", value):
             # Check for date/time patterns
-            if re.match(r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}", value):
-                return "string"  # Could be datetime format
+            return "string"  # Could be datetime format
         return "string"
 
 
@@ -368,7 +367,7 @@ class FlextOracleWmsDynamicSchemaProcessor:
     async def process_records(
         self,
         records: TOracleWmsRecordBatch,
-        entity_type: OracleWMSEntityType | None = None,
+        entity_type: OracleWMSEntityType | None = None,  # noqa: ARG002
     ) -> FlextResult[TOracleWmsSchema]:
         """Process Oracle WMS records to generate dynamic schema."""
         try:
@@ -460,7 +459,7 @@ class DiscoveryStrategy(ABC):
     async def execute_discovery_step(
         self,
         context: DiscoveryContext,
-        api_client: FlextApiClient,
+        api_client: FlextApiClient,  # noqa: ARG002
     ) -> FlextResult[None]:
         """Execute a specific discovery step."""
 
@@ -471,7 +470,7 @@ class EntityListDiscoveryStrategy(DiscoveryStrategy):
     async def execute_discovery_step(
         self,
         context: DiscoveryContext,
-        api_client: FlextApiClient,
+        api_client: FlextApiClient,  # noqa: ARG002
     ) -> FlextResult[None]:
         """Discover entities from Oracle WMS API."""
         try:
@@ -523,7 +522,7 @@ class FlextOracleWmsEntityDiscovery:
         self,
         include_patterns: list[str] | None = None,
         exclude_patterns: list[str] | None = None,
-        use_cache: bool = True,
+        use_cache: bool = True,  # noqa: FBT001, FBT002
     ) -> FlextResult[FlextOracleWmsDiscoveryResult]:
         """Discover Oracle WMS entities with caching support."""
         try:

@@ -55,7 +55,7 @@ src/flext_oracle_wms/
 - **Intelligent caching** with cache invalidation and performance monitoring
 - **Batch operations** for high-volume data processing
 - **Comprehensive error handling** with Oracle WMS-specific error categorization
-- **Type safety** with 95%+ type annotation coverage and strict MyPy validation
+- **Type Safety**: MyPy strict mode adoption; aiming for 95%+ coverage
 
 ## 📖 **Module Documentation**
 
@@ -126,7 +126,7 @@ except FlextOracleWmsAuthenticationError:
 
 ### Code Quality Standards
 
-- **Type Safety**: 95%+ type annotation coverage with strict MyPy validation
+- **Type Safety**: MyPy strict mode adoption; aiming for 95%+ coverage
 - **Error Handling**: All operations return FlextResult for consistent error management
 - **Documentation**: Comprehensive docstrings following enterprise standards
 - **Testing**: 90%+ test coverage requirement with unit and integration tests

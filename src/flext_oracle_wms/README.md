@@ -42,7 +42,7 @@ This directory contains the core implementation of the **flext-oracle-wms** libr
 
 - **Dynamic Entity Discovery** - Automatically discovers available entities from Oracle WMS Cloud REST API
 - **Declarative API Catalog** - Comprehensive endpoint definitions with categorization and versioning
-- **Type-Safe Operations** - Full type annotation coverage with strict MyPy validation
+- **Type-Safe Operations** - MyPy strict mode adoption; increasing coverage
 - **Multi-Method Authentication** - Support for Basic, Bearer token, and API key authentication methods
 - **Enterprise Error Handling** - Comprehensive exception hierarchy with Oracle WMS-specific categorization
 
@@ -129,7 +129,7 @@ except FlextOracleWmsConnectionError as e:
 
 ### Code Quality Standards
 
-- **Type Safety**: 95%+ type annotation coverage with strict MyPy validation
+- **Type Safety**: MyPy strict mode adoption; aiming for 95%+ coverage
 - **Error Handling**: All operations return FlextResult for consistent error management
 - **Documentation**: Comprehensive docstrings following enterprise standards
 - **Testing**: 90%+ test coverage requirement with unit and integration tests

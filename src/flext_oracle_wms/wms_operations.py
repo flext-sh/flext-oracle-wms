@@ -73,7 +73,7 @@ def validate_dict_parameter(param: object, field_name: str) -> None:
 def validate_string_parameter(
     param: object,
     field_name: str,
-    allow_empty: bool = False,
+    allow_empty: bool = False,  # noqa: FBT001, FBT002
 ) -> None:
     """DRY function to validate string parameter."""
     if not isinstance(param, str):
@@ -322,7 +322,7 @@ class FlextOracleWmsFilter:
 
     def _apply_operator(self, field_value: object, operator: str, filter_value: object) -> bool:
         """Apply filter operator to field value."""
-        from collections.abc import Callable
+        from collections.abc import Callable  # noqa: TC003
         operator_map: dict[str, Callable[[object, object], bool]] = {
             OracleWMSFilterOperator.EQ: self._op_equals,
             OracleWMSFilterOperator.NE: self._op_not_equals,
@@ -350,28 +350,28 @@ class FlextOracleWmsFilter:
     def _op_greater_than(self, field_value: object, filter_value: object) -> bool:
         """Greater than operator."""
         try:
-            return field_value > filter_value  # type: ignore
+            return field_value > filter_value  # type: ignore[operator]
         except (TypeError, ValueError):
             return False
 
     def _op_greater_equal(self, field_value: object, filter_value: object) -> bool:
         """Greater than or equal operator."""
         try:
-            return field_value >= filter_value  # type: ignore
+            return field_value >= filter_value  # type: ignore[operator]
         except (TypeError, ValueError):
             return False
 
     def _op_less_than(self, field_value: object, filter_value: object) -> bool:
         """Less than operator."""
         try:
-            return field_value < filter_value  # type: ignore
+            return field_value < filter_value  # type: ignore[operator]
         except (TypeError, ValueError):
             return False
 
     def _op_less_equal(self, field_value: object, filter_value: object) -> bool:
         """Less than or equal operator."""
         try:
-            return field_value <= filter_value  # type: ignore
+            return field_value <= filter_value  # type: ignore[operator]
         except (TypeError, ValueError):
             return False
 
@@ -490,10 +490,10 @@ class FlextOracleWmsPlugin:
         self.version = version
         self._logger = get_logger(__name__)
 
-    async def initialize(self, context: FlextOracleWmsPluginContext) -> FlextResult[None]:
+    async def initialize(self, context: FlextOracleWmsPluginContext) -> FlextResult[None]:  # noqa: ARG002
         """Initialize Oracle WMS plugin with context."""
         try:
-            self._logger.info("Initializing Oracle WMS plugin", extra={"name": self.name})
+            self._logger.info("Initializing Oracle WMS plugin", extra={"plugin_name": self.name})
             return FlextResult.ok(None)
         except (TypeError, ValueError, AttributeError, RuntimeError) as e:
             return FlextResult.fail(f"Oracle WMS plugin initialization failed: {e}")
@@ -501,7 +501,7 @@ class FlextOracleWmsPlugin:
     async def cleanup(self) -> FlextResult[None]:
         """Cleanup Oracle WMS plugin resources."""
         try:
-            self._logger.info("Cleaning up Oracle WMS plugin", extra={"name": self.name})
+            self._logger.info("Cleaning up Oracle WMS plugin", extra={"plugin_name": self.name})
             return FlextResult.ok(None)
         except (OSError, RuntimeError, AttributeError) as e:
             return FlextResult.fail(f"Oracle WMS plugin cleanup failed: {e}")

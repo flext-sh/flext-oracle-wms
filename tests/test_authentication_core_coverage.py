@@ -264,7 +264,7 @@ class TestAuthenticator:
         )
 
         authenticator = FlextOracleWmsAuthenticator(config)
-        custom_headers = {"Content-Type": "application/json", "X-Custom": "value"}
+        custom_headers = {"Content-Type": FlextApiConstants.ContentTypes.JSON, "X-Custom": "value"}
 
         headers = await authenticator.get_auth_headers(custom_headers)
 
