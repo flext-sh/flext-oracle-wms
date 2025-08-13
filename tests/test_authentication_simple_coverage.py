@@ -53,7 +53,8 @@ class TestAuthenticationConfig:
     def test_bearer_auth_config_creation(self) -> None:
         """Test creating bearer token auth configuration."""
         config = FlextOracleWmsAuthConfig(
-            auth_type=OracleWMSAuthMethod.BEARER, token="bearer_token_123",
+            auth_type=OracleWMSAuthMethod.BEARER,
+            token="bearer_token_123",
         )
 
         assert config.auth_type == OracleWMSAuthMethod.BEARER
@@ -65,7 +66,8 @@ class TestAuthenticationConfig:
     def test_api_key_auth_config_creation(self) -> None:
         """Test creating API key auth configuration."""
         config = FlextOracleWmsAuthConfig(
-            auth_type=OracleWMSAuthMethod.API_KEY, api_key="api_key_123",
+            auth_type=OracleWMSAuthMethod.API_KEY,
+            api_key="api_key_123",
         )
 
         assert config.auth_type == OracleWMSAuthMethod.API_KEY
@@ -88,7 +90,8 @@ class TestAuthenticationConfig:
     def test_config_validation_success_bearer(self) -> None:
         """Test config validation succeeds for valid bearer auth."""
         config = FlextOracleWmsAuthConfig(
-            auth_type=OracleWMSAuthMethod.BEARER, token="valid_token",
+            auth_type=OracleWMSAuthMethod.BEARER,
+            token="valid_token",
         )
 
         result = config.validate_business_rules()
@@ -97,7 +100,8 @@ class TestAuthenticationConfig:
     def test_config_validation_success_api_key(self) -> None:
         """Test config validation succeeds for valid API key auth."""
         config = FlextOracleWmsAuthConfig(
-            auth_type=OracleWMSAuthMethod.API_KEY, api_key="valid_key",
+            auth_type=OracleWMSAuthMethod.API_KEY,
+            api_key="valid_key",
         )
 
         result = config.validate_business_rules()

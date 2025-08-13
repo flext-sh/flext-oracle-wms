@@ -218,7 +218,9 @@ class TestRecordFiltering:
         filter_engine = FlextOracleWmsFilter()
         filters = {"status": "active"}
         result = await filter_engine.filter_records(
-            self.sample_records, filters, limit=1,
+            self.sample_records,
+            filters,
+            limit=1,
         )
 
         assert result.success
@@ -286,7 +288,9 @@ class TestRecordSorting:
         """Test sorting records by string field in descending order."""
         filter_engine = FlextOracleWmsFilter()
         result = await filter_engine.sort_records(
-            self.unsorted_records, "name", ascending=False,
+            self.unsorted_records,
+            "name",
+            ascending=False,
         )
 
         assert result.success
@@ -306,7 +310,9 @@ class TestRecordSorting:
         """Test sorting records by numeric field in descending order."""
         filter_engine = FlextOracleWmsFilter()
         result = await filter_engine.sort_records(
-            self.unsorted_records, "score", ascending=False,
+            self.unsorted_records,
+            "score",
+            ascending=False,
         )
 
         assert result.success
@@ -373,7 +379,8 @@ class TestNestedValueAccess:
         """Test getting two levels nested value."""
         filter_engine = FlextOracleWmsFilter()
         value = filter_engine._get_nested_value(
-            self.nested_record, "company.address.city",
+            self.nested_record,
+            "company.address.city",
         )
         assert value == "New York"
 
@@ -387,7 +394,8 @@ class TestNestedValueAccess:
         """Test getting nonexistent nested field returns None."""
         filter_engine = FlextOracleWmsFilter()
         value = filter_engine._get_nested_value(
-            self.nested_record, "company.nonexistent",
+            self.nested_record,
+            "company.nonexistent",
         )
         assert value is None
 
@@ -541,7 +549,8 @@ class TestFactoryFunction:
     def test_create_filter_custom(self) -> None:
         """Test creating filter with custom parameters."""
         filter_engine = flext_oracle_wms_create_filter(
-            case_sensitive=True, max_conditions=50,
+            case_sensitive=True,
+            max_conditions=50,
         )
         assert filter_engine.case_sensitive is True
         assert filter_engine.max_conditions == 50
@@ -577,7 +586,9 @@ class TestConvenienceFunctions:
     async def test_filter_by_field_string_value(self) -> None:
         """Test filter by field with string value."""
         result = await flext_oracle_wms_filter_by_field(
-            self.sample_records, "status", "active",
+            self.sample_records,
+            "status",
+            "active",
         )
 
         assert result.success
@@ -597,7 +608,9 @@ class TestConvenienceFunctions:
     async def test_filter_by_field_list_value(self) -> None:
         """Test filter by field with list value."""
         result = await flext_oracle_wms_filter_by_field(
-            self.sample_records, "id", [1, 3],
+            self.sample_records,
+            "id",
+            [1, 3],
         )
 
         assert result.success
@@ -608,7 +621,10 @@ class TestConvenienceFunctions:
     async def test_filter_by_field_custom_operator(self) -> None:
         """Test filter by field with custom operator."""
         result = await flext_oracle_wms_filter_by_field(
-            self.sample_records, "status", "inactive", OracleWMSFilterOperator.NE,
+            self.sample_records,
+            "status",
+            "inactive",
+            OracleWMSFilterOperator.NE,
         )
 
         assert result.success
@@ -626,7 +642,10 @@ class TestConvenienceFunctions:
     async def test_filter_by_id_range_both_bounds(self) -> None:
         """Test filter by ID range with both min and max."""
         result = await flext_oracle_wms_filter_by_id_range(
-            self.sample_records, "id", min_id=1, max_id=3,
+            self.sample_records,
+            "id",
+            min_id=1,
+            max_id=3,
         )
 
         assert result.success
@@ -636,7 +655,9 @@ class TestConvenienceFunctions:
     async def test_filter_by_id_range_min_only(self) -> None:
         """Test filter by ID range with min only."""
         result = await flext_oracle_wms_filter_by_id_range(
-            self.sample_records, "id", min_id=2,
+            self.sample_records,
+            "id",
+            min_id=2,
         )
 
         assert result.success
@@ -646,7 +667,9 @@ class TestConvenienceFunctions:
     async def test_filter_by_id_range_max_only(self) -> None:
         """Test filter by ID range with max only."""
         result = await flext_oracle_wms_filter_by_id_range(
-            self.sample_records, "id", max_id=2,
+            self.sample_records,
+            "id",
+            max_id=2,
         )
 
         assert result.success
@@ -664,7 +687,9 @@ class TestConvenienceFunctions:
     async def test_filter_by_id_range_custom_field(self) -> None:
         """Test filter by ID range with custom ID field."""
         result = await flext_oracle_wms_filter_by_id_range(
-            self.sample_records, "name", min_id="Company B",
+            self.sample_records,
+            "name",
+            min_id="Company B",
         )
 
         assert result.success
@@ -736,7 +761,9 @@ class TestPerformanceAndEdgeCases:
 
         filter_engine = FlextOracleWmsFilter()
         result = await filter_engine.filter_records(
-            large_records, {"status": "active"}, limit=100,
+            large_records,
+            {"status": "active"},
+            limit=100,
         )
 
         assert result.success
@@ -753,7 +780,8 @@ class TestPerformanceAndEdgeCases:
 
         filter_engine = FlextOracleWmsFilter()
         result = await filter_engine.filter_records(
-            complex_records, {"data.level1.level2.level3.value": "target"},
+            complex_records,
+            {"data.level1.level2.level3.value": "target"},
         )
 
         assert result.success

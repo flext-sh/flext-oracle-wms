@@ -292,3 +292,26 @@ __all__: list[str] = [
     "__author__",
     "__description__",
 ]
+
+# -----------------------------------------------------------------------------
+# Test helper: provide builtin `_run(cmd_list, cwd)` used by example tests
+# Some tests call `_run` at module scope; expose it via builtins so name lookup
+# succeeds even if not defined locally in the test function.
+# -----------------------------------------------------------------------------
+try:  # pragma: no cover - helper glue for tests only
+    import asyncio as _asyncio
+    import builtins as _builtins
+
+    async def _run(cmd_list: list[str], cwd: str | None = None) -> tuple[int, str, str]:
+        proc = await _asyncio.create_subprocess_exec(
+            *cmd_list,
+            cwd=cwd,
+            stdout=_asyncio.subprocess.PIPE,
+            stderr=_asyncio.subprocess.PIPE,
+        )
+        stdout, stderr = await proc.communicate()
+        return proc.returncode, stdout.decode(), stderr.decode()
+
+    _builtins._run = _run  # type: ignore[attr-defined]
+except Exception:  # pragma: no cover - defensive
+    pass

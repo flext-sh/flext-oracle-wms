@@ -78,7 +78,9 @@ class TestFlextOracleWmsAuth:
     def test_auth_validation_empty_credentials(self) -> None:
         """Test auth validation with empty credentials."""
         config = FlextOracleWmsAuthConfig(
-            auth_type=OracleWMSAuthMethod.BASIC, username="", password="",
+            auth_type=OracleWMSAuthMethod.BASIC,
+            username="",
+            password="",
         )
         result = config.validate_business_rules()
         assert result.success is False

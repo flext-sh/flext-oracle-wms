@@ -60,10 +60,14 @@ class TestDiscoveryContext:
         """Test DiscoveryContext with existing data."""
         entities = [
             FlextOracleWmsEntity(
-                name="company", endpoint="/api/company", description="Company entity",
+                name="company",
+                endpoint="/api/company",
+                description="Company entity",
             ),
             FlextOracleWmsEntity(
-                name="facility", endpoint="/api/facility", description="Facility entity",
+                name="facility",
+                endpoint="/api/facility",
+                description="Facility entity",
             ),
         ]
         errors = ["API timeout error", "Authentication failed"]
@@ -90,7 +94,10 @@ class TestEndpointDiscoveryStrategy:
         self.strategy = EndpointDiscoveryStrategy(self.mock_discovery)
         self.mock_api_client = AsyncMock()
         self.context = DiscoveryContext(
-            include_patterns=None, exclude_patterns=None, all_entities=[], errors=[],
+            include_patterns=None,
+            exclude_patterns=None,
+            all_entities=[],
+            errors=[],
         )
 
     @pytest.mark.asyncio
@@ -106,20 +113,27 @@ class TestEndpointDiscoveryStrategy:
         # Mock entity parsing
         mock_entities = [
             FlextOracleWmsEntity(
-                name="company", endpoint="/api/company", description="Company",
+                name="company",
+                endpoint="/api/company",
+                description="Company",
             ),
             FlextOracleWmsEntity(
-                name="facility", endpoint="/api/facility", description="Facility",
+                name="facility",
+                endpoint="/api/facility",
+                description="Facility",
             ),
         ]
 
         with patch.object(
-            EntityResponseParser, "parse_entities_response",
+            EntityResponseParser,
+            "parse_entities_response",
         ) as mock_parse:
             mock_parse.return_value = FlextResult.ok(mock_entities)
 
             result = await self.strategy.execute_discovery_step(
-                self.context, self.mock_api_client, "/api/entities",
+                self.context,
+                self.mock_api_client,
+                "/api/entities",
             )
 
             assert result.success
@@ -134,7 +148,9 @@ class TestEndpointDiscoveryStrategy:
         )
 
         result = await self.strategy.execute_discovery_step(
-            self.context, self.mock_api_client, "/api/entities",
+            self.context,
+            self.mock_api_client,
+            "/api/entities",
         )
 
         assert result.success
@@ -152,7 +168,9 @@ class TestEndpointDiscoveryStrategy:
         self.mock_api_client.get.return_value = FlextResult.ok(mock_response)
 
         result = await self.strategy.execute_discovery_step(
-            self.context, self.mock_api_client, "/api/entities",
+            self.context,
+            self.mock_api_client,
+            "/api/entities",
         )
 
         assert result.success
@@ -169,7 +187,9 @@ class TestEndpointDiscoveryStrategy:
         self.mock_api_client.get.return_value = FlextResult.ok(mock_response)
 
         result = await self.strategy.execute_discovery_step(
-            self.context, self.mock_api_client, "/api/entities",
+            self.context,
+            self.mock_api_client,
+            "/api/entities",
         )
 
         assert result.success
@@ -182,7 +202,9 @@ class TestEndpointDiscoveryStrategy:
         self.mock_api_client.get.side_effect = Exception("Network error")
 
         result = await self.strategy.execute_discovery_step(
-            self.context, self.mock_api_client, "/api/entities",
+            self.context,
+            self.mock_api_client,
+            "/api/entities",
         )
 
         assert result.success
@@ -198,7 +220,8 @@ class TestEndpointDiscoveryStrategy:
         self.mock_api_client.get.return_value = FlextResult.ok(mock_response)
 
         result = await self.strategy._make_api_request(
-            self.mock_api_client, "/api/test",
+            self.mock_api_client,
+            "/api/test",
         )
 
         assert result.success
@@ -210,7 +233,8 @@ class TestEndpointDiscoveryStrategy:
         self.mock_api_client.get.return_value = FlextResult.fail("Connection timeout")
 
         result = await self.strategy._make_api_request(
-            self.mock_api_client, "/api/test",
+            self.mock_api_client,
+            "/api/test",
         )
 
         assert result.is_failure
@@ -222,7 +246,8 @@ class TestEndpointDiscoveryStrategy:
         self.mock_api_client.get.return_value = FlextResult.ok(None)
 
         result = await self.strategy._make_api_request(
-            self.mock_api_client, "/api/test",
+            self.mock_api_client,
+            "/api/test",
         )
 
         assert result.is_failure
@@ -281,7 +306,9 @@ class TestEntityResponseParser:
         """Test that parser delegates to discovery instance."""
         mock_entities = [
             FlextOracleWmsEntity(
-                name="test", endpoint="/api/test", description="Test entity",
+                name="test",
+                endpoint="/api/test",
+                description="Test entity",
             ),
         ]
         self.mock_discovery._parse_entities_response.return_value = FlextResult.ok(
@@ -290,13 +317,15 @@ class TestEntityResponseParser:
 
         response_data = {"entities": ["test"]}
         result = await self.parser.parse_entities_response(
-            response_data, "/api/entities",
+            response_data,
+            "/api/entities",
         )
 
         assert result.success
         assert result.data == mock_entities
         self.mock_discovery._parse_entities_response.assert_called_once_with(
-            response_data, "/api/entities",
+            response_data,
+            "/api/entities",
         )
 
 
@@ -307,13 +336,15 @@ class TestFlextOracleWmsEntityDiscovery:
         """Set up test fixtures."""
         self.mock_api_client = AsyncMock()
         self.discovery = FlextOracleWmsEntityDiscovery(
-            api_client=self.mock_api_client, environment="test_env",
+            api_client=self.mock_api_client,
+            environment="test_env",
         )
 
     def test_initialization_default(self) -> None:
         """Test discovery initialization with default parameters."""
         discovery = FlextOracleWmsEntityDiscovery(
-            api_client=self.mock_api_client, environment="prod",
+            api_client=self.mock_api_client,
+            environment="prod",
         )
 
         assert discovery.api_client == self.mock_api_client
@@ -353,10 +384,14 @@ class TestFlextOracleWmsEntityDiscovery:
         # Mock the _perform_discovery method
         mock_entities = [
             FlextOracleWmsEntity(
-                name="company", endpoint="/api/company", description="Company",
+                name="company",
+                endpoint="/api/company",
+                description="Company",
             ),
             FlextOracleWmsEntity(
-                name="facility", endpoint="/api/facility", description="Facility",
+                name="facility",
+                endpoint="/api/facility",
+                description="Facility",
             ),
         ]
 
@@ -396,7 +431,8 @@ class TestFlextOracleWmsEntityDiscovery:
             mock_perform.return_value = FlextResult.ok(mock_discovery_result)
 
             result = await self.discovery.discover_all_entities(
-                include_patterns=include_patterns, exclude_patterns=exclude_patterns,
+                include_patterns=include_patterns,
+                exclude_patterns=exclude_patterns,
             )
 
             assert result.success
@@ -498,14 +534,17 @@ class TestFlextOracleWmsEntityDiscovery:
         self.discovery.cache_manager = mock_cache
 
         mock_entity = FlextOracleWmsEntity(
-            name="company", endpoint="/api/company", description="Company entity",
+            name="company",
+            endpoint="/api/company",
+            description="Company entity",
         )
 
         with patch.object(self.discovery, "_get_cached_entity") as mock_cache_get:
             mock_cache_get.return_value = FlextResult.ok(mock_entity)
 
             result = await self.discovery.discover_entity_schema(
-                "company", use_cache=True,
+                "company",
+                use_cache=True,
             )
 
             assert result.success
@@ -518,7 +557,9 @@ class TestFlextOracleWmsEntityDiscovery:
         self.discovery.cache_manager = mock_cache
 
         mock_entity = FlextOracleWmsEntity(
-            name="company", endpoint="/api/company", description="Company entity",
+            name="company",
+            endpoint="/api/company",
+            description="Company entity",
         )
 
         with (
@@ -530,7 +571,8 @@ class TestFlextOracleWmsEntityDiscovery:
             mock_discover.return_value = FlextResult.ok(mock_entity)
 
             result = await self.discovery.discover_entity_schema(
-                "company", use_cache=True,
+                "company",
+                use_cache=True,
             )
 
             assert result.success
@@ -541,14 +583,17 @@ class TestFlextOracleWmsEntityDiscovery:
         """Test successful discovery performance."""
         # Mock strategy execution
         with patch.object(
-            EndpointDiscoveryStrategy, "execute_discovery_step",
+            EndpointDiscoveryStrategy,
+            "execute_discovery_step",
         ) as mock_step:
             mock_step.return_value = FlextResult.ok(True)
 
             with patch.object(self.discovery, "_apply_post_processing") as mock_process:
                 mock_entities = [
                     FlextOracleWmsEntity(
-                        name="test", endpoint="/api/test", description="Test",
+                        name="test",
+                        endpoint="/api/test",
+                        description="Test",
                     ),
                 ]
                 mock_process.return_value = mock_entities
@@ -565,7 +610,8 @@ class TestFlextOracleWmsEntityDiscovery:
         exclude_patterns = ["test_*"]
 
         with patch.object(
-            EndpointDiscoveryStrategy, "execute_discovery_step",
+            EndpointDiscoveryStrategy,
+            "execute_discovery_step",
         ) as mock_step:
             mock_step.return_value = FlextResult.ok(True)
 
@@ -573,7 +619,8 @@ class TestFlextOracleWmsEntityDiscovery:
                 mock_process.return_value = []
 
                 result = await self.discovery._perform_discovery(
-                    include_patterns, exclude_patterns,
+                    include_patterns,
+                    exclude_patterns,
                 )
 
                 assert result.success
@@ -587,10 +634,14 @@ class TestFlextOracleWmsEntityDiscovery:
         """Test post-processing without filters."""
         entities = [
             FlextOracleWmsEntity(
-                name="company", endpoint="/api/company", description="Company",
+                name="company",
+                endpoint="/api/company",
+                description="Company",
             ),
             FlextOracleWmsEntity(
-                name="facility", endpoint="/api/facility", description="Facility",
+                name="facility",
+                endpoint="/api/facility",
+                description="Facility",
             ),
         ]
 
@@ -610,13 +661,19 @@ class TestFlextOracleWmsEntityDiscovery:
         """Test post-processing with filters."""
         entities = [
             FlextOracleWmsEntity(
-                name="company", endpoint="/api/company", description="Company",
+                name="company",
+                endpoint="/api/company",
+                description="Company",
             ),
             FlextOracleWmsEntity(
-                name="facility", endpoint="/api/facility", description="Facility",
+                name="facility",
+                endpoint="/api/facility",
+                description="Facility",
             ),
             FlextOracleWmsEntity(
-                name="test_entity", endpoint="/api/test", description="Test",
+                name="test_entity",
+                endpoint="/api/test",
+                description="Test",
             ),
         ]
 
@@ -644,7 +701,9 @@ class TestFlextOracleWmsEntityDiscovery:
         """Test discovery result creation."""
         entities = [
             FlextOracleWmsEntity(
-                name="company", endpoint="/api/company", description="Company",
+                name="company",
+                endpoint="/api/company",
+                description="Company",
             ),
         ]
 
@@ -667,7 +726,8 @@ class TestFlextOracleWmsEntityDiscovery:
         response_data = {"entities": ["company", "facility", "item"]}
 
         result = self.discovery._extract_entity_list_from_response(
-            response_data, "/api/test",
+            response_data,
+            "/api/test",
         )
 
         assert result.success
@@ -678,7 +738,8 @@ class TestFlextOracleWmsEntityDiscovery:
         response_data = {"results": ["order", "shipment"]}
 
         result = self.discovery._extract_entity_list_from_response(
-            response_data, "/api/test",
+            response_data,
+            "/api/test",
         )
 
         assert result.success
@@ -689,7 +750,8 @@ class TestFlextOracleWmsEntityDiscovery:
         response_data = {"data": ["location", "inventory"]}
 
         result = self.discovery._extract_entity_list_from_response(
-            response_data, "/api/test",
+            response_data,
+            "/api/test",
         )
 
         assert result.success
@@ -700,7 +762,8 @@ class TestFlextOracleWmsEntityDiscovery:
         response_data = {"company": {}, "facility": {}, "item": {}}
 
         result = self.discovery._extract_entity_list_from_response(
-            response_data, "/api/test",
+            response_data,
+            "/api/test",
         )
 
         assert result.success
@@ -711,7 +774,8 @@ class TestFlextOracleWmsEntityDiscovery:
         response_data = ["company", "facility", "item"]
 
         result = self.discovery._extract_entity_list_from_response(
-            response_data, "/api/test",
+            response_data,
+            "/api/test",
         )
 
         assert result.success
@@ -722,7 +786,8 @@ class TestFlextOracleWmsEntityDiscovery:
         response_data = "unexpected_string"
 
         result = self.discovery._extract_entity_list_from_response(
-            response_data, "/api/test",
+            response_data,
+            "/api/test",
         )
 
         assert result.is_failure
@@ -808,7 +873,8 @@ class TestFlextOracleWmsEntityDiscovery:
         response_data = {"entities": ["company", "facility"]}
 
         result = await self.discovery._parse_entities_response(
-            response_data, "/api/test",
+            response_data,
+            "/api/test",
         )
 
         assert result.success
@@ -828,7 +894,8 @@ class TestFlextOracleWmsEntityDiscovery:
         }
 
         result = await self.discovery._parse_entities_response(
-            response_data, "/api/test",
+            response_data,
+            "/api/test",
         )
 
         assert result.success
@@ -848,7 +915,8 @@ class TestFlextOracleWmsEntityDiscovery:
         }
 
         result = await self.discovery._parse_entities_response(
-            response_data, "/api/test",
+            response_data,
+            "/api/test",
         )
 
         assert result.success
@@ -858,7 +926,8 @@ class TestFlextOracleWmsEntityDiscovery:
     async def test_parse_entities_response_empty_list(self) -> None:
         """Test parsing entities from empty response."""
         with patch.object(
-            self.discovery, "_extract_entity_list_from_response",
+            self.discovery,
+            "_extract_entity_list_from_response",
         ) as mock_extract:
             mock_extract.return_value = FlextResult.ok(None)
 
@@ -871,7 +940,8 @@ class TestFlextOracleWmsEntityDiscovery:
     async def test_parse_entities_response_extraction_failure(self) -> None:
         """Test parsing entities with extraction failure."""
         with patch.object(
-            self.discovery, "_extract_entity_list_from_response",
+            self.discovery,
+            "_extract_entity_list_from_response",
         ) as mock_extract:
             mock_extract.return_value = FlextResult.fail("Extraction failed")
 
@@ -937,7 +1007,9 @@ class TestFlextOracleWmsEntityDiscovery:
         }
 
         result = await self.discovery._extract_entity_schema(
-            response_data, "company", "/api/company",
+            response_data,
+            "company",
+            "/api/company",
         )
 
         assert result.success
@@ -958,7 +1030,9 @@ class TestFlextOracleWmsEntityDiscovery:
         }
 
         result = await self.discovery._extract_entity_schema(
-            response_data, "facility", "/api/facility",
+            response_data,
+            "facility",
+            "/api/facility",
         )
 
         assert result.success
@@ -971,7 +1045,9 @@ class TestFlextOracleWmsEntityDiscovery:
         response_data = {"results": []}
 
         result = await self.discovery._extract_entity_schema(
-            response_data, "empty", "/api/empty",
+            response_data,
+            "empty",
+            "/api/empty",
         )
 
         assert result.success
@@ -992,21 +1068,28 @@ class TestFlextOracleWmsEntityDiscovery:
         """Test entity filtering with include patterns."""
         entities = [
             FlextOracleWmsEntity(
-                name="company", endpoint="/api/company", description="Company",
+                name="company",
+                endpoint="/api/company",
+                description="Company",
             ),
             FlextOracleWmsEntity(
-                name="facility", endpoint="/api/facility", description="Facility",
+                name="facility",
+                endpoint="/api/facility",
+                description="Facility",
             ),
             FlextOracleWmsEntity(name="item", endpoint="/api/item", description="Item"),
             FlextOracleWmsEntity(
-                name="order", endpoint="/api/order", description="Order",
+                name="order",
+                endpoint="/api/order",
+                description="Order",
             ),
         ]
 
         include_patterns = ["comp.*", "fac.*"]
 
         result = self.discovery._filter_entities(
-            entities, include_patterns=include_patterns,
+            entities,
+            include_patterns=include_patterns,
         )
 
         assert len(result) == 2
@@ -1016,20 +1099,27 @@ class TestFlextOracleWmsEntityDiscovery:
         """Test entity filtering with exclude patterns."""
         entities = [
             FlextOracleWmsEntity(
-                name="company", endpoint="/api/company", description="Company",
+                name="company",
+                endpoint="/api/company",
+                description="Company",
             ),
             FlextOracleWmsEntity(
-                name="test_entity", endpoint="/api/test", description="Test",
+                name="test_entity",
+                endpoint="/api/test",
+                description="Test",
             ),
             FlextOracleWmsEntity(
-                name="temp_data", endpoint="/api/temp", description="Temp",
+                name="temp_data",
+                endpoint="/api/temp",
+                description="Temp",
             ),
         ]
 
         exclude_patterns = ["test_.*", "temp_.*"]
 
         result = self.discovery._filter_entities(
-            entities, exclude_patterns=exclude_patterns,
+            entities,
+            exclude_patterns=exclude_patterns,
         )
 
         assert len(result) == 1
@@ -1039,7 +1129,9 @@ class TestFlextOracleWmsEntityDiscovery:
         """Test entity filtering with both include and exclude patterns."""
         entities = [
             FlextOracleWmsEntity(
-                name="company", endpoint="/api/company", description="Company",
+                name="company",
+                endpoint="/api/company",
+                description="Company",
             ),
             FlextOracleWmsEntity(
                 name="company_test",
@@ -1047,7 +1139,9 @@ class TestFlextOracleWmsEntityDiscovery:
                 description="Company Test",
             ),
             FlextOracleWmsEntity(
-                name="facility", endpoint="/api/facility", description="Facility",
+                name="facility",
+                endpoint="/api/facility",
+                description="Facility",
             ),
             FlextOracleWmsEntity(name="item", endpoint="/api/item", description="Item"),
         ]
@@ -1056,7 +1150,9 @@ class TestFlextOracleWmsEntityDiscovery:
         exclude_patterns = [".*_test"]
 
         result = self.discovery._filter_entities(
-            entities, include_patterns, exclude_patterns,
+            entities,
+            include_patterns,
+            exclude_patterns,
         )
 
         assert len(result) == 1
@@ -1066,17 +1162,22 @@ class TestFlextOracleWmsEntityDiscovery:
         """Test entity filtering is case insensitive."""
         entities = [
             FlextOracleWmsEntity(
-                name="Company", endpoint="/api/company", description="Company",
+                name="Company",
+                endpoint="/api/company",
+                description="Company",
             ),
             FlextOracleWmsEntity(
-                name="FACILITY", endpoint="/api/facility", description="Facility",
+                name="FACILITY",
+                endpoint="/api/facility",
+                description="Facility",
             ),
         ]
 
         include_patterns = ["comp.*"]
 
         result = self.discovery._filter_entities(
-            entities, include_patterns=include_patterns,
+            entities,
+            include_patterns=include_patterns,
         )
 
         assert len(result) == 1
@@ -1086,10 +1187,14 @@ class TestFlextOracleWmsEntityDiscovery:
         """Test entity filtering with no patterns returns all entities."""
         entities = [
             FlextOracleWmsEntity(
-                name="company", endpoint="/api/company", description="Company",
+                name="company",
+                endpoint="/api/company",
+                description="Company",
             ),
             FlextOracleWmsEntity(
-                name="facility", endpoint="/api/facility", description="Facility",
+                name="facility",
+                endpoint="/api/facility",
+                description="Facility",
             ),
         ]
 
@@ -1102,17 +1207,25 @@ class TestFlextOracleWmsEntityDiscovery:
         """Test entity deduplication by name."""
         entities = [
             FlextOracleWmsEntity(
-                name="company", endpoint="/api/company1", description="Company 1",
+                name="company",
+                endpoint="/api/company1",
+                description="Company 1",
             ),
             FlextOracleWmsEntity(
-                name="facility", endpoint="/api/facility", description="Facility",
+                name="facility",
+                endpoint="/api/facility",
+                description="Facility",
             ),
             FlextOracleWmsEntity(
-                name="company", endpoint="/api/company2", description="Company 2",
+                name="company",
+                endpoint="/api/company2",
+                description="Company 2",
             ),
             FlextOracleWmsEntity(name="item", endpoint="/api/item", description="Item"),
             FlextOracleWmsEntity(
-                name="facility", endpoint="/api/facility2", description="Facility 2",
+                name="facility",
+                endpoint="/api/facility2",
+                description="Facility 2",
             ),
         ]
 
@@ -1130,10 +1243,14 @@ class TestFlextOracleWmsEntityDiscovery:
         """Test entity deduplication with no duplicates."""
         entities = [
             FlextOracleWmsEntity(
-                name="company", endpoint="/api/company", description="Company",
+                name="company",
+                endpoint="/api/company",
+                description="Company",
             ),
             FlextOracleWmsEntity(
-                name="facility", endpoint="/api/facility", description="Facility",
+                name="facility",
+                endpoint="/api/facility",
+                description="Facility",
             ),
         ]
 
@@ -1176,7 +1293,9 @@ class TestFlextOracleWmsEntityDiscovery:
     async def test_cache_entity_result_no_op(self) -> None:
         """Test cache entity result is no-op."""
         mock_entity = FlextOracleWmsEntity(
-            name="test", endpoint="/api/test", description="Test entity",
+            name="test",
+            endpoint="/api/test",
+            description="Test entity",
         )
 
         # Should not raise any errors
@@ -1191,7 +1310,8 @@ class TestFactoryFunction:
         mock_api_client = AsyncMock()
 
         discovery = flext_oracle_wms_create_entity_discovery(
-            api_client=mock_api_client, environment="prod",
+            api_client=mock_api_client,
+            environment="prod",
         )
 
         assert discovery.api_client == mock_api_client
@@ -1219,7 +1339,9 @@ class TestFactoryFunction:
         mock_api_client = AsyncMock()
 
         discovery = flext_oracle_wms_create_entity_discovery(
-            api_client=mock_api_client, environment="dev", enable_caching=False,
+            api_client=mock_api_client,
+            environment="dev",
+            enable_caching=False,
         )
 
         assert discovery.cache_manager is None
@@ -1232,7 +1354,8 @@ class TestErrorHandling:
         """Set up test fixtures."""
         self.mock_api_client = AsyncMock()
         self.discovery = FlextOracleWmsEntityDiscovery(
-            api_client=self.mock_api_client, environment="test",
+            api_client=self.mock_api_client,
+            environment="test",
         )
 
     @pytest.mark.asyncio
@@ -1259,7 +1382,8 @@ class TestErrorHandling:
     async def test_parse_entities_response_exception(self) -> None:
         """Test _parse_entities_response handles exceptions."""
         with patch.object(
-            self.discovery, "_extract_entity_list_from_response",
+            self.discovery,
+            "_extract_entity_list_from_response",
         ) as mock_extract:
             mock_extract.side_effect = Exception("Parse error")
 
@@ -1279,7 +1403,9 @@ class TestErrorHandling:
             # Should raise exception via handle_operation_exception
             with pytest.raises(Exception):
                 await self.discovery._extract_entity_schema(
-                    response_data, "test", "/api/test",
+                    response_data,
+                    "test",
+                    "/api/test",
                 )
 
 
@@ -1306,7 +1432,8 @@ class TestEdgeCases:
     async def test_discover_all_entities_empty_response(self) -> None:
         """Test discovery with empty response from all endpoints."""
         with patch.object(
-            EndpointDiscoveryStrategy, "execute_discovery_step",
+            EndpointDiscoveryStrategy,
+            "execute_discovery_step",
         ) as mock_step:
             mock_step.return_value = FlextResult.ok(False)
 
@@ -1320,12 +1447,16 @@ class TestEdgeCases:
         """Test filtering with empty pattern lists."""
         entities = [
             FlextOracleWmsEntity(
-                name="company", endpoint="/api/company", description="Company",
+                name="company",
+                endpoint="/api/company",
+                description="Company",
             ),
         ]
 
         result = self.discovery._filter_entities(
-            entities, include_patterns=[], exclude_patterns=[],
+            entities,
+            include_patterns=[],
+            exclude_patterns=[],
         )
 
         assert len(result) == 1

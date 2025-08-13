@@ -51,7 +51,8 @@ def load_env_config():
         "max_retries": int(config.get("ORACLE_WMS_MAX_RETRIES", "3")),
         "verify_ssl": config.get("ORACLE_WMS_VERIFY_SSL", "true").lower() == "true",
         "enable_logging": config.get(
-            "ORACLE_WMS_ENABLE_REQUEST_LOGGING", "true",
+            "ORACLE_WMS_ENABLE_REQUEST_LOGGING",
+            "true",
         ).lower()
         == "true",
     }

@@ -237,7 +237,10 @@ class TestExamplesIntegration:
         import sys
 
         # Run basic_usage.py as subprocess to validate it works
-        async def _run(cmd_list: list[str], cwd: str | None = None) -> tuple[int, str, str]:
+        async def _run(
+            cmd_list: list[str],
+            cwd: str | None = None,
+        ) -> tuple[int, str, str]:
             process = await asyncio.create_subprocess_exec(
                 *cmd_list,
                 cwd=cwd,
@@ -248,7 +251,10 @@ class TestExamplesIntegration:
             return process.returncode, stdout.decode(), stderr.decode()
 
         rc, out, err = asyncio.run(
-            _run([sys.executable, "examples/basic_usage.py"], cwd="/home/marlonsc/flext/flext-oracle-wms"),
+            _run(
+                [sys.executable, "examples/basic_usage.py"],
+                cwd="/home/marlonsc/flext/flext-oracle-wms",
+            ),
         )
 
         # Should complete successfully
@@ -267,7 +273,10 @@ class TestExamplesIntegration:
 
         # Run configuration.py to test it works
         rc, out, err = asyncio.run(
-            _run([sys.executable, "examples/configuration.py"], cwd="/home/marlonsc/flext/flext-oracle-wms"),
+            _run(
+                [sys.executable, "examples/configuration.py"],
+                cwd="/home/marlonsc/flext/flext-oracle-wms",
+            ),
         )
 
         # Should now succeed after refactoring

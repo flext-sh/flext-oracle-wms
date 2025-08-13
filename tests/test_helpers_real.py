@@ -49,7 +49,9 @@ class TestRealScenarios:
 
         for scenario in real_scenarios:
             result = flext_oracle_wms_build_entity_url(
-                scenario["base"], scenario["env"], scenario["entity"],
+                scenario["base"],
+                scenario["env"],
+                scenario["entity"],
             )
             assert result == scenario["expected"]
 

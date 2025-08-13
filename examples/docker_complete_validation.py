@@ -199,7 +199,8 @@ async def validate_complete_functionality() -> dict[str, Any]:
         functionality_results = {
             "entities_discovered": connectivity_results.get("entities_discovered", 0),
             "health_check_passed": connectivity_results.get(
-                "health_check_success", False,
+                "health_check_success",
+                False,
             ),
             "data_retrieval_success": connectivity_results.get("sample_entity_data")
             is not None,
@@ -217,7 +218,8 @@ async def validate_complete_functionality() -> dict[str, Any]:
             "entities_per_second": connectivity_results.get("entities_discovered", 0)
             / max(execution_time, 1),
             "connection_established": connectivity_results.get(
-                "connection_success", False,
+                "connection_success",
+                False,
             ),
             "end_time": end_time.isoformat(),
         }

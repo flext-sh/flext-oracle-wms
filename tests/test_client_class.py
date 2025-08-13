@@ -39,7 +39,9 @@ def test_api_url_building() -> None:
 
     # Use real helper function
     url = flext_oracle_wms_build_entity_url(
-        "https://test.example.com", "prod", "order_hdr",
+        "https://test.example.com",
+        "prod",
+        "order_hdr",
     )
     assert "order_hdr" in url
     assert "wms/lgfapi" in url

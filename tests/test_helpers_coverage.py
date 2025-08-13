@@ -79,7 +79,10 @@ class TestHelpersCoverage:
         """Test entity URL building comprehensively."""
         # Test normal case
         result = flext_oracle_wms_build_entity_url(
-            "https://wms.com", "prod", "orders", "v2",
+            "https://wms.com",
+            "prod",
+            "orders",
+            "v2",
         )
         expected = "https://wms.com/prod/wms/lgfapi/v2/entity/orders/"
         assert result == expected
@@ -233,12 +236,14 @@ class TestHelpersCoverage:
         validate_records_list([{"a": 1}, {"b": 2}])  # Should pass
 
         with pytest.raises(
-            FlextOracleWmsDataValidationError, match="Records must be a list",
+            FlextOracleWmsDataValidationError,
+            match="Records must be a list",
         ):
             validate_records_list("not a list")
 
         with pytest.raises(
-            FlextOracleWmsDataValidationError, match="Records must be a list",
+            FlextOracleWmsDataValidationError,
+            match="Records must be a list",
         ):
             validate_records_list({"not": "list"})
 
@@ -246,12 +251,14 @@ class TestHelpersCoverage:
         validate_dict_parameter({"key": "value"}, "config")  # Should pass
 
         with pytest.raises(
-            FlextOracleWmsDataValidationError, match="Config must be a dictionary",
+            FlextOracleWmsDataValidationError,
+            match="Config must be a dictionary",
         ):
             validate_dict_parameter("not a dict", "config")
 
         with pytest.raises(
-            FlextOracleWmsDataValidationError, match="Settings must be a dictionary",
+            FlextOracleWmsDataValidationError,
+            match="Settings must be a dictionary",
         ):
             validate_dict_parameter(123, "settings")
 
@@ -260,12 +267,14 @@ class TestHelpersCoverage:
         validate_string_parameter("", "optional", allow_empty=True)  # Should pass
 
         with pytest.raises(
-            FlextOracleWmsDataValidationError, match="Name must be a string",
+            FlextOracleWmsDataValidationError,
+            match="Name must be a string",
         ):
             validate_string_parameter(123, "name")
 
         with pytest.raises(
-            FlextOracleWmsDataValidationError, match="Title must be a non-empty string",
+            FlextOracleWmsDataValidationError,
+            match="Title must be a non-empty string",
         ):
             validate_string_parameter("", "title", allow_empty=False)
 
@@ -307,17 +316,20 @@ class TestHelpersCoverage:
         """Test error message formatting in validation functions."""
         # Test field name capitalization in error messages
         with pytest.raises(
-            FlextOracleWmsDataValidationError, match="Test_field must be a list",
+            FlextOracleWmsDataValidationError,
+            match="Test_field must be a list",
         ):
             validate_records_list("invalid", "test_field")
 
         with pytest.raises(
-            FlextOracleWmsDataValidationError, match="User_config must be a dictionary",
+            FlextOracleWmsDataValidationError,
+            match="User_config must be a dictionary",
         ):
             validate_dict_parameter("invalid", "user_config")
 
         with pytest.raises(
-            FlextOracleWmsDataValidationError, match="Entity_name must be a string",
+            FlextOracleWmsDataValidationError,
+            match="Entity_name must be a string",
         ):
             validate_string_parameter(None, "entity_name")
 

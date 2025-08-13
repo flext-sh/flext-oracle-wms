@@ -82,7 +82,8 @@ def load_env_config() -> dict[str, object] | None:
             "max_retries": int(config.get("ORACLE_WMS_MAX_RETRIES", "3")),
             "verify_ssl": config.get("ORACLE_WMS_VERIFY_SSL", "true").lower() == "true",
             "enable_logging": config.get(
-                "ORACLE_WMS_ENABLE_REQUEST_LOGGING", "true",
+                "ORACLE_WMS_ENABLE_REQUEST_LOGGING",
+                "true",
             ).lower()
             == "true",
         }
@@ -208,7 +209,8 @@ class TestOracleWmsDeclarativeIntegration:
         assert "test_call_success" in health_data
 
     async def test_get_all_entities(
-        self, oracle_wms_client: FlextOracleWmsClient,
+        self,
+        oracle_wms_client: FlextOracleWmsClient,
     ) -> None:
         """Test getting list of all Oracle WMS entities."""
         entities_result = await oracle_wms_client.get_all_entities()
@@ -242,11 +244,14 @@ class TestLgfApiV10Integration:
 
     @pytest.mark.parametrize("entity_name", ["company", "facility", "item"])
     async def test_get_entity_data(
-        self, oracle_wms_client: FlextOracleWmsClient, entity_name: str,
+        self,
+        oracle_wms_client: FlextOracleWmsClient,
+        entity_name: str,
     ) -> None:
         """Test getting entity data using LGF API v10."""
         result = await oracle_wms_client.get_entity_data(
-            entity_name=entity_name, limit=5,
+            entity_name=entity_name,
+            limit=5,
         )
 
         if result.success:
@@ -269,7 +274,8 @@ class TestLgfApiV10Integration:
             logger.warning("⚠️ Failed to get %s data: %s", entity_name, result.error)
 
     async def test_get_entity_data_with_filters(
-        self, oracle_wms_client: FlextOracleWmsClient,
+        self,
+        oracle_wms_client: FlextOracleWmsClient,
     ) -> None:
         """Test getting entity data with filters."""
         result = await oracle_wms_client.get_entity_data(
@@ -286,7 +292,8 @@ class TestLgfApiV10Integration:
             logger.warning("⚠️ Filtered query failed: %s", result.error)
 
     async def test_get_entity_by_id(
-        self, oracle_wms_client: FlextOracleWmsClient,
+        self,
+        oracle_wms_client: FlextOracleWmsClient,
     ) -> None:
         """Test getting specific entity record by ID."""
         # First get some data to find an ID
@@ -328,11 +335,14 @@ class TestAutomationApisIntegration:
     """Integration tests for automation and operations APIs."""
 
     async def test_get_entity_status(
-        self, oracle_wms_client: FlextOracleWmsClient,
+        self,
+        oracle_wms_client: FlextOracleWmsClient,
     ) -> None:
         """Test getting entity status."""
         result = await oracle_wms_client.get_entity_status(
-            entity="company", key="test", company_code="DEFAULT",
+            entity="company",
+            key="test",
+            company_code="DEFAULT",
         )
 
         # This might fail due to permissions, but we test the API structure
@@ -344,7 +354,8 @@ class TestAutomationApisIntegration:
             assert "Client not initialized" not in result.error
 
     async def test_update_oblpn_tracking_number(
-        self, oracle_wms_client: FlextOracleWmsClient,
+        self,
+        oracle_wms_client: FlextOracleWmsClient,
     ) -> None:
         """Test OBLPN tracking number update API structure."""
         # This is a dry run test - we don't actually update anything
@@ -364,13 +375,16 @@ class TestAutomationApisIntegration:
         logger.info("⚠️ OBLPN update failed as expected: %s", result.error)
 
     async def test_create_lpn_api_structure(
-        self, oracle_wms_client: FlextOracleWmsClient,
+        self,
+        oracle_wms_client: FlextOracleWmsClient,
     ) -> None:
         """Test LPN creation API structure."""
         # This is a dry run test - verify API call structure
 
         result = await oracle_wms_client.create_lpn(
-            lpn_nbr="TEST_LPN_001", qty=10, item_barcode="TEST_ITEM",
+            lpn_nbr="TEST_LPN_001",
+            qty=10,
+            item_barcode="TEST_ITEM",
         )
 
         # Expected to fail with business logic error, not client error
@@ -388,7 +402,8 @@ class TestErrorHandlingIntegration:
     """Integration tests for error handling and edge cases."""
 
     async def test_invalid_entity_name(
-        self, oracle_wms_client: FlextOracleWmsClient,
+        self,
+        oracle_wms_client: FlextOracleWmsClient,
     ) -> None:
         """Test handling of invalid entity names."""
         result = await oracle_wms_client.get_entity_data("invalid_entity_xyz")
@@ -399,7 +414,8 @@ class TestErrorHandlingIntegration:
         logger.info("✅ Properly handled invalid entity: %s", result.error)
 
     async def test_unknown_api_call(
-        self, oracle_wms_client: FlextOracleWmsClient,
+        self,
+        oracle_wms_client: FlextOracleWmsClient,
     ) -> None:
         """Test handling of unknown API calls."""
         result = await oracle_wms_client.call_api("unknown_api_xyz")
@@ -409,7 +425,8 @@ class TestErrorHandlingIntegration:
         logger.info("✅ Properly handled unknown API: %s", result.error)
 
     async def test_malformed_lgf_call(
-        self, oracle_wms_client: FlextOracleWmsClient,
+        self,
+        oracle_wms_client: FlextOracleWmsClient,
     ) -> None:
         """Test handling of malformed LGF API calls."""
         result = await oracle_wms_client.call_api("invalid_api_name")
@@ -427,7 +444,8 @@ class TestPerformanceIntegration:
     """Performance and stress tests for Oracle WMS client."""
 
     async def test_concurrent_entity_requests(
-        self, oracle_wms_client: FlextOracleWmsClient,
+        self,
+        oracle_wms_client: FlextOracleWmsClient,
     ) -> None:
         """Test concurrent requests to different entities."""
         import asyncio
@@ -451,7 +469,9 @@ class TestPerformanceIntegration:
                 logger.info("✅ Concurrent request %d succeeded", i)
             else:
                 logger.warning(
-                    "Request %d failed: %s", i, getattr(result, "error", "Unknown"),
+                    "Request %d failed: %s",
+                    i,
+                    getattr(result, "error", "Unknown"),
                 )
 
         # At least one request should succeed
@@ -463,14 +483,16 @@ class TestPerformanceIntegration:
         )
 
     async def test_pagination_handling(
-        self, oracle_wms_client: FlextOracleWmsClient,
+        self,
+        oracle_wms_client: FlextOracleWmsClient,
     ) -> None:
         """Test pagination with different page sizes."""
         page_sizes = [1, 5, 10]
 
         for page_size in page_sizes:
             result = await oracle_wms_client.get_entity_data(
-                entity_name="company", limit=page_size,
+                entity_name="company",
+                limit=page_size,
             )
 
             if result.success:
@@ -479,14 +501,18 @@ class TestPerformanceIntegration:
                 actual_count = len(results)
 
                 logger.info(
-                    "✅ Page size %d returned %d records", page_size, actual_count,
+                    "✅ Page size %d returned %d records",
+                    page_size,
+                    actual_count,
                 )
 
                 # Should not exceed requested page size
                 assert actual_count <= page_size
             else:
                 logger.warning(
-                    "⚠️ Pagination test failed for size %d: %s", page_size, result.error,
+                    "⚠️ Pagination test failed for size %d: %s",
+                    page_size,
+                    result.error,
                 )
 
 

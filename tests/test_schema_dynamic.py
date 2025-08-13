@@ -164,7 +164,8 @@ class TestFactoryFunction:
     def test_create_schema_processor_custom(self) -> None:
         """Test creating schema processor with custom parameters."""
         processor = flext_oracle_wms_create_dynamic_schema_processor(
-            sample_size=100, confidence_threshold=0.9,
+            sample_size=100,
+            confidence_threshold=0.9,
         )
         assert isinstance(processor, FlextOracleWmsDynamicSchemaProcessor)
         assert processor.sample_size == 100
@@ -174,7 +175,8 @@ class TestFactoryFunction:
         """Test creating schema processor with edge case parameters."""
         # Test with minimum valid values
         processor = flext_oracle_wms_create_dynamic_schema_processor(
-            sample_size=1, confidence_threshold=0.0,
+            sample_size=1,
+            confidence_threshold=0.0,
         )
         assert isinstance(processor, FlextOracleWmsDynamicSchemaProcessor)
         assert processor.sample_size == 1
@@ -182,7 +184,8 @@ class TestFactoryFunction:
 
         # Test with maximum valid values
         processor = flext_oracle_wms_create_dynamic_schema_processor(
-            sample_size=10000, confidence_threshold=1.0,
+            sample_size=10000,
+            confidence_threshold=1.0,
         )
         assert isinstance(processor, FlextOracleWmsDynamicSchemaProcessor)
         assert processor.sample_size == 10000

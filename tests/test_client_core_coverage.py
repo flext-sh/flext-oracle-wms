@@ -218,7 +218,9 @@ class TestFlextOracleWmsClientCore:
 
     @pytest.mark.asyncio
     async def test_discover_entities_success(
-        self, mock_config, sample_entities,
+        self,
+        mock_config,
+        sample_entities,
     ) -> None:
         """Test successful entity discovery."""
         with patch("flext_oracle_wms.client.FlextApiClient") as mock_api_client_class:
@@ -254,7 +256,9 @@ class TestFlextOracleWmsClientCore:
 
     @pytest.mark.asyncio
     async def test_get_entity_data_success(
-        self, mock_config, sample_entity_data,
+        self,
+        mock_config,
+        sample_entity_data,
     ) -> None:
         """Test successful entity data retrieval."""
         with patch("flext_oracle_wms.client.FlextApiClient") as mock_api_client_class:
@@ -296,7 +300,8 @@ class TestFlextOracleWmsClientCore:
         """Test calling API without initialized client."""
         client = FlextOracleWmsClient(mock_config)
         result = await client.call_api(
-            "lgf_init_stage_interface", path_params={"entity_name": "test"},
+            "lgf_init_stage_interface",
+            path_params={"entity_name": "test"},
         )
 
         assert result.is_failure

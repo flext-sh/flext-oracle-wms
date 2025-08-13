@@ -63,7 +63,7 @@ run_service() {
 	log_info "🚀 Starting: $description"
 	echo "----------------------------------------"
 
-	docker-compose run --rm $service
+	docker-compose run --rm "$service"
 
 	if [ $? -eq 0 ]; then
 		log_success "$description completed successfully"

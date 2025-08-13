@@ -56,7 +56,8 @@ class TestAuthenticationConfig:
     def test_bearer_auth_config_creation(self) -> None:
         """Test creating bearer token auth configuration."""
         config = FlextOracleWmsAuthConfig(
-            auth_type=OracleWMSAuthMethod.BEARER, token="bearer_token_123",
+            auth_type=OracleWMSAuthMethod.BEARER,
+            token="bearer_token_123",
         )
 
         assert config.auth_type == OracleWMSAuthMethod.BEARER
@@ -92,7 +93,8 @@ class TestAuthenticationConfig:
     def test_config_validation_success_bearer(self) -> None:
         """Test config validation succeeds for valid bearer auth."""
         config = FlextOracleWmsAuthConfig(
-            auth_type=OracleWMSAuthMethod.BEARER, token="valid_token",
+            auth_type=OracleWMSAuthMethod.BEARER,
+            token="valid_token",
         )
 
         result = config.validate_business_rules()
@@ -232,7 +234,8 @@ class TestAuthenticator:
     async def test_bearer_auth_headers_generation(self) -> None:
         """Test bearer auth headers are generated correctly."""
         config = FlextOracleWmsAuthConfig(
-            auth_type=OracleWMSAuthMethod.BEARER, token="test_bearer_token",
+            auth_type=OracleWMSAuthMethod.BEARER,
+            token="test_bearer_token",
         )
 
         authenticator = FlextOracleWmsAuthenticator(config)
@@ -385,7 +388,8 @@ class TestAuthPlugin:
 
         # Mock authenticator validation to fail
         with patch.object(
-            plugin.authenticator, "validate_credentials",
+            plugin.authenticator,
+            "validate_credentials",
         ) as mock_validate:
             mock_validate.return_value = FlextResult.failure("Auth failed")
 
@@ -444,7 +448,8 @@ class TestAuthPlugin:
 
         # Mock validation
         with patch.object(
-            plugin.authenticator, "validate_credentials",
+            plugin.authenticator,
+            "validate_credentials",
         ) as mock_validate:
             mock_validate.return_value = FlextResult.success(True)
 

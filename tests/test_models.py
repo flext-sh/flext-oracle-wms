@@ -150,7 +150,10 @@ def test_api_response_creation() -> None:
 def test_api_response_error() -> None:
     """Test API response with error."""
     response = FlextOracleWmsApiResponse(
-        data={}, status_code=404, success=False, error_message="Order not found",
+        data={},
+        status_code=404,
+        success=False,
+        error_message="Order not found",
     )
 
     assert response.status_code == 404
@@ -161,7 +164,10 @@ def test_api_response_error() -> None:
 def test_api_response_validation() -> None:
     """Test API response validation."""
     response = FlextOracleWmsApiResponse(
-        status_code=200, data={"test": "data"}, success=True, error_message=None,
+        status_code=200,
+        data={"test": "data"},
+        success=True,
+        error_message=None,
     )
     # Should not raise exception
     response.validate_business_rules()
@@ -269,7 +275,9 @@ def test_entity_validation() -> None:
 def test_response_with_list_data() -> None:
     """Test response with list data."""
     response = FlextOracleWmsApiResponse(
-        data={"results": [{"result": "success"}]}, status_code=200, success=True,
+        data={"results": [{"result": "success"}]},
+        status_code=200,
+        success=True,
     )
     # Test actual fields that exist in the class
     assert response.data["results"][0]["result"] == "success"

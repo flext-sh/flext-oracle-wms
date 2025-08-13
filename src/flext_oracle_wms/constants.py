@@ -3,6 +3,7 @@
 Provides legacy import path `flext_oracle_wms.constants` by re-exporting
 from the consolidated constants module.
 """
+
 from __future__ import annotations
 
 from .wms_constants import (
@@ -13,6 +14,10 @@ from .wms_constants import (
     FlextOracleWmsErrorMessages,
     FlextOracleWmsResponseFields,
     OracleWMSAuthMethod,
+    OracleWMSEntityType,
+    OracleWMSFilterOperator,
+    OracleWMSPageMode,
+    OracleWMSWriteMode,
 )
 
 __all__ = [
@@ -23,4 +28,8 @@ __all__ = [
     "FlextOracleWmsErrorMessages",
     "FlextOracleWmsResponseFields",
     "OracleWMSAuthMethod",
+    "OracleWMSEntityType",
+    "OracleWMSFilterOperator",
+    "OracleWMSPageMode",
+    "OracleWMSWriteMode",
 ]

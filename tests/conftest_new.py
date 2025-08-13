@@ -106,7 +106,8 @@ def pytest_configure(config) -> None:
     """Configure pytest markers for test categorization."""
     config.addinivalue_line("markers", "unit: Unit tests (fast)")
     config.addinivalue_line(
-        "markers", "integration: Integration tests with real Oracle",
+        "markers",
+        "integration: Integration tests with real Oracle",
     )
     config.addinivalue_line("markers", "real: Tests using real .env credentials")
     config.addinivalue_line("markers", "mock: Tests using mock data only")

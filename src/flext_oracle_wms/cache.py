@@ -3,12 +3,14 @@
 Provides legacy import path `flext_oracle_wms.cache` by re-exporting
 cache components from the consolidated discovery module `wms_discovery`.
 """
+
 from __future__ import annotations
 
 from .wms_discovery import (
     FlextOracleWmsCacheConfig,
     FlextOracleWmsCacheEntry,
     FlextOracleWmsCacheManager,
+    FlextOracleWmsCacheStats,
     flext_oracle_wms_create_cache_manager,
 )
 
@@ -16,5 +18,6 @@ __all__ = [
     "FlextOracleWmsCacheConfig",
     "FlextOracleWmsCacheEntry",
     "FlextOracleWmsCacheManager",
+    "FlextOracleWmsCacheStats",
     "flext_oracle_wms_create_cache_manager",
 ]

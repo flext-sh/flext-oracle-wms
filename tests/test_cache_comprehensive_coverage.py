@@ -248,7 +248,10 @@ class TestFlextOracleWmsCacheEntry:
     def test_cache_entry_validation_negative_ttl(self) -> None:
         """Test cache entry validation with negative TTL."""
         entry = FlextOracleWmsCacheEntry[str](
-            key="test", value="value", timestamp=time.time(), ttl_seconds=-1,
+            key="test",
+            value="value",
+            timestamp=time.time(),
+            ttl_seconds=-1,
         )
 
         result = entry.validate_business_rules()
@@ -732,7 +735,8 @@ class TestFlextOracleWmsCacheManager:
 
         # Test set operation
         set_result = await self.cache_manager.set_entity(
-            "entity_1", {"name": "Test Entity"},
+            "entity_1",
+            {"name": "Test Entity"},
         )
         assert set_result.success
         assert set_result.data is True
@@ -761,7 +765,9 @@ class TestFlextOracleWmsCacheManager:
         await self.cache_manager.start()
 
         set_result = await self.cache_manager.set_entity(
-            "entity_ttl", "test_value", ttl_seconds=7200,
+            "entity_ttl",
+            "test_value",
+            ttl_seconds=7200,
         )
         assert set_result.success
 
@@ -1151,7 +1157,10 @@ class TestFactoryFunction:
     def test_create_cache_manager_custom_all_same_ttl(self) -> None:
         """Test creating cache manager with same TTL for all cache types."""
         cache_manager = flext_oracle_wms_create_cache_manager(
-            entity_ttl=1800, schema_ttl=1800, metadata_ttl=1800, max_size=500,
+            entity_ttl=1800,
+            schema_ttl=1800,
+            metadata_ttl=1800,
+            max_size=500,
         )
 
         assert cache_manager.config.default_ttl_seconds == 1800

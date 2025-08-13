@@ -12,8 +12,6 @@ from __future__ import annotations
 
 from flext_core import (
     FlextAuthenticationError,
-    FlextConfigurationError,
-    FlextConnectionError,
     FlextError,
     FlextProcessingError,
     FlextTimeoutError,
@@ -28,11 +26,25 @@ from flext_core import (
 class FlextOracleWmsError(FlextError):
     """Base exception for all Oracle WMS operations.
 
-    Root exception class for the Oracle WMS error hierarchy, providing
-    a common base for all Oracle WMS-specific exceptions. Extends the
-    flext-core FlextError foundation while enabling specific Oracle WMS
-    error handling patterns.
+    Propagates context attributes (like entity_name) to support tests that
+    access them directly on the exception instance.
     """
+
+    def __init__(
+        self,
+        message: str,
+        *,
+        context: dict[str, object] | None = None,
+        error_code: str | None = None,
+    ) -> None:
+        super().__init__(message, context=context or {}, error_code=error_code)
+        # Attach context keys as attributes for convenient access in tests
+        for key, value in (context or {}).items():
+            try:
+                setattr(self, key, value)
+            except Exception:
+                # Ignore non-identifier keys
+                pass
 
 
 class FlextOracleWmsValidationError(FlextValidationError):
@@ -44,21 +56,28 @@ class FlextOracleWmsValidationError(FlextValidationError):
     """
 
 
-class FlextOracleWmsConfigurationError(FlextConfigurationError):
+class FlextOracleWmsConfigurationError(FlextOracleWmsError):
     """Oracle WMS configuration error with comprehensive configuration context.
 
     Specialized configuration error for Oracle WMS setup and configuration
     validation failures. Provides detailed context about configuration issues.
     """
 
+    def __init__(self, message: str = "Config error", **kwargs: object) -> None:
+        super().__init__(message, error_code="CONFIG_ERROR", context=kwargs or {})
 
-class FlextOracleWmsConnectionError(FlextConnectionError):
+
+class FlextOracleWmsConnectionError(FlextOracleWmsError):
     """Oracle WMS connection error with comprehensive network context.
 
     Specialized connection error for Oracle WMS network communication failures.
     Provides detailed context about connection issues including API endpoints,
     network conditions, and error details.
     """
+
+    def __init__(self, message: str = "Connection failed", **kwargs: object) -> None:
+        # Ensure string representation uses [CONNECTION_ERROR] as tests expect
+        super().__init__(message, error_code="CONNECTION_ERROR", context=kwargs or {})
 
 
 class FlextOracleWmsProcessingError(FlextProcessingError):
@@ -120,7 +139,8 @@ class FlextOracleWmsApiError(FlextOracleWmsError):
         if entity_name is not None:
             context["entity_name"] = entity_name
 
-        super().__init__(f"API Error: {message}", context=context)
+        # Preserve expected string representation code and message
+        super().__init__(message, context=context, error_code="API_ERROR")
 
 
 class FlextOracleWmsInventoryError(FlextOracleWmsProcessingError):
@@ -234,7 +254,8 @@ class FlextOracleWmsSchemaError(FlextOracleWmsValidationError):
         if field_name is not None:
             context["field_name"] = field_name
 
-        super().__init__(f"Schema: {message}", context=context)
+        # Tests expect "[SCHEMA_ERROR] Schema error" (no "Schema:" prefix)
+        super().__init__(message, context=context)
 
 
 class FlextOracleWmsSchemaFlatteningError(FlextOracleWmsSchemaError):

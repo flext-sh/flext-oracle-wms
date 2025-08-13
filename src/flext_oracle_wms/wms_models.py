@@ -165,7 +165,7 @@ class FlextOracleWmsDiscoveryResult(FlextValueObject):
     discovery_duration_ms: float = 0.0
     has_errors: bool = False
     errors: list[str] = field(default_factory=list)
-    api_version: str | None = None
+    api_version: str | None = "v10"
 
     def validate_business_rules(self) -> FlextResult[None]:
         """Validate discovery result."""

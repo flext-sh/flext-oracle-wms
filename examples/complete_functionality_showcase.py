@@ -162,7 +162,8 @@ async def showcase_2_entity_discovery(client: FlextOracleWmsClient) -> list[str]
 
 
 async def showcase_3_data_retrieval(
-    client: FlextOracleWmsClient, entities: list[str],
+    client: FlextOracleWmsClient,
+    entities: list[str],
 ) -> dict[str, Any]:
     """Feature 3: Data Retrieval and Querying."""
     print("📊 FEATURE 3: DATA RETRIEVAL & QUERYING")
@@ -382,7 +383,8 @@ async def showcase_7_health_monitoring(client: FlextOracleWmsClient) -> dict[str
 
 
 async def showcase_8_performance_tracking(
-    client: FlextOracleWmsClient, entities: list[str],
+    client: FlextOracleWmsClient,
+    entities: list[str],
 ) -> None:
     """Feature 8: Performance Tracking."""
     print("⚡ FEATURE 8: PERFORMANCE TRACKING")
@@ -483,7 +485,8 @@ async def showcase_9_cache_management(client: FlextOracleWmsClient) -> None:
 
 
 async def showcase_10_enterprise_features(
-    client: FlextOracleWmsClient, config: FlextOracleWmsClientConfig,
+    client: FlextOracleWmsClient,
+    config: FlextOracleWmsClientConfig,
 ) -> None:
     """Feature 10: Enterprise Features."""
     print("🏢 FEATURE 10: ENTERPRISE FEATURES")
