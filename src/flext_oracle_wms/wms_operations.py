@@ -206,7 +206,7 @@ def flext_oracle_wms_validate_entity_name(entity_name: str) -> FlextResult[str]:
 
 
 def flext_oracle_wms_validate_api_response(
-    response_data: dict[str, object] | object,
+    response_data: object,
 ) -> FlextResult[dict[str, object]]:
     """Validate Oracle WMS API response format.
 
@@ -218,12 +218,20 @@ def flext_oracle_wms_validate_api_response(
     # is not a dict-like object; tests assert this behavior. Force an
     # attribute access early to surface the expected exception types.
     try:
-        _ = response_data.get  # type: ignore[attr-defined]
+        if not isinstance(response_data, dict):
+            # Force the error that tests expect
+            _ = response_data.get  # type: ignore[attr-defined]
     except Exception:
         raise
-    if any(k in response_data for k in ("error",)):
-        try:  # type: ignore[unreachable]
-            err_val = response_data.get("error")  # type: ignore[union-attr]
+
+    # Type narrowing: assert response_data is dict after isinstance check
+    if not isinstance(response_data, dict):
+        return FlextResult.fail("Response data is not a dictionary")
+
+    response_dict: dict[str, object] = response_data
+    if any(k in response_dict for k in ("error",)):
+        try:
+            err_val = response_dict.get("error")
         except Exception:
             # If response_data isn't dict-like, let callers see the underlying error elsewhere
             raise
@@ -232,29 +240,29 @@ def flext_oracle_wms_validate_api_response(
         return FlextResult.fail("API error")
 
     # Treat message starting with "Error:" or containing "error" keyword as failure
-    msg = response_data.get("message")  # type: ignore[union-attr]
+    msg = response_dict.get("message")
     if isinstance(msg, str):
         msg_lower = msg.strip().lower()
         if msg_lower.startswith("error") or "error" in msg_lower:
             return FlextResult.fail(f"API error: {msg}")
 
     # If status field explicitly indicates error, treat as failure
-    status_val = response_data.get("status")  # type: ignore[union-attr]
+    status_val = response_dict.get("status")
     if isinstance(status_val, str) and status_val.lower() in {
         "error",
         "failed",
         "failure",
     }:
-        message_text = response_data.get("message")  # type: ignore[union-attr]
+        message_text = response_dict.get("message")
         if isinstance(message_text, str) and message_text:
             return FlextResult.fail(f"API error: {message_text}")
         return FlextResult.fail("API error")
 
-    if any(k in response_data for k in ("data", "results", "message", "status")):
-        return FlextResult.ok(response_data)  # type: ignore[return-value]
+    if any(k in response_dict for k in ("data", "results", "message", "status")):
+        return FlextResult.ok(response_dict)
 
     # Default to success when structure is acceptable dict
-    return FlextResult.ok(response_data)  # type: ignore[return-value]
+    return FlextResult.ok(response_dict)
 
 
 def flext_oracle_wms_extract_pagination_info(

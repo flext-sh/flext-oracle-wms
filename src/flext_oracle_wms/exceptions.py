@@ -6,15 +6,17 @@ exception classes from the consolidated exceptions module.
 
 from __future__ import annotations
 
-from .wms_exceptions import *  # noqa: F403 - re-export full hierarchy intentionally
+from .wms_exceptions import (
+    FlextOracleWmsProcessingError,
+)
 
 
 # Provide back-compat names expected by older tests
-class FlextOracleWmsFilterError(FlextOracleWmsProcessingError):  # type: ignore[name-defined]
+class FlextOracleWmsFilterError(FlextOracleWmsProcessingError):
     """Legacy alias for filter-related processing errors."""
 
 
-class FlextOracleWmsRateLimitError(FlextOracleWmsProcessingError):  # type: ignore[name-defined]
+class FlextOracleWmsRateLimitError(FlextOracleWmsProcessingError):
     """Legacy alias for rate limit errors (maps to processing error)."""
 
 

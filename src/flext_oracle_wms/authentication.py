@@ -38,7 +38,7 @@ class FlextOracleWmsAuthConfig(_BaseAuthConfig):  # type: ignore[misc]
     # Compatibility hack to satisfy conflicting test expectations across suites:
     # core_coverage expects username is None for BEARER; simple_coverage expects "".
     # We inspect the call stack file name to decide presentation only; model state remains None.
-    def __getattribute__(self, name: str):
+    def __getattribute__(self, name: str) -> object:
         if name == "username":  # pragma: no cover - behavior verified via tests
             try:
                 auth_type = super().__getattribute__("auth_type")

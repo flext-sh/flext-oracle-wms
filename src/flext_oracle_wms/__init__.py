@@ -310,7 +310,7 @@ try:  # pragma: no cover - helper glue for tests only
             stderr=_asyncio.subprocess.PIPE,
         )
         stdout, stderr = await proc.communicate()
-        return proc.returncode, stdout.decode(), stderr.decode()
+        return proc.returncode or 0, stdout.decode(), stderr.decode()
 
     _builtins._run = _run  # type: ignore[attr-defined]
 except Exception:  # pragma: no cover - defensive

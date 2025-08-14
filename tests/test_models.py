@@ -41,7 +41,7 @@ License: MIT
 import pytest
 
 from flext_oracle_wms.exceptions import FlextOracleWmsDataValidationError
-from flext_oracle_wms.models import (
+from flext_oracle_wms.wms_models import (
     FlextOracleWmsApiResponse,
     FlextOracleWmsDiscoveryResult,
     FlextOracleWmsEntity,

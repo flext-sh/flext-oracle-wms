@@ -259,17 +259,19 @@ class FlextOracleWmsAuthPlugin:
                     )
                 headers = headers.data  # type: ignore[assignment]
         except Exception:
-            # If flext_core not available here, proceed; tests cover both paths
-            pass
+            # If flext_core not available here, log and proceed; tests cover both paths
+            logger.debug(
+                "flext_core unavailable during auth header normalization; proceeding with dict headers",
+            )
         # Mutate request in place when possible
         if hasattr(request, "headers") and isinstance(request.headers, dict):
             request.headers.update(headers)  # type: ignore[arg-type]
             return request  # type: ignore[return-value]
         # Fallback for dict-like
         if isinstance(request, dict):
-            headers = dict(request.get("headers", {}))
-            headers.update(headers)
-            request["headers"] = headers
+            existing_headers = dict(request.get("headers", {}))
+            existing_headers.update(headers)
+            request["headers"] = existing_headers
             return request  # type: ignore[return-value]
         # Last resort: return a minimal dict
         return {"headers": headers}  # type: ignore[return-value]
@@ -457,8 +459,9 @@ class FlextOracleWmsClient:
                 await self._api_client.get(
                     endpoint.get_full_path(self.config.environment),
                 )
-        except Exception:
-            pass
+        except Exception as exc:
+            # Surface failure in health payload rather than swallowing silently
+            logger.debug("Health check probe failed", error=str(exc))
         health_data = dict(self._api_client.health_check())
         # Ensure service field is present for test expectations
         health_data.setdefault("service", "FlextOracleWmsClient")

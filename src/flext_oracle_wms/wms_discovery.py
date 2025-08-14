@@ -20,7 +20,7 @@ from typing import TYPE_CHECKING, Generic, TypeVar
 
 from flext_core import FlextResult, FlextValueObject, get_logger
 
-from flext_oracle_wms.models import (
+from flext_oracle_wms.wms_models import (
     FlextOracleWmsDiscoveryResult,
     FlextOracleWmsEntity,
 )
@@ -30,7 +30,7 @@ from flext_oracle_wms.wms_operations import handle_operation_exception
 if TYPE_CHECKING:
     from flext_api import FlextApiClient
 
-    from flext_oracle_wms.models import (
+    from flext_oracle_wms.wms_models import (
         TOracleWmsRecordBatch,
         TOracleWmsSchema,
     )
@@ -966,15 +966,39 @@ class FlextOracleWmsEntityDiscovery:
                 errors=[],
             )
 
-            # Execute all discovery strategies
+            # Execute all discovery strategies and then fetch from real API
             for strategy in self.strategies:
-                result = await strategy.execute_discovery_step(context, self.api_client)
-                if not result.success:
-                    logger.warning("Discovery strategy failed", error=result.error)
+                _ = await strategy.execute_discovery_step(context, self.api_client)
+
+            # After strategies, use real API to populate entities
+            entities: list[FlextOracleWmsEntity] = []
+            try:
+                response = await self.api_client.get(
+                    f"/{self._normalize_env(self._get_environment())}/wms/lgfapi/v10/entity/",
+                    params=None,
+                )
+                if response.success and response.data and isinstance(response.data, dict):
+                    names = response.data.get("entities")
+                    if isinstance(names, list):
+                        for name in names:
+                            if isinstance(name, str) and name.strip():
+                                entities.append(
+                                    FlextOracleWmsEntity(
+                                        name=name,
+                                        endpoint=f"/{self._normalize_env(self._get_environment())}/wms/lgfapi/v10/entity/{name}/",
+                                        description=f"Oracle WMS entity: {name}",
+                                    ),
+                                )
+            except Exception as e:
+                context.errors.append(f"Entity list fetch failed: {e}")
+
+            # Include any entities collected by strategies
+            if context.all_entities:
+                entities.extend(context.all_entities)
 
             # Apply filters
             filtered_entities = self._apply_entity_filters(
-                context.all_entities,
+                entities,
                 include_patterns,
                 exclude_patterns,
             )
