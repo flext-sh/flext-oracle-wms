@@ -280,7 +280,7 @@ class FlextOracleWmsAuthPlugin:
             return request
 
         # Return a minimal dict for unknown request types
-        return {"headers": headers if isinstance(headers, dict) else {}}  # pragma: no cover - defensive fallback
+        return {"headers": headers if isinstance(headers, dict) else {}}  # pragma: no cover
 
     async def after_response(self, response: dict[str, object]) -> dict[str, object]:
         status = getattr(response, "status_code", 200)
@@ -490,7 +490,7 @@ class FlextOracleWmsClient:
                 fallback_entities: list[dict[str, object]] = [
                     {"name": "company", "type": "entity"},
                     {"name": "facility", "type": "entity"},
-                    {"name": "item", "type": "entity"}
+                    {"name": "item", "type": "entity"},
                 ]
                 return FlextResult.ok(fallback_entities)
 
@@ -517,8 +517,8 @@ class FlextOracleWmsClient:
                 return FlextResult.fail(f"Entity discovery failed: {resp_result.error}")
 
             api_resp = resp_result.data
-            if api_resp is None:  # pragma: no cover - defensive check
-                return FlextResult.fail("No HTTP response received from entity discovery")  # pragma: no cover
+            if api_resp is None:  # pragma: no cover
+                return FlextResult.fail("No HTTP response received from entity discovery")
 
             if hasattr(api_resp, "is_success") and not api_resp.is_success():
                 return FlextResult.fail(
@@ -625,8 +625,8 @@ class FlextOracleWmsClient:
                 )
 
             api_resp = resp_result.data
-            if api_resp is None:  # pragma: no cover - defensive check
-                return FlextResult.fail("No HTTP response received from entity data API")  # pragma: no cover
+            if api_resp is None:  # pragma: no cover
+                return FlextResult.fail("No HTTP response received from entity data API")
 
             if hasattr(api_resp, "is_success") and not api_resp.is_success():
                 # Return failure with http status detail for tests that check error path
@@ -707,8 +707,8 @@ class FlextOracleWmsClient:
                 )
             # Validate HTTP status and extract body
             api_resp = response.data
-            if api_resp is None:  # pragma: no cover - defensive check
-                return FlextResult.fail("Empty HTTP response")  # pragma: no cover
+            if api_resp is None:  # pragma: no cover
+                return FlextResult.fail("Empty HTTP response")
             if hasattr(api_resp, "is_success") and not api_resp.is_success():
                 return FlextResult.fail(
                     f"API call failed: HTTP {getattr(api_resp, 'status_code', 'unknown')}",

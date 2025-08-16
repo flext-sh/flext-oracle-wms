@@ -17,6 +17,7 @@ from flext_core import (
     FlextTimeoutError,
     FlextValidationError,
 )
+from flext_core.exceptions import FlextErrorCodes
 
 # =============================================================================
 # ORACLE WMS BASE EXCEPTION HIERARCHY
@@ -37,7 +38,15 @@ class FlextOracleWmsError(FlextError):
         context: dict[str, object] | None = None,
         error_code: str | None = None,
     ) -> None:
-        super().__init__(message, context=context or {}, code=error_code)
+        # Convert string error code to FlextErrorCodes enum
+        flext_code = None
+        if error_code:
+            try:
+                flext_code = FlextErrorCodes(error_code)
+            except ValueError:
+                # Fallback to generic error for unknown codes
+                flext_code = FlextErrorCodes.GENERIC_ERROR
+        super().__init__(message, context=context or {}, code=flext_code)
         # Attach context keys as attributes for convenient access in tests
         for key, value in (context or {}).items():
             try:
@@ -64,7 +73,7 @@ class FlextOracleWmsConfigurationError(FlextOracleWmsError):
     """
 
     def __init__(self, message: str = "Config error", **kwargs: object) -> None:
-        super().__init__(message, error_code="CONFIG_ERROR", context=kwargs or {})
+        super().__init__(message, error_code="FLEXT_CONFIG_ERROR", context=kwargs or {})
 
 
 class FlextOracleWmsConnectionError(FlextOracleWmsError):
@@ -77,7 +86,7 @@ class FlextOracleWmsConnectionError(FlextOracleWmsError):
 
     def __init__(self, message: str = "Connection failed", **kwargs: object) -> None:
         # Ensure string representation uses [CONNECTION_ERROR] as tests expect
-        super().__init__(message, error_code="CONNECTION_ERROR", context=kwargs or {})
+        super().__init__(message, error_code="FLEXT_CONNECTION_ERROR", context=kwargs or {})
 
 
 class FlextOracleWmsProcessingError(FlextProcessingError):
@@ -140,7 +149,7 @@ class FlextOracleWmsApiError(FlextOracleWmsError):
             context["entity_name"] = entity_name
 
         # Preserve expected string representation code and message
-        super().__init__(message, context=context, error_code="API_ERROR")
+        super().__init__(message, context=context, error_code="FLEXT_OPERATION_ERROR")
 
 
 class FlextOracleWmsInventoryError(FlextOracleWmsProcessingError):

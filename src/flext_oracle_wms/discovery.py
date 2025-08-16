@@ -37,6 +37,7 @@ class CacheManagerProtocol(Protocol):
         """Set value in cache."""
         ...
 
+
 from .wms_constants import FlextOracleWmsDefaults
 from .wms_discovery import (
     ArrayTypeStrategy,

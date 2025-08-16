@@ -982,15 +982,11 @@ class FlextOracleWmsEntityDiscovery:
                 if response.success and response.data and isinstance(response.data, dict):
                     names = response.data.get("entities")
                     if isinstance(names, list):
-                        for name in names:
-                            if isinstance(name, str) and name.strip():
-                                discovered_entities.append(
-                                    FlextOracleWmsEntity(
+                        discovered_entities.extend(FlextOracleWmsEntity(
                                         name=name,
                                         endpoint=f"/{self.environment}/wms/lgfapi/v10/entity/{name}/",
                                         description=f"Oracle WMS entity: {name}",
-                                    ),
-                                )
+                                    ) for name in names if isinstance(name, str) and name.strip())
             except Exception as e:
                 context.errors.append(f"Entity list fetch failed: {e}")
 

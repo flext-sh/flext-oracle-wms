@@ -50,8 +50,7 @@ class FlextOracleWmsDataFlattener(_OpsFlattener):
                     out[normalized] = v
                 return out
 
-            remapped = [remap(r) for r in flattened]
-            return remapped
+            return [remap(r) for r in flattened]
         except Exception:  # pragma: no cover - delegate errors
             return []
 
