@@ -256,6 +256,16 @@ try:  # pragma: no cover - helper glue for tests only
     import builtins as _builtins
 
     async def _run(cmd_list: list[str], cwd: str | None = None) -> tuple[int, str, str]:
+        """Run function.
+
+        Args:
+            cmd_list (list[str]): Description.
+            cwd (str | None): Description.
+
+        Returns:
+            tuple[int, str, str]: Description.
+
+        """
         proc = await _asyncio.create_subprocess_exec(
             *cmd_list,
             cwd=cwd,

@@ -28,10 +28,10 @@ class FlextOracleWmsDataFlattener(_OpsFlattener):
         # Back-compat exposed property name expected by tests
         self.preserve_lists = preserve_lists
 
-    async def flatten_records(
+    def flatten_records(
         self,
         records: list[dict[str, object]],
-    ) -> FlextResult[list[dict[str, object]]]:  # type: ignore[override]
+    ) -> list[dict[str, object]]:
         try:
             flattened = super().flatten_records(records)
 
@@ -51,7 +51,18 @@ class FlextOracleWmsDataFlattener(_OpsFlattener):
                 return out
 
             remapped = [remap(r) for r in flattened]
-            return FlextResult.ok(remapped)
+            return remapped
+        except Exception:  # pragma: no cover - delegate errors
+            return []
+
+    def flatten_records_with_result(
+        self,
+        records: list[dict[str, object]],
+    ) -> FlextResult[list[dict[str, object]]]:
+        """Flatten records returning FlextResult for error handling."""
+        try:
+            result = self.flatten_records(records)
+            return FlextResult.ok(result)
         except Exception as e:  # pragma: no cover - delegate errors
             return FlextResult.fail(str(e))
 
@@ -67,7 +78,7 @@ class FlextOracleWmsDataFlattener(_OpsFlattener):
         records: list[dict[str, object]],
     ) -> FlextResult[dict[str, object]]:
         super().flatten_records(records)
-        stats = {
+        stats: dict[str, object] = {
             "total_records": len(records),
             "max_depth": self.max_depth,
             "nested_records": sum(

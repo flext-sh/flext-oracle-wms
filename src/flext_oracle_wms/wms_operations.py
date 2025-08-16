@@ -350,8 +350,8 @@ class FlextOracleWmsFilter:
     def __post_init__(self) -> None:
         """Validate filter conditions after initialization."""
         # Accept being called without explicit filters in shim
-        if not hasattr(self, "filters") or self.filters is None:  # type: ignore[attr-defined]
-            object.__setattr__(self, "filters", {})  # type: ignore[attr-defined]
+        if not hasattr(self, "filters") or self.filters is None:
+            object.__setattr__(self, "filters", {})
         self._validate_filter_conditions_count()
 
     def _validate_filter_conditions_count(self) -> None:

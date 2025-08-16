@@ -10,6 +10,7 @@ This module provides comprehensive entity discovery, schema processing, and cach
 from __future__ import annotations
 
 import asyncio
+import contextlib
 import re
 import threading
 import time
@@ -20,21 +21,21 @@ from typing import TYPE_CHECKING, Generic, TypeVar
 
 from flext_core import FlextResult, FlextValueObject, get_logger
 
+from flext_oracle_wms.wms_constants import FlextOracleWmsDefaults
 from flext_oracle_wms.wms_models import (
     FlextOracleWmsDiscoveryResult,
     FlextOracleWmsEntity,
 )
-from flext_oracle_wms.wms_constants import FlextOracleWmsDefaults
 from flext_oracle_wms.wms_operations import handle_operation_exception
 
 if TYPE_CHECKING:
     from flext_api import FlextApiClient
 
+    from flext_oracle_wms.wms_constants import OracleWMSEntityType
     from flext_oracle_wms.wms_models import (
         TOracleWmsRecordBatch,
         TOracleWmsSchema,
     )
-    from flext_oracle_wms.wms_constants import OracleWMSEntityType
 
 logger = get_logger(__name__)
 
@@ -678,7 +679,7 @@ class FlextOracleWmsDynamicSchemaProcessor:
                 return await self.process_records(records, None)
 
             # Optionally, we could validate/adjust schema against records.
-            return FlextResult.ok(schema)  # type: ignore[return-value]
+            return FlextResult.ok(schema)
         except Exception as e:  # pragma: no cover - defensive
             return FlextResult.fail(f"Process entity records failed: {e}")
 
@@ -718,9 +719,9 @@ class FlextOracleWmsDynamicSchemaProcessor:
         """Convert value to the given primitive type when possible."""
         try:
             if type_name == "integer":
-                return int(value)  # type: ignore[call-arg]
+                return int(value) if isinstance(value, (int, float, str)) else 0
             if type_name == "number":
-                return float(value)  # type: ignore[call-arg]
+                return float(value) if isinstance(value, (int, float, str)) else 0.0
             if type_name == "boolean":
                 if isinstance(value, str):
                     return value.strip().lower() in {"true", "1", "yes"}
@@ -883,9 +884,10 @@ class EntityListDiscoveryStrategy(DiscoveryStrategy):
 class FlextOracleWmsEntityDiscovery:
     """Oracle WMS entity discovery using Strategy and Command patterns."""
 
-    def __init__(self, api_client: FlextApiClient) -> None:
+    def __init__(self, api_client: FlextApiClient, environment: str = "default") -> None:
         """Initialize entity discovery with API client."""
         self.api_client = api_client
+        self.environment = environment
         self.strategies: list[DiscoveryStrategy] = [
             EntityListDiscoveryStrategy(),
         ]
@@ -971,10 +973,10 @@ class FlextOracleWmsEntityDiscovery:
                 _ = await strategy.execute_discovery_step(context, self.api_client)
 
             # After strategies, use real API to populate entities
-            entities: list[FlextOracleWmsEntity] = []
+            discovered_entities: list[FlextOracleWmsEntity] = []
             try:
                 response = await self.api_client.get(
-                    f"/{self._normalize_env(self._get_environment())}/wms/lgfapi/v10/entity/",
+                    f"/{self.environment}/wms/lgfapi/v10/entity/",
                     params=None,
                 )
                 if response.success and response.data and isinstance(response.data, dict):
@@ -982,10 +984,10 @@ class FlextOracleWmsEntityDiscovery:
                     if isinstance(names, list):
                         for name in names:
                             if isinstance(name, str) and name.strip():
-                                entities.append(
+                                discovered_entities.append(
                                     FlextOracleWmsEntity(
                                         name=name,
-                                        endpoint=f"/{self._normalize_env(self._get_environment())}/wms/lgfapi/v10/entity/{name}/",
+                                        endpoint=f"/{self.environment}/wms/lgfapi/v10/entity/{name}/",
                                         description=f"Oracle WMS entity: {name}",
                                     ),
                                 )
@@ -994,11 +996,11 @@ class FlextOracleWmsEntityDiscovery:
 
             # Include any entities collected by strategies
             if context.all_entities:
-                entities.extend(context.all_entities)
+                discovered_entities.extend(context.all_entities)
 
             # Apply filters
             filtered_entities = self._apply_entity_filters(
-                entities,
+                discovered_entities,
                 include_patterns,
                 exclude_patterns,
             )

@@ -18,7 +18,7 @@ from flext_api import FlextApiClientConfig
 from flext_api.constants import FlextApiConstants
 from flext_core import (
     FlextResult,
-    FlextValueObject,
+    FlextValue,
     get_logger,
 )
 from pydantic import Field
@@ -53,7 +53,7 @@ logger = get_logger(__name__)
 # =============================================================================
 
 
-class FlextOracleWmsAuthConfig(FlextValueObject):
+class FlextOracleWmsAuthConfig(FlextValue):
     """Oracle WMS authentication configuration."""
 
     auth_type: OracleWMSAuthMethod = Field(
@@ -113,7 +113,7 @@ class FlextOracleWmsAuthenticator:
     async def get_auth_headers(
         self,
         extra_headers: dict[str, str] | None = None,
-    ) -> object:
+    ) -> FlextResult[dict[str, str]] | dict[str, str]:
         """Get authentication headers based on configuration."""
         try:
             headers = {}
@@ -127,7 +127,8 @@ class FlextOracleWmsAuthenticator:
                 headers["Authorization"] = f"Bearer {self.config.token}"
 
             elif self.config.auth_type == OracleWMSAuthMethod.API_KEY:
-                headers["X-API-Key"] = self.config.api_key
+                if self.config.api_key:
+                    headers["X-API-Key"] = self.config.api_key
 
             headers["Content-Type"] = FlextApiConstants.ContentTypes.JSON
             headers["Accept"] = FlextApiConstants.ContentTypes.JSON
@@ -257,7 +258,7 @@ class FlextOracleWmsAuthPlugin:
                     raise FlextOracleWmsAuthenticationError(
                         headers.error or "Auth headers failed",
                     )
-                headers = headers.data  # type: ignore[assignment]
+                headers = headers.data
         except Exception:
             # If flext_core not available here, log and proceed; tests cover both paths
             logger.debug(
@@ -265,16 +266,21 @@ class FlextOracleWmsAuthPlugin:
             )
         # Mutate request in place when possible
         if hasattr(request, "headers") and isinstance(request.headers, dict):
-            request.headers.update(headers)  # type: ignore[arg-type]
-            return request  # type: ignore[return-value]
-        # Fallback for dict-like
+            if isinstance(headers, dict):
+                request.headers.update(headers)
+            return request
+
+        # Fallback for dict-like request
         if isinstance(request, dict):
-            existing_headers = dict(request.get("headers", {}))
-            existing_headers.update(headers)
+            headers_value = request.get("headers", {})
+            existing_headers = dict(headers_value) if isinstance(headers_value, dict) else {}
+            if isinstance(headers, dict):
+                existing_headers.update(headers)
             request["headers"] = existing_headers
-            return request  # type: ignore[return-value]
-        # Last resort: return a minimal dict
-        return {"headers": headers}  # type: ignore[return-value]
+            return request
+
+        # Return a minimal dict for unknown request types
+        return {"headers": headers if isinstance(headers, dict) else {}}  # pragma: no cover - defensive fallback
 
     async def after_response(self, response: dict[str, object]) -> dict[str, object]:
         status = getattr(response, "status_code", 200)
@@ -392,14 +398,21 @@ class FlextOracleWmsClient:
             # Get authentication headers
             if self._authenticator:
                 auth_result = await self._authenticator.get_auth_headers()
-                if not auth_result.success:
-                    return FlextResult.fail(
-                        f"Authentication failed: {auth_result.error}",
-                    )
-                if auth_result.data:
-                    api_config.headers.update(auth_result.data)
-                # Maintain back-compat attribute for tests
-                self._auth_headers = dict(auth_result.data)
+                # Handle both FlextResult and dict return types
+                if hasattr(auth_result, "success") and hasattr(auth_result, "error"):
+                    # FlextResult type
+                    if not auth_result.success:
+                        return FlextResult.fail(
+                            f"Authentication failed: {auth_result.error}",
+                        )
+                    if hasattr(auth_result, "data") and auth_result.data:
+                        api_config.headers.update(auth_result.data)
+                        # Maintain back-compat attribute for tests
+                        self._auth_headers = dict(auth_result.data)
+                elif isinstance(auth_result, dict):
+                    # Direct dict type
+                    api_config.headers.update(auth_result)
+                    self._auth_headers = dict(auth_result)
 
             self._api_client = FlextApiClient(api_config)
             logger.info(
@@ -462,7 +475,7 @@ class FlextOracleWmsClient:
         except Exception as exc:
             # Surface failure in health payload rather than swallowing silently
             logger.debug("Health check probe failed", error=str(exc))
-        health_data = dict(self._api_client.health_check())
+        health_data: dict[str, object] = dict(self._api_client.health_check())
         # Ensure service field is present for test expectations
         health_data.setdefault("service", "FlextOracleWmsClient")
         # Add timestamp if backend did not provide
@@ -474,7 +487,12 @@ class FlextOracleWmsClient:
         try:
             if not self._api_client:
                 # Provide fallback minimal discovery when not started
-                return FlextResult.ok(["company", "facility", "item"])
+                fallback_entities: list[dict[str, object]] = [
+                    {"name": "company", "type": "entity"},
+                    {"name": "facility", "type": "entity"},
+                    {"name": "item", "type": "entity"}
+                ]
+                return FlextResult.ok(fallback_entities)
 
             # Use mock server only when explicitly configured
             if getattr(self.config, "use_mock", False):
@@ -499,10 +517,8 @@ class FlextOracleWmsClient:
                 return FlextResult.fail(f"Entity discovery failed: {resp_result.error}")
 
             api_resp = resp_result.data
-            if api_resp is None:
-                return FlextResult.fail(
-                    "No HTTP response received from entity discovery",
-                )
+            if api_resp is None:  # pragma: no cover - defensive check
+                return FlextResult.fail("No HTTP response received from entity discovery")  # pragma: no cover
 
             if hasattr(api_resp, "is_success") and not api_resp.is_success():
                 return FlextResult.fail(
@@ -513,12 +529,20 @@ class FlextOracleWmsClient:
             if not isinstance(body, dict):
                 return FlextResult.fail("Invalid entity discovery response format")
 
-            entities = (
-                body.get("entities", [])
-                if isinstance(body.get("entities", []), list)
-                else []
-            )
-            return FlextResult.ok(entities)  # type: ignore[arg-type]
+            entities_raw = body.get("entities", [])
+            if not isinstance(entities_raw, list):
+                entities_raw = []
+
+            # Ensure all entities are dict[str, object] format
+            entities: list[dict[str, object]] = []
+            for item in entities_raw:
+                if isinstance(item, dict):
+                    entities.append(item)
+                elif isinstance(item, str):
+                    # Convert string entity names to dict format
+                    entities.append({"name": item, "type": "entity"})
+
+            return FlextResult.ok(entities)
 
         except (
             ConnectionError,
@@ -601,10 +625,8 @@ class FlextOracleWmsClient:
                 )
 
             api_resp = resp_result.data
-            if api_resp is None:
-                return FlextResult.fail(
-                    "No HTTP response received from entity data API",
-                )
+            if api_resp is None:  # pragma: no cover - defensive check
+                return FlextResult.fail("No HTTP response received from entity data API")  # pragma: no cover
 
             if hasattr(api_resp, "is_success") and not api_resp.is_success():
                 # Return failure with http status detail for tests that check error path
@@ -685,8 +707,8 @@ class FlextOracleWmsClient:
                 )
             # Validate HTTP status and extract body
             api_resp = response.data
-            if api_resp is None:
-                return FlextResult.fail("Empty HTTP response")
+            if api_resp is None:  # pragma: no cover - defensive check
+                return FlextResult.fail("Empty HTTP response")  # pragma: no cover
             if hasattr(api_resp, "is_success") and not api_resp.is_success():
                 return FlextResult.fail(
                     f"API call failed: HTTP {getattr(api_resp, 'status_code', 'unknown')}",

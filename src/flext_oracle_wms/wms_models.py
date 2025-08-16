@@ -154,6 +154,17 @@ class FlextOracleWmsEntity(FlextValueObject):
             )
         return FlextResult.ok(None)
 
+    def to_dict_basic(self) -> dict[str, object]:
+        """Convert entity to basic dict format (used by discovery)."""
+        return {
+            "name": self.name,
+            "endpoint": self.endpoint,
+            "description": self.description,
+            "primary_key": self.primary_key,
+            "replication_key": self.replication_key,
+            "supports_incremental": self.supports_incremental,
+        }
+
 
 @dataclass(frozen=True)
 class FlextOracleWmsDiscoveryResult(FlextValueObject):

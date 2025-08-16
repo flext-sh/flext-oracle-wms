@@ -37,7 +37,7 @@ class FlextOracleWmsError(FlextError):
         context: dict[str, object] | None = None,
         error_code: str | None = None,
     ) -> None:
-        super().__init__(message, context=context or {}, error_code=error_code)
+        super().__init__(message, context=context or {}, code=error_code)
         # Attach context keys as attributes for convenient access in tests
         for key, value in (context or {}).items():
             try:

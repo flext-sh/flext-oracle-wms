@@ -27,7 +27,10 @@ from flext_oracle_wms.discovery import (
     FlextOracleWmsEntityDiscovery,
     flext_oracle_wms_create_entity_discovery,
 )
-from flext_oracle_wms.wms_models import FlextOracleWmsDiscoveryResult, FlextOracleWmsEntity
+from flext_oracle_wms.wms_models import (
+    FlextOracleWmsDiscoveryResult,
+    FlextOracleWmsEntity,
+)
 
 
 class TestDiscoveryConstants:

@@ -20,16 +20,43 @@ class FlextOracleWmsPlugin:
     """
 
     def __init__(self, config: dict[str, object] | None = None) -> None:
+        """Init   function.
+
+        Args:
+            config (dict[str, object] | None): Description.
+
+        """
         self.config = config or {}
         self._client: object | None = None
 
     async def start(self) -> FlextResult[None]:
+        """Start function.
+
+        Returns:
+            FlextResult[None]: Description.
+
+        """
         return FlextResult.ok(None)
 
     async def stop(self) -> FlextResult[None]:
+        """Stop function.
+
+        Returns:
+            FlextResult[None]: Description.
+
+        """
         return FlextResult.ok(None)
 
     async def execute(self, operation: str) -> FlextResult[object]:
+        """Execute function.
+
+        Args:
+            operation (str): Description.
+
+        Returns:
+            FlextResult[object]: Description.
+
+        """
         if self._client is None:
             return FlextResult.fail("Plugin not initialized: client is not initialized")
         try:
@@ -39,16 +66,26 @@ class FlextOracleWmsPlugin:
 
 
 # Back-compat wrapper to ensure start()/stop() can be asserted as awaited once
-class FlextApiClient(_FlextApiClient):  # type: ignore[misc]
-    async def start(self):
-        return await super().start()  # type: ignore[no-any-return]
+class FlextApiClient(_FlextApiClient):
+    """FlextApiClient class."""
 
-    async def stop(self):
-        return await super().stop()  # type: ignore[no-any-return]
+    async def start(self) -> FlextResult[None]:
+        """Start function."""
+        return await super().start()
+
+    async def stop(self) -> FlextResult[None]:
+        """Stop function."""
+        return await super().stop()
 
 
 # Lazy export of main client to avoid circular imports on module import time
-def __getattr__(name: str):  # pragma: no cover - module-level hook
+def __getattr__(name: str) -> object:  # pragma: no cover - module-level hook
+    """Getattr   function.
+
+    Args:
+        name (str): Description.
+
+    """
     if name == "FlextOracleWmsClient":
         from .wms_client import FlextOracleWmsClient as _Client
 

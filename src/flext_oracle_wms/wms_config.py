@@ -19,7 +19,7 @@ from urllib.parse import urlparse
 from flext_core import (
     FlextResult,
     FlextSettings,
-    FlextValueObject,
+    FlextValue,
     get_logger,
 )
 from pydantic import Field, HttpUrl, field_validator
@@ -32,7 +32,7 @@ WMSAPIVersion = NewType("WMSAPIVersion", str)
 WMSRetryAttempts = NewType("WMSRetryAttempts", int)
 
 
-class FlextOracleWmsClientConfig(FlextValueObject):
+class FlextOracleWmsClientConfig(FlextValue):
     """Oracle WMS Declarative Client Configuration.
 
     Simplified configuration management for declarative Oracle WMS Cloud client
@@ -61,15 +61,18 @@ class FlextOracleWmsClientConfig(FlextValueObject):
 
     """
 
-    base_url: str
-    username: str
-    password: str
-    environment: str = "default"
-    api_version: FlextOracleWmsApiVersion = FlextOracleWmsApiVersion.LGF_V10
-    timeout: float = Field(default=30.0)
-    max_retries: int = Field(default=3)
-    verify_ssl: bool = Field(default=True)
-    enable_logging: bool = Field(default=True)
+    base_url: str = Field(..., description="Oracle WMS base URL")
+    username: str = Field(..., description="Oracle WMS username")
+    password: str = Field(..., description="Oracle WMS password")
+    environment: str = Field(default="default", description="Environment name")
+    api_version: FlextOracleWmsApiVersion = Field(
+        default=FlextOracleWmsApiVersion.LGF_V10,
+        description="API version",
+    )
+    timeout: float = Field(default=30.0, description="Request timeout in seconds")
+    max_retries: int = Field(default=3, description="Maximum retry attempts")
+    verify_ssl: bool = Field(default=True, description="Verify SSL certificates")
+    enable_logging: bool = Field(default=True, description="Enable logging")
     use_mock: bool = Field(
         default=False,
         description="Use internal mock server explicitly (testing only)",

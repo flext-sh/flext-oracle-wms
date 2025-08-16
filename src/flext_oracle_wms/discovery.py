@@ -13,9 +13,29 @@ import re
 import time
 from dataclasses import dataclass
 from datetime import UTC, datetime
-from typing import Any
+from typing import Protocol
 
 from flext_core import FlextResult, get_logger
+
+
+class ApiClientProtocol(Protocol):
+    """Protocol for API client used in discovery operations."""
+
+    async def get(self, endpoint: str) -> FlextResult[object]:
+        """Make GET request to endpoint."""
+        ...
+
+
+class CacheManagerProtocol(Protocol):
+    """Protocol for cache manager used in discovery operations."""
+
+    def get(self, key: str) -> object:
+        """Get value from cache."""
+        ...
+
+    def set(self, key: str, value: object, ttl: int | None = None) -> None:
+        """Set value in cache."""
+        ...
 
 from .wms_constants import FlextOracleWmsDefaults
 from .wms_discovery import (
@@ -52,8 +72,9 @@ class DiscoveryStrategy:
     async def execute_discovery_step(  # pragma: no cover - interface
         self,
         context: DiscoveryContext,
-        api_client: Any,
-    ) -> FlextResult[None]:
+        api_client: ApiClientProtocol,
+        endpoint: str,
+    ) -> FlextResult[bool]:
         raise NotImplementedError
 
 
@@ -76,7 +97,7 @@ class EndpointDiscoveryStrategy(DiscoveryStrategy):
     async def execute_discovery_step(
         self,
         context: DiscoveryContext,
-        api_client: Any,
+        api_client: ApiClientProtocol,
         endpoint: str,
     ) -> FlextResult[bool]:
         try:
@@ -108,12 +129,12 @@ class EndpointDiscoveryStrategy(DiscoveryStrategy):
 
     async def _make_api_request(
         self,
-        api_client: Any,
+        api_client: ApiClientProtocol,
         endpoint: str,
-    ) -> FlextResult[Any]:
+    ) -> FlextResult[object]:
         try:
             result = await api_client.get(endpoint)
-            if not result.success:
+            if not result.is_success:
                 return FlextResult.fail(f"Failed to call {endpoint}: {result.error}")
             if result.data is None:
                 return FlextResult.fail(f"No response data from {endpoint}")
@@ -121,7 +142,7 @@ class EndpointDiscoveryStrategy(DiscoveryStrategy):
         except Exception as e:
             return FlextResult.fail(f"Failed to call {endpoint}: {e}")
 
-    def _validate_response(self, response: Any, endpoint: str) -> FlextResult[Any]:
+    def _validate_response(self, response: object, endpoint: str) -> FlextResult[object]:
         if response is None:
             return FlextResult.fail(f"No response data from {endpoint}")
         if not hasattr(response, "status_code"):
@@ -136,13 +157,13 @@ class EndpointDiscoveryStrategy(DiscoveryStrategy):
 class FlextOracleWmsEntityDiscovery:
     def __init__(
         self,
-        api_client: Any,
+        api_client: ApiClientProtocol,
         environment: str = "default",
-        cache_manager: Any | None = None,
+        cache_manager: CacheManagerProtocol | dict[str, object] | None = None,
     ) -> None:
         self.api_client = api_client
         self.environment = environment
-        self.cache_manager = cache_manager
+        self.cache_manager: CacheManagerProtocol | dict[str, object] | None = cache_manager
         self.schema_processor = FlextOracleWmsDynamicSchemaProcessor()
         self._endpoints = [
             f"/{environment}/wms/lgfapi/v10/entity/",
@@ -344,14 +365,14 @@ class FlextOracleWmsEntityDiscovery:
             for key in ("entities", "results", "data"):
                 val = response_data.get(key)
                 if isinstance(val, list):
-                    return FlextResult.ok(val)  # type: ignore[return-value]
+                    return FlextResult.ok(val)
             # fallback: treat top-level keys as entity names when values are dicts
             if all(isinstance(v, dict) for v in response_data.values()):
-                return FlextResult.ok(list(response_data.keys()))  # type: ignore[return-value]
+                return FlextResult.ok(list(response_data.keys()))
             return FlextResult.fail("Unexpected response format: dictionary")
         if isinstance(response_data, list):
             if all(isinstance(x, (str, dict)) for x in response_data):
-                return FlextResult.ok(response_data)  # type: ignore[return-value]
+                return FlextResult.ok(response_data)
         return FlextResult.fail("Unexpected response format: not list/dict")
 
     def _create_entity_from_string_name(self, name: str) -> FlextOracleWmsEntity:
@@ -377,25 +398,24 @@ class FlextOracleWmsEntityDiscovery:
             or f"/{self.environment}/wms/lgfapi/v10/entity/{name}/",
         )
         description = metadata.get("description")
-        fields = (
-            metadata.get("fields") if isinstance(metadata.get("fields"), dict) else None
+        fields_value = metadata.get("fields")
+        fields: dict[str, object] | None = (
+            fields_value if isinstance(fields_value, dict) else None
         )
-        primary_key = (
-            metadata.get("primary_key")
-            if isinstance(metadata.get("primary_key"), str)
-            else None
+        primary_key_value = metadata.get("primary_key")
+        primary_key: str | None = (
+            primary_key_value if isinstance(primary_key_value, str) else None
         )
-        replication_key = (
-            metadata.get("replication_key")
-            if isinstance(metadata.get("replication_key"), str)
-            else None
+        replication_key_value = metadata.get("replication_key")
+        replication_key: str | None = (
+            replication_key_value if isinstance(replication_key_value, str) else None
         )
         supports_incremental = bool(metadata.get("supports_incremental"))
         return FlextOracleWmsEntity(
             name=name,
             endpoint=endpoint,
             description=str(description) if isinstance(description, str) else None,
-            fields=fields,  # type: ignore[arg-type]
+            fields=fields,
             primary_key=primary_key,
             replication_key=replication_key,
             supports_incremental=supports_incremental,
@@ -414,7 +434,7 @@ class FlextOracleWmsEntityDiscovery:
             )
             try:
                 resp = await self.api_client.get(endpoint)
-                if not resp.success or resp.data is None:
+                if not resp.is_success or resp.data is None:
                     continue
                 http = resp.data
                 if getattr(http, "status_code", None) != FlextOracleWmsDefaults.HTTP_OK:
@@ -425,7 +445,7 @@ class FlextOracleWmsEntityDiscovery:
                     entity_name,
                     endpoint,
                 )
-                if schema_result.success:
+                if schema_result.is_success:
                     return schema_result
             except Exception:
                 continue
@@ -451,7 +471,7 @@ class FlextOracleWmsEntityDiscovery:
                 # No sample, return empty fields
                 return FlextResult.ok(self._create_entity_from_string_name(entity_name))
             sample = records[0]
-            fields: dict[str, dict[str, object]] = {}
+            fields: dict[str, object] = {}
             for k, v in sample.items():
                 fields[k] = {"type": self._infer_field_type(v)}
             return FlextResult.ok(
@@ -499,7 +519,7 @@ def flext_oracle_wms_create_dynamic_schema_processor() -> (
 
 
 def flext_oracle_wms_create_entity_discovery(
-    api_client: Any,
+    api_client: ApiClientProtocol,
     environment: str = "prod",
     enable_caching: bool = True,
     cache_ttl: int = 300,

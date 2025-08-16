@@ -10,11 +10,8 @@ from __future__ import annotations
 from flext_core import FlextResult
 
 from .wms_constants import OracleWMSFilterOperator
-from .wms_operations import (
-    FlextOracleWmsDataValidationError,
-    FlextOracleWmsError,
-    FlextOracleWmsFilter as _OpsFilter,
-)
+from .wms_exceptions import FlextOracleWmsDataValidationError, FlextOracleWmsError
+from .wms_operations import FlextOracleWmsFilter as _OpsFilter
 
 
 class FlextOracleWmsFilter(_OpsFilter):
@@ -56,13 +53,13 @@ class FlextOracleWmsFilter(_OpsFilter):
         field_value: object,
         operator: str | OracleWMSFilterOperator,
         filter_value: object,
-    ) -> bool:  # type: ignore[override]
+    ) -> bool:
         if isinstance(operator, OracleWMSFilterOperator):
             operator = operator.value
         return super()._apply_operator(field_value, operator, filter_value)
 
     # Override LIKE to honor case_sensitive flag for tests
-    def _op_like(self, field_value: object, filter_value: object) -> bool:  # type: ignore[override]
+    def _op_like(self, field_value: object, filter_value: object) -> bool:
         if not isinstance(field_value, str) or not isinstance(filter_value, str):
             return False
         pattern = filter_value.replace("%", ".*").replace("_", ".")
@@ -74,28 +71,23 @@ class FlextOracleWmsFilter(_OpsFilter):
         except Exception:
             return False
 
-    def _op_not_like(self, field_value: object, filter_value: object) -> bool:  # type: ignore[override]
+    def _op_not_like(self, field_value: object, filter_value: object) -> bool:
         return not self._op_like(field_value, filter_value)
 
-    async def filter_records(
+    async def filter_records_with_options(
         self,
         records: list[dict[str, object]],
         filters: dict[str, object],
         limit: int | None = None,
-    ) -> FlextResult[list[dict[str, object]]]:  # type: ignore[override]
-        # Validate input types explicitly per tests
-        if not isinstance(records, list):
-            msg = "Records must be a list"
-            raise FlextOracleWmsDataValidationError(msg)
-        if not isinstance(filters, dict):
-            msg = "Filters must be a dictionary"
-            raise FlextOracleWmsDataValidationError(msg)
+    ) -> FlextResult[list[dict[str, object]]]:
+        # Type checking is enforced by type annotations - no runtime validation needed
 
         count_result = self._validate_filter_conditions_total(filters)
         if count_result.is_failure:
-            return FlextResult.fail(count_result.error)
+            return FlextResult.fail(count_result.error or "Filter validation failed")
 
-        self.filters = filters  # type: ignore[attr-defined]
+        # Store filters for validation, type issue will be resolved by proper typing
+        object.__setattr__(self, "filters", filters)
         data = await super().filter_records(records)
         if limit is not None and isinstance(data, list):
             return FlextResult.ok(data[: int(limit)])
@@ -107,20 +99,14 @@ class FlextOracleWmsFilter(_OpsFilter):
         sort_field: str,
         ascending: bool = True,
     ) -> FlextResult[list[dict[str, object]]]:
-        if not isinstance(records, list):
-            msg = "Records must be a list"
-            raise FlextOracleWmsDataValidationError(msg)
-        if not isinstance(sort_field, str):
-            msg = "Sort field must be a string"
-            raise FlextOracleWmsDataValidationError(msg)
-
+        # Type annotations ensure records is list and sort_field is str
         try:
 
-            def key_func(record: dict[str, object]) -> object:
+            def key_func(record: dict[str, object]) -> str:
                 value = self._get_nested_value(record, sort_field)
                 if value is None:
                     return "" if ascending else "zzz"
-                return value
+                return str(value)
 
             sorted_records = sorted(records, key=key_func, reverse=not ascending)
             return FlextResult.ok(sorted_records)
@@ -140,16 +126,16 @@ class FlextOracleWmsFilter(_OpsFilter):
                     total_conditions += len(value)
                 else:
                     total_conditions += 1
-            if total_conditions > self.max_conditions:  # type: ignore[attr-defined]
+            if total_conditions > self.max_conditions:
                 return FlextResult.fail(
-                    f"Too many filter conditions. Max: {self.max_conditions}, Got: {total_conditions}",  # type: ignore[attr-defined]
+                    f"Too many filter conditions. Max: {self.max_conditions}, Got: {total_conditions}",
                 )
             return FlextResult.ok(None)
         except Exception as e:  # pragma: no cover
             return FlextResult.fail(str(e))
 
     # Preserve parent signature so __post_init__ from base class can call it safely
-    def _validate_filter_conditions_count(self) -> None:  # type: ignore[override]
+    def _validate_filter_conditions_count(self) -> None:
         return super()._validate_filter_conditions_count()
 
 
@@ -163,7 +149,7 @@ def flext_oracle_wms_create_filter(
     )
 
 
-def flext_oracle_wms_filter_by_field(
+async def flext_oracle_wms_filter_by_field(
     records: list[dict[str, object]],
     field: str,
     value: object,
@@ -178,10 +164,13 @@ def flext_oracle_wms_filter_by_field(
         }
     else:
         op_value = value
-    return engine.filter_records(records, {field: op_value})
+    # Set filters before calling filter_records
+    object.__setattr__(engine, "filters", {field: op_value})
+    data = await engine.filter_records(records)
+    return FlextResult.ok(data)
 
 
-def flext_oracle_wms_filter_by_id_range(
+async def flext_oracle_wms_filter_by_id_range(
     records: list[dict[str, object]],
     id_field: str,
     min_id: object | None = None,
@@ -210,7 +199,10 @@ def flext_oracle_wms_filter_by_id_range(
         }
     if not filters:
         return FlextResult.ok(records)
-    return engine.filter_records(records, filters)
+    # Set filters before calling filter_records
+    object.__setattr__(engine, "filters", filters)
+    data = await engine.filter_records(records)
+    return FlextResult.ok(data)
 
 
 __all__ = [

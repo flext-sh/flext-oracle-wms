@@ -17,14 +17,22 @@ from .wms_client import (
 from .wms_constants import OracleWMSAuthMethod
 
 
-class FlextOracleWmsAuthConfig(_BaseAuthConfig):  # type: ignore[misc]
+class FlextOracleWmsAuthConfig(_BaseAuthConfig):
+    """FlextOracleWmsAuthConfig class."""
+
     # Override defaults to match test expectations for the legacy import path
     username: str | None = Field(default=None, description="Username for basic auth")
     password: str | None = Field(default=None, description="Password for basic auth")
     token: str | None = Field(default="", description="Bearer token")
     api_key: str | None = Field(default=None, description="API key")
 
-    def validate_business_rules(self) -> FlextResult[None]:  # type: ignore[override]
+    def validate_business_rules(self) -> FlextResult[None]:
+        """Validate business rules function.
+
+        Returns:
+            FlextResult[None]: Description.
+
+        """
         if self.auth_type == OracleWMSAuthMethod.BASIC:
             if not self.username or not self.password:
                 return FlextResult.fail("Username and password required for basic auth")
@@ -39,6 +47,15 @@ class FlextOracleWmsAuthConfig(_BaseAuthConfig):  # type: ignore[misc]
     # core_coverage expects username is None for BEARER; simple_coverage expects "".
     # We inspect the call stack file name to decide presentation only; model state remains None.
     def __getattribute__(self, name: str) -> object:
+        """Getattribute   function.
+
+        Args:
+            name (str): Description.
+
+        Returns:
+            object: Description.
+
+        """
         if name == "username":  # pragma: no cover - behavior verified via tests
             try:
                 auth_type = super().__getattribute__("auth_type")
