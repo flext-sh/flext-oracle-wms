@@ -8,10 +8,10 @@ import builtins
 
 async def _run(cmd_list: list[str], cwd: str | None = None) -> tuple[int, str, str]:
     proc = await asyncio.create_subprocess_exec(
-      *cmd_list,
-      cwd=cwd,
-      stdout=asyncio.subprocess.PIPE,
-      stderr=asyncio.subprocess.PIPE,
+        *cmd_list,
+        cwd=cwd,
+        stdout=asyncio.subprocess.PIPE,
+        stderr=asyncio.subprocess.PIPE,
     )
     stdout, stderr = await proc.communicate()
     return proc.returncode, stdout.decode(), stderr.decode()

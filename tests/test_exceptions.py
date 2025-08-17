@@ -147,8 +147,8 @@ def test_rate_limit_error() -> None:
 def test_rate_limit_error_with_retry_after() -> None:
     """Test rate limit error with retry after."""
     error = FlextOracleWmsRateLimitError(
-      "Rate limit exceeded",
-      retry_after_seconds=60.0,
+        "Rate limit exceeded",
+        retry_after_seconds=60.0,
     )
     assert str(error) == "[RATE_LIMIT_EXCEEDED] Rate limit exceeded"
     assert error.retry_after_seconds == 60.0
@@ -164,9 +164,9 @@ def test_api_error() -> None:
 def test_api_error_with_status_code() -> None:
     """Test API error with status code."""
     error = FlextOracleWmsApiError(
-      "API error",
-      status_code=404,
-      response_body='{"error": "Not found"}',
+        "API error",
+        status_code=404,
+        response_body='{"error": "Not found"}',
     )
     assert str(error) == "[API_ERROR] API error"
     assert error.status_code == 404
@@ -199,30 +199,30 @@ def test_error_inheritance() -> None:
     """Test error inheritance hierarchy."""
     # All errors should inherit from FlextOracleWmsError
     errors = [
-      FlextOracleWmsConnectionError("test"),
-      FlextOracleWmsAuthenticationError("test"),
-      FlextOracleWmsDataValidationError("test"),
-      FlextOracleWmsConfigurationError("test"),
-      FlextOracleWmsEntityNotFoundError("test_entity"),
-      FlextOracleWmsRateLimitError("test"),
-      FlextOracleWmsApiError("test"),
-      FlextOracleWmsSchemaError("test"),
-      FlextOracleWmsSchemaFlatteningError("test", "flatten"),
-      FlextOracleWmsFilterError("test"),
+        FlextOracleWmsConnectionError("test"),
+        FlextOracleWmsAuthenticationError("test"),
+        FlextOracleWmsDataValidationError("test"),
+        FlextOracleWmsConfigurationError("test"),
+        FlextOracleWmsEntityNotFoundError("test_entity"),
+        FlextOracleWmsRateLimitError("test"),
+        FlextOracleWmsApiError("test"),
+        FlextOracleWmsSchemaError("test"),
+        FlextOracleWmsSchemaFlatteningError("test", "flatten"),
+        FlextOracleWmsFilterError("test"),
     ]
 
     for error in errors:
-      assert isinstance(error, FlextOracleWmsError)
-      assert isinstance(error, Exception)
+        assert isinstance(error, FlextOracleWmsError)
+        assert isinstance(error, Exception)
 
 
 def test_error_with_multiple_details() -> None:
     """Test error with multiple detail fields."""
     error = FlextOracleWmsDataValidationError(
-      "Complex error",
-      field_name="order_id",
-      invalid_value="invalid",
-      entity_name="order_hdr",
+        "Complex error",
+        field_name="order_id",
+        invalid_value="invalid",
+        entity_name="order_hdr",
     )
     assert str(error) == "[VALIDATION_ERROR] Complex error"
     assert error.entity_name == "order_hdr"
@@ -234,31 +234,31 @@ def test_error_raising() -> Never:
     """Test raising and catching errors."""
     msg = "Connection failed"
     with pytest.raises(FlextOracleWmsConnectionError):
-      raise FlextOracleWmsConnectionError(msg)
+        raise FlextOracleWmsConnectionError(msg)
 
     auth_msg = "Auth failed"
     with pytest.raises(FlextOracleWmsError):
-      raise FlextOracleWmsAuthenticationError(auth_msg)
+        raise FlextOracleWmsAuthenticationError(auth_msg)
 
 
 def test_error_chaining() -> None:
     """Test error chaining with cause."""
 
     def _raise_original_error() -> None:
-      msg = "Original error"
-      raise ValueError(msg)
+        msg = "Original error"
+        raise ValueError(msg)
 
     def _raise_wrapped_error(cause: Exception) -> None:
-      msg = "Wrapped error"
-      raise FlextOracleWmsDataValidationError(msg) from cause
+        msg = "Wrapped error"
+        raise FlextOracleWmsDataValidationError(msg) from cause
 
     try:
-      _raise_original_error()
+        _raise_original_error()
     except ValueError as original_error:
-      with pytest.raises(FlextOracleWmsDataValidationError):
-          _raise_wrapped_error(original_error)
-      # Verify the cause is properly set (outside except block)
-      # exc_info.value.__cause__ testing is verified by pytest structure
+        with pytest.raises(FlextOracleWmsDataValidationError):
+            _raise_wrapped_error(original_error)
+        # Verify the cause is properly set (outside except block)
+        # exc_info.value.__cause__ testing is verified by pytest structure
 
 
 def test_base_error_with_error_code() -> None:

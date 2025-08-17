@@ -57,6 +57,7 @@ class FlextOracleWmsClientConfig(FlextValue):
       >>> validation = config.validate_business_rules()
       >>> if validation.success:
       ...     from flext_core import get_logger
+      ...
       ...     get_logger(__name__).info("Configuration is valid")
 
     """
@@ -66,75 +67,75 @@ class FlextOracleWmsClientConfig(FlextValue):
     password: str = Field(..., description="Oracle WMS password")
     environment: str = Field(default="default", description="Environment name")
     api_version: FlextOracleWmsApiVersion = Field(
-      default=FlextOracleWmsApiVersion.LGF_V10,
-      description="API version",
+        default=FlextOracleWmsApiVersion.LGF_V10,
+        description="API version",
     )
     timeout: float = Field(default=30.0, description="Request timeout in seconds")
     max_retries: int = Field(default=3, description="Maximum retry attempts")
     verify_ssl: bool = Field(default=True, description="Verify SSL certificates")
     enable_logging: bool = Field(default=True, description="Enable logging")
     use_mock: bool = Field(
-      default=False,
-      description="Use internal mock server explicitly (testing only)",
+        default=False,
+        description="Use internal mock server explicitly (testing only)",
     )
 
     def validate_business_rules(self) -> FlextResult[None]:
-      """Validate Oracle WMS client configuration business rules."""
-      validation_errors = []
+        """Validate Oracle WMS client configuration business rules."""
+        validation_errors = []
 
-      if not self.base_url:
-          validation_errors.append("Base URL cannot be empty")
-      elif not self.base_url.startswith(("http://", "https://")):
-          validation_errors.append("Base URL must start with http:// or https://")
+        if not self.base_url:
+            validation_errors.append("Base URL cannot be empty")
+        elif not self.base_url.startswith(("http://", "https://")):
+            validation_errors.append("Base URL must start with http:// or https://")
 
-      if not self.username:
-          validation_errors.append("Username cannot be empty")
-      if not self.password:
-          validation_errors.append("Password cannot be empty")
-      if not self.environment:
-          validation_errors.append("Environment cannot be empty")
-      if self.timeout <= 0:
-          validation_errors.append("Timeout must be greater than 0")
-      if self.max_retries < 0:
-          validation_errors.append("Max retries cannot be negative")
-      # Explicit mock must be intentional; no auto-mock by URL heuristics
-      if self.use_mock and not self.base_url:
-          validation_errors.append("Base URL is required even when using mock")
+        if not self.username:
+            validation_errors.append("Username cannot be empty")
+        if not self.password:
+            validation_errors.append("Password cannot be empty")
+        if not self.environment:
+            validation_errors.append("Environment cannot be empty")
+        if self.timeout <= 0:
+            validation_errors.append("Timeout must be greater than 0")
+        if self.max_retries < 0:
+            validation_errors.append("Max retries cannot be negative")
+        # Explicit mock must be intentional; no auto-mock by URL heuristics
+        if self.use_mock and not self.base_url:
+            validation_errors.append("Base URL is required even when using mock")
 
-      if validation_errors:
-          return FlextResult.fail("; ".join(validation_errors))
-      return FlextResult.ok(None)
+        if validation_errors:
+            return FlextResult.fail("; ".join(validation_errors))
+        return FlextResult.ok(None)
 
     @classmethod
     def from_legacy_config(
-      cls,
-      legacy_config: FlextOracleWmsModuleConfig,
+        cls,
+        legacy_config: FlextOracleWmsModuleConfig,
     ) -> FlextOracleWmsClientConfig:
-      """Create declarative config from legacy config."""
-      # Extract environment from base_url
-      environment = "default"
-      base_url_str = str(legacy_config.base_url)
-      try:
-          parsed = urlparse(base_url_str)
-          path_parts = parsed.path.strip("/").split("/")
-          if path_parts and path_parts[-1]:
-              environment = path_parts[-1]
-      except (ValueError, TypeError, AttributeError, IndexError):
-          environment = "default"
+        """Create declarative config from legacy config."""
+        # Extract environment from base_url
+        environment = "default"
+        base_url_str = str(legacy_config.base_url)
+        try:
+            parsed = urlparse(base_url_str)
+            path_parts = parsed.path.strip("/").split("/")
+            if path_parts and path_parts[-1]:
+                environment = path_parts[-1]
+        except (ValueError, TypeError, AttributeError, IndexError):
+            environment = "default"
 
-      return cls(
-          base_url=base_url_str,
-          username=legacy_config.username,
-          password=legacy_config.password,
-          environment=environment,
-          api_version=FlextOracleWmsApiVersion.LGF_V10
-          if legacy_config.api_version == "v10"
-          else FlextOracleWmsApiVersion.LEGACY,
-          timeout=legacy_config.timeout_seconds,
-          max_retries=legacy_config.max_retries,
-          verify_ssl=legacy_config.verify_ssl,
-          enable_logging=legacy_config.enable_request_logging,
-      )
+        return cls(
+            base_url=base_url_str,
+            username=legacy_config.username,
+            password=legacy_config.password,
+            environment=environment,
+            api_version=FlextOracleWmsApiVersion.LGF_V10
+            if legacy_config.api_version == "v10"
+            else FlextOracleWmsApiVersion.LEGACY,
+            timeout=legacy_config.timeout_seconds,
+            max_retries=legacy_config.max_retries,
+            verify_ssl=legacy_config.verify_ssl,
+            enable_logging=legacy_config.enable_request_logging,
+        )
 
 
 class FlextOracleWmsModuleConfig(FlextSettings):
@@ -145,68 +146,68 @@ class FlextOracleWmsModuleConfig(FlextSettings):
     """
 
     model_config: ClassVar[SettingsConfigDict] = SettingsConfigDict(
-      env_prefix="ORACLE_WMS_",
-      env_file=".env",
-      env_file_encoding="utf-8",
-      env_nested_delimiter="__",
-      case_sensitive=False,
-      extra="ignore",  # Allow extra fields in .env
-      validate_assignment=True,
-      str_strip_whitespace=True,
+        env_prefix="ORACLE_WMS_",
+        env_file=".env",
+        env_file_encoding="utf-8",
+        env_nested_delimiter="__",
+        case_sensitive=False,
+        extra="ignore",  # Allow extra fields in .env
+        validate_assignment=True,
+        str_strip_whitespace=True,
     )
     # === Oracle WMS API Configuration (additional to WMSConfigMixin) ===
     base_url: HttpUrl = Field(
-      ...,
-      description="Oracle WMS base URL (e.g., https://ta29.wms.ocs.oraclecloud.com/raizen_test)",
+        ...,
+        description="Oracle WMS base URL (e.g., https://ta29.wms.ocs.oraclecloud.com/raizen_test)",
     )
     api_version: str = Field(
-      default="v10",
-      description="Oracle WMS API version",
+        default="v10",
+        description="Oracle WMS API version",
     )
     username: str = Field(..., description="Oracle WMS API username")
     password: str = Field(..., description="Oracle WMS API password")
     # === WMS Rate Limiting (additional to PerformanceConfigMixin) ===
     enable_rate_limiting: bool = Field(
-      default=True,
-      description="Enable WMS API rate limiting",
+        default=True,
+        description="Enable WMS API rate limiting",
     )
     max_requests_per_minute: int = Field(
-      default=60,
-      description="Max WMS requests per minute",
+        default=60,
+        description="Max WMS requests per minute",
     )
     min_request_delay: float = Field(
-      default=0.1,
-      description="Minimum delay between WMS requests",
+        default=0.1,
+        description="Minimum delay between WMS requests",
     )
     # === Security Configuration ===
     verify_ssl: bool = Field(default=True, description="Verify SSL certificates")
     ssl_cert_path: Path | None = Field(
-      default=None,
-      description="Path to SSL certificate file",
+        default=None,
+        description="Path to SSL certificate file",
     )
     # === Observability (additional to LoggingConfigMixin) ===
     enable_request_logging: bool = Field(
-      default=False,
-      description="Log detailed API request/response information",
+        default=False,
+        description="Log detailed API request/response information",
     )
     enable_metrics: bool = Field(default=True, description="Enable metrics collection")
     # === Discovery Configuration ===
     auto_discover: bool = Field(
-      default=True,
-      description="Enable automatic schema discovery",
+        default=True,
+        description="Enable automatic schema discovery",
     )
     include_metadata: bool = Field(
-      default=True,
-      description="Include metadata in responses",
+        default=True,
+        description="Include metadata in responses",
     )
     # === Connection Pool Configuration (additional to PerformanceConfigMixin) ===
     pool_size: int = Field(
-      default=5,
-      description="HTTP connection pool size",
+        default=5,
+        description="HTTP connection pool size",
     )
     pool_timeout: float = Field(
-      default=30.0,
-      description="Connection pool timeout",
+        default=30.0,
+        description="Connection pool timeout",
     )
     # === Version Information ===
     version: str = Field(default="0.9.0", description="Client version")
@@ -216,155 +217,155 @@ class FlextOracleWmsModuleConfig(FlextSettings):
     cache_ttl_seconds: int = Field(default=300, description="Cache TTL in seconds")
     max_cache_size: int = Field(default=1000, description="Maximum cache entries")
     cleanup_interval_seconds: int = Field(
-      default=300,
-      description="Cache cleanup interval",
+        default=300,
+        description="Cache cleanup interval",
     )
 
     # === Performance Configuration ===
     timeout_seconds: float = Field(
-      default=30.0,
-      description="HTTP request timeout in seconds",
+        default=30.0,
+        description="HTTP request timeout in seconds",
     )
     batch_size: int = Field(
-      default=100,
-      description="Batch size for API requests",
+        default=100,
+        description="Batch size for API requests",
     )
     max_retries: int = Field(
-      default=3,
-      description="Maximum number of retry attempts",
+        default=3,
+        description="Maximum number of retry attempts",
     )
     retry_delay: float = Field(
-      default=1.0,
-      description="Delay between retry attempts in seconds",
+        default=1.0,
+        description="Delay between retry attempts in seconds",
     )
 
     # === Project Configuration ===
     project_name: str = Field(
-      default="flext-oracle-wms",
-      description="Project name for identification",
+        default="flext-oracle-wms",
+        description="Project name for identification",
     )
     environment: str = Field(
-      default="production",
-      description="Environment identifier (dev, test, prod)",
+        default="production",
+        description="Environment identifier (dev, test, prod)",
     )
 
     # === Compatibility Properties ===
     @property
     def timeout(self) -> float:
-      """Compatibility property for timeout access."""
-      return self.timeout_seconds
+        """Compatibility property for timeout access."""
+        return self.timeout_seconds
 
     @field_validator("base_url")
     @classmethod
     def validate_base_url(cls, v: HttpUrl) -> HttpUrl:
-      """Validate Oracle WMS base URL format."""
-      url_str = str(v)
-      if not url_str.startswith(("http://", "https://")):
-          invalid_protocol_msg: str = f"Invalid Oracle WMS base URL: {url_str} (must start with http:// or https://)"
-          raise ValueError(invalid_protocol_msg)
-      # Validate Oracle WMS URL pattern - more flexible for different environments
-      oracle_patterns = [
-          ".wms.ocs.oraclecloud.com",  # Production Oracle Cloud
-          ".oraclecloud.com",  # Other Oracle Cloud services
-          "oracle.com",  # Oracle domains
-      ]
+        """Validate Oracle WMS base URL format."""
+        url_str = str(v)
+        if not url_str.startswith(("http://", "https://")):
+            invalid_protocol_msg: str = f"Invalid Oracle WMS base URL: {url_str} (must start with http:// or https://)"
+            raise ValueError(invalid_protocol_msg)
+        # Validate Oracle WMS URL pattern - more flexible for different environments
+        oracle_patterns = [
+            ".wms.ocs.oraclecloud.com",  # Production Oracle Cloud
+            ".oraclecloud.com",  # Other Oracle Cloud services
+            "oracle.com",  # Oracle domains
+        ]
 
-      dev_patterns = [
-          "localhost",
-          "127.0.0.1",
-          "test",
-          "dev",
-          "staging",
-          "demo",
-          "sandbox",
-          "internal",
-          "lab",
-          "qa",
-      ]
+        dev_patterns = [
+            "localhost",
+            "127.0.0.1",
+            "test",
+            "dev",
+            "staging",
+            "demo",
+            "sandbox",
+            "internal",
+            "lab",
+            "qa",
+        ]
 
-      # Check if URL matches Oracle patterns or dev patterns
-      is_oracle_url = any(pattern in url_str for pattern in oracle_patterns)
-      is_dev_url = any(pattern in url_str for pattern in dev_patterns)
+        # Check if URL matches Oracle patterns or dev patterns
+        is_oracle_url = any(pattern in url_str for pattern in oracle_patterns)
+        is_dev_url = any(pattern in url_str for pattern in dev_patterns)
 
-      if not (is_oracle_url or is_dev_url):
-          # Allow any HTTPS URL for maximum flexibility
-          if not url_str.startswith("https://"):
-              https_security_msg: str = (
-                  f"Oracle WMS URL should use HTTPS for security: {url_str}"
-              )
-              raise ValueError(https_security_msg)
-          # For non-Oracle URLs, just issue a warning in logs but allow it
+        if not (is_oracle_url or is_dev_url):
+            # Allow any HTTPS URL for maximum flexibility
+            if not url_str.startswith("https://"):
+                https_security_msg: str = (
+                    f"Oracle WMS URL should use HTTPS for security: {url_str}"
+                )
+                raise ValueError(https_security_msg)
+            # For non-Oracle URLs, just issue a warning in logs but allow it
 
-          logger = get_logger(__name__)
-          logger.warning(
-              "Using non-standard Oracle WMS URL: %s. "
-              "Ensure this is correct for your environment.",
-              url_str,
-          )
-      return v
+            logger = get_logger(__name__)
+            logger.warning(
+                "Using non-standard Oracle WMS URL: %s. "
+                "Ensure this is correct for your environment.",
+                url_str,
+            )
+        return v
 
     # Note: log_level validation is now handled by LoggingConfigMixin
     @property
     def api_headers(self) -> dict[str, str]:
-      """Generate standard API headers for Oracle WMS requests."""
-      return {
-          "Accept": "application/json",
-          "Content-Type": "application/json",
-          "User-Agent": f"flext-oracle-wms/{self.version}",
-      }
+        """Generate standard API headers for Oracle WMS requests."""
+        return {
+            "Accept": "application/json",
+            "Content-Type": "application/json",
+            "User-Agent": f"flext-oracle-wms/{self.version}",
+        }
 
     @property
     def connection_config(self) -> dict[str, object]:
-      """Generate connection configuration for HTTP client."""
-      return {
-          "base_url": str(self.base_url),
-          "timeout": self.timeout_seconds,  # Using composition mixin field
-          "verify": self.verify_ssl,
-          "headers": self.api_headers,
-      }
+        """Generate connection configuration for HTTP client."""
+        return {
+            "base_url": str(self.base_url),
+            "timeout": self.timeout_seconds,  # Using composition mixin field
+            "verify": self.verify_ssl,
+            "headers": self.api_headers,
+        }
 
     @property
     def wms_endpoint_base(self) -> str:
-      """Get the WMS API endpoint base path."""
-      return f"/wms/lgfapi/{self.api_version}/entity/"
+        """Get the WMS API endpoint base path."""
+        return f"/wms/lgfapi/{self.api_version}/entity/"
 
     def get_entity_endpoint(self, entity_name: str) -> str:
-      """Get the full endpoint URL for a specific entity."""
-      return f"{self.wms_endpoint_base}{entity_name}"
+        """Get the full endpoint URL for a specific entity."""
+        return f"{self.wms_endpoint_base}{entity_name}"
 
     def get_entity_params(self, **additional_params: object) -> dict[str, object]:
-      """Generate standard entity query parameters."""
-      params: dict[str, object] = {
-          "page_size": self.batch_size,  # Using composition mixin field
-      }
-      # Type-safe update of parameters
-      for key, value in additional_params.items():
-          if isinstance(value, (str, int, float, bool)):
-              params[key] = value
-          else:
-              params[key] = str(value)
-      return params
+        """Generate standard entity query parameters."""
+        params: dict[str, object] = {
+            "page_size": self.batch_size,  # Using composition mixin field
+        }
+        # Type-safe update of parameters
+        for key, value in additional_params.items():
+            if isinstance(value, (str, int, float, bool)):
+                params[key] = value
+            else:
+                params[key] = str(value)
+        return params
 
     @classmethod
     def from_env_file(cls, env_file: str | Path = ".env") -> FlextOracleWmsModuleConfig:
-      """Create configuration from environment file."""
-      return cls(_env_file=env_file)
+        """Create configuration from environment file."""
+        return cls(_env_file=env_file)
 
     @classmethod
     def for_testing(cls) -> FlextOracleWmsModuleConfig:
-      """Create configuration optimized for testing."""
-      return cls(
-          project_name="flext-oracle-wms-test",
-          environment="test",
-          base_url=HttpUrl("https://test.example.com"),
-          username="test_user",
-          password=os.environ.get("FLEXT_ORACLE_WMS_TEST_PASSWORD", "test_password"),
-          batch_size=10,  # Using composition mixin field
-          timeout_seconds=5.0,  # Using composition mixin field
-          max_retries=1,  # Using composition mixin field
-          enable_request_logging=True,
-          verify_ssl=False,
-      )
+        """Create configuration optimized for testing."""
+        return cls(
+            project_name="flext-oracle-wms-test",
+            environment="test",
+            base_url=HttpUrl("https://test.example.com"),
+            username="test_user",
+            password=os.environ.get("FLEXT_ORACLE_WMS_TEST_PASSWORD", "test_password"),
+            batch_size=10,  # Using composition mixin field
+            timeout_seconds=5.0,  # Using composition mixin field
+            max_retries=1,  # Using composition mixin field
+            enable_request_logging=True,
+            verify_ssl=False,
+        )
 
 
 def load_config() -> FlextOracleWmsModuleConfig:
@@ -377,13 +378,13 @@ def load_config() -> FlextOracleWmsModuleConfig:
     env_file = None
     current_dir = Path.cwd()
     for _ in range(5):  # Search up to 5 levels up
-      potential_env = Path(current_dir) / ".env"
-      if Path(potential_env).exists():
-          env_file = potential_env
-          break
-      current_dir = Path(current_dir).parent
+        potential_env = Path(current_dir) / ".env"
+        if Path(potential_env).exists():
+            env_file = potential_env
+            break
+        current_dir = Path(current_dir).parent
     if env_file:
-      return FlextOracleWmsModuleConfig(_env_file=env_file)
+        return FlextOracleWmsModuleConfig(_env_file=env_file)
     return FlextOracleWmsModuleConfig()
 
 

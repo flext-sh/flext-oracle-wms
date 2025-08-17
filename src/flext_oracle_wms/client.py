@@ -21,49 +21,49 @@ class FlextOracleWmsPlugin:
     """
 
     def __init__(self, config: dict[str, object] | None = None) -> None:
-      """Init   function.
+        """Init   function.
 
-      Args:
-          config (dict[str, object] | None): Description.
+        Args:
+            config (dict[str, object] | None): Description.
 
-      """
-      self.config = config or {}
-      self._client: object | None = None
+        """
+        self.config = config or {}
+        self._client: object | None = None
 
     async def start(self) -> FlextResult[None]:
-      """Start function.
+        """Start function.
 
-      Returns:
-          FlextResult[None]: Description.
+        Returns:
+            FlextResult[None]: Description.
 
-      """
-      return FlextResult.ok(None)
+        """
+        return FlextResult.ok(None)
 
     async def stop(self) -> FlextResult[None]:
-      """Stop function.
+        """Stop function.
 
-      Returns:
-          FlextResult[None]: Description.
+        Returns:
+            FlextResult[None]: Description.
 
-      """
-      return FlextResult.ok(None)
+        """
+        return FlextResult.ok(None)
 
     async def execute(self, operation: str) -> FlextResult[object]:
-      """Execute function.
+        """Execute function.
 
-      Args:
-          operation (str): Description.
+        Args:
+            operation (str): Description.
 
-      Returns:
-          FlextResult[object]: Description.
+        Returns:
+            FlextResult[object]: Description.
 
-      """
-      if self._client is None:
-          return FlextResult.fail("Plugin not initialized: client is not initialized")
-      try:
-          return FlextResult.ok({"operation": operation, "status": "noop"})
-      except Exception as e:  # pragma: no cover - defensive
-          raise FlextOracleWmsProcessingError(str(e)) from e
+        """
+        if self._client is None:
+            return FlextResult.fail("Plugin not initialized: client is not initialized")
+        try:
+            return FlextResult.ok({"operation": operation, "status": "noop"})
+        except Exception as e:  # pragma: no cover - defensive
+            raise FlextOracleWmsProcessingError(str(e)) from e
 
 
 # Back-compat wrapper to ensure start()/stop() can be asserted as awaited once
@@ -71,12 +71,12 @@ class FlextApiClient(_FlextApiClient):
     """FlextApiClient class."""
 
     async def start(self) -> FlextResult[None]:
-      """Start function."""
-      return await super().start()
+        """Start function."""
+        return await super().start()
 
     async def stop(self) -> FlextResult[None]:
-      """Stop function."""
-      return await super().stop()
+        """Stop function."""
+        return await super().stop()
 
 
 # Lazy export of main client to avoid circular imports on module import time
@@ -88,7 +88,7 @@ def __getattr__(name: str) -> object:  # pragma: no cover - module-level hook
 
     """
     if name == "FlextOracleWmsClient":
-      return _Client
+        return _Client
     raise AttributeError(name)
 
 

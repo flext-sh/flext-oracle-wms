@@ -9,15 +9,15 @@ from flext_oracle_wms import FlextOracleWmsApiVersion, FlextOracleWmsClientConfi
 def test_config_creation_valid() -> None:
     """Test config creation with valid parameters - EXACTLY like working example."""
     config = FlextOracleWmsClientConfig(
-      base_url="https://ta29.wms.ocs.oraclecloud.com/raizen_test",
-      username="USER_WMS_INTEGRA",
-      password="test_password",
-      environment="raizen_test",
-      api_version=FlextOracleWmsApiVersion.LGF_V10,
-      timeout=30.0,
-      max_retries=3,
-      verify_ssl=True,
-      enable_logging=True,
+        base_url="https://ta29.wms.ocs.oraclecloud.com/raizen_test",
+        username="USER_WMS_INTEGRA",
+        password="test_password",
+        environment="raizen_test",
+        api_version=FlextOracleWmsApiVersion.LGF_V10,
+        timeout=30.0,
+        max_retries=3,
+        verify_ssl=True,
+        enable_logging=True,
     )
 
     assert config.base_url == "https://ta29.wms.ocs.oraclecloud.com/raizen_test"
@@ -35,15 +35,15 @@ def test_config_creation_valid() -> None:
 def test_config_validation_success() -> None:
     """Test config domain validation - BASED ON WORKING PATTERN."""
     config = FlextOracleWmsClientConfig(
-      base_url="https://test.wms.oraclecloud.com/test",
-      username="test_user",
-      password="test_password",
-      environment="test_env",
-      api_version=FlextOracleWmsApiVersion.LGF_V10,
-      timeout=30.0,
-      max_retries=3,
-      verify_ssl=True,
-      enable_logging=True,
+        base_url="https://test.wms.oraclecloud.com/test",
+        username="test_user",
+        password="test_password",
+        environment="test_env",
+        api_version=FlextOracleWmsApiVersion.LGF_V10,
+        timeout=30.0,
+        max_retries=3,
+        verify_ssl=True,
+        enable_logging=True,
     )
 
     # This should not raise an exception
@@ -55,15 +55,15 @@ def test_config_validation_success() -> None:
 def test_config_validation_invalid_url() -> None:
     """Test config validation with invalid URL."""
     config = FlextOracleWmsClientConfig(
-      base_url="invalid-url-without-protocol",
-      username="test_user",
-      password="test_password",
-      environment="test_env",
-      api_version=FlextOracleWmsApiVersion.LGF_V10,
-      timeout=30.0,
-      max_retries=3,
-      verify_ssl=True,
-      enable_logging=True,
+        base_url="invalid-url-without-protocol",
+        username="test_user",
+        password="test_password",
+        environment="test_env",
+        api_version=FlextOracleWmsApiVersion.LGF_V10,
+        timeout=30.0,
+        max_retries=3,
+        verify_ssl=True,
+        enable_logging=True,
     )
 
     result = config.validate_business_rules()
@@ -75,15 +75,15 @@ def test_config_validation_invalid_url() -> None:
 def test_config_validation_empty_username() -> None:
     """Test config validation with empty username."""
     config = FlextOracleWmsClientConfig(
-      base_url="https://test.wms.oraclecloud.com/test",
-      username="",
-      password="test_password",
-      environment="test_env",
-      api_version=FlextOracleWmsApiVersion.LGF_V10,
-      timeout=30.0,
-      max_retries=3,
-      verify_ssl=True,
-      enable_logging=True,
+        base_url="https://test.wms.oraclecloud.com/test",
+        username="",
+        password="test_password",
+        environment="test_env",
+        api_version=FlextOracleWmsApiVersion.LGF_V10,
+        timeout=30.0,
+        max_retries=3,
+        verify_ssl=True,
+        enable_logging=True,
     )
 
     result = config.validate_business_rules()
@@ -95,15 +95,15 @@ def test_config_validation_empty_username() -> None:
 def test_config_validation_empty_password() -> None:
     """Test config validation with empty password."""
     config = FlextOracleWmsClientConfig(
-      base_url="https://test.wms.oraclecloud.com/test",
-      username="test_user",
-      password="",
-      environment="test_env",
-      api_version=FlextOracleWmsApiVersion.LGF_V10,
-      timeout=30.0,
-      max_retries=3,
-      verify_ssl=True,
-      enable_logging=True,
+        base_url="https://test.wms.oraclecloud.com/test",
+        username="test_user",
+        password="",
+        environment="test_env",
+        api_version=FlextOracleWmsApiVersion.LGF_V10,
+        timeout=30.0,
+        max_retries=3,
+        verify_ssl=True,
+        enable_logging=True,
     )
 
     result = config.validate_business_rules()
@@ -115,15 +115,15 @@ def test_config_validation_empty_password() -> None:
 def test_config_validation_invalid_timeout() -> None:
     """Test config validation with invalid timeout."""
     config = FlextOracleWmsClientConfig(
-      base_url="https://test.wms.oraclecloud.com/test",
-      username="test_user",
-      password="test_password",
-      environment="test_env",
-      api_version=FlextOracleWmsApiVersion.LGF_V10,
-      timeout=-1.0,  # Invalid negative timeout
-      max_retries=3,
-      verify_ssl=True,
-      enable_logging=True,
+        base_url="https://test.wms.oraclecloud.com/test",
+        username="test_user",
+        password="test_password",
+        environment="test_env",
+        api_version=FlextOracleWmsApiVersion.LGF_V10,
+        timeout=-1.0,  # Invalid negative timeout
+        max_retries=3,
+        verify_ssl=True,
+        enable_logging=True,
     )
 
     result = config.validate_business_rules()
@@ -135,15 +135,15 @@ def test_config_validation_invalid_timeout() -> None:
 def test_config_validation_invalid_retries() -> None:
     """Test config validation with invalid retries."""
     config = FlextOracleWmsClientConfig(
-      base_url="https://test.wms.oraclecloud.com/test",
-      username="test_user",
-      password="test_password",
-      environment="test_env",
-      api_version=FlextOracleWmsApiVersion.LGF_V10,
-      timeout=30.0,
-      max_retries=-1,  # Invalid negative retries
-      verify_ssl=True,
-      enable_logging=True,
+        base_url="https://test.wms.oraclecloud.com/test",
+        username="test_user",
+        password="test_password",
+        environment="test_env",
+        api_version=FlextOracleWmsApiVersion.LGF_V10,
+        timeout=30.0,
+        max_retries=-1,  # Invalid negative retries
+        verify_ssl=True,
+        enable_logging=True,
     )
 
     result = config.validate_business_rules()

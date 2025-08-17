@@ -1,6 +1,12 @@
 """Test Oracle WMS client class functionality."""
 
-from flext_oracle_wms import FlextOracleWmsClient, FlextOracleWmsModuleConfig
+from flext_oracle_wms import (
+    FlextOracleWmsClient,
+    FlextOracleWmsModuleConfig,
+    FlextOracleWmsPlugin,
+    flext_oracle_wms_build_entity_url,
+    flext_oracle_wms_validate_entity_name,
+)
 
 
 def test_client_class_creation() -> None:
@@ -24,8 +30,6 @@ def test_client_class_with_real_methods() -> None:
 
 def test_entity_name_validation() -> None:
     """Test entity name validation using real helper function."""
-from flext_oracle_wms import flext_oracle_wms_validate_entity_name
-
     # Test with invalid entity name
     result = flext_oracle_wms_validate_entity_name("")
     assert result.is_failure
@@ -34,13 +38,11 @@ from flext_oracle_wms import flext_oracle_wms_validate_entity_name
 
 def test_api_url_building() -> None:
     """Test API URL building using real helper function."""
-from flext_oracle_wms import flext_oracle_wms_build_entity_url
-
     # Use real helper function
     url = flext_oracle_wms_build_entity_url(
-      "https://test.example.com",
-      "prod",
-      "order_hdr",
+        "https://test.example.com",
+        "prod",
+        "order_hdr",
     )
     assert "order_hdr" in url
     assert "wms/lgfapi" in url
@@ -170,11 +172,6 @@ def test_client_configuration_access() -> None:
 
 def test_real_helper_functions() -> None:
     """Test using real helper functions from helpers module."""
-from flext_oracle_wms import (
-      flext_oracle_wms_build_entity_url,
-      flext_oracle_wms_validate_entity_name,
-    )
-
     # Test real validation function
     result = flext_oracle_wms_validate_entity_name("order_hdr")
     assert result.success
@@ -199,12 +196,6 @@ def test_client_repr_and_str() -> None:
 
 def test_imports_and_modules() -> None:
     """Test that all required imports work correctly."""
-from flext_oracle_wms import (
-      FlextOracleWmsClient,
-      FlextOracleWmsModuleConfig,
-      FlextOracleWmsPlugin,
-    )
-
     # Test that classes can be imported and instantiated
     config = FlextOracleWmsModuleConfig.for_testing()
     client = FlextOracleWmsClient(config)
