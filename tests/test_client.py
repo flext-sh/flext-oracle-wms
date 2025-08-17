@@ -21,8 +21,7 @@ Version: 0.9.0
 License: MIT
 """
 
-from flext_oracle_wms.client import FlextOracleWmsClient
-from flext_oracle_wms.config import FlextOracleWmsModuleConfig
+from flext_oracle_wms import FlextOracleWmsClient, FlextOracleWmsModuleConfig
 
 
 def test_client_creation() -> None:

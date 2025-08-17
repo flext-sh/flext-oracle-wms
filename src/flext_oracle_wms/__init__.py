@@ -256,25 +256,28 @@ try:  # pragma: no cover - helper glue for tests only
     import builtins as _builtins
 
     async def _run(cmd_list: list[str], cwd: str | None = None) -> tuple[int, str, str]:
-        """Run function.
+      """Run function.
 
-        Args:
-            cmd_list (list[str]): Description.
-            cwd (str | None): Description.
+      Args:
+          cmd_list (list[str]): Description.
+          cwd (str | None): Description.
 
-        Returns:
-            tuple[int, str, str]: Description.
+      Returns:
+          tuple[int, str, str]: Description.
 
-        """
-        proc = await _asyncio.create_subprocess_exec(
-            *cmd_list,
-            cwd=cwd,
-            stdout=_asyncio.subprocess.PIPE,
-            stderr=_asyncio.subprocess.PIPE,
-        )
-        stdout, stderr = await proc.communicate()
-        return proc.returncode or 0, stdout.decode(), stderr.decode()
+      """
+      proc = await _asyncio.create_subprocess_exec(
+          *cmd_list,
+          cwd=cwd,
+          stdout=_asyncio.subprocess.PIPE,
+          stderr=_asyncio.subprocess.PIPE,
+      )
+      stdout, stderr = await proc.communicate()
+      return proc.returncode or 0, stdout.decode(), stderr.decode()
 
     _builtins._run = _run  # type: ignore[attr-defined]
 except Exception:  # pragma: no cover - defensive
-    pass
+    # Test helper setup failed, tests will need to provide _run themselves
+    # This is non-critical as it only affects test utilities
+    import logging
+    logging.getLogger(__name__).debug("Test helper _run setup failed, tests may need manual setup")

@@ -130,40 +130,40 @@ class FlextOracleWmsEntity(FlextValueObject):
     supports_incremental: bool = False
 
     def validate_business_rules(self) -> FlextResult[None]:
-        """Validate entity business rules."""
-        validation_errors = []
+      """Validate entity business rules."""
+      validation_errors = []
 
-        try:
-            validate_string_parameter(self.name, "entity name")
-            validate_string_parameter(self.endpoint, "entity endpoint")
-        except (TypeError, ValueError, AttributeError) as e:
-            validation_errors.append(str(e))
+      try:
+          validate_string_parameter(self.name, "entity name")
+          validate_string_parameter(self.endpoint, "entity endpoint")
+      except (TypeError, ValueError, AttributeError) as e:
+          validation_errors.append(str(e))
 
-        if not self.endpoint.startswith("/"):
-            validation_errors.append("Entity endpoint must start with /")
+      if not self.endpoint.startswith("/"):
+          validation_errors.append("Entity endpoint must start with /")
 
-        max_length = FlextOracleWmsDefaults.MAX_ENTITY_NAME_LENGTH
-        if len(self.name) > max_length:
-            validation_errors.append(
-                f"Entity name too long (max {max_length} characters)",
-            )
+      max_length = FlextOracleWmsDefaults.MAX_ENTITY_NAME_LENGTH
+      if len(self.name) > max_length:
+          validation_errors.append(
+              f"Entity name too long (max {max_length} characters)",
+          )
 
-        if validation_errors:
-            return FlextResult.fail(
-                f"{FlextOracleWmsErrorMessages.ENTITY_VALIDATION_FAILED}: {'; '.join(validation_errors)}",
-            )
-        return FlextResult.ok(None)
+      if validation_errors:
+          return FlextResult.fail(
+              f"{FlextOracleWmsErrorMessages.ENTITY_VALIDATION_FAILED}: {'; '.join(validation_errors)}",
+          )
+      return FlextResult.ok(None)
 
     def to_dict_basic(self) -> dict[str, object]:
-        """Convert entity to basic dict format (used by discovery)."""
-        return {
-            "name": self.name,
-            "endpoint": self.endpoint,
-            "description": self.description,
-            "primary_key": self.primary_key,
-            "replication_key": self.replication_key,
-            "supports_incremental": self.supports_incremental,
-        }
+      """Convert entity to basic dict format (used by discovery)."""
+      return {
+          "name": self.name,
+          "endpoint": self.endpoint,
+          "description": self.description,
+          "primary_key": self.primary_key,
+          "replication_key": self.replication_key,
+          "supports_incremental": self.supports_incremental,
+      }
 
 
 @dataclass(frozen=True)
@@ -179,33 +179,33 @@ class FlextOracleWmsDiscoveryResult(FlextValueObject):
     api_version: str | None = "v10"
 
     def validate_business_rules(self) -> FlextResult[None]:
-        """Validate discovery result."""
-        validation_errors = []
+      """Validate discovery result."""
+      validation_errors = []
 
-        try:
-            validate_records_list(self.entities, "entities")
-        except (TypeError, ValueError, AttributeError) as e:
-            validation_errors.append(str(e))
+      try:
+          validate_records_list(self.entities, "entities")
+      except (TypeError, ValueError, AttributeError) as e:
+          validation_errors.append(str(e))
 
-        if self.total_count < 0:
-            validation_errors.append("Total count cannot be negative")
+      if self.total_count < 0:
+          validation_errors.append("Total count cannot be negative")
 
-        if self.entities and len(self.entities) != self.total_count:
-            validation_errors.append("Entity count mismatch")
+      if self.entities and len(self.entities) != self.total_count:
+          validation_errors.append("Entity count mismatch")
 
-        # Validate all entities
-        for entity in self.entities:
-            entity_validation = entity.validate_business_rules()
-            if not entity_validation.success:
-                validation_errors.append(
-                    f"Entity {entity.name}: {entity_validation.error}",
-                )
+      # Validate all entities
+      for entity in self.entities:
+          entity_validation = entity.validate_business_rules()
+          if not entity_validation.success:
+              validation_errors.append(
+                  f"Entity {entity.name}: {entity_validation.error}",
+              )
 
-        if validation_errors:
-            return FlextResult.fail(
-                f"{FlextOracleWmsErrorMessages.DISCOVERY_FAILED}: {'; '.join(validation_errors)}",
-            )
-        return FlextResult.ok(None)
+      if validation_errors:
+          return FlextResult.fail(
+              f"{FlextOracleWmsErrorMessages.DISCOVERY_FAILED}: {'; '.join(validation_errors)}",
+          )
+      return FlextResult.ok(None)
 
 
 @dataclass(frozen=True)
@@ -218,27 +218,27 @@ class FlextOracleWmsApiResponse(FlextValueObject):
     error_message: str | None = None
 
     def validate_business_rules(self) -> FlextResult[None]:
-        """Validate API response."""
-        validation_errors = []
+      """Validate API response."""
+      validation_errors = []
 
-        try:
-            validate_dict_parameter(self.data, "data")
-        except (TypeError, ValueError, AttributeError) as e:
-            validation_errors.append(str(e))
+      try:
+          validate_dict_parameter(self.data, "data")
+      except (TypeError, ValueError, AttributeError) as e:
+          validation_errors.append(str(e))
 
-        min_code = FlextOracleWmsDefaults.MIN_HTTP_STATUS_CODE
-        max_code = FlextOracleWmsDefaults.MAX_HTTP_STATUS_CODE
-        if self.status_code < min_code or self.status_code > max_code:
-            validation_errors.append(f"Invalid HTTP status code: {self.status_code}")
+      min_code = FlextOracleWmsDefaults.MIN_HTTP_STATUS_CODE
+      max_code = FlextOracleWmsDefaults.MAX_HTTP_STATUS_CODE
+      if self.status_code < min_code or self.status_code > max_code:
+          validation_errors.append(f"Invalid HTTP status code: {self.status_code}")
 
-        if not self.success and not self.error_message:
-            validation_errors.append("Failed response must have error message")
+      if not self.success and not self.error_message:
+          validation_errors.append("Failed response must have error message")
 
-        if validation_errors:
-            return FlextResult.fail(
-                f"{FlextOracleWmsErrorMessages.INVALID_RESPONSE}: {'; '.join(validation_errors)}",
-            )
-        return FlextResult.ok(None)
+      if validation_errors:
+          return FlextResult.fail(
+              f"{FlextOracleWmsErrorMessages.INVALID_RESPONSE}: {'; '.join(validation_errors)}",
+          )
+      return FlextResult.ok(None)
 
 
 @dataclass(frozen=True)
@@ -254,31 +254,31 @@ class FlextOracleWmsApiEndpoint(FlextValueObject):
     since_version: str = "6.1"
 
     def get_full_path(self, environment: str) -> str:
-        """Get full API path with environment."""
-        if self.version == FlextOracleWmsApiVersion.LGF_V10:
-            return f"/{environment}/wms/lgfapi/v10{self.path}"
-        return f"/{environment}/wms/api{self.path}"
+      """Get full API path with environment."""
+      if self.version == FlextOracleWmsApiVersion.LGF_V10:
+          return f"/{environment}/wms/lgfapi/v10{self.path}"
+      return f"/{environment}/wms/api{self.path}"
 
     def validate_business_rules(self) -> FlextResult[None]:
-        """Validate Oracle WMS API endpoint business rules."""
-        validation_errors = []
+      """Validate Oracle WMS API endpoint business rules."""
+      validation_errors = []
 
-        if not self.name:
-            validation_errors.append("API name cannot be empty")
-        if not self.method:
-            validation_errors.append("HTTP method cannot be empty")
-        if not self.path:
-            validation_errors.append("API path cannot be empty")
-        if self.method not in {"GET", "POST", "PUT", "PATCH", "DELETE"}:
-            validation_errors.append(f"Invalid HTTP method: {self.method}")
-        if not self.path.startswith("/"):
-            validation_errors.append("API path must start with /")
-        if not self.description:
-            validation_errors.append("API description cannot be empty")
+      if not self.name:
+          validation_errors.append("API name cannot be empty")
+      if not self.method:
+          validation_errors.append("HTTP method cannot be empty")
+      if not self.path:
+          validation_errors.append("API path cannot be empty")
+      if self.method not in {"GET", "POST", "PUT", "PATCH", "DELETE"}:
+          validation_errors.append(f"Invalid HTTP method: {self.method}")
+      if not self.path.startswith("/"):
+          validation_errors.append("API path must start with /")
+      if not self.description:
+          validation_errors.append("API description cannot be empty")
 
-        if validation_errors:
-            return FlextResult.fail("; ".join(validation_errors))
-        return FlextResult.ok(None)
+      if validation_errors:
+          return FlextResult.fail("; ".join(validation_errors))
+      return FlextResult.ok(None)
 
 
 # =============================================================================

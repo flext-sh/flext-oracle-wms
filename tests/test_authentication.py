@@ -25,20 +25,20 @@ License: MIT
 
 import pytest
 
-from flext_oracle_wms.authentication import (
+from flext_oracle_wms import (
     FlextOracleWmsAuthConfig,
     FlextOracleWmsAuthenticator,
     FlextOracleWmsAuthPlugin,
+    OracleWMSAuthMethod,
 )
-from flext_oracle_wms.constants import OracleWMSAuthMethod
 
 
 def test_basic_auth_config_creation() -> None:
     """Test basic authentication config creation."""
     config = FlextOracleWmsAuthConfig(
-        auth_type=OracleWMSAuthMethod.BASIC,
-        username="user",
-        password="pass",
+      auth_type=OracleWMSAuthMethod.BASIC,
+      username="user",
+      password="pass",
     )
     assert config.auth_type == OracleWMSAuthMethod.BASIC
     assert config.username == "user"
@@ -48,8 +48,8 @@ def test_basic_auth_config_creation() -> None:
 def test_api_key_auth_config_creation() -> None:
     """Test API key authentication config creation."""
     config = FlextOracleWmsAuthConfig(
-        auth_type=OracleWMSAuthMethod.API_KEY,
-        api_key="test_api_key_12345",
+      auth_type=OracleWMSAuthMethod.API_KEY,
+      api_key="test_api_key_12345",
     )
     assert config.auth_type == OracleWMSAuthMethod.API_KEY
     assert config.api_key == "test_api_key_12345"
@@ -58,9 +58,9 @@ def test_api_key_auth_config_creation() -> None:
 def test_authenticator_creation() -> None:
     """Test authenticator creation."""
     config = FlextOracleWmsAuthConfig(
-        auth_type=OracleWMSAuthMethod.BASIC,
-        username="user",
-        password="pass",
+      auth_type=OracleWMSAuthMethod.BASIC,
+      username="user",
+      password="pass",
     )
     authenticator = FlextOracleWmsAuthenticator(config)
     assert authenticator.config == config
@@ -69,9 +69,9 @@ def test_authenticator_creation() -> None:
 def test_basic_auth_validation() -> None:
     """Test basic auth credential validation."""
     config = FlextOracleWmsAuthConfig(
-        auth_type=OracleWMSAuthMethod.BASIC,
-        username="user",
-        password="pass",
+      auth_type=OracleWMSAuthMethod.BASIC,
+      username="user",
+      password="pass",
     )
     result = config.validate_business_rules()
     assert result.success is True
@@ -80,9 +80,9 @@ def test_basic_auth_validation() -> None:
 def test_basic_auth_validation_empty_credentials() -> None:
     """Test validation with empty credentials."""
     config = FlextOracleWmsAuthConfig(
-        auth_type=OracleWMSAuthMethod.BASIC,
-        username="",
-        password="",
+      auth_type=OracleWMSAuthMethod.BASIC,
+      username="",
+      password="",
     )
     result = config.validate_business_rules()
     assert result.success is False
@@ -91,8 +91,8 @@ def test_basic_auth_validation_empty_credentials() -> None:
 def test_bearer_validation_missing_token() -> None:
     """Test Bearer token validation with missing token."""
     config = FlextOracleWmsAuthConfig(
-        auth_type=OracleWMSAuthMethod.BEARER,
-        # Missing token
+      auth_type=OracleWMSAuthMethod.BEARER,
+      # Missing token
     )
     result = config.validate_business_rules()
     assert result.success is False
@@ -102,9 +102,9 @@ def test_bearer_validation_missing_token() -> None:
 async def test_authenticator_get_headers() -> None:
     """Test getting authentication headers."""
     config = FlextOracleWmsAuthConfig(
-        auth_type=OracleWMSAuthMethod.BASIC,
-        username="user",
-        password="pass",
+      auth_type=OracleWMSAuthMethod.BASIC,
+      username="user",
+      password="pass",
     )
     authenticator = FlextOracleWmsAuthenticator(config)
 
@@ -120,8 +120,8 @@ async def test_authenticator_get_headers() -> None:
 async def test_authenticator_oauth2_headers() -> None:
     """Test OAuth2 authentication headers."""
     config = FlextOracleWmsAuthConfig(
-        auth_type=OracleWMSAuthMethod.BEARER,
-        token="test_bearer_token_12345",
+      auth_type=OracleWMSAuthMethod.BEARER,
+      token="test_bearer_token_12345",
     )
     authenticator = FlextOracleWmsAuthenticator(config)
 
@@ -137,9 +137,9 @@ async def test_authenticator_oauth2_headers() -> None:
 def test_auth_plugin_creation() -> None:
     """Test authentication plugin creation."""
     config = FlextOracleWmsAuthConfig(
-        auth_type=OracleWMSAuthMethod.BASIC,
-        username="user",
-        password="pass",
+      auth_type=OracleWMSAuthMethod.BASIC,
+      username="user",
+      password="pass",
     )
     authenticator = FlextOracleWmsAuthenticator(config)
 
@@ -153,9 +153,9 @@ def test_auth_plugin_creation() -> None:
 async def test_plugin_request_processing() -> None:
     """Test plugin request processing."""
     config = FlextOracleWmsAuthConfig(
-        auth_type=OracleWMSAuthMethod.BASIC,
-        username="user",
-        password="pass",
+      auth_type=OracleWMSAuthMethod.BASIC,
+      username="user",
+      password="pass",
     )
     authenticator = FlextOracleWmsAuthenticator(config)
     plugin = FlextOracleWmsAuthPlugin(authenticator)

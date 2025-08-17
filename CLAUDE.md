@@ -18,44 +18,67 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ### Key Components
 
-- **Client Layer**: `FlextOracleWmsClient` in `src/flext_oracle_wms/client.py` - Main client interface
-- **API Catalog**: `src/flext_oracle_wms/api_catalog.py` - Declarative API endpoint definitions
-- **Authentication**: `src/flext_oracle_wms/authentication.py` - Multiple auth methods (basic, bearer, API key)
-- **Configuration**: `src/flext_oracle_wms/config.py` - Unified config management with Pydantic
-- **Discovery**: `src/flext_oracle_wms/discovery.py` - Automatic entity discovery and schema processing
-- **Cache Management**: `src/flext_oracle_wms/cache.py` - Enterprise caching using flext-core patterns
-- **Error Handling**: `src/flext_oracle_wms/exceptions.py` - Comprehensive exception hierarchy
+- **Client Layer**: `FlextOracleWmsClient` in `src/flext_oracle_wms/wms_client.py` - Main client interface
+- **API Catalog**: `src/flext_oracle_wms/wms_api.py` - Declarative API endpoint definitions and mock server
+- **Authentication**: Integrated in `src/flext_oracle_wms/wms_client.py` - Multiple auth methods (basic, bearer, API key)
+- **Configuration**: `src/flext_oracle_wms/wms_config.py` - Unified config management with Pydantic
+- **Discovery**: `src/flext_oracle_wms/wms_discovery.py` - Automatic entity discovery and schema processing
+- **Data Operations**: `src/flext_oracle_wms/wms_operations.py` - WMS data operations and utilities
+- **Models**: `src/flext_oracle_wms/wms_models.py` - WMS-specific data models and value objects
+- **Constants**: `src/flext_oracle_wms/wms_constants.py` - WMS enums and constants
+- **Error Handling**: `src/flext_oracle_wms/wms_exceptions.py` - Comprehensive exception hierarchy
 
 ### Source Structure
 
 ```
 src/flext_oracle_wms/
 ├── __init__.py           # Public API exports (comprehensive)
-├── client.py             # Main WMS client implementation
-├── api_catalog.py        # Declarative API endpoint definitions
-├── authentication.py    # Authentication providers
-├── config.py            # Configuration classes with Pydantic
-├── discovery.py         # Entity discovery functionality
-├── cache.py             # Caching implementation
-├── dynamic.py           # Dynamic schema processing
-├── filtering.py         # Record filtering utilities
-├── flattening.py        # Nested data flattening
-├── helpers.py           # Utility functions
-├── models.py            # Data models and value objects
-├── types.py             # Type definitions and aliases
-├── constants.py         # Enums and constants
-└── exceptions.py        # Exception hierarchy
+├── wms_client.py         # Main WMS client implementation
+├── wms_api.py           # API catalog and mock server
+├── authentication.py    # Authentication providers (legacy)
+├── wms_config.py        # WMS-specific configuration with Pydantic
+├── wms_discovery.py     # WMS entity discovery functionality
+├── cache.py             # Caching implementation (legacy)
+├── dynamic.py           # Dynamic schema processing (legacy)
+├── filtering.py         # Record filtering utilities (legacy)
+├── flattening.py        # Nested data flattening (legacy)
+├── helpers.py           # Utility functions (legacy)
+├── helpers_compat.py    # Compatibility helpers
+├── wms_models.py        # WMS data models and value objects
+├── typings.py           # Type definitions and aliases
+├── wms_constants.py     # WMS enums and constants
+├── wms_exceptions.py    # WMS exception hierarchy
+├── wms_operations.py    # WMS data operations and utilities
+├── legacy.py            # Legacy code compatibility
+├── client.py            # Legacy client (deprecated)
+├── config.py            # Legacy config (deprecated)
+├── models.py            # Legacy models (deprecated)
+├── constants.py         # Legacy constants (deprecated)
+├── exceptions.py        # Legacy exceptions (deprecated)
+├── discovery.py         # Legacy discovery (deprecated)
+├── api_catalog.py       # Legacy API catalog (deprecated)
+└── py.typed             # Type annotations marker
 ```
 
 ### Dependencies
 
-Core dependencies are managed through flext ecosystem libraries:
+**FLEXT Ecosystem Dependencies (Local Development):**
+- `flext-core`: Base patterns, logging, result handling, dependency injection (path: ../flext-core)
+- `flext-api`: API client patterns and enterprise authentication (path: ../flext-api)
+- `flext-observability`: Monitoring and observability features (path: ../flext-observability)
 
-- `flext-core`: Base patterns, logging, result handling, dependency injection
-- `flext-api`: API client patterns and enterprise authentication
-- `flext-observability`: Monitoring and observability features
-- `pydantic`: Data validation and settings management (v2.11.7+)
-- `httpx`: Async HTTP client for API communications (v0.28.1+)
+**Core Dependencies:**
+- `pydantic` (≥2.11.7): Data validation and settings management
+- `httpx` (≥0.28.1): Async HTTP client for API communications
+- `pydantic-settings` (≥2.10.1): Settings management
+- `python-dotenv` (≥1.1.1): Environment variable loading
+
+**Development Dependencies:**
+- `ruff` (≥0.12.3): Linting and formatting
+- `mypy` (≥1.13.0): Type checking
+- `pytest` (≥8.4.0): Testing framework
+- `bandit` (≥1.8.0): Security scanning
+- `pre-commit` (≥4.0.1): Git hooks
 
 ## Development Commands
 
@@ -108,6 +131,26 @@ make build-clean      # Clean and build
 make clean            # Clean build artifacts
 make clean-all        # Deep clean including virtual environment
 
+# WMS-specific operations
+make wms-test         # Test WMS connectivity
+make wms-schema       # Validate WMS schema
+make wms-inventory    # Test inventory operations
+make wms-shipping     # Test shipping operations
+make oracle-connect   # Test Oracle connection
+make oracle-schema    # Validate Oracle schema
+
+# Docker operations (Maximum Container Usage)
+make docker-build     # Build Docker images
+make docker-up        # Start all Docker services
+make docker-down      # Stop all Docker services
+make docker-examples  # Run Oracle WMS examples in Docker
+make docker-test      # Run complete test suite in Docker with real Oracle WMS
+make docker-validate  # Complete Oracle WMS validation using Docker
+make docker-full-validation  # Complete Docker validation workflow
+./docker-run.sh examples     # Run examples in Docker
+./docker-run.sh test         # Run tests in Docker
+./docker-run.sh all          # Complete validation
+
 # Diagnostics and maintenance
 make diagnose         # Project diagnostics (Python, Poetry, dependencies)
 make doctor           # Health check combining diagnose + check
@@ -131,13 +174,19 @@ pytest -m declarative       # Declarative integration tests
 pytest -m lgf_api           # LGF API specific tests
 pytest -m automation        # Automation tests
 pytest -m performance       # Performance tests
+
+# WMS-specific test markers (from Makefile)
+pytest -m wms               # WMS specific tests
+pytest -m oracle            # Oracle database tests
+pytest -m inventory         # Inventory management tests
+pytest -m shipping          # Shipping operation tests
 ```
 
 ## Code Architecture
 
 ### Main Client Interface
 
-The `FlextOracleWmsClient` in `src/flext_oracle_wms/client.py` is the primary interface:
+The `FlextOracleWmsClient` in `src/flext_oracle_wms/wms_client.py` is the primary interface:
 
 ```python
 from flext_oracle_wms import FlextOracleWmsClient, FlextOracleWmsClientConfig
@@ -169,31 +218,34 @@ if result.success:
 
 #### Authentication System
 
-Multiple authentication methods in `src/flext_oracle_wms/authentication.py`:
+Multiple authentication methods in `src/flext_oracle_wms/wms_client.py`:
 
 - `FlextOracleWmsAuthenticator`: Main authenticator interface
+- `FlextOracleWmsAuthPlugin`: Pluggable authentication system
 - Basic Authentication, Bearer Token, API Key support
-- Pluggable authentication system via `FlextOracleWmsAuthPlugin`
+- Factory functions for creating auth providers
 
 #### API Catalog System
 
-Declarative API definitions in `src/flext_oracle_wms/api_catalog.py`:
+Declarative API definitions in `src/flext_oracle_wms/wms_api.py`:
 
 - `FLEXT_ORACLE_WMS_APIS`: Centralized API endpoint catalog
 - `FlextOracleWmsApiCategory`: Categorized endpoints
 - `FlextOracleWmsApiEndpoint`: Individual endpoint definitions
+- `OracleWmsMockServer`: Mock server for testing
 
 #### Entity Discovery
 
-`src/flext_oracle_wms/discovery.py` provides:
+`src/flext_oracle_wms/wms_discovery.py` provides:
 
 - `FlextOracleWmsEntityDiscovery`: Automatic entity discovery
-- Schema processing and validation
+- `FlextOracleWmsDynamicSchemaProcessor`: Schema processing and validation
+- `FlextOracleWmsCacheManager`: Enterprise caching
 - Integration with flext-core patterns
 
 #### Error Handling
 
-Comprehensive exception hierarchy in `src/flext_oracle_wms/exceptions.py`:
+Comprehensive exception hierarchy in `src/flext_oracle_wms/wms_exceptions.py`:
 
 - `FlextOracleWmsError`: Base exception class
 - `FlextOracleWmsConnectionError`: Connection-related errors
@@ -254,12 +306,73 @@ tests/
 2. Implement changes using established patterns from flext-core
 3. Run `make validate` frequently during development
 4. Use type hints throughout (required by strict MyPy)
+5. Test with Docker: `make docker-test` for complete validation
 
 ### Before Committing
 
 1. Run `make validate` to ensure all quality gates pass
 2. Verify test coverage meets 90% requirement
-3. Pre-commit hooks will run automatically
+3. Run `make docker-validate` for complete Docker validation
+4. Pre-commit hooks will run automatically
+
+## Docker Integration
+
+### Maximum Container Usage
+
+The project provides extensive Docker integration as requested:
+
+```bash
+# Complete Docker workflow
+make docker-full-validation  # Build + validate + examples + tests
+
+# Individual Docker operations
+make docker-build           # Build all Docker images
+make docker-up              # Start all services (PostgreSQL, Redis, etc.)
+make docker-examples        # Run all examples in Docker
+make docker-test            # Run complete test suite in Docker
+make docker-validate        # Complete Oracle WMS validation
+
+# Direct script usage
+./docker-run.sh examples    # Run examples directly
+./docker-run.sh test        # Run tests directly
+./docker-run.sh all         # Complete validation workflow
+./docker-run.sh clean       # Clean Docker resources
+```
+
+### Docker Environment
+
+The Docker setup provides:
+
+- Complete Oracle WMS testing environment
+- Real Oracle database connectivity testing
+- Isolated dependency management
+- Reproducible validation results
+- Full coverage reporting in Docker
+
+## Legacy Code Handling
+
+### File Organization
+
+The codebase contains both current WMS-prefixed modules and legacy modules:
+
+**Current Implementation (use these):**
+- `wms_client.py` - Main client (replaces `client.py`)
+- `wms_config.py` - Configuration (replaces `config.py`)
+- `wms_models.py` - Data models (replaces `models.py`)
+- `wms_exceptions.py` - Exceptions (replaces `exceptions.py`)
+- `wms_constants.py` - Constants (replaces `constants.py`)
+
+**Legacy Files (being phased out):**
+- `client.py`, `config.py`, `models.py`, `exceptions.py`, `constants.py`
+- `discovery.py`, `api_catalog.py` - Use WMS equivalents
+- `legacy.py` - Compatibility layer
+- `helpers_compat.py` - Compatibility helpers
+
+**When Developing:**
+1. Always use WMS-prefixed files for new features
+2. Don't modify legacy files unless absolutely necessary
+3. Migrate functionality from legacy to WMS modules when possible
+4. Use compatibility layer (`legacy.py`) for backward compatibility
 
 ## Key Integration Patterns
 

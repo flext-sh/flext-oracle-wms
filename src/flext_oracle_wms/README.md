@@ -104,7 +104,7 @@ result = await client.get_entity_data(
 
 if result.success:
     data = result.data
-    from flext_core import get_logger
+from flext_core import get_logger
     get_logger(__name__).info("Records retrieved", count=len(data.get('results', [])))
 ```
 
@@ -127,7 +127,7 @@ try:
 
 except FlextOracleWmsConnectionError as e:
     # Handle connection-specific errors
-    from flext_core import get_logger
+from flext_core import get_logger
     get_logger(__name__).error("Connection failed", error=str(e))
 ```
 

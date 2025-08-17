@@ -21,15 +21,16 @@ def flext_oracle_wms_create_dynamic_schema_processor(
     sample_size: int | None = None,
     confidence_threshold: float | None = None,
 ) -> FlextOracleWmsDynamicSchemaProcessor:
+    """Create a dynamic schema processor for Oracle WMS."""
     processor = FlextOracleWmsDynamicSchemaProcessor()
     if sample_size is not None:
-        processor.sample_size = int(sample_size)
+      processor.sample_size = int(sample_size)
     if confidence_threshold is not None:
-        # Some tests expect attribute to exist; store without strict enforcement
-        processor.confidence_threshold = float(confidence_threshold)
+      # Some tests expect attribute to exist; store without strict enforcement
+      processor.confidence_threshold = float(confidence_threshold)
     else:
-        # Provide default expected by tests
-        processor.confidence_threshold = 0.8
+      # Provide default expected by tests
+      processor.confidence_threshold = 0.8
     return processor
 
 
