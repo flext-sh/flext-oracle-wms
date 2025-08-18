@@ -272,7 +272,7 @@ class FlextOracleWmsAuthPlugin:
             return request
 
         # Return a minimal dict for unknown request types
-        return {"headers": headers if isinstance(headers, dict) else {}}  # type: ignore[unreachable]
+        return {"headers": headers if isinstance(headers, dict) else {}}
 
     async def after_response(self, response: dict[str, object]) -> dict[str, object]:
         status = getattr(response, "status_code", 200)
@@ -509,7 +509,7 @@ class FlextOracleWmsClient:
                 return FlextResult.fail(f"Entity discovery failed: {resp_result.error}")
 
             api_resp = resp_result.data
-            if api_resp is None:  # type: ignore[unreachable]
+            if api_resp is None:
                 return FlextResult.fail(
                     "No HTTP response received from entity discovery",
                 )
@@ -619,7 +619,7 @@ class FlextOracleWmsClient:
                 )
 
             api_resp = resp_result.data
-            if api_resp is None:  # type: ignore[unreachable]
+            if api_resp is None:
                 return FlextResult.fail(
                     "No HTTP response received from entity data API",
                 )
@@ -704,7 +704,7 @@ class FlextOracleWmsClient:
 
             # Validate HTTP status and extract body
             api_resp = response.data
-            if api_resp is None:  # type: ignore[unreachable]
+            if api_resp is None:
                 return FlextResult.fail("Empty HTTP response")
 
             if hasattr(api_resp, "is_success") and not api_resp.is_success():

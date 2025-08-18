@@ -8,7 +8,7 @@ from __future__ import annotations
 
 from flext_core import FlextResult
 
-from .wms_operations import FlextOracleWmsFlattener as _OpsFlattener
+from flext_oracle_wms.wms_operations import FlextOracleWmsFlattener as _OpsFlattener
 
 
 class FlextOracleWmsDataFlattener(_OpsFlattener):
@@ -39,7 +39,6 @@ class FlextOracleWmsDataFlattener(_OpsFlattener):
             flattened = super().flatten_records(records)
 
             # Remap keys to expected separator for tests
-
             def remap(rec: dict[str, object]) -> dict[str, object]:
                 # Always normalize internal double-underscore to UI separator
                 out: dict[str, object] = {}
@@ -64,16 +63,16 @@ class FlextOracleWmsDataFlattener(_OpsFlattener):
         """Flatten records returning FlextResult for error handling."""
         try:
             result = self.flatten_records(records)
-            return FlextResult.ok(result)
+            return FlextResult[list[dict[str, object]]].ok(result)
         except Exception as e:  # pragma: no cover - delegate errors
-            return FlextResult.fail(str(e))
+            return FlextResult[list[dict[str, object]]].fail(str(e))
 
     async def unflatten_records(
         self,
         records: list[dict[str, object]],
     ) -> FlextResult[list[dict[str, object]]]:
         # Minimal unflatten: return records as-is (tests only check shape basics)
-        return FlextResult.ok(records)
+        return FlextResult[list[dict[str, object]]].ok(records)
 
     async def get_flattening_stats(
         self,
@@ -89,7 +88,7 @@ class FlextOracleWmsDataFlattener(_OpsFlattener):
                 if any(isinstance(v, (dict, list)) for v in r.values())
             ),
         }
-        return FlextResult.ok(stats)
+        return FlextResult[dict[str, object]].ok(stats)
 
 
 def flext_oracle_wms_create_data_flattener(

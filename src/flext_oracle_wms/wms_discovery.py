@@ -19,16 +19,8 @@ from dataclasses import dataclass
 from datetime import UTC, datetime
 from typing import Generic, TypeVar
 
+from flext_api import FlextApiClient
 from flext_core import FlextResult, FlextValueObject, get_logger
-
-# Import FlextApiClient from proper location
-try:
-    from flext_api import FlextApiClient
-except ImportError:
-    try:
-        from flext_oracle_wms.client import FlextApiClient
-    except ImportError:
-        FlextApiClient = object  # type: ignore[misc]
 
 from flext_oracle_wms.wms_constants import FlextOracleWmsDefaults, OracleWMSEntityType
 from flext_oracle_wms.wms_models import (
@@ -936,7 +928,7 @@ class FlextOracleWmsEntityDiscovery:
                             else None,
                             fields=item.get("fields")
                             if isinstance(item.get("fields"), dict)
-                            else {},  # type: ignore[arg-type]
+                            else {},
                             primary_key=str(item.get("primary_key"))
                             if item.get("primary_key")
                             else None,
@@ -1035,7 +1027,7 @@ class FlextOracleWmsEntityDiscovery:
                     "total_count": len(filtered_entities),
                     "timestamp": discovery_result.timestamp,
                 }
-                await self.cache_manager.set(cache_key, cache_data)  # type: ignore[arg-type]
+                await self.cache_manager.set(cache_key, cache_data)
 
             return FlextResult.ok(discovery_result)
 

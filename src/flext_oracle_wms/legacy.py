@@ -15,23 +15,10 @@ from __future__ import annotations
 
 import warnings
 
-# Import modules for legacy functions
+from flext_oracle_wms.authentication import FlextOracleWmsAuthenticator
+from flext_oracle_wms.client import FlextOracleWmsClient
+from flext_oracle_wms.config import FlextOracleWmsClientConfig
 from flext_oracle_wms.exceptions import FlextOracleWmsProcessingError
-
-try:
-    from flext_oracle_wms.authentication import FlextOracleWmsAuthenticator
-except ImportError:
-    FlextOracleWmsAuthenticator = None  # type: ignore[misc,assignment]
-
-try:
-    from flext_oracle_wms.client import FlextOracleWmsClient
-except ImportError:
-    FlextOracleWmsClient = None  # type: ignore[misc,assignment]
-
-try:
-    from flext_oracle_wms.config import FlextOracleWmsClientConfig
-except ImportError:
-    FlextOracleWmsClientConfig = None  # type: ignore[misc,assignment]
 
 
 def _deprecation_warning(old_name: str, new_name: str) -> None:
@@ -76,28 +63,22 @@ FlextOracleWmsRateLimitError = flext_oracle_wms_rate_limit_error
 def create_wms_client(*args: object, **kwargs: object) -> object:  # noqa: N802
     """Legacy: Use FlextOracleWmsClient directly instead."""
     _deprecation_warning("create_wms_client", "FlextOracleWmsClient")
-    if FlextOracleWmsClient is None:  # type: ignore[unreachable]
-        msg = "FlextOracleWmsClient not available"
-        raise ImportError(msg) from None
-    return FlextOracleWmsClient(*args, **kwargs)  # type: ignore[arg-type]
+    return FlextOracleWmsClient(*args, **kwargs)
 
 
 def create_wms_config(*args: object, **kwargs: object) -> object:  # noqa: N802
     """Legacy: Use FlextOracleWmsClientConfig directly instead."""
     _deprecation_warning("create_wms_config", "FlextOracleWmsClientConfig")
-    if FlextOracleWmsClientConfig is None:  # type: ignore[unreachable]
-        msg = "FlextOracleWmsClientConfig not available"
-        raise ImportError(msg) from None
-    return FlextOracleWmsClientConfig(*args, **kwargs)  # type: ignore[arg-type]
+    return FlextOracleWmsClientConfig(*args, **kwargs)
 
 
 def setup_wms_authentication(*args: object, **kwargs: object) -> object:  # noqa: N802
     """Legacy: Use FlextOracleWmsAuthenticator directly instead."""
     _deprecation_warning("setup_wms_authentication", "FlextOracleWmsAuthenticator")
-    if FlextOracleWmsAuthenticator is None:  # type: ignore[unreachable]
+    if FlextOracleWmsAuthenticator is None:
         msg = "FlextOracleWmsAuthenticator not available"
         raise ImportError(msg) from None
-    return FlextOracleWmsAuthenticator(*args, **kwargs)  # type: ignore[arg-type]
+    return FlextOracleWmsAuthenticator(*args, **kwargs)
 
 
 # Legacy constants and configuration from Oracle WMS patterns

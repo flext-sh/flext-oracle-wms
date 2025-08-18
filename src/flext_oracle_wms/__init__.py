@@ -275,7 +275,7 @@ try:  # pragma: no cover - helper glue for tests only
         stdout, stderr = await proc.communicate()
         return proc.returncode or 0, stdout.decode(), stderr.decode()
 
-    _builtins._run = _run  # type: ignore[attr-defined]
+    _builtins._run = _run
 except Exception:  # pragma: no cover - defensive
     # Test helper setup failed, tests will need to provide _run themselves
     # This is non-critical as it only affects test utilities

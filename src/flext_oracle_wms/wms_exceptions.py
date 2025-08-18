@@ -15,7 +15,7 @@ import contextlib
 from flext_core import (
     FlextAuthenticationError,
     FlextError,
-    FlextErrorCodes,
+    FlextErrorCode,
     FlextProcessingError,
     FlextTimeoutError,
     FlextValidationError,
@@ -40,14 +40,14 @@ class FlextOracleWmsError(FlextError):
         context: dict[str, object] | None = None,
         error_code: str | None = None,
     ) -> None:
-        # Convert string error code to FlextErrorCodes enum
+        # Convert string error code to FlextErrorCode enum
         flext_code = None
         if error_code:
             try:
-                flext_code = FlextErrorCodes(error_code)
+                flext_code = FlextErrorCode(error_code)
             except ValueError:
                 # Fallback to generic error for unknown codes
-                flext_code = FlextErrorCodes.GENERIC_ERROR
+                flext_code = FlextErrorCode.GENERIC_ERROR
         super().__init__(message, context=context or {}, code=flext_code)
         # Attach context keys as attributes for convenient access in tests
         for key, value in (context or {}).items():

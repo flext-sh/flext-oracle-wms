@@ -4,6 +4,7 @@ import os
 from pathlib import Path
 
 import pytest
+from dotenv import load_dotenv
 
 from flext_oracle_wms import (
     FlextOracleWmsApiVersion,
@@ -15,8 +16,6 @@ from flext_oracle_wms import (
 def load_test_env() -> bool:
     """Load test environment - EXACTLY like working basic_usage.py example."""
     try:
-        from dotenv import load_dotenv
-
         project_root = Path(__file__).parent.parent
         env_file = project_root / ".env"
         if env_file.exists():
@@ -28,7 +27,7 @@ def load_test_env() -> bool:
 
 
 @pytest.fixture
-def mock_config():
+def mock_config() -> FlextOracleWmsClientConfig:
     """Mock configuration for unit testing."""
     return FlextOracleWmsClientConfig(
         base_url="https://test.wms.oraclecloud.com/test_env",
@@ -73,7 +72,7 @@ def real_config(_load_test_env):
 
 
 @pytest.fixture
-def sample_entities():
+def sample_entities() -> list[str]:
     """Sample entity names based on REAL discovery results."""
     return [
         "action_code",  # Real entity discovered
@@ -86,7 +85,7 @@ def sample_entities():
 
 
 @pytest.fixture
-def sample_entity_data():
+def sample_entity_data() -> dict[str, object]:
     """Sample entity response data based on REAL query results."""
     return {
         "result_count": 4,
@@ -102,7 +101,7 @@ def sample_entity_data():
 
 
 # Configure pytest markers
-def pytest_configure(config) -> None:
+def pytest_configure(config: pytest.Config) -> None:
     """Configure pytest markers for test categorization."""
     config.addinivalue_line("markers", "unit: Unit tests (fast)")
     config.addinivalue_line(

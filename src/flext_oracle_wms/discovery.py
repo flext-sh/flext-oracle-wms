@@ -134,7 +134,7 @@ class EndpointDiscoveryStrategy(DiscoveryStrategy):
     ) -> FlextResult[object]:
         try:
             result = await api_client.get(endpoint)
-            if not result.is_success:
+            if not result.success:
                 return FlextResult.fail(f"Failed to call {endpoint}: {result.error}")
             if result.data is None:
                 return FlextResult.fail(f"No response data from {endpoint}")
