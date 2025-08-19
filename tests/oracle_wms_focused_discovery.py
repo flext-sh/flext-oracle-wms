@@ -83,7 +83,7 @@ class FocusedOracleWmsDiscovery:
 
             entities_result = await self.client.discover_entities()
             if not entities_result.success:
-                return FlextResult.fail(
+                return FlextResult[None].fail(
                     f"Entity discovery failed: {entities_result.error}",
                 )
 
@@ -148,7 +148,7 @@ class FocusedOracleWmsDiscovery:
                     schema.get("properties", {})
                     schema.get("key_properties", [])
 
-            return FlextResult.ok(
+            return FlextResult[None].ok(
                 {
                     "total_entities": len(all_entities),
                     "entities_with_data": len(data_entities),
@@ -161,7 +161,7 @@ class FocusedOracleWmsDiscovery:
 
         except Exception as e:
             logger.exception("Focused discovery failed")
-            return FlextResult.fail(f"Discovery failed: {e}")
+            return FlextResult[None].fail(f"Discovery failed: {e}")
         finally:
             await self.client.stop()
 
@@ -504,7 +504,7 @@ class FocusedOracleWmsDiscovery:
         with summary_file.open("w", encoding="utf-8") as f:
             json.dump(summary, f, indent=2, default=str)
 
-        return FlextResult.ok(str(results_dir))
+        return FlextResult[None].ok(str(results_dir))
 
     def _create_singer_catalog(self) -> dict[str, Any]:
         """Create Singer catalog."""

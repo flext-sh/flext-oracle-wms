@@ -63,8 +63,8 @@ def validate_records_list(records: object, field_name: str = "records") -> Flext
     if not isinstance(records, list):
         pretty = field_name.capitalize()
         msg = f"{pretty} must be a list"
-        return FlextResult.fail(msg)
-    return FlextResult.ok(True)
+        return FlextResult[None].fail(msg)
+    return FlextResult[None].ok(True)
 
 
 def validate_dict_parameter(param: object, field_name: str) -> FlextResult[bool]:
@@ -81,8 +81,8 @@ def validate_dict_parameter(param: object, field_name: str) -> FlextResult[bool]
     if not isinstance(param, dict):
         pretty = field_name.capitalize()
         msg = f"{pretty} must be a dictionary"
-        return FlextResult.fail(msg)
-    return FlextResult.ok(True)
+        return FlextResult[None].fail(msg)
+    return FlextResult[None].ok(True)
 
 
 def validate_string_parameter(
@@ -104,14 +104,14 @@ def validate_string_parameter(
     if not isinstance(param, str):
         pretty = field_name.capitalize()
         msg = f"{pretty} must be a string"
-        return FlextResult.fail(msg)
+        return FlextResult[None].fail(msg)
 
     if not allow_empty and not param.strip():
         pretty = field_name.capitalize()
         msg = f"{pretty} must be a non-empty string"
-        return FlextResult.fail(msg)
+        return FlextResult[None].fail(msg)
 
-    return FlextResult.ok(True)
+    return FlextResult[None].ok(True)
 
 
 def handle_operation_exception(
@@ -224,25 +224,25 @@ def flext_oracle_wms_validate_entity_name(entity_name: str) -> FlextResult[str]:
     # Validate using FlextResult pattern
     string_result = validate_string_parameter(entity_name, "entity name", allow_empty=True)
     if not string_result.success:
-        return FlextResult.fail(string_result.error)
+        return FlextResult[None].fail(string_result.error)
 
     normalized = entity_name.strip().lower()
     if not normalized:
-        return FlextResult.fail("cannot be empty")
+        return FlextResult[None].fail("cannot be empty")
 
     # Check length
     max_length = FlextOracleWmsDefaults.MAX_ENTITY_NAME_LENGTH
     if len(normalized) > max_length:
-        return FlextResult.fail(
+        return FlextResult[None].fail(
             f"Entity name too long (max {max_length} characters)",
         )
 
     # Check pattern
     pattern = FlextOracleWmsDefaults.ENTITY_NAME_PATTERN
     if not re.match(pattern, normalized):
-        return FlextResult.fail("Invalid entity name format")
+        return FlextResult[None].fail("Invalid entity name format")
 
-    return FlextResult.ok(normalized)
+    return FlextResult[None].ok(normalized)
 
 
 def flext_oracle_wms_validate_api_response(
@@ -263,21 +263,21 @@ def flext_oracle_wms_validate_api_response(
 
     # Type narrowing: assert response_data is dict after isinstance check
     if not isinstance(response_data, dict):
-        return FlextResult.fail("Response data is not a dictionary")
+        return FlextResult[None].fail("Response data is not a dictionary")
 
     response_dict: dict[str, object] = response_data
     if any(k in response_dict for k in ("error",)):
         err_val = response_dict.get("error")
         if isinstance(err_val, str) and err_val.strip():
-            return FlextResult.fail(f"API error: {err_val}")
-        return FlextResult.fail("API error")
+            return FlextResult[None].fail(f"API error: {err_val}")
+        return FlextResult[None].fail("API error")
 
     # Treat message starting with "Error:" or containing "error" keyword as failure
     msg = response_dict.get("message")
     if isinstance(msg, str):
         msg_lower = msg.strip().lower()
         if msg_lower.startswith("error") or "error" in msg_lower:
-            return FlextResult.fail(f"API error: {msg}")
+            return FlextResult[None].fail(f"API error: {msg}")
 
     # If status field explicitly indicates error, treat as failure
     status_val = response_dict.get("status")
@@ -288,14 +288,14 @@ def flext_oracle_wms_validate_api_response(
     }:
         message_text = response_dict.get("message")
         if isinstance(message_text, str) and message_text:
-            return FlextResult.fail(f"API error: {message_text}")
-        return FlextResult.fail("API error")
+            return FlextResult[None].fail(f"API error: {message_text}")
+        return FlextResult[None].fail("API error")
 
     if any(k in response_dict for k in ("data", "results", "message", "status")):
-        return FlextResult.ok(response_dict)
+        return FlextResult[None].ok(response_dict)
 
     # Default to success when structure is acceptable dict
-    return FlextResult.ok(response_dict)
+    return FlextResult[None].ok(response_dict)
 
 
 def flext_oracle_wms_extract_pagination_info(
@@ -353,12 +353,12 @@ def flext_oracle_wms_chunk_records(
         """Validate chunk size is within acceptable range using FlextResult pattern."""
         if size <= 0:
             msg = "Chunk size must be positive"
-            return FlextResult.fail(msg)
+            return FlextResult[None].fail(msg)
         if size > 5000:
             # Upper bound to catch unrealistic sizes used by tests
             msg = "Chunk size is too large"
-            return FlextResult.fail(msg)
-        return FlextResult.ok(True)
+            return FlextResult[None].fail(msg)
+        return FlextResult[None].ok(True)
 
     # Validate using FlextResult pattern
     records_result = validate_records_list(records, "records")
@@ -672,9 +672,9 @@ class FlextOracleWmsPlugin:
                 plugin_name=self.name,
                 has_external_logger=has_external_logger,
             )
-            return FlextResult.ok(None)
+            return FlextResult[None].ok(None)
         except (TypeError, ValueError, AttributeError, RuntimeError) as e:
-            return FlextResult.fail(f"Oracle WMS plugin initialization failed: {e}")
+            return FlextResult[None].fail(f"Oracle WMS plugin initialization failed: {e}")
 
     async def cleanup(self) -> FlextResult[None]:
         """Cleanup Oracle WMS plugin resources."""
@@ -683,9 +683,9 @@ class FlextOracleWmsPlugin:
                 "Cleaning up Oracle WMS plugin",
                 plugin_name=self.name,
             )
-            return FlextResult.ok(None)
+            return FlextResult[None].ok(None)
         except (OSError, RuntimeError, AttributeError) as e:
-            return FlextResult.fail(f"Oracle WMS plugin cleanup failed: {e}")
+            return FlextResult[None].fail(f"Oracle WMS plugin cleanup failed: {e}")
 
 
 class FlextOracleWmsDataPlugin:
@@ -710,9 +710,9 @@ class FlextOracleWmsPluginRegistry:
         try:
             self._plugins[plugin.name] = plugin
             self._logger.info("Registered Oracle WMS plugin", plugin_name=plugin.name)
-            return FlextResult.ok(None)
+            return FlextResult[None].ok(None)
         except (TypeError, ValueError, AttributeError, RuntimeError) as e:
-            return FlextResult.fail(f"Plugin registration failed: {e}")
+            return FlextResult[None].fail(f"Plugin registration failed: {e}")
 
     def get_plugin(self, name: str) -> FlextOracleWmsPlugin | None:
         """Get registered plugin by name."""

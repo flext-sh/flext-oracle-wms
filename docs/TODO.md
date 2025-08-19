@@ -116,9 +116,9 @@ flext-oracle-wms serves as the **specialized Oracle WMS integration layer** with
   async def discover_entities(self) -> FlextResult[List[WmsEntity]]:
       try:
           entities = await self._perform_discovery()
-          return FlextResult.success(entities)
+          return FlextResult[None].ok(entities)
       except Exception as e:
-          return FlextResult.failure(f"Discovery failed: {e}")
+          return FlextResult[None].fail(f"Discovery failed: {e}")
   ```
 
 - **Success Criteria**: 100% FlextResult usage in public API

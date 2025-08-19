@@ -149,10 +149,10 @@ class FlextOracleWmsEntity(FlextValueObject):
             )
 
         if validation_errors:
-            return FlextResult.fail(
+            return FlextResult[None].fail(
                 f"{FlextOracleWmsErrorMessages.ENTITY_VALIDATION_FAILED}: {'; '.join(validation_errors)}",
             )
-        return FlextResult.ok(None)
+        return FlextResult[None].ok(None)
 
     def to_dict_basic(self) -> dict[str, object]:
         """Convert entity to basic dict format (used by discovery)."""
@@ -202,10 +202,10 @@ class FlextOracleWmsDiscoveryResult(FlextValueObject):
                 )
 
         if validation_errors:
-            return FlextResult.fail(
+            return FlextResult[None].fail(
                 f"{FlextOracleWmsErrorMessages.DISCOVERY_FAILED}: {'; '.join(validation_errors)}",
             )
-        return FlextResult.ok(None)
+        return FlextResult[None].ok(None)
 
 
 @dataclass(frozen=True)
@@ -235,10 +235,10 @@ class FlextOracleWmsApiResponse(FlextValueObject):
             validation_errors.append("Failed response must have error message")
 
         if validation_errors:
-            return FlextResult.fail(
+            return FlextResult[None].fail(
                 f"{FlextOracleWmsErrorMessages.INVALID_RESPONSE}: {'; '.join(validation_errors)}",
             )
-        return FlextResult.ok(None)
+        return FlextResult[None].ok(None)
 
 
 @dataclass(frozen=True)
@@ -277,8 +277,8 @@ class FlextOracleWmsApiEndpoint(FlextValueObject):
             validation_errors.append("API description cannot be empty")
 
         if validation_errors:
-            return FlextResult.fail("; ".join(validation_errors))
-        return FlextResult.ok(None)
+            return FlextResult[None].fail("; ".join(validation_errors))
+        return FlextResult[None].ok(None)
 
 
 # =============================================================================

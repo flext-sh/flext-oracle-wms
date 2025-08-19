@@ -64,7 +64,7 @@ async def discover_wms_entities() -> FlextResult[List[WmsEntity]]:
     if result.success:
         entities = result.data
         print(f"Discovered {len(entities)} WMS entities")
-        return FlextResult.success(entities)
+        return FlextResult[None].ok(entities)
     else:
         # Handle errors consistently
         error = FlextError(
@@ -72,7 +72,7 @@ async def discover_wms_entities() -> FlextResult[List[WmsEntity]]:
             message=f"Failed to discover entities: {result.error}",
             details={"base_url": config.base_url}
         )
-        return FlextResult.failure(error)
+        return FlextResult[None].fail(error)
 
 # ❌ Current Issue - Some methods bypass FlextResult
 # This pattern exists in current codebase and needs fixing
@@ -157,7 +157,7 @@ class WmsOperations:
                     duration_ms=result.duration_ms
                 )
 
-                return FlextResult.success(result)
+                return FlextResult[None].ok(result)
 
             except Exception as e:
                 self._logger.error(
@@ -165,7 +165,7 @@ class WmsOperations:
                     error=str(e),
                     stack_trace=self._get_stack_trace()
                 )
-                return FlextResult.failure(f"Sync failed: {e}")
+                return FlextResult[None].fail(f"Sync failed: {e}")
 ```
 
 ## 🔌 flext-api Integration
@@ -207,9 +207,9 @@ class FlextOracleWmsClient(EnterpriseApiClient):
 
         if response.success:
             entities = self._parse_entities(response.data)
-            return FlextResult.success(entities)
+            return FlextResult[None].ok(entities)
         else:
-            return FlextResult.failure(f"Discovery failed: {response.error}")
+            return FlextResult[None].fail(f"Discovery failed: {response.error}")
 ```
 
 ### Authentication Provider Integration
@@ -343,12 +343,12 @@ class WmsService:
                     sync_span.set_attribute("records.processed", sync_result.records_processed)
 
                 span.set_status("ok")
-                return FlextResult.success(sync_result)
+                return FlextResult[None].ok(sync_result)
 
             except Exception as e:
                 span.set_status("error", str(e))
                 span.record_exception(e)
-                return FlextResult.failure(f"Sync failed: {e}")
+                return FlextResult[None].fail(f"Sync failed: {e}")
 ```
 
 ## 🚨 Critical Integration Gaps

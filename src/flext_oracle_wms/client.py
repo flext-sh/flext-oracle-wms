@@ -37,7 +37,7 @@ class FlextOracleWmsPlugin:
             FlextResult[None]: Description.
 
         """
-        return FlextResult.ok(None)
+        return FlextResult[None].ok(None)
 
     async def stop(self) -> FlextResult[None]:
         """Stop function.
@@ -46,7 +46,7 @@ class FlextOracleWmsPlugin:
             FlextResult[None]: Description.
 
         """
-        return FlextResult.ok(None)
+        return FlextResult[None].ok(None)
 
     async def execute(self, operation: str) -> FlextResult[object]:
         """Execute function.
@@ -59,9 +59,9 @@ class FlextOracleWmsPlugin:
 
         """
         if self._client is None:
-            return FlextResult.fail("Plugin not initialized: client is not initialized")
+            return FlextResult[None].fail("Plugin not initialized: client is not initialized")
         try:
-            return FlextResult.ok({"operation": operation, "status": "noop"})
+            return FlextResult[None].ok({"operation": operation, "status": "noop"})
         except Exception as e:  # pragma: no cover - defensive
             raise FlextOracleWmsProcessingError(str(e)) from e
 

@@ -103,8 +103,8 @@ class FlextOracleWmsClientConfig(FlextValue):
             validation_errors.append("Base URL is required even when using mock")
 
         if validation_errors:
-            return FlextResult.fail("; ".join(validation_errors))
-        return FlextResult.ok(None)
+            return FlextResult[None].fail("; ".join(validation_errors))
+        return FlextResult[None].ok(None)
 
     @classmethod
     def from_legacy_config(

@@ -167,11 +167,11 @@ class InventoryItem(WmsEntity):
     def adjust_quantity(self, adjustment: QuantityAdjustment) -> FlextResult[None]:
         """Business logic for inventory adjustments."""
         if not self._can_adjust(adjustment):
-            return FlextResult.failure("Invalid quantity adjustment")
+            return FlextResult[None].fail("Invalid quantity adjustment")
 
         self._quantity = self._quantity.adjust(adjustment)
         self._record_adjustment_event(adjustment)
-        return FlextResult.success(None)
+        return FlextResult[None].ok(None)
 
     def can_fulfill_order(self, required_quantity: Quantity) -> bool:
         """Domain business rule for order fulfillment."""
@@ -190,7 +190,7 @@ class FlextOracleWmsClient:
         http_response = await self._http_client.get("/entities")  # Infrastructure
         entities = self._process_response(http_response)          # Application
         validated_entities = self._validate_entities(entities)   # Domain
-        return FlextResult.success(validated_entities)
+        return FlextResult[None].ok(validated_entities)
 
 # Target: Proper Use Case Separation
 class DiscoverEntitiesUseCase:
@@ -210,7 +210,7 @@ class DiscoverEntitiesUseCase:
         validated_entities = [entity for entity in entities if entity.is_valid()]
 
         self._logger.info(f"Discovered {len(validated_entities)} valid entities")
-        return FlextResult.success(validated_entities)
+        return FlextResult[None].ok(validated_entities)
 ```
 
 ### 3. **Infrastructure Coupling** (High)
@@ -239,7 +239,7 @@ class WmsRepositoryImpl(WmsRepository):
         )
 
         if api_result.is_failure:
-            return FlextResult.failure(f"API query failed: {api_result.error}")
+            return FlextResult[None].fail(f"API query failed: {api_result.error}")
 
         # Map API response to domain entities
         inventory_items = [
@@ -247,7 +247,7 @@ class WmsRepositoryImpl(WmsRepository):
             for item_data in api_result.data
         ]
 
-        return FlextResult.success(inventory_items)
+        return FlextResult[None].ok(inventory_items)
 ```
 
 ## 🔧 FLEXT Integration Patterns
@@ -262,15 +262,15 @@ async def discover_entities() -> FlextResult[List[WmsEntity]]:
     try:
         # Business logic
         entities = await self._perform_discovery()
-        return FlextResult.success(entities)
+        return FlextResult[None].ok(entities)
     except WmsConnectionError as e:
-        return FlextResult.failure(FlextError(
+        return FlextResult[None].fail(FlextError(
             code="WMS_CONNECTION_FAILED",
             message=f"Failed to connect to Oracle WMS: {e}",
             details={"endpoint": self._config.base_url}
         ))
     except Exception as e:
-        return FlextResult.failure(FlextError(
+        return FlextResult[None].fail(FlextError(
             code="UNEXPECTED_ERROR",
             message=f"Unexpected error during discovery: {e}"
         ))
@@ -328,7 +328,7 @@ class InventoryService:
                 new_quantity=result.new_quantity
             )
 
-            return FlextResult.success(None)
+            return FlextResult[None].ok(None)
 
         except Exception as e:
             self._logger.error(
@@ -337,7 +337,7 @@ class InventoryService:
                 error=str(e),
                 stack_trace=self._get_stack_trace()
             )
-            return FlextResult.failure(f"Adjustment failed: {e}")
+            return FlextResult[None].fail(f"Adjustment failed: {e}")
 ```
 
 ## 📊 Architecture Compliance Roadmap

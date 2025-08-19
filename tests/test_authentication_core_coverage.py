@@ -295,7 +295,7 @@ class TestAuthenticator:
 
         # Mock the validation call
         with patch.object(authenticator, "_make_validation_request") as mock_request:
-            mock_request.return_value = FlextResult.ok({"status": "authenticated"})
+            mock_request.return_value = FlextResult[None].ok({"status": "authenticated"})
 
             result = await authenticator.validate_authentication()
             assert result.success
@@ -313,7 +313,7 @@ class TestAuthenticator:
 
         # Mock the validation call to fail
         with patch.object(authenticator, "_make_validation_request") as mock_request:
-            mock_request.return_value = FlextResult.fail("Authentication failed")
+            mock_request.return_value = FlextResult[None].fail("Authentication failed")
 
             result = await authenticator.validate_authentication()
             assert result.is_failure
@@ -366,7 +366,7 @@ class TestAuthPlugin:
 
         # Mock authenticator validation
         with patch.object(plugin.authenticator, "get_auth_headers") as mock_headers:
-            mock_headers.return_value = FlextResult.ok(
+            mock_headers.return_value = FlextResult[None].ok(
                 {"Authorization": "Basic dGVzdA=="},
             )
 
@@ -391,7 +391,7 @@ class TestAuthPlugin:
             plugin.authenticator,
             "validate_credentials",
         ) as mock_validate:
-            mock_validate.return_value = FlextResult.fail("Auth failed")
+            mock_validate.return_value = FlextResult[None].fail("Auth failed")
 
             result = await plugin.authenticator.validate_credentials()
             assert result.is_failure
@@ -426,7 +426,7 @@ class TestAuthPlugin:
 
         # Mock the authenticator's get_auth_headers method
         with patch.object(plugin.authenticator, "get_auth_headers") as mock_headers:
-            mock_headers.return_value = FlextResult.ok(
+            mock_headers.return_value = FlextResult[None].ok(
                 {"Authorization": "Basic dGVzdA=="},
             )
 
@@ -451,7 +451,7 @@ class TestAuthPlugin:
             plugin.authenticator,
             "validate_credentials",
         ) as mock_validate:
-            mock_validate.return_value = FlextResult.ok(True)
+            mock_validate.return_value = FlextResult[None].ok(True)
 
             result = await plugin.authenticator.validate_credentials()
 
@@ -472,7 +472,7 @@ class TestAuthPlugin:
 
         # Mock failure in get_auth_headers
         with patch.object(plugin.authenticator, "get_auth_headers") as mock_headers:
-            mock_headers.return_value = FlextResult.fail("Auth failed")
+            mock_headers.return_value = FlextResult[None].fail("Auth failed")
 
             result = await plugin.authenticator.get_auth_headers()
             assert result.is_failure

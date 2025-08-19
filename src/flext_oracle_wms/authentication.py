@@ -37,13 +37,13 @@ class FlextOracleWmsAuthConfig(_BaseAuthConfig):
         """
         if self.auth_type == OracleWMSAuthMethod.BASIC:
             if not self.username or not self.password:
-                return FlextResult.fail("Username and password required for basic auth")
+                return FlextResult[None].fail("Username and password required for basic auth")
         elif self.auth_type == OracleWMSAuthMethod.BEARER:
             if not self.token:
-                return FlextResult.fail("Token required for bearer auth")
+                return FlextResult[None].fail("Token required for bearer auth")
         elif self.auth_type == OracleWMSAuthMethod.API_KEY and not self.api_key:
-            return FlextResult.fail("API key required in header for API key auth")
-        return FlextResult.ok(None)
+            return FlextResult[None].fail("API key required in header for API key auth")
+        return FlextResult[None].ok(None)
 
     # Compatibility hack to satisfy conflicting test expectations across suites:
     # core_coverage expects username is None for BEARER; simple_coverage expects "".

@@ -125,7 +125,7 @@ class InventoryItem(FlextEntity):
     def adjust_quantity(self, adjustment: QuantityAdjustment) -> FlextResult[None]:
         """Business logic for inventory quantity adjustments."""
         if not self._can_adjust(adjustment):
-            return FlextResult.failure("Insufficient quantity for adjustment")
+            return FlextResult[None].fail("Insufficient quantity for adjustment")
 
         self._quantity = self._quantity.add(adjustment.delta)
         self._record_domain_event(InventoryAdjusted(
@@ -133,20 +133,20 @@ class InventoryItem(FlextEntity):
             adjustment=adjustment,
             new_quantity=self._quantity
         ))
-        return FlextResult.success(None)
+        return FlextResult[None].ok(None)
 
     def reserve_quantity(self, reservation: QuantityReservation) -> FlextResult[None]:
         """Reserve inventory for order fulfillment."""
         available = self._quantity.subtract(self._reserved_quantity)
         if available.value < reservation.quantity.value:
-            return FlextResult.failure("Insufficient available quantity")
+            return FlextResult[None].fail("Insufficient available quantity")
 
         self._reserved_quantity = self._reserved_quantity.add(reservation.quantity)
         self._record_domain_event(QuantityReserved(
             item_number=self._item_number,
             reservation=reservation
         ))
-        return FlextResult.success(None)
+        return FlextResult[None].ok(None)
 
     def can_fulfill_order(self, required_quantity: Quantity) -> bool:
         """Domain business rule for order fulfillment capability."""
@@ -236,7 +236,7 @@ class QueryInventoryUseCase:
                 correlation_id=request.correlation_id,
                 error=inventory_result.error
             )
-            return FlextResult.failure(f"Query failed: {inventory_result.error}")
+            return FlextResult[None].fail(f"Query failed: {inventory_result.error}")
 
         # Transform to response DTO
         inventory_items = inventory_result.data
@@ -252,7 +252,7 @@ class QueryInventoryUseCase:
             items_found=len(inventory_items)
         )
 
-        return FlextResult.success(response)
+        return FlextResult[None].ok(response)
 ```
 
 ### **Infrastructure Layer** - External System Integration
@@ -338,7 +338,7 @@ class InventoryRepositoryImpl(InventoryRepository):
         cached_result = await self._cache.get(cache_key)
         if cached_result.success and cached_result.data:
             self._logger.debug("Inventory data retrieved from cache", cache_key=cache_key)
-            return FlextResult.success(cached_result.data)
+            return FlextResult[None].ok(cached_result.data)
 
         # Query Oracle WMS API
         api_result = await self._api_client.query_entity(
@@ -348,7 +348,7 @@ class InventoryRepositoryImpl(InventoryRepository):
         )
 
         if api_result.is_failure:
-            return FlextResult.failure(f"API query failed: {api_result.error}")
+            return FlextResult[None].fail(f"API query failed: {api_result.error}")
 
         # Map API response to domain entities
         inventory_items = []
@@ -366,7 +366,7 @@ class InventoryRepositoryImpl(InventoryRepository):
         # Cache successful results
         await self._cache.set(cache_key, inventory_items, ttl=300)
 
-        return FlextResult.success(inventory_items)
+        return FlextResult[None].ok(inventory_items)
 ```
 
 ### **Presentation Layer** - Client Interface
@@ -431,7 +431,7 @@ class FlextOracleWmsClient:
         use_case_result = await self._discover_entities_use_case.execute(request)
 
         if use_case_result.is_failure:
-            return FlextResult.failure(use_case_result.error)
+            return FlextResult[None].fail(use_case_result.error)
 
         # Map to presentation DTOs
         entities = [
@@ -439,7 +439,7 @@ class FlextOracleWmsClient:
             for entity in use_case_result.data.entities
         ]
 
-        return FlextResult.success(entities)
+        return FlextResult[None].ok(entities)
 
     async def query_inventory_data(
         self,
@@ -458,7 +458,7 @@ class FlextOracleWmsClient:
         use_case_result = await self._query_inventory_use_case.execute(request)
 
         if use_case_result.is_failure:
-            return FlextResult.failure(use_case_result.error)
+            return FlextResult[None].fail(use_case_result.error)
 
         # Map to API response format
         inventory_data = [
@@ -466,7 +466,7 @@ class FlextOracleWmsClient:
             for item in use_case_result.data.items
         ]
 
-        return FlextResult.success(inventory_data)
+        return FlextResult[None].ok(inventory_data)
 ```
 
 ---
@@ -662,14 +662,14 @@ class WmsLocation(FlextEntity):
     def enable_picking(self) -> FlextResult[None]:
         """Enable picking operations with business rules."""
         if not self._validate_picking_requirements():
-            return FlextResult.failure("Location does not meet picking requirements")
+            return FlextResult[None].fail("Location does not meet picking requirements")
 
         self._is_picking_enabled = True
         self._record_domain_event(LocationPickingEnabled(
             location_code=self._location_code,
             organization=self._organization
         ))
-        return FlextResult.success(None)
+        return FlextResult[None].ok(None)
 
 class InventoryTransaction(FlextEntity):
     """Oracle WMS inventory transaction."""
@@ -702,7 +702,7 @@ class InventoryTransaction(FlextEntity):
             item_number=self._item_number,
             quantity=self._quantity
         ))
-        return FlextResult.success(None)
+        return FlextResult[None].ok(None)
 ```
 
 ### **Oracle WMS API Integration Patterns**
@@ -745,16 +745,16 @@ class OracleWmsApiClient(WmsApiClient):
         )
 
         if response.status_code != 200:
-            return FlextResult.failure(
+            return FlextResult[None].fail(
                 f"Oracle WMS API error: {response.status_code} - {response.text}"
             )
 
         # Parse Oracle ADF response format
         oracle_response = response.json()
         if "items" not in oracle_response:
-            return FlextResult.failure("Invalid Oracle WMS response format")
+            return FlextResult[None].fail("Invalid Oracle WMS response format")
 
-        return FlextResult.success(oracle_response["items"])
+        return FlextResult[None].ok(oracle_response["items"])
 
     def _build_oracle_query_filter(self, transaction_types: List[str]) -> str:
         """Build Oracle ADF query filter syntax."""
@@ -781,7 +781,7 @@ async def generate_oracle_wms_catalog(
 
     entities_result = await client.discover_entities()
     if entities_result.is_failure:
-        return FlextResult.failure(f"Entity discovery failed: {entities_result.error}")
+        return FlextResult[None].fail(f"Entity discovery failed: {entities_result.error}")
 
     streams = []
     for entity in entities_result.data:
@@ -808,7 +808,7 @@ async def generate_oracle_wms_catalog(
         streams.append(stream)
 
     catalog = Catalog(streams=streams)
-    return FlextResult.success(catalog)
+    return FlextResult[None].ok(catalog)
 
 def _convert_oracle_schema_to_singer(oracle_schema: Dict[str, Any]) -> Schema:
     """Convert Oracle WMS schema to Singer schema format."""
@@ -876,9 +876,9 @@ async def _filter_inventory_entities(entities: List[WmsEntity]) -> FlextResult[L
     ]
 
     if not inventory_entities:
-        return FlextResult.failure("No inventory entities found")
+        return FlextResult[None].fail("No inventory entities found")
 
-    return FlextResult.success(inventory_entities)
+    return FlextResult[None].ok(inventory_entities)
 
 async def _query_all_inventory_data(
     client: FlextOracleWmsClient,
@@ -896,11 +896,11 @@ async def _query_all_inventory_data(
         )
 
         if entity_result.is_failure:
-            return FlextResult.failure(f"Failed to query {entity.name}: {entity_result.error}")
+            return FlextResult[None].fail(f"Failed to query {entity.name}: {entity_result.error}")
 
         inventory_data[entity.name] = entity_result.data
 
-    return FlextResult.success(inventory_data)
+    return FlextResult[None].ok(inventory_data)
 ```
 
 ### **Error Aggregation for Oracle WMS**
@@ -955,9 +955,9 @@ def validate_oracle_wms_data(
 
     if validation_errors:
         error_summary = _format_validation_errors(validation_errors)
-        return FlextResult.failure(f"Oracle WMS data validation failed: {error_summary}")
+        return FlextResult[None].fail(f"Oracle WMS data validation failed: {error_summary}")
 
-    return FlextResult.success(entity_data)
+    return FlextResult[None].ok(entity_data)
 
 def _format_validation_errors(errors: List[WmsValidationError]) -> str:
     """Format validation errors for reporting."""
@@ -1510,7 +1510,7 @@ def handle_oracle_wms_error(
         }
     )
 
-    return FlextResult.failure(flext_error)
+    return FlextResult[None].fail(flext_error)
 
 def _determine_error_severity(error_code: OracleWmsErrorCode) -> str:
     """Determine error severity for monitoring and alerting."""
@@ -1566,7 +1566,7 @@ async def query_oracle_inventory(
 
         # Process successful response
         inventory_records = _parse_oracle_inventory_response(api_result.data)
-        return FlextResult.success(inventory_records)
+        return FlextResult[None].ok(inventory_records)
 
     except Exception as e:
         return handle_oracle_wms_error(
@@ -1621,7 +1621,7 @@ class UnifiedOracleService:
         )
 
         if db_result.is_failure:
-            return FlextResult.failure(f"Database query failed: {db_result.error}")
+            return FlextResult[None].fail(f"Database query failed: {db_result.error}")
 
         # Transform DB data for WMS
         wms_updates = []
@@ -1637,7 +1637,7 @@ class UnifiedOracleService:
         wms_result = await self._wms_client.bulk_update_inventory(wms_updates)
 
         if wms_result.is_failure:
-            return FlextResult.failure(f"WMS update failed: {wms_result.error}")
+            return FlextResult[None].fail(f"WMS update failed: {wms_result.error}")
 
         sync_result = SyncResult(
             records_processed=len(wms_updates),
@@ -1645,7 +1645,7 @@ class UnifiedOracleService:
             error_count=wms_result.data.error_count
         )
 
-        return FlextResult.success(sync_result)
+        return FlextResult[None].ok(sync_result)
 
 # Container configuration for Oracle integration
 def configure_oracle_container(container: FlextContainer) -> None:

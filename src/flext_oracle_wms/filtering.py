@@ -90,14 +90,14 @@ class FlextOracleWmsFilter(_OpsFilter):
 
         count_result = self._validate_filter_conditions_total(filters)
         if count_result.is_failure:
-            return FlextResult.fail(count_result.error or "Filter validation failed")
+            return FlextResult[None].fail(count_result.error or "Filter validation failed")
 
         # Store filters for validation, type issue will be resolved by proper typing
         object.__setattr__(self, "filters", filters)
         data = await super().filter_records(records)
         if limit is not None and isinstance(data, list):
-            return FlextResult.ok(data[: int(limit)])
-        return FlextResult.ok(data)
+            return FlextResult[None].ok(data[: int(limit)])
+        return FlextResult[None].ok(data)
 
     async def sort_records(
         self,
@@ -116,11 +116,11 @@ class FlextOracleWmsFilter(_OpsFilter):
                 return str(value)
 
             sorted_records = sorted(records, key=key_func, reverse=not ascending)
-            return FlextResult.ok(sorted_records)
+            return FlextResult[None].ok(sorted_records)
         except FlextOracleWmsDataValidationError:
             raise
         except Exception as e:  # pragma: no cover - defensive
-            return FlextResult.fail(f"Sort failed: {e}")
+            return FlextResult[None].fail(f"Sort failed: {e}")
 
     def _validate_filter_conditions_total(
         self,
@@ -134,12 +134,12 @@ class FlextOracleWmsFilter(_OpsFilter):
                 else:
                     total_conditions += 1
             if total_conditions > self.max_conditions:
-                return FlextResult.fail(
+                return FlextResult[None].fail(
                     f"Too many filter conditions. Max: {self.max_conditions}, Got: {total_conditions}",
                 )
-            return FlextResult.ok(None)
+            return FlextResult[None].ok(None)
         except Exception as e:  # pragma: no cover
-            return FlextResult.fail(str(e))
+            return FlextResult[None].fail(str(e))
 
     # Preserve parent signature so __post_init__ from base class can call it safely
     def _validate_filter_conditions_count(self) -> None:
@@ -177,7 +177,7 @@ async def flext_oracle_wms_filter_by_field(
     # Set filters before calling filter_records
     object.__setattr__(engine, "filters", {field: op_value})
     data = await engine.filter_records(records)
-    return FlextResult.ok(data)
+    return FlextResult[None].ok(data)
 
 
 async def flext_oracle_wms_filter_by_id_range(
@@ -209,11 +209,11 @@ async def flext_oracle_wms_filter_by_id_range(
             "value": max_id,
         }
     if not filters:
-        return FlextResult.ok(records)
+        return FlextResult[None].ok(records)
     # Set filters before calling filter_records
     object.__setattr__(engine, "filters", filters)
     data = await engine.filter_records(records)
-    return FlextResult.ok(data)
+    return FlextResult[None].ok(data)
 
 
 __all__: list[str] = [

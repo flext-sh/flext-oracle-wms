@@ -64,12 +64,12 @@ class FlextOracleWmsCacheConfig(FlextValueObject):
     def validate_business_rules(self) -> FlextResult[None]:
         """Validate Oracle WMS cache configuration business rules."""
         if self.default_ttl_seconds <= 0:
-            return FlextResult.fail("Default TTL must be positive")
+            return FlextResult[None].fail("Default TTL must be positive")
         if self.max_cache_entries <= 0:
-            return FlextResult.fail("Max cache entries must be positive")
+            return FlextResult[None].fail("Max cache entries must be positive")
         if self.cleanup_interval_seconds <= 0:
-            return FlextResult.fail("Cleanup interval must be positive")
-        return FlextResult.ok(None)
+            return FlextResult[None].fail("Cleanup interval must be positive")
+        return FlextResult[None].ok(None)
 
 
 @dataclass(frozen=True)
@@ -98,12 +98,12 @@ class FlextOracleWmsCacheEntry(FlextValueObject, Generic[T]):  # noqa: UP046
     def validate_business_rules(self) -> FlextResult[None]:
         """Validate cache entry business rules."""
         if not self.key:
-            return FlextResult.fail("Cache key cannot be empty")
+            return FlextResult[None].fail("Cache key cannot be empty")
         if self.ttl_seconds <= 0:
-            return FlextResult.fail("TTL must be positive")
+            return FlextResult[None].fail("TTL must be positive")
         if self.timestamp <= 0:
-            return FlextResult.fail("Timestamp must be positive")
-        return FlextResult.ok(None)
+            return FlextResult[None].fail("Timestamp must be positive")
+        return FlextResult[None].ok(None)
 
     def is_valid(self) -> bool:
         """Check if cache entry is still valid."""
@@ -124,14 +124,14 @@ class FlextOracleWmsCacheStats(FlextValueObject):
 
     def validate_business_rules(self) -> FlextResult[None]:
         if self.hits < 0 or self.misses < 0:
-            return FlextResult.fail("Statistics counters cannot be negative")
+            return FlextResult[None].fail("Statistics counters cannot be negative")
         if self.evictions < 0:
-            return FlextResult.fail("Statistics counters cannot be negative")
+            return FlextResult[None].fail("Statistics counters cannot be negative")
         if self.expired_entries < 0 or self.total_entries < 0:
-            return FlextResult.fail("Entry counts cannot be negative")
+            return FlextResult[None].fail("Entry counts cannot be negative")
         if self.memory_usage_bytes < 0:
-            return FlextResult.fail("Memory usage cannot be negative")
-        return FlextResult.ok(None)
+            return FlextResult[None].fail("Memory usage cannot be negative")
+        return FlextResult[None].ok(None)
 
     def get_hit_ratio(self) -> float:
         total = self.hits + self.misses
@@ -203,9 +203,9 @@ class FlextOracleWmsCacheManager:
         try:
             if self.config.enable_async_cleanup:
                 self._start_cleanup_task()
-            return FlextResult.ok(None)
+            return FlextResult[None].ok(None)
         except Exception as e:  # pragma: no cover - defensive
-            return FlextResult.fail(f"Cache manager start failed: {e}")
+            return FlextResult[None].fail(f"Cache manager start failed: {e}")
 
     async def stop(self) -> FlextResult[None]:
         """Stop background cleanup and clear caches."""
@@ -215,9 +215,9 @@ class FlextOracleWmsCacheManager:
                 with contextlib.suppress(Exception):
                     await asyncio.sleep(0)
             self.clear()
-            return FlextResult.ok(None)
+            return FlextResult[None].ok(None)
         except Exception as e:  # pragma: no cover - defensive
-            return FlextResult.fail(f"Cache manager stop failed: {e}")
+            return FlextResult[None].fail(f"Cache manager stop failed: {e}")
 
     def _start_cleanup_task(self) -> None:
         """Start background cleanup task."""
@@ -269,7 +269,7 @@ class FlextOracleWmsCacheManager:
                 entry = self._cache.get(key)
                 if entry is None:
                     self._stats = self._stats.update_miss()
-                    return FlextResult.fail(f"Cache miss for key: {key}")
+                    return FlextResult[None].fail(f"Cache miss for key: {key}")
 
                 if entry.is_expired():
                     del self._cache[key]
@@ -282,7 +282,7 @@ class FlextOracleWmsCacheManager:
                         memory_usage_bytes=self._stats.memory_usage_bytes,
                         last_cleanup=self._stats.last_cleanup,
                     )
-                    return FlextResult.fail(f"Cache expired for key: {key}")
+                    return FlextResult[None].fail(f"Cache expired for key: {key}")
 
                 # Update access statistics
                 updated_entry = FlextOracleWmsCacheEntry(
@@ -296,10 +296,10 @@ class FlextOracleWmsCacheManager:
                 self._cache[key] = updated_entry
 
                 self._stats = self._stats.update_hit()
-                return FlextResult.ok(entry.value)
+                return FlextResult[None].ok(entry.value)
 
         except Exception as e:
-            return FlextResult.fail(f"Cache get failed: {e}")
+            return FlextResult[None].fail(f"Cache get failed: {e}")
 
     # Convenience wrappers expected by tests -------------------------------------------------
     async def set_entity(
@@ -311,9 +311,9 @@ class FlextOracleWmsCacheManager:
         result = await self.set(key, value, ttl_seconds)
         success_value = True
         return (
-            FlextResult.ok(success_value)
+            FlextResult[None].ok(success_value)
             if result.success
-            else FlextResult.fail(result.error or "error")
+            else FlextResult[None].fail(result.error or "error")
         )
 
     async def get_entity(self, key: str) -> FlextResult[CacheValue | None]:
@@ -321,12 +321,12 @@ class FlextOracleWmsCacheManager:
         if result.success:
             # On miss, tests expect success with None
             if isinstance(result.error, str):  # pragma: no cover - defensive
-                return FlextResult.ok(None)
-            return FlextResult.ok(result.data)
+                return FlextResult[None].ok(None)
+            return FlextResult[None].ok(result.data)
         # Convert miss to success with None
         if result.error and "Cache miss" in result.error:
-            return FlextResult.ok(None)
-        return FlextResult.fail(result.error or "error")
+            return FlextResult[None].ok(None)
+        return FlextResult[None].fail(result.error or "error")
 
     async def set_schema(
         self,
@@ -351,7 +351,7 @@ class FlextOracleWmsCacheManager:
         return await self.get_entity(key)
 
     async def get_statistics(self) -> FlextResult[FlextOracleWmsCacheStats]:
-        return FlextResult.ok(self._stats)
+        return FlextResult[None].ok(self._stats)
 
     async def _evict_oldest_entry(
         self,
@@ -419,11 +419,11 @@ class FlextOracleWmsCacheManager:
                     last_cleanup=self._stats.last_cleanup,
                 )
 
-            return FlextResult.ok(None)
+            return FlextResult[None].ok(None)
 
         except Exception as e:
             handle_operation_exception(e, "cache set", logger)
-            return FlextResult.fail(f"Cache set failed: {e}")
+            return FlextResult[None].fail(f"Cache set failed: {e}")
 
     def invalidate(self, key: str) -> None:
         """Invalidate specific cache entry."""
@@ -611,7 +611,7 @@ class FlextOracleWmsDynamicSchemaProcessor:
         """Process Oracle WMS records to generate dynamic schema."""
         try:
             if not records:
-                return FlextResult.fail("No records to process")
+                return FlextResult[None].fail("No records to process")
 
             # Sample records for schema inference
             sample_records = (
@@ -635,10 +635,10 @@ class FlextOracleWmsDynamicSchemaProcessor:
                     field_schema["entity_type_hint"] = str(entity_type)
                 schema[field_name] = field_schema
 
-            return FlextResult.ok(schema)
+            return FlextResult[None].ok(schema)
 
         except Exception as e:
-            return FlextResult.fail(f"Process dynamic schema failed: {e}")
+            return FlextResult[None].fail(f"Process dynamic schema failed: {e}")
 
     # Public convenience methods expected by tests
     async def discover_entity_schema(
@@ -666,16 +666,16 @@ class FlextOracleWmsDynamicSchemaProcessor:
         """
         try:
             if not isinstance(records, list) or not records:
-                return FlextResult.fail("No records to process")
+                return FlextResult[None].fail("No records to process")
 
             if not schema:
                 # Minimal inference fall back
                 return await self.process_records(records, None)
 
             # Optionally, we could validate/adjust schema against records.
-            return FlextResult.ok(schema)
+            return FlextResult[None].ok(schema)
         except Exception as e:  # pragma: no cover - defensive
-            return FlextResult.fail(f"Process entity records failed: {e}")
+            return FlextResult[None].fail(f"Process entity records failed: {e}")
 
     # ---------------------------------------------------------------------
     # Private helper methods expected by tests
@@ -863,16 +863,16 @@ class EntityListDiscoveryStrategy(DiscoveryStrategy):
                 logger.debug(
                     "API client does not expose 'get' method; skipping discovery step",
                 )
-                return FlextResult.ok(None)
+                return FlextResult[None].ok(None)
 
             # Nesta estratégia, não inventamos entidades. Outras estratégias ou o cliente real
             # são responsáveis pela descoberta. Mantemos consistente e sem dados falsos.
-            return FlextResult.ok(None)
+            return FlextResult[None].ok(None)
 
         except Exception as e:
             error_msg = f"Entity discovery failed: {e}"
             context.errors.append(error_msg)
-            return FlextResult.fail(error_msg)
+            return FlextResult[None].fail(error_msg)
 
 
 class FlextOracleWmsEntityDiscovery:
@@ -945,7 +945,7 @@ class FlextOracleWmsEntityDiscovery:
                         and item.get("endpoint")
                     ]
                     logger.debug("Using cached discovery result")
-                    return FlextResult.ok(
+                    return FlextResult[None].ok(
                         FlextOracleWmsDiscoveryResult(
                             entities=entities,
                             total_count=len(entities),
@@ -1029,10 +1029,10 @@ class FlextOracleWmsEntityDiscovery:
                 }
                 await self.cache_manager.set(cache_key, cache_data)
 
-            return FlextResult.ok(discovery_result)
+            return FlextResult[None].ok(discovery_result)
 
         except Exception as e:
-            return FlextResult.fail(f"Discover entities failed: {e}")
+            return FlextResult[None].fail(f"Discover entities failed: {e}")
 
     def _apply_entity_filters(
         self,

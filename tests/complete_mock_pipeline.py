@@ -299,7 +299,7 @@ class CompleteMockPipeline:
 
             # Show pipeline flow
 
-            return FlextResult.ok(
+            return FlextResult[None].ok(
                 {
                     "duration": duration,
                     "schemas_count": len(schemas),
@@ -313,7 +313,7 @@ class CompleteMockPipeline:
 
         except Exception as e:
             logger.exception("Complete pipeline failed")
-            return FlextResult.fail(f"Pipeline failed: {e}")
+            return FlextResult[None].fail(f"Pipeline failed: {e}")
 
     def _generate_complete_singer_schemas(self) -> dict[str, object]:
         """Generate complete Singer schemas for all entities."""
@@ -719,7 +719,7 @@ class CompleteMockPipeline:
         with summary_file.open("w", encoding="utf-8") as f:
             json.dump(pipeline_summary, f, indent=2, default=str)
 
-        return FlextResult.ok(str(results_dir))
+        return FlextResult[None].ok(str(results_dir))
 
 
 def main() -> None:

@@ -62,9 +62,9 @@ class OracleWmsCompleteDiscovery:
         """Start complete discovery process."""
         start_result = await self.client.start()
         if not start_result.success:
-            return FlextResult.fail(f"Client start failed: {start_result.error}")
+            return FlextResult[None].fail(f"Client start failed: {start_result.error}")
 
-        return FlextResult.ok(None)
+        return FlextResult[None].ok(None)
 
     async def discover_all_apis(
         self,
@@ -105,7 +105,7 @@ class OracleWmsCompleteDiscovery:
                         api_endpoint,
                     )
                 else:
-                    result: FlextResult[Any] = FlextResult.fail("Unknown API category")
+                    result: FlextResult[Any] = FlextResult[None].fail("Unknown API category")
 
                 api_results[api_name] = {
                     "endpoint": api_endpoint,
@@ -119,13 +119,13 @@ class OracleWmsCompleteDiscovery:
             except Exception as e:
                 api_results[api_name] = {
                     "endpoint": api_endpoint,
-                    "result": FlextResult.fail(f"Exception: {e}"),
+                    "result": FlextResult[None].fail(f"Exception: {e}"),
                     "tested_at": datetime.now(UTC).isoformat(),
                 }
 
         _ = sum(1 for r in api_results.values() if r["result"].success)
 
-        return FlextResult.ok(api_results)
+        return FlextResult[None].ok(api_results)
 
     async def _test_data_extract_api(
         self,
@@ -151,7 +151,7 @@ class OracleWmsCompleteDiscovery:
                         api_name,
                         path_params={"entity_name": entity_name},
                     )
-                return FlextResult.fail("No entities available for testing")
+                return FlextResult[None].fail("No entities available for testing")
 
             if api_name == "lgf_entity_get":
                 # Need entity name and ID - requires more complex discovery
@@ -168,7 +168,7 @@ class OracleWmsCompleteDiscovery:
             return await self.client.call_api(api_name)
 
         except Exception as e:
-            return FlextResult.fail(f"Data extract API test failed: {e}")
+            return FlextResult[None].fail(f"Data extract API test failed: {e}")
 
     async def _test_entity_operations_api(
         self,
@@ -193,11 +193,11 @@ class OracleWmsCompleteDiscovery:
                         api_name,
                         path_params={"entity_name": entity_name},
                     )
-                return FlextResult.fail("No entities for entity operations test")
+                return FlextResult[None].fail("No entities for entity operations test")
             return await self.client.call_api(api_name)
 
         except Exception as e:
-            return FlextResult.fail(f"Entity operations API test failed: {e}")
+            return FlextResult[None].fail(f"Entity operations API test failed: {e}")
 
     async def _test_setup_api(self, api_name: str, endpoint) -> FlextResult[Any]:
         """Test setup and transactional APIs."""
@@ -208,7 +208,7 @@ class OracleWmsCompleteDiscovery:
                 return await self.client.call_api(api_name, data=test_data)
             return await self.client.call_api(api_name)
         except Exception as e:
-            return FlextResult.fail(f"Setup API test failed: {e}")
+            return FlextResult[None].fail(f"Setup API test failed: {e}")
 
     async def _test_automation_api(self, api_name: str, endpoint) -> FlextResult[Any]:
         """Test automation and operations APIs."""
@@ -219,7 +219,7 @@ class OracleWmsCompleteDiscovery:
                 return await self.client.call_api(api_name, data=test_data)
             return await self.client.call_api(api_name)
         except Exception as e:
-            return FlextResult.fail(f"Automation API test failed: {e}")
+            return FlextResult[None].fail(f"Automation API test failed: {e}")
 
     async def _test_entity_get_with_discovery(self) -> FlextResult[Any]:
         """Test entity get by discovering entity with data first."""
@@ -249,12 +249,12 @@ class OracleWmsCompleteDiscovery:
                                     },
                                 )
 
-            return FlextResult.fail(
+            return FlextResult[None].fail(
                 "No entity with ID found for testing lgf_entity_get",
             )
 
         except Exception as e:
-            return FlextResult.fail(f"Entity get discovery failed: {e}")
+            return FlextResult[None].fail(f"Entity get discovery failed: {e}")
 
     async def _test_data_extract_to_object_store(self) -> FlextResult[Any]:
         """Test data extract to object store API."""
@@ -268,7 +268,7 @@ class OracleWmsCompleteDiscovery:
             }
             return await self.client.call_api("lgf_data_extract", data=extract_request)
         except Exception as e:
-            return FlextResult.fail(f"Data extract to object store failed: {e}")
+            return FlextResult[None].fail(f"Data extract to object store failed: {e}")
 
     async def _test_async_task_status(self) -> FlextResult[Any]:
         """Test async task status API."""
@@ -279,7 +279,7 @@ class OracleWmsCompleteDiscovery:
                 params={"status": "COMPLETED", "limit": 5},
             )
         except Exception as e:
-            return FlextResult.fail(f"Async task status test failed: {e}")
+            return FlextResult[None].fail(f"Async task status test failed: {e}")
 
     async def _test_entity_with_id(
         self,
@@ -306,10 +306,10 @@ class OracleWmsCompleteDiscovery:
                                 },
                             )
 
-            return FlextResult.fail(f"No valid ID found for entity {entity_name}")
+            return FlextResult[None].fail(f"No valid ID found for entity {entity_name}")
 
         except Exception as e:
-            return FlextResult.fail(f"Entity with ID test failed: {e}")
+            return FlextResult[None].fail(f"Entity with ID test failed: {e}")
 
     def _summarize_api_response(self, data: object) -> str:
         """Summarize API response data."""
@@ -337,7 +337,7 @@ class OracleWmsCompleteDiscovery:
             if entities_result.success:
                 self.discovered_entities = entities_result.data
             else:
-                return FlextResult.fail("Entity discovery failed")
+                return FlextResult[None].fail("Entity discovery failed")
 
         metadata_results = {}
 
@@ -442,7 +442,7 @@ class OracleWmsCompleteDiscovery:
             for name, _count in sorted_entities[:10]:
                 len(metadata_results[name]["fields"])
 
-        return FlextResult.ok(
+        return FlextResult[None].ok(
             {
                 "total_entities": len(self.discovered_entities),
                 "entities_with_data": entities_with_data,
@@ -457,7 +457,7 @@ class OracleWmsCompleteDiscovery:
     ) -> FlextResult[dict[str, Any]]:
         """Generate Singer schemas with real data flattening based on Oracle metadata."""
         if not self.entity_metadata:
-            return FlextResult.fail(
+            return FlextResult[None].fail(
                 "No entity metadata available for schema generation",
             )
 
@@ -484,7 +484,7 @@ class OracleWmsCompleteDiscovery:
 
         self.complete_schemas = singer_schemas
 
-        return FlextResult.ok(singer_schemas)
+        return FlextResult[None].ok(singer_schemas)
 
     async def _generate_singer_schema_from_metadata(
         self,
@@ -636,15 +636,15 @@ class OracleWmsCompleteDiscovery:
         with summary_file.open("w", encoding="utf-8") as f:
             json.dump(summary, f, indent=2, default=str)
 
-        return FlextResult.ok(str(results_dir))
+        return FlextResult[None].ok(str(results_dir))
 
     async def cleanup(self) -> FlextResult[None]:
         """Clean up resources."""
         try:
             await self.client.stop()
-            return FlextResult.ok(None)
+            return FlextResult[None].ok(None)
         except Exception as e:
-            return FlextResult.fail(f"Cleanup failed: {e}")
+            return FlextResult[None].fail(f"Cleanup failed: {e}")
 
 
 async def run_complete_discovery() -> None:

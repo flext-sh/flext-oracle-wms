@@ -53,7 +53,7 @@ class TestFlextOracleWmsClientCore:
         """Test successful client startup."""
         with patch("flext_oracle_wms.client.FlextApiClient") as mock_api_client_class:
             mock_api_client = AsyncMock()
-            mock_api_client.start.return_value = FlextResult.ok(None)
+            mock_api_client.start.return_value = FlextResult[None].ok(None)
             mock_api_client_class.return_value = mock_api_client
 
             client = FlextOracleWmsClient(mock_config)
@@ -70,7 +70,7 @@ class TestFlextOracleWmsClientCore:
 
         with patch("flext_oracle_wms.client.FlextApiClient") as mock_api_client_class:
             mock_api_client = AsyncMock()
-            mock_api_client.start.return_value = FlextResult.fail("Connection failed")
+            mock_api_client.start.return_value = FlextResult[None].fail("Connection failed")
             mock_api_client_class.return_value = mock_api_client
 
             client = FlextOracleWmsClient(mock_config)
@@ -86,7 +86,7 @@ class TestFlextOracleWmsClientCore:
         """Test starting client multiple times."""
         with patch("flext_oracle_wms.client.FlextApiClient") as mock_api_client_class:
             mock_api_client = AsyncMock()
-            mock_api_client.start.return_value = FlextResult.ok(None)
+            mock_api_client.start.return_value = FlextResult[None].ok(None)
             mock_api_client_class.return_value = mock_api_client
 
             client = FlextOracleWmsClient(mock_config)
@@ -107,7 +107,7 @@ class TestFlextOracleWmsClientCore:
         """Test successful client stop."""
         with patch("flext_oracle_wms.client.FlextApiClient") as mock_api_client_class:
             mock_api_client = AsyncMock()
-            mock_api_client.start.return_value = FlextResult.ok(None)
+            mock_api_client.start.return_value = FlextResult[None].ok(None)
             mock_api_client.close.return_value = (
                 None  # close() returns None, not FlextResult
             )
@@ -193,8 +193,8 @@ class TestFlextOracleWmsClientCore:
             }
 
             mock_api_client = AsyncMock()
-            mock_api_client.start.return_value = FlextResult.ok(None)
-            mock_api_client.get.return_value = FlextResult.ok(mock_response)
+            mock_api_client.start.return_value = FlextResult[None].ok(None)
+            mock_api_client.get.return_value = FlextResult[None].ok(mock_response)
             mock_api_client_class.return_value = mock_api_client
 
             client = FlextOracleWmsClient(mock_config)
@@ -233,8 +233,8 @@ class TestFlextOracleWmsClientCore:
             }
 
             mock_api_client = AsyncMock()
-            mock_api_client.start.return_value = FlextResult.ok(None)
-            mock_api_client.get.return_value = FlextResult.ok(mock_response)
+            mock_api_client.start.return_value = FlextResult[None].ok(None)
+            mock_api_client.get.return_value = FlextResult[None].ok(mock_response)
             mock_api_client_class.return_value = mock_api_client
 
             client = FlextOracleWmsClient(mock_config)
@@ -268,8 +268,8 @@ class TestFlextOracleWmsClientCore:
             mock_response.data = sample_entity_data
 
             mock_api_client = AsyncMock()
-            mock_api_client.start.return_value = FlextResult.ok(None)
-            mock_api_client.get.return_value = FlextResult.ok(mock_response)
+            mock_api_client.start.return_value = FlextResult[None].ok(None)
+            mock_api_client.get.return_value = FlextResult[None].ok(mock_response)
             mock_api_client_class.return_value = mock_api_client
 
             client = FlextOracleWmsClient(mock_config)
@@ -285,7 +285,7 @@ class TestFlextOracleWmsClientCore:
         """Test calling unknown API."""
         with patch("flext_oracle_wms.client.FlextApiClient") as mock_api_client_class:
             mock_api_client = AsyncMock()
-            mock_api_client.start.return_value = FlextResult.ok(None)
+            mock_api_client.start.return_value = FlextResult[None].ok(None)
             mock_api_client_class.return_value = mock_api_client
 
             client = FlextOracleWmsClient(mock_config)
