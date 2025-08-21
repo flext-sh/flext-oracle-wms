@@ -105,7 +105,9 @@ class OracleWmsCompleteDiscovery:
                         api_endpoint,
                     )
                 else:
-                    result: FlextResult[Any] = FlextResult[None].fail("Unknown API category")
+                    result: FlextResult[Any] = FlextResult[None].fail(
+                        "Unknown API category"
+                    )
 
                 api_results[api_name] = {
                     "endpoint": api_endpoint,

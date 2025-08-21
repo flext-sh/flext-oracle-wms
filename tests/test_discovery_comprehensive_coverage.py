@@ -231,7 +231,9 @@ class TestEndpointDiscoveryStrategy:
     @pytest.mark.asyncio
     async def test_make_api_request_failure(self) -> None:
         """Test failed API request."""
-        self.mock_api_client.get.return_value = FlextResult[None].fail("Connection timeout")
+        self.mock_api_client.get.return_value = FlextResult[None].fail(
+            "Connection timeout"
+        )
 
         result = await self.strategy._make_api_request(
             self.mock_api_client,
@@ -312,7 +314,9 @@ class TestEntityResponseParser:
                 description="Test entity",
             ),
         ]
-        self.mock_discovery._parse_entities_response.return_value = FlextResult[None].ok(
+        self.mock_discovery._parse_entities_response.return_value = FlextResult[
+            None
+        ].ok(
             mock_entities,
         )
 
@@ -971,7 +975,9 @@ class TestFlextOracleWmsEntityDiscovery:
     @pytest.mark.asyncio
     async def test_discover_single_entity_all_endpoints_fail(self) -> None:
         """Test single entity discovery when all endpoints fail."""
-        self.mock_api_client.get.return_value = FlextResult[None].fail("Connection failed")
+        self.mock_api_client.get.return_value = FlextResult[None].fail(
+            "Connection failed"
+        )
 
         result = await self.discovery._discover_single_entity("company")
 

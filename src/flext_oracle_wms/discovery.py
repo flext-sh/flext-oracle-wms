@@ -135,7 +135,9 @@ class EndpointDiscoveryStrategy(DiscoveryStrategy):
         try:
             result = await api_client.get(endpoint)
             if not result.success:
-                return FlextResult[None].fail(f"Failed to call {endpoint}: {result.error}")
+                return FlextResult[None].fail(
+                    f"Failed to call {endpoint}: {result.error}"
+                )
             if result.data is None:
                 return FlextResult[None].fail(f"No response data from {endpoint}")
             return FlextResult[None].ok(result.data)
@@ -150,7 +152,9 @@ class EndpointDiscoveryStrategy(DiscoveryStrategy):
         if response is None:
             return FlextResult[None].fail(f"No response data from {endpoint}")
         if not hasattr(response, "status_code"):
-            return FlextResult[None].fail("Invalid response structure: missing status_code")
+            return FlextResult[None].fail(
+                "Invalid response structure: missing status_code"
+            )
         if int(getattr(response, "status_code", 0)) != FlextOracleWmsDefaults.HTTP_OK:
             return FlextResult[None].fail(
                 f"HTTP {getattr(response, 'status_code', 'unknown')} calling {endpoint}",
@@ -486,7 +490,9 @@ class FlextOracleWmsEntityDiscovery:
                     break
         if not records:
             # No sample, return empty fields
-            return FlextResult[None].ok(self._create_entity_from_string_name(entity_name))
+            return FlextResult[None].ok(
+                self._create_entity_from_string_name(entity_name)
+            )
         sample = records[0]
         fields: dict[str, object] = {}
         for k, v in sample.items():

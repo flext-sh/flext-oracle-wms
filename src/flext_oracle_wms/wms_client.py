@@ -66,7 +66,9 @@ class FlextOracleWmsAuthConfig(FlextValue):
         """Validate authentication configuration."""
         if self.auth_type == OracleWMSAuthMethod.BASIC:
             if not self.username or not self.password:
-                return FlextResult[None].fail("Username and password required for basic auth")
+                return FlextResult[None].fail(
+                    "Username and password required for basic auth"
+                )
         elif self.auth_type == OracleWMSAuthMethod.BEARER:
             if not self.token:
                 return FlextResult[None].fail("Token required for bearer auth")
@@ -495,7 +497,9 @@ class FlextOracleWmsClient:
                     return FlextResult[None].ok(
                         entities_data if isinstance(entities_data, list) else [],
                     )
-                return FlextResult[None].fail(f"Mock discovery failed: {mock_result.error}")
+                return FlextResult[None].fail(
+                    f"Mock discovery failed: {mock_result.error}"
+                )
 
             # Real API discovery
             endpoint = FLEXT_ORACLE_WMS_APIS.get("entity_discovery")
@@ -506,7 +510,9 @@ class FlextOracleWmsClient:
             resp_result = await self._api_client.get(full_path)
 
             if not resp_result.success:
-                return FlextResult[None].fail(f"Entity discovery failed: {resp_result.error}")
+                return FlextResult[None].fail(
+                    f"Entity discovery failed: {resp_result.error}"
+                )
 
             api_resp = resp_result.data
             if api_resp is None:
@@ -521,7 +527,9 @@ class FlextOracleWmsClient:
 
             body = api_resp.data if hasattr(api_resp, "data") else None
             if not isinstance(body, dict):
-                return FlextResult[None].fail("Invalid entity discovery response format")
+                return FlextResult[None].fail(
+                    "Invalid entity discovery response format"
+                )
 
             entities_raw = body.get("entities", [])
             if not isinstance(entities_raw, list):
@@ -590,7 +598,9 @@ class FlextOracleWmsClient:
                     return FlextResult[None].ok(
                         results_data if isinstance(results_data, list) else [],
                     )
-                return FlextResult[None].fail(f"Mock entity data failed: {mock_result.error}")
+                return FlextResult[None].fail(
+                    f"Mock entity data failed: {mock_result.error}"
+                )
 
             # Real API call
             # Fail fast for invalid entity names that match common test invalids
@@ -646,7 +656,9 @@ class FlextOracleWmsClient:
             AttributeError,
             RuntimeError,
         ) as e:
-            return FlextResult[None].fail(f"Get entity data for {entity_name} failed: {e}")
+            return FlextResult[None].fail(
+                f"Get entity data for {entity_name} failed: {e}"
+            )
 
     async def call_api(
         self,

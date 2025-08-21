@@ -49,7 +49,9 @@ logger = get_logger(__name__)
 # =============================================================================
 
 
-def validate_records_list(records: object, field_name: str = "records") -> FlextResult[bool]:
+def validate_records_list(
+    records: object, field_name: str = "records"
+) -> FlextResult[bool]:
     """Validate records parameter is a list using FlextResult pattern.
 
     Args:
@@ -222,7 +224,9 @@ def flext_oracle_wms_build_entity_url(
 def flext_oracle_wms_validate_entity_name(entity_name: str) -> FlextResult[str]:
     """Validate Oracle WMS entity name format."""
     # Validate using FlextResult pattern
-    string_result = validate_string_parameter(entity_name, "entity name", allow_empty=True)
+    string_result = validate_string_parameter(
+        entity_name, "entity name", allow_empty=True
+    )
     if not string_result.success:
         return FlextResult[None].fail(string_result.error)
 
@@ -405,7 +409,9 @@ class FlextOracleWmsFilter:
         # Validate using FlextResult pattern
         records_result = validate_records_list(records, "records")
         if not records_result.success:
-            logger.error("Record filtering failed", extra={"error": records_result.error})
+            logger.error(
+                "Record filtering failed", extra={"error": records_result.error}
+            )
             return []
 
         return self._apply_record_filters(records)
@@ -674,7 +680,9 @@ class FlextOracleWmsPlugin:
             )
             return FlextResult[None].ok(None)
         except (TypeError, ValueError, AttributeError, RuntimeError) as e:
-            return FlextResult[None].fail(f"Oracle WMS plugin initialization failed: {e}")
+            return FlextResult[None].fail(
+                f"Oracle WMS plugin initialization failed: {e}"
+            )
 
     async def cleanup(self) -> FlextResult[None]:
         """Cleanup Oracle WMS plugin resources."""

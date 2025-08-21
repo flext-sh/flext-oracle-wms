@@ -90,7 +90,9 @@ class FlextOracleWmsFilter(_OpsFilter):
 
         count_result = self._validate_filter_conditions_total(filters)
         if count_result.is_failure:
-            return FlextResult[None].fail(count_result.error or "Filter validation failed")
+            return FlextResult[None].fail(
+                count_result.error or "Filter validation failed"
+            )
 
         # Store filters for validation, type issue will be resolved by proper typing
         object.__setattr__(self, "filters", filters)

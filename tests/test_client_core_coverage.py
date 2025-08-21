@@ -70,7 +70,9 @@ class TestFlextOracleWmsClientCore:
 
         with patch("flext_oracle_wms.client.FlextApiClient") as mock_api_client_class:
             mock_api_client = AsyncMock()
-            mock_api_client.start.return_value = FlextResult[None].fail("Connection failed")
+            mock_api_client.start.return_value = FlextResult[None].fail(
+                "Connection failed"
+            )
             mock_api_client_class.return_value = mock_api_client
 
             client = FlextOracleWmsClient(mock_config)

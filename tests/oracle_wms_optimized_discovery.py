@@ -100,7 +100,9 @@ class OptimizedOracleWmsDiscovery:
         # Get all entities first
         entities_result = await self.client.discover_entities()
         if not entities_result.success:
-            return FlextResult[None].fail(f"Entity discovery failed: {entities_result.error}")
+            return FlextResult[None].fail(
+                f"Entity discovery failed: {entities_result.error}"
+            )
 
         all_entities = entities_result.data
 
