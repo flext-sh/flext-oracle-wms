@@ -113,7 +113,7 @@ class EndpointDiscoveryStrategy(DiscoveryStrategy):
 
             parser = EntityResponseParser(self._discovery)
             parsed = await parser.parse_entities_response(
-                getattr(validation.data, "data", None) or {},
+                validation.value.data if hasattr(validation.value, "data") else {},
                 endpoint,
             )
             if parsed.is_failure:
@@ -155,9 +155,10 @@ class EndpointDiscoveryStrategy(DiscoveryStrategy):
             return FlextResult[None].fail(
                 "Invalid response structure: missing status_code"
             )
-        if int(getattr(response, "status_code", 0)) != FlextOracleWmsDefaults.HTTP_OK:
+        status_code = response.status_code if hasattr(response, "status_code") else 0
+        if int(status_code) != FlextOracleWmsDefaults.HTTP_OK:
             return FlextResult[None].fail(
-                f"HTTP {getattr(response, 'status_code', 'unknown')} calling {endpoint}",
+                f"HTTP {status_code} calling {endpoint}",
             )
         return FlextResult[None].ok(response)
 
@@ -458,11 +459,11 @@ class FlextOracleWmsEntityDiscovery:
                 if not resp.is_success or resp.data is None:
                     continue
                 http = resp.data
-                if getattr(http, "status_code", None) != FlextOracleWmsDefaults.HTTP_OK:
+                if (http.status_code if hasattr(http, "status_code") else None) != FlextOracleWmsDefaults.HTTP_OK:
                     continue
                 # Extract schema from response
                 schema_result = await self._extract_entity_schema(
-                    getattr(http, "data", {}),
+                    http.data if hasattr(http, "data") else {},
                     entity_name,
                     endpoint,
                 )
