@@ -632,9 +632,9 @@ from flext_oracle_wms import FlextOracleWmsClient as WmsClient  # Confusing
 
 ```python
 # Oracle WMS specific domain patterns
-from flext_core import FlextEntity, FlextValueObject, FlextResult
+from flext_core import FlextEntity, FlextValue, FlextResult
 
-class OracleOrganization(FlextValueObject):
+class OracleOrganization(FlextValue):
     """Oracle organization with validation."""
     code: str
     name: str

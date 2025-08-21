@@ -14,7 +14,7 @@ from dataclasses import dataclass, field
 from enum import StrEnum
 from typing import Annotated, Literal, TypedDict
 
-from flext_core import FlextResult, FlextValueObject
+from flext_core import FlextResult, FlextValue
 from pydantic import Field, StringConstraints
 
 from flext_oracle_wms.wms_constants import (
@@ -118,7 +118,7 @@ class FlextOracleWmsApiCategory(StrEnum):
 
 
 @dataclass(frozen=True)
-class FlextOracleWmsEntity(FlextValueObject):
+class FlextOracleWmsEntity(FlextValue):
     """Oracle WMS entity model - USED BY DISCOVERY."""
 
     name: str
@@ -167,7 +167,7 @@ class FlextOracleWmsEntity(FlextValueObject):
 
 
 @dataclass(frozen=True)
-class FlextOracleWmsDiscoveryResult(FlextValueObject):
+class FlextOracleWmsDiscoveryResult(FlextValue):
     """Oracle WMS discovery result - USED BY DISCOVERY."""
 
     entities: list[FlextOracleWmsEntity] = field(default_factory=list)
@@ -209,7 +209,7 @@ class FlextOracleWmsDiscoveryResult(FlextValueObject):
 
 
 @dataclass(frozen=True)
-class FlextOracleWmsApiResponse(FlextValueObject):
+class FlextOracleWmsApiResponse(FlextValue):
     """Oracle WMS API response wrapper - USED BY CLIENT."""
 
     data: dict[str, object] = field(default_factory=dict)
@@ -242,7 +242,7 @@ class FlextOracleWmsApiResponse(FlextValueObject):
 
 
 @dataclass(frozen=True)
-class FlextOracleWmsApiEndpoint(FlextValueObject):
+class FlextOracleWmsApiEndpoint(FlextValue):
     """Declarative API endpoint definition - FROM API_CATALOG."""
 
     name: str

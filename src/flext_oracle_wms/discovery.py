@@ -459,7 +459,9 @@ class FlextOracleWmsEntityDiscovery:
                 if not resp.is_success or resp.data is None:
                     continue
                 http = resp.data
-                if (http.status_code if hasattr(http, "status_code") else None) != FlextOracleWmsDefaults.HTTP_OK:
+                if (
+                    http.status_code if hasattr(http, "status_code") else None
+                ) != FlextOracleWmsDefaults.HTTP_OK:
                     continue
                 # Extract schema from response
                 schema_result = await self._extract_entity_schema(
