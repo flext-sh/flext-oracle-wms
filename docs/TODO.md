@@ -1,6 +1,6 @@
 # FLEXT Oracle WMS - Technical Debt and Architecture Remediation Plan
 
-**Version**: 1.0.0 | **Status**: Critical Architectural Gaps Identified | **Remediation Priority**: High
+**Version**: 0.9.0 | **Status**: Critical Architectural Gaps Identified | **Remediation Priority**: High
 
 This document outlines architectural deviations, technical debt, and implementation gaps that must be addressed to align flext-oracle-wms with FLEXT ecosystem standards and enterprise architecture requirements.
 

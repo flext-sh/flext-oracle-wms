@@ -1811,8 +1811,8 @@ class OracleWmsDbtProject:
 
 ---
 
-**Last Updated**: January 4, 2025  
-**Target Audience**: FLEXT Oracle WMS developers and ecosystem contributors  
-**Scope**: Python module organization for Oracle WMS Cloud integration  
-**Version**: 0.9.0 → 1.0.0 development guidelines  
+**Last Updated**: January 4, 2025
+**Target Audience**: FLEXT Oracle WMS developers and ecosystem contributors
+**Scope**: Python module organization for Oracle WMS Cloud integration
+**Version**: 0.9.0 → 0.9.0 development guidelines
 **Dependencies**: flext-core patterns, Clean Architecture, Oracle WMS Cloud APIs
