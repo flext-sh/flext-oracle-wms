@@ -66,7 +66,7 @@ def validate_records_list(
         pretty = field_name.capitalize()
         msg = f"{pretty} must be a list"
         return FlextResult[None].fail(msg)
-    return FlextResult[None].ok(True)
+    return FlextResult[None].ok(data=True)
 
 
 def validate_dict_parameter(param: object, field_name: str) -> FlextResult[bool]:
@@ -84,7 +84,7 @@ def validate_dict_parameter(param: object, field_name: str) -> FlextResult[bool]
         pretty = field_name.capitalize()
         msg = f"{pretty} must be a dictionary"
         return FlextResult[None].fail(msg)
-    return FlextResult[None].ok(True)
+    return FlextResult[None].ok(data=True)
 
 
 def validate_string_parameter(
@@ -113,7 +113,7 @@ def validate_string_parameter(
         msg = f"{pretty} must be a non-empty string"
         return FlextResult[None].fail(msg)
 
-    return FlextResult[None].ok(True)
+    return FlextResult[None].ok(data=True)
 
 
 def handle_operation_exception(
@@ -362,7 +362,7 @@ def flext_oracle_wms_chunk_records(
             # Upper bound to catch unrealistic sizes used by tests
             msg = "Chunk size is too large"
             return FlextResult[None].fail(msg)
-        return FlextResult[None].ok(True)
+        return FlextResult[None].ok(data=True)
 
     # Validate using FlextResult pattern
     records_result = validate_records_list(records, "records")

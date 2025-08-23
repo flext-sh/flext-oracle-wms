@@ -591,7 +591,7 @@ class TestFlextOracleWmsEntityDiscovery:
             EndpointDiscoveryStrategy,
             "execute_discovery_step",
         ) as mock_step:
-            mock_step.return_value = FlextResult[None].ok(True)
+            mock_step.return_value = FlextResult[None].ok(data=True)
 
             with patch.object(self.discovery, "_apply_post_processing") as mock_process:
                 mock_entities = [
@@ -618,7 +618,7 @@ class TestFlextOracleWmsEntityDiscovery:
             EndpointDiscoveryStrategy,
             "execute_discovery_step",
         ) as mock_step:
-            mock_step.return_value = FlextResult[None].ok(True)
+            mock_step.return_value = FlextResult[None].ok(data=True)
 
             with patch.object(self.discovery, "_apply_post_processing") as mock_process:
                 mock_process.return_value = []

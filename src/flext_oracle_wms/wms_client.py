@@ -179,7 +179,7 @@ class FlextOracleWmsAuthenticator:
             ):
                 return FlextResult[None].fail("Invalid API key")
 
-            return FlextResult[bool].ok(True)
+            return FlextResult[bool].ok(data=True)
 
         except (
             ConnectionError,
