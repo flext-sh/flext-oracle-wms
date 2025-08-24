@@ -27,7 +27,7 @@ logger = get_logger(__name__)
 class FlextOracleWmsFilter(_OpsFilter):
     """Oracle WMS filter with case sensitivity and validation."""
 
-    def __init__(self, case_sensitive: bool = False, max_conditions: int = 50) -> None:  # noqa: FBT001, FBT002
+    def __init__(self, case_sensitive: bool = False, max_conditions: int = 50) -> None:
         if max_conditions <= 0:
             msg = "max_conditions must be positive"
             raise FlextOracleWmsError(msg)
@@ -90,7 +90,7 @@ class FlextOracleWmsFilter(_OpsFilter):
 
         count_result = self._validate_filter_conditions_total(filters)
         if count_result.is_failure:
-            return FlextResult[None].fail(
+            return FlextResult[list[dict[str, object]]].fail(
                 count_result.error or "Filter validation failed"
             )
 
@@ -98,8 +98,8 @@ class FlextOracleWmsFilter(_OpsFilter):
         object.__setattr__(self, "filters", filters)
         data = await super().filter_records(records)
         if limit is not None and isinstance(data, list):
-            return FlextResult[None].ok(data[: int(limit)])
-        return FlextResult[None].ok(data)
+            return FlextResult[list[dict[str, object]]].ok(data[: int(limit)])
+        return FlextResult[list[dict[str, object]]].ok(data)
 
     async def sort_records(
         self,
@@ -118,11 +118,11 @@ class FlextOracleWmsFilter(_OpsFilter):
                 return str(value)
 
             sorted_records = sorted(records, key=key_func, reverse=not ascending)
-            return FlextResult[None].ok(sorted_records)
+            return FlextResult[list[dict[str, object]]].ok(sorted_records)
         except FlextOracleWmsDataValidationError:
             raise
         except Exception as e:  # pragma: no cover - defensive
-            return FlextResult[None].fail(f"Sort failed: {e}")
+            return FlextResult[list[dict[str, object]]].fail(f"Sort failed: {e}")
 
     def _validate_filter_conditions_total(
         self,
@@ -179,7 +179,7 @@ async def flext_oracle_wms_filter_by_field(
     # Set filters before calling filter_records
     object.__setattr__(engine, "filters", {field: op_value})
     data = await engine.filter_records(records)
-    return FlextResult[None].ok(data)
+    return FlextResult[list[dict[str, object]]].ok(data)
 
 
 async def flext_oracle_wms_filter_by_id_range(
@@ -211,11 +211,11 @@ async def flext_oracle_wms_filter_by_id_range(
             "value": max_id,
         }
     if not filters:
-        return FlextResult[None].ok(records)
+        return FlextResult[list[dict[str, object]]].ok(records)
     # Set filters before calling filter_records
     object.__setattr__(engine, "filters", filters)
     data = await engine.filter_records(records)
-    return FlextResult[None].ok(data)
+    return FlextResult[list[dict[str, object]]].ok(data)
 
 
 __all__: list[str] = [

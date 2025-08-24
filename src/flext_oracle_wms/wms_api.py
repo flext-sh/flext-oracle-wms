@@ -345,10 +345,10 @@ class OracleWmsMockServer:
                 return self._mock_entity_data(entity_name)
             if endpoint == "entity_metadata" and entity_name:
                 return self._mock_entity_metadata(entity_name)
-            return FlextResult[None].fail(f"Unknown mock endpoint: {endpoint}")
+            return FlextResult[dict[str, object]].fail(f"Unknown mock endpoint: {endpoint}")
         except Exception as e:
             logger.exception("Mock server error")
-            return FlextResult[None].fail(f"Mock server error: {e}")
+            return FlextResult[dict[str, object]].fail(f"Mock server error: {e}")
 
     def _mock_entity_discovery(self) -> FlextResult[dict[str, object]]:
         """Mock entity discovery response."""
@@ -368,7 +368,7 @@ class OracleWmsMockServer:
             )
         ]
 
-        return FlextResult[None].ok(
+        return FlextResult[dict[str, object]].ok(
             {
                 "entities": entities,
                 "total_count": len(entities),
@@ -403,7 +403,7 @@ class OracleWmsMockServer:
                 },
             ]
 
-        return FlextResult[None].ok(
+        return FlextResult[dict[str, object]].ok(
             {
                 "results": mock_records,
                 "result_count": len(mock_records)
@@ -439,7 +439,7 @@ class OracleWmsMockServer:
         entity_specific_fields = self._get_entity_specific_fields(entity_name)
         base_fields.update(entity_specific_fields)
 
-        return FlextResult[None].ok(
+        return FlextResult[dict[str, object]].ok(
             {
                 "entity_name": entity_name,
                 "fields": base_fields,

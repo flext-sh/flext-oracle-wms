@@ -63,9 +63,6 @@ def load_env_config():
 
 async def main() -> None:
     """Demonstrate declarative Oracle WMS Client usage."""
-    print("🚀 Oracle WMS Cloud Client - Declarative Implementation Demo")
-    print("=" * 60)
-
     # Load configuration
     env_config = load_env_config()
     if not env_config or not all(
@@ -75,7 +72,6 @@ async def main() -> None:
             env_config.get("password"),
         ],
     ):
-        print("❌ No valid .env configuration found - skipping demo")
         return
 
     # Create client configuration
@@ -84,17 +80,11 @@ async def main() -> None:
 
     try:
         # Start the client
-        print("🔧 Starting Oracle WMS client...")
         start_result = await client.start()
         if not start_result.success:
-            print(f"❌ Failed to start client: {start_result.error}")
             return
-        print("✅ Client started successfully")
 
         # Show API catalog
-        print(
-            f"\n�� API Catalog: {len(FLEXT_ORACLE_WMS_APIS)} Oracle WMS Cloud APIs loaded",
-        )
 
         # Categorize APIs
         categories = {}
@@ -103,85 +93,49 @@ async def main() -> None:
                 categories[api.category] = []
             categories[api.category].append(api.name)
 
-        for category, apis in categories.items():
-            print(f"  📁 {category}: {len(apis)} APIs")
+        for _category, _apis in categories.items():
+            pass
 
         # Health check
-        print("\n🏥 Health Check...")
         health_result = await client.health_check()
         if health_result.success:
-            health_data = health_result.data
-            print(
-                f"✅ Service: {health_data['service']} - Status: {health_data['status']}",
-            )
-        else:
-            print(f"❌ Health check failed: {health_result.error}")
+            pass
 
         # Get available entities
-        print("\n📋 Available Entities...")
         entities_result = await client.get_all_entities()
         if entities_result.success:
-            entities = entities_result.data
-            print(f"✅ Found {len(entities)} entities: {', '.join(entities[:5])}...")
-        else:
-            print(f"❌ Failed to get entities: {entities_result.error}")
+            pass
 
         # Test LGF API v10 - Get entity data
-        print("\n📊 LGF API v10 - Data Extraction...")
         for entity in ["company", "facility", "item"]:
-            print(f"  🔍 Testing {entity}...")
             result = await client.get_entity_data(entity, limit=3)
 
             if result.success:
                 data = result.data
-                count = data.get("count", len(data.get("results", [])))
-                print(f"    ✅ {entity}: {count} records available")
-            else:
-                print(f"    ⚠️ {entity}: {result.error}")
+                data.get("count", len(data.get("results", [])))
 
         # Test automation APIs (dry run)
-        print("\n🤖 Automation APIs (Structure Test)...")
 
         # Test entity status
-        status_result = await client.get_entity_status(entity="company", key="test")
-        print(
-            f"  📊 Entity Status: {'✅ OK' if status_result.success else '⚠️ Expected failure'}",
-        )
+        await client.get_entity_status(entity="company", key="test")
 
         # Test OBLPN tracking (will fail, but tests structure)
-        tracking_result = await client.update_oblpn_tracking_number(
+        await client.update_oblpn_tracking_number(
             company_code="TEST",
             facility_code="TEST",
             oblpn_nbr="TEST123",
             tracking_nbr="TRACK123",
         )
-        print(
-            f"  📦 OBLPN Tracking: {'✅ OK' if tracking_result.success else '⚠️ Expected failure'}",
-        )
 
         # Test LPN creation (will fail, but tests structure)
-        lpn_result = await client.create_lpn(lpn_nbr="TEST_LPN", qty=10)
-        print(
-            f"  📋 LPN Creation: {'✅ OK' if lpn_result.success else '⚠️ Expected failure'}",
-        )
+        await client.create_lpn(lpn_nbr="TEST_LPN", qty=10)
 
-        print("\n🎉 Declarative Oracle WMS Client Demo Complete!")
-        print("💡 Key Benefits:")
-        print("  • 25+ APIs defined declaratively")
-        print("  • Built on flext-api infrastructure")
-        print("  • Type-safe with flext-core patterns")
-        print("  • Async/await support")
-        print("  • Comprehensive error handling")
-        print("  • Easy to extend and maintain")
-
-    except Exception as e:
-        print(f"❌ Demo failed: {e}")
+    except Exception:
+        pass
 
     finally:
         # Cleanup
-        print("\n🧹 Cleaning up...")
         await client.stop()
-        print("✅ Client stopped")
 
 
 if __name__ == "__main__":

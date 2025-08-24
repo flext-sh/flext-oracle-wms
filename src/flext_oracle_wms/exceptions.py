@@ -13,8 +13,7 @@ from __future__ import annotations
 from collections.abc import Mapping
 from enum import Enum
 
-from flext_core import FlextError
-from flext_core.exceptions import FlextErrorMixin
+from flext_core import FlextError, FlextErrorMixin
 
 
 class FlextOracleWmsErrorCodes(Enum):

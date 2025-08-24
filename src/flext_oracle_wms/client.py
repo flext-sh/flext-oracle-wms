@@ -59,11 +59,11 @@ class FlextOracleWmsPlugin:
 
         """
         if self._client is None:
-            return FlextResult[None].fail(
+            return FlextResult[object].fail(
                 "Plugin not initialized: client is not initialized"
             )
         try:
-            return FlextResult[None].ok({"operation": operation, "status": "noop"})
+            return FlextResult[object].ok({"operation": operation, "status": "noop"})
         except Exception as e:  # pragma: no cover - defensive
             raise FlextOracleWmsProcessingError(str(e)) from e
 

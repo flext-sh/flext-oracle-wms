@@ -268,16 +268,18 @@ class TestExamplesIntegration:
 
     def test_configuration_example_works(self) -> None:
         """Test that configuration.py now works after refactoring."""
-        import asyncio
+        # Run configuration.py to test it works
+        import subprocess
         import sys
 
-        # Run configuration.py to test it works
-        rc, out, err = asyncio.run(
-            _run(
-                [sys.executable, "examples/configuration.py"],
-                cwd="/home/marlonsc/flext/flext-oracle-wms",
-            ),
+        result = subprocess.run(
+            [sys.executable, "examples/configuration.py"],
+            check=False,
+            cwd="/home/marlonsc/flext/flext-oracle-wms",
+            capture_output=True,
+            text=True,
         )
+        rc, out, err = result.returncode, result.stdout, result.stderr
 
         # Should now succeed after refactoring
         assert rc == 0, f"configuration.py failed: {err}"

@@ -21,6 +21,7 @@ Usage:
     python examples/configuration.py
 """
 
+import contextlib
 import os
 from dataclasses import dataclass
 from enum import StrEnum
@@ -145,7 +146,7 @@ def create_demo_config() -> FlextOracleWmsClientConfig:
     return FlextOracleWmsClientConfig(
         base_url="https://demo-wms.oraclecloud.com/demo",
         username="demo_user",
-        password="demo_password",  # noqa: S106 - Demo password argument for configuration example
+        password="demo_password",
         environment="demo",
         api_version=FlextOracleWmsApiVersion.LGF_V10,
         timeout=30.0,
@@ -264,88 +265,47 @@ async def test_configuration(config: FlextOracleWmsClientConfig) -> dict[str, An
 
 def demonstrate_configuration_patterns() -> None:
     """Demonstrate working Oracle WMS configuration patterns."""
-    print("🔧 Oracle WMS Configuration Management Examples")
-    print("=" * 60)
-
     # Pattern 1: Environment-driven configuration (REAL)
-    print("\n📋 Pattern 1: Environment-driven Configuration")
-    print("-" * 45)
     try:
         env_config = create_config_from_environment()
         validation = validate_configuration(env_config)
 
-        print("✅ Environment configuration created successfully")
-        print(f"   Base URL: {env_config.base_url}")
-        print(f"   Username: {env_config.username}")
-        print(f"   Environment: {env_config.environment}")
-        print(f"   API Version: {env_config.api_version.value}")
-        print(f"   Timeout: {env_config.timeout}s")
-
         if validation["warnings"]:
-            print("⚠️  Configuration warnings:")
-            for warning in validation["warnings"]:
-                print(f"   - {warning}")
+            for _warning in validation["warnings"]:
+                pass
 
         if validation["valid"]:
-            print("✅ Configuration is valid and ready for use")
+            pass
         else:
-            print("❌ Configuration has errors:")
-            for error in validation["errors"]:
-                print(f"   - {error}")
+            for _error in validation["errors"]:
+                pass
 
-    except ValueError as e:
-        print(f"❌ Configuration example failed: {e}")
-        print("   Check your environment setup and try again")
+    except ValueError:
+        pass
 
     # Pattern 2: Demo configuration
-    print("\n📋 Pattern 2: Demo Configuration")
-    print("-" * 45)
     try:
         demo_config = create_demo_config()
         validation = validate_configuration(demo_config)
 
-        print("✅ Demo configuration created successfully")
-        print(f"   Base URL: {demo_config.base_url}")
-        print(f"   Configuration valid: {validation['valid']}")
-
         if validation["warnings"]:
-            print("⚠️  Configuration warnings:")
-            for warning in validation["warnings"]:
-                print(f"   - {warning}")
+            for _warning in validation["warnings"]:
+                pass
 
-    except Exception as e:
-        print(f"❌ Demo configuration failed: {e}")
+    except Exception:
+        pass
 
     # Pattern 3: Environment-specific configurations
-    print("\n📋 Pattern 3: Environment-specific Templates")
-    print("-" * 45)
     env_configs = get_environment_configs()
 
-    for config in env_configs.values():
-        print(f"🌍 {config.name} Environment:")
-        print(f"   Base URL: {config.base_url}")
-        print(f"   Timeout: {config.timeout}s")
-        print(f"   Max Retries: {config.max_retries}")
-        print()
+    for _config in env_configs.values():
+        pass
 
 
 def main() -> None:
     """Main function demonstrating Oracle WMS configuration patterns."""
-    print("🚀 FLEXT Oracle WMS - Configuration Examples")
-    print("=" * 60)
-
-    try:
+    with contextlib.suppress(Exception):
         demonstrate_configuration_patterns()
-
-        print("\n✅ Configuration examples completed successfully!")
-        print("\n💡 Next steps:")
-        print("   - Ensure your .env file has valid Oracle WMS credentials")
-        print("   - Test with basic_usage.py for real Oracle WMS connection")
-        print("   - Explore entity discovery and data retrieval examples")
-
-    except Exception as e:
-        print(f"❌ Configuration example failed: {e}")
-        print("   Check your environment setup and try again")
 
 
 if __name__ == "__main__":
