@@ -51,7 +51,7 @@ graph TB
 **Current State**: 85% compliance, needs consistency improvements
 
 ```python
-from flext_core import FlextResult, FlextError
+from flext_core import FlextResult, FlextExceptions.Error
 from flext_oracle_wms import FlextOracleWmsClient
 
 # ✅ Correct Usage - All public methods return FlextResult
@@ -67,7 +67,7 @@ async def discover_wms_entities() -> FlextResult[List[WmsEntity]]:
         return FlextResult[None].ok(entities)
     else:
         # Handle errors consistently
-        error = FlextError(
+        error = FlextExceptions.Error(
             code="WMS_DISCOVERY_FAILED",
             message=f"Failed to discover entities: {result.error}",
             details={"base_url": config.base_url}

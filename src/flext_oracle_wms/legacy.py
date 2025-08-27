@@ -2,7 +2,7 @@
 
 This module provides backward compatibility for legacy exception classes and APIs
 that were refactored during the flext-core modernization. All legacy names are
-maintained as facades to the new FlextErrorMixin-based exceptions.
+maintained as facades to the new FlextExceptions.ErrorMixin-based exceptions.
 
 This layer will be deprecated in a future version. Please migrate to the new
 FlextOracleWms* exception classes for modern error handling patterns.

@@ -1478,7 +1478,7 @@ async def process_oracle_inventory_transaction(
 
 ```python
 # Oracle WMS specific error handling patterns
-from flext_core import FlextResult, FlextError
+from flext_core import FlextResult, FlextExceptions.Error
 from enum import Enum
 
 class OracleWmsErrorCode(str, Enum):
@@ -1499,7 +1499,7 @@ def handle_oracle_wms_error(
 ) -> FlextResult[None]:
     """Standardized Oracle WMS error handling."""
 
-    flext_error = FlextError(
+    flext_error = FlextExceptions.Error(
         code=error_code.value,
         message=error_message,
         details={

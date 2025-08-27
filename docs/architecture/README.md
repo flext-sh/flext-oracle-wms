@@ -255,7 +255,7 @@ class WmsRepositoryImpl(WmsRepository):
 ### FlextResult Pattern Implementation
 
 ```python
-from flext_core import FlextResult, FlextError
+from flext_core import FlextResult, FlextExceptions.Error
 
 # All public operations must return FlextResult
 async def discover_entities() -> FlextResult[List[WmsEntity]]:
@@ -264,13 +264,13 @@ async def discover_entities() -> FlextResult[List[WmsEntity]]:
         entities = await self._perform_discovery()
         return FlextResult[None].ok(entities)
     except WmsConnectionError as e:
-        return FlextResult[None].fail(FlextError(
+        return FlextResult[None].fail(FlextExceptions.Error(
             code="WMS_CONNECTION_FAILED",
             message=f"Failed to connect to Oracle WMS: {e}",
             details={"endpoint": self._config.base_url}
         ))
     except Exception as e:
-        return FlextResult[None].fail(FlextError(
+        return FlextResult[None].fail(FlextExceptions.Error(
             code="UNEXPECTED_ERROR",
             message=f"Unexpected error during discovery: {e}"
         ))
