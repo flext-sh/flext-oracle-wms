@@ -17,8 +17,8 @@ from typing import ClassVar, NewType
 from urllib.parse import urlparse
 
 from flext_core import (
+    FlextConfig,
     FlextResult,
-    FlextSettings,
     FlextValue,
     get_logger,
 )
@@ -138,7 +138,7 @@ class FlextOracleWmsClientConfig(FlextValue):
         )
 
 
-class FlextOracleWmsModuleConfig(FlextSettings):
+class FlextOracleWmsModuleConfig(FlextConfig):
     """Enterprise Oracle WMS configuration using modern Pydantic patterns.
 
     Simplified configuration management for Oracle WMS integration operations

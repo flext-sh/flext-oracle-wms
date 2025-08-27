@@ -13,12 +13,12 @@ from __future__ import annotations
 import contextlib
 
 from flext_core import (
-    FlextExceptions.AuthenticationError,
-    FlextExceptions.Error,
-    FlextExceptions.ErrorCode,
+    FlextExceptions,
+    FlextExceptions,
+    FlextExceptionsCode,
     FlextProcessingError,
-    FlextExceptions.TimeoutError,
-    FlextExceptions.ValidationError,
+    FlextExceptions,
+    FlextExceptions,
 )
 
 # =============================================================================
@@ -26,7 +26,7 @@ from flext_core import (
 # =============================================================================
 
 
-class FlextOracleWmsError(FlextExceptions.Error):
+class FlextOracleWmsError(FlextExceptions):
     """Base exception for all Oracle WMS operations.
 
     Propagates context attributes (like entity_name) to support tests that
@@ -40,14 +40,14 @@ class FlextOracleWmsError(FlextExceptions.Error):
         context: dict[str, object] | None = None,
         error_code: str | None = None,
     ) -> None:
-        # Convert string error code to FlextExceptions.ErrorCode enum
+        # Convert string error code to FlextExceptionsCode enum
         flext_code = None
         if error_code:
             try:
-                flext_code = FlextExceptions.ErrorCode(error_code)
+                flext_code = FlextExceptionsCode(error_code)
             except ValueError:
                 # Fallback to generic error for unknown codes
-                flext_code = FlextExceptions.ErrorCode.GENERIC_ERROR
+                flext_code = FlextExceptionsCode.GENERIC_ERROR
         super().__init__(message, context=context or {}, code=flext_code)
         # Attach context keys as attributes for convenient access in tests
         for key, value in (context or {}).items():
@@ -55,7 +55,7 @@ class FlextOracleWmsError(FlextExceptions.Error):
                 setattr(self, key, value)
 
 
-class FlextOracleWmsValidationError(FlextExceptions.ValidationError):
+class FlextOracleWmsValidationError(FlextExceptions):
     """Oracle WMS validation error with comprehensive field context.
 
     Specialized validation error for Oracle WMS entity and configuration
@@ -101,7 +101,7 @@ class FlextOracleWmsProcessingError(FlextProcessingError):
     """
 
 
-class FlextOracleWmsAuthenticationError(FlextExceptions.AuthenticationError):
+class FlextOracleWmsAuthenticationError(FlextExceptions):
     """Oracle WMS authentication error with comprehensive auth context.
 
     Specialized authentication error for Oracle WMS authentication and
@@ -109,7 +109,7 @@ class FlextOracleWmsAuthenticationError(FlextExceptions.AuthenticationError):
     """
 
 
-class FlextOracleWmsTimeoutError(FlextExceptions.TimeoutError):
+class FlextOracleWmsTimeoutError(FlextExceptions):
     """Oracle WMS timeout error with comprehensive deadline context.
 
     Specialized timeout error for Oracle WMS operation deadline violations.

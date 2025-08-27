@@ -5,7 +5,7 @@ from __future__ import annotations
 
 from collections import defaultdict
 
-from flext_core import FlextLoggerFactory, FlextLoggerName
+from flext_core import FlextLoggerName
 from pydantic import HttpUrl
 
 from flext_oracle_wms import FlextOracleWmsLegacyClient, FlextOracleWmsModuleConfig

@@ -1,7 +1,7 @@
 """Oracle WMS Exception Hierarchy - Modern Pydantic v2 Patterns.
 
 This module provides Oracle WMS-specific exceptions using modern patterns from flext-core.
-All exceptions follow the FlextExceptions.ErrorMixin pattern with keyword-only arguments and
+All exceptions follow the FlextExceptionsMixin pattern with keyword-only arguments and
 modern Python 3.13 type aliases for comprehensive error handling in Oracle WMS operations.
 
 Copyright (c) 2025 FLEXT Contributors
@@ -34,8 +34,8 @@ class FlextOracleWmsErrorCodes(Enum):
     WMS_PICKING_ERROR = "WMS_PICKING_ERROR"
 
 
-# Base Oracle WMS exception hierarchy using FlextExceptions.ErrorMixin pattern
-class FlextOracleWmsError(FlextExceptions.Error, FlextExceptions.ErrorMixin):
+# Base Oracle WMS exception hierarchy using FlextExceptionsMixin pattern
+class FlextOracleWmsError(FlextExceptions, FlextExceptionsMixin):
     """Base Oracle WMS error."""
 
 
@@ -76,7 +76,7 @@ class FlextOracleWmsSchemaError(FlextOracleWmsError):
 
 
 # Domain-specific exceptions for Oracle WMS business logic
-# Using modern FlextExceptions.ErrorMixin pattern with context support
+# Using modern FlextExceptionsMixin pattern with context support
 
 
 class FlextOracleWmsDataValidationError(FlextOracleWmsValidationError):

@@ -2,7 +2,7 @@
 
 This module provides backward compatibility for legacy exception classes and APIs
 that were refactored during the flext-core modernization. All legacy names are
-maintained as facades to the new FlextExceptions.ErrorMixin-based exceptions.
+maintained as facades to the new FlextExceptionsMixin-based exceptions.
 
 This layer will be deprecated in a future version. Please migrate to the new
 FlextOracleWms* exception classes for modern error handling patterns.
@@ -21,7 +21,7 @@ from flext_oracle_wms.config import FlextOracleWmsClientConfig
 from flext_oracle_wms.exceptions import FlextOracleWmsProcessingError
 
 
-def _deprecation_warning(old_name: str, new_name: str) -> None:
+def deprecation_warning(old_name: str, new_name: str) -> None:
     """Issue deprecation warning for legacy API usage."""
     warnings.warn(
         f"{old_name} is deprecated. Use {new_name} instead. "
@@ -36,7 +36,7 @@ def flext_oracle_wms_filter_error(
     *args: object, **_kwargs: object
 ) -> FlextOracleWmsProcessingError:
     """Legacy: Use FlextOracleWmsProcessingError instead."""
-    _deprecation_warning("FlextOracleWmsFilterError", "FlextOracleWmsProcessingError")
+    deprecation_warning("FlextOracleWmsFilterError", "FlextOracleWmsProcessingError")
     # Convert positional args to message and pass kwargs as context
     message = str(args[0]) if args else "Filter error"
     return FlextOracleWmsProcessingError(message)
@@ -46,9 +46,7 @@ def flext_oracle_wms_rate_limit_error(
     *args: object, **_kwargs: object
 ) -> FlextOracleWmsProcessingError:
     """Legacy: Use FlextOracleWmsProcessingError instead."""
-    _deprecation_warning(
-        "FlextOracleWmsRateLimitError", "FlextOracleWmsProcessingError"
-    )
+    deprecation_warning("FlextOracleWmsRateLimitError", "FlextOracleWmsProcessingError")
     # Convert positional args to message and pass kwargs as context
     message = str(args[0]) if args else "Rate limit error"
     return FlextOracleWmsProcessingError(message)
@@ -62,19 +60,19 @@ FlextOracleWmsRateLimitError = flext_oracle_wms_rate_limit_error
 # Legacy API function aliases
 def create_wms_client(*args: object, **kwargs: object) -> object:
     """Legacy: Use FlextOracleWmsClient directly instead."""
-    _deprecation_warning("create_wms_client", "FlextOracleWmsClient")
+    deprecation_warning("create_wms_client", "FlextOracleWmsClient")
     return FlextOracleWmsClient(*args, **kwargs)
 
 
 def create_wms_config(*args: object, **kwargs: object) -> object:
     """Legacy: Use FlextOracleWmsClientConfig directly instead."""
-    _deprecation_warning("create_wms_config", "FlextOracleWmsClientConfig")
+    deprecation_warning("create_wms_config", "FlextOracleWmsClientConfig")
     return FlextOracleWmsClientConfig(*args, **kwargs)
 
 
 def setup_wms_authentication(*args: object, **kwargs: object) -> object:
     """Legacy: Use FlextOracleWmsAuthenticator directly instead."""
-    _deprecation_warning("setup_wms_authentication", "FlextOracleWmsAuthenticator")
+    deprecation_warning("setup_wms_authentication", "FlextOracleWmsAuthenticator")
     if FlextOracleWmsAuthenticator is None:
         msg = "FlextOracleWmsAuthenticator not available"
         raise ImportError(msg) from None
@@ -91,7 +89,7 @@ WMS_DEFAULT_CACHE_TTL = 300  # 5 minutes
 # Legacy parameter factories for compatibility - simplified
 def wms_validation_error_params(**kwargs: object) -> dict[str, object]:
     """Legacy: Create parameters for WMS validation error - use FlextOracleWmsDataValidationError context instead."""
-    _deprecation_warning(
+    deprecation_warning(
         "WmsValidationErrorParams",
         "FlextOracleWmsDataValidationError context parameter",
     )
@@ -105,7 +103,7 @@ def wms_validation_error_params(**kwargs: object) -> dict[str, object]:
 
 def wms_configuration_error_params(**kwargs: object) -> dict[str, object]:
     """Legacy: Create parameters for WMS configuration error - use FlextOracleWmsConfigError context instead."""
-    _deprecation_warning(
+    deprecation_warning(
         "WmsConfigurationErrorParams", "FlextOracleWmsConfigError context parameter"
     )
     return {
@@ -118,7 +116,7 @@ def wms_configuration_error_params(**kwargs: object) -> dict[str, object]:
 
 def wms_api_error_params(**kwargs: object) -> dict[str, object]:
     """Legacy: Create parameters for WMS API error - use FlextOracleWmsApiRequestError context instead."""
-    _deprecation_warning(
+    deprecation_warning(
         "WmsApiErrorParams", "FlextOracleWmsApiRequestError context parameter"
     )
     return {

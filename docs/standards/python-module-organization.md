@@ -982,7 +982,7 @@ def _format_validation_errors(errors: List[WmsValidationError]) -> str:
 ### **Oracle WMS Specific Configuration**
 
 ```python
-from flext_core import FlextSettings
+from flext_core import FlextConfig
 from typing import Optional, List
 from enum import Enum
 
@@ -1000,7 +1000,7 @@ class OracleWmsEnvironment(str, Enum):
     STAGING = "stage"
     PRODUCTION = "prod"
 
-class FlextOracleWmsAuthSettings(FlextSettings):
+class FlextOracleWmsAuthSettings(FlextConfig):
     """Oracle WMS authentication configuration."""
     method: OracleWmsAuthMethod = OracleWmsAuthMethod.BASIC
     username: Optional[str] = None
@@ -1014,7 +1014,7 @@ class FlextOracleWmsAuthSettings(FlextSettings):
     class Config:
         env_prefix = "FLEXT_ORACLE_WMS_AUTH_"
 
-class FlextOracleWmsPerformanceSettings(FlextSettings):
+class FlextOracleWmsPerformanceSettings(FlextConfig):
     """Oracle WMS performance configuration."""
     timeout_seconds: int = 30
     max_retries: int = 3
@@ -1026,7 +1026,7 @@ class FlextOracleWmsPerformanceSettings(FlextSettings):
     class Config:
         env_prefix = "FLEXT_ORACLE_WMS_PERF_"
 
-class FlextOracleWmsCacheSettings(FlextSettings):
+class FlextOracleWmsCacheSettings(FlextConfig):
     """Oracle WMS caching configuration."""
     enabled: bool = True
     ttl_seconds: int = 300
@@ -1037,7 +1037,7 @@ class FlextOracleWmsCacheSettings(FlextSettings):
     class Config:
         env_prefix = "FLEXT_ORACLE_WMS_CACHE_"
 
-class FlextOracleWmsClientConfig(FlextSettings):
+class FlextOracleWmsClientConfig(FlextConfig):
     """Complete Oracle WMS client configuration."""
 
     # Connection settings
@@ -1784,7 +1784,7 @@ class OracleWmsDbtProject:
 - [ ] **Oracle Specificity**: Handles Oracle WMS Cloud API patterns and business rules
 - [ ] **Type Safety**: Complete type annotations with Oracle WMS specific types
 - [ ] **Error Handling**: Uses OracleWmsErrorCode enum and structured error handling
-- [ ] **Configuration**: Extends FlextSettings with Oracle WMS specific options
+- [ ] **Configuration**: Extends FlextConfig with Oracle WMS specific options
 - [ ] **Testing**: 90%+ coverage with unit, integration, and Oracle WMS specific tests
 - [ ] **Documentation**: Comprehensive docstrings with Oracle WMS examples
 - [ ] **Singer Integration**: Compatible with Singer protocol and catalog generation
