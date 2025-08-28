@@ -14,11 +14,8 @@ import contextlib
 
 from flext_core import (
     FlextExceptions,
-    FlextExceptions,
     FlextExceptionsCode,
     FlextProcessingError,
-    FlextExceptions,
-    FlextExceptions,
 )
 
 # =============================================================================
@@ -26,7 +23,7 @@ from flext_core import (
 # =============================================================================
 
 
-class FlextOracleWmsError(FlextExceptions):
+class FlextOracleWmsError(FlextExceptions.Error):
     """Base exception for all Oracle WMS operations.
 
     Propagates context attributes (like entity_name) to support tests that

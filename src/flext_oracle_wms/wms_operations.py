@@ -131,7 +131,7 @@ def handle_operation_exception(
     if logger is not None:
         # Compatibilidade com asserções: args[1] deve conter a operação, args[2] os extras
         extras = ", ".join(f"{k}={v}" for k, v in context.items()) if context else ""
-        logger.error("%s", operation, extras)
+        logger.error("%s %s", operation, extras)
     raise FlextOracleWmsError(error_msg) from exception
 
 

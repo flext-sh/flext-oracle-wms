@@ -20,7 +20,6 @@ from flext_oracle_wms.wms_discovery import (
     FlextOracleWmsCacheManager,
     FlextOracleWmsCacheStats,
     FlextOracleWmsDynamicSchemaProcessor,
-    FlextOracleWmsEntityDiscovery,
     NullTypeStrategy,
     NumberTypeStrategy,
     ObjectTypeStrategy,
@@ -528,7 +527,7 @@ class FlextOracleWmsEntityDiscovery:
 
         for type_class, type_name in type_mapping.items():
             if isinstance(value, type_class):
-                if type_class == int and isinstance(value, bool):
+                if type_class is int and isinstance(value, bool):
                     continue  # Skip bool since it's a subclass of int
                 return type_name
 

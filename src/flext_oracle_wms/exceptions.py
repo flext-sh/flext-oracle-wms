@@ -34,8 +34,8 @@ class FlextOracleWmsErrorCodes(Enum):
     WMS_PICKING_ERROR = "WMS_PICKING_ERROR"
 
 
-# Base Oracle WMS exception hierarchy using FlextExceptionsMixin pattern
-class FlextOracleWmsError(FlextExceptions, FlextExceptionsMixin):
+# Base Oracle WMS exception hierarchy using FlextExceptions pattern
+class FlextOracleWmsError(FlextExceptions.Error):
     """Base Oracle WMS error."""
 
 

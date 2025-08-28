@@ -150,7 +150,7 @@ class FlextOracleWmsAuthenticator:
 
         except (ValueError, TypeError, AttributeError, KeyError) as e:
             msg = f"Generate auth headers failed: {e}"
-            raise FlextOracleWmsAuthenticationError(msg)
+            raise FlextOracleWmsAuthenticationError(msg) from e
 
     # Back-compat private method used in some tests to patch validation requests
     async def _make_validation_request(self) -> FlextResult[dict[str, object]]:
