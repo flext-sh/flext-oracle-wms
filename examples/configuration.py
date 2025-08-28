@@ -26,7 +26,8 @@ import os
 from dataclasses import dataclass
 from enum import StrEnum
 from pathlib import Path
-from typing import Any
+
+object
 
 from dotenv import load_dotenv
 from flext_core import FlextConstants
@@ -127,8 +128,14 @@ def create_config_from_environment() -> FlextOracleWmsClientConfig:
         password=password,
         environment=environment,
         api_version=FlextOracleWmsApiVersion.LGF_V10,
-        timeout=float(os.getenv("ORACLE_WMS_TIMEOUT", str(FlextConstants.Defaults.TIMEOUT))),
-        max_retries=int(os.getenv("ORACLE_WMS_MAX_RETRIES", str(FlextConstants.Defaults.MAX_RETRIES))),
+        timeout=float(
+            os.getenv("ORACLE_WMS_TIMEOUT", str(FlextConstants.Defaults.TIMEOUT))
+        ),
+        max_retries=int(
+            os.getenv(
+                "ORACLE_WMS_MAX_RETRIES", str(FlextConstants.Defaults.MAX_RETRIES)
+            )
+        ),
         verify_ssl=os.getenv("ORACLE_WMS_VERIFY_SSL", "true").lower() == "true",
         enable_logging=True,
     )
@@ -157,7 +164,7 @@ def create_demo_config() -> FlextOracleWmsClientConfig:
     )
 
 
-def validate_configuration(config: FlextOracleWmsClientConfig) -> dict[str, Any]:
+def validate_configuration(config: FlextOracleWmsClientConfig) -> dict[str, object]:
     """Validate Oracle WMS client configuration.
 
     Args:
@@ -199,7 +206,9 @@ def validate_configuration(config: FlextOracleWmsClientConfig) -> dict[str, Any]
         )
 
     # Constants for validation
-    max_retries_warning_threshold = FlextConstants.Defaults.MAX_RETRIES_WARNING_THRESHOLD
+    max_retries_warning_threshold = (
+        FlextConstants.Defaults.MAX_RETRIES_WARNING_THRESHOLD
+    )
 
     if config.max_retries < 0:
         validation_results["errors"].append("Max retries cannot be negative")
@@ -222,7 +231,7 @@ def validate_configuration(config: FlextOracleWmsClientConfig) -> dict[str, Any]
     return validation_results
 
 
-async def test_configuration(config: FlextOracleWmsClientConfig) -> dict[str, Any]:
+async def test_configuration(config: FlextOracleWmsClientConfig) -> dict[str, object]:
     """Test Oracle WMS configuration by attempting connection.
 
     Args:

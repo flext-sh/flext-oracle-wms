@@ -29,7 +29,8 @@ Requirements:
 import asyncio
 import os
 from pathlib import Path
-from typing import Any
+
+object
 
 from dotenv import load_dotenv
 
@@ -132,7 +133,7 @@ async def showcase_2_entity_discovery(client: FlextOracleWmsClient) -> list[str]
 async def showcase_3_data_retrieval(
     client: FlextOracleWmsClient,
     entities: list[str],
-) -> dict[str, Any]:
+) -> dict[str, object]:
     """Feature 3: Data Retrieval and Querying."""
     sample_data = {}
 
@@ -265,7 +266,9 @@ async def showcase_6_error_handling(client: FlextOracleWmsClient) -> None:
         pass
 
 
-async def showcase_7_health_monitoring(client: FlextOracleWmsClient) -> dict[str, Any]:
+async def showcase_7_health_monitoring(
+    client: FlextOracleWmsClient,
+) -> dict[str, object]:
     """Feature 7: Health Monitoring."""
     # Perform health check
     health_result = await client.health_check()

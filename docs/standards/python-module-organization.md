@@ -327,7 +327,7 @@ class InventoryRepositoryImpl(InventoryRepository):
     async def query_inventory(
         self,
         entity_name: str,
-        filters: Dict[str, Any],
+        filters: Dict[str, object],
         organization_code: str
     ) -> FlextResult[List[InventoryItem]]:
         """Query inventory with caching and error handling."""
@@ -444,8 +444,8 @@ class FlextOracleWmsClient:
     async def query_inventory_data(
         self,
         entity_name: str,
-        filters: Optional[Dict[str, Any]] = None
-    ) -> FlextResult[List[Dict[str, Any]]]:
+        filters: Optional[Dict[str, object]] = None
+    ) -> FlextResult[List[Dict[str, object]]]:
         """Query inventory data with business rule validation."""
 
         request = QueryInventoryRequest(
@@ -542,7 +542,7 @@ _response_parser.py         # Internal response parsing
 def _validate_organization_code(code: str) -> bool:
     """Internal organization code validation"""
 
-def _build_cache_key(*args: Any) -> str:
+def _build_cache_key(*args: object) -> str:
     """Internal cache key generation"""
 
 class _InternalApiResponse:
@@ -721,7 +721,7 @@ class OracleWmsApiClient(WmsApiClient):
         date_from: datetime,
         date_to: datetime,
         transaction_types: List[str] = None
-    ) -> FlextResult[List[Dict[str, Any]]]:
+    ) -> FlextResult[List[Dict[str, object]]]:
         """Query inventory transactions with Oracle-specific parameters."""
 
         # Build Oracle WMS specific query parameters
@@ -810,7 +810,7 @@ async def generate_oracle_wms_catalog(
     catalog = Catalog(streams=streams)
     return FlextResult[None].ok(catalog)
 
-def _convert_oracle_schema_to_singer(oracle_schema: Dict[str, Any]) -> Schema:
+def _convert_oracle_schema_to_singer(oracle_schema: Dict[str, object]) -> Schema:
     """Convert Oracle WMS schema to Singer schema format."""
     properties = {}
 
@@ -884,7 +884,7 @@ async def _query_all_inventory_data(
     client: FlextOracleWmsClient,
     entities: List[WmsEntity],
     organization_code: str
-) -> FlextResult[Dict[str, List[Dict[str, Any]]]]:
+) -> FlextResult[Dict[str, List[Dict[str, object]]]]:
     """Query data for all inventory entities."""
 
     inventory_data = {}
@@ -907,7 +907,7 @@ async def _query_all_inventory_data(
 
 ```python
 # Oracle WMS specific error handling
-from typing import List, Dict, Any
+from typing import List, Dict, object
 from dataclasses import dataclass
 
 @dataclass
@@ -919,8 +919,8 @@ class WmsValidationError:
     oracle_error_code: Optional[str] = None
 
 def validate_oracle_wms_data(
-    entity_data: Dict[str, List[Dict[str, Any]]]
-) -> FlextResult[Dict[str, List[Dict[str, Any]]]]:
+    entity_data: Dict[str, List[Dict[str, object]]]
+) -> FlextResult[Dict[str, List[Dict[str, object]]]]:
     """Validate Oracle WMS data with error aggregation."""
 
     validation_errors: List[WmsValidationError] = []
@@ -1078,7 +1078,7 @@ class FlextOracleWmsClientConfig(FlextConfig):
         return self.environment == OracleWmsEnvironment.PRODUCTION
 
     @property
-    def full_auth_config(self) -> Dict[str, Any]:
+    def full_auth_config(self) -> Dict[str, object]:
         """Get complete authentication configuration."""
         return {
             "method": self.auth.method.value,
@@ -1418,8 +1418,8 @@ from decimal import Decimal
 from datetime import datetime
 
 # Oracle WMS API response types
-OracleWmsApiResponse = Dict[str, Any]
-OracleWmsEntityData = List[Dict[str, Any]]
+OracleWmsApiResponse = Dict[str, object]
+OracleWmsEntityData = List[Dict[str, object]]
 OracleWmsFilterParams = Dict[str, Union[str, int, float, bool, List[str]]]
 
 # Oracle organization and location types
@@ -1452,7 +1452,7 @@ async def process_oracle_inventory_transaction(
     lot_number: Optional[LotNumber] = None,
     serial_numbers: Optional[List[SerialNumber]] = None,
     transaction_date: Optional[datetime] = None
-) -> FlextResult[Dict[str, Any]]:
+) -> FlextResult[Dict[str, object]]:
     """
     Process Oracle WMS inventory transaction with complete type safety.
 
@@ -1495,7 +1495,7 @@ class OracleWmsErrorCode(str, Enum):
 def handle_oracle_wms_error(
     error_code: OracleWmsErrorCode,
     error_message: str,
-    context: Dict[str, Any]
+    context: Dict[str, object]
 ) -> FlextResult[None]:
     """Standardized Oracle WMS error handling."""
 
@@ -1671,7 +1671,7 @@ from flext_oracle_wms import FlextOracleWmsClient
 class OracleWmsSingerTap:
     """Singer tap for Oracle WMS using flext-oracle-wms."""
 
-    def __init__(self, config: Dict[str, Any]):
+    def __init__(self, config: Dict[str, object]):
         self._config = config
         self._wms_client = FlextOracleWmsClient(
             FlextOracleWmsClientConfig(**config)
@@ -1685,7 +1685,7 @@ class OracleWmsSingerTap:
             organization_code=self._config["organization_code"]
         )
 
-    async def sync(self, catalog: Catalog, state: Dict[str, Any]) -> None:
+    async def sync(self, catalog: Catalog, state: Dict[str, object]) -> None:
         """Sync Oracle WMS data using Singer protocol."""
 
         for stream in catalog.streams:

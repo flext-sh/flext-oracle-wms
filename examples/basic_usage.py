@@ -22,7 +22,8 @@ Usage:
 import asyncio
 import os
 from pathlib import Path
-from typing import Any
+
+object
 
 from flext_core import FlextResult
 
@@ -41,6 +42,7 @@ from flext_oracle_wms import (
 # Load .env file from project root
 try:
     from dotenv import load_dotenv
+
     project_root = Path(__file__).parent.parent
     env_file = project_root / ".env"
     if env_file.exists():
@@ -126,7 +128,7 @@ async def discover_wms_entities(
 async def query_entity_data(
     client: FlextOracleWmsClient,
     entity_name: str,
-) -> FlextResult[list[dict[str, Any]]]:
+) -> FlextResult[list[dict[str, object]]]:
     """Query data from a specific Oracle WMS entity.
 
     Args:
@@ -190,9 +192,12 @@ async def demonstrate_error_handling(client: FlextOracleWmsClient) -> None:
     result = await client.get_entity_data("NON_EXISTENT_ENTITY")
 
     if result.is_failure:
-
         # Check for specific error types
-        if "not found" in result.error.lower() or "authentication" in result.error.lower() or "timeout" in result.error.lower():
+        if (
+            "not found" in result.error.lower()
+            or "authentication" in result.error.lower()
+            or "timeout" in result.error.lower()
+        ):
             pass
 
 

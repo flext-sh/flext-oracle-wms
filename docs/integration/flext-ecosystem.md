@@ -286,7 +286,7 @@ class WmsHealthCheck(HealthCheck):
         self._client = client
         super().__init__(name="oracle_wms", timeout=30)
 
-    async def check_health(self) -> Dict[str, Any]:
+    async def check_health(self) -> Dict[str, object]:
         """Check Oracle WMS connectivity and status."""
         try:
             # Test basic connectivity
@@ -422,7 +422,7 @@ async def generate_singer_catalog(client: FlextOracleWmsClient) -> Catalog:
 async def stream_wms_changes(
     client: FlextOracleWmsClient,
     entity_name: str
-) -> AsyncIterator[Dict[str, Any]]:
+) -> AsyncIterator[Dict[str, object]]:
     """Stream real-time WMS entity changes."""
 
     last_sync_time = await client.get_last_sync_time(entity_name)

@@ -85,11 +85,11 @@ flext-oracle-wms serves as the **specialized Oracle WMS integration layer** with
 
   ```python
   # 1. Implement Singer catalog generation
-  def generate_singer_catalog() -> Dict[str, Any]:
+  def generate_singer_catalog() -> Dict[str, object]:
       # Generate complete WMS entity catalog
 
   # 2. Add real-time inventory streaming
-  def stream_inventory_changes() -> Iterator[Dict[str, Any]]:
+  def stream_inventory_changes() -> Iterator[Dict[str, object]]:
       # Real-time inventory event streaming
 
   # 3. Complete tap/target integration patterns

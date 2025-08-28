@@ -14,7 +14,8 @@ import json
 import operator
 from datetime import UTC, datetime
 from pathlib import Path
-from typing import Any
+
+object
 
 from flext_core import FlextResult, get_logger
 
@@ -95,7 +96,7 @@ class OptimizedOracleWmsDiscovery:
 
         return FlextResult[None].ok(None)
 
-    async def discover_priority_entities_fast(self) -> FlextResult[dict[str, Any]]:
+    async def discover_priority_entities_fast(self) -> FlextResult[dict[str, object]]:
         """Fast discovery of priority entities with data."""
         # Get all entities first
         entities_result = await self.client.discover_entities()
@@ -167,7 +168,7 @@ class OptimizedOracleWmsDiscovery:
         entities: list[str],
         batch_name: str,
         batch_size: int = 10,
-    ) -> dict[str, Any]:
+    ) -> dict[str, object]:
         """Process entity batch with parallel requests."""
         results = {}
 
@@ -209,7 +210,7 @@ class OptimizedOracleWmsDiscovery:
 
         return results
 
-    async def _analyze_single_entity(self, entity_name: str) -> dict[str, Any]:
+    async def _analyze_single_entity(self, entity_name: str) -> dict[str, object]:
         """Analyze single entity for data and structure."""
         try:
             # Get entity data with small sample
@@ -276,7 +277,7 @@ class OptimizedOracleWmsDiscovery:
                 "processed_at": datetime.now(UTC).isoformat(),
             }
 
-    def _safe_sample_record(self, record: dict[str, Any]) -> dict[str, Any]:
+    def _safe_sample_record(self, record: dict[str, object]) -> dict[str, object]:
         """Create safe sample record for storage."""
         safe_record = {}
         for k, v in record.items():
@@ -289,7 +290,7 @@ class OptimizedOracleWmsDiscovery:
                 safe_record[k] = f"<{type(v).__name__}>"
         return safe_record
 
-    async def generate_complete_singer_schemas(self) -> FlextResult[dict[str, Any]]:
+    async def generate_complete_singer_schemas(self) -> FlextResult[dict[str, object]]:
         """Generate complete Singer schemas for high-value entities."""
         if not self.high_value_entities:
             return FlextResult[None].fail(
@@ -338,8 +339,8 @@ class OptimizedOracleWmsDiscovery:
     def _generate_singer_schema_from_entity_data(
         self,
         entity_name: str,
-        entity_data: dict[str, Any],
-    ) -> dict[str, Any] | None:
+        entity_data: dict[str, object],
+    ) -> dict[str, object] | None:
         """Generate Singer schema from entity data with proper typing."""
         try:
             fields = entity_data.get("fields", [])
@@ -398,7 +399,7 @@ class OptimizedOracleWmsDiscovery:
         field_name: str,
         python_type: str,
         sample_value: object,
-    ) -> dict[str, Any]:
+    ) -> dict[str, object]:
         """Convert Oracle field to Singer type with real data analysis."""
         # Analyze sample value for precise typing
         if sample_value is not None:
@@ -542,7 +543,7 @@ class OptimizedOracleWmsDiscovery:
 
         return potential_keys[:3]  # Max 3 key properties
 
-    def _generate_singer_catalog(self, schemas: dict[str, Any]) -> dict[str, Any]:
+    def _generate_singer_catalog(self, schemas: dict[str, object]) -> dict[str, object]:
         """Generate Singer catalog from schemas."""
         streams = []
 

@@ -16,7 +16,8 @@ import json
 import operator
 from datetime import UTC, datetime
 from pathlib import Path
-from typing import Any
+
+object
 
 from flext_core import FlextModelConfig, FlextResult, get_logger
 
@@ -55,8 +56,8 @@ class OracleWmsCompleteDiscovery:
             mock_mode=False,
         )
         self.discovered_entities: list[str] = []
-        self.entity_metadata: dict[str, Any] = {}
-        self.complete_schemas: dict[str, Any] = {}
+        self.entity_metadata: dict[str, object] = {}
+        self.complete_schemas: dict[str, object] = {}
 
     async def start_discovery(self) -> FlextResult[None]:
         """Start complete discovery process."""
@@ -68,23 +69,25 @@ class OracleWmsCompleteDiscovery:
 
     async def discover_all_apis(
         self,
-    ) -> FlextResult[dict[str, dict[str, object | FlextResult[Any]]]]:
+    ) -> FlextResult[dict[str, dict[str, object | FlextResult[object]]]]:
         """Discover and test ALL 22+ Oracle WMS APIs."""
-        api_results: dict[str, dict[str, object | FlextResult[Any]]] = {}
+        api_results: dict[str, dict[str, object | FlextResult[object]]] = {}
         all_apis: dict[str, FlextOracleWmsApiEndpoint] = FLEXT_ORACLE_WMS_APIS
 
         for api_name, api_endpoint in all_apis.items():
             try:
                 # Test API based on its type and requirements
                 if api_endpoint.category == FlextOracleWmsApiCategory.DATA_EXTRACT:
-                    result: FlextResult[Any] = await self._test_data_extract_api(
+                    result: FlextResult[object] = await self._test_data_extract_api(
                         api_name,
                         api_endpoint,
                     )
                 elif (
                     api_endpoint.category == FlextOracleWmsApiCategory.ENTITY_OPERATIONS
                 ):
-                    result: FlextResult[Any] = await self._test_entity_operations_api(
+                    result: FlextResult[
+                        object
+                    ] = await self._test_entity_operations_api(
                         api_name,
                         api_endpoint,
                     )
@@ -92,7 +95,7 @@ class OracleWmsCompleteDiscovery:
                     api_endpoint.category
                     == FlextOracleWmsApiCategory.SETUP_TRANSACTIONAL
                 ):
-                    result: FlextResult[Any] = await self._test_setup_api(
+                    result: FlextResult[object] = await self._test_setup_api(
                         api_name,
                         api_endpoint,
                     )
@@ -100,12 +103,12 @@ class OracleWmsCompleteDiscovery:
                     api_endpoint.category
                     == FlextOracleWmsApiCategory.AUTOMATION_OPERATIONS
                 ):
-                    result: FlextResult[Any] = await self._test_automation_api(
+                    result: FlextResult[object] = await self._test_automation_api(
                         api_name,
                         api_endpoint,
                     )
                 else:
-                    result: FlextResult[Any] = FlextResult[None].fail(
+                    result: FlextResult[object] = FlextResult[None].fail(
                         "Unknown API category"
                     )
 
@@ -133,7 +136,7 @@ class OracleWmsCompleteDiscovery:
         self,
         api_name: str,
         endpoint: FlextOracleWmsApiEndpoint,
-    ) -> FlextResult[Any]:
+    ) -> FlextResult[object]:
         """Test data extraction APIs."""
         try:
             if api_name == "lgf_entity_discovery":
@@ -176,7 +179,7 @@ class OracleWmsCompleteDiscovery:
         self,
         api_name: str,
         endpoint,
-    ) -> FlextResult[Any]:
+    ) -> FlextResult[object]:
         """Test entity operations APIs."""
         try:
             if "entity" in endpoint.path and "{entity_name}" in endpoint.path:
@@ -201,7 +204,7 @@ class OracleWmsCompleteDiscovery:
         except Exception as e:
             return FlextResult[None].fail(f"Entity operations API test failed: {e}")
 
-    async def _test_setup_api(self, api_name: str, endpoint) -> FlextResult[Any]:
+    async def _test_setup_api(self, api_name: str, endpoint) -> FlextResult[object]:
         """Test setup and transactional APIs."""
         # These typically require POST data - test with minimal payload
         try:
@@ -212,7 +215,9 @@ class OracleWmsCompleteDiscovery:
         except Exception as e:
             return FlextResult[None].fail(f"Setup API test failed: {e}")
 
-    async def _test_automation_api(self, api_name: str, endpoint) -> FlextResult[Any]:
+    async def _test_automation_api(
+        self, api_name: str, endpoint
+    ) -> FlextResult[object]:
         """Test automation and operations APIs."""
         try:
             if endpoint.method == "POST":
@@ -223,7 +228,7 @@ class OracleWmsCompleteDiscovery:
         except Exception as e:
             return FlextResult[None].fail(f"Automation API test failed: {e}")
 
-    async def _test_entity_get_with_discovery(self) -> FlextResult[Any]:
+    async def _test_entity_get_with_discovery(self) -> FlextResult[object]:
         """Test entity get by discovering entity with data first."""
         try:
             # First find entities with data
@@ -258,7 +263,7 @@ class OracleWmsCompleteDiscovery:
         except Exception as e:
             return FlextResult[None].fail(f"Entity get discovery failed: {e}")
 
-    async def _test_data_extract_to_object_store(self) -> FlextResult[Any]:
+    async def _test_data_extract_to_object_store(self) -> FlextResult[object]:
         """Test data extract to object store API."""
         try:
             # Oracle 25A data extract API
@@ -272,7 +277,7 @@ class OracleWmsCompleteDiscovery:
         except Exception as e:
             return FlextResult[None].fail(f"Data extract to object store failed: {e}")
 
-    async def _test_async_task_status(self) -> FlextResult[Any]:
+    async def _test_async_task_status(self) -> FlextResult[object]:
         """Test async task status API."""
         try:
             # Test getting async task status
@@ -287,7 +292,7 @@ class OracleWmsCompleteDiscovery:
         self,
         api_name: str,
         entity_name: str,
-    ) -> FlextResult[Any]:
+    ) -> FlextResult[object]:
         """Test entity API that requires ID parameter."""
         try:
             # Get entity data to find valid ID
@@ -332,7 +337,7 @@ class OracleWmsCompleteDiscovery:
             return f"{type(data).__name__}"
         return None
 
-    async def discover_complete_entity_metadata(self) -> FlextResult[dict[str, Any]]:
+    async def discover_complete_entity_metadata(self) -> FlextResult[dict[str, object]]:
         """Discover complete metadata for all entities using Oracle WMS APIs."""
         if not self.discovered_entities:
             entities_result = await self.client.discover_entities()
@@ -456,7 +461,7 @@ class OracleWmsCompleteDiscovery:
 
     async def generate_singer_schemas_with_flattening(
         self,
-    ) -> FlextResult[dict[str, Any]]:
+    ) -> FlextResult[dict[str, object]]:
         """Generate Singer schemas with real data flattening based on Oracle metadata."""
         if not self.entity_metadata:
             return FlextResult[None].fail(
@@ -491,8 +496,8 @@ class OracleWmsCompleteDiscovery:
     async def _generate_singer_schema_from_metadata(
         self,
         entity_name: str,
-        metadata: dict[str, Any],
-    ) -> dict[str, Any] | None:
+        metadata: dict[str, object],
+    ) -> dict[str, object] | None:
         """Generate Singer schema from Oracle WMS metadata with flattening."""
         try:
             fields = metadata.get("fields", [])
@@ -529,7 +534,7 @@ class OracleWmsCompleteDiscovery:
         python_type: str,
         sample_value: object,
         field_name: str,
-    ) -> dict[str, Any]:
+    ) -> dict[str, object]:
         """Map Oracle/Python types to Singer types based on real data."""
         # Analyze sample value for more accurate typing
         if sample_value is not None:
