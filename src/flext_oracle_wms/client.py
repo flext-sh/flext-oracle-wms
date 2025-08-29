@@ -8,7 +8,7 @@ API compatible with tests.
 from __future__ import annotations
 
 from flext_api import FlextApiClient as _FlextApiClient  # for patching in tests
-from flext_core import FlextResult, get_logger
+from flext_core import FlextLogger, FlextResult
 
 from .wms_client import FlextOracleWmsClient as _Client
 from .wms_exceptions import FlextOracleWmsProcessingError
@@ -99,7 +99,7 @@ FlextOracleWmsClient = _Client
 
 __all__ = [
     "FlextApiClient",
+    "FlextLogger",
     "FlextOracleWmsClient",
     "FlextOracleWmsPlugin",
-    "get_logger",
 ]

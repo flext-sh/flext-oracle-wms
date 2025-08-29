@@ -19,7 +19,7 @@ from pathlib import Path
 
 object
 
-from flext_core import FlextModelConfig, FlextResult, get_logger
+from flext_core import FlextLogger, FlextModelConfig, FlextResult
 
 from flext_oracle_wms import (
     FLEXT_ORACLE_WMS_APIS,
@@ -31,7 +31,7 @@ from flext_oracle_wms import (
     create_oracle_wms_client,
 )
 
-logger = get_logger(__name__)
+logger = FlextLogger(__name__)
 
 
 class OracleWmsCompleteDiscovery:

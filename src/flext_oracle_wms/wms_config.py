@@ -19,8 +19,8 @@ from urllib.parse import urlparse
 from flext_core import (
     FlextConfig,
     FlextResult,
-    FlextValue,
-    get_logger,
+    FlextModels.Value,
+    FlextLogger,
 )
 from pydantic import Field, HttpUrl, field_validator
 from pydantic_settings import SettingsConfigDict
@@ -32,7 +32,7 @@ WMSAPIVersion = NewType("WMSAPIVersion", str)
 WMSRetryAttempts = NewType("WMSRetryAttempts", int)
 
 
-class FlextOracleWmsClientConfig(FlextValue):
+class FlextOracleWmsClientConfig(FlextModels.Value):
     """Oracle WMS Declarative Client Configuration.
 
     Simplified configuration management for declarative Oracle WMS Cloud client
@@ -56,9 +56,9 @@ class FlextOracleWmsClientConfig(FlextValue):
       ... )
       >>> validation = config.validate_business_rules()
       >>> if validation.success:
-      ...     from flext_core import get_logger
+      ...     from flext_core import FlextLogger
       ...
-      ...     get_logger(__name__).info("Configuration is valid")
+      ...     FlextLogger(__name__).info("Configuration is valid")
 
     """
 
@@ -296,7 +296,7 @@ class FlextOracleWmsModuleConfig(FlextConfig):
                 raise ValueError(https_security_msg)
             # For non-Oracle URLs, just issue a warning in logs but allow it
 
-            logger = get_logger(__name__)
+            logger = FlextLogger(__name__)
             logger.warning(
                 "Using non-standard Oracle WMS URL: %s. "
                 "Ensure this is correct for your environment.",

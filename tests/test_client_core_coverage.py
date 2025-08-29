@@ -381,12 +381,12 @@ class TestGetLogger:
 
     def test_get_logger_module_name(self) -> None:
         """Test logger creation with module name."""
-        from flext_oracle_wms import get_logger
+        from flext_oracle_wms import FlextLogger
 
-        logger = get_logger("test_module")
+        logger = FlextLogger("test_module")
         assert hasattr(logger, "info")  # Check it's a logger
         assert hasattr(logger, "error")  # Check it has expected methods
 
         # Test with None
-        logger_none = get_logger(None)
+        logger_none = FlextLogger(None)
         assert callable(logger_none.info)  # Check it's functional

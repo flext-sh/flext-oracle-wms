@@ -17,8 +17,8 @@ from datetime import UTC, datetime
 from flext_api import FlextApiClientConfig, FlextApiConstants
 from flext_core import (
     FlextResult,
-    FlextValue,
-    get_logger,
+    FlextModels.Value,
+    FlextLogger,
 )
 from pydantic import Field
 
@@ -40,13 +40,13 @@ from flext_oracle_wms.wms_exceptions import (
 )
 from flext_oracle_wms.wms_models import TOracleWmsEntityName
 
-logger = get_logger(__name__)
+logger = FlextLogger(__name__)
 # =============================================================================
 # AUTHENTICATION COMPONENTS
 # =============================================================================
 
 
-class FlextOracleWmsAuthConfig(FlextValue):
+class FlextOracleWmsAuthConfig(FlextModels.Value):
     """Oracle WMS authentication configuration."""
 
     auth_type: OracleWMSAuthMethod = Field(

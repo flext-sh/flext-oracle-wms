@@ -18,7 +18,7 @@ from pathlib import Path
 
 object
 
-from flext_core import FlextResult, get_logger
+from flext_core import FlextLogger, FlextResult
 
 from flext_oracle_wms import (
     FlextOracleWmsApiVersion,
@@ -26,7 +26,7 @@ from flext_oracle_wms import (
     create_oracle_wms_client,
 )
 
-logger = get_logger(__name__)
+logger = FlextLogger(__name__)
 
 
 class FocusedOracleWmsDiscovery:

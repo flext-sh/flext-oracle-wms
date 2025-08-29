@@ -18,7 +18,7 @@ from __future__ import annotations
 from datetime import UTC, datetime
 from uuid import uuid4
 
-from flext_core import FlextResult, get_logger
+from flext_core import FlextLogger, FlextResult
 
 from flext_oracle_wms.wms_models import (
     FlextOracleWmsApiCategory,
@@ -26,7 +26,7 @@ from flext_oracle_wms.wms_models import (
     FlextOracleWmsApiVersion,
 )
 
-logger = get_logger(__name__)
+logger = FlextLogger(__name__)
 
 
 # =============================================================================
@@ -345,7 +345,9 @@ class OracleWmsMockServer:
                 return self._mock_entity_data(entity_name)
             if endpoint == "entity_metadata" and entity_name:
                 return self._mock_entity_metadata(entity_name)
-            return FlextResult[dict[str, object]].fail(f"Unknown mock endpoint: {endpoint}")
+            return FlextResult[dict[str, object]].fail(
+                f"Unknown mock endpoint: {endpoint}"
+            )
         except Exception as e:
             logger.exception("Mock server error")
             return FlextResult[dict[str, object]].fail(f"Mock server error: {e}")

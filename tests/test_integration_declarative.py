@@ -18,7 +18,7 @@ from flext_oracle_wms import (
     FlextOracleWmsClientConfig,
 )
 
-logger = structlog.get_logger(__name__)
+logger = structlog.FlextLogger(__name__)
 
 # ==============================================================================
 # TEST CONFIGURATION AND FIXTURES

@@ -1,7 +1,7 @@
 """Comprehensive tests for client.py - targeting critical missing coverage."""
 
 import pytest
-from flext_core import get_logger
+from flext_core import FlextLogger
 
 from flext_oracle_wms import (
     FlextOracleWmsClient,
@@ -10,7 +10,7 @@ from flext_oracle_wms import (
     FlextOracleWmsPlugin,
 )
 
-logger = get_logger(__name__)
+logger = FlextLogger(__name__)
 
 
 class TestGetLogger:
@@ -18,8 +18,8 @@ class TestGetLogger:
 
     def test_get_logger_module_name(self) -> None:
         """Test logger creation with module name."""
-        logger1 = get_logger("module1")
-        logger2 = get_logger("module2")
+        logger1 = FlextLogger("module1")
+        logger2 = FlextLogger("module2")
 
         # Test that different loggers are created
         assert logger1 is not None

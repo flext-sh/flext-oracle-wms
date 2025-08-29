@@ -102,10 +102,10 @@ src/flext_oracle_wms/
 **Domain Entity Pattern**:
 
 ```python
-from flext_core import FlextEntity, FlextResult
+from flext_core import FlextModels.Entity, FlextResult
 from flext_oracle_wms.domain.value_objects import ItemNumber, Quantity, LocationCode
 
-class InventoryItem(FlextEntity):
+class InventoryItem(FlextModels.Entity):
     """Rich inventory domain entity with business behaviors."""
 
     def __init__(
@@ -632,9 +632,9 @@ from flext_oracle_wms import FlextOracleWmsClient as WmsClient  # Confusing
 
 ```python
 # Oracle WMS specific domain patterns
-from flext_core import FlextEntity, FlextValue, FlextResult
+from flext_core import FlextModels.Entity, FlextModels.Value, FlextResult
 
-class OracleOrganization(FlextValue):
+class OracleOrganization(FlextModels.Value):
     """Oracle organization with validation."""
     code: str
     name: str
@@ -643,7 +643,7 @@ class OracleOrganization(FlextValue):
         if not self.code or len(self.code) > 3:
             raise ValueError("Invalid organization code")
 
-class WmsLocation(FlextEntity):
+class WmsLocation(FlextModels.Entity):
     """Warehouse location entity with Oracle WMS rules."""
 
     def __init__(
@@ -671,7 +671,7 @@ class WmsLocation(FlextEntity):
         ))
         return FlextResult[None].ok(None)
 
-class InventoryTransaction(FlextEntity):
+class InventoryTransaction(FlextModels.Entity):
     """Oracle WMS inventory transaction."""
 
     def __init__(

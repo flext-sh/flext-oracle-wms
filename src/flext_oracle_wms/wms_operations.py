@@ -20,7 +20,6 @@ from urllib.parse import urljoin, urlparse
 from flext_core import (
     FlextLogger,
     FlextResult,
-    get_logger,
 )
 
 from flext_oracle_wms.wms_constants import (
@@ -43,7 +42,7 @@ TOracleWmsPaginationInfo = dict[str, object]
 TOracleWmsFilters = dict[str, object]
 TOracleWmsFilterValue = object
 
-logger = get_logger(__name__)
+logger = FlextLogger(__name__)
 # =============================================================================
 # DRY VALIDATION FUNCTIONS - Consolidated from helpers.py
 # =============================================================================
@@ -663,7 +662,7 @@ class FlextOracleWmsPlugin:
         """Initialize Oracle WMS plugin."""
         self.name = name
         self.version = version
-        self._logger = get_logger(__name__)
+        self._logger = FlextLogger(__name__)
 
     async def initialize(
         self,
@@ -711,7 +710,7 @@ class FlextOracleWmsPluginRegistry:
     def __init__(self) -> None:
         """Initialize plugin registry."""
         self._plugins: dict[str, FlextOracleWmsPlugin] = {}
-        self._logger = get_logger(__name__)
+        self._logger = FlextLogger(__name__)
 
     def register_plugin(self, plugin: FlextOracleWmsPlugin) -> FlextResult[None]:
         """Register Oracle WMS plugin."""

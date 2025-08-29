@@ -9,7 +9,7 @@ from __future__ import annotations
 
 import re
 
-from flext_core import FlextResult, get_logger
+from flext_core import FlextLogger, FlextResult
 
 from flext_oracle_wms.exceptions import (
     FlextOracleWmsDataValidationError,
@@ -21,7 +21,7 @@ from flext_oracle_wms.wms_constants import (
 )
 from flext_oracle_wms.wms_operations import FlextOracleWmsFilter as _OpsFilter
 
-logger = get_logger(__name__)
+logger = FlextLogger(__name__)
 
 
 class FlextOracleWmsFilter(_OpsFilter):

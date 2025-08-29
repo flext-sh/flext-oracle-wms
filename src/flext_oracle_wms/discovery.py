@@ -9,7 +9,7 @@ from dataclasses import dataclass
 from datetime import UTC, datetime
 from typing import Protocol
 
-from flext_core import FlextResult, get_logger
+from flext_core import FlextLogger, FlextResult
 
 from flext_oracle_wms.wms_constants import FlextOracleWmsDefaults
 from flext_oracle_wms.wms_discovery import (
@@ -48,7 +48,7 @@ class CacheManagerProtocol(Protocol):
 DISCOVERY_SUCCESS = True
 DISCOVERY_FAILURE = False
 
-logger = get_logger(__name__)
+logger = FlextLogger(__name__)
 
 
 @dataclass
@@ -214,7 +214,9 @@ class FlextOracleWmsEntityDiscovery:
 
         perform = await self._perform_discovery(include_patterns, exclude_patterns)
         if perform.is_failure or perform.data is None:
-            return FlextResult[FlextOracleWmsDiscoveryResult].fail(perform.error or "Discovery returned no data")
+            return FlextResult[FlextOracleWmsDiscoveryResult].fail(
+                perform.error or "Discovery returned no data"
+            )
         # When caching enabled and a mock cache is set, store the result
         if use_cache and self.cache_manager and hasattr(self.cache_manager, "set"):
             with contextlib.suppress(Exception):
@@ -318,7 +320,9 @@ class FlextOracleWmsEntityDiscovery:
             )
             return FlextResult[FlextOracleWmsDiscoveryResult].ok(result)
         except Exception as e:
-            return FlextResult[FlextOracleWmsDiscoveryResult].fail(f"Create discovery result failed: {e}")
+            return FlextResult[FlextOracleWmsDiscoveryResult].fail(
+                f"Create discovery result failed: {e}"
+            )
 
     async def _get_cached_discovery(
         self,
@@ -358,7 +362,9 @@ class FlextOracleWmsEntityDiscovery:
         """Parse entities response."""
         extracted = self._extract_entity_list_from_response(response_data, endpoint)
         if extracted.is_failure:
-            return FlextResult[list[FlextOracleWmsEntity]].fail(extracted.error or "Extraction failed")
+            return FlextResult[list[FlextOracleWmsEntity]].fail(
+                extracted.error or "Extraction failed"
+            )
         names_or_meta = extracted.data
         if not names_or_meta:
             return FlextResult[list[FlextOracleWmsEntity]].ok([])
@@ -385,13 +391,19 @@ class FlextOracleWmsEntityDiscovery:
                     return FlextResult[list[str] | list[dict[str, object]]].ok(val)
             # fallback: treat top-level keys as entity names when values are dicts
             if all(isinstance(v, dict) for v in response_data.values()):
-                return FlextResult[list[str] | list[dict[str, object]]].ok(list(response_data.keys()))
-            return FlextResult[list[str] | list[dict[str, object]]].fail("Unexpected response format: dictionary")
+                return FlextResult[list[str] | list[dict[str, object]]].ok(
+                    list(response_data.keys())
+                )
+            return FlextResult[list[str] | list[dict[str, object]]].fail(
+                "Unexpected response format: dictionary"
+            )
         if isinstance(response_data, list) and all(
             isinstance(x, (str, dict)) for x in response_data
         ):
             return FlextResult[list[str] | list[dict[str, object]]].ok(response_data)
-        return FlextResult[list[str] | list[dict[str, object]]].fail("Unexpected response format: not list/dict")
+        return FlextResult[list[str] | list[dict[str, object]]].fail(
+            "Unexpected response format: not list/dict"
+        )
 
     def _create_entity_from_string_name(self, name: str) -> FlextOracleWmsEntity:
         """Create entity from string name."""
@@ -473,7 +485,9 @@ class FlextOracleWmsEntityDiscovery:
             except Exception:
                 continue
         # Fallback minimal entity
-        return FlextResult[FlextOracleWmsEntity].ok(self._create_entity_from_string_name(entity_name))
+        return FlextResult[FlextOracleWmsEntity].ok(
+            self._create_entity_from_string_name(entity_name)
+        )
 
     async def _extract_entity_schema(
         self,

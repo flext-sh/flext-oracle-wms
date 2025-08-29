@@ -83,9 +83,9 @@ await client.start()
 
 # Discover entities
 result = await client.discover_entities()
-from flext_core import get_logger
+from flext_core import FlextLogger
 if result.success:
-    logger = get_logger(__name__)
+    logger = FlextLogger(__name__)
     logger.info("Discovered WMS entities", count=len(result.data))
     for entity in result.data:
         logger.info("Entity", name=str(entity))
@@ -104,8 +104,8 @@ result = await client.get_entity_data(
 
 if result.success:
     data = result.data
-from flext_core import get_logger
-    get_logger(__name__).info("Records retrieved", count=len(data.get('results', [])))
+from flext_core import FlextLogger
+    FlextLogger(__name__).info("Records retrieved", count=len(data.get('results', [])))
 ```
 
 ### Error Handling with FlextResult
@@ -117,18 +117,18 @@ try:
     result = await client.get_entity_data("inventory")
     if result.is_failure:
         # Handle business logic errors via FlextResult
-        from flext_core import get_logger
-        get_logger(__name__).error("Query failed", error=result.error)
+        from flext_core import FlextLogger
+        FlextLogger(__name__).error("Query failed", error=result.error)
     else:
         # Process successful result
         inventory_data = result.data
-        from flext_core import get_logger
-        get_logger(__name__).info("Retrieved inventory data", count=len(inventory_data))
+        from flext_core import FlextLogger
+        FlextLogger(__name__).info("Retrieved inventory data", count=len(inventory_data))
 
 except FlextOracleWmsConnectionError as e:
     # Handle connection-specific errors
-from flext_core import get_logger
-    get_logger(__name__).error("Connection failed", error=str(e))
+from flext_core import FlextLogger
+    FlextLogger(__name__).error("Connection failed", error=str(e))
 ```
 
 ## 🔧 **Development Guidelines**

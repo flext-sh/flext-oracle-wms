@@ -279,8 +279,8 @@ try:  # pragma: no cover - helper glue for tests only
 except Exception:  # pragma: no cover - defensive
     # Test helper setup failed, tests will need to provide _run themselves
     # This is non-critical as it only affects test utilities
-    from flext_core import get_logger
+    from flext_core import FlextLogger
 
-    get_logger(__name__).debug(
+    FlextLogger(__name__).debug(
         "Test helper _run setup failed, tests may need manual setup"
     )

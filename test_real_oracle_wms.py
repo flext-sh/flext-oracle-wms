@@ -13,7 +13,7 @@ import asyncio
 import builtins
 import contextlib
 
-from flext_core import get_logger
+from flext_core import FlextLogger
 
 # Use public enum re-exported by package
 from flext_oracle_wms import (
@@ -22,7 +22,7 @@ from flext_oracle_wms import (
     create_oracle_wms_client,
 )
 
-logger = get_logger(__name__)
+logger = FlextLogger(__name__)
 
 
 async def test_real_oracle_wms():

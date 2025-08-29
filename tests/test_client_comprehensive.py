@@ -3,7 +3,7 @@
 from unittest.mock import AsyncMock, Mock, patch
 
 import pytest
-from flext_core import FlextResult, get_logger
+from flext_core import FlextLogger, FlextResult
 
 from flext_oracle_wms import (
     FlextOracleWmsApiVersion,
@@ -22,14 +22,14 @@ class TestUtilityFunctions:
 
     def test_get_logger(self) -> None:
         """Test logger creation function."""
-        logger = get_logger("test_logger")
+        logger = FlextLogger("test_logger")
         assert logger is not None
         assert hasattr(logger, "info")  # Verify it's a working logger
 
     def test_logger_caching(self) -> None:
         """Test that loggers are cached."""
-        logger1 = get_logger("existing_logger")
-        logger2 = get_logger("existing_logger")
+        logger1 = FlextLogger("existing_logger")
+        logger2 = FlextLogger("existing_logger")
         assert logger1 is logger2
 
 

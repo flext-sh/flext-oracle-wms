@@ -20,7 +20,7 @@ from datetime import UTC, datetime
 from typing import TypeVar
 
 from flext_api import FlextApiClient
-from flext_core import FlextResult, FlextValue, get_logger
+from flext_core import FlextResult, FlextModels.Value, FlextLogger
 
 from flext_oracle_wms.wms_constants import FlextOracleWmsDefaults, OracleWMSEntityType
 from flext_oracle_wms.wms_models import (
@@ -31,7 +31,7 @@ from flext_oracle_wms.wms_models import (
 )
 from flext_oracle_wms.wms_operations import handle_operation_exception
 
-logger = get_logger(__name__)
+logger = FlextLogger(__name__)
 # Type variables for generic cache
 T = TypeVar("T")
 
@@ -52,7 +52,7 @@ DISCOVERY_FAILURE = False
 
 
 @dataclass(frozen=True)
-class FlextOracleWmsCacheConfig(FlextValue):
+class FlextOracleWmsCacheConfig(FlextModels.Value):
     """Oracle WMS cache configuration using flext-core standards."""
 
     default_ttl_seconds: int = 3600  # 1 hour
@@ -73,7 +73,7 @@ class FlextOracleWmsCacheConfig(FlextValue):
 
 
 @dataclass(frozen=True)
-class FlextOracleWmsCacheEntry[T](FlextValue):
+class FlextOracleWmsCacheEntry[T](FlextModels.Value):
     """Oracle WMS cache entry with metadata using flext-core standards."""
 
     key: str
@@ -111,7 +111,7 @@ class FlextOracleWmsCacheEntry[T](FlextValue):
 
 
 @dataclass(frozen=True)
-class FlextOracleWmsCacheStats(FlextValue):
+class FlextOracleWmsCacheStats(FlextModels.Value):
     """Cache statistics snapshot using flext-core standards."""
 
     hits: int
