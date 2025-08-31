@@ -15,7 +15,7 @@ import contextlib
 from flext_core import (
     FlextExceptions,
     FlextExceptionsCode,
-    FlextProcessingError,
+    FlextExceptions.ProcessingError,
 )
 
 # =============================================================================
@@ -89,7 +89,7 @@ class FlextOracleWmsConnectionError(FlextOracleWmsError):
         )
 
 
-class FlextOracleWmsProcessingError(FlextProcessingError):
+class FlextOracleWmsProcessingError(FlextExceptions.ProcessingError):
     """Oracle WMS processing error with comprehensive operation context.
 
     Specialized processing error for Oracle WMS business logic and data
