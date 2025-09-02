@@ -24,7 +24,7 @@ class TestUrlHelpers:
     def test_build_entity_url_basic(self) -> None:
         """Test basic entity URL building."""
         base_url = "https://test.wms.oraclecloud.com"
-        environment = "test_env"
+        environment = "test"
         entity_name = "facility"
 
         result = flext_oracle_wms_build_entity_url(base_url, environment, entity_name)
@@ -35,7 +35,7 @@ class TestUrlHelpers:
     def test_build_entity_url_with_api_version(self) -> None:
         """Test entity URL building with API version."""
         base_url = "https://test.wms.oraclecloud.com"
-        environment = "test_env"
+        environment = "test"
         entity_name = "item"
         api_version = "v1.0"
 
@@ -54,7 +54,7 @@ class TestUrlHelpers:
     def test_build_entity_url_with_trailing_slash(self) -> None:
         """Test entity URL building with trailing slash in base URL."""
         base_url = "https://test.wms.oraclecloud.com/"
-        environment = "test_env"
+        environment = "test"
         entity_name = "company"
 
         result = flext_oracle_wms_build_entity_url(base_url, environment, entity_name)
@@ -66,7 +66,7 @@ class TestUrlHelpers:
     def test_build_entity_url_empty_entity(self) -> None:
         """Test entity URL building with empty entity name."""
         base_url = "https://test.wms.oraclecloud.com"
-        environment = "test_env"
+        environment = "test"
 
         with pytest.raises(
             Exception,
@@ -76,7 +76,7 @@ class TestUrlHelpers:
 
     def test_build_entity_url_invalid_base_url(self) -> None:
         """Test entity URL building with invalid base URL."""
-        environment = "test_env"
+        environment = "test"
         entity_name = "facility"
 
         with pytest.raises(
@@ -88,28 +88,28 @@ class TestUrlHelpers:
     def test_normalize_url_basic(self) -> None:
         """Test basic URL normalization."""
         base_url = "https://test.wms.oraclecloud.com/"
-        path = "test_env/api"
+        path = "test/api"
         result = flext_oracle_wms_normalize_url(base_url, path)
 
-        expected = "https://test.wms.oraclecloud.com/test_env/api"
+        expected = "https://test.wms.oraclecloud.com/test/api"
         assert result == expected
 
     def test_normalize_url_no_trailing_slash(self) -> None:
         """Test URL normalization when base URL has no trailing slash."""
         base_url = "https://test.wms.oraclecloud.com"
-        path = "test_env"
+        path = "test"
         result = flext_oracle_wms_normalize_url(base_url, path)
 
-        expected = "https://test.wms.oraclecloud.com/test_env"
+        expected = "https://test.wms.oraclecloud.com/test"
         assert result == expected
 
     def test_normalize_url_leading_slash_in_path(self) -> None:
         """Test URL normalization with leading slash in path."""
         base_url = "https://test.wms.oraclecloud.com/"
-        path = "/test_env/api"
+        path = "/test/api"
         result = flext_oracle_wms_normalize_url(base_url, path)
 
-        expected = "https://test.wms.oraclecloud.com/test_env/api"
+        expected = "https://test.wms.oraclecloud.com/test/api"
         assert result == expected
 
     def test_extract_environment_from_url_basic(self) -> None:

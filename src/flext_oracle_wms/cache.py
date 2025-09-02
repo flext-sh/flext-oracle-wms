@@ -11,7 +11,7 @@ from .wms_discovery import (
     FlextOracleWmsCacheEntry,
     FlextOracleWmsCacheManager,
     FlextOracleWmsCacheStats,
-    flext_oracle_wms_create_cache_manager,
+    # REMOVED: flext_oracle_wms_create_cache_manager - use FlextOracleWmsCacheManager directly
 )
 
 __all__ = [
@@ -19,5 +19,5 @@ __all__ = [
     "FlextOracleWmsCacheEntry",
     "FlextOracleWmsCacheManager",
     "FlextOracleWmsCacheStats",
-    "flext_oracle_wms_create_cache_manager",
+    # REMOVED: "flext_oracle_wms_create_cache_manager" - use FlextOracleWmsCacheManager directly
 ]

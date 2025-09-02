@@ -15,10 +15,13 @@ from __future__ import annotations
 
 import warnings
 
-from flext_oracle_wms.authentication import FlextOracleWmsAuthenticator
-from flext_oracle_wms.client import FlextOracleWmsClient
-from flext_oracle_wms.config import FlextOracleWmsClientConfig
-from flext_oracle_wms.exceptions import FlextOracleWmsProcessingError
+try:
+    from flext_oracle_wms.authentication import FlextOracleWmsAuthenticator
+except ImportError:
+    FlextOracleWmsAuthenticator = None  # type: ignore[misc,assignment]
+from flext_oracle_wms.wms_client import FlextOracleWmsClient
+from flext_oracle_wms.wms_config import FlextOracleWmsClientConfig
+from flext_oracle_wms.wms_exceptions import FlextOracleWmsProcessingError
 
 
 def deprecation_warning(old_name: str, new_name: str) -> None:
@@ -61,22 +64,22 @@ FlextOracleWmsRateLimitError = flext_oracle_wms_rate_limit_error
 def create_wms_client(*args: object, **kwargs: object) -> object:
     """Legacy: Use FlextOracleWmsClient directly instead."""
     deprecation_warning("create_wms_client", "FlextOracleWmsClient")
-    return FlextOracleWmsClient(*args, **kwargs)
+    return FlextOracleWmsClient(*args, **kwargs)  # type: ignore[arg-type]
 
 
 def create_wms_config(*args: object, **kwargs: object) -> object:
     """Legacy: Use FlextOracleWmsClientConfig directly instead."""
     deprecation_warning("create_wms_config", "FlextOracleWmsClientConfig")
-    return FlextOracleWmsClientConfig(*args, **kwargs)
+    return FlextOracleWmsClientConfig(*args, **kwargs)  # type: ignore[arg-type]
 
 
 def setup_wms_authentication(*args: object, **kwargs: object) -> object:
     """Legacy: Use FlextOracleWmsAuthenticator directly instead."""
     deprecation_warning("setup_wms_authentication", "FlextOracleWmsAuthenticator")
     if FlextOracleWmsAuthenticator is None:
-        msg = "FlextOracleWmsAuthenticator not available"
+        msg = "FlextOracleWmsAuthenticator not available"  # type: ignore[unreachable]
         raise ImportError(msg) from None
-    return FlextOracleWmsAuthenticator(*args, **kwargs)
+    return FlextOracleWmsAuthenticator(*args, **kwargs)  # type: ignore[arg-type]
 
 
 # Legacy constants and configuration from Oracle WMS patterns

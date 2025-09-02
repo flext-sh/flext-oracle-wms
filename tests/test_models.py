@@ -38,11 +38,9 @@ Version: 0.9.0
 License: MIT
 """
 
-import pytest
 
 from flext_oracle_wms import (
     FlextOracleWmsApiResponse,
-    FlextOracleWmsDataValidationError,
     FlextOracleWmsDiscoveryResult,
     FlextOracleWmsEntity,
 )
@@ -75,15 +73,17 @@ def test_entity_validation_success() -> None:
 def test_entity_validation_empty_name() -> None:
     """Test entity validation with empty name."""
     entity = FlextOracleWmsEntity(name="", endpoint="/api/items")
-    with pytest.raises(FlextOracleWmsDataValidationError):
-        entity.validate_business_rules()
+    result = entity.validate_business_rules()
+    assert result.is_failure
+    assert "name" in result.error.lower()
 
 
 def test_entity_validation_empty_endpoint() -> None:
     """Test entity validation with empty endpoint."""
     entity = FlextOracleWmsEntity(name="item_master", endpoint="")
-    with pytest.raises(FlextOracleWmsDataValidationError):
-        entity.validate_business_rules()
+    result = entity.validate_business_rules()
+    assert result.is_failure
+    assert "endpoint" in result.error.lower()
 
 
 def test_discovery_result_creation() -> None:
@@ -128,8 +128,9 @@ def test_discovery_result_validation_count_mismatch() -> None:
         total_count=5,  # Mismatch: 1 entity but count says 5
         timestamp="2025-01-15T10:30:00Z",
     )
-    with pytest.raises(FlextOracleWmsDataValidationError):
-        result.validate_business_rules()
+    validation_result = result.validate_business_rules()
+    assert validation_result.is_failure
+    assert "mismatch" in validation_result.error.lower()
 
 
 def test_api_response_creation() -> None:

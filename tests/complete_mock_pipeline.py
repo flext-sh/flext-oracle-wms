@@ -256,7 +256,7 @@ class CompleteMockPipeline:
             },
         }
 
-        self.results = {}
+        self.results: dict[str, object] = {}
 
     def run_complete_pipeline(self) -> FlextResult[dict[str, object]]:
         """Run complete Oracle WMS pipeline with mock data."""
@@ -294,16 +294,18 @@ class CompleteMockPipeline:
 
             # Show entity metrics
             for data in self.mock_entities.values():
-                data["count"]
-                len(data["sample_data"].keys())
+                if isinstance(data, dict) and "sample_data" in data:
+                    sample_data = data["sample_data"]
+                    if isinstance(sample_data, dict):
+                        len(sample_data.keys())
 
             # Show pipeline flow
 
-            return FlextResult[None].ok(
+            return FlextResult[dict[str, object]].ok(
                 {
                     "duration": duration,
                     "schemas_count": len(schemas),
-                    "catalog_streams": len(catalog["streams"]),
+                    "catalog_streams": len(catalog.get("streams", [])),
                     "tap_records": len(tap_records),
                     "target_tables": len(target_results),
                     "dbt_models": len(dbt_results),
@@ -313,18 +315,20 @@ class CompleteMockPipeline:
 
         except Exception as e:
             logger.exception("Complete pipeline failed")
-            return FlextResult[None].fail(f"Pipeline failed: {e}")
+            return FlextResult[dict[str, object]].fail(f"Pipeline failed: {e}")
 
     def _generate_complete_singer_schemas(self) -> dict[str, object]:
         """Generate complete Singer schemas for all entities."""
-        schemas = {}
+        schemas: dict[str, object] = {}
 
         for entity_name, entity_info in self.mock_entities.items():
-            sample_data = entity_info["sample_data"]
-            properties, key_properties = self._create_entity_properties(sample_data)
-            self._add_singer_metadata(properties)
-            schema = self._build_singer_schema(properties, key_properties)
-            schemas[entity_name] = schema
+            if isinstance(entity_info, dict) and "sample_data" in entity_info:
+                sample_data = entity_info["sample_data"]
+                if isinstance(sample_data, dict):
+                    properties, key_properties = self._create_entity_properties(sample_data)
+                    self._add_singer_metadata(properties)
+                    schema = self._build_singer_schema(properties, key_properties)
+                    schemas[entity_name] = schema
 
         return schemas
 
@@ -333,11 +337,11 @@ class CompleteMockPipeline:
         sample_data: dict[str, object],
     ) -> tuple[dict[str, object], list[str]]:
         """Create properties and key properties from sample data - SRP compliance."""
-        properties = {}
-        key_properties = []
+        properties: dict[str, object] = {}
+        key_properties: list[str] = []
 
         for field, value in sample_data.items():
-            field_property = self._infer_field_type(field, value)
+            field_property = self._infer_field_type(field, value=value)
             properties[field] = field_property
 
             if self._is_key_field(field, key_properties):
@@ -349,7 +353,7 @@ class CompleteMockPipeline:
         self,
         field: str,
         *,
-        value: str | float | bool | None,
+        value: object,
     ) -> dict[str, str | list[str]]:
         """Infer Singer type from field name and value - Strategy Pattern."""
         # Try field name patterns first
@@ -358,7 +362,7 @@ class CompleteMockPipeline:
             return field_type
 
         # Fallback to value-based inference
-        return self._infer_type_from_value(value)
+        return self._infer_type_from_value(value=value)
 
     def _infer_type_from_field_name(
         self,
@@ -366,7 +370,7 @@ class CompleteMockPipeline:
     ) -> dict[str, str | list[str]] | None:
         """Infer type from field name patterns - Template Method Pattern."""
         # Field type mapping to reduce return statements
-        field_type_mapping = {
+        field_type_mapping: dict[str, dict[str, str | list[str]]] = {
             "id": {"type": "integer"},
             "_code": {"type": ["string", "null"]},
             "_ts": {"type": ["string", "null"], "format": "date-time"},
@@ -391,7 +395,7 @@ class CompleteMockPipeline:
     def _infer_type_from_value(
         self,
         *,
-        value: str | float | bool | None,
+        value: object,
     ) -> dict[str, str | list[str]]:
         """Infer type from Python value type - Template Method Pattern."""
         if isinstance(value, bool):

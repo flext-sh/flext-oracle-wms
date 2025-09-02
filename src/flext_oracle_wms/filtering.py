@@ -11,13 +11,13 @@ import re
 
 from flext_core import FlextLogger, FlextResult
 
-from flext_oracle_wms.exceptions import (
-    FlextOracleWmsDataValidationError,
-    FlextOracleWmsError,
-)
 from flext_oracle_wms.wms_constants import (
     FlextOracleWmsDefaults,
     OracleWMSFilterOperator,
+)
+from flext_oracle_wms.wms_exceptions import (
+    FlextOracleWmsDataValidationError,
+    FlextOracleWmsError,
 )
 from flext_oracle_wms.wms_operations import FlextOracleWmsFilter as _OpsFilter
 
@@ -27,7 +27,7 @@ logger = FlextLogger(__name__)
 class FlextOracleWmsFilter(_OpsFilter):
     """Oracle WMS filter with case sensitivity and validation."""
 
-    def __init__(self, case_sensitive: bool = False, max_conditions: int = 50) -> None:
+    def __init__(self, *, case_sensitive: bool = False, max_conditions: int = 50) -> None:
         if max_conditions <= 0:
             msg = "max_conditions must be positive"
             raise FlextOracleWmsError(msg)

@@ -20,7 +20,7 @@ from datetime import UTC, datetime
 from typing import TypeVar
 
 from flext_api import FlextApiClient
-from flext_core import FlextLogger, FlextModels, FlextResult
+from flext_core import FlextConfig, FlextLogger, FlextModels, FlextResult
 
 from flext_oracle_wms.wms_constants import FlextOracleWmsDefaults, OracleWMSEntityType
 from flext_oracle_wms.wms_models import (
@@ -52,7 +52,7 @@ DISCOVERY_FAILURE = False
 
 
 @dataclass(frozen=True)
-class FlextOracleWmsCacheConfig(FlextModels):
+class FlextOracleWmsCacheConfig(FlextConfig):
     """Oracle WMS cache configuration using flext-core standards."""
 
     default_ttl_seconds: int = 3600  # 1 hour
@@ -322,7 +322,7 @@ class FlextOracleWmsCacheManager:
             # On miss, tests expect success with None
             if isinstance(result.error, str):  # pragma: no cover - defensive
                 return FlextResult[CacheValue | None].ok(None)
-            return FlextResult[CacheValue | None].ok(result.data)
+            return FlextResult[CacheValue | None].ok(result.value)
         # Convert miss to success with None
         if result.error and "Cache miss" in result.error:
             return FlextResult[CacheValue | None].ok(None)
@@ -647,7 +647,7 @@ class FlextOracleWmsDynamicSchemaProcessor:
     # Public convenience methods expected by tests
     async def discover_entity_schema(
         self,
-        entity_name: str,
+        _entity_name: str,
         records: TOracleWmsRecordBatch,
     ) -> FlextResult[TOracleWmsSchema]:
         """Discover schema for an entity from sample records.
@@ -659,7 +659,7 @@ class FlextOracleWmsDynamicSchemaProcessor:
 
     async def process_entity_records(
         self,
-        entity_name: str,
+        _entity_name: str,
         records: TOracleWmsRecordBatch,
         schema: dict[str, dict[str, object]] | None,
     ) -> FlextResult[TOracleWmsSchema]:
@@ -906,6 +906,7 @@ class FlextOracleWmsEntityDiscovery:
         self,
         include_patterns: list[str] | None = None,
         exclude_patterns: list[str] | None = None,
+        *,
         use_cache: bool = True,
     ) -> FlextResult[FlextOracleWmsDiscoveryResult]:
         """Discover Oracle WMS entities with caching support."""
@@ -915,8 +916,8 @@ class FlextOracleWmsEntityDiscovery:
             # Try cache first
             if use_cache and self.cache_manager:
                 cached_result = await self.cache_manager.get(cache_key)
-                if cached_result.success and isinstance(cached_result.data, dict):
-                    data = cached_result.data
+                if cached_result.success and isinstance(cached_result.value, dict):
+                    data = cached_result.value
                     raw_entities: list[dict[str, object]] = []
                     entities_data: list[object] = []
                     if isinstance(data, dict):
@@ -934,9 +935,7 @@ class FlextOracleWmsEntityDiscovery:
                             description=str(item.get("description"))
                             if isinstance(item.get("description"), str)
                             else None,
-                            fields=item.get("fields")
-                            if isinstance(item.get("fields"), dict)
-                            else {},
+                            fields=item.get("fields") if isinstance(item.get("fields"), dict) else None,  # type: ignore[arg-type]
                             primary_key=str(item.get("primary_key"))
                             if item.get("primary_key")
                             else None,
@@ -981,14 +980,13 @@ class FlextOracleWmsEntityDiscovery:
             try:
                 response = await self.api_client.get(
                     f"/{self.environment}/wms/lgfapi/v10/entity/",
-                    params=None,
                 )
                 if (
                     response.success
-                    and response.data
-                    and isinstance(response.data, dict)
+                    and response.value
+                    and isinstance(response.value, dict)
                 ):
-                    names = response.data.get("entities")
+                    names = response.value.get("entities")
                     if isinstance(names, list):
                         discovered_entities.extend(
                             FlextOracleWmsEntity(
@@ -1035,7 +1033,8 @@ class FlextOracleWmsEntityDiscovery:
                     "total_count": len(filtered_entities),
                     "timestamp": discovery_result.timestamp,
                 }
-                await self.cache_manager.set(cache_key, cache_data)
+                # Type cast for cache compatibility
+                await self.cache_manager.set(cache_key, str(cache_data))
 
             return FlextResult[FlextOracleWmsDiscoveryResult].ok(discovery_result)
 
@@ -1073,55 +1072,14 @@ class FlextOracleWmsEntityDiscovery:
 
 
 # =============================================================================
-# FACTORY FUNCTIONS
+# REMOVED: Factory functions eliminated in favor of direct class usage
 # =============================================================================
+# Users should instantiate classes directly:
+# FlextOracleWmsEntityDiscovery(api_client)
+# FlextOracleWmsDynamicSchemaProcessor()
 
 
-def flext_oracle_wms_create_entity_discovery(
-    api_client: FlextApiClient,
-) -> FlextOracleWmsEntityDiscovery:
-    """Create Oracle WMS entity discovery instance."""
-    return FlextOracleWmsEntityDiscovery(api_client)
-
-
-def flext_oracle_wms_create_dynamic_schema_processor() -> (
-    FlextOracleWmsDynamicSchemaProcessor
-):
-    """Create Oracle WMS dynamic schema processor instance."""
-    return FlextOracleWmsDynamicSchemaProcessor()
-
-
-def flext_oracle_wms_create_cache_manager(
-    config: FlextOracleWmsCacheConfig | None = None,
-    *,
-    entity_ttl: int | None = None,
-    schema_ttl: int | None = None,
-    metadata_ttl: int | None = None,
-    max_size: int | None = None,
-) -> FlextOracleWmsCacheManager:
-    """Create Oracle WMS cache manager instance with optional overrides.
-
-    Tests expect that when different TTLs are provided, the minimum is used as
-    the default TTL for a unified cache.
-    """
-    if config is None:
-        default_ttl = FlextOracleWmsDefaults.DEFAULT_CACHE_TTL
-        ttl_candidates = [
-            t
-            for t in (entity_ttl, schema_ttl, metadata_ttl)
-            if isinstance(t, int) and t > 0
-        ]
-        effective_ttl = min(ttl_candidates) if ttl_candidates else default_ttl
-        config = FlextOracleWmsCacheConfig(
-            default_ttl_seconds=effective_ttl,
-            max_cache_entries=max_size
-            if isinstance(max_size, int) and max_size > 0
-            else FlextOracleWmsDefaults.MAX_CACHE_SIZE,
-            cleanup_interval_seconds=300,
-            enable_statistics=True,
-            enable_async_cleanup=True,
-        )
-    return FlextOracleWmsCacheManager(config)
+# FlextOracleWmsCacheManager(config)
 
 
 # =============================================================================
@@ -1148,8 +1106,8 @@ __all__: list[str] = [
     "ObjectTypeStrategy",
     "StringTypeStrategy",
     "TypeInferenceStrategy",
-    "flext_oracle_wms_create_cache_manager",
-    "flext_oracle_wms_create_dynamic_schema_processor",
-    # Factory Functions
-    "flext_oracle_wms_create_entity_discovery",
+    # REMOVED: Factory functions eliminated in favor of direct class usage
+    # "flext_oracle_wms_create_cache_manager"
+    # "flext_oracle_wms_create_dynamic_schema_processor"
+    # "flext_oracle_wms_create_entity_discovery"
 ]

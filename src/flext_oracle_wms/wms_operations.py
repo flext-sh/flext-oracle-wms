@@ -17,10 +17,7 @@ from datetime import UTC, datetime
 from logging import Logger
 from urllib.parse import urljoin, urlparse
 
-from flext_core import (
-    FlextLogger,
-    FlextResult,
-)
+from flext_core import FlextLogger, FlextResult
 
 from flext_oracle_wms.wms_constants import (
     FlextOracleWmsDefaults,
@@ -89,6 +86,7 @@ def validate_dict_parameter(param: object, field_name: str) -> FlextResult[bool]
 def validate_string_parameter(
     param: object,
     field_name: str,
+    *,
     allow_empty: bool = False,
 ) -> FlextResult[bool]:
     """Validate string parameter using FlextResult pattern.
@@ -145,12 +143,12 @@ def flext_oracle_wms_normalize_url(base_url: str, path: str) -> str:
     base_url_result = validate_string_parameter(base_url, "base_url")
     if not base_url_result.success:
         # Legacy tests expect base OracleWmsError
-        raise FlextOracleWmsError(base_url_result.error) from None
+        raise FlextOracleWmsError(base_url_result.error or "Invalid base_url") from None
 
     path_result = validate_string_parameter(path, "path")
     if not path_result.success:
         # Legacy tests expect base OracleWmsError
-        raise FlextOracleWmsError(path_result.error) from None
+        raise FlextOracleWmsError(path_result.error or "Invalid path") from None
 
     # Use urljoin for proper URL construction
     return urljoin(base_url.rstrip("/") + "/", path.lstrip("/"))
@@ -227,7 +225,7 @@ def flext_oracle_wms_validate_entity_name(entity_name: str) -> FlextResult[str]:
         entity_name, "entity name", allow_empty=True
     )
     if not string_result.success:
-        return FlextResult[str].fail(string_result.error)
+        return FlextResult[str].fail(string_result.error or "Invalid entity name")
 
     normalized = entity_name.strip().lower()
     if not normalized:
@@ -262,7 +260,7 @@ def flext_oracle_wms_validate_api_response(
     # attribute access early to surface the expected exception types.
     if not isinstance(response_data, dict):
         # Force the error that tests expect
-        _ = response_data.get
+        _ = getattr(response_data, "get", None)
 
     # Type narrowing: assert response_data is dict after isinstance check
     if not isinstance(response_data, dict):
@@ -357,7 +355,8 @@ def flext_oracle_wms_chunk_records(
         if size <= 0:
             msg = "Chunk size must be positive"
             return FlextResult[bool].fail(msg)
-        if size > 5000:
+        max_chunk_size = 5000
+        if size > max_chunk_size:
             # Upper bound to catch unrealistic sizes used by tests
             msg = "Chunk size is too large"
             return FlextResult[bool].fail(msg)
@@ -366,11 +365,13 @@ def flext_oracle_wms_chunk_records(
     # Validate using FlextResult pattern
     records_result = validate_records_list(records, "records")
     if not records_result.success:
-        raise FlextOracleWmsError(records_result.error) from None
+        raise FlextOracleWmsError(records_result.error or "Invalid records") from None
 
     chunk_size_result = _validate_chunk_size(chunk_size)
     if not chunk_size_result.success:
-        raise FlextOracleWmsError(chunk_size_result.error) from None
+        raise FlextOracleWmsError(
+            chunk_size_result.error or "Invalid chunk_size"
+        ) from None
 
     return [records[i : i + chunk_size] for i in range(0, len(records), chunk_size)]
 
@@ -499,28 +500,28 @@ class FlextOracleWmsFilter:
     def _op_greater_than(self, field_value: object, filter_value: object) -> bool:
         """Greater than operator."""
         try:
-            return field_value > filter_value
+            return field_value > filter_value  # type: ignore[operator,no-any-return]
         except (TypeError, ValueError):
             return False
 
     def _op_greater_equal(self, field_value: object, filter_value: object) -> bool:
         """Greater than or equal operator."""
         try:
-            return field_value >= filter_value
+            return field_value >= filter_value  # type: ignore[operator,no-any-return]
         except (TypeError, ValueError):
             return False
 
     def _op_less_than(self, field_value: object, filter_value: object) -> bool:
         """Less than operator."""
         try:
-            return field_value < filter_value
+            return field_value < filter_value  # type: ignore[operator,no-any-return]
         except (TypeError, ValueError):
             return False
 
     def _op_less_equal(self, field_value: object, filter_value: object) -> bool:
         """Less than or equal operator."""
         try:
-            return field_value <= filter_value
+            return field_value <= filter_value  # type: ignore[operator,no-any-return]
         except (TypeError, ValueError):
             return False
 
@@ -570,6 +571,10 @@ class FlextOracleWmsFlattener:
     separator: str = "_"
     preserve_arrays: bool = False
 
+    def _raise_flattening_error(self, message: str) -> None:
+        """Helper to raise flattening error in inner function."""
+        raise FlextOracleWmsSchemaFlatteningError(message)
+
     def flatten_record(self, record: TOracleWmsRecord) -> TOracleWmsRecord:
         """Flatten a single Oracle WMS record."""
         try:
@@ -577,7 +582,7 @@ class FlextOracleWmsFlattener:
             record_result = validate_dict_parameter(record, "record")
             if not record_result.success:
                 msg = f"Record flattening failed: {record_result.error}"
-                raise FlextOracleWmsSchemaFlatteningError(msg) from None
+                self._raise_flattening_error(msg)
 
             return self._flatten_dict(record)
         except Exception as e:
@@ -591,7 +596,7 @@ class FlextOracleWmsFlattener:
             records_result = validate_records_list(records, "records")
             if not records_result.success:
                 msg = f"Batch flattening failed: {records_result.error}"
-                raise FlextOracleWmsSchemaFlatteningError(msg) from None
+                self._raise_flattening_error(msg)
 
             return [self.flatten_record(record) for record in records]
         except Exception as e:
@@ -731,30 +736,11 @@ class FlextOracleWmsPluginRegistry:
 # =============================================================================
 
 
-def flext_oracle_wms_create_filter(filters: TOracleWmsFilters) -> FlextOracleWmsFilter:
-    """Create Oracle WMS filter instance."""
-    return FlextOracleWmsFilter(filters=filters)
-
-
-def flext_oracle_wms_filter_by_field(
-    field: str,
-    value: TOracleWmsFilterValue,
-) -> FlextOracleWmsFilter:
-    """Create simple field filter."""
-    return FlextOracleWmsFilter(filters={field: value})
-
-
-def flext_oracle_wms_filter_by_id_range(
-    start_id: int,
-    end_id: int,
-) -> FlextOracleWmsFilter:
-    """Create ID range filter."""
-    return FlextOracleWmsFilter(
-        filters={
-            "id": {"operator": "ge", "value": start_id},
-            "id_max": {"operator": "le", "value": end_id},
-        },
-    )
+# REMOVED: Factory functions eliminated in favor of direct class usage
+# Users should instantiate FlextOracleWmsFilter directly:
+# FlextOracleWmsFilter(filters=filters)
+# FlextOracleWmsFilter(filters={field: value})
+# FlextOracleWmsFilter(filters={"id": {"operator": "ge", "value": start_id}, "id_max": {"operator": "le", "value": end_id}})
 
 
 def create_oracle_wms_data_plugin(
@@ -788,11 +774,11 @@ __all__: list[str] = [
     "create_oracle_wms_plugin_registry",
     "flext_oracle_wms_build_entity_url",
     "flext_oracle_wms_chunk_records",
-    "flext_oracle_wms_create_filter",
+    # REMOVED: "flext_oracle_wms_create_filter" - use FlextOracleWmsFilter directly
     "flext_oracle_wms_extract_environment_from_url",
     "flext_oracle_wms_extract_pagination_info",
-    "flext_oracle_wms_filter_by_field",
-    "flext_oracle_wms_filter_by_id_range",
+    # REMOVED: "flext_oracle_wms_filter_by_field" - use FlextOracleWmsFilter directly
+    # REMOVED: "flext_oracle_wms_filter_by_id_range" - use FlextOracleWmsFilter directly
     "flext_oracle_wms_format_timestamp",
     # URL and Utility Functions
     "flext_oracle_wms_normalize_url",

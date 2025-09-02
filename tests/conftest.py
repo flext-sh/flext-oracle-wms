@@ -2,8 +2,10 @@
 
 import os
 from pathlib import Path
+from typing import cast
 
 import pytest
+from flext_core import FlextTypes
 
 from flext_oracle_wms import (
     FlextOracleWmsApiVersion,
@@ -28,15 +30,15 @@ def load_test_env() -> bool:
 
 
 @pytest.fixture
-def mock_config():
+def mock_config() -> FlextOracleWmsClientConfig:
     """Mock configuration for unit testing."""
     return FlextOracleWmsClientConfig(
         base_url="https://test.wms.oraclecloud.com/test_env",
         username="test_user",
         password="test_password",
-        environment="test_env",
+        environment="test",
         api_version=FlextOracleWmsApiVersion.LGF_V10,
-        timeout=30.0,
+        timeout=30,
         max_retries=3,
         verify_ssl=True,
         enable_logging=True,
@@ -44,7 +46,7 @@ def mock_config():
 
 
 @pytest.fixture
-def real_config(_load_test_env):
+def real_config(_load_test_env: bool) -> FlextOracleWmsClientConfig:
     """Real config from .env - EXACTLY like working basic_usage.py example."""
     base_url = os.getenv("ORACLE_WMS_BASE_URL") or os.getenv(
         "FLEXT_ORACLE_WMS_BASE_URL",
@@ -59,13 +61,18 @@ def real_config(_load_test_env):
     if not all([base_url, username, password]):
         pytest.skip("Real Oracle WMS credentials not available in .env")
 
+    # Type assertion after validation
+    assert base_url is not None
+    assert username is not None
+    assert password is not None
+
     return FlextOracleWmsClientConfig(
         base_url=base_url,
         username=username,
         password=password,
-        environment=os.getenv("ORACLE_WMS_ENVIRONMENT", "raizen_test"),
+        environment=cast("FlextTypes.Config.Environment", os.getenv("ORACLE_WMS_ENVIRONMENT", "test")),
         api_version=FlextOracleWmsApiVersion.LGF_V10,
-        timeout=float(os.getenv("ORACLE_WMS_TIMEOUT", "30")),
+        timeout=int(os.getenv("ORACLE_WMS_TIMEOUT", "30")),
         max_retries=int(os.getenv("ORACLE_WMS_MAX_RETRIES", "3")),
         verify_ssl=True,
         enable_logging=True,
@@ -73,7 +80,7 @@ def real_config(_load_test_env):
 
 
 @pytest.fixture
-def sample_entities():
+def sample_entities() -> list[str]:
     """Sample entity names based on REAL discovery results."""
     return [
         "action_code",  # Real entity discovered
@@ -86,7 +93,7 @@ def sample_entities():
 
 
 @pytest.fixture
-def sample_entity_data():
+def sample_entity_data() -> dict[str, object]:
     """Sample entity response data based on REAL query results."""
     return {
         "result_count": 4,
@@ -102,7 +109,7 @@ def sample_entity_data():
 
 
 # Configure pytest markers
-def pytest_configure(config) -> None:
+def pytest_configure(config: pytest.Config) -> None:
     """Configure pytest markers for test categorization."""
     config.addinivalue_line("markers", "unit: Unit tests (fast)")
     config.addinivalue_line(

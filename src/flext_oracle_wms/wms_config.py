@@ -19,8 +19,8 @@ from urllib.parse import urlparse
 from flext_core import (
     FlextConfig,
     FlextLogger,
-    FlextModels,
     FlextResult,
+    FlextTypes,
 )
 from pydantic import Field, HttpUrl, field_validator
 from pydantic_settings import SettingsConfigDict
@@ -32,7 +32,7 @@ WMSAPIVersion = NewType("WMSAPIVersion", str)
 WMSRetryAttempts = NewType("WMSRetryAttempts", int)
 
 
-class FlextOracleWmsClientConfig(FlextModels):
+class FlextOracleWmsClientConfig(FlextConfig):
     """Oracle WMS Declarative Client Configuration.
 
     Simplified configuration management for declarative Oracle WMS Cloud client
@@ -65,12 +65,12 @@ class FlextOracleWmsClientConfig(FlextModels):
     base_url: str = Field(..., description="Oracle WMS base URL")
     username: str = Field(..., description="Oracle WMS username")
     password: str = Field(..., description="Oracle WMS password")
-    environment: str = Field(default="default", description="Environment name")
+    environment: FlextTypes.Config.Environment = Field(default="development", description="Environment name")
     api_version: FlextOracleWmsApiVersion = Field(
         default=FlextOracleWmsApiVersion.LGF_V10,
         description="API version",
     )
-    timeout: float = Field(default=30.0, description="Request timeout in seconds")
+    timeout: int = Field(default=30, description="Request timeout in seconds")
     max_retries: int = Field(default=3, description="Maximum retry attempts")
     verify_ssl: bool = Field(default=True, description="Verify SSL certificates")
     enable_logging: bool = Field(default=True, description="Enable logging")
@@ -92,8 +92,6 @@ class FlextOracleWmsClientConfig(FlextModels):
             validation_errors.append("Username cannot be empty")
         if not self.password:
             validation_errors.append("Password cannot be empty")
-        if not self.environment:
-            validation_errors.append("Environment cannot be empty")
         if self.timeout <= 0:
             validation_errors.append("Timeout must be greater than 0")
         if self.max_retries < 0:
@@ -112,16 +110,27 @@ class FlextOracleWmsClientConfig(FlextModels):
         legacy_config: FlextOracleWmsModuleConfig,
     ) -> FlextOracleWmsClientConfig:
         """Create declarative config from legacy config."""
-        # Extract environment from base_url
-        environment = "default"
+        # Extract environment from base_url, ensuring it's a valid literal
+        environment: FlextTypes.Config.Environment = "development"
         base_url_str = str(legacy_config.base_url)
         try:
             parsed = urlparse(base_url_str)
             path_parts = parsed.path.strip("/").split("/")
             if path_parts and path_parts[-1]:
-                environment = path_parts[-1]
+                parsed_env = path_parts[-1].lower()
+                # Map to valid environments
+                if parsed_env in {"prod", "production"}:
+                    environment = "production"
+                elif parsed_env in {"stage", "staging"}:
+                    environment = "staging"
+                elif parsed_env in {"test", "testing"}:
+                    environment = "test"
+                elif parsed_env == "local":
+                    environment = "local"
+                else:
+                    environment = "development"
         except (ValueError, TypeError, AttributeError, IndexError):
-            environment = "default"
+            environment = "development"
 
         return cls(
             base_url=base_url_str,
@@ -131,8 +140,8 @@ class FlextOracleWmsClientConfig(FlextModels):
             api_version=FlextOracleWmsApiVersion.LGF_V10
             if legacy_config.api_version == "v10"
             else FlextOracleWmsApiVersion.LEGACY,
-            timeout=legacy_config.timeout_seconds,
-            max_retries=legacy_config.max_retries,
+            timeout=int(legacy_config.timeout_seconds),
+            max_retries=legacy_config.retries,
             verify_ssl=legacy_config.verify_ssl,
             enable_logging=legacy_config.enable_request_logging,
         )
@@ -157,15 +166,15 @@ class FlextOracleWmsModuleConfig(FlextConfig):
     )
     # === Oracle WMS API Configuration (additional to WMSConfigMixin) ===
     base_url: HttpUrl = Field(
-        ...,
+        default_factory=lambda: HttpUrl("https://example.oraclecloud.com"),
         description="Oracle WMS base URL (e.g., https://ta29.wms.ocs.oraclecloud.com/raizen_test)",
     )
     api_version: str = Field(
         default="v10",
         description="Oracle WMS API version",
     )
-    username: str = Field(..., description="Oracle WMS API username")
-    password: str = Field(..., description="Oracle WMS API password")
+    username: str = Field(default="", description="Oracle WMS API username")
+    password: str = Field(default="", description="Oracle WMS API password")
     # === WMS Rate Limiting (additional to PerformanceConfigMixin) ===
     enable_rate_limiting: bool = Field(
         default=True,
@@ -209,8 +218,7 @@ class FlextOracleWmsModuleConfig(FlextConfig):
         default=30.0,
         description="Connection pool timeout",
     )
-    # === Version Information ===
-    version: str = Field(default="0.9.0", description="Client version")
+    # Note: version is inherited from FlextConfig
 
     # === Enterprise Cache Configuration ===
     enable_cache: bool = Field(default=True, description="Enable enterprise caching")
@@ -222,18 +230,12 @@ class FlextOracleWmsModuleConfig(FlextConfig):
     )
 
     # === Performance Configuration ===
-    timeout_seconds: float = Field(
-        default=30.0,
-        description="HTTP request timeout in seconds",
-    )
+    # Note: timeout_seconds is inherited from FlextConfig
     batch_size: int = Field(
         default=100,
         description="Batch size for API requests",
     )
-    max_retries: int = Field(
-        default=3,
-        description="Maximum number of retry attempts",
-    )
+    # Note: max_retries is inherited from FlextConfig (as retries)
     retry_delay: float = Field(
         default=1.0,
         description="Delay between retry attempts in seconds",
@@ -244,16 +246,13 @@ class FlextOracleWmsModuleConfig(FlextConfig):
         default="flext-oracle-wms",
         description="Project name for identification",
     )
-    environment: str = Field(
-        default="production",
-        description="Environment identifier (dev, test, prod)",
-    )
+    # Note: environment is inherited from FlextConfig
 
     # === Compatibility Properties ===
     @property
-    def timeout(self) -> float:
-        """Compatibility property for timeout access."""
-        return self.timeout_seconds
+    def max_retries(self) -> int:
+        """Compatibility property for max_retries access."""
+        return self.retries
 
     @field_validator("base_url")
     @classmethod
@@ -349,7 +348,12 @@ class FlextOracleWmsModuleConfig(FlextConfig):
     @classmethod
     def from_env_file(cls, env_file: str | Path = ".env") -> FlextOracleWmsModuleConfig:
         """Create configuration from environment file."""
-        return cls(_env_file=env_file)
+        # Note: BaseSettings uses model_config.env_file, not constructor param
+        # For dynamic env files, temporarily load into environment
+        if Path(env_file).exists():
+            from dotenv import load_dotenv
+            load_dotenv(env_file)
+        return cls()
 
     @classmethod
     def for_testing(cls) -> FlextOracleWmsModuleConfig:
@@ -361,8 +365,8 @@ class FlextOracleWmsModuleConfig(FlextConfig):
             username="test_user",
             password=os.environ.get("FLEXT_ORACLE_WMS_TEST_PASSWORD", "test_password"),
             batch_size=10,  # Using composition mixin field
-            timeout_seconds=5.0,  # Using composition mixin field
-            max_retries=1,  # Using composition mixin field
+            timeout_seconds=5,  # Using composition mixin field
+            retries=1,  # Using composition mixin field
             enable_request_logging=True,
             verify_ssl=False,
         )
@@ -375,16 +379,13 @@ def load_config() -> FlextOracleWmsModuleConfig:
     with automatic environment file detection.
     """
     # Try to find .env file in current directory or parent directories
-    env_file = None
     current_dir = Path.cwd()
     for _ in range(5):  # Search up to 5 levels up
         potential_env = Path(current_dir) / ".env"
         if Path(potential_env).exists():
-            env_file = potential_env
             break
         current_dir = Path(current_dir).parent
-    if env_file:
-        return FlextOracleWmsModuleConfig(_env_file=env_file)
+    # FlextConfig/BaseSettings handles env files via model_config, not constructor
     return FlextOracleWmsModuleConfig()
 
 

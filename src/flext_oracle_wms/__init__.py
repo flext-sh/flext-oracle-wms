@@ -79,9 +79,7 @@ from flext_oracle_wms.wms_client import (
     FlextOracleWmsClient,
     FlextOracleWmsClientMock,
     create_oracle_wms_client,
-    flext_oracle_wms_create_api_key_auth,
-    flext_oracle_wms_create_basic_auth,
-    flext_oracle_wms_create_bearer_auth,
+    # REMOVED: Helper functions eliminated in favor of direct class usage
 )
 
 # WMS Discovery - Entity discovery and schema processing
@@ -90,9 +88,7 @@ from flext_oracle_wms.wms_discovery import (
     FlextOracleWmsCacheManager,
     FlextOracleWmsDynamicSchemaProcessor,
     FlextOracleWmsEntityDiscovery,
-    flext_oracle_wms_create_cache_manager,
-    flext_oracle_wms_create_dynamic_schema_processor,
-    flext_oracle_wms_create_entity_discovery,
+    # REMOVED: Helper functions eliminated in favor of direct class usage
 )
 
 # WMS Operations - Data operations and utilities
@@ -107,11 +103,11 @@ from flext_oracle_wms.wms_operations import (
     create_oracle_wms_plugin_registry,
     flext_oracle_wms_build_entity_url,
     flext_oracle_wms_chunk_records,
-    flext_oracle_wms_create_filter,
+    # REMOVED: flext_oracle_wms_create_filter (use FlextOracleWmsFilter directly)
     flext_oracle_wms_extract_environment_from_url,
     flext_oracle_wms_extract_pagination_info,
-    flext_oracle_wms_filter_by_field,
-    flext_oracle_wms_filter_by_id_range,
+    # REMOVED: flext_oracle_wms_filter_by_field (use FlextOracleWmsFilter directly)
+    # REMOVED: flext_oracle_wms_filter_by_id_range (use FlextOracleWmsFilter directly)
     flext_oracle_wms_format_timestamp,
     flext_oracle_wms_normalize_url,
     flext_oracle_wms_validate_api_response,
@@ -221,20 +217,13 @@ __all__: list[str] = [
     "create_oracle_wms_client",
     "create_oracle_wms_data_plugin",
     "create_oracle_wms_plugin_registry",
-    "flext_oracle_wms_create_api_key_auth",
-    "flext_oracle_wms_create_basic_auth",
-    "flext_oracle_wms_create_bearer_auth",
-    "flext_oracle_wms_create_cache_manager",
-    "flext_oracle_wms_create_dynamic_schema_processor",
-    "flext_oracle_wms_create_entity_discovery",
-    "flext_oracle_wms_create_filter",
+    # REMOVED: Factory functions eliminated in favor of direct class usage
     # Helper Functions
     "flext_oracle_wms_build_entity_url",
     "flext_oracle_wms_chunk_records",
     "flext_oracle_wms_extract_environment_from_url",
     "flext_oracle_wms_extract_pagination_info",
-    "flext_oracle_wms_filter_by_field",
-    "flext_oracle_wms_filter_by_id_range",
+    # REMOVED: Factory functions eliminated in favor of direct class usage
     "flext_oracle_wms_format_timestamp",
     "flext_oracle_wms_normalize_url",
     "flext_oracle_wms_validate_api_response",
@@ -275,7 +264,7 @@ try:  # pragma: no cover - helper glue for tests only
         stdout, stderr = await proc.communicate()
         return proc.returncode or 0, stdout.decode(), stderr.decode()
 
-    _builtins._run = _run
+    setattr(_builtins, "_run", _run)
 except Exception:  # pragma: no cover - defensive
     # Test helper setup failed, tests will need to provide _run themselves
     # This is non-critical as it only affects test utilities

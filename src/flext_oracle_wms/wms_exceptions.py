@@ -12,17 +12,14 @@ from __future__ import annotations
 
 import contextlib
 
-from flext_core import (
-    FlextExceptions,
-    FlextExceptionsCode,
-)
+from flext_core import FlextExceptions
 
 # =============================================================================
 # ORACLE WMS BASE EXCEPTION HIERARCHY
 # =============================================================================
 
 
-class FlextOracleWmsError(FlextExceptions.Error):
+class FlextOracleWmsError(FlextExceptions.BaseError):
     """Base exception for all Oracle WMS operations.
 
     Propagates context attributes (like entity_name) to support tests that
@@ -33,25 +30,17 @@ class FlextOracleWmsError(FlextExceptions.Error):
         self,
         message: str,
         *,
+        code: str | None = None,
         context: dict[str, object] | None = None,
-        error_code: str | None = None,
     ) -> None:
-        # Convert string error code to FlextExceptionsCode enum
-        flext_code = None
-        if error_code:
-            try:
-                flext_code = FlextExceptionsCode(error_code)
-            except ValueError:
-                # Fallback to generic error for unknown codes
-                flext_code = FlextExceptionsCode.GENERIC_ERROR
-        super().__init__(message, context=context or {}, code=flext_code)
+        super().__init__(message, code=code, context=context or {})
         # Attach context keys as attributes for convenient access in tests
         for key, value in (context or {}).items():
             with contextlib.suppress(Exception):
                 setattr(self, key, value)
 
 
-class FlextOracleWmsValidationError(FlextExceptions):
+class FlextOracleWmsValidationError(FlextOracleWmsError):
     """Oracle WMS validation error with comprehensive field context.
 
     Specialized validation error for Oracle WMS entity and configuration
@@ -68,7 +57,7 @@ class FlextOracleWmsConfigurationError(FlextOracleWmsError):
     """
 
     def __init__(self, message: str = "Config error", **kwargs: object) -> None:
-        super().__init__(message, error_code="FLEXT_CONFIG_ERROR", context=kwargs or {})
+        super().__init__(message, context=kwargs or {})
 
 
 class FlextOracleWmsConnectionError(FlextOracleWmsError):
@@ -81,14 +70,10 @@ class FlextOracleWmsConnectionError(FlextOracleWmsError):
 
     def __init__(self, message: str = "Connection failed", **kwargs: object) -> None:
         # Ensure string representation uses [CONNECTION_ERROR] as tests expect
-        super().__init__(
-            message,
-            error_code="FLEXT_CONNECTION_ERROR",
-            context=kwargs or {},
-        )
+        super().__init__(message, context=kwargs or {})
 
 
-class FlextOracleWmsProcessingError(FlextExceptions.ProcessingError):
+class FlextOracleWmsProcessingError(FlextOracleWmsError):
     """Oracle WMS processing error with comprehensive operation context.
 
     Specialized processing error for Oracle WMS business logic and data
@@ -97,7 +82,7 @@ class FlextOracleWmsProcessingError(FlextExceptions.ProcessingError):
     """
 
 
-class FlextOracleWmsAuthenticationError(FlextExceptions):
+class FlextOracleWmsAuthenticationError(FlextOracleWmsError):
     """Oracle WMS authentication error with comprehensive auth context.
 
     Specialized authentication error for Oracle WMS authentication and
@@ -105,7 +90,7 @@ class FlextOracleWmsAuthenticationError(FlextExceptions):
     """
 
 
-class FlextOracleWmsTimeoutError(FlextExceptions):
+class FlextOracleWmsTimeoutError(FlextOracleWmsError):
     """Oracle WMS timeout error with comprehensive deadline context.
 
     Specialized timeout error for Oracle WMS operation deadline violations.
@@ -148,7 +133,7 @@ class FlextOracleWmsApiError(FlextOracleWmsError):
             context["entity_name"] = entity_name
 
         # Preserve expected string representation code and message
-        super().__init__(message, context=context, error_code="FLEXT_OPERATION_ERROR")
+        super().__init__(message, context=context)
 
 
 class FlextOracleWmsInventoryError(FlextOracleWmsProcessingError):

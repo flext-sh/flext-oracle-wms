@@ -133,11 +133,15 @@ class FlextOracleWmsEntity(FlextModels):
         """Validate entity business rules."""
         validation_errors = []
 
-        try:
-            validate_string_parameter(self.name, "entity name")
-            validate_string_parameter(self.endpoint, "entity endpoint")
-        except (TypeError, ValueError, AttributeError) as e:
-            validation_errors.append(str(e))
+        # Validate entity name
+        name_result = validate_string_parameter(self.name, "entity name")
+        if name_result.is_failure:
+            validation_errors.append(name_result.error)
+
+        # Validate entity endpoint
+        endpoint_result = validate_string_parameter(self.endpoint, "entity endpoint")
+        if endpoint_result.is_failure:
+            validation_errors.append(endpoint_result.error)
 
         if not self.endpoint.startswith("/"):
             validation_errors.append("Entity endpoint must start with /")

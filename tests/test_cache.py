@@ -50,7 +50,7 @@ def create_test_cache_entry(
     value: object = "test_value",
     ttl_seconds: int = 3600,
     access_count: int = 0,
-    **overrides,
+    **overrides: object,
 ) -> FlextOracleWmsCacheEntry[object]:
     """Helper function to create cache entry with defaults."""
     defaults = {

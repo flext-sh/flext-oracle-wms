@@ -12,7 +12,7 @@ def test_config_creation_valid() -> None:
         base_url="https://ta29.wms.ocs.oraclecloud.com/raizen_test",
         username="USER_WMS_INTEGRA",
         password="test_password",
-        environment="raizen_test",
+        environment="test",
         api_version=FlextOracleWmsApiVersion.LGF_V10,
         timeout=30.0,
         max_retries=3,
@@ -23,7 +23,7 @@ def test_config_creation_valid() -> None:
     assert config.base_url == "https://ta29.wms.ocs.oraclecloud.com/raizen_test"
     assert config.username == "USER_WMS_INTEGRA"
     assert config.password == "test_password"
-    assert config.environment == "raizen_test"
+    assert config.environment == "test"
     assert config.api_version == FlextOracleWmsApiVersion.LGF_V10
     assert config.timeout == 30.0
     assert config.max_retries == 3
@@ -38,7 +38,7 @@ def test_config_validation_success() -> None:
         base_url="https://test.wms.oraclecloud.com/test",
         username="test_user",
         password="test_password",
-        environment="test_env",
+        environment="test",
         api_version=FlextOracleWmsApiVersion.LGF_V10,
         timeout=30.0,
         max_retries=3,
@@ -58,7 +58,7 @@ def test_config_validation_invalid_url() -> None:
         base_url="invalid-url-without-protocol",
         username="test_user",
         password="test_password",
-        environment="test_env",
+        environment="test",
         api_version=FlextOracleWmsApiVersion.LGF_V10,
         timeout=30.0,
         max_retries=3,
@@ -78,7 +78,7 @@ def test_config_validation_empty_username() -> None:
         base_url="https://test.wms.oraclecloud.com/test",
         username="",
         password="test_password",
-        environment="test_env",
+        environment="test",
         api_version=FlextOracleWmsApiVersion.LGF_V10,
         timeout=30.0,
         max_retries=3,
@@ -98,7 +98,7 @@ def test_config_validation_empty_password() -> None:
         base_url="https://test.wms.oraclecloud.com/test",
         username="test_user",
         password="",
-        environment="test_env",
+        environment="test",
         api_version=FlextOracleWmsApiVersion.LGF_V10,
         timeout=30.0,
         max_retries=3,
@@ -114,21 +114,23 @@ def test_config_validation_empty_password() -> None:
 @pytest.mark.unit
 def test_config_validation_invalid_timeout() -> None:
     """Test config validation with invalid timeout."""
-    config = FlextOracleWmsClientConfig(
-        base_url="https://test.wms.oraclecloud.com/test",
-        username="test_user",
-        password="test_password",
-        environment="test_env",
-        api_version=FlextOracleWmsApiVersion.LGF_V10,
-        timeout=-1.0,  # Invalid negative timeout
-        max_retries=3,
-        verify_ssl=True,
-        enable_logging=True,
-    )
+    from pydantic import ValidationError
 
-    result = config.validate_business_rules()
-    assert result.is_failure
-    assert "timeout" in result.error.lower()
+    with pytest.raises(ValidationError) as exc_info:
+        FlextOracleWmsClientConfig(
+            base_url="https://test.wms.oraclecloud.com/test",
+            username="test_user",
+            password="test_password",
+            environment="test",
+            api_version=FlextOracleWmsApiVersion.LGF_V10,
+            timeout=-1,  # Invalid negative timeout
+            max_retries=3,
+            verify_ssl=True,
+            enable_logging=True,
+        )
+
+    # Check that the error mentions invalid input
+    assert "Invalid input" in str(exc_info.value) or "timeout" in str(exc_info.value).lower()
 
 
 @pytest.mark.unit
@@ -138,7 +140,7 @@ def test_config_validation_invalid_retries() -> None:
         base_url="https://test.wms.oraclecloud.com/test",
         username="test_user",
         password="test_password",
-        environment="test_env",
+        environment="test",
         api_version=FlextOracleWmsApiVersion.LGF_V10,
         timeout=30.0,
         max_retries=-1,  # Invalid negative retries

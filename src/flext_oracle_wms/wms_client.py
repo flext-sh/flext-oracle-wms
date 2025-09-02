@@ -14,22 +14,21 @@ import inspect
 from dataclasses import dataclass
 from datetime import UTC, datetime
 
-from flext_api import FlextApiClientConfig, FlextApiConstants
-from flext_core import (
-    FlextLogger,
-    FlextModels,
-    FlextResult,
+from flext_api import (
+    FlextApiClientProtocol,
+    FlextApiConstants,
+    create_flext_api_client,
 )
+from flext_core import FlextConfig, FlextLogger, FlextResult
 from pydantic import Field
 
-from flext_oracle_wms.client import FlextApiClient
-from flext_oracle_wms.config import FlextOracleWmsClientConfig
 from flext_oracle_wms.wms_api import (
     FLEXT_ORACLE_WMS_APIS,
     FlextOracleWmsApiCategory,
     FlextOracleWmsApiEndpoint,
     get_mock_server,
 )
+from flext_oracle_wms.wms_config import FlextOracleWmsClientConfig
 from flext_oracle_wms.wms_constants import (
     FlextOracleWmsDefaults,
     OracleWMSAuthMethod,
@@ -37,6 +36,7 @@ from flext_oracle_wms.wms_constants import (
 from flext_oracle_wms.wms_exceptions import (
     FlextOracleWmsAuthenticationError,
     FlextOracleWmsConnectionError,
+    FlextOracleWmsError,
 )
 from flext_oracle_wms.wms_models import TOracleWmsEntityName
 
@@ -46,7 +46,7 @@ logger = FlextLogger(__name__)
 # =============================================================================
 
 
-class FlextOracleWmsAuthConfig(FlextModels):
+class FlextOracleWmsAuthConfig(FlextConfig):
     """Oracle WMS authentication configuration."""
 
     auth_type: OracleWMSAuthMethod = Field(
@@ -57,7 +57,7 @@ class FlextOracleWmsAuthConfig(FlextModels):
     password: str | None = Field(default="", description="Password for basic auth")
     token: str | None = Field(default="", description="Bearer token")
     api_key: str | None = Field(default="", description="API key")
-    timeout: float = Field(
+    auth_timeout: float = Field(
         default=FlextOracleWmsDefaults.DEFAULT_TIMEOUT,
         description="Request timeout in seconds",
     )
@@ -76,7 +76,7 @@ class FlextOracleWmsAuthConfig(FlextModels):
             return FlextResult[None].fail("API key required in header for API key auth")
         return FlextResult[None].ok(None)
 
-    def __str__(self) -> str:  # Hide sensitive values
+    def __str__(self) -> str:
         """String representation of authentication configuration."""
         safe_password = "***" if self.password else ""
         safe_token = "***" if self.token else ""
@@ -84,10 +84,10 @@ class FlextOracleWmsAuthConfig(FlextModels):
         return (
             f"FlextOracleWmsAuthConfig(auth_type={self.auth_type}, "
             f"username='{self.username}', password='{safe_password}', "
-            f"token='{safe_token}', api_key='{safe_key}', timeout={self.timeout})"
+            f"token='{safe_token}', api_key='{safe_key}', timeout={self.auth_timeout})"
         )
 
-    def model_post_init(self, __context: object) -> None:  # pydantic v2 hook
+    def model_post_init(self, __context: object, /) -> None:  # pydantic v2 hook
         """Post-init hook for authentication configuration."""
         return
 
@@ -126,8 +126,8 @@ class FlextOracleWmsAuthenticator:
                 if self.config.api_key:
                     headers["X-API-Key"] = self.config.api_key
 
-            headers["Content-Type"] = FlextApiConstants.ContentTypes.JSON
-            headers["Accept"] = FlextApiConstants.ContentTypes.JSON
+            headers["Content-Type"] = FlextApiConstants.Http.CONTENT_TYPE_JSON
+            headers["Accept"] = FlextApiConstants.Http.CONTENT_TYPE_JSON
             if isinstance(extra_headers, dict):
                 headers.update(extra_headers)
             # Some test suites expect a FlextResult, others expect dict directly.
@@ -144,8 +144,8 @@ class FlextOracleWmsAuthenticator:
                         ),
                     ):
                         return FlextResult[dict[str, str]].ok(headers)
-            except Exception:
-                pass
+            except Exception as e:
+                logger.debug("Failed to create FlextResult: %s", e)
             return headers
 
         except (ValueError, TypeError, AttributeError, KeyError) as e:
@@ -156,7 +156,7 @@ class FlextOracleWmsAuthenticator:
     async def _make_validation_request(self) -> FlextResult[dict[str, object]]:
         try:
             # Simulate a lightweight validation call result
-            return FlextResult[dict[str, str]].ok({"status": "authenticated"})
+            return FlextResult[dict[str, object]].ok({"status": "authenticated"})
         except Exception as e:  # pragma: no cover - defensive
             return FlextResult[dict[str, object]].fail(str(e))
 
@@ -230,15 +230,19 @@ class FlextOracleWmsAuthPlugin:
                 password=password,
                 token=token,
                 api_key=api_key,
-                timeout=timeout,
+                auth_timeout=timeout,
             )
             self.authenticator = FlextOracleWmsAuthenticator(auth_config)
             return FlextResult[None].ok(None)
         except (TypeError, ValueError, AttributeError, RuntimeError) as e:
             return FlextResult[None].fail(f"Auth plugin initialization failed: {e}")
 
+    def _raise_auth_error(self, message: str) -> None:
+        """Helper to raise authentication error in inner function."""
+        raise FlextOracleWmsAuthenticationError(message)
+
     # Minimal before/after hooks to satisfy interface used by tests
-    async def before_request(self, request: dict[str, object]) -> dict[str, object]:
+    async def before_request(self, request: dict[str, object] | object) -> dict[str, object] | object:
         if self.authenticator is None:
             msg = "Authenticator not initialized"
             raise FlextOracleWmsAuthenticationError(msg)
@@ -247,10 +251,9 @@ class FlextOracleWmsAuthPlugin:
         try:
             if isinstance(headers, FlextResult):
                 if not headers.success:
-                    raise FlextOracleWmsAuthenticationError(
-                        headers.error or "Auth headers failed",
-                    )
-                headers = headers.data
+                    error_msg = headers.error or "Auth headers failed"
+                    self._raise_auth_error(error_msg)
+                headers = headers.value
         except Exception:
             # If flext_core not available here, log and proceed; tests cover both paths
             logger.debug(
@@ -261,9 +264,8 @@ class FlextOracleWmsAuthPlugin:
             if isinstance(headers, dict):
                 request.headers.update(headers)
             return request
-
-        # Fallback for dict-like request
         if isinstance(request, dict):
+            # Fallback for dict-like request
             headers_value = request.get("headers", {})
             existing_headers = (
                 dict(headers_value) if isinstance(headers_value, dict) else {}
@@ -272,9 +274,9 @@ class FlextOracleWmsAuthPlugin:
                 existing_headers.update(headers)
             request["headers"] = existing_headers
             return request
-
-        # Return a minimal dict for unknown request types
-        return {"headers": headers if isinstance(headers, dict) else {}}
+        # This handles edge case where request is neither object with headers nor dict
+        msg = "Request type not supported for header injection"
+        raise FlextOracleWmsError(msg)
 
     async def after_response(self, response: dict[str, object]) -> dict[str, object]:
         status = getattr(response, "status_code", 200)
@@ -284,6 +286,7 @@ class FlextOracleWmsAuthPlugin:
         return response
 
     def __str__(self) -> str:
+        """Return string representation of FlextOracleWmsAuthPlugin."""
         auth_type_str = "unknown"
         if (
             self.authenticator
@@ -363,7 +366,7 @@ class FlextOracleWmsClient:
     def __init__(self, config: FlextOracleWmsClientConfig) -> None:
         """Initialize Oracle WMS client with configuration."""
         self.config = config
-        self._api_client: FlextApiClient | None = None
+        self._api_client: FlextApiClientProtocol[object] | None = None
         self._authenticator: FlextOracleWmsAuthenticator | None = None
         # Back-compat internal attributes expected by some tests
         self._client: object | None = None
@@ -381,15 +384,16 @@ class FlextOracleWmsClient:
     async def initialize(self) -> FlextResult[None]:
         """Initialize the Oracle WMS client."""
         try:
-            # Setup API client configuration
-            api_config = FlextApiClientConfig(
-                base_url=self.config.base_url,
-                timeout=self.config.timeout,
-                max_retries=self.config.max_retries,
-                verify_ssl=self.config.verify_ssl,
-            )
+            # Setup API client configuration dictionary
+            api_config_dict = {
+                "base_url": self.config.base_url,
+                "timeout": self.config.timeout,
+                "max_retries": self.config.max_retries,
+                "verify_ssl": self.config.verify_ssl,
+            }
 
             # Get authentication headers
+            auth_headers: dict[str, str] = {}
             if self._authenticator:
                 auth_result = await self._authenticator.get_auth_headers()
                 # Handle both FlextResult and dict return types
@@ -399,18 +403,32 @@ class FlextOracleWmsClient:
                         return FlextResult[None].fail(
                             f"Authentication failed: {auth_result.error}",
                         )
-                    if hasattr(auth_result, "data") and auth_result.data:
-                        api_config.headers.update(auth_result.data)
+                    if hasattr(auth_result, "value") and auth_result.value:
+                        auth_headers.update(auth_result.value)
                         # Maintain back-compat attribute for tests
-                        self._auth_headers = dict(auth_result.data)
+                        self._auth_headers = dict(auth_result.value)
                 elif isinstance(auth_result, dict):
                     # Direct dict type
-                    api_config.headers.update(auth_result)
+                    auth_headers.update(auth_result)
                     self._auth_headers = dict(auth_result)
 
-            self._api_client = FlextApiClient(api_config)
+            # Use modern factory function to create API client
+            client_config = {
+                "base_url": api_config_dict["base_url"],
+                "timeout": api_config_dict["timeout"],
+                "headers": auth_headers,
+                "max_retries": api_config_dict["max_retries"],
+                "verify_ssl": api_config_dict["verify_ssl"],
+            }
+
+            client_result = create_flext_api_client(client_config)
+            if not client_result.success:
+                error_msg = f"Failed to create API client: {client_result.error}"
+                raise FlextOracleWmsConnectionError(error_msg)
+
+            self._api_client = client_result.value
             logger.info(
-                "Oracle WMS client initialized",
+                "Oracle WMS client initialized with modern FlextApi patterns",
                 base_url=self.config.base_url,
                 environment=self.config.environment,
                 verify_ssl=self.config.verify_ssl,
@@ -438,13 +456,13 @@ class FlextOracleWmsClient:
             msg = "Connection failed"
             raise FlextOracleWmsConnectionError(msg)
         # Ensure underlying HTTP session exists
-        if self._api_client:
+        if self._api_client and hasattr(self._api_client, "start"):
             await self._api_client.start()
         return FlextResult[None].ok(None)
 
     async def stop(self) -> FlextResult[None]:
         try:
-            if self._api_client:
+            if self._api_client and hasattr(self._api_client, "stop"):
                 await self._api_client.stop()
             return FlextResult[None].ok(None)
         except Exception as e:
@@ -469,7 +487,11 @@ class FlextOracleWmsClient:
         except Exception as exc:
             # Surface failure in health payload rather than swallowing silently
             logger.debug("Health check probe failed", error=str(exc))
-        health_data: dict[str, object] = dict(self._api_client.health_check())
+        # Check if health_check method exists before calling
+        if hasattr(self._api_client, "health_check"):
+            health_data: dict[str, object] = dict(self._api_client.health_check())
+        else:
+            health_data = {"status": "unknown", "message": "health_check method not available"}
         # Ensure service field is present for test expectations
         health_data.setdefault("service", "FlextOracleWmsClient")
         # Add timestamp if backend did not provide
@@ -486,14 +508,14 @@ class FlextOracleWmsClient:
                     {"name": "facility", "type": "entity"},
                     {"name": "item", "type": "entity"},
                 ]
-                return FlextResult[list[str]].ok(fallback_entities)
+                return FlextResult[list[dict[str, object]]].ok(fallback_entities)
 
             # Use mock server only when explicitly configured
             if getattr(self.config, "use_mock", False):
                 mock_server = get_mock_server(self.config.environment)
                 mock_result = mock_server.get_mock_response("entity_discovery")
-                if mock_result.success and mock_result.data:
-                    entities_data = mock_result.data.get("entities", [])
+                if mock_result.success and mock_result.value:
+                    entities_data = mock_result.value.get("entities", [])
                     return FlextResult[list[dict[str, object]]].ok(
                         entities_data if isinstance(entities_data, list) else [],
                     )
@@ -516,9 +538,9 @@ class FlextOracleWmsClient:
                     f"Entity discovery failed: {resp_result.error}"
                 )
 
-            api_resp = resp_result.data
+            api_resp = resp_result.value
             if api_resp is None:
-                return FlextResult[None].fail(
+                return FlextResult[list[dict[str, object]]].fail(
                     "No HTTP response received from entity discovery",
                 )
 
@@ -527,7 +549,7 @@ class FlextOracleWmsClient:
                     f"Entity discovery failed: HTTP {getattr(api_resp, 'status_code', 'unknown')}",
                 )
 
-            body = api_resp.data if hasattr(api_resp, "data") else None
+            body = api_resp.value if hasattr(api_resp, "value") else None
             if not isinstance(body, dict):
                 return FlextResult[list[dict[str, object]]].fail(
                     "Invalid entity discovery response format"
@@ -546,7 +568,7 @@ class FlextOracleWmsClient:
                     # Convert string entity names to dict format
                     entities.append({"name": item, "type": "entity"})
 
-            return FlextResult[list[str]].ok(entities)
+            return FlextResult[list[dict[str, object]]].ok(entities)
 
         except (
             ConnectionError,
@@ -569,9 +591,9 @@ class FlextOracleWmsClient:
         if not self._api_client:
             return FlextResult[dict[str, object]].fail("Client not initialized")
         response = await self._api_client.get(endpoint_path)
-        if not response.success or response.data is None:
+        if not response.success or response.value is None:
             return FlextResult[dict[str, object]].fail(response.error or "No response")
-        body = response.data.data if hasattr(response.data, "data") else None
+        body = response.value.value if hasattr(response.value, "value") else None
         if not isinstance(body, dict):
             return FlextResult[dict[str, object]].fail("Invalid response body")
         return FlextResult[dict[str, object]].ok(body)
@@ -599,8 +621,8 @@ class FlextOracleWmsClient:
             if getattr(self.config, "use_mock", False):
                 mock_server = get_mock_server(self.config.environment)
                 mock_result = mock_server.get_mock_response("entity_data", entity_name)
-                if mock_result.success and mock_result.data:
-                    results_data = mock_result.data.get("results", [])
+                if mock_result.success and mock_result.value:
+                    results_data = mock_result.value.get("results", [])
                     return FlextResult[dict[str, object] | list[dict[str, object]]].ok(
                         results_data if isinstance(results_data, list) else [],
                     )
@@ -629,16 +651,20 @@ class FlextOracleWmsClient:
                 query_params["limit"] = kwargs["limit"]
             if "page_size" in kwargs and "page_size" not in query_params:
                 query_params["page_size"] = kwargs["page_size"]
-            resp_result = await self._api_client.get(full_path, params=query_params)
+            # Build URL with query parameters
+            if query_params:
+                from urllib.parse import urlencode
+                full_path = f"{full_path}?{urlencode(query_params)}"
+            resp_result = await self._api_client.get(full_path)
 
             if not resp_result.success:
                 return FlextResult[dict[str, object] | list[dict[str, object]]].fail(
                     f"Entity data extraction failed: {resp_result.error}",
                 )
 
-            api_resp = resp_result.data
+            api_resp = resp_result.value
             if api_resp is None:
-                return FlextResult[None].fail(
+                return FlextResult[dict[str, object] | list[dict[str, object]]].fail(
                     "No HTTP response received from entity data API",
                 )
 
@@ -648,14 +674,14 @@ class FlextOracleWmsClient:
                     f"Entity data extraction failed: HTTP {getattr(api_resp, 'status_code', 'unknown')}",
                 )
 
-            body = api_resp.data if hasattr(api_resp, "data") else None
+            body = api_resp.value if hasattr(api_resp, "value") else None
             if not isinstance(body, dict):
                 return FlextResult[dict[str, object] | list[dict[str, object]]].fail(
                     "Invalid entity data response format"
                 )
 
             # Tests expect the raw dict body
-            return FlextResult[dict[str, object]].ok(body)
+            return FlextResult[dict[str, object] | list[dict[str, object]]].ok(body)
 
         except (
             ConnectionError,
@@ -693,10 +719,12 @@ class FlextOracleWmsClient:
             # Execute API call
             response = None
             if prepared_call.method.upper() == "GET":
-                response = await self._api_client.get(
-                    prepared_call.full_path,
-                    params=prepared_call.params or {},
-                )
+                # Build URL with query parameters
+                path_with_params = prepared_call.full_path
+                if prepared_call.params:
+                    from urllib.parse import urlencode
+                    path_with_params = f"{prepared_call.full_path}?{urlencode(prepared_call.params)}"
+                response = await self._api_client.get(path_with_params)
             elif prepared_call.method.upper() == "POST":
                 # Send JSON when dict provided, otherwise raw data
                 json_payload = (
@@ -711,10 +739,11 @@ class FlextOracleWmsClient:
                         else None
                     )
                 )
+                # Use json_payload if available, otherwise use data_payload
+                request_data = json_payload if json_payload is not None else data_payload
                 response = await self._api_client.post(
                     prepared_call.full_path,
-                    json_data=json_payload,
-                    data=data_payload,
+                    data=request_data,  # type: ignore[arg-type]
                 )
             else:
                 return FlextResult[dict[str, object]].fail(
@@ -727,16 +756,16 @@ class FlextOracleWmsClient:
                 )
 
             # Validate HTTP status and extract body
-            api_resp = response.data
+            api_resp = response.value
             if api_resp is None:
-                return FlextResult[None].fail("Empty HTTP response")
+                return FlextResult[dict[str, object]].fail("Empty HTTP response")
 
             if hasattr(api_resp, "is_success") and not api_resp.is_success():
                 return FlextResult[dict[str, object]].fail(
                     f"API call failed: HTTP {getattr(api_resp, 'status_code', 'unknown')}",
                 )
 
-            body = api_resp.data if hasattr(api_resp, "data") else None
+            body = api_resp.value if hasattr(api_resp, "value") else None
             data_dict = body if isinstance(body, dict) else {}
             return FlextResult[dict[str, object]].ok(data_dict)
 
@@ -847,8 +876,8 @@ class FlextOracleWmsClientMock:
     async def discover_entities(self) -> FlextResult[list[dict[str, object]]]:
         """Mock entity discovery."""
         mock_result = self.mock_server.get_mock_response("entity_discovery")
-        if mock_result.success and mock_result.data:
-            entities_data = mock_result.data.get("entities", [])
+        if mock_result.success and mock_result.value:
+            entities_data = mock_result.value.get("entities", [])
             return FlextResult[list[dict[str, object]]].ok(
                 entities_data if isinstance(entities_data, list) else [],
             )
@@ -864,8 +893,8 @@ class FlextOracleWmsClientMock:
         """Mock entity data retrieval."""
         # Allow simple filtering via params in mock path to exercise parameter usage
         mock_result = self.mock_server.get_mock_response("entity_data", entity_name)
-        if mock_result.success and mock_result.data:
-            results_data = mock_result.data.get("results", [])
+        if mock_result.success and mock_result.value:
+            results_data = mock_result.value.get("results", [])
             if isinstance(results_data, list) and isinstance(params, dict):
                 # Filter by optional "limit" parameter for demonstration
                 limit_val = params.get("limit")
@@ -897,32 +926,9 @@ def create_oracle_wms_client(
     return FlextOracleWmsClient(config)
 
 
-def flext_oracle_wms_create_basic_auth(
-    username: str,
-    password: str,
-) -> FlextOracleWmsAuthConfig:
-    """Create basic authentication configuration."""
-    return FlextOracleWmsAuthConfig(
-        auth_type=OracleWMSAuthMethod.BASIC,
-        username=username,
-        password=password,
-    )
-
-
-def flext_oracle_wms_create_bearer_auth(token: str) -> FlextOracleWmsAuthConfig:
-    """Create bearer token authentication configuration."""
-    return FlextOracleWmsAuthConfig(
-        auth_type=OracleWMSAuthMethod.BEARER,
-        token=token,
-    )
-
-
-def flext_oracle_wms_create_api_key_auth(api_key: str) -> FlextOracleWmsAuthConfig:
-    """Create API key authentication configuration."""
-    return FlextOracleWmsAuthConfig(
-        auth_type=OracleWMSAuthMethod.API_KEY,
-        api_key=api_key,
-    )
+# REMOVED: Helper functions eliminated in favor of direct class usage
+# Users should instantiate FlextOracleWmsAuthConfig directly:
+# FlextOracleWmsAuthConfig(auth_type=OracleWMSAuthMethod.BASIC, username="user", password="pass")
 
 
 # =============================================================================
@@ -939,7 +945,8 @@ __all__: list[str] = [
     "FlextOracleWmsClientMock",
     # Factory Functions
     "create_oracle_wms_client",
-    "flext_oracle_wms_create_api_key_auth",
-    "flext_oracle_wms_create_basic_auth",
-    "flext_oracle_wms_create_bearer_auth",
+    # REMOVED: Factory functions eliminated in favor of direct class usage
+    # "flext_oracle_wms_create_api_key_auth"
+    # "flext_oracle_wms_create_basic_auth"
+    # "flext_oracle_wms_create_bearer_auth"
 ]

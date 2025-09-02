@@ -342,7 +342,7 @@ class TestFlextOracleWmsEntityDiscovery:
         self.mock_api_client = AsyncMock()
         self.discovery = FlextOracleWmsEntityDiscovery(
             api_client=self.mock_api_client,
-            environment="test_env",
+            environment="test",
         )
 
     def test_initialization_default(self) -> None:
@@ -372,13 +372,13 @@ class TestFlextOracleWmsEntityDiscovery:
     def test_discovery_endpoints_generation(self) -> None:
         """Test that discovery endpoints are properly generated."""
         expected_patterns = [
-            "/test_env/wms/lgfapi/v10/entity/",
-            "/test_env/wms/lgfapi/v11/entity/",
-            "/test_env/api/entities/",
-            "/test_env/api/v1/entities/",
-            "/test_env/entities/",
-            "/test_env/metadata/entities/",
-            "/test_env/schema/entities/",
+            "/test/wms/lgfapi/v10/entity/",
+            "/test/wms/lgfapi/v11/entity/",
+            "/test/api/entities/",
+            "/test/api/v1/entities/",
+            "/test/entities/",
+            "/test/metadata/entities/",
+            "/test/schema/entities/",
         ]
 
         assert self.discovery.discovery_endpoints == expected_patterns
@@ -803,7 +803,7 @@ class TestFlextOracleWmsEntityDiscovery:
         entity = self.discovery._create_entity_from_string_name("company")
 
         assert entity.name == "company"
-        assert entity.endpoint == "/test_env/wms/lgfapi/v10/entity/company/"
+        assert entity.endpoint == "/test/wms/lgfapi/v10/entity/company/"
         assert entity.description == "Oracle WMS entity: company"
 
     def test_create_entity_from_metadata_complete(self) -> None:
@@ -837,7 +837,7 @@ class TestFlextOracleWmsEntityDiscovery:
 
         assert entity is not None
         assert entity.name == "facility"
-        assert entity.endpoint == "/test_env/wms/lgfapi/v10/entity/facility/"
+        assert entity.endpoint == "/test/wms/lgfapi/v10/entity/facility/"
         assert entity.description == "Oracle WMS entity: facility"
         assert entity.primary_key is None
         assert entity.replication_key is None

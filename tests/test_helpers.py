@@ -83,7 +83,7 @@ class TestUrlHelpers:
 
     def test_normalize_url_basic(self) -> None:
         """Test basic URL normalization."""
-        base_url = "https://test.wms.oraclecloud.com/test_env"
+        base_url = "https://test.wms.oraclecloud.com/test"
         path = "scmRestApi/resources/latest/facility"
 
         result = flext_oracle_wms_normalize_url(base_url, path)
@@ -94,7 +94,7 @@ class TestUrlHelpers:
 
     def test_normalize_url_with_trailing_slash(self) -> None:
         """Test URL normalization with trailing slash."""
-        base_url = "https://test.wms.oraclecloud.com/test_env/"
+        base_url = "https://test.wms.oraclecloud.com/test/"
         path = "/scmRestApi/resources/latest/facility"
 
         result = flext_oracle_wms_normalize_url(base_url, path)
@@ -128,7 +128,7 @@ class TestUrlHelpers:
     def test_build_entity_url_basic(self) -> None:
         """Test basic entity URL building."""
         base_url = "https://test.wms.oraclecloud.com"
-        environment = "test_env"
+        environment = "test"
         entity_name = "facility"
 
         result = flext_oracle_wms_build_entity_url(base_url, environment, entity_name)
@@ -140,7 +140,7 @@ class TestUrlHelpers:
     def test_build_entity_url_with_api_version(self) -> None:
         """Test entity URL building with API version."""
         base_url = "https://test.wms.oraclecloud.com"
-        environment = "test_env"
+        environment = "test"
         entity_name = "item"
         api_version = "v1.0"
 
