@@ -17,8 +17,6 @@ import operator
 from datetime import UTC, datetime
 from pathlib import Path
 
-object
-
 from flext_core import FlextLogger, FlextModelConfig, FlextResult
 
 from flext_oracle_wms import (

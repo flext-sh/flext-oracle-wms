@@ -15,7 +15,6 @@ import contextlib
 from flext_core import (
     FlextExceptions,
     FlextExceptionsCode,
-    FlextExceptions.ProcessingError,
 )
 
 # =============================================================================

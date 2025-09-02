@@ -30,8 +30,6 @@ import asyncio
 import os
 from pathlib import Path
 
-object
-
 from dotenv import load_dotenv
 
 from flext_oracle_wms import (

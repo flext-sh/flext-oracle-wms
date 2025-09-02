@@ -18,9 +18,9 @@ from urllib.parse import urlparse
 
 from flext_core import (
     FlextConfig,
-    FlextResult,
-    FlextModels.Value,
     FlextLogger,
+    FlextModels,
+    FlextResult,
 )
 from pydantic import Field, HttpUrl, field_validator
 from pydantic_settings import SettingsConfigDict
@@ -32,7 +32,7 @@ WMSAPIVersion = NewType("WMSAPIVersion", str)
 WMSRetryAttempts = NewType("WMSRetryAttempts", int)
 
 
-class FlextOracleWmsClientConfig(FlextModels.Value):
+class FlextOracleWmsClientConfig(FlextModels):
     """Oracle WMS Declarative Client Configuration.
 
     Simplified configuration management for declarative Oracle WMS Cloud client

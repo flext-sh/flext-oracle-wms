@@ -23,13 +23,7 @@ import asyncio
 import os
 from pathlib import Path
 
-object
-
 from flext_core import FlextResult
-
-# Display configuration constants
-MAX_ENTITIES_TO_SHOW = 5
-MAX_VALUE_DISPLAY_LENGTH = 50
 
 from flext_oracle_wms import (
     FlextOracleWmsApiVersion,
