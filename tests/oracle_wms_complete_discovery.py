@@ -17,7 +17,8 @@ import operator
 from datetime import UTC, datetime
 from pathlib import Path
 
-from flext_core import FlextLogger, FlextModelConfig, FlextResult
+from flext_core import FlextLogger, FlextResult
+from pydantic import ConfigDict
 
 from flext_oracle_wms import (
     FLEXT_ORACLE_WMS_APIS,
@@ -47,7 +48,7 @@ class OracleWmsCompleteDiscovery:
             api_version=FlextOracleWmsApiVersion.LGF_V10,
             verify_ssl=True,
             enable_logging=True,
-            model_config=FlextModelConfig(strict=True),
+            model_config=ConfigDict(strict=True),
         )
         self.client: FlextOracleWmsClient = create_oracle_wms_client(
             self.config,

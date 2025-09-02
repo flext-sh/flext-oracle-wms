@@ -55,7 +55,7 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
     CMD poetry run python -c "from flext_oracle_wms import FlextOracleWmsClient; print('Oracle WMS Client available')" || exit 1
 
 # Default command runs examples and tests
-CMD ["sh", "-c", "echo '🚀 FLEXT Oracle WMS Docker Environment' && echo '📋 Running complete functionality validation...' && poetry run python examples/basic_usage.py && poetry run python examples/configuration.py && echo '🧪 Running pytest with coverage...' && poetry run pytest --cov=src --cov-report=html --cov-report=term-missing -v"]
+CMD ["sh", "-c", "echo '🚀 FLEXT Oracle WMS Docker Environment' && echo '📋 Running complete functionality validation...' && poetry run python examples/01_basic_usage.py && poetry run python examples/02_configuration.py && echo '🧪 Running pytest with coverage...' && poetry run pytest --cov=src --cov-report=html --cov-report=term-missing -v"]
 
 # Expose port for potential web interface (future enhancement)
 EXPOSE 8080

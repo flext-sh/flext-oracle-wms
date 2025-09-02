@@ -18,7 +18,7 @@ Features Demonstrated:
     10. ✅ Enterprise Features
 
 Usage:
-    python examples/complete_functionality_showcase.py
+    python examples/03_complete_functionality_showcase.py
 
 Requirements:
     - .env file with Oracle WMS credentials

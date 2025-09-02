@@ -18,7 +18,7 @@ Validates:
 
 Usage:
     # Inside Docker container:
-    python examples/docker_complete_validation.py
+    python examples/04_docker_complete_validation.py
 
     # Or via Docker run script:
     ./docker-run.sh examples

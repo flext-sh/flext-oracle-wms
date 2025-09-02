@@ -267,13 +267,13 @@ class TestExamplesIntegration:
         assert "completed successfully" in output.lower()
 
     def test_configuration_example_works(self) -> None:
-        """Test that configuration.py now works after refactoring."""
-        # Run configuration.py to test it works
+        """Test that 02_configuration.py now works after refactoring."""
+        # Run 02_configuration.py to test it works
         import subprocess
         import sys
 
         result = subprocess.run(
-            [sys.executable, "examples/configuration.py"],
+            [sys.executable, "examples/02_configuration.py"],
             check=False,
             cwd="/home/marlonsc/flext/flext-oracle-wms",
             capture_output=True,

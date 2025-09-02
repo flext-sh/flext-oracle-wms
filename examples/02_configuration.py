@@ -18,7 +18,7 @@ Environment Variables (from .env):
     - ORACLE_WMS_MAX_RETRIES: Maximum retry attempts
 
 Usage:
-    python examples/configuration.py
+    python examples/02_configuration.py
 """
 
 import contextlib
