@@ -242,7 +242,9 @@ class FlextOracleWmsAuthPlugin:
         raise FlextOracleWmsAuthenticationError(message)
 
     # Minimal before/after hooks to satisfy interface used by tests
-    async def before_request(self, request: dict[str, object] | object) -> dict[str, object] | object:
+    async def before_request(
+        self, request: dict[str, object] | object
+    ) -> dict[str, object] | object:
         if self.authenticator is None:
             msg = "Authenticator not initialized"
             raise FlextOracleWmsAuthenticationError(msg)
@@ -491,7 +493,10 @@ class FlextOracleWmsClient:
         if hasattr(self._api_client, "health_check"):
             health_data: dict[str, object] = dict(self._api_client.health_check())
         else:
-            health_data = {"status": "unknown", "message": "health_check method not available"}
+            health_data = {
+                "status": "unknown",
+                "message": "health_check method not available",
+            }
         # Ensure service field is present for test expectations
         health_data.setdefault("service", "FlextOracleWmsClient")
         # Add timestamp if backend did not provide
@@ -654,6 +659,7 @@ class FlextOracleWmsClient:
             # Build URL with query parameters
             if query_params:
                 from urllib.parse import urlencode
+
                 full_path = f"{full_path}?{urlencode(query_params)}"
             resp_result = await self._api_client.get(full_path)
 
@@ -723,7 +729,10 @@ class FlextOracleWmsClient:
                 path_with_params = prepared_call.full_path
                 if prepared_call.params:
                     from urllib.parse import urlencode
-                    path_with_params = f"{prepared_call.full_path}?{urlencode(prepared_call.params)}"
+
+                    path_with_params = (
+                        f"{prepared_call.full_path}?{urlencode(prepared_call.params)}"
+                    )
                 response = await self._api_client.get(path_with_params)
             elif prepared_call.method.upper() == "POST":
                 # Send JSON when dict provided, otherwise raw data
@@ -740,10 +749,12 @@ class FlextOracleWmsClient:
                     )
                 )
                 # Use json_payload if available, otherwise use data_payload
-                request_data = json_payload if json_payload is not None else data_payload
+                request_data = (
+                    json_payload if json_payload is not None else data_payload
+                )
                 response = await self._api_client.post(
                     prepared_call.full_path,
-                    data=request_data,  # type: ignore[arg-type]
+                    data=request_data,
                 )
             else:
                 return FlextResult[dict[str, object]].fail(

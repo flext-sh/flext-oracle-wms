@@ -327,7 +327,7 @@ class OracleWMSPageMode(StrEnum):
 
     OFFSET = "offset"
     CURSOR = "cursor"
-    TOKEN = "token"  # noqa: S105  # This is a pagination parameter name, not a password
+    TOKEN = "token"
 
 
 class OracleWMSWriteMode(StrEnum):

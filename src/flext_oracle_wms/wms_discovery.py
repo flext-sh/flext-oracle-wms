@@ -935,7 +935,9 @@ class FlextOracleWmsEntityDiscovery:
                             description=str(item.get("description"))
                             if isinstance(item.get("description"), str)
                             else None,
-                            fields=item.get("fields") if isinstance(item.get("fields"), dict) else None,  # type: ignore[arg-type]
+                            fields=item.get("fields")
+                            if isinstance(item.get("fields"), dict)
+                            else None,
                             primary_key=str(item.get("primary_key"))
                             if item.get("primary_key")
                             else None,

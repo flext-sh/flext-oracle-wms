@@ -500,28 +500,28 @@ class FlextOracleWmsFilter:
     def _op_greater_than(self, field_value: object, filter_value: object) -> bool:
         """Greater than operator."""
         try:
-            return field_value > filter_value  # type: ignore[operator,no-any-return]
+            return field_value > filter_value
         except (TypeError, ValueError):
             return False
 
     def _op_greater_equal(self, field_value: object, filter_value: object) -> bool:
         """Greater than or equal operator."""
         try:
-            return field_value >= filter_value  # type: ignore[operator,no-any-return]
+            return field_value >= filter_value
         except (TypeError, ValueError):
             return False
 
     def _op_less_than(self, field_value: object, filter_value: object) -> bool:
         """Less than operator."""
         try:
-            return field_value < filter_value  # type: ignore[operator,no-any-return]
+            return field_value < filter_value
         except (TypeError, ValueError):
             return False
 
     def _op_less_equal(self, field_value: object, filter_value: object) -> bool:
         """Less than or equal operator."""
         try:
-            return field_value <= filter_value  # type: ignore[operator,no-any-return]
+            return field_value <= filter_value
         except (TypeError, ValueError):
             return False
 
