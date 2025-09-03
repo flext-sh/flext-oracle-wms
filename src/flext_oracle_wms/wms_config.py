@@ -65,7 +65,9 @@ class FlextOracleWmsClientConfig(FlextConfig):
     base_url: str = Field(..., description="Oracle WMS base URL")
     username: str = Field(..., description="Oracle WMS username")
     password: str = Field(..., description="Oracle WMS password")
-    environment: FlextTypes.Config.Environment = Field(default="development", description="Environment name")
+    environment: FlextTypes.Config.Environment = Field(
+        default="development", description="Environment name"
+    )
     api_version: FlextOracleWmsApiVersion = Field(
         default=FlextOracleWmsApiVersion.LGF_V10,
         description="API version",
@@ -352,6 +354,7 @@ class FlextOracleWmsModuleConfig(FlextConfig):
         # For dynamic env files, temporarily load into environment
         if Path(env_file).exists():
             from dotenv import load_dotenv
+
             load_dotenv(env_file)
         return cls()
 

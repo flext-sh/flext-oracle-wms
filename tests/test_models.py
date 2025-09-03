@@ -38,7 +38,6 @@ Version: 0.9.0
 License: MIT
 """
 
-
 from flext_oracle_wms import (
     FlextOracleWmsApiResponse,
     FlextOracleWmsDiscoveryResult,

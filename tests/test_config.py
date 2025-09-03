@@ -130,7 +130,10 @@ def test_config_validation_invalid_timeout() -> None:
         )
 
     # Check that the error mentions invalid input
-    assert "Invalid input" in str(exc_info.value) or "timeout" in str(exc_info.value).lower()
+    assert (
+        "Invalid input" in str(exc_info.value)
+        or "timeout" in str(exc_info.value).lower()
+    )
 
 
 @pytest.mark.unit

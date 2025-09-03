@@ -325,7 +325,9 @@ class CompleteMockPipeline:
             if isinstance(entity_info, dict) and "sample_data" in entity_info:
                 sample_data = entity_info["sample_data"]
                 if isinstance(sample_data, dict):
-                    properties, key_properties = self._create_entity_properties(sample_data)
+                    properties, key_properties = self._create_entity_properties(
+                        sample_data
+                    )
                     self._add_singer_metadata(properties)
                     schema = self._build_singer_schema(properties, key_properties)
                     schemas[entity_name] = schema

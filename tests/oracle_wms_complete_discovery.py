@@ -203,7 +203,9 @@ class OracleWmsCompleteDiscovery:
         except Exception as e:
             return FlextResult[None].fail(f"Entity operations API test failed: {e}")
 
-    async def _test_setup_api(self, api_name: str, endpoint: FlextOracleWmsApiEndpoint) -> FlextResult[object]:
+    async def _test_setup_api(
+        self, api_name: str, endpoint: FlextOracleWmsApiEndpoint
+    ) -> FlextResult[object]:
         """Test setup and transactional APIs."""
         # These typically require POST data - test with minimal payload
         try:

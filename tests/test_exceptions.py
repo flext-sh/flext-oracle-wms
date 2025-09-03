@@ -78,7 +78,9 @@ def test_connection_error() -> None:
 
 def test_connection_error_with_retry_count() -> None:
     """Test connection error with retry count."""
-    error = FlextOracleWmsConnectionError("Connection failed", context={"retry_count": 3})
+    error = FlextOracleWmsConnectionError(
+        "Connection failed", context={"retry_count": 3}
+    )
     assert str(error) == "[FLEXT_0001] Connection failed"
     assert error.retry_count == 3
 
@@ -92,7 +94,9 @@ def test_authentication_error() -> None:
 
 def test_authentication_error_with_auth_method() -> None:
     """Test authentication error with auth method."""
-    error = FlextOracleWmsAuthenticationError("Auth failed", context={"auth_method": "oauth2"})
+    error = FlextOracleWmsAuthenticationError(
+        "Auth failed", context={"auth_method": "oauth2"}
+    )
     assert str(error) == "[FLEXT_0001] Auth failed"
     assert error.auth_method == "oauth2"
 
@@ -120,7 +124,9 @@ def test_configuration_error() -> None:
 
 def test_configuration_error_with_config_key() -> None:
     """Test configuration error with config key."""
-    error = FlextOracleWmsConfigurationError("Config error", context={"config_key": "base_url"})
+    error = FlextOracleWmsConfigurationError(
+        "Config error", context={"config_key": "base_url"}
+    )
     assert str(error) == "[FLEXT_0001] Config error"
     assert error.config_key == "base_url"
 

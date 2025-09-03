@@ -63,17 +63,20 @@ src/flext_oracle_wms/
 ### Dependencies
 
 **FLEXT Ecosystem Dependencies (Local Development):**
+
 - `flext-core`: Base patterns, logging, result handling, dependency injection (path: ../flext-core)
 - `flext-api`: API client patterns and enterprise authentication (path: ../flext-api)
 - `flext-observability`: Monitoring and observability features (path: ../flext-observability)
 
 **Core Dependencies:**
+
 - `pydantic` (≥2.11.7): Data validation and settings management
 - `httpx` (≥0.28.1): Async HTTP client for API communications
 - `pydantic-settings` (≥2.10.1): Settings management
 - `python-dotenv` (≥1.1.1): Environment variable loading
 
 **Development Dependencies:**
+
 - `ruff` (≥0.12.3): Linting and formatting
 - `mypy` (≥1.13.0): Type checking
 - `pytest` (≥8.4.0): Testing framework
@@ -356,6 +359,7 @@ The Docker setup provides:
 The codebase contains both current WMS-prefixed modules and legacy modules:
 
 **Current Implementation (use these):**
+
 - `wms_client.py` - Main client (replaces `client.py`)
 - `wms_config.py` - Configuration (replaces `config.py`)
 - `wms_models.py` - Data models (replaces `models.py`)
@@ -363,12 +367,14 @@ The codebase contains both current WMS-prefixed modules and legacy modules:
 - `wms_constants.py` - Constants (replaces `constants.py`)
 
 **Legacy Files (being phased out):**
+
 - `client.py`, `config.py`, `models.py`, `exceptions.py`, `constants.py`
 - `discovery.py`, `api_catalog.py` - Use WMS equivalents
 - `legacy.py` - Compatibility layer
 - `helpers_compat.py` - Compatibility helpers
 
 **When Developing:**
+
 1. Always use WMS-prefixed files for new features
 2. Don't modify legacy files unless absolutely necessary
 3. Migrate functionality from legacy to WMS modules when possible

@@ -70,7 +70,9 @@ def real_config(_load_test_env: bool) -> FlextOracleWmsClientConfig:
         base_url=base_url,
         username=username,
         password=password,
-        environment=cast("FlextTypes.Config.Environment", os.getenv("ORACLE_WMS_ENVIRONMENT", "test")),
+        environment=cast(
+            "FlextTypes.Config.Environment", os.getenv("ORACLE_WMS_ENVIRONMENT", "test")
+        ),
         api_version=FlextOracleWmsApiVersion.LGF_V10,
         timeout=int(os.getenv("ORACLE_WMS_TIMEOUT", "30")),
         max_retries=int(os.getenv("ORACLE_WMS_MAX_RETRIES", "3")),
