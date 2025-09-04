@@ -3,15 +3,15 @@
 
 from __future__ import annotations
 
+import traceback
 from collections import defaultdict
 
-from flext_core import FlextLoggerName
+from flext_core import FlextLogger
 from pydantic import HttpUrl
 
 from flext_oracle_wms import FlextOracleWmsLegacyClient, FlextOracleWmsModuleConfig
 
-logger_factory = FlextLoggerFactory()
-logger = logger_factory.create_logger(FlextLoggerName(__name__))
+logger = FlextLogger(__name__)
 
 
 def analyze_data_types(data: object, path: str = "") -> dict[str, set[str]]:
@@ -154,8 +154,6 @@ def main() -> None:
                     pass
 
         except Exception:
-            import traceback
-
             traceback.print_exc()
 
         finally:

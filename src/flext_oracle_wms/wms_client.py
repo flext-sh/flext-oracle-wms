@@ -13,6 +13,7 @@ import base64
 import inspect
 from dataclasses import dataclass
 from datetime import UTC, datetime
+from urllib.parse import urlencode
 
 from flext_api import (
     FlextApiClientProtocol,
@@ -658,8 +659,6 @@ class FlextOracleWmsClient:
                 query_params["page_size"] = kwargs["page_size"]
             # Build URL with query parameters
             if query_params:
-                from urllib.parse import urlencode
-
                 full_path = f"{full_path}?{urlencode(query_params)}"
             resp_result = await self._api_client.get(full_path)
 
@@ -728,8 +727,6 @@ class FlextOracleWmsClient:
                 # Build URL with query parameters
                 path_with_params = prepared_call.full_path
                 if prepared_call.params:
-                    from urllib.parse import urlencode
-
                     path_with_params = (
                         f"{prepared_call.full_path}?{urlencode(prepared_call.params)}"
                     )
