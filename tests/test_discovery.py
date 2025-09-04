@@ -1442,7 +1442,7 @@ class TestEdgeCases:
             EndpointDiscoveryStrategy,
             "execute_discovery_step",
         ) as mock_step:
-            mock_step.return_value = FlextResult[None].ok(False)
+            mock_step.return_value = FlextResult[None].ok(data=False)
 
             result = await self.discovery.discover_all_entities()
 
