@@ -18,7 +18,7 @@ from urllib.parse import urlencode
 from flext_api import (
     FlextApiClientProtocol,
     FlextApiConstants,
-    create_flext_api_client,
+    create_client,
 )
 from flext_core import FlextConfig, FlextLogger, FlextResult
 from pydantic import Field
@@ -424,12 +424,12 @@ class FlextOracleWmsClient:
                 "verify_ssl": api_config_dict["verify_ssl"],
             }
 
-            client_result = create_flext_api_client(client_config)
-            if not client_result.success:
-                error_msg = f"Failed to create API client: {client_result.error}"
-                raise FlextOracleWmsConnectionError(error_msg)
-
-            self._api_client = client_result.value
+            # create_client from flext-api returns FlextApiClient directly (raises on failure)
+            try:
+                self._api_client = create_client(client_config)
+            except Exception as e:
+                error_msg = f"Failed to create API client: {e}"
+                raise FlextOracleWmsConnectionError(error_msg) from e
             logger.info(
                 "Oracle WMS client initialized with modern FlextApi patterns",
                 base_url=self.config.base_url,

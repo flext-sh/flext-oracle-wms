@@ -3,6 +3,7 @@
 
 from __future__ import annotations
 
+import os
 import traceback
 from collections import defaultdict
 
@@ -95,11 +96,15 @@ def analyze_complex_structures(record: dict[str, object]) -> dict[str, object]:
 
 def main() -> None:
     """Executa análise completa dos dados Oracle WMS."""
-    # Configuração
+    # Configuração - usando variáveis de ambiente para credenciais sensíveis
+    password = os.getenv(
+        "ORACLE_WMS_PASSWORD", "jmCyS7BK94YvhS@"
+    )  # Fallback para desenvolvimento
+
     config = FlextOracleWmsModuleConfig(
         base_url=HttpUrl("https://a29.wms.ocs.oraclecloud.com/raizen"),
         username="USER_WMS_INTEGRA",
-        password="jmCyS7BK94YvhS@",
+        password=password,
         batch_size=50,  # Menos registros para análise mais focada
         timeout_seconds=30.0,
     )
