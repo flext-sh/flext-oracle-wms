@@ -32,7 +32,7 @@ from pathlib import Path
 
 from dotenv import load_dotenv
 
-from flext_oracle_wms import (
+from ..flext_oracle_wms import (
     FlextOracleWmsApiCategory,
     FlextOracleWmsApiVersion,
     FlextOracleWmsAuthConfig,
@@ -91,7 +91,9 @@ async def showcase_1_client_initialization(
     return client
 
 
-async def showcase_2_entity_discovery(client: FlextOracleWmsClient) -> list[str]:
+async def showcase_2_entity_discovery(
+    client: FlextOracleWmsClient,
+) -> FlextTypes.Core.StringList:
     """Feature 2: Entity Discovery (320+ entities)."""
     # Discover all entities
     entities_result = await client.discover_entities()
@@ -130,8 +132,8 @@ async def showcase_2_entity_discovery(client: FlextOracleWmsClient) -> list[str]
 
 async def showcase_3_data_retrieval(
     client: FlextOracleWmsClient,
-    entities: list[str],
-) -> dict[str, object]:
+    entities: FlextTypes.Core.StringList,
+) -> FlextTypes.Core.Dict:
     """Feature 3: Data Retrieval and Querying."""
     sample_data = {}
 
@@ -266,7 +268,7 @@ async def showcase_6_error_handling(client: FlextOracleWmsClient) -> None:
 
 async def showcase_7_health_monitoring(
     client: FlextOracleWmsClient,
-) -> dict[str, object]:
+) -> FlextTypes.Core.Dict:
     """Feature 7: Health Monitoring."""
     # Perform health check
     health_result = await client.health_check()
@@ -286,7 +288,7 @@ async def showcase_7_health_monitoring(
 
 async def showcase_8_performance_tracking(
     client: FlextOracleWmsClient,
-    entities: list[str],
+    entities: FlextTypes.Core.StringList,
 ) -> None:
     """Feature 8: Performance Tracking."""
     # Constants for performance testing

@@ -1,3 +1,11 @@
+"""Copyright (c) 2025 FLEXT Team. All rights reserved.
+SPDX-License-Identifier: MIT.
+"""
+
+from __future__ import annotations
+
+from flext_core import FlextTypes
+
 """Oracle WMS Discovery - Consolidated Entity Discovery and Dynamic Processing.
 
 Copyright (c) 2025 FLEXT Contributors
@@ -7,7 +15,6 @@ Consolidated Oracle WMS discovery system combining discovery.py + dynamic.py + c
 This module provides comprehensive entity discovery, schema processing, and caching.
 """
 
-from __future__ import annotations
 
 import asyncio
 import contextlib
@@ -611,7 +618,7 @@ class FlextOracleWmsDynamicSchemaProcessor:
         """Process Oracle WMS records to generate dynamic schema."""
         try:
             if not records:
-                return FlextResult[dict[str, dict[str, object]]].fail(
+                return FlextResult[dict[str, FlextTypes.Core.Dict]].fail(
                     "No records to process"
                 )
 
@@ -637,10 +644,10 @@ class FlextOracleWmsDynamicSchemaProcessor:
                     field_schema["entity_type_hint"] = str(entity_type)
                 schema[field_name] = field_schema
 
-            return FlextResult[dict[str, dict[str, object]]].ok(schema)
+            return FlextResult[dict[str, FlextTypes.Core.Dict]].ok(schema)
 
         except Exception as e:
-            return FlextResult[dict[str, dict[str, object]]].fail(
+            return FlextResult[dict[str, FlextTypes.Core.Dict]].fail(
                 f"Process dynamic schema failed: {e}"
             )
 
@@ -661,7 +668,7 @@ class FlextOracleWmsDynamicSchemaProcessor:
         self,
         _entity_name: str,
         records: TOracleWmsRecordBatch,
-        schema: dict[str, dict[str, object]] | None,
+        schema: dict[str, FlextTypes.Core.Dict] | None,
     ) -> FlextResult[TOracleWmsSchema]:
         """Process records with a provided schema.
 
@@ -670,7 +677,7 @@ class FlextOracleWmsDynamicSchemaProcessor:
         """
         try:
             if not isinstance(records, list) or not records:
-                return FlextResult[dict[str, dict[str, object]]].fail(
+                return FlextResult[dict[str, FlextTypes.Core.Dict]].fail(
                     "No records to process"
                 )
 
@@ -679,9 +686,9 @@ class FlextOracleWmsDynamicSchemaProcessor:
                 return await self.process_records(records, None)
 
             # Optionally, we could validate/adjust schema against records.
-            return FlextResult[dict[str, dict[str, object]]].ok(schema)
+            return FlextResult[dict[str, FlextTypes.Core.Dict]].ok(schema)
         except Exception as e:  # pragma: no cover - defensive
-            return FlextResult[dict[str, dict[str, object]]].fail(
+            return FlextResult[dict[str, FlextTypes.Core.Dict]].fail(
                 f"Process entity records failed: {e}"
             )
 
@@ -736,8 +743,8 @@ class FlextOracleWmsDynamicSchemaProcessor:
 
     def _calculate_schema_confidence(
         self,
-        records: list[dict[str, object]],
-        schema: dict[str, dict[str, object]],
+        records: list[FlextTypes.Core.Dict],
+        schema: dict[str, FlextTypes.Core.Dict],
     ) -> float:
         """Calculate a simplistic confidence score for a schema against records.
 
@@ -769,7 +776,7 @@ class FlextOracleWmsDynamicSchemaProcessor:
 
     def _check_field_consistency(
         self,
-        records: list[dict[str, object]],
+        records: list[FlextTypes.Core.Dict],
         field_name: str,
     ) -> float:
         """Return consistency ratio for presence of a field across records."""
@@ -782,7 +789,7 @@ class FlextOracleWmsDynamicSchemaProcessor:
         self,
         field_name: str,
         records: TOracleWmsRecordBatch,
-    ) -> dict[str, object]:
+    ) -> FlextTypes.Core.Dict:
         """Infer schema for a specific field across records."""
         field_values = [
             record[field_name]
@@ -838,10 +845,10 @@ class FlextOracleWmsDynamicSchemaProcessor:
 class DiscoveryContext:
     """Parameter Object: Encapsulates discovery operation context."""
 
-    include_patterns: list[str] | None
-    exclude_patterns: list[str] | None
+    include_patterns: FlextTypes.Core.StringList | None
+    exclude_patterns: FlextTypes.Core.StringList | None
     all_entities: list[FlextOracleWmsEntity]
-    errors: list[str]
+    errors: FlextTypes.Core.StringList
 
 
 class DiscoveryStrategy(ABC):
@@ -904,8 +911,8 @@ class FlextOracleWmsEntityDiscovery:
 
     async def discover_entities(
         self,
-        include_patterns: list[str] | None = None,
-        exclude_patterns: list[str] | None = None,
+        include_patterns: FlextTypes.Core.StringList | None = None,
+        exclude_patterns: FlextTypes.Core.StringList | None = None,
         *,
         use_cache: bool = True,
     ) -> FlextResult[FlextOracleWmsDiscoveryResult]:
@@ -918,8 +925,8 @@ class FlextOracleWmsEntityDiscovery:
                 cached_result = await self.cache_manager.get(cache_key)
                 if cached_result.success and isinstance(cached_result.value, dict):
                     data = cached_result.value
-                    raw_entities: list[dict[str, object]] = []
-                    entities_data: list[object] = []
+                    raw_entities: list[FlextTypes.Core.Dict] = []
+                    entities_data: FlextTypes.Core.List = []
                     if isinstance(data, dict):
                         raw_data: object = data.get("entities", [])
                         if isinstance(raw_data, list):
@@ -1048,8 +1055,8 @@ class FlextOracleWmsEntityDiscovery:
     def _apply_entity_filters(
         self,
         entities: list[FlextOracleWmsEntity],
-        include_patterns: list[str] | None,
-        exclude_patterns: list[str] | None,
+        include_patterns: FlextTypes.Core.StringList | None,
+        exclude_patterns: FlextTypes.Core.StringList | None,
     ) -> list[FlextOracleWmsEntity]:
         """Apply include/exclude patterns to entity list."""
         filtered_entities = entities
@@ -1088,7 +1095,7 @@ class FlextOracleWmsEntityDiscovery:
 # EXPORTS
 # =============================================================================
 
-__all__: list[str] = [
+__all__: FlextTypes.Core.StringList = [
     "ArrayTypeStrategy",
     "BooleanTypeStrategy",
     "DiscoveryContext",

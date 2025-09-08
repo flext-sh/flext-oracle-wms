@@ -1,3 +1,11 @@
+"""Copyright (c) 2025 FLEXT Team. All rights reserved.
+SPDX-License-Identifier: MIT.
+"""
+
+from __future__ import annotations
+
+from flext_core import FlextTypes
+
 """Oracle WMS Operations - Consolidated Data Operations and Utilities.
 
 Copyright (c) 2025 FLEXT Contributors
@@ -8,7 +16,6 @@ and plugin implementation. This module combines filtering.py + flattening.py +
 helpers.py + plugin_implementation.py into unified operations.
 """
 
-from __future__ import annotations
 
 import re
 from collections.abc import Callable, Mapping
@@ -33,10 +40,10 @@ from flext_oracle_wms.wms_exceptions import (
 # Type aliases for Oracle WMS operations
 TOracleWmsEnvironment = str
 TOracleWmsApiVersion = str
-TOracleWmsRecord = dict[str, object]
+TOracleWmsRecord = FlextTypes.Core.Dict
 TOracleWmsRecordBatch = list[TOracleWmsRecord]
-TOracleWmsPaginationInfo = dict[str, object]
-TOracleWmsFilters = dict[str, object]
+TOracleWmsPaginationInfo = FlextTypes.Core.Dict
+TOracleWmsFilters = FlextTypes.Core.Dict
 TOracleWmsFilterValue = object
 
 logger = FlextLogger(__name__)
@@ -248,7 +255,7 @@ def flext_oracle_wms_validate_entity_name(entity_name: str) -> FlextResult[str]:
 
 def flext_oracle_wms_validate_api_response(
     response_data: object,
-) -> FlextResult[dict[str, object]]:
+) -> FlextResult[FlextTypes.Core.Dict]:
     """Validate Oracle WMS API response format.
 
     Note: Intentionally avoids upfront strict type validation to mirror legacy
@@ -264,21 +271,23 @@ def flext_oracle_wms_validate_api_response(
 
     # Type narrowing: assert response_data is dict after isinstance check
     if not isinstance(response_data, dict):
-        return FlextResult[dict[str, object]].fail("Response data is not a dictionary")
+        return FlextResult[FlextTypes.Core.Dict].fail(
+            "Response data is not a dictionary"
+        )
 
-    response_dict: dict[str, object] = response_data
+    response_dict: FlextTypes.Core.Dict = response_data
     if any(k in response_dict for k in ("error",)):
         err_val = response_dict.get("error")
         if isinstance(err_val, str) and err_val.strip():
-            return FlextResult[dict[str, object]].fail(f"API error: {err_val}")
-        return FlextResult[dict[str, object]].fail("API error")
+            return FlextResult[FlextTypes.Core.Dict].fail(f"API error: {err_val}")
+        return FlextResult[FlextTypes.Core.Dict].fail("API error")
 
     # Treat message starting with "Error:" or containing "error" keyword as failure
     msg = response_dict.get("message")
     if isinstance(msg, str):
         msg_lower = msg.strip().lower()
         if msg_lower.startswith("error") or "error" in msg_lower:
-            return FlextResult[dict[str, object]].fail(f"API error: {msg}")
+            return FlextResult[FlextTypes.Core.Dict].fail(f"API error: {msg}")
 
     # If status field explicitly indicates error, treat as failure
     status_val = response_dict.get("status")
@@ -289,18 +298,18 @@ def flext_oracle_wms_validate_api_response(
     }:
         message_text = response_dict.get("message")
         if isinstance(message_text, str) and message_text:
-            return FlextResult[dict[str, object]].fail(f"API error: {message_text}")
-        return FlextResult[dict[str, object]].fail("API error")
+            return FlextResult[FlextTypes.Core.Dict].fail(f"API error: {message_text}")
+        return FlextResult[FlextTypes.Core.Dict].fail("API error")
 
     if any(k in response_dict for k in ("data", "results", "message", "status")):
-        return FlextResult[dict[str, object]].ok(response_dict)
+        return FlextResult[FlextTypes.Core.Dict].ok(response_dict)
 
     # Default to success when structure is acceptable dict
-    return FlextResult[dict[str, object]].ok(response_dict)
+    return FlextResult[FlextTypes.Core.Dict].ok(response_dict)
 
 
 def flext_oracle_wms_extract_pagination_info(
-    response_data: dict[str, object],
+    response_data: FlextTypes.Core.Dict,
 ) -> TOracleWmsPaginationInfo:
     """Extract pagination information from Oracle WMS API response."""
     fields = FlextOracleWmsResponseFields
@@ -605,10 +614,10 @@ class FlextOracleWmsFlattener:
 
     def _flatten_dict(
         self,
-        data: dict[str, object],
+        data: FlextTypes.Core.Dict,
         prefix: str = "",
         depth: int = 0,
-    ) -> dict[str, object]:
+    ) -> FlextTypes.Core.Dict:
         """Recursively flatten dictionary structure."""
         if depth >= self.max_depth:
             return {prefix.rstrip(self.separator): data}
@@ -760,7 +769,7 @@ def create_oracle_wms_plugin_registry() -> FlextOracleWmsPluginRegistry:
 # EXPORTS
 # =============================================================================
 
-__all__: list[str] = [
+__all__: FlextTypes.Core.StringList = [
     "FlextOracleWmsDataPlugin",
     # Filtering Operations
     "FlextOracleWmsFilter",

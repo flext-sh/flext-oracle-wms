@@ -1,3 +1,11 @@
+"""Copyright (c) 2025 FLEXT Team. All rights reserved.
+SPDX-License-Identifier: MIT.
+"""
+
+from __future__ import annotations
+
+from flext_core import FlextTypes
+
 """Oracle WMS Exceptions - Consolidated Exception Hierarchy.
 
 Copyright (c) 2025 FLEXT Contributors
@@ -8,7 +16,6 @@ class definitions for type safety. This module consolidates all Oracle WMS-speci
 exceptions into a single coherent hierarchy compatible with MyPy static analysis.
 """
 
-from __future__ import annotations
 
 import contextlib
 
@@ -31,7 +38,7 @@ class FlextOracleWmsError(FlextExceptions.BaseError):
         message: str,
         *,
         code: str | None = None,
-        context: dict[str, object] | None = None,
+        context: FlextTypes.Core.Dict | None = None,
     ) -> None:
         super().__init__(message, code=code, context=context or {})
         # Attach context keys as attributes for convenient access in tests
@@ -66,6 +73,10 @@ class FlextOracleWmsConnectionError(FlextOracleWmsError):
     Specialized connection error for Oracle WMS network communication failures.
     Provides detailed context about connection issues including API endpoints,
     network conditions, and error details.
+
+    Returns:
+            object: Description of return value.
+
     """
 
     def __init__(self, message: str = "Connection failed", **kwargs: object) -> None:
@@ -79,6 +90,10 @@ class FlextOracleWmsProcessingError(FlextOracleWmsError):
     Specialized processing error for Oracle WMS business logic and data
     processing operations. Provides detailed context about processing
     failures and business rule violations.
+
+    Returns:
+            object: Description of return value.
+
     """
 
 
@@ -263,7 +278,7 @@ class FlextOracleWmsSchemaFlatteningError(FlextOracleWmsSchemaError):
 # EXPORTS
 # =============================================================================
 
-__all__: list[str] = [
+__all__: FlextTypes.Core.StringList = [
     "FlextOracleWmsApiError",
     "FlextOracleWmsAuthenticationError",
     "FlextOracleWmsConfigurationError",

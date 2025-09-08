@@ -1,4 +1,9 @@
-"""Enterprise Oracle WMS Cloud integration library for FLEXT ecosystem."""
+"""Enterprise Oracle WMS Cloud integration library for FLEXT ecosystem.
+
+Copyright (c) 2025 FLEXT Team. All rights reserved.
+SPDX-License-Identifier: MIT
+"""
+
 
 # =============================================================================
 # CONSOLIDATED WMS MODULE IMPORTS - New PEP8 Structure
@@ -133,7 +138,7 @@ __description__ = (
 # PUBLIC API - Explicitly defined for clarity and backward compatibility
 # =============================================================================
 
-__all__: list[str] = [
+__all__: FlextTypes.Core.StringList = [
     # API Catalog
     "FLEXT_ORACLE_WMS_APIS",
     "FlextOracleWmsApiCategory",
@@ -244,11 +249,13 @@ try:  # pragma: no cover - helper glue for tests only
     import asyncio as _asyncio
     import builtins as _builtins
 
-    async def _run(cmd_list: list[str], cwd: str | None = None) -> tuple[int, str, str]:
+    async def _run(
+        cmd_list: FlextTypes.Core.StringList, cwd: str | None = None
+    ) -> tuple[int, str, str]:
         """Run function.
 
         Args:
-            cmd_list (list[str]): Description.
+            cmd_list (FlextTypes.Core.StringList): Description.
             cwd (str | None): Description.
 
         Returns:

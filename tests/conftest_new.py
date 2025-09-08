@@ -1,4 +1,8 @@
-"""Test fixtures for flext-oracle-wms based on WORKING code patterns."""
+"""Test fixtures for flext-oracle-wms based on WORKING code patterns.
+
+Copyright (c) 2025 FLEXT Team. All rights reserved.
+SPDX-License-Identifier: MIT
+"""
 
 import os
 from pathlib import Path
@@ -81,7 +85,7 @@ def real_config(_load_test: bool) -> FlextOracleWmsClientConfig:
 
 
 @pytest.fixture
-def sample_entities() -> list[str]:
+def sample_entities() -> FlextTypes.Core.StringList:
     """Sample entity names based on REAL discovery results."""
     return [
         "action_code",  # Real entity discovered
@@ -94,7 +98,7 @@ def sample_entities() -> list[str]:
 
 
 @pytest.fixture
-def sample_entity_data() -> dict[str, object]:
+def sample_entity_data() -> FlextTypes.Core.Dict:
     """Sample entity response data based on REAL query results."""
     return {
         "result_count": 4,

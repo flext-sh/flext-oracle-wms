@@ -9,6 +9,10 @@ This test file provides extensive coverage for cache.py, focusing on:
 - Configuration validation and error handling
 
 Target: Increase cache.py coverage from 24% to 85%+
+
+
+Copyright (c) 2025 FLEXT Team. All rights reserved.
+SPDX-License-Identifier: MIT
 """
 
 import asyncio
@@ -189,7 +193,7 @@ class TestFlextOracleWmsCacheEntry:
         timestamp = time.time()
         last_accessed = timestamp - 100
 
-        entry = FlextOracleWmsCacheEntry[dict[str, str]](
+        entry = FlextOracleWmsCacheEntry[FlextTypes.Core.Headers](
             key="test_key",
             value={"data": "value"},
             timestamp=timestamp,

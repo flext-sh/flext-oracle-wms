@@ -2,6 +2,10 @@
 
 Tests the new declarative Oracle WMS Cloud client using real .env configuration.
 Skips tests if .env is not available.
+
+
+Copyright (c) 2025 FLEXT Team. All rights reserved.
+SPDX-License-Identifier: MIT
 """
 
 from collections.abc import AsyncGenerator
@@ -39,7 +43,7 @@ def find_env_file() -> Path | None:
     return None
 
 
-def load_env_config() -> dict[str, object] | None:
+def load_env_config() -> FlextTypes.Core.Dict | None:
     """Load Oracle WMS configuration from .env file."""
     env_path = find_env_file()
     if not env_path:
@@ -93,7 +97,7 @@ def load_env_config() -> dict[str, object] | None:
 
 
 @pytest.fixture
-def env_config() -> dict[str, object] | None:
+def env_config() -> FlextTypes.Core.Dict | None:
     """Fixture that provides .env configuration or skips test."""
     config = load_env_config()
     if not config or not all(
@@ -105,7 +109,7 @@ def env_config() -> dict[str, object] | None:
 
 @pytest.fixture
 async def oracle_wms_client(
-    env_config: dict[str, object],
+    env_config: FlextTypes.Core.Dict,
 ) -> AsyncGenerator[FlextOracleWmsClient]:
     """Fixture that provides configured Oracle WMS client."""
     config = FlextOracleWmsClientConfig(**env_config)
@@ -173,7 +177,7 @@ class TestOracleWmsDeclarativeIntegration:
         ]
         assert len(lgf_apis) >= 5, "Should have multiple LGF v10 APIs"
 
-    async def test_client_configuration(self, env_config: dict[str, object]) -> None:
+    async def test_client_configuration(self, env_config: FlextTypes.Core.Dict) -> None:
         """Test client configuration and initialization."""
         config = FlextOracleWmsClientConfig(**env_config)
 

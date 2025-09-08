@@ -1,4 +1,8 @@
-"""Comprehensive test for Oracle WMS Singer flattening functionality."""
+"""Comprehensive test for Oracle WMS Singer flattening functionality.
+
+Copyright (c) 2025 FLEXT Team. All rights reserved.
+SPDX-License-Identifier: MIT
+"""
 
 import pytest
 
@@ -33,7 +37,7 @@ class TestFlextOracleWmsDataFlattener:
     async def test_flatten_simple_record(self) -> None:
         """Test flattening a simple record."""
         flattener = FlextOracleWmsDataFlattener()
-        record: dict[str, object] = {
+        record: FlextTypes.Core.Dict = {
             "id": "123",
             "name": "Test Item",
             "status": "active",
@@ -50,7 +54,7 @@ class TestFlextOracleWmsDataFlattener:
     async def test_flatten_nested_record(self) -> None:
         """Test flattening a nested record."""
         flattener = FlextOracleWmsDataFlattener()
-        record: dict[str, object] = {
+        record: FlextTypes.Core.Dict = {
             "id": "123",
             "details": {
                 "name": "Test Item",
@@ -72,7 +76,7 @@ class TestFlextOracleWmsDataFlattener:
     async def test_unflatten_record(self) -> None:
         """Test unflattening a flattened record."""
         flattener = FlextOracleWmsDataFlattener()
-        flattened_record: dict[str, object] = {
+        flattened_record: FlextTypes.Core.Dict = {
             "id": "123",
             "details_name": "Test Item",
             "details_category_id": "cat1",
@@ -91,7 +95,7 @@ class TestFlextOracleWmsDataFlattener:
     async def test_get_flattening_stats(self) -> None:
         """Test getting flattening statistics."""
         flattener = FlextOracleWmsDataFlattener()
-        records: list[dict[str, object]] = [
+        records: list[FlextTypes.Core.Dict] = [
             {"id": "1", "name": "Item 1"},
             {"id": "2", "details": {"name": "Item 2", "type": "special"}},
             {"id": "3", "info": {"nested": {"deep": "value"}}},

@@ -1,4 +1,8 @@
-#!/usr/bin/env python3
+"""Copyright (c) 2025 FLEXT Team. All rights reserved.
+SPDX-License-Identifier: MIT.
+"""
+
+# !/usr/bin/env python3
 """Oracle WMS Focused Discovery - ADMINISTRATOR Mode.
 
 FOCUSED STRATEGY:
@@ -16,7 +20,7 @@ import json
 from datetime import UTC, datetime
 from pathlib import Path
 
-from flext_core import FlextLogger, FlextResult
+from flext_core import FlextLogger, FlextResult, FlextTypes
 
 from flext_oracle_wms import (
     FlextOracleWmsApiVersion,
@@ -72,7 +76,7 @@ class FocusedOracleWmsDiscovery:
         self.entities_with_data = {}
         self.complete_schemas = {}
 
-    async def execute_focused_discovery(self) -> FlextResult[dict[str, object]]:
+    async def execute_focused_discovery(self) -> FlextResult[FlextTypes.Core.Dict]:
         """Execute complete focused discovery."""
         try:
             # Start client
@@ -164,7 +168,9 @@ class FocusedOracleWmsDiscovery:
         finally:
             await self.client.stop()
 
-    async def _quick_data_scan(self, entities: list[str]) -> dict[str, object]:
+    async def _quick_data_scan(
+        self, entities: FlextTypes.Core.StringList
+    ) -> FlextTypes.Core.Dict:
         """Quick scan to find entities with actual data."""
         data_entities = {}
 
@@ -229,7 +235,9 @@ class FocusedOracleWmsDiscovery:
 
         return data_entities
 
-    async def _get_entity_structures(self, entities: list[str]) -> dict[str, object]:
+    async def _get_entity_structures(
+        self, entities: FlextTypes.Core.StringList
+    ) -> FlextTypes.Core.Dict:
         """Get entity structures even without data."""
         structures = {}
 
@@ -257,7 +265,7 @@ class FocusedOracleWmsDiscovery:
 
         return structures
 
-    def _safe_sample(self, record: dict[str, object]) -> dict[str, object]:
+    def _safe_sample(self, record: FlextTypes.Core.Dict) -> FlextTypes.Core.Dict:
         """Create safe sample record."""
         safe = {}
         for k, v in list(record.items())[:10]:  # First 10 fields only
@@ -272,8 +280,8 @@ class FocusedOracleWmsDiscovery:
 
     async def _generate_schemas_from_data(
         self,
-        data_entities: dict[str, object],
-    ) -> dict[str, object]:
+        data_entities: FlextTypes.Core.Dict,
+    ) -> FlextTypes.Core.Dict:
         """Generate Singer schemas from entities with data."""
         schemas = {}
 
@@ -286,8 +294,8 @@ class FocusedOracleWmsDiscovery:
 
     async def _generate_schemas_from_structures(
         self,
-        structure_entities: dict[str, object],
-    ) -> dict[str, object]:
+        structure_entities: FlextTypes.Core.Dict,
+    ) -> FlextTypes.Core.Dict:
         """Generate Singer schemas from structures."""
         schemas = {}
 
@@ -301,8 +309,8 @@ class FocusedOracleWmsDiscovery:
     def _create_singer_schema(
         self,
         entity_name: str,
-        entity_data: dict[str, object],
-    ) -> dict[str, object] | None:
+        entity_data: FlextTypes.Core.Dict,
+    ) -> FlextTypes.Core.Dict | None:
         """Create Singer schema with proper Oracle WMS typing."""
         try:
             fields = entity_data.get("sample_fields", entity_data.get("fields", []))
@@ -355,7 +363,7 @@ class FocusedOracleWmsDiscovery:
         python_type: str,
         sample_value: object,
         entity_name: str,
-    ) -> dict[str, object]:
+    ) -> FlextTypes.Core.Dict:
         """Convert Oracle WMS field to Singer type with context."""
         # Oracle WMS specific field analysis
         if sample_value is not None:
@@ -430,8 +438,8 @@ class FocusedOracleWmsDiscovery:
     def _get_oracle_key_properties(
         self,
         entity_name: str,
-        fields: list[str],
-    ) -> list[str]:
+        fields: FlextTypes.Core.StringList,
+    ) -> FlextTypes.Core.StringList:
         """Get Oracle WMS key properties for entity."""
         keys = []
 
@@ -505,7 +513,7 @@ class FocusedOracleWmsDiscovery:
 
         return FlextResult[None].ok(str(results_dir))
 
-    def _create_singer_catalog(self) -> dict[str, object]:
+    def _create_singer_catalog(self) -> FlextTypes.Core.Dict:
         """Create Singer catalog."""
         streams = []
 

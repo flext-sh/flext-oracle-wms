@@ -7,10 +7,10 @@ import os
 import traceback
 from collections import defaultdict
 
-from flext_core import FlextLogger
+from flext_core import FlextLogger, FlextTypes
 from pydantic import HttpUrl
 
-from flext_oracle_wms import FlextOracleWmsLegacyClient, FlextOracleWmsModuleConfig
+from ..flext_oracle_wms import FlextOracleWmsLegacyClient, FlextOracleWmsModuleConfig
 
 logger = FlextLogger(__name__)
 
@@ -44,9 +44,9 @@ def analyze_data_types(data: object, path: str = "") -> dict[str, set[str]]:
     return type_analysis
 
 
-def analyze_complex_structures(record: dict[str, object]) -> dict[str, object]:
+def analyze_complex_structures(record: FlextTypes.Core.Dict) -> FlextTypes.Core.Dict:
     """Analisa estruturas complexas em um registro."""
-    analysis: dict[str, object] = {
+    analysis: FlextTypes.Core.Dict = {
         "complex_fields": {},
         "array_fields": {},
         "object_fields": {},
@@ -111,7 +111,11 @@ def main() -> None:
 
     client = FlextOracleWmsLegacyClient(config)
 
-    entities_to_analyze: list[str] = ["allocation", "order_hdr", "order_dtl"]
+    entities_to_analyze: FlextTypes.Core.StringList = [
+        "allocation",
+        "order_hdr",
+        "order_dtl",
+    ]
 
     for entity in entities_to_analyze:
         try:

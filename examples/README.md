@@ -93,7 +93,7 @@ Environment Variables:
     - FLEXT_ORACLE_WMS_PASSWORD: Authentication password
 
 Usage:
-    python [example_file.py]
+    python [example_file.py]:
 """
 
 import asyncio

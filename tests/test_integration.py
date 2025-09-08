@@ -4,6 +4,10 @@ These tests use REAL Oracle WMS credentials from .env to validate that the code
 actually works in practice, not just passes mocked unit tests.
 
 CRITICAL: These tests validate BUSINESS FUNCTIONALITY, not just code coverage.
+
+
+Copyright (c) 2025 FLEXT Team. All rights reserved.
+SPDX-License-Identifier: MIT
 """
 
 import os
@@ -238,7 +242,7 @@ class TestExamplesIntegration:
 
         # Run basic_usage.py as subprocess to validate it works
         async def _run(
-            cmd_list: list[str],
+            cmd_list: FlextTypes.Core.StringList,
             cwd: str | None = None,
         ) -> tuple[int, str, str]:
             process = await asyncio.create_subprocess_exec(

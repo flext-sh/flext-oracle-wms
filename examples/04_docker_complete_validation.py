@@ -1,4 +1,10 @@
-#!/usr/bin/env python3
+"""FLEXT - Enterprise Data Integration Platform.
+
+Copyright (c) 2025 FLEXT Team. All rights reserved.
+SPDX-License-Identifier: MIT
+"""
+
+# !/usr/bin/env python3
 """Docker Complete Oracle WMS Validation Example.
 
 This example demonstrates COMPLETE Oracle WMS functionality validation
@@ -34,7 +40,7 @@ from typing import Any
 from dotenv import load_dotenv
 from flext_core import get_logger
 
-from flext_oracle_wms import (
+from ..flext_oracle_wms import (
     FlextOracleWmsApiVersion,
     FlextOracleWmsClient,
     FlextOracleWmsClientConfig,

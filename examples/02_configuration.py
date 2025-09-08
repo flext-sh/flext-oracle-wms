@@ -3,23 +3,9 @@
 This example demonstrates WORKING configuration patterns for Oracle WMS Cloud
 integration using the ACTUAL API that exists and functions properly.
 
-REFACTORED: Only includes patterns that work with the real FlextOracleWmsClientConfig.
-
-Requirements:
-    - Real Oracle WMS credentials in .env file
-    - Understanding of working FlextOracleWmsClientConfig parameters
-
-Environment Variables (from .env):
-    - ORACLE_WMS_BASE_URL: Oracle WMS Cloud base URL
-    - ORACLE_WMS_USERNAME: Authentication username
-    - ORACLE_WMS_PASSWORD: Authentication password
-    - ORACLE_WMS_ENVIRONMENT: Environment name
-    - ORACLE_WMS_TIMEOUT: Request timeout in seconds
-    - ORACLE_WMS_MAX_RETRIES: Maximum retry attempts
-
-Usage:
-    python examples/02_configuration.py
 """
+
+from flext_core import FlextTypes
 
 import contextlib
 import os
@@ -162,7 +148,7 @@ def create_demo_config() -> FlextOracleWmsClientConfig:
     )
 
 
-def validate_configuration(config: FlextOracleWmsClientConfig) -> dict[str, object]:
+def validate_configuration(config: FlextOracleWmsClientConfig) -> FlextTypes.Core.Dict:
     """Validate Oracle WMS client configuration.
 
     Args:
@@ -229,7 +215,9 @@ def validate_configuration(config: FlextOracleWmsClientConfig) -> dict[str, obje
     return validation_results
 
 
-async def test_configuration(config: FlextOracleWmsClientConfig) -> dict[str, object]:
+async def test_configuration(
+    config: FlextOracleWmsClientConfig,
+) -> FlextTypes.Core.Dict:
     """Test Oracle WMS configuration by attempting connection.
 
     Args:

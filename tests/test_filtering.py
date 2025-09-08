@@ -9,6 +9,10 @@ This test file provides extensive coverage for filtering.py, focusing on:
 - Performance considerations and edge cases
 
 Target: Increase filtering.py coverage from 11% to 85%+
+
+
+Copyright (c) 2025 FLEXT Team. All rights reserved.
+SPDX-License-Identifier: MIT
 """
 
 import math
@@ -140,7 +144,7 @@ class TestRecordFiltering:
     """Test record filtering functionality."""
 
     @property
-    def sample_records(self) -> list[dict[str, object]]:
+    def sample_records(self) -> list[FlextTypes.Core.Dict]:
         """Sample records for testing."""
         return [
             {"id": 1, "name": "Company A", "status": "active", "score": 85.5},
@@ -150,7 +154,7 @@ class TestRecordFiltering:
         ]
 
     @property
-    def nested_records(self) -> list[dict[str, object]]:
+    def nested_records(self) -> list[FlextTypes.Core.Dict]:
         """Nested records for testing dot notation."""
         return [
             {
@@ -261,7 +265,7 @@ class TestRecordSorting:
     """Test record sorting functionality."""
 
     @property
-    def unsorted_records(self) -> list[dict[str, object]]:
+    def unsorted_records(self) -> list[FlextTypes.Core.Dict]:
         """Unsorted records for testing."""
         return [
             {"id": 3, "name": "Charlie", "score": 75.5},
@@ -348,7 +352,7 @@ class TestNestedValueAccess:
     """Test nested value access with dot notation."""
 
     @property
-    def nested_record(self) -> dict[str, object]:
+    def nested_record(self) -> FlextTypes.Core.Dict:
         """Nested record for testing."""
         return {
             "id": 1,
@@ -570,7 +574,7 @@ class TestConvenienceFunctions:
     """Test convenience filtering functions."""
 
     @property
-    def sample_records(self) -> list[dict[str, object]]:
+    def sample_records(self) -> list[FlextTypes.Core.Dict]:
         """Sample records for testing."""
         return [
             {"id": 1, "name": "Company A", "status": "active"},

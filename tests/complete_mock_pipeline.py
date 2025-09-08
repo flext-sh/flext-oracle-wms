@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+# !/usr/bin/env python3
 """Complete Oracle WMS Pipeline - MOCK MODE.
 
 REALISTIC MOCK IMPLEMENTATION:
@@ -16,7 +16,7 @@ import uuid
 from datetime import UTC, datetime
 from pathlib import Path
 
-from flext_core import FlextLogger, FlextResult
+from flext_core import FlextLogger, FlextResult, FlextTypes
 
 logger = FlextLogger(__name__)
 
@@ -256,9 +256,9 @@ class CompleteMockPipeline:
             },
         }
 
-        self.results: dict[str, object] = {}
+        self.results: FlextTypes.Core.Dict = {}
 
-    def run_complete_pipeline(self) -> FlextResult[dict[str, object]]:
+    def run_complete_pipeline(self) -> FlextResult[FlextTypes.Core.Dict]:
         """Run complete Oracle WMS pipeline with mock data."""
         start_time = datetime.now(UTC)
 
@@ -301,7 +301,7 @@ class CompleteMockPipeline:
 
             # Show pipeline flow
 
-            return FlextResult[dict[str, object]].ok(
+            return FlextResult[FlextTypes.Core.Dict].ok(
                 {
                     "duration": duration,
                     "schemas_count": len(schemas),
@@ -315,11 +315,11 @@ class CompleteMockPipeline:
 
         except Exception as e:
             logger.exception("Complete pipeline failed")
-            return FlextResult[dict[str, object]].fail(f"Pipeline failed: {e}")
+            return FlextResult[FlextTypes.Core.Dict].fail(f"Pipeline failed: {e}")
 
-    def _generate_complete_singer_schemas(self) -> dict[str, object]:
+    def _generate_complete_singer_schemas(self) -> FlextTypes.Core.Dict:
         """Generate complete Singer schemas for all entities."""
-        schemas: dict[str, object] = {}
+        schemas: FlextTypes.Core.Dict = {}
 
         for entity_name, entity_info in self.mock_entities.items():
             if isinstance(entity_info, dict) and "sample_data" in entity_info:
@@ -336,11 +336,11 @@ class CompleteMockPipeline:
 
     def _create_entity_properties(
         self,
-        sample_data: dict[str, object],
-    ) -> tuple[dict[str, object], list[str]]:
+        sample_data: FlextTypes.Core.Dict,
+    ) -> tuple[FlextTypes.Core.Dict, FlextTypes.Core.StringList]:
         """Create properties and key properties from sample data - SRP compliance."""
-        properties: dict[str, object] = {}
-        key_properties: list[str] = []
+        properties: FlextTypes.Core.Dict = {}
+        key_properties: FlextTypes.Core.StringList = []
 
         for field, value in sample_data.items():
             field_property = self._infer_field_type(field, value=value)
@@ -356,7 +356,7 @@ class CompleteMockPipeline:
         field: str,
         *,
         value: object,
-    ) -> dict[str, str | list[str]]:
+    ) -> dict[str, str | FlextTypes.Core.StringList]:
         """Infer Singer type from field name and value - Strategy Pattern."""
         # Try field name patterns first
         field_type = self._infer_type_from_field_name(field)
@@ -369,10 +369,10 @@ class CompleteMockPipeline:
     def _infer_type_from_field_name(
         self,
         field: str,
-    ) -> dict[str, str | list[str]] | None:
+    ) -> dict[str, str | FlextTypes.Core.StringList] | None:
         """Infer type from field name patterns - Template Method Pattern."""
         # Field type mapping to reduce return statements
-        field_type_mapping: dict[str, dict[str, str | list[str]]] = {
+        field_type_mapping: dict[str, dict[str, str | FlextTypes.Core.StringList]] = {
             "id": {"type": "integer"},
             "_code": {"type": ["string", "null"]},
             "_ts": {"type": ["string", "null"], "format": "date-time"},
@@ -398,7 +398,7 @@ class CompleteMockPipeline:
         self,
         *,
         value: object,
-    ) -> dict[str, str | list[str]]:
+    ) -> dict[str, str | FlextTypes.Core.StringList]:
         """Infer type from Python value type - Template Method Pattern."""
         if isinstance(value, bool):
             return {"type": ["boolean", "null"]}
@@ -410,11 +410,13 @@ class CompleteMockPipeline:
             return {"type": ["string", "null"]}
         return {"type": ["string", "null"]}
 
-    def _is_key_field(self, field: str, existing_keys: list[str]) -> bool:
+    def _is_key_field(
+        self, field: str, existing_keys: FlextTypes.Core.StringList
+    ) -> bool:
         """Determine if field should be a key property."""
         return field == "id" or (field.endswith("_code") and not existing_keys)
 
-    def _add_singer_metadata(self, properties: dict[str, object]) -> None:
+    def _add_singer_metadata(self, properties: FlextTypes.Core.Dict) -> None:
         """Add Singer metadata properties - SRP compliance."""
         properties.update(
             {
@@ -427,9 +429,9 @@ class CompleteMockPipeline:
 
     def _build_singer_schema(
         self,
-        properties: dict[str, object],
-        key_properties: list[str],
-    ) -> dict[str, object]:
+        properties: FlextTypes.Core.Dict,
+        key_properties: FlextTypes.Core.StringList,
+    ) -> FlextTypes.Core.Dict:
         """Build complete Singer schema - SRP compliance."""
         return {
             "type": "object",
@@ -440,8 +442,8 @@ class CompleteMockPipeline:
 
     def _create_complete_singer_catalog(
         self,
-        schemas: dict[str, object],
-    ) -> dict[str, object]:
+        schemas: FlextTypes.Core.Dict,
+    ) -> FlextTypes.Core.Dict:
         """Create complete Singer catalog for Meltano integration."""
         streams = []
 
@@ -489,7 +491,7 @@ class CompleteMockPipeline:
 
         return {"version": 1, "streams": streams}
 
-    def _simulate_tap_extraction(self) -> list[dict[str, object]]:
+    def _simulate_tap_extraction(self) -> list[FlextTypes.Core.Dict]:
         """Simulate TAP extraction process."""
         tap_records = []
 
@@ -519,8 +521,8 @@ class CompleteMockPipeline:
 
     def _simulate_target_loading(
         self,
-        tap_records: list[dict[str, object]],
-    ) -> dict[str, object]:
+        tap_records: list[FlextTypes.Core.Dict],
+    ) -> FlextTypes.Core.Dict:
         """Simulate TARGET loading process."""
         target_results = {}
 
@@ -542,8 +544,8 @@ class CompleteMockPipeline:
 
     def _simulate_dbt_transformations(
         self,
-        target_results: dict[str, object],
-    ) -> dict[str, object]:
+        target_results: FlextTypes.Core.Dict,
+    ) -> FlextTypes.Core.Dict:
         """Simulate DBT transformation process."""
         dbt_results = {}
 
@@ -632,11 +634,11 @@ class CompleteMockPipeline:
 
     def _save_complete_pipeline_results(
         self,
-        schemas: dict[str, object],
-        catalog: dict[str, object],
-        tap_records: list[dict[str, object]],
-        target_results: dict[str, object],
-        dbt_results: dict[str, object],
+        schemas: FlextTypes.Core.Dict,
+        catalog: FlextTypes.Core.Dict,
+        tap_records: list[FlextTypes.Core.Dict],
+        target_results: FlextTypes.Core.Dict,
+        dbt_results: FlextTypes.Core.Dict,
     ) -> FlextResult[str]:
         """Save complete pipeline results."""
         results_dir = Path("complete_pipeline_results")

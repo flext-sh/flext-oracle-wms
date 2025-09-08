@@ -25,7 +25,7 @@ from pathlib import Path
 
 from flext_core import FlextResult
 
-from flext_oracle_wms import (
+from ..flext_oracle_wms import (
     FlextOracleWmsApiVersion,
     FlextOracleWmsClient,
     FlextOracleWmsClientConfig,
@@ -122,7 +122,7 @@ async def discover_wms_entities(
 async def query_entity_data(
     client: FlextOracleWmsClient,
     entity_name: str,
-) -> FlextResult[list[dict[str, object]]]:
+) -> FlextResult[list[FlextTypes.Core.Dict]]:
     """Query data from a specific Oracle WMS entity.
 
     Args:

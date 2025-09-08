@@ -2,9 +2,19 @@
 
 Provides legacy import path `flext_oracle_wms.cache` by re-exporting
 cache components from the consolidated discovery module `wms_discovery`.
+
+
+Copyright (c) 2025 FLEXT Team. All rights reserved.
+SPDX-License-Identifier: MIT
 """
 
 from __future__ import annotations
+
+"""
+Copyright (c) 2025 FLEXT Team. All rights reserved.
+SPDX-License-Identifier: MIT
+"""
+
 
 from .wms_discovery import (
     FlextOracleWmsCacheConfig,

@@ -3,9 +3,21 @@
 Provides legacy import path `flext_oracle_wms.filtering` by exposing
 filter components implemented in `wms_operations` with the API expected
 by the tests in this repository.
+
+
+Copyright (c) 2025 FLEXT Team. All rights reserved.
+SPDX-License-Identifier: MIT
 """
 
 from __future__ import annotations
+
+from flext_core import FlextTypes
+
+"""
+Copyright (c) 2025 FLEXT Team. All rights reserved.
+SPDX-License-Identifier: MIT
+"""
+
 
 import re
 
@@ -84,15 +96,15 @@ class FlextOracleWmsFilter(_OpsFilter):
 
     async def filter_records_with_options(
         self,
-        records: list[dict[str, object]],
-        filters: dict[str, object],
+        records: list[FlextTypes.Core.Dict],
+        filters: FlextTypes.Core.Dict,
         limit: int | None = None,
-    ) -> FlextResult[list[dict[str, object]]]:
+    ) -> FlextResult[list[FlextTypes.Core.Dict]]:
         # Type checking is enforced by type annotations - no runtime validation needed
 
         count_result = self._validate_filter_conditions_total(filters)
         if count_result.is_failure:
-            return FlextResult[list[dict[str, object]]].fail(
+            return FlextResult[list[FlextTypes.Core.Dict]].fail(
                 count_result.error or "Filter validation failed"
             )
 
@@ -100,35 +112,35 @@ class FlextOracleWmsFilter(_OpsFilter):
         object.__setattr__(self, "filters", filters)
         data = await super().filter_records(records)
         if limit is not None and isinstance(data, list):
-            return FlextResult[list[dict[str, object]]].ok(data[: int(limit)])
-        return FlextResult[list[dict[str, object]]].ok(data)
+            return FlextResult[list[FlextTypes.Core.Dict]].ok(data[: int(limit)])
+        return FlextResult[list[FlextTypes.Core.Dict]].ok(data)
 
     async def sort_records(
         self,
-        records: list[dict[str, object]],
+        records: list[FlextTypes.Core.Dict],
         sort_field: str,
         *,
         ascending: bool = True,
-    ) -> FlextResult[list[dict[str, object]]]:
+    ) -> FlextResult[list[FlextTypes.Core.Dict]]:
         # Type annotations ensure records is list and sort_field is str
         try:
 
-            def key_func(record: dict[str, object]) -> str:
+            def key_func(record: FlextTypes.Core.Dict) -> str:
                 value = self._get_nested_value(record, sort_field)
                 if value is None:
                     return "" if ascending else "zzz"
                 return str(value)
 
             sorted_records = sorted(records, key=key_func, reverse=not ascending)
-            return FlextResult[list[dict[str, object]]].ok(sorted_records)
+            return FlextResult[list[FlextTypes.Core.Dict]].ok(sorted_records)
         except FlextOracleWmsDataValidationError:
             raise
         except Exception as e:  # pragma: no cover - defensive
-            return FlextResult[list[dict[str, object]]].fail(f"Sort failed: {e}")
+            return FlextResult[list[FlextTypes.Core.Dict]].fail(f"Sort failed: {e}")
 
     def _validate_filter_conditions_total(
         self,
-        filters: dict[str, object],
+        filters: FlextTypes.Core.Dict,
     ) -> FlextResult[None]:
         try:
             total_conditions = 0
@@ -163,11 +175,11 @@ def flext_oracle_wms_create_filter(
 
 
 async def flext_oracle_wms_filter_by_field(
-    records: list[dict[str, object]],
+    records: list[FlextTypes.Core.Dict],
     field: str,
     value: object,
     operator: OracleWMSFilterOperator | None = None,
-) -> FlextResult[list[dict[str, object]]]:
+) -> FlextResult[list[FlextTypes.Core.Dict]]:
     """Filter records by field value and operator."""
     engine = FlextOracleWmsFilter()
     op_value: object
@@ -181,18 +193,18 @@ async def flext_oracle_wms_filter_by_field(
     # Set filters before calling filter_records
     object.__setattr__(engine, "filters", {field: op_value})
     data = await engine.filter_records(records)
-    return FlextResult[list[dict[str, object]]].ok(data)
+    return FlextResult[list[FlextTypes.Core.Dict]].ok(data)
 
 
 async def flext_oracle_wms_filter_by_id_range(
-    records: list[dict[str, object]],
+    records: list[FlextTypes.Core.Dict],
     id_field: str,
     min_id: object | None = None,
     max_id: object | None = None,
-) -> FlextResult[list[dict[str, object]]]:
+) -> FlextResult[list[FlextTypes.Core.Dict]]:
     """Filter records by ID range."""
     engine = FlextOracleWmsFilter()
-    filters: dict[str, object] = {}
+    filters: FlextTypes.Core.Dict = {}
     if min_id is not None:
         filters[id_field] = {
             "operator": OracleWMSFilterOperator.GE.value,
@@ -213,14 +225,14 @@ async def flext_oracle_wms_filter_by_id_range(
             "value": max_id,
         }
     if not filters:
-        return FlextResult[list[dict[str, object]]].ok(records)
+        return FlextResult[list[FlextTypes.Core.Dict]].ok(records)
     # Set filters before calling filter_records
     object.__setattr__(engine, "filters", filters)
     data = await engine.filter_records(records)
-    return FlextResult[list[dict[str, object]]].ok(data)
+    return FlextResult[list[FlextTypes.Core.Dict]].ok(data)
 
 
-__all__: list[str] = [
+__all__: FlextTypes.Core.StringList = [
     "FlextOracleWmsFilter",
     "flext_oracle_wms_create_filter",
     "flext_oracle_wms_filter_by_field",

@@ -1,3 +1,11 @@
+"""Copyright (c) 2025 FLEXT Team. All rights reserved.
+SPDX-License-Identifier: MIT.
+"""
+
+from __future__ import annotations
+
+from flext_core import FlextTypes
+
 """Oracle WMS API - Consolidated API Catalog and Mock Server.
 
 Copyright (c) 2025 FLEXT Contributors
@@ -13,7 +21,6 @@ Features:
 - Enterprise integration patterns with FLEXT ecosystem
 """
 
-from __future__ import annotations
 
 from datetime import UTC, datetime
 from uuid import uuid4
@@ -239,7 +246,7 @@ class OracleWmsMockServer:
         self.environment = mock_environment
         self.mock_data = self._initialize_mock_data()
 
-    def _initialize_mock_data(self) -> dict[str, object]:
+    def _initialize_mock_data(self) -> FlextTypes.Core.Dict:
         """Initialize realistic mock data based on Oracle WMS documentation."""
         return {
             "entities": [
@@ -336,7 +343,7 @@ class OracleWmsMockServer:
         self,
         endpoint: str,
         entity_name: str | None = None,
-    ) -> FlextResult[dict[str, object]]:
+    ) -> FlextResult[FlextTypes.Core.Dict]:
         """Generate mock response for Oracle WMS API endpoint."""
         try:
             if endpoint == "entity_discovery":
@@ -345,14 +352,14 @@ class OracleWmsMockServer:
                 return self._mock_entity_data(entity_name)
             if endpoint == "entity_metadata" and entity_name:
                 return self._mock_entity_metadata(entity_name)
-            return FlextResult[dict[str, object]].fail(
+            return FlextResult[FlextTypes.Core.Dict].fail(
                 f"Unknown mock endpoint: {endpoint}"
             )
         except Exception as e:
             logger.exception("Mock server error")
-            return FlextResult[dict[str, object]].fail(f"Mock server error: {e}")
+            return FlextResult[FlextTypes.Core.Dict].fail(f"Mock server error: {e}")
 
-    def _mock_entity_discovery(self) -> FlextResult[dict[str, object]]:
+    def _mock_entity_discovery(self) -> FlextResult[FlextTypes.Core.Dict]:
         """Mock entity discovery response."""
         entities = [
             {
@@ -370,7 +377,7 @@ class OracleWmsMockServer:
             )
         ]
 
-        return FlextResult[dict[str, object]].ok(
+        return FlextResult[FlextTypes.Core.Dict].ok(
             {
                 "entities": entities,
                 "total_count": len(entities),
@@ -380,7 +387,7 @@ class OracleWmsMockServer:
             },
         )
 
-    def _mock_entity_data(self, entity_name: str) -> FlextResult[dict[str, object]]:
+    def _mock_entity_data(self, entity_name: str) -> FlextResult[FlextTypes.Core.Dict]:
         """Mock entity data response."""
         data_key = f"{entity_name}_data"
         mock_records = self.mock_data.get(data_key, [])
@@ -405,7 +412,7 @@ class OracleWmsMockServer:
                 },
             ]
 
-        return FlextResult[dict[str, object]].ok(
+        return FlextResult[FlextTypes.Core.Dict].ok(
             {
                 "results": mock_records,
                 "result_count": len(mock_records)
@@ -418,7 +425,9 @@ class OracleWmsMockServer:
             },
         )
 
-    def _mock_entity_metadata(self, entity_name: str) -> FlextResult[dict[str, object]]:
+    def _mock_entity_metadata(
+        self, entity_name: str
+    ) -> FlextResult[FlextTypes.Core.Dict]:
         """Mock entity metadata response."""
         base_fields = {
             "id": {"type": "string", "description": "Unique identifier"},
@@ -441,7 +450,7 @@ class OracleWmsMockServer:
         entity_specific_fields = self._get_entity_specific_fields(entity_name)
         base_fields.update(entity_specific_fields)
 
-        return FlextResult[dict[str, object]].ok(
+        return FlextResult[FlextTypes.Core.Dict].ok(
             {
                 "entity_name": entity_name,
                 "fields": base_fields,
@@ -468,7 +477,7 @@ class OracleWmsMockServer:
     def _get_entity_specific_fields(
         self,
         entity_name: str,
-    ) -> dict[str, dict[str, str]]:
+    ) -> dict[str, FlextTypes.Core.Headers]:
         """Get entity-specific mock fields."""
         entity_fields = {
             "company": {
@@ -513,7 +522,7 @@ def get_mock_server(environment: str = "mock_test") -> OracleWmsMockServer:
 # EXPORTS
 # =============================================================================
 
-__all__: list[str] = [
+__all__: FlextTypes.Core.StringList = [
     # API Catalog
     "FLEXT_ORACLE_WMS_APIS",
     "FlextOracleWmsApiCategory",

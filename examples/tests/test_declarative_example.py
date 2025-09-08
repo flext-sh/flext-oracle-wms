@@ -6,7 +6,7 @@ This demonstrates the declarative approach with massive code reduction.
 import asyncio
 from pathlib import Path
 
-from flext_oracle_wms import (
+from ...flext_oracle_wms import (
     FLEXT_ORACLE_WMS_APIS,
     FlextOracleWmsApiVersion,
     FlextOracleWmsClient,

@@ -1,6 +1,10 @@
 """Comprehensive unit tests for FlextOracleWmsClient - targeting 90%+ coverage.
 
 Based on working code patterns from basic_usage.py and real Oracle WMS connectivity.
+
+
+Copyright (c) 2025 FLEXT Team. All rights reserved.
+SPDX-License-Identifier: MIT
 """
 
 from unittest.mock import AsyncMock, patch
@@ -247,7 +251,7 @@ class TestFlextOracleWmsClientCore:
     async def test_discover_entities_success(
         self,
         mock_config: FlextOracleWmsClientConfig,
-        sample_entities: list[str],
+        sample_entities: FlextTypes.Core.StringList,
     ) -> None:
         """Test successful entity discovery."""
         with patch("flext_oracle_wms.client.FlextApiClient") as mock_api_client_class:
@@ -287,7 +291,7 @@ class TestFlextOracleWmsClientCore:
     async def test_get_entity_data_success(
         self,
         mock_config: FlextOracleWmsClientConfig,
-        sample_entity_data: dict[str, object],
+        sample_entity_data: FlextTypes.Core.Dict,
     ) -> None:
         """Test successful entity data retrieval."""
         with patch("flext_oracle_wms.client.FlextApiClient") as mock_api_client_class:

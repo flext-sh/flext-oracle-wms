@@ -2,9 +2,19 @@
 
 Exposes dynamic schema processor from `wms_discovery` under legacy
 import path `flext_oracle_wms.dynamic` expected by tests.
+
+
+Copyright (c) 2025 FLEXT Team. All rights reserved.
+SPDX-License-Identifier: MIT
 """
 
 from __future__ import annotations
+
+"""
+Copyright (c) 2025 FLEXT Team. All rights reserved.
+SPDX-License-Identifier: MIT
+"""
+
 
 from .wms_discovery import (
     ArrayTypeStrategy,

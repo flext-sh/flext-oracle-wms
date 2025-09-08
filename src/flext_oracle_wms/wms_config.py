@@ -1,3 +1,11 @@
+"""Copyright (c) 2025 FLEXT Team. All rights reserved.
+SPDX-License-Identifier: MIT.
+"""
+
+from __future__ import annotations
+
+from flext_core import FlextTypes
+
 """Oracle WMS Configuration - Consolidated Configuration Management.
 
 Copyright (c) 2025 FLEXT Contributors
@@ -9,7 +17,6 @@ eliminating duplication between tap and target implementations.
 Implements flext-core unified configuration standards.
 """
 
-from __future__ import annotations
 
 import os
 from pathlib import Path
@@ -20,7 +27,6 @@ from flext_core import (
     FlextConfig,
     FlextLogger,
     FlextResult,
-    FlextTypes,
 )
 from pydantic import Field, HttpUrl, field_validator
 from pydantic_settings import SettingsConfigDict
@@ -307,7 +313,7 @@ class FlextOracleWmsModuleConfig(FlextConfig):
 
     # Note: log_level validation is now handled by LoggingConfigMixin
     @property
-    def api_headers(self) -> dict[str, str]:
+    def api_headers(self) -> FlextTypes.Core.Headers:
         """Generate standard API headers for Oracle WMS requests."""
         return {
             "Accept": "application/json",
@@ -316,7 +322,7 @@ class FlextOracleWmsModuleConfig(FlextConfig):
         }
 
     @property
-    def connection_config(self) -> dict[str, object]:
+    def connection_config(self) -> FlextTypes.Core.Dict:
         """Generate connection configuration for HTTP client."""
         return {
             "base_url": str(self.base_url),
@@ -334,9 +340,9 @@ class FlextOracleWmsModuleConfig(FlextConfig):
         """Get the full endpoint URL for a specific entity."""
         return f"{self.wms_endpoint_base}{entity_name}"
 
-    def get_entity_params(self, **additional_params: object) -> dict[str, object]:
+    def get_entity_params(self, **additional_params: object) -> FlextTypes.Core.Dict:
         """Generate standard entity query parameters."""
-        params: dict[str, object] = {
+        params: FlextTypes.Core.Dict = {
             "page_size": self.batch_size,  # Using composition mixin field
         }
         # Type-safe update of parameters
@@ -400,7 +406,7 @@ FlextOracleWmsModuleConfig.model_rebuild()
 # EXPORTS
 # =============================================================================
 
-__all__: list[str] = [
+__all__: FlextTypes.Core.StringList = [
     "FlextOracleWmsClientConfig",
     "FlextOracleWmsModuleConfig",
     "WMSAPIVersion",

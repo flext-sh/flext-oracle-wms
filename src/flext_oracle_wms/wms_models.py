@@ -1,3 +1,11 @@
+"""Copyright (c) 2025 FLEXT Team. All rights reserved.
+SPDX-License-Identifier: MIT.
+"""
+
+from __future__ import annotations
+
+from flext_core import FlextTypes
+
 """Oracle WMS Models - Consolidated Data Models and Types.
 
 Copyright (c) 2025 FLEXT Contributors
@@ -8,7 +16,6 @@ This module combines models.py + types.py + core entities from api_catalog.py
 into a single unified data model system.
 """
 
-from __future__ import annotations
 
 from dataclasses import dataclass, field
 from enum import StrEnum
@@ -33,12 +40,12 @@ from flext_oracle_wms.wms_operations import (
 # =============================================================================
 
 # Core record types - USED EVERYWHERE
-TOracleWmsRecord = dict[str, object]
+TOracleWmsRecord = FlextTypes.Core.Dict
 TOracleWmsRecordBatch = list[TOracleWmsRecord]
-TOracleWmsSchema = dict[str, dict[str, object]]
+TOracleWmsSchema = dict[str, FlextTypes.Core.Dict]
 
 # API types - USED BY CLIENT
-TOracleWmsApiResponse = dict[str, object]
+TOracleWmsApiResponse = FlextTypes.Core.Dict
 TOracleWmsApiVersion = Literal["v10", "v9", "v8", "legacy"]
 
 # Entity naming - USED BY CLIENT/DISCOVERY
@@ -50,7 +57,7 @@ TOracleWmsEntityName = Annotated[
 
 # Filter types - USED BY FILTERING MODULE
 TOracleWmsFilterValue = (
-    str | int | float | bool | list[str | int | float] | dict[str, object]
+    str | int | float | bool | list[str | int | float] | FlextTypes.Core.Dict
 )
 TOracleWmsFilters = dict[str, TOracleWmsFilterValue]
 
@@ -124,7 +131,7 @@ class FlextOracleWmsEntity(FlextModels):
     name: str
     endpoint: str
     description: str | None = None
-    fields: dict[str, object] | None = field(default_factory=dict)
+    fields: FlextTypes.Core.Dict | None = field(default_factory=dict)
     primary_key: str | None = None
     replication_key: str | None = None
     supports_incremental: bool = False
@@ -158,7 +165,7 @@ class FlextOracleWmsEntity(FlextModels):
             )
         return FlextResult[None].ok(None)
 
-    def to_dict_basic(self) -> dict[str, object]:
+    def to_dict_basic(self) -> FlextTypes.Core.Dict:
         """Convert entity to basic dict format (used by discovery)."""
         return {
             "name": self.name,
@@ -179,7 +186,7 @@ class FlextOracleWmsDiscoveryResult(FlextModels):
     timestamp: str = ""
     discovery_duration_ms: float = 0.0
     has_errors: bool = False
-    errors: list[str] = field(default_factory=list)
+    errors: FlextTypes.Core.StringList = field(default_factory=list)
     api_version: str | None = "v10"
 
     def validate_business_rules(self) -> FlextResult[None]:
@@ -216,7 +223,7 @@ class FlextOracleWmsDiscoveryResult(FlextModels):
 class FlextOracleWmsApiResponse(FlextModels):
     """Oracle WMS API response wrapper - USED BY CLIENT."""
 
-    data: dict[str, object] = field(default_factory=dict)
+    data: FlextTypes.Core.Dict = field(default_factory=dict)
     status_code: int = 200
     success: bool = True
     error_message: str | None = None
@@ -289,7 +296,7 @@ class FlextOracleWmsApiEndpoint(FlextModels):
 # EXPORTS
 # =============================================================================
 
-__all__: list[str] = [
+__all__: FlextTypes.Core.StringList = [
     "FlextOracleWmsApiCategory",
     "FlextOracleWmsApiEndpoint",
     "FlextOracleWmsApiResponse",

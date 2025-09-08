@@ -2,9 +2,19 @@
 
 Re-exports helper utilities from the consolidated operations module so
 legacy imports `flext_oracle_wms.helpers` continue to function.
+
+
+Copyright (c) 2025 FLEXT Team. All rights reserved.
+SPDX-License-Identifier: MIT
 """
 
 from __future__ import annotations
+
+"""
+Copyright (c) 2025 FLEXT Team. All rights reserved.
+SPDX-License-Identifier: MIT
+"""
+
 
 from .wms_operations import (
     flext_oracle_wms_build_entity_url,

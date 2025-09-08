@@ -1,3 +1,11 @@
+"""Copyright (c) 2025 FLEXT Team. All rights reserved.
+SPDX-License-Identifier: MIT.
+"""
+
+from __future__ import annotations
+
+from flext_core import FlextTypes
+
 """Oracle WMS Constants - Consolidated Constants and Enums.
 
 Copyright (c) 2025 FLEXT Contributors
@@ -7,7 +15,6 @@ Consolidated constants extending flext-core platform constants.
 This module consolidates all Oracle WMS-specific constants, enums, and default values.
 """
 
-from __future__ import annotations
 
 from enum import StrEnum
 from typing import ClassVar, Literal
@@ -45,7 +52,7 @@ class FlextOracleWmsSemanticConstants(FlextConstants):
         """API configuration constants."""
 
         # API versions
-        VERSIONS: ClassVar[list[str]] = ["v10", "v9", "v8"]
+        VERSIONS: ClassVar[FlextTypes.Core.StringList] = ["v10", "v9", "v8"]
         DEFAULT_VERSION: Literal["v10"] = "v10"
 
         # Base paths
@@ -69,36 +76,36 @@ class FlextOracleWmsSemanticConstants(FlextConstants):
     class Authentication:
         """Authentication configuration constants."""
 
-        METHODS: ClassVar[list[str]] = ["basic", "bearer", "api_key"]
+        METHODS: ClassVar[FlextTypes.Core.StringList] = ["basic", "bearer", "api_key"]
         MIN_TOKEN_LENGTH = 10
         MIN_API_KEY_LENGTH = 10
 
     class Entities:
         """Oracle WMS entity type constants."""
 
-        CORE_ENTITIES: ClassVar[list[str]] = [
+        CORE_ENTITIES: ClassVar[FlextTypes.Core.StringList] = [
             "company",
             "facility",
             "location",
             "item",
         ]
 
-        ORDER_ENTITIES: ClassVar[list[str]] = [
+        ORDER_ENTITIES: ClassVar[FlextTypes.Core.StringList] = [
             "order_hdr",
             "order_dtl",
         ]
 
-        INVENTORY_ENTITIES: ClassVar[list[str]] = [
+        INVENTORY_ENTITIES: ClassVar[FlextTypes.Core.StringList] = [
             "inventory",
             "allocation",
         ]
 
-        MOVEMENT_ENTITIES: ClassVar[list[str]] = [
+        MOVEMENT_ENTITIES: ClassVar[FlextTypes.Core.StringList] = [
             "pick_hdr",
             "pick_dtl",
         ]
 
-        SHIPMENT_ENTITIES: ClassVar[list[str]] = [
+        SHIPMENT_ENTITIES: ClassVar[FlextTypes.Core.StringList] = [
             "shipment",
             "oblpn",
         ]
@@ -110,7 +117,7 @@ class FlextOracleWmsSemanticConstants(FlextConstants):
     class Filtering:
         """Data filtering constants."""
 
-        OPERATORS: ClassVar[list[str]] = [
+        OPERATORS: ClassVar[FlextTypes.Core.StringList] = [
             "eq",
             "ne",
             "gt",
@@ -128,7 +135,7 @@ class FlextOracleWmsSemanticConstants(FlextConstants):
     class Pagination:
         """Pagination configuration constants."""
 
-        MODES: ClassVar[list[str]] = ["offset", "cursor", "token"]
+        MODES: ClassVar[FlextTypes.Core.StringList] = ["offset", "cursor", "token"]
         DEFAULT_PAGE_SIZE = 100
         MAX_PAGE_SIZE = 1000
         MIN_PAGE_SIZE = 1
@@ -136,7 +143,12 @@ class FlextOracleWmsSemanticConstants(FlextConstants):
     class Processing:
         """Data processing configuration constants."""
 
-        WRITE_MODES: ClassVar[list[str]] = ["insert", "update", "upsert", "delete"]
+        WRITE_MODES: ClassVar[FlextTypes.Core.StringList] = [
+            "insert",
+            "update",
+            "upsert",
+            "delete",
+        ]
         DEFAULT_BATCH_SIZE = 50
         MAX_BATCH_SIZE = 500
 
@@ -429,7 +441,7 @@ FlextOracleWmsResponseFields = FlextOracleWmsSemanticConstants.ResponseFields
 # EXPORTS
 # =============================================================================
 
-__all__: list[str] = [
+__all__: FlextTypes.Core.StringList = [
     "FlextOracleWmsApiPaths",
     "FlextOracleWmsApiVersion",
     "FlextOracleWmsConstants",

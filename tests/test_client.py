@@ -1,4 +1,8 @@
-"""Simple focused tests for FlextOracleWmsClient - high coverage without complex mocking."""
+"""Simple focused tests for FlextOracleWmsClient - high coverage without complex mocking.
+
+Copyright (c) 2025 FLEXT Team. All rights reserved.
+SPDX-License-Identifier: MIT
+"""
 
 from flext_oracle_wms import FlextOracleWmsClient, FlextOracleWmsModuleConfig
 

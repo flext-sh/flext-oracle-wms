@@ -36,6 +36,10 @@ Validation Testing:
 Author: FLEXT Development Team
 Version: 0.9.0
 License: MIT
+
+
+Copyright (c) 2025 FLEXT Team. All rights reserved.
+SPDX-License-Identifier: MIT
 """
 
 from flext_oracle_wms import (

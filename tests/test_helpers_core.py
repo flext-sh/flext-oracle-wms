@@ -1,6 +1,10 @@
 """Comprehensive unit tests for Oracle WMS helpers module - targeting 90%+ coverage.
 
 Based on working code patterns and real Oracle WMS URL structures.
+
+
+Copyright (c) 2025 FLEXT Team. All rights reserved.
+SPDX-License-Identifier: MIT
 """
 
 import pytest

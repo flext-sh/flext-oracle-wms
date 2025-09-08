@@ -1,4 +1,8 @@
-"""Test Oracle WMS dynamic schema processing functionality."""
+"""Test Oracle WMS dynamic schema processing functionality.
+
+Copyright (c) 2025 FLEXT Team. All rights reserved.
+SPDX-License-Identifier: MIT
+"""
 
 import pytest
 

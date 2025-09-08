@@ -9,6 +9,10 @@ This test file provides extensive coverage for discovery.py, focusing on:
 - Strategy and Command pattern implementations
 
 Target: Increase discovery.py coverage from 15% to 85%+
+
+
+Copyright (c) 2025 FLEXT Team. All rights reserved.
+SPDX-License-Identifier: MIT
 """
 
 import math

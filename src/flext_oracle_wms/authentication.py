@@ -2,9 +2,19 @@
 
 Provides legacy import path `flext_oracle_wms.authentication` by re-exporting
 authentication components from the consolidated client module `wms_client`.
+
+
+Copyright (c) 2025 FLEXT Team. All rights reserved.
+SPDX-License-Identifier: MIT
 """
 
 from __future__ import annotations
+
+"""
+Copyright (c) 2025 FLEXT Team. All rights reserved.
+SPDX-License-Identifier: MIT
+"""
+
 
 import inspect
 
