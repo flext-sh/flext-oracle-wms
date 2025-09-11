@@ -1,21 +1,14 @@
-"""Copyright (c) 2025 FLEXT Team. All rights reserved.
-SPDX-License-Identifier: MIT.
-"""
-
-from __future__ import annotations
-
-from flext_core import FlextTypes
-
 """Oracle WMS Operations - Consolidated Data Operations and Utilities.
 
-Copyright (c) 2025 FLEXT Contributors
-SPDX-License-Identifier: MIT
+Copyright (c) 2025 FLEXT Team. All rights reserved.
+SPDX-License-Identifier: MIT.
 
 Consolidated Oracle WMS operations including filtering, flattening, helper functions,
 and plugin implementation. This module combines filtering.py + flattening.py +
 helpers.py + plugin_implementation.py into unified operations.
 """
 
+from __future__ import annotations
 
 import re
 from collections.abc import Callable, Mapping
@@ -24,7 +17,7 @@ from datetime import UTC, datetime
 from logging import Logger
 from urllib.parse import urljoin, urlparse
 
-from flext_core import FlextLogger, FlextResult
+from flext_core import FlextLogger, FlextResult, FlextTypes
 
 from flext_oracle_wms.wms_constants import (
     FlextOracleWmsDefaults,
@@ -377,8 +370,8 @@ def flext_oracle_wms_chunk_records(
 
 
 @dataclass
-class FlextOracleWmsFilter:
-    """Oracle WMS advanced filtering implementation."""
+class FlextOracleWmsFilterConfig:
+    """Oracle WMS advanced filtering configuration."""
 
     filters: TOracleWmsFilters
     max_conditions: int = 50  # FlextOracleWmsDefaults.MAX_FILTER_CONDITIONS
@@ -495,28 +488,44 @@ class FlextOracleWmsFilter:
     def _op_greater_than(self, field_value: object, filter_value: object) -> bool:
         """Greater than operator."""
         try:
-            return field_value > filter_value
+            if isinstance(field_value, (int, float)) and isinstance(
+                filter_value, (int, float)
+            ):
+                return field_value > filter_value
+            return False
         except (TypeError, ValueError):
             return False
 
     def _op_greater_equal(self, field_value: object, filter_value: object) -> bool:
         """Greater than or equal operator."""
         try:
-            return field_value >= filter_value
+            if isinstance(field_value, (int, float)) and isinstance(
+                filter_value, (int, float)
+            ):
+                return field_value >= filter_value
+            return False
         except (TypeError, ValueError):
             return False
 
     def _op_less_than(self, field_value: object, filter_value: object) -> bool:
         """Less than operator."""
         try:
-            return field_value < filter_value
+            if isinstance(field_value, (int, float)) and isinstance(
+                filter_value, (int, float)
+            ):
+                return field_value < filter_value
+            return False
         except (TypeError, ValueError):
             return False
 
     def _op_less_equal(self, field_value: object, filter_value: object) -> bool:
         """Less than or equal operator."""
         try:
-            return field_value <= filter_value
+            if isinstance(field_value, (int, float)) and isinstance(
+                filter_value, (int, float)
+            ):
+                return field_value <= filter_value
+            return False
         except (TypeError, ValueError):
             return False
 

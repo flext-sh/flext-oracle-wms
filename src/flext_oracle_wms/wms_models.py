@@ -1,27 +1,20 @@
-"""Copyright (c) 2025 FLEXT Team. All rights reserved.
-SPDX-License-Identifier: MIT.
-"""
-
-from __future__ import annotations
-
-from flext_core import FlextTypes
-
 """Oracle WMS Models - Consolidated Data Models and Types.
 
-Copyright (c) 2025 FLEXT Contributors
-SPDX-License-Identifier: MIT
+Copyright (c) 2025 FLEXT Team. All rights reserved.
+SPDX-License-Identifier: MIT.
 
 Consolidated Oracle WMS data models, type definitions, and entity structures.
 This module combines models.py + types.py + core entities from api_catalog.py
 into a single unified data model system.
 """
 
+from __future__ import annotations
 
 from dataclasses import dataclass, field
 from enum import StrEnum
 from typing import Annotated, Literal, TypedDict
 
-from flext_core import FlextModels, FlextResult
+from flext_core import FlextModels, FlextResult, FlextTypes
 from pydantic import Field, StringConstraints
 
 from flext_oracle_wms.wms_constants import (
@@ -141,8 +134,11 @@ class FlextOracleWmsEntity(FlextModels):
             )
 
         if validation_errors:
+            error_messages = [
+                str(error) for error in validation_errors if error is not None
+            ]
             return FlextResult[None].fail(
-                f"{FlextOracleWmsErrorMessages.ENTITY_VALIDATION_FAILED}: {'; '.join(validation_errors)}",
+                f"{FlextOracleWmsErrorMessages.ENTITY_VALIDATION_FAILED}: {'; '.join(error_messages)}",
             )
         return FlextResult[None].ok(None)
 

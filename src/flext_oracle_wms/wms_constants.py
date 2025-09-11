@@ -1,25 +1,18 @@
-"""Copyright (c) 2025 FLEXT Team. All rights reserved.
-SPDX-License-Identifier: MIT.
-"""
-
-from __future__ import annotations
-
-from flext_core import FlextTypes
-
 """Oracle WMS Constants - Consolidated Constants and Enums.
 
-Copyright (c) 2025 FLEXT Contributors
-SPDX-License-Identifier: MIT
+Copyright (c) 2025 FLEXT Team. All rights reserved.
+SPDX-License-Identifier: MIT.
 
 Consolidated constants extending flext-core platform constants.
 This module consolidates all Oracle WMS-specific constants, enums, and default values.
 """
 
+from __future__ import annotations
 
 from enum import StrEnum
 from typing import ClassVar, Literal
 
-from flext_core import FlextConstants
+from flext_core import FlextConstants, FlextTypes
 
 """Constants and enums for Oracle WMS module.
 
@@ -335,7 +328,7 @@ class OracleWMSPageMode(StrEnum):
 
     OFFSET = "offset"
     CURSOR = "cursor"
-    TOKEN = "token"
+    TOKEN = "token"  # noqa: S105
 
 
 class OracleWMSWriteMode(StrEnum):

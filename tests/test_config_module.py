@@ -39,8 +39,9 @@ def test_config_creation() -> None:
         base_url="https://example.com",
         username="test_user",
         password="test_pass",
+        environment="development",
     )
-    assert str(config.base_url) == "https://example.com/"
+    assert str(config.base_url) == "https://example.com"
     assert config.username == "test_user"
     assert config.password == "test_pass"
 
@@ -51,10 +52,11 @@ def test_config_defaults() -> None:
         base_url="https://example.com",
         username="test_user",
         password="test_pass",
+        environment="development",
     )
     assert config.timeout_seconds == 30
     assert config.batch_size == 100
-    assert config.max_retries == 3
+    assert config.retries == 3
     assert config.enable_cache is True
 
 
@@ -64,14 +66,15 @@ def test_config_custom_values() -> None:
         base_url="https://example.com",
         username="test_user",
         password="test_pass",
+        environment="development",
         timeout_seconds=60,
         batch_size=50,
-        max_retries=5,
+        retries=5,
         enable_cache=False,
     )
     assert config.timeout_seconds == 60
     assert config.batch_size == 50
-    assert config.max_retries == 5
+    assert config.retries == 5
     assert config.enable_cache is False
 
 
@@ -81,6 +84,7 @@ def test_config_validation_success() -> None:
         base_url="https://example.com",
         username="test_user",
         password="test_pass",
+        environment="development",
     )
     # Configuration is valid if it can be created without errors
     assert config.username == "test_user"
@@ -93,9 +97,10 @@ def test_config_from_dict() -> None:
         base_url="https://example.com",
         username="test_user",
         password="test_pass",
+        environment="development",
         timeout_seconds=45,
     )
-    assert str(config.base_url) == "https://example.com/"
+    assert str(config.base_url) == "https://example.com"
     assert config.username == "test_user"
     assert config.timeout_seconds == 45
 
@@ -114,6 +119,7 @@ def test_config_url_validation() -> None:
         base_url="https://example.com",
         username="test_user",
         password="test_pass",
+        environment="development",
     )
     # Should not raise an exception
     assert str(config.base_url).startswith("https://")
@@ -125,6 +131,7 @@ def test_config_batch_size_validation() -> None:
         base_url="https://example.com",
         username="test_user",
         password="test_pass",
+        environment="development",
         batch_size=1000,
     )
     assert config.batch_size == 1000
@@ -136,6 +143,7 @@ def test_config_timeout_validation() -> None:
         base_url="https://example.com",
         username="test_user",
         password="test_pass",
+        environment="development",
         timeout_seconds=120,
     )
     assert config.timeout_seconds == 120
@@ -147,6 +155,7 @@ def test_config_str_representation() -> None:
         base_url="https://example.com",
         username="test_user",
         password="test_pass",
+        environment="development",
     )
     config_str = str(config)
     assert "example.com" in config_str
@@ -159,11 +168,13 @@ def test_config_equality() -> None:
         base_url="https://example.com",
         username="test_user",
         password="test_pass",
+        environment="development",
     )
     config2 = FlextOracleWmsModuleConfig(
         base_url="https://example.com",
         username="test_user",
         password="test_pass",
+        environment="development",
     )
     # They should have the same values
     assert config1.base_url == config2.base_url

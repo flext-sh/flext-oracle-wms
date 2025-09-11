@@ -300,8 +300,13 @@ def demonstrate_configuration_patterns() -> None:
 
 def main() -> None:
     """Main function demonstrating Oracle WMS configuration patterns."""
-    with contextlib.suppress(Exception):
+    try:
         demonstrate_configuration_patterns()
+        print("Configuration examples completed successfully")
+        print("Environment configuration created successfully")
+        print("Configuration is valid and ready for use")
+    except Exception as e:
+        print(f"Configuration example failed: {e}")
 
 
 if __name__ == "__main__":

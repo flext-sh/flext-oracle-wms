@@ -42,7 +42,7 @@ class OracleWmsCompleteDiscovery:
             base_url="https://ta29.wms.ocs.oraclecloud.com",
             username="USER_WMS_INTEGRA",  # ADMINISTRATOR TOTAL
             password="jmCyS7BK94YvhS@",
-            environment="raizen_test",
+            environment="test",
             timeout=120.0,  # Increased for complete discovery
             max_retries=5,
             api_version=FlextOracleWmsApiVersion.LGF_V10,
@@ -134,7 +134,6 @@ class OracleWmsCompleteDiscovery:
     async def _test_data_extract_api(
         self,
         api_name: str,
-        endpoint: FlextOracleWmsApiEndpoint,
     ) -> FlextResult[object]:
         """Test data extraction APIs."""
         try:

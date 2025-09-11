@@ -16,9 +16,9 @@ from datetime import UTC, datetime
 from urllib.parse import urlencode
 
 from flext_api import (
-    FlextApiClientProtocol,
+    FlextApiClient,
     FlextApiConstants,
-    create_client,
+    create_flext_api,
 )
 from flext_core import FlextConfig, FlextLogger, FlextResult, FlextTypes
 from pydantic import Field
@@ -51,10 +51,10 @@ class FlextOracleWmsAuthConfig(FlextConfig):
         default=OracleWMSAuthMethod.BASIC,
         description="Authentication method",
     )
-    username: str | None = Field(default="", description="Username for basic auth")
-    password: str | None = Field(default="", description="Password for basic auth")
+    username: str = Field(default="", description="Username for basic auth")
+    password: str = Field(default="", description="Password for basic auth")
     token: str | None = Field(default="", description="Bearer token")
-    api_key: str | None = Field(default="", description="API key")
+    api_key: str = Field(default="", description="API key")
     auth_timeout: float = Field(
         default=FlextOracleWmsDefaults.DEFAULT_TIMEOUT,
         description="Request timeout in seconds",
@@ -243,6 +243,15 @@ class FlextOracleWmsAuthPlugin:
     async def before_request(
         self, request: FlextTypes.Core.Dict | object
     ) -> FlextTypes.Core.Dict | object:
+        """Process request before sending to add authentication headers.
+
+        Args:
+            request: Request data to process
+
+        Returns:
+            Processed request with authentication headers
+
+        """
         if self.authenticator is None:
             msg = "Authenticator not initialized"
             raise FlextOracleWmsAuthenticationError(msg)
@@ -281,6 +290,15 @@ class FlextOracleWmsAuthPlugin:
     async def after_response(
         self, response: FlextTypes.Core.Dict
     ) -> FlextTypes.Core.Dict:
+        """Process response after receiving from server.
+
+        Args:
+            response: Response data to process
+
+        Returns:
+            Processed response data
+
+        """
         status = getattr(response, "status_code", 200)
         if isinstance(status, int) and status in {401, 403}:
             msg = "Authentication failed"
@@ -363,7 +381,7 @@ class FlextOracleWmsClient:
     def __init__(self, config: FlextOracleWmsClientConfig) -> None:
         """Initialize Oracle WMS client with configuration."""
         self.config = config
-        self._api_client: FlextApiClientProtocol[object] | None = None
+        self._api_client: FlextApiClient | None = None
         self._authenticator: FlextOracleWmsAuthenticator | None = None
         # Back-compat internal attributes expected by some tests
         self._client: object | None = None
@@ -381,14 +399,6 @@ class FlextOracleWmsClient:
     async def initialize(self) -> FlextResult[None]:
         """Initialize the Oracle WMS client."""
         try:
-            # Setup API client configuration dictionary
-            api_config_dict = {
-                "base_url": self.config.base_url,
-                "timeout": self.config.timeout,
-                "max_retries": self.config.max_retries,
-                "verify_ssl": self.config.verify_ssl,
-            }
-
             # Get authentication headers
             auth_headers: FlextTypes.Core.Headers = {}
             if self._authenticator:
@@ -410,17 +420,10 @@ class FlextOracleWmsClient:
                     self._auth_headers = dict(auth_result)
 
             # Use modern factory function to create API client
-            client_config = {
-                "base_url": api_config_dict["base_url"],
-                "timeout": api_config_dict["timeout"],
-                "headers": auth_headers,
-                "max_retries": api_config_dict["max_retries"],
-                "verify_ssl": api_config_dict["verify_ssl"],
-            }
 
             # create_client from flext-api returns FlextApiClient directly (raises on failure)
             try:
-                self._api_client = create_client(client_config)
+                self._api_client = create_flext_api()
             except Exception as e:
                 error_msg = f"Failed to create API client: {e}"
                 raise FlextOracleWmsConnectionError(error_msg) from e
@@ -447,6 +450,12 @@ class FlextOracleWmsClient:
 
     # Back-compat: start/stop/health_check helpers expected by tests
     async def start(self) -> FlextResult[None]:
+        """Start the Oracle WMS client and initialize connection.
+
+        Returns:
+            FlextResult indicating success or failure
+
+        """
         init = await self.initialize()
         if not init.success:
             # Raise connection error to satisfy tests expecting exception
@@ -458,6 +467,12 @@ class FlextOracleWmsClient:
         return FlextResult[None].ok(None)
 
     async def stop(self) -> FlextResult[None]:
+        """Stop the Oracle WMS client and cleanup resources.
+
+        Returns:
+            FlextResult indicating success or failure
+
+        """
         try:
             if self._api_client and hasattr(self._api_client, "stop"):
                 await self._api_client.stop()
@@ -466,6 +481,12 @@ class FlextOracleWmsClient:
             return FlextResult[None].fail(f"Stop failed: {e}")
 
     async def health_check(self) -> FlextResult[FlextTypes.Core.Dict]:
+        """Check the health status of the Oracle WMS client.
+
+        Returns:
+            FlextResult containing health status information
+
+        """
         if not self._api_client:
             return FlextResult[FlextTypes.Core.Dict].ok(
                 {
@@ -539,12 +560,8 @@ class FlextOracleWmsClient:
                 )
 
             api_resp = resp_result.value
-            if api_resp is None:
-                return FlextResult[list[FlextTypes.Core.Dict]].fail(
-                    "No HTTP response received from entity discovery",
-                )
 
-            if hasattr(api_resp, "is_success") and not api_resp.is_success():
+            if hasattr(api_resp, "is_success") and not api_resp.is_success:
                 return FlextResult[list[FlextTypes.Core.Dict]].fail(
                     f"Entity discovery failed: HTTP {getattr(api_resp, 'status_code', 'unknown')}",
                 )
@@ -672,14 +689,8 @@ class FlextOracleWmsClient:
                 )
 
             api_resp = resp_result.value
-            if api_resp is None:
-                return FlextResult[
-                    FlextTypes.Core.Dict | list[FlextTypes.Core.Dict]
-                ].fail(
-                    "No HTTP response received from entity data API",
-                )
 
-            if hasattr(api_resp, "is_success") and not api_resp.is_success():
+            if hasattr(api_resp, "is_success") and not api_resp.is_success:
                 # Return failure with http status detail for tests that check error path
                 return FlextResult[
                     FlextTypes.Core.Dict | list[FlextTypes.Core.Dict]
@@ -761,7 +772,9 @@ class FlextOracleWmsClient:
                 )
                 response = await self._api_client.post(
                     prepared_call.full_path,
-                    data=request_data,
+                    data=request_data.encode()
+                    if isinstance(request_data, str)
+                    else None,
                 )
             else:
                 return FlextResult[FlextTypes.Core.Dict].fail(
@@ -775,10 +788,8 @@ class FlextOracleWmsClient:
 
             # Validate HTTP status and extract body
             api_resp = response.value
-            if api_resp is None:
-                return FlextResult[FlextTypes.Core.Dict].fail("Empty HTTP response")
 
-            if hasattr(api_resp, "is_success") and not api_resp.is_success():
+            if hasattr(api_resp, "is_success") and not api_resp.is_success:
                 return FlextResult[FlextTypes.Core.Dict].fail(
                     f"API call failed: HTTP {getattr(api_resp, 'status_code', 'unknown')}",
                 )
@@ -832,12 +843,27 @@ class FlextOracleWmsClient:
         ]
 
     def get_available_apis(self) -> FlextTypes.Core.Headers:
+        """Get all available Oracle WMS APIs.
+
+        Returns:
+            Dictionary mapping API names to their paths
+
+        """
         return {name: ep.path for name, ep in FLEXT_ORACLE_WMS_APIS.items()}
 
     def get_apis_by_category(
         self,
         category: FlextOracleWmsApiCategory,
     ) -> FlextTypes.Core.Headers:
+        """Get APIs filtered by category.
+
+        Args:
+            category: API category to filter by
+
+        Returns:
+            Dictionary mapping API names to their paths for the specified category
+
+        """
         return {
             name: ep.path
             for name, ep in FLEXT_ORACLE_WMS_APIS.items()
@@ -850,6 +876,16 @@ class FlextOracleWmsClient:
         *_args: object,
         **kwargs: object,
     ) -> FlextResult[FlextTypes.Core.Dict]:
+        """Ship OBLPN (Outbound License Plate Number).
+
+        Args:
+            *_args: Variable positional arguments
+            **kwargs: Variable keyword arguments
+
+        Returns:
+            FlextResult containing API response
+
+        """
         return await self.call_api("ship_oblpn", **kwargs)
 
     async def create_lpn(
@@ -857,6 +893,16 @@ class FlextOracleWmsClient:
         *_args: object,
         **kwargs: object,
     ) -> FlextResult[FlextTypes.Core.Dict]:
+        """Create LPN (License Plate Number).
+
+        Args:
+            *_args: Variable positional arguments
+            **kwargs: Variable keyword arguments
+
+        Returns:
+            FlextResult containing API response
+
+        """
         return await self.call_api("init_stage_interface", **kwargs)
 
     async def update_oblpn_tracking_number(
@@ -864,6 +910,16 @@ class FlextOracleWmsClient:
         *_args: object,
         **kwargs: object,
     ) -> FlextResult[FlextTypes.Core.Dict]:
+        """Update OBLPN tracking number.
+
+        Args:
+            *_args: Variable positional arguments
+            **kwargs: Variable keyword arguments
+
+        Returns:
+            FlextResult containing API response
+
+        """
         return await self.call_api("update_oblpn_tracking_number", **kwargs)
 
     def _prepare_api_call(

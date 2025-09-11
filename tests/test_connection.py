@@ -11,7 +11,7 @@ import sys
 
 from flext_core import FlextLogger
 
-from flext_oracle_wms import FlextOracleWmsClient
+from flext_oracle_wms import FlextOracleWmsClient, FlextOracleWmsModuleConfig
 
 # Setup logging
 logging.basicConfig(
@@ -26,8 +26,6 @@ def test_real_connection() -> bool:
     try:
         # Use test configuration instead of loading from environment
         logger.info("Loading Oracle WMS test configuration...")
-        from flext_oracle_wms import FlextOracleWmsModuleConfig
-
         config = FlextOracleWmsModuleConfig.for_testing()
 
         logger.info("Configuration loaded:")

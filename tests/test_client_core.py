@@ -10,11 +10,13 @@ SPDX-License-Identifier: MIT
 from unittest.mock import AsyncMock, patch
 
 import pytest
-from flext_core import FlextResult
+from flext_core import FlextLogger, FlextResult, FlextTypes
 
 from flext_oracle_wms import (
     FlextOracleWmsClient,
     FlextOracleWmsClientConfig,
+    FlextOracleWmsConnectionError,
+    FlextOracleWmsError,
 )
 
 
@@ -79,8 +81,6 @@ class TestFlextOracleWmsClientCore:
         self, mock_config: FlextOracleWmsClientConfig
     ) -> None:
         """Test client startup failure."""
-        from flext_oracle_wms import FlextOracleWmsConnectionError
-
         with patch("flext_oracle_wms.client.FlextApiClient") as mock_api_client_class:
             mock_api_client = AsyncMock()
             mock_api_client.start.return_value = FlextResult[None].fail(
@@ -346,8 +346,6 @@ class TestFlextOracleWmsClientCore:
 
     def test_client_error_handling_invalid_config(self) -> None:
         """Test client creation with invalid config."""
-        from flext_oracle_wms import FlextOracleWmsError
-
         # Client validates config and raises FlextOracleWmsError for None
         with pytest.raises(FlextOracleWmsError):
             FlextOracleWmsClient(None)
@@ -426,12 +424,10 @@ class TestGetLogger:
 
     def test_get_logger_module_name(self) -> None:
         """Test logger creation with module name."""
-        from flext_oracle_wms import FlextLogger
-
         logger = FlextLogger("test_module")
         assert hasattr(logger, "info")  # Check it's a logger
         assert hasattr(logger, "error")  # Check it has expected methods
 
-        # Test with None
-        logger_none = FlextLogger(None)
-        assert callable(logger_none.info)  # Check it's functional
+        # Test with empty string
+        logger_empty = FlextLogger("")
+        assert callable(logger_empty.info)  # Check it's functional

@@ -5,6 +5,7 @@ SPDX-License-Identifier: MIT
 """
 
 import pytest
+from flext_core import FlextTypes
 
 from flext_oracle_wms import (
     FlextOracleWmsDataFlattener,
@@ -43,12 +44,11 @@ class TestFlextOracleWmsDataFlattener:
             "status": "active",
         }
 
-        result = await flattener.flatten_records([record])
-        assert result.success
-        assert result.data is not None
-        assert len(result.data) == 1
-        assert result.data[0]["id"] == "123"
-        assert result.data[0]["name"] == "Test Item"
+        result = flattener.flatten_records([record])
+        assert isinstance(result, list)
+        assert len(result) == 1
+        assert result[0]["id"] == "123"
+        assert result[0]["name"] == "Test Item"
 
     @pytest.mark.asyncio
     async def test_flatten_nested_record(self) -> None:
@@ -62,11 +62,11 @@ class TestFlextOracleWmsDataFlattener:
             },
         }
 
-        result = await flattener.flatten_records([record])
-        assert result.success
-        assert result.data is not None
-        assert len(result.data) == 1
-        flattened = result.data[0]
+        result = flattener.flatten_records([record])
+        assert isinstance(result, list)
+        assert result is not None
+        assert len(result) == 1
+        flattened = result[0]
         assert flattened["id"] == "123"
         assert flattened["details_name"] == "Test Item"
         assert flattened["details_category_id"] == "cat1"
@@ -87,7 +87,7 @@ class TestFlextOracleWmsDataFlattener:
         assert result.success
         assert result.data is not None
         assert len(result.data) == 1
-        unflattened = result.data[0]
+        unflattened = result[0]
         assert unflattened["id"] == "123"
         # Note: Current implementation uses dot notation, not the original nested structure
 
@@ -140,10 +140,9 @@ class TestFlattenerErrorHandling:
         """Test flattening empty records list."""
         flattener = FlextOracleWmsDataFlattener()
 
-        result = await flattener.flatten_records([])
-        assert result.success
-        assert result.data is not None
-        assert len(result.data) == 0
+        result = flattener.flatten_records([])
+        assert isinstance(result, list)
+        assert len(result) == 0
 
     @pytest.mark.asyncio
     async def test_unflatten_empty_records(self) -> None:

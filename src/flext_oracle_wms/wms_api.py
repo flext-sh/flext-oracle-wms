@@ -1,31 +1,15 @@
-"""Copyright (c) 2025 FLEXT Team. All rights reserved.
+"""Oracle WMS API - Consolidated API Catalog and Mock Server.
+
+Copyright (c) 2025 FLEXT Team. All rights reserved.
 SPDX-License-Identifier: MIT.
 """
 
 from __future__ import annotations
 
-from flext_core import FlextTypes
-
-"""Oracle WMS API - Consolidated API Catalog and Mock Server.
-
-Copyright (c) 2025 FLEXT Contributors
-SPDX-License-Identifier: MIT
-
-Consolidated Oracle WMS API definitions and mock server functionality.
-This module combines api_catalog.py + mock_server.py into unified API management.
-
-Features:
-- Complete Oracle WMS Cloud API endpoint catalog
-- Realistic mock server for testing and development
-- Type-safe API definitions with comprehensive validation
-- Enterprise integration patterns with FLEXT ecosystem
-"""
-
-
 from datetime import UTC, datetime
 from uuid import uuid4
 
-from flext_core import FlextLogger, FlextResult
+from flext_core import FlextLogger, FlextResult, FlextTypes
 
 from flext_oracle_wms.wms_models import (
     FlextOracleWmsApiCategory,

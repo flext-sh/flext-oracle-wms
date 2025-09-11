@@ -5,6 +5,7 @@ SPDX-License-Identifier: MIT
 """
 
 import pytest
+from pydantic import ValidationError
 
 from flext_oracle_wms import FlextOracleWmsApiVersion, FlextOracleWmsClientConfig
 
@@ -16,7 +17,7 @@ def test_config_creation_valid() -> None:
         base_url="https://ta29.wms.ocs.oraclecloud.com/raizen_test",
         username="USER_WMS_INTEGRA",
         password="test_password",
-        environment="test",
+        environment="development",
         api_version=FlextOracleWmsApiVersion.LGF_V10,
         timeout=30.0,
         max_retries=3,
@@ -42,7 +43,7 @@ def test_config_validation_success() -> None:
         base_url="https://test.wms.oraclecloud.com/test",
         username="test_user",
         password="test_password",
-        environment="test",
+        environment="development",
         api_version=FlextOracleWmsApiVersion.LGF_V10,
         timeout=30.0,
         max_retries=3,
@@ -62,7 +63,7 @@ def test_config_validation_invalid_url() -> None:
         base_url="invalid-url-without-protocol",
         username="test_user",
         password="test_password",
-        environment="test",
+        environment="development",
         api_version=FlextOracleWmsApiVersion.LGF_V10,
         timeout=30.0,
         max_retries=3,
@@ -82,7 +83,7 @@ def test_config_validation_empty_username() -> None:
         base_url="https://test.wms.oraclecloud.com/test",
         username="",
         password="test_password",
-        environment="test",
+        environment="development",
         api_version=FlextOracleWmsApiVersion.LGF_V10,
         timeout=30.0,
         max_retries=3,
@@ -102,7 +103,7 @@ def test_config_validation_empty_password() -> None:
         base_url="https://test.wms.oraclecloud.com/test",
         username="test_user",
         password="",
-        environment="test",
+        environment="development",
         api_version=FlextOracleWmsApiVersion.LGF_V10,
         timeout=30.0,
         max_retries=3,
@@ -118,14 +119,12 @@ def test_config_validation_empty_password() -> None:
 @pytest.mark.unit
 def test_config_validation_invalid_timeout() -> None:
     """Test config validation with invalid timeout."""
-    from pydantic import ValidationError
-
     with pytest.raises(ValidationError) as exc_info:
         FlextOracleWmsClientConfig(
             base_url="https://test.wms.oraclecloud.com/test",
             username="test_user",
             password="test_password",
-            environment="test",
+            environment="development",
             api_version=FlextOracleWmsApiVersion.LGF_V10,
             timeout=-1,  # Invalid negative timeout
             max_retries=3,
@@ -147,7 +146,7 @@ def test_config_validation_invalid_retries() -> None:
         base_url="https://test.wms.oraclecloud.com/test",
         username="test_user",
         password="test_password",
-        environment="test",
+        environment="development",
         api_version=FlextOracleWmsApiVersion.LGF_V10,
         timeout=30.0,
         max_retries=-1,  # Invalid negative retries

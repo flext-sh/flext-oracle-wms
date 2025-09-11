@@ -177,7 +177,7 @@ pytest -m "oracle_wms" -v
 # Complete validation for this module
 make validate               # Lint + type + security + test
 make lint
-make type-check             # MyPy strict mode
+make type-check           
 make security               # Bandit + pip-audit security scanning
 ```
 

@@ -1,15 +1,7 @@
-"""Copyright (c) 2025 FLEXT Team. All rights reserved.
-SPDX-License-Identifier: MIT.
-"""
-
-from __future__ import annotations
-
-from flext_core import FlextTypes
-
 """Oracle WMS Configuration - Consolidated Configuration Management.
 
-Copyright (c) 2025 FLEXT Contributors
-SPDX-License-Identifier: MIT
+Copyright (c) 2025 FLEXT Team. All rights reserved.
+SPDX-License-Identifier: MIT.
 
 Enterprise configuration management for Oracle WMS integrations.
 This module provides unified configuration management for all Oracle WMS operations,
@@ -17,18 +9,37 @@ eliminating duplication between tap and target implementations.
 Implements flext-core unified configuration standards.
 """
 
+from __future__ import annotations
 
 import os
 from pathlib import Path
 from typing import ClassVar, NewType
 from urllib.parse import urlparse
 
+try:
+    from dotenv import load_dotenv
+except ImportError:
+    from os import PathLike
+    from typing import IO
+
+    def load_dotenv(
+        dotenv_path: str | PathLike[str] | None = None,  # noqa: ARG001
+        stream: IO[str] | None = None,  # noqa: ARG001
+        verbose: bool = False,  # noqa: ARG001, FBT001, FBT002
+        override: bool = False,  # noqa: ARG001, FBT001, FBT002
+        interpolate: bool = True,  # noqa: ARG001, FBT001, FBT002
+        encoding: str | None = None,  # noqa: ARG001
+    ) -> bool:
+        return False
+
+
 from flext_core import (
     FlextConfig,
     FlextLogger,
     FlextResult,
+    FlextTypes,
 )
-from pydantic import Field, HttpUrl, field_validator
+from pydantic import Field, field_validator
 from pydantic_settings import SettingsConfigDict
 
 from flext_oracle_wms.wms_constants import FlextOracleWmsApiVersion
@@ -135,6 +146,8 @@ class FlextOracleWmsClientConfig(FlextConfig):
                     environment = "test"
                 elif parsed_env == "local":
                     environment = "local"
+                elif parsed_env in {"raizen_test", "test_env"}:
+                    environment = "test"
                 else:
                     environment = "development"
         except (ValueError, TypeError, AttributeError, IndexError):
@@ -159,7 +172,7 @@ class FlextOracleWmsModuleConfig(FlextConfig):
     """Enterprise Oracle WMS configuration using modern Pydantic patterns.
 
     Simplified configuration management for Oracle WMS integration operations
-    with proper type safety and validation, following SOLID principles.
+    with proper type safety and validation,
     """
 
     model_config: ClassVar[SettingsConfigDict] = SettingsConfigDict(
@@ -173,9 +186,9 @@ class FlextOracleWmsModuleConfig(FlextConfig):
         str_strip_whitespace=True,
     )
     # === Oracle WMS API Configuration (additional to WMSConfigMixin) ===
-    base_url: HttpUrl = Field(
-        default_factory=lambda: HttpUrl("https://example.oraclecloud.com"),
-        description="Oracle WMS base URL (e.g., https://ta29.wms.ocs.oraclecloud.com/raizen_test)",
+    base_url: str = Field(
+        default="https://test.example.com",
+        description="Oracle WMS base URL (e.g., https://ta29.wms.ocs.oraclecloud.com/test)",
     )
     api_version: str = Field(
         default="v10",
@@ -244,6 +257,10 @@ class FlextOracleWmsModuleConfig(FlextConfig):
         description="Batch size for API requests",
     )
     # Note: max_retries is inherited from FlextConfig (as retries)
+    retries: int = Field(
+        default=3,
+        description="Maximum retry attempts",
+    )
     retry_delay: float = Field(
         default=1.0,
         description="Delay between retry attempts in seconds",
@@ -257,16 +274,12 @@ class FlextOracleWmsModuleConfig(FlextConfig):
     # Note: environment is inherited from FlextConfig
 
     # === Compatibility Properties ===
-    @property
-    def max_retries(self) -> int:
-        """Compatibility property for max_retries access."""
-        return self.retries
 
     @field_validator("base_url")
     @classmethod
-    def validate_base_url(cls, v: HttpUrl) -> HttpUrl:
+    def validate_base_url(cls, v: str) -> str:
         """Validate Oracle WMS base URL format."""
-        url_str = str(v)
+        url_str = v
         if not url_str.startswith(("http://", "https://")):
             invalid_protocol_msg: str = f"Invalid Oracle WMS base URL: {url_str} (must start with http:// or https://)"
             raise ValueError(invalid_protocol_msg)
@@ -358,9 +371,7 @@ class FlextOracleWmsModuleConfig(FlextConfig):
         """Create configuration from environment file."""
         # Note: BaseSettings uses model_config.env_file, not constructor param
         # For dynamic env files, temporarily load into environment
-        if Path(env_file).exists():
-            from dotenv import load_dotenv
-
+        if Path(env_file).exists() and load_dotenv is not None:
             load_dotenv(env_file)
         return cls()
 
@@ -370,12 +381,12 @@ class FlextOracleWmsModuleConfig(FlextConfig):
         return cls(
             project_name="flext-oracle-wms-test",
             environment="test",
-            base_url=HttpUrl("https://test.example.com"),
+            base_url="https://test.example.com",
             username="test_user",
             password=os.environ.get("FLEXT_ORACLE_WMS_TEST_PASSWORD", "test_password"),
             batch_size=10,  # Using composition mixin field
             timeout_seconds=5,  # Using composition mixin field
-            retries=1,  # Using composition mixin field
+            retries=1,
             enable_request_logging=True,
             verify_ssl=False,
         )

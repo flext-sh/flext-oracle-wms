@@ -208,5 +208,5 @@ def test_imports_and_modules() -> None:
     assert isinstance(config, FlextOracleWmsModuleConfig)
 
     # Test plugin class
-    plugin = FlextOracleWmsPlugin()
+    plugin = FlextOracleWmsPlugin(name="test-plugin")
     assert isinstance(plugin, FlextOracleWmsPlugin)

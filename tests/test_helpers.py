@@ -10,6 +10,7 @@ SPDX-License-Identifier: MIT
 import pytest
 
 from flext_oracle_wms import (
+    FlextOracleWmsDataValidationError,
     flext_oracle_wms_build_entity_url,
     flext_oracle_wms_chunk_records,
     flext_oracle_wms_extract_environment_from_url,
@@ -42,43 +43,41 @@ class TestValidationHelpers:
 
     def test_validate_records_list_invalid(self) -> None:
         """Test records list validation with invalid input."""
-        from flext_oracle_wms import FlextOracleWmsDataValidationError
-
-        with pytest.raises(FlextOracleWmsDataValidationError):
-            validate_records_list("not_a_list")
+        result = validate_records_list("not_a_list")
+        assert result.is_failure
+        assert "must be a list" in result.error
 
     def test_validate_dict_parameter_valid(self) -> None:
         """Test dict parameter validation with valid input."""
         param = {"key": "value"}
-        # Should not raise exception
-        validate_dict_parameter(param, "test_field")
+        result = validate_dict_parameter(param, "test_field")
+        assert result.success
+        assert result.value is True
 
     def test_validate_dict_parameter_invalid(self) -> None:
         """Test dict parameter validation with invalid input."""
-        from flext_oracle_wms import FlextOracleWmsDataValidationError
-
-        with pytest.raises((TypeError, ValueError, FlextOracleWmsDataValidationError)):
-            validate_dict_parameter("not_a_dict", "test_field")
+        result = validate_dict_parameter("not_a_dict", "test_field")
+        assert result.is_failure
+        assert "must be a dictionary" in result.error
 
     def test_validate_string_parameter_valid(self) -> None:
         """Test string parameter validation with valid input."""
         param = "valid_string"
-        # Should not raise exception
-        validate_string_parameter(param, "test_field")
+        result = validate_string_parameter(param, "test_field")
+        assert result.success
+        assert result.value is True
 
     def test_validate_string_parameter_empty(self) -> None:
         """Test string parameter validation with empty string."""
-        from flext_oracle_wms import FlextOracleWmsDataValidationError
-
-        with pytest.raises(FlextOracleWmsDataValidationError):
-            validate_string_parameter("", "test_field")
+        result = validate_string_parameter("", "test_field")
+        assert result.is_failure
+        assert "must be a non-empty string" in result.error
 
     def test_validate_string_parameter_invalid(self) -> None:
         """Test string parameter validation with invalid input."""
-        from flext_oracle_wms import FlextOracleWmsDataValidationError
-
-        with pytest.raises(FlextOracleWmsDataValidationError):
-            validate_string_parameter(None, "test_field")
+        result = validate_string_parameter(None, "test_field")
+        assert result.is_failure
+        assert "must be a string" in result.error
 
 
 @pytest.mark.unit

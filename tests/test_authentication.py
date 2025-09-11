@@ -166,7 +166,7 @@ class TestAuthenticationConfig:
         assert config.password == ""
         assert config.token == ""
         assert config.api_key == ""
-        assert config.timeout > 0
+        assert config.auth_timeout > 0
 
     def test_config_string_representation(self) -> None:
         """Test config string representation."""

@@ -4,7 +4,12 @@ Copyright (c) 2025 FLEXT Team. All rights reserved.
 SPDX-License-Identifier: MIT
 """
 
-from flext_oracle_wms import FlextOracleWmsClient, FlextOracleWmsModuleConfig
+from flext_oracle_wms import (
+    FlextOracleWmsClient,
+    FlextOracleWmsModuleConfig,
+    flext_oracle_wms_build_entity_url,
+    flext_oracle_wms_validate_entity_name,
+)
 
 
 class TestClientSimpleNew:
@@ -41,8 +46,6 @@ class TestClientSimpleNew:
 
     def test_validate_entity_name_valid(self) -> None:
         """Test entity name validation with valid names."""
-        from flext_oracle_wms import flext_oracle_wms_validate_entity_name
-
         # Test with common WMS entity name
         result = flext_oracle_wms_validate_entity_name("order_hdr")
         assert result.success
@@ -50,8 +53,6 @@ class TestClientSimpleNew:
 
     def test_validate_entity_name_invalid(self) -> None:
         """Test entity name validation with invalid names."""
-        from flext_oracle_wms import flext_oracle_wms_validate_entity_name
-
         # Test with invalid entity name
         result = flext_oracle_wms_validate_entity_name("")
         assert result.is_failure
@@ -59,8 +60,6 @@ class TestClientSimpleNew:
 
     def test_build_api_url_basic(self) -> None:
         """Test basic URL building using helper function."""
-        from flext_oracle_wms import flext_oracle_wms_build_entity_url
-
         url = flext_oracle_wms_build_entity_url(
             "https://test.wms.com",
             "prod",
@@ -72,8 +71,6 @@ class TestClientSimpleNew:
 
     def test_build_api_url_with_version(self) -> None:
         """Test URL building with API version using helper function."""
-        from flext_oracle_wms import flext_oracle_wms_build_entity_url
-
         url = flext_oracle_wms_build_entity_url(
             "https://test.wms.com",
             "prod",
@@ -225,8 +222,6 @@ class TestClientSimpleNew:
 
     def test_validate_entity_name_edge_cases(self) -> None:
         """Test entity name validation edge cases."""
-        from flext_oracle_wms import flext_oracle_wms_validate_entity_name
-
         # Test with special chars should fail
         result = flext_oracle_wms_validate_entity_name("order@hdr")
         assert result.is_failure
@@ -248,8 +243,6 @@ class TestClientSimpleNew:
 
     def test_build_api_url_edge_cases(self) -> None:
         """Test URL building edge cases using helper function."""
-        from flext_oracle_wms import flext_oracle_wms_build_entity_url
-
         # Test with different entity
         url = flext_oracle_wms_build_entity_url(
             "https://test.wms.com",

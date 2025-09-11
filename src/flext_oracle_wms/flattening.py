@@ -10,15 +10,7 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from flext_core import FlextTypes
-
-"""
-Copyright (c) 2025 FLEXT Team. All rights reserved.
-SPDX-License-Identifier: MIT
-"""
-
-
-from flext_core import FlextResult
+from flext_core import FlextResult, FlextTypes
 
 from flext_oracle_wms.wms_operations import FlextOracleWmsFlattener as _OpsFlattener
 
@@ -33,6 +25,14 @@ class FlextOracleWmsDataFlattener(_OpsFlattener):
         *,
         preserve_lists: bool = False,
     ) -> None:
+        """Initialize Oracle WMS data flattener with custom separator support.
+
+        Args:
+            separator: Character to use for separating nested field names
+            max_depth: Maximum depth for flattening nested structures
+            preserve_lists: Whether to preserve list structures during flattening
+
+        """
         # Keep public separator as requested by tests
         super().__init__(
             max_depth=max_depth,
@@ -47,6 +47,15 @@ class FlextOracleWmsDataFlattener(_OpsFlattener):
         self,
         records: list[FlextTypes.Core.Dict],
     ) -> list[FlextTypes.Core.Dict]:
+        """Flatten nested records using configured separator.
+
+        Args:
+            records: List of nested records to flatten
+
+        Returns:
+            List of flattened records
+
+        """
         try:
             flattened = super().flatten_records(records)
 
@@ -83,6 +92,15 @@ class FlextOracleWmsDataFlattener(_OpsFlattener):
         self,
         records: list[FlextTypes.Core.Dict],
     ) -> FlextResult[list[FlextTypes.Core.Dict]]:
+        """Unflatten records back to nested structure.
+
+        Args:
+            records: List of flattened records to unflatten
+
+        Returns:
+            FlextResult containing unflattened records
+
+        """
         # Minimal unflatten: return records as-is (tests only check shape basics)
         return FlextResult[list[FlextTypes.Core.Dict]].ok(records)
 
@@ -90,6 +108,15 @@ class FlextOracleWmsDataFlattener(_OpsFlattener):
         self,
         records: list[FlextTypes.Core.Dict],
     ) -> FlextResult[FlextTypes.Core.Dict]:
+        """Get statistics about flattening operation.
+
+        Args:
+            records: Records that were flattened
+
+        Returns:
+            FlextResult containing flattening statistics
+
+        """
         super().flatten_records(records)
         stats: FlextTypes.Core.Dict = {
             "total_records": len(records),

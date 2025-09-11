@@ -9,6 +9,7 @@ from pathlib import Path
 from typing import cast
 
 import pytest
+from dotenv import load_dotenv
 from flext_core import FlextTypes
 
 from flext_oracle_wms import (
@@ -21,8 +22,6 @@ from flext_oracle_wms import (
 def load_test_env() -> bool:
     """Load test environment - EXACTLY like working basic_usage.py example."""
     try:
-        from dotenv import load_dotenv
-
         project_root = Path(__file__).parent.parent
         env_file = project_root / ".env"
         if env_file.exists():

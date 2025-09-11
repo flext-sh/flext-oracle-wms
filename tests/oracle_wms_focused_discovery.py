@@ -1,9 +1,7 @@
-"""Copyright (c) 2025 FLEXT Team. All rights reserved.
-SPDX-License-Identifier: MIT.
-"""
-
-# !/usr/bin/env python3
 """Oracle WMS Focused Discovery - ADMINISTRATOR Mode.
+
+Copyright (c) 2025 FLEXT Team. All rights reserved.
+SPDX-License-Identifier: MIT.
 
 FOCUSED STRATEGY:
 1. Use ADMINISTRATOR credentials for complete access
@@ -40,7 +38,7 @@ class FocusedOracleWmsDiscovery:
             base_url="https://ta29.wms.ocs.oraclecloud.com",
             username="USER_WMS_INTEGRA",  # ADMINISTRATOR TOTAL
             password="jmCyS7BK94YvhS@",
-            environment="raizen_test",
+            environment="test",
             timeout=30.0,
             max_retries=2,
             api_version=FlextOracleWmsApiVersion.LGF_V10,
@@ -360,7 +358,6 @@ class FocusedOracleWmsDiscovery:
     def _oracle_field_to_singer_type(
         self,
         field_name: str,
-        python_type: str,
         sample_value: object,
         entity_name: str,
     ) -> FlextTypes.Core.Dict:

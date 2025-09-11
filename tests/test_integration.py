@@ -10,12 +10,24 @@ Copyright (c) 2025 FLEXT Team. All rights reserved.
 SPDX-License-Identifier: MIT
 """
 
+import asyncio
 import os
+import subprocess
+import sys
 from pathlib import Path
 
 import pytest
+from dotenv import load_dotenv
+from flext_core import FlextTypes
 
-from flext_oracle_wms import FlextOracleWmsClient, FlextOracleWmsClientConfig
+from flext_oracle_wms import (
+    FlextOracleWmsApiVersion,
+    FlextOracleWmsClient,
+    FlextOracleWmsClientConfig,
+)
+
+# Load environment variables from .env file
+load_dotenv()
 
 
 class TestRealOracleWMSIntegration:
@@ -25,8 +37,6 @@ class TestRealOracleWMSIntegration:
     def setup_class(cls) -> None:
         """Load real environment for integration tests."""
         try:
-            from dotenv import load_dotenv
-
             project_root = Path(__file__).parent.parent
             env_file = project_root / ".env"
             if env_file.exists():
@@ -57,8 +67,6 @@ class TestRealOracleWMSIntegration:
 
     def test_real_client_configuration(self) -> None:
         """Test that client configuration works with real environment."""
-        from flext_oracle_wms import FlextOracleWmsApiVersion
-
         config = FlextOracleWmsClientConfig(
             base_url=os.getenv("ORACLE_WMS_BASE_URL"),
             username=os.getenv("ORACLE_WMS_USERNAME"),
@@ -84,8 +92,6 @@ class TestRealOracleWMSIntegration:
         # Skip if no environment
         if not os.getenv("ORACLE_WMS_BASE_URL"):
             pytest.skip("No real Oracle WMS environment configured")
-
-        from flext_oracle_wms import FlextOracleWmsApiVersion
 
         config = FlextOracleWmsClientConfig(
             base_url=os.getenv("ORACLE_WMS_BASE_URL"),
@@ -137,8 +143,6 @@ class TestRealOracleWMSIntegration:
         if not os.getenv("ORACLE_WMS_BASE_URL"):
             pytest.skip("No real Oracle WMS environment configured")
 
-        from flext_oracle_wms import FlextOracleWmsApiVersion
-
         config = FlextOracleWmsClientConfig(
             base_url=os.getenv("ORACLE_WMS_BASE_URL"),
             username=os.getenv("ORACLE_WMS_USERNAME"),
@@ -174,8 +178,6 @@ class TestRealOracleWMSIntegration:
         if not os.getenv("ORACLE_WMS_BASE_URL"):
             pytest.skip("No real Oracle WMS environment configured")
 
-        from flext_oracle_wms import FlextOracleWmsApiVersion
-
         config = FlextOracleWmsClientConfig(
             base_url=os.getenv("ORACLE_WMS_BASE_URL"),
             username=os.getenv("ORACLE_WMS_USERNAME"),
@@ -203,8 +205,6 @@ class TestRealOracleWMSIntegration:
 
     def test_real_api_catalog_availability(self) -> None:
         """Test that API catalog has real Oracle WMS endpoints."""
-        from flext_oracle_wms import FlextOracleWmsApiVersion
-
         config = FlextOracleWmsClientConfig(
             base_url="https://test.example.com",  # Dummy URL for catalog test
             username="test",
@@ -237,9 +237,6 @@ class TestExamplesIntegration:
 
     def test_basic_usage_example_works(self) -> None:
         """Test that basic_usage.py actually executes successfully."""
-        import asyncio
-        import sys
-
         # Run basic_usage.py as subprocess to validate it works
         async def _run(
             cmd_list: FlextTypes.Core.StringList,
@@ -256,7 +253,7 @@ class TestExamplesIntegration:
 
         rc, out, err = asyncio.run(
             _run(
-                [sys.executable, "examples/basic_usage.py"],
+                [sys.executable, "examples/01_basic_usage.py"],
                 cwd="/home/marlonsc/flext/flext-oracle-wms",
             ),
         )
@@ -273,9 +270,6 @@ class TestExamplesIntegration:
     def test_configuration_example_works(self) -> None:
         """Test that 02_configuration.py now works after refactoring."""
         # Run 02_configuration.py to test it works
-        import subprocess
-        import sys
-
         result = subprocess.run(
             [sys.executable, "examples/02_configuration.py"],
             check=False,

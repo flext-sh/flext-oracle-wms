@@ -11,17 +11,9 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from flext_core import FlextTypes
-
-"""
-Copyright (c) 2025 FLEXT Team. All rights reserved.
-SPDX-License-Identifier: MIT
-"""
-
-
 import re
 
-from flext_core import FlextLogger, FlextResult
+from flext_core import FlextLogger, FlextResult, FlextTypes
 
 from flext_oracle_wms.wms_constants import (
     FlextOracleWmsDefaults,
@@ -31,17 +23,25 @@ from flext_oracle_wms.wms_exceptions import (
     FlextOracleWmsDataValidationError,
     FlextOracleWmsError,
 )
-from flext_oracle_wms.wms_operations import FlextOracleWmsFilter as _OpsFilter
+
+# Import base classes from flext-core instead of creating circular dependency
 
 logger = FlextLogger(__name__)
 
 
-class FlextOracleWmsFilter(_OpsFilter):
+class FlextOracleWmsFilter:
     """Oracle WMS filter with case sensitivity and validation."""
 
     def __init__(
         self, *, case_sensitive: bool = False, max_conditions: int = 50
     ) -> None:
+        """Initialize Oracle WMS filter with case sensitivity and validation.
+
+        Args:
+            case_sensitive: Whether string comparisons should be case sensitive
+            max_conditions: Maximum number of filter conditions allowed
+
+        """
         if max_conditions <= 0:
             msg = "max_conditions must be positive"
             raise FlextOracleWmsError(msg)
@@ -100,6 +100,17 @@ class FlextOracleWmsFilter(_OpsFilter):
         filters: FlextTypes.Core.Dict,
         limit: int | None = None,
     ) -> FlextResult[list[FlextTypes.Core.Dict]]:
+        """Filter records with additional options like limit.
+
+        Args:
+            records: List of records to filter
+            filters: Filter conditions to apply
+            limit: Optional limit on number of results
+
+        Returns:
+            FlextResult containing filtered records
+
+        """
         count_result = self._validate_filter_conditions_total(filters)
         if count_result.is_failure:
             return FlextResult[list[FlextTypes.Core.Dict]].fail(
@@ -120,6 +131,17 @@ class FlextOracleWmsFilter(_OpsFilter):
         *,
         ascending: bool = True,
     ) -> FlextResult[list[FlextTypes.Core.Dict]]:
+        """Sort records by specified field.
+
+        Args:
+            records: List of records to sort
+            sort_field: Field name to sort by
+            ascending: Whether to sort in ascending order
+
+        Returns:
+            FlextResult containing sorted records
+
+        """
         try:
 
             def key_func(record: FlextTypes.Core.Dict) -> str:

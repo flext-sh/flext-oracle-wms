@@ -8,11 +8,13 @@ Copyright (c) 2025 FLEXT Team. All rights reserved.
 SPDX-License-Identifier: MIT
 """
 
+import asyncio
 from collections.abc import AsyncGenerator
 from pathlib import Path
+from urllib.parse import urlparse
 
 import pytest
-import structlog
+from flext_core import FlextLogger, FlextTypes
 
 from flext_oracle_wms import (
     FLEXT_ORACLE_WMS_APIS,
@@ -22,7 +24,7 @@ from flext_oracle_wms import (
     FlextOracleWmsClientConfig,
 )
 
-logger = structlog.FlextLogger(__name__)
+logger = FlextLogger(__name__)
 
 # ==============================================================================
 # TEST CONFIGURATION AND FIXTURES
@@ -39,6 +41,12 @@ def find_env_file() -> Path | None:
         if env_path.exists():
             return env_path
         current_dir = current_dir.parent
+
+    # Also check project root directly
+    project_root = Path(__file__).parent.parent
+    env_path = project_root / ".env"
+    if env_path.exists():
+        return env_path
 
     return None
 
@@ -67,8 +75,6 @@ def load_env_config() -> FlextTypes.Core.Dict | None:
         if base_url:
             try:
                 # Extract the last path component as environment
-                from urllib.parse import urlparse
-
                 parsed = urlparse(base_url)
                 path_parts = parsed.path.strip("/").split("/")
                 if path_parts and path_parts[-1]:
@@ -97,7 +103,7 @@ def load_env_config() -> FlextTypes.Core.Dict | None:
 
 
 @pytest.fixture
-def env_config() -> FlextTypes.Core.Dict | None:
+def env_config() -> FlextTypes.Core.Dict:
     """Fixture that provides .env configuration or skips test."""
     config = load_env_config()
     if not config or not all(
@@ -452,8 +458,6 @@ class TestPerformanceIntegration:
         oracle_wms_client: FlextOracleWmsClient,
     ) -> None:
         """Test concurrent requests to different entities."""
-        import asyncio
-
         entities = ["company", "facility", "item"]
 
         # Create concurrent requests

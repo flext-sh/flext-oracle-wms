@@ -23,7 +23,7 @@ import asyncio
 import os
 from pathlib import Path
 
-from flext_core import FlextResult
+from flext_core import FlextResult, FlextTypes
 
 from flext_oracle_wms import (
     FlextOracleWmsApiVersion,

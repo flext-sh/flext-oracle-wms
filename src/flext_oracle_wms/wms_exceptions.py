@@ -1,25 +1,18 @@
-"""Copyright (c) 2025 FLEXT Team. All rights reserved.
-SPDX-License-Identifier: MIT.
-"""
-
-from __future__ import annotations
-
-from flext_core import FlextTypes
-
 """Oracle WMS Exceptions - Consolidated Exception Hierarchy.
 
-Copyright (c) 2025 FLEXT Contributors
-SPDX-License-Identifier: MIT
+Copyright (c) 2025 FLEXT Team. All rights reserved.
+SPDX-License-Identifier: MIT.
 
 Enterprise-grade exception hierarchy for Oracle WMS operations with explicit
 class definitions for type safety. This module consolidates all Oracle WMS-specific
 exceptions into a single coherent hierarchy compatible with MyPy static analysis.
 """
 
+from __future__ import annotations
 
 import contextlib
 
-from flext_core import FlextExceptions
+from flext_core import FlextExceptions, FlextTypes
 
 
 class FlextOracleWmsError(FlextExceptions.BaseError):
@@ -36,6 +29,14 @@ class FlextOracleWmsError(FlextExceptions.BaseError):
         code: str | None = None,
         context: FlextTypes.Core.Dict | None = None,
     ) -> None:
+        """Initialize Oracle WMS error with context.
+
+        Args:
+            message: Error message
+            code: Optional error code
+            context: Optional context dictionary
+
+        """
         super().__init__(message, code=code, context=context or {})
         # Attach context keys as attributes for convenient access in tests
         for key, value in (context or {}).items():
@@ -60,6 +61,13 @@ class FlextOracleWmsConfigurationError(FlextOracleWmsError):
     """
 
     def __init__(self, message: str = "Config error", **kwargs: object) -> None:
+        """Initialize configuration error.
+
+        Args:
+            message: Error message
+            **kwargs: Additional context parameters
+
+        """
         super().__init__(message, context=kwargs or {})
 
 
@@ -76,6 +84,13 @@ class FlextOracleWmsConnectionError(FlextOracleWmsError):
     """
 
     def __init__(self, message: str = "Connection failed", **kwargs: object) -> None:
+        """Initialize connection error.
+
+        Args:
+            message: Error message
+            **kwargs: Additional context parameters
+
+        """
         # Ensure string representation uses [CONNECTION_ERROR] as tests expect
         super().__init__(message, context=kwargs or {})
 

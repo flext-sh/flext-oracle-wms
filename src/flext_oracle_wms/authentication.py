@@ -10,12 +10,6 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-"""
-Copyright (c) 2025 FLEXT Team. All rights reserved.
-SPDX-License-Identifier: MIT
-"""
-
-
 import inspect
 
 from flext_core import FlextResult
@@ -33,10 +27,10 @@ class FlextOracleWmsAuthConfig(_BaseAuthConfig):
     """FlextOracleWmsAuthConfig class."""
 
     # Override defaults to match test expectations for the legacy import path
-    username: str | None = Field(default=None, description="Username for basic auth")
-    password: str | None = Field(default=None, description="Password for basic auth")
+    username: str = Field(default="", description="Username for basic auth")
+    password: str = Field(default="", description="Password for basic auth")
     token: str | None = Field(default="", description="Bearer token")
-    api_key: str | None = Field(default=None, description="API key")
+    api_key: str = Field(default="", description="API key")
 
     def validate_business_rules(self) -> FlextResult[None]:
         """Validate business rules function.

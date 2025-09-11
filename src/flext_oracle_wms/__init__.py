@@ -4,7 +4,56 @@ Copyright (c) 2025 FLEXT Team. All rights reserved.
 SPDX-License-Identifier: MIT
 """
 
+from __future__ import annotations
+
+from flext_core import FlextTypes
+
+# WMS Dynamic Schema Processing
+from flext_oracle_wms.dynamic import (
+    flext_oracle_wms_create_dynamic_schema_processor,
+)
+
+# WMS Filtering - Filter operations
+from flext_oracle_wms.filtering import (
+    FlextOracleWmsFilter,
+    flext_oracle_wms_create_filter,
+    flext_oracle_wms_filter_by_field,
+    flext_oracle_wms_filter_by_id_range,
+)
+
+# WMS Flattening
+from flext_oracle_wms.flattening import (
+    FlextOracleWmsDataFlattener,
+    flext_oracle_wms_create_data_flattener,
+)
+
 # WMS Constants - Core constants and enums
+# WMS API - API catalog and mock server
+from flext_oracle_wms.wms_api import (
+    FLEXT_ORACLE_WMS_APIS,
+    OracleWmsMockServer,
+    get_mock_server,
+)
+
+# WMS Client - Client and authentication
+from flext_oracle_wms.wms_client import (
+    FlextOracleWmsAuthConfig,
+    FlextOracleWmsAuthenticator,
+    FlextOracleWmsAuthPlugin,
+    FlextOracleWmsClient,
+    FlextOracleWmsClientMock,
+    create_oracle_wms_client,
+    # REMOVED: Helper functions eliminated in favor of direct class usage
+)
+
+# WMS Configuration - Configuration management
+from flext_oracle_wms.wms_config import (
+    FlextOracleWmsClientConfig,
+    FlextOracleWmsModuleConfig,
+    WMSAPIVersion,
+    WMSRetryAttempts,
+    load_config,
+)
 from flext_oracle_wms.wms_constants import (
     FlextOracleWmsApiPaths,
     FlextOracleWmsConstants,
@@ -19,37 +68,20 @@ from flext_oracle_wms.wms_constants import (
     OracleWMSWriteMode,
 )
 
-# WMS Configuration - Configuration management
-from flext_oracle_wms.wms_config import (
-    FlextOracleWmsClientConfig,
-    FlextOracleWmsModuleConfig,
-    WMSAPIVersion,
-    WMSRetryAttempts,
-    load_config,
-)
-
-# WMS Models - Data models and types
-from flext_oracle_wms.wms_models import (
-    FlextOracleWmsApiCategory,
-    FlextOracleWmsApiEndpoint,
-    FlextOracleWmsApiResponse,
-    FlextOracleWmsApiVersion,
-    FlextOracleWmsDiscoveryResult,
-    FlextOracleWmsEntity,
-    TOracleWmsApiResponse,
-    TOracleWmsApiVersion,
-    TOracleWmsDiscoveryResult,
-    TOracleWmsEntityId,
-    TOracleWmsEntityInfo,
-    TOracleWmsEntityName,
-    TOracleWmsEnvironment,
-    TOracleWmsFilterValue,
-    TOracleWmsFilters,
-    TOracleWmsPaginationInfo,
-    TOracleWmsRecord,
-    TOracleWmsRecordBatch,
-    TOracleWmsSchema,
-    TOracleWmsTimeout,
+# WMS Discovery - Entity discovery and schema processing
+from flext_oracle_wms.wms_discovery import (
+    DISCOVERY_FAILURE,
+    DISCOVERY_SUCCESS,
+    DiscoveryContext,
+    EndpointDiscoveryStrategy,
+    EntityResponseParser,
+    FlextOracleWmsCacheConfig,
+    FlextOracleWmsCacheEntry,
+    FlextOracleWmsCacheManager,
+    FlextOracleWmsCacheStats,
+    FlextOracleWmsDynamicSchemaProcessor,
+    FlextOracleWmsEntityDiscovery,
+    # REMOVED: Helper functions eliminated in favor of direct class usage
 )
 
 # WMS Exceptions - Exception hierarchy
@@ -71,30 +103,34 @@ from flext_oracle_wms.wms_exceptions import (
     FlextOracleWmsValidationError,
 )
 
-# WMS Client - Client and authentication
-from flext_oracle_wms.wms_client import (
-    FlextOracleWmsAuthConfig,
-    FlextOracleWmsAuthPlugin,
-    FlextOracleWmsAuthenticator,
-    FlextOracleWmsClient,
-    FlextOracleWmsClientMock,
-    create_oracle_wms_client,
-    # REMOVED: Helper functions eliminated in favor of direct class usage
-)
-
-# WMS Discovery - Entity discovery and schema processing
-from flext_oracle_wms.wms_discovery import (
-    FlextOracleWmsCacheConfig,
-    FlextOracleWmsCacheManager,
-    FlextOracleWmsDynamicSchemaProcessor,
-    FlextOracleWmsEntityDiscovery,
-    # REMOVED: Helper functions eliminated in favor of direct class usage
+# WMS Models - Data models and types
+from flext_oracle_wms.wms_models import (
+    FlextOracleWmsApiCategory,
+    FlextOracleWmsApiEndpoint,
+    FlextOracleWmsApiResponse,
+    FlextOracleWmsApiVersion,
+    FlextOracleWmsDiscoveryResult,
+    FlextOracleWmsEntity,
+    TOracleWmsApiResponse,
+    TOracleWmsApiVersion,
+    TOracleWmsDiscoveryResult,
+    TOracleWmsEntityId,
+    TOracleWmsEntityInfo,
+    TOracleWmsEntityName,
+    TOracleWmsEnvironment,
+    TOracleWmsFilters,
+    TOracleWmsFilterValue,
+    TOracleWmsPaginationInfo,
+    TOracleWmsRecord,
+    TOracleWmsRecordBatch,
+    TOracleWmsSchema,
+    TOracleWmsTimeout,
 )
 
 # WMS Operations - Data operations and utilities
 from flext_oracle_wms.wms_operations import (
     FlextOracleWmsDataPlugin,
-    FlextOracleWmsFilter,
+    FlextOracleWmsFilterConfig,
     FlextOracleWmsFlattener,
     FlextOracleWmsPlugin,
     FlextOracleWmsPluginContext,
@@ -103,22 +139,15 @@ from flext_oracle_wms.wms_operations import (
     create_oracle_wms_plugin_registry,
     flext_oracle_wms_build_entity_url,
     flext_oracle_wms_chunk_records,
-    # REMOVED: flext_oracle_wms_create_filter (use FlextOracleWmsFilter directly)
     flext_oracle_wms_extract_environment_from_url,
     flext_oracle_wms_extract_pagination_info,
-    # REMOVED: flext_oracle_wms_filter_by_field (use FlextOracleWmsFilter directly)
-    # REMOVED: flext_oracle_wms_filter_by_id_range (use FlextOracleWmsFilter directly)
     flext_oracle_wms_format_timestamp,
     flext_oracle_wms_normalize_url,
     flext_oracle_wms_validate_api_response,
     flext_oracle_wms_validate_entity_name,
-)
-
-# WMS API - API catalog and mock server
-from flext_oracle_wms.wms_api import (
-    FLEXT_ORACLE_WMS_APIS,
-    OracleWmsMockServer,
-    get_mock_server,
+    validate_dict_parameter,
+    validate_records_list,
+    validate_string_parameter,
 )
 
 # Version information
@@ -131,33 +160,66 @@ __description__ = (
 
 
 __all__: FlextTypes.Core.StringList = [
-    # API Catalog
+    "DISCOVERY_FAILURE",
+    "DISCOVERY_SUCCESS",
     "FLEXT_ORACLE_WMS_APIS",
+    "DiscoveryContext",
+    "EndpointDiscoveryStrategy",
+    "EntityResponseParser",
     "FlextOracleWmsApiCategory",
     "FlextOracleWmsApiEndpoint",
-    "FlextOracleWmsApiVersion",
-    # Constants
+    "FlextOracleWmsApiError",
     "FlextOracleWmsApiPaths",
+    "FlextOracleWmsApiResponse",
+    "FlextOracleWmsApiVersion",
+    "FlextOracleWmsAuthConfig",
+    "FlextOracleWmsAuthPlugin",
+    "FlextOracleWmsAuthenticationError",
+    "FlextOracleWmsAuthenticator",
+    "FlextOracleWmsCacheConfig",
+    "FlextOracleWmsCacheEntry",
+    "FlextOracleWmsCacheManager",
+    "FlextOracleWmsCacheStats",
+    "FlextOracleWmsClient",
+    "FlextOracleWmsClientConfig",
+    "FlextOracleWmsClientMock",
+    "FlextOracleWmsConfigurationError",
+    "FlextOracleWmsConnectionError",
     "FlextOracleWmsConstants",
+    "FlextOracleWmsDataFlattener",
+    "FlextOracleWmsDataPlugin",
+    "FlextOracleWmsDataValidationError",
     "FlextOracleWmsDefaults",
+    "FlextOracleWmsDiscoveryResult",
+    "FlextOracleWmsDynamicSchemaProcessor",
+    "FlextOracleWmsEntity",
+    "FlextOracleWmsEntityDiscovery",
+    "FlextOracleWmsEntityNotFoundError",
+    "FlextOracleWmsError",
     "FlextOracleWmsErrorMessages",
+    "FlextOracleWmsFilter",
+    "FlextOracleWmsFilterConfig",
+    "FlextOracleWmsFlattener",
+    "FlextOracleWmsInventoryError",
+    "FlextOracleWmsModuleConfig",
+    "FlextOracleWmsPickingError",
+    "FlextOracleWmsPlugin",
+    "FlextOracleWmsPluginContext",
+    "FlextOracleWmsPluginRegistry",
+    "FlextOracleWmsProcessingError",
     "FlextOracleWmsResponseFields",
+    "FlextOracleWmsSchemaError",
+    "FlextOracleWmsSchemaFlatteningError",
     "FlextOracleWmsSemanticConstants",
+    "FlextOracleWmsShipmentError",
+    "FlextOracleWmsTimeoutError",
+    "FlextOracleWmsValidationError",
     "OracleWMSAuthMethod",
     "OracleWMSEntityType",
     "OracleWMSFilterOperator",
     "OracleWMSPageMode",
     "OracleWMSWriteMode",
-    # Configuration
-    "FlextOracleWmsClientConfig",
-    "FlextOracleWmsModuleConfig",
-    "WMSAPIVersion",
-    "WMSRetryAttempts",
-    "load_config",
-    # Models
-    "FlextOracleWmsApiResponse",
-    "FlextOracleWmsDiscoveryResult",
-    "FlextOracleWmsEntity",
+    "OracleWmsMockServer",
     "TOracleWmsApiResponse",
     "TOracleWmsApiVersion",
     "TOracleWmsDiscoveryResult",
@@ -172,64 +234,33 @@ __all__: FlextTypes.Core.StringList = [
     "TOracleWmsRecordBatch",
     "TOracleWmsSchema",
     "TOracleWmsTimeout",
-    # Exceptions
-    "FlextOracleWmsApiError",
-    "FlextOracleWmsAuthenticationError",
-    "FlextOracleWmsConfigurationError",
-    "FlextOracleWmsConnectionError",
-    "FlextOracleWmsDataValidationError",
-    "FlextOracleWmsEntityNotFoundError",
-    "FlextOracleWmsError",
-    "FlextOracleWmsInventoryError",
-    "FlextOracleWmsPickingError",
-    "FlextOracleWmsProcessingError",
-    "FlextOracleWmsSchemaError",
-    "FlextOracleWmsSchemaFlatteningError",
-    "FlextOracleWmsShipmentError",
-    "FlextOracleWmsTimeoutError",
-    "FlextOracleWmsValidationError",
-    # Authentication
-    "FlextOracleWmsAuthConfig",
-    "FlextOracleWmsAuthPlugin",
-    "FlextOracleWmsAuthenticator",
-    # Core Client
-    "FlextOracleWmsClient",
-    "FlextOracleWmsClientMock",
-    # Discovery and Cache
-    "FlextOracleWmsCacheConfig",
-    "FlextOracleWmsCacheManager",
-    "FlextOracleWmsDynamicSchemaProcessor",
-    "FlextOracleWmsEntityDiscovery",
-    # Data Operations
-    "FlextOracleWmsDataPlugin",
-    "FlextOracleWmsFilter",
-    "FlextOracleWmsFlattener",
-    "FlextOracleWmsPlugin",
-    "FlextOracleWmsPluginContext",
-    "FlextOracleWmsPluginRegistry",
-    # Mock Server
-    "OracleWmsMockServer",
-    "get_mock_server",
-    # Factory Functions
+    "WMSAPIVersion",
+    "WMSRetryAttempts",
+    "__author__",
+    "__description__",
+    "__version__",
+    "__version_info__",
     "create_oracle_wms_client",
     "create_oracle_wms_data_plugin",
     "create_oracle_wms_plugin_registry",
-    # REMOVED: Factory functions eliminated in favor of direct class usage
-    # Helper Functions
     "flext_oracle_wms_build_entity_url",
     "flext_oracle_wms_chunk_records",
+    "flext_oracle_wms_create_data_flattener",
+    "flext_oracle_wms_create_dynamic_schema_processor",
+    "flext_oracle_wms_create_filter",
     "flext_oracle_wms_extract_environment_from_url",
     "flext_oracle_wms_extract_pagination_info",
-    # REMOVED: Factory functions eliminated in favor of direct class usage
+    "flext_oracle_wms_filter_by_field",
+    "flext_oracle_wms_filter_by_id_range",
     "flext_oracle_wms_format_timestamp",
     "flext_oracle_wms_normalize_url",
     "flext_oracle_wms_validate_api_response",
     "flext_oracle_wms_validate_entity_name",
-    # Metadata
-    "__version__",
-    "__version_info__",
-    "__author__",
-    "__description__",
+    "get_mock_server",
+    "load_config",
+    "validate_dict_parameter",
+    "validate_records_list",
+    "validate_string_parameter",
 ]
 
 # -----------------------------------------------------------------------------

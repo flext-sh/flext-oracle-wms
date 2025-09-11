@@ -1,9 +1,7 @@
-"""Copyright (c) 2025 FLEXT Team. All rights reserved.
-SPDX-License-Identifier: MIT.
-"""
-
-# !/usr/bin/env python3
 """Oracle WMS Optimized Discovery - REAL Implementation.
+
+Copyright (c) 2025 FLEXT Team. All rights reserved.
+SPDX-License-Identifier: MIT.
 
 OPTIMIZED approach:
 1. Focus on high-priority entities first
@@ -19,7 +17,7 @@ import operator
 from datetime import UTC, datetime
 from pathlib import Path
 
-from flext_core import FlextLogger, FlextResult
+from flext_core import FlextLogger, FlextResult, FlextTypes
 
 from flext_oracle_wms import (
     FlextOracleWmsApiVersion,
@@ -39,7 +37,7 @@ class OptimizedOracleWmsDiscovery:
             base_url="https://ta29.wms.ocs.oraclecloud.com",
             username="USER_WMS_INTEGRA",  # ADMINISTRATOR TOTAL
             password="jmCyS7BK94YvhS@",
-            environment="raizen_test",
+            environment="test",
             timeout=60.0,
             max_retries=3,
             api_version=FlextOracleWmsApiVersion.LGF_V10,
@@ -170,7 +168,6 @@ class OptimizedOracleWmsDiscovery:
     async def _process_entity_batch(
         self,
         entities: FlextTypes.Core.StringList,
-        batch_name: str,
         batch_size: int = 10,
     ) -> FlextTypes.Core.Dict:
         """Process entity batch with parallel requests."""

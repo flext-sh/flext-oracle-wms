@@ -7,10 +7,10 @@ Copyright (c) 2025 FLEXT Team. All rights reserved.
 SPDX-License-Identifier: MIT
 """
 
+import base64
 from unittest.mock import patch
 
 import pytest
-from flext_api import FlextApiConstants
 from flext_core import FlextResult
 
 from flext_oracle_wms import (
@@ -228,8 +228,6 @@ class TestAuthenticator:
         assert headers["Authorization"].startswith("Basic ")
 
         # Decode and verify
-        import base64
-
         encoded_credentials = headers["Authorization"][6:]  # Remove "Basic "
         decoded = base64.b64decode(encoded_credentials).decode("utf-8")
         assert decoded == "test_user:test_password"
@@ -273,7 +271,7 @@ class TestAuthenticator:
 
         authenticator = FlextOracleWmsAuthenticator(config)
         custom_headers = {
-            "Content-Type": FlextApiConstants.ContentTypes.JSON,
+            "Content-Type": "application/json",
             "X-Custom": "value",
         }
 
