@@ -19,6 +19,8 @@ from dataclasses import dataclass
 from datetime import UTC, datetime
 from typing import TypeVar, cast
 
+from pydantic import Field
+
 from flext_api import FlextApiClient
 from flext_core import FlextConfig, FlextLogger, FlextModels, FlextResult, FlextTypes
 
@@ -46,15 +48,14 @@ DISCOVERY_SUCCESS = True
 DISCOVERY_FAILURE = False
 
 
-@dataclass(frozen=True)
 class FlextOracleWmsCacheConfig(FlextConfig):
     """Oracle WMS cache configuration using flext-core standards."""
 
-    default_ttl_seconds: int = 3600  # 1 hour
-    max_cache_entries: int = 1000
-    cleanup_interval_seconds: int = 300  # 5 minutes
-    enable_statistics: bool = True
-    enable_async_cleanup: bool = True
+    default_ttl_seconds: int = Field(default=3600, description="Default TTL in seconds")  # 1 hour
+    max_cache_entries: int = Field(default=1000, description="Maximum cache entries")
+    cleanup_interval_seconds: int = Field(default=300, description="Cleanup interval in seconds")  # 5 minutes
+    enable_statistics: bool = Field(default=True, description="Enable cache statistics")
+    enable_async_cleanup: bool = Field(default=True, description="Enable async cleanup")
 
     def validate_business_rules(self) -> FlextResult[None]:
         """Validate Oracle WMS cache configuration business rules."""
@@ -1080,7 +1081,9 @@ class FlextOracleWmsEntityDiscovery:
                 )
                 if response.success and response.value:
                     response_data = response.value
-                    names = response_data.get("entities") if hasattr(response_data, "get") else None
+                    names = None
+                    if isinstance(response_data.body, dict):
+                        names = response_data.body.get("entities")
                     if isinstance(names, list):
                         discovered_entities.extend(
                             FlextOracleWmsEntity(

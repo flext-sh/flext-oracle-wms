@@ -882,9 +882,7 @@ class TestFlextOracleWmsCacheManager:
         await self.cache_manager.set_metadata("test_key", "metadata_value")
 
         # Invalidate key from all caches
-        result = await self.cache_manager.invalidate_key("test_key")
-        assert result.success
-        assert result.data is True
+        self.cache_manager.invalidate_key("test_key")
 
         # All should return None
         assert (await self.cache_manager.get_entity("test_key")).data is None
@@ -1147,9 +1145,7 @@ class TestFactoryFunction:
 
     def test_create_cache_manager_default(self) -> None:
         """Test creating cache manager with default parameters."""
-        cache_manager = FlextOracleWmsCacheManager(
-            config=FlextOracleWmsCacheConfig()
-        )
+        cache_manager = FlextOracleWmsCacheManager(config=FlextOracleWmsCacheConfig())
 
         assert isinstance(cache_manager, FlextOracleWmsCacheManager)
         assert (

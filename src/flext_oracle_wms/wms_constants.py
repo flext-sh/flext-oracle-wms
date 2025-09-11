@@ -29,7 +29,7 @@ class FlextOracleWmsSemanticConstants(FlextConstants):
     values while maintaining full backward compatibility.
     """
 
-    class Core:
+    class OracleWmsCore:
         """Core Oracle WMS system constants."""
 
         NAME = "flext-oracle-wms"
@@ -37,7 +37,7 @@ class FlextOracleWmsSemanticConstants(FlextConstants):
         ECOSYSTEM_SIZE = 33
         DEFAULT_ENVIRONMENT = "default"
 
-    class Api:
+    class OracleWmsApi:
         """API configuration constants."""
 
         # API versions
@@ -69,7 +69,7 @@ class FlextOracleWmsSemanticConstants(FlextConstants):
         MIN_TOKEN_LENGTH = 10
         MIN_API_KEY_LENGTH = 10
 
-    class Entities:
+    class OracleWmsEntities:
         """Oracle WMS entity type constants."""
 
         CORE_ENTITIES: ClassVar[FlextTypes.Core.StringList] = [
@@ -328,7 +328,7 @@ class OracleWMSPageMode(StrEnum):
 
     OFFSET = "offset"
     CURSOR = "cursor"
-    TOKEN = "token"  # noqa: S105
+    PAGE_MARKER = "page_token"
 
 
 class OracleWMSWriteMode(StrEnum):
@@ -344,10 +344,10 @@ class FlextOracleWmsDefaults:
     """Default values for Oracle WMS operations (DEPRECATED - use FlextOracleWmsConstants)."""
 
     # API Configuration
-    DEFAULT_API_VERSION = FlextOracleWmsSemanticConstants.Api.DEFAULT_VERSION
-    DEFAULT_TIMEOUT = FlextOracleWmsSemanticConstants.Api.DEFAULT_TIMEOUT
-    DEFAULT_MAX_RETRIES = FlextOracleWmsSemanticConstants.Api.DEFAULT_MAX_RETRIES
-    DEFAULT_RETRY_DELAY = FlextOracleWmsSemanticConstants.Api.DEFAULT_RETRY_DELAY
+    DEFAULT_API_VERSION = FlextOracleWmsSemanticConstants.OracleWmsApi.DEFAULT_VERSION
+    DEFAULT_TIMEOUT = FlextOracleWmsSemanticConstants.OracleWmsApi.DEFAULT_TIMEOUT
+    DEFAULT_MAX_RETRIES = FlextOracleWmsSemanticConstants.OracleWmsApi.DEFAULT_MAX_RETRIES
+    DEFAULT_RETRY_DELAY = FlextOracleWmsSemanticConstants.OracleWmsApi.DEFAULT_RETRY_DELAY
 
     # Authentication
     MIN_TOKEN_LENGTH = FlextOracleWmsSemanticConstants.Authentication.MIN_TOKEN_LENGTH
@@ -391,9 +391,9 @@ class FlextOracleWmsDefaults:
 
     # Entity Validation
     MAX_ENTITY_NAME_LENGTH = (
-        FlextOracleWmsSemanticConstants.Entities.MAX_ENTITY_NAME_LENGTH
+        FlextOracleWmsSemanticConstants.OracleWmsEntities.MAX_ENTITY_NAME_LENGTH
     )
-    ENTITY_NAME_PATTERN = FlextOracleWmsSemanticConstants.Entities.ENTITY_NAME_PATTERN
+    ENTITY_NAME_PATTERN = FlextOracleWmsSemanticConstants.OracleWmsEntities.ENTITY_NAME_PATTERN
 
     # Filter Limits
     MAX_FILTER_CONDITIONS = (
@@ -401,18 +401,18 @@ class FlextOracleWmsDefaults:
     )
 
     # HTTP status codes
-    HTTP_OK = FlextOracleWmsSemanticConstants.Api.HTTP_OK
-    HTTP_BAD_REQUEST = FlextOracleWmsSemanticConstants.Api.HTTP_BAD_REQUEST
-    HTTP_UNAUTHORIZED = FlextOracleWmsSemanticConstants.Api.HTTP_UNAUTHORIZED
-    HTTP_FORBIDDEN = FlextOracleWmsSemanticConstants.Api.HTTP_FORBIDDEN
-    MIN_HTTP_STATUS_CODE = FlextOracleWmsSemanticConstants.Api.MIN_HTTP_STATUS_CODE
-    MAX_HTTP_STATUS_CODE = FlextOracleWmsSemanticConstants.Api.MAX_HTTP_STATUS_CODE
+    HTTP_OK = FlextOracleWmsSemanticConstants.OracleWmsApi.HTTP_OK
+    HTTP_BAD_REQUEST = FlextOracleWmsSemanticConstants.OracleWmsApi.HTTP_BAD_REQUEST
+    HTTP_UNAUTHORIZED = FlextOracleWmsSemanticConstants.OracleWmsApi.HTTP_UNAUTHORIZED
+    HTTP_FORBIDDEN = FlextOracleWmsSemanticConstants.OracleWmsApi.HTTP_FORBIDDEN
+    MIN_HTTP_STATUS_CODE = FlextOracleWmsSemanticConstants.OracleWmsApi.MIN_HTTP_STATUS_CODE
+    MAX_HTTP_STATUS_CODE = FlextOracleWmsSemanticConstants.OracleWmsApi.MAX_HTTP_STATUS_CODE
 
     # Core constants
-    DEFAULT_ENVIRONMENT = FlextOracleWmsSemanticConstants.Core.DEFAULT_ENVIRONMENT
+    DEFAULT_ENVIRONMENT = FlextOracleWmsSemanticConstants.OracleWmsCore.DEFAULT_ENVIRONMENT
 
     # Authentication status codes
-    AUTH_ERROR_CODES = FlextOracleWmsSemanticConstants.Api.AUTH_ERROR_CODES
+    AUTH_ERROR_CODES = FlextOracleWmsSemanticConstants.OracleWmsApi.AUTH_ERROR_CODES
 
 
 # Legacy class aliases for backward compatibility

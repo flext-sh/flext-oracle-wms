@@ -247,13 +247,7 @@ def flext_oracle_wms_validate_api_response(
     behavior expected by tests, where non-dict inputs trigger AttributeError/
     TypeError via attribute access (e.g., calling `.get` on non-dicts).
     """
-    # The following may raise AttributeError/TypeError if response_data
-    # is not a dict-like object; tests assert this behavior. Force an
-    # attribute access early to surface the expected exception types.
-    if not isinstance(response_data, dict):
-        # Force the error that tests expect
-        _ = getattr(response_data, "get", None)
-
+    # Validate response_data is a dictionary
     if not isinstance(response_data, dict):
         return FlextResult[FlextTypes.Core.Dict].fail(
             "Response data is not a dictionary"
@@ -748,7 +742,7 @@ def create_oracle_wms_plugin_registry() -> FlextOracleWmsPluginRegistry:
 __all__: FlextTypes.Core.StringList = [
     "FlextOracleWmsDataPlugin",
     # Filtering Operations
-    "FlextOracleWmsFilter",
+    "FlextOracleWmsFilterConfig",
     # Data Flattening
     "FlextOracleWmsFlattener",
     # Plugin Implementation

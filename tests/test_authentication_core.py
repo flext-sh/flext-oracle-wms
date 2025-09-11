@@ -66,9 +66,9 @@ class TestAuthenticationConfig:
 
         assert config.auth_type == OracleWMSAuthMethod.BEARER
         assert config.token == "bearer_token_123"
-        assert config.username is None
-        assert config.password is None
-        assert config.api_key is None
+        assert config.username == ""
+        assert config.password == ""
+        assert config.api_key == ""
 
     def test_api_key_auth_config_creation(self) -> None:
         """Test creating API key auth configuration."""
@@ -285,7 +285,7 @@ class TestAuthenticator:
         assert headers["X-Custom"] == "value"
 
     @pytest.mark.asyncio
-    async def test_validate_authentication_success(self) -> None:
+    async def test_validate_credentials_success(self) -> None:
         """Test successful authentication validation."""
         config = FlextOracleWmsAuthConfig(
             auth_type=OracleWMSAuthMethod.BASIC,
@@ -301,27 +301,23 @@ class TestAuthenticator:
                 {"status": "authenticated"}
             )
 
-            result = await authenticator.validate_authentication()
+            result = await authenticator.validate_credentials()
             assert result.success
 
     @pytest.mark.asyncio
-    async def test_validate_authentication_failure(self) -> None:
+    async def test_validate_credentials_failure(self) -> None:
         """Test authentication validation failure."""
         config = FlextOracleWmsAuthConfig(
             auth_type=OracleWMSAuthMethod.BASIC,
-            username="test_user",
-            password="wrong_password",
+            username="",  # Empty username should fail validation
+            password="test_password",
         )
 
-        authenticator = FlextOracleWmsAuthenticator(config)
-
-        # Mock the validation call to fail
-        with patch.object(authenticator, "_make_validation_request") as mock_request:
-            mock_request.return_value = FlextResult[None].fail("Authentication failed")
-
-            result = await authenticator.validate_authentication()
-            assert result.is_failure
-            assert "Authentication failed" in result.error
+        # The constructor should raise an exception for invalid credentials
+        with pytest.raises(FlextOracleWmsAuthenticationError) as exc_info:
+            FlextOracleWmsAuthenticator(config)
+        
+        assert "Username and password required for basic auth" in str(exc_info.value)
 
     def test_authenticator_string_representation(self) -> None:
         """Test authenticator string representation."""

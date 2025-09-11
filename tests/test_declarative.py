@@ -71,21 +71,32 @@ def load_env_config() -> FlextTypes.Core.Dict | None:
 
         # Extract environment from URL dynamically
         # URL format: https://ta29.wms.ocs.oraclecloud.com/raizen_test
-        environment = "default"  # fallback
+        environment = "development"  # fallback
         if base_url:
             try:
                 # Extract the last path component as environment
                 parsed = urlparse(base_url)
                 path_parts = parsed.path.strip("/").split("/")
                 if path_parts and path_parts[-1]:
-                    environment = path_parts[-1]
+                    env_name = path_parts[-1].lower()
+                    # Map to valid environment values
+                    if env_name in {"prod", "production"}:
+                        environment = "production"
+                    elif env_name in {"stage", "staging"}:
+                        environment = "staging"
+                    elif env_name in {"test", "testing", "raizen_test"}:
+                        environment = "test"
+                    elif env_name == "local":
+                        environment = "local"
+                    else:
+                        environment = "development"
             except Exception:
-                environment = "default"
+                environment = "development"
 
         return {
-            "base_url": base_url,
-            "username": config.get("ORACLE_WMS_USERNAME"),
-            "password": config.get("ORACLE_WMS_PASSWORD"),
+            "oracle_wms_base_url": base_url,
+            "oracle_wms_username": config.get("ORACLE_WMS_USERNAME"),
+            "oracle_wms_password": config.get("ORACLE_WMS_PASSWORD"),
             "environment": environment,  # Dynamic extraction from URL
             "api_version": FlextOracleWmsApiVersion.LGF_V10,  # Default to LGF v10
             "timeout": float(config.get("ORACLE_WMS_TIMEOUT", "30")),
@@ -107,7 +118,7 @@ def env_config() -> FlextTypes.Core.Dict:
     """Fixture that provides .env configuration or skips test."""
     config = load_env_config()
     if not config or not all(
-        [config.get("base_url"), config.get("username"), config.get("password")],
+        [config.get("oracle_wms_base_url"), config.get("oracle_wms_username"), config.get("oracle_wms_password")],
     ):
         pytest.skip("No valid .env configuration found - skipping integration tests")
     return config
@@ -223,11 +234,11 @@ class TestOracleWmsDeclarativeIntegration:
         oracle_wms_client: FlextOracleWmsClient,
     ) -> None:
         """Test getting list of all Oracle WMS entities."""
-        entities_result = await oracle_wms_client.get_all_entities()
+        entities_result = await oracle_wms_client.discover_entities()
 
         assert entities_result.success, f"Get entities failed: {entities_result.error}"
 
-        entities = entities_result.data
+        entities = entities_result.value
         assert isinstance(entities, list)
         assert len(entities) > 0
 

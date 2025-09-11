@@ -23,13 +23,14 @@ from flext_oracle_wms.wms_exceptions import (
     FlextOracleWmsDataValidationError,
     FlextOracleWmsError,
 )
+from flext_oracle_wms.wms_operations import FlextOracleWmsFilterConfig
 
 # Import base classes from flext-core instead of creating circular dependency
 
 logger = FlextLogger(__name__)
 
 
-class FlextOracleWmsFilter:
+class FlextOracleWmsFilter(FlextOracleWmsFilterConfig):
     """Oracle WMS filter with case sensitivity and validation."""
 
     def __init__(
@@ -51,34 +52,11 @@ class FlextOracleWmsFilter:
             raise FlextOracleWmsError(msg)
         super().__init__(filters={}, max_conditions=max_conditions)
         self.case_sensitive = case_sensitive
-        # Build operator map using existing methods
-        self._operators = {
-            OracleWMSFilterOperator.EQ: self._op_equals,
-            OracleWMSFilterOperator.NE: self._op_not_equals,
-            OracleWMSFilterOperator.GT: self._op_greater_than,
-            OracleWMSFilterOperator.GE: self._op_greater_equal,
-            OracleWMSFilterOperator.LT: self._op_less_than,
-            OracleWMSFilterOperator.LE: self._op_less_equal,
-            OracleWMSFilterOperator.IN: self._op_in,
-            OracleWMSFilterOperator.NOT_IN: self._op_not_in,
-            OracleWMSFilterOperator.LIKE: self._op_like,
-            OracleWMSFilterOperator.NOT_LIKE: self._op_not_like,
-        }
 
     def _normalize_for_comparison(self, value: object) -> object:
         if isinstance(value, str) and not self.case_sensitive:
             return value.lower().strip()
         return value
-
-    def _apply_operator(
-        self,
-        field_value: object,
-        operator: str | OracleWMSFilterOperator,
-        filter_value: object,
-    ) -> bool:
-        if isinstance(operator, OracleWMSFilterOperator):
-            operator = operator.value
-        return super()._apply_operator(field_value, operator, filter_value)
 
     # Override LIKE to honor case_sensitive flag for tests
     def _op_like(self, field_value: object, filter_value: object) -> bool:
@@ -119,7 +97,7 @@ class FlextOracleWmsFilter:
 
         # Store filters for validation, type issue will be resolved by proper typing
         object.__setattr__(self, "filters", filters)
-        data = await super().filter_records(records)
+        data = await self.filter_records(records)
         if limit is not None and isinstance(data, list):
             return FlextResult[list[FlextTypes.Core.Dict]].ok(data[: int(limit)])
         return FlextResult[list[FlextTypes.Core.Dict]].ok(data)
@@ -178,7 +156,7 @@ class FlextOracleWmsFilter:
 
     # Preserve parent signature so __post_init__ from base class can call it safely
     def _validate_filter_conditions_count(self) -> None:
-        return super()._validate_filter_conditions_count()
+        super()._validate_filter_conditions_count()
 
 
 def flext_oracle_wms_create_filter(

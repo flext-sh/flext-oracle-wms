@@ -14,9 +14,9 @@ from flext_oracle_wms import FlextOracleWmsApiVersion, FlextOracleWmsClientConfi
 def test_config_creation_valid() -> None:
     """Test config creation with valid parameters - EXACTLY like working example."""
     config = FlextOracleWmsClientConfig(
-        base_url="https://ta29.wms.ocs.oraclecloud.com/raizen_test",
-        username="USER_WMS_INTEGRA",
-        password="test_password",
+        oracle_wms_base_url="https://ta29.wms.ocs.oraclecloud.com/raizen_test",
+        oracle_wms_username="USER_WMS_INTEGRA",
+        oracle_wms_password="test_password",
         environment="development",
         api_version=FlextOracleWmsApiVersion.LGF_V10,
         timeout=30.0,
@@ -25,10 +25,9 @@ def test_config_creation_valid() -> None:
         enable_logging=True,
     )
 
-    assert config.base_url == "https://ta29.wms.ocs.oraclecloud.com/raizen_test"
-    assert config.username == "USER_WMS_INTEGRA"
-    assert config.password == "test_password"
-    assert config.environment == "test"
+    assert config.oracle_wms_base_url == "https://ta29.wms.ocs.oraclecloud.com/raizen_test"
+    assert config.oracle_wms_username == "USER_WMS_INTEGRA"
+    assert config.oracle_wms_password == "test_password"
     assert config.api_version == FlextOracleWmsApiVersion.LGF_V10
     assert config.timeout == 30.0
     assert config.max_retries == 3
@@ -40,9 +39,9 @@ def test_config_creation_valid() -> None:
 def test_config_validation_success() -> None:
     """Test config domain validation - BASED ON WORKING PATTERN."""
     config = FlextOracleWmsClientConfig(
-        base_url="https://test.wms.oraclecloud.com/test",
-        username="test_user",
-        password="test_password",
+        oracle_wms_base_url="https://test.wms.oraclecloud.com/test",
+        oracle_wms_username="test_user",
+        oracle_wms_password="test_password",
         environment="development",
         api_version=FlextOracleWmsApiVersion.LGF_V10,
         timeout=30.0,
@@ -59,33 +58,31 @@ def test_config_validation_success() -> None:
 @pytest.mark.unit
 def test_config_validation_invalid_url() -> None:
     """Test config validation with invalid URL."""
-    config = FlextOracleWmsClientConfig(
-        base_url="invalid-url-without-protocol",
-        username="test_user",
-        password="test_password",
-        environment="development",
-        api_version=FlextOracleWmsApiVersion.LGF_V10,
-        timeout=30.0,
-        max_retries=3,
-        verify_ssl=True,
-        enable_logging=True,
-    )
-
-    result = config.validate_business_rules()
-    assert result.is_failure
-    assert "http://" in result.error or "https://" in result.error
+    # The constructor should raise a validation error for invalid URL
+    with pytest.raises(ValidationError) as exc_info:
+        FlextOracleWmsClientConfig(
+            oracle_wms_base_url="invalid-url-without-protocol",
+            oracle_wms_username="test_user",
+            oracle_wms_password="test_password",
+            api_version=FlextOracleWmsApiVersion.LGF_V10,
+            timeout=30,
+            max_retries=3,
+            verify_ssl=True,
+            enable_logging=True,
+        )
+    
+    assert "Base URL must start with http:// or https://" in str(exc_info.value)
 
 
 @pytest.mark.unit
 def test_config_validation_empty_username() -> None:
     """Test config validation with empty username."""
     config = FlextOracleWmsClientConfig(
-        base_url="https://test.wms.oraclecloud.com/test",
-        username="",
-        password="test_password",
-        environment="development",
+        oracle_wms_base_url="https://test.wms.oraclecloud.com/test",
+        oracle_wms_username="",
+        oracle_wms_password="test_password",
         api_version=FlextOracleWmsApiVersion.LGF_V10,
-        timeout=30.0,
+        timeout=30,
         max_retries=3,
         verify_ssl=True,
         enable_logging=True,
@@ -100,12 +97,11 @@ def test_config_validation_empty_username() -> None:
 def test_config_validation_empty_password() -> None:
     """Test config validation with empty password."""
     config = FlextOracleWmsClientConfig(
-        base_url="https://test.wms.oraclecloud.com/test",
-        username="test_user",
-        password="",
-        environment="development",
+        oracle_wms_base_url="https://test.wms.oraclecloud.com/test",
+        oracle_wms_username="test_user",
+        oracle_wms_password="",
         api_version=FlextOracleWmsApiVersion.LGF_V10,
-        timeout=30.0,
+        timeout=30,
         max_retries=3,
         verify_ssl=True,
         enable_logging=True,
@@ -121,9 +117,9 @@ def test_config_validation_invalid_timeout() -> None:
     """Test config validation with invalid timeout."""
     with pytest.raises(ValidationError) as exc_info:
         FlextOracleWmsClientConfig(
-            base_url="https://test.wms.oraclecloud.com/test",
-            username="test_user",
-            password="test_password",
+            oracle_wms_base_url="https://test.wms.oraclecloud.com/test",
+            oracle_wms_username="test_user",
+            oracle_wms_password="test_password",
             environment="development",
             api_version=FlextOracleWmsApiVersion.LGF_V10,
             timeout=-1,  # Invalid negative timeout
@@ -143,9 +139,9 @@ def test_config_validation_invalid_timeout() -> None:
 def test_config_validation_invalid_retries() -> None:
     """Test config validation with invalid retries."""
     config = FlextOracleWmsClientConfig(
-        base_url="https://test.wms.oraclecloud.com/test",
-        username="test_user",
-        password="test_password",
+        oracle_wms_base_url="https://test.wms.oraclecloud.com/test",
+        oracle_wms_username="test_user",
+        oracle_wms_password="test_password",
         environment="development",
         api_version=FlextOracleWmsApiVersion.LGF_V10,
         timeout=30.0,

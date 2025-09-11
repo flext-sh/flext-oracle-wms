@@ -16,23 +16,7 @@ from pathlib import Path
 from typing import ClassVar, NewType
 from urllib.parse import urlparse
 
-try:
-    from dotenv import load_dotenv
-except ImportError:
-    from os import PathLike
-    from typing import IO
-
-    def load_dotenv(
-        dotenv_path: str | PathLike[str] | None = None,  # noqa: ARG001
-        stream: IO[str] | None = None,  # noqa: ARG001
-        verbose: bool = False,  # noqa: ARG001, FBT001, FBT002
-        override: bool = False,  # noqa: ARG001, FBT001, FBT002
-        interpolate: bool = True,  # noqa: ARG001, FBT001, FBT002
-        encoding: str | None = None,  # noqa: ARG001
-    ) -> bool:
-        return False
-
-
+# load_dotenv is handled by flext-core configuration system
 from flext_core import (
     FlextConfig,
     FlextLogger,
@@ -79,12 +63,9 @@ class FlextOracleWmsClientConfig(FlextConfig):
 
     """
 
-    base_url: str = Field(..., description="Oracle WMS base URL")
-    username: str = Field(..., description="Oracle WMS username")
-    password: str = Field(..., description="Oracle WMS password")
-    environment: FlextTypes.Config.Environment = Field(
-        default="development", description="Environment name"
-    )
+    oracle_wms_base_url: str = Field(..., description="Oracle WMS base URL")
+    oracle_wms_username: str = Field(..., description="Oracle WMS username")
+    oracle_wms_password: str = Field(..., description="Oracle WMS password")
     api_version: FlextOracleWmsApiVersion = Field(
         default=FlextOracleWmsApiVersion.LGF_V10,
         description="API version",
@@ -98,25 +79,41 @@ class FlextOracleWmsClientConfig(FlextConfig):
         description="Use internal mock server explicitly (testing only)",
     )
 
+    @field_validator("oracle_wms_base_url")
+    @classmethod
+    def validate_base_url(cls, v: str) -> str:
+        """Validate base URL format."""
+        if not v.startswith(("http://", "https://")):
+            raise ValueError("Base URL must start with http:// or https://")
+        return v
+
+    @field_validator("timeout")
+    @classmethod
+    def validate_timeout(cls, v: int) -> int:
+        """Validate timeout value."""
+        if v <= 0:
+            raise ValueError("Timeout must be greater than 0")
+        return v
+
     def validate_business_rules(self) -> FlextResult[None]:
         """Validate Oracle WMS client configuration business rules."""
         validation_errors = []
 
-        if not self.base_url:
+        if not self.oracle_wms_base_url:
             validation_errors.append("Base URL cannot be empty")
-        elif not self.base_url.startswith(("http://", "https://")):
+        elif not self.oracle_wms_base_url.startswith(("http://", "https://")):
             validation_errors.append("Base URL must start with http:// or https://")
 
-        if not self.username:
+        if not self.oracle_wms_username:
             validation_errors.append("Username cannot be empty")
-        if not self.password:
+        if not self.oracle_wms_password:
             validation_errors.append("Password cannot be empty")
         if self.timeout <= 0:
             validation_errors.append("Timeout must be greater than 0")
         if self.max_retries < 0:
             validation_errors.append("Max retries cannot be negative")
         # Explicit mock must be intentional; no auto-mock by URL heuristics
-        if self.use_mock and not self.base_url:
+        if self.use_mock and not self.oracle_wms_base_url:
             validation_errors.append("Base URL is required even when using mock")
 
         if validation_errors:
@@ -154,9 +151,9 @@ class FlextOracleWmsClientConfig(FlextConfig):
             environment = "development"
 
         return cls(
-            base_url=base_url_str,
-            username=legacy_config.username,
-            password=legacy_config.password,
+            oracle_wms_base_url=base_url_str,
+            oracle_wms_username=legacy_config.username,
+            oracle_wms_password=legacy_config.password,
             environment=environment,
             api_version=FlextOracleWmsApiVersion.LGF_V10
             if legacy_config.api_version == "v10"
@@ -277,9 +274,9 @@ class FlextOracleWmsModuleConfig(FlextConfig):
 
     @field_validator("base_url")
     @classmethod
-    def validate_base_url(cls, v: str) -> str:
+    def validate_base_url(cls, value: str) -> str:
         """Validate Oracle WMS base URL format."""
-        url_str = v
+        url_str = value
         if not url_str.startswith(("http://", "https://")):
             invalid_protocol_msg: str = f"Invalid Oracle WMS base URL: {url_str} (must start with http:// or https://)"
             raise ValueError(invalid_protocol_msg)
@@ -322,7 +319,7 @@ class FlextOracleWmsModuleConfig(FlextConfig):
                 "Ensure this is correct for your environment.",
                 url_str,
             )
-        return v
+        return value
 
     # Note: log_level validation is now handled by LoggingConfigMixin
     @property
@@ -367,12 +364,11 @@ class FlextOracleWmsModuleConfig(FlextConfig):
         return params
 
     @classmethod
-    def from_env_file(cls, env_file: str | Path = ".env") -> FlextOracleWmsModuleConfig:
+    def from_env_file(cls) -> FlextOracleWmsModuleConfig:
         """Create configuration from environment file."""
-        # Note: BaseSettings uses model_config.env_file, not constructor param
-        # For dynamic env files, temporarily load into environment
-        if Path(env_file).exists() and load_dotenv is not None:
-            load_dotenv(env_file)
+        # Note: BaseSettings automatically loads .env files via model_config.env_file
+        # For dynamic env files, we would need to temporarily modify the environment
+        # This is not recommended as it can cause side effects
         return cls()
 
     @classmethod

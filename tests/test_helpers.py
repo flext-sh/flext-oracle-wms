@@ -10,7 +10,6 @@ SPDX-License-Identifier: MIT
 import pytest
 
 from flext_oracle_wms import (
-    FlextOracleWmsDataValidationError,
     flext_oracle_wms_build_entity_url,
     flext_oracle_wms_chunk_records,
     flext_oracle_wms_extract_environment_from_url,
@@ -193,9 +192,10 @@ class TestDataProcessingHelpers:
         """Test API response validation with invalid list input."""
         response = [{"id": 1, "name": "Test 1"}, {"id": 2, "name": "Test 2"}]
 
-        # Function expects dict, should fail with list
-        with pytest.raises(AttributeError):
-            flext_oracle_wms_validate_api_response(response)
+        # Function expects dict, should return failure result with list
+        result = flext_oracle_wms_validate_api_response(response)
+        assert result.is_failure
+        assert "not a dictionary" in result.error
 
     def test_validate_api_response_valid_dict(self) -> None:
         """Test API response validation with valid dict."""
@@ -209,9 +209,10 @@ class TestDataProcessingHelpers:
         invalid_responses = [None, "", 123, True]
 
         for response in invalid_responses:
-            # These should all raise exceptions since function expects dict
-            with pytest.raises((TypeError, AttributeError)):
-                flext_oracle_wms_validate_api_response(response)
+            # These should all return failure results since function expects dict
+            result = flext_oracle_wms_validate_api_response(response)
+            assert result.is_failure
+            assert "not a dictionary" in result.error
 
     def test_extract_pagination_info_complete(self) -> None:
         """Test extracting pagination info with complete data."""

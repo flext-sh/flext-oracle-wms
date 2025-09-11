@@ -237,6 +237,7 @@ class TestExamplesIntegration:
 
     def test_basic_usage_example_works(self) -> None:
         """Test that basic_usage.py actually executes successfully."""
+
         # Run basic_usage.py as subprocess to validate it works
         async def _run(
             cmd_list: FlextTypes.Core.StringList,

@@ -87,7 +87,7 @@ class TestFlextOracleWmsDataFlattener:
         assert result.success
         assert result.data is not None
         assert len(result.data) == 1
-        unflattened = result[0]
+        unflattened = result.data[0]
         assert unflattened["id"] == "123"
         # Note: Current implementation uses dot notation, not the original nested structure
 

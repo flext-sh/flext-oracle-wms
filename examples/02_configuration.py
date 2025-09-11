@@ -5,16 +5,13 @@ integration using the ACTUAL API that exists and functions properly.
 
 """
 
-from flext_core import FlextTypes
-
-import contextlib
 import os
 from dataclasses import dataclass
 from enum import StrEnum
 from pathlib import Path
 
 from dotenv import load_dotenv
-from flext_core import FlextConstants
+from flext_core import FlextConstants, FlextTypes
 
 from flext_oracle_wms import (
     FlextOracleWmsApiVersion,
@@ -47,7 +44,7 @@ def get_environment_configs() -> dict[Environment, WmsEnvironmentConfig]:
         Environment.DEVELOPMENT: WmsEnvironmentConfig(
             name="Development",
             base_url="https://dev-wms.oraclecloud.com/dev_env",
-            timeout=FlextConstants.Defaults.DATABASE_COMMAND_TIMEOUT,
+            timeout=FlextConstants.Database.DEFAULT_DB_TIMEOUT,
             max_retries=FlextConstants.Defaults.MIN_RETRIES,
         ),
         Environment.STAGING: WmsEnvironmentConfig(
@@ -107,12 +104,11 @@ def create_config_from_environment() -> FlextOracleWmsClientConfig:
         raise ValueError(msg)
 
     return FlextOracleWmsClientConfig(
-        base_url=base_url,
-        username=username,
-        password=password,
-        environment=environment,
+        oracle_wms_base_url=base_url,
+        oracle_wms_username=username,
+        oracle_wms_password=password,
         api_version=FlextOracleWmsApiVersion.LGF_V10,
-        timeout=float(
+        timeout=int(
             os.getenv("ORACLE_WMS_TIMEOUT", str(FlextConstants.Defaults.TIMEOUT))
         ),
         max_retries=int(
@@ -136,12 +132,11 @@ def create_demo_config() -> FlextOracleWmsClientConfig:
 
     """
     return FlextOracleWmsClientConfig(
-        base_url="https://demo-wms.oraclecloud.com/demo",
-        username="demo_user",
-        password="demo_password",
-        environment="demo",
+        oracle_wms_base_url="https://demo-wms.oraclecloud.com/demo",
+        oracle_wms_username="demo_user",
+        oracle_wms_password="demo_password",
         api_version=FlextOracleWmsApiVersion.LGF_V10,
-        timeout=float(FlextConstants.Defaults.TIMEOUT),
+        timeout=int(FlextConstants.Defaults.TIMEOUT),
         max_retries=FlextConstants.Defaults.MAX_RETRIES,
         verify_ssl=True,
         enable_logging=True,
@@ -166,14 +161,14 @@ def validate_configuration(config: FlextOracleWmsClientConfig) -> FlextTypes.Cor
     }
 
     # Validate base URL
-    if not config.base_url:
+    if not config.oracle_wms_base_url:
         validation_results["errors"].append("Base URL is required")
         validation_results["valid"] = False
-    elif not config.base_url.startswith("https://"):
+    elif not config.oracle_wms_base_url.startswith("https://"):
         validation_results["warnings"].append("Base URL should use HTTPS for security")
 
     # Validate authentication
-    if not config.username or not config.password:
+    if not config.oracle_wms_username or not config.oracle_wms_password:
         validation_results["errors"].append("Username and password are required")
         validation_results["valid"] = False
 
@@ -202,9 +197,8 @@ def validate_configuration(config: FlextOracleWmsClientConfig) -> FlextTypes.Cor
 
     # Create configuration summary
     validation_results["configuration_summary"] = {
-        "base_url": config.base_url,
-        "username": config.username,
-        "environment": config.environment,
+        "base_url": config.oracle_wms_base_url,
+        "username": config.oracle_wms_username,
         "api_version": config.api_version.value,
         "timeout": config.timeout,
         "max_retries": config.max_retries,

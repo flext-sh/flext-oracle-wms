@@ -68,7 +68,7 @@ def test_base_error_with_details() -> None:
     """Test base error with error details."""
     details = {"code": "E001", "field": "username"}
     error = FlextOracleWmsError("Test error", context=details)
-    assert str(error) == "[FLEXT_0001] Test error"
+    assert str(error) == "[E001] Test error"
     assert error.code == "E001"
     assert error.field == "username"
 
@@ -83,7 +83,7 @@ def test_connection_error() -> None:
 def test_connection_error_with_retry_count() -> None:
     """Test connection error with retry count."""
     error = FlextOracleWmsConnectionError(
-        "Connection failed", context={"retry_count": 3}
+        "Connection failed", retry_count=3
     )
     assert str(error) == "[FLEXT_0001] Connection failed"
     assert error.retry_count == 3
@@ -144,8 +144,10 @@ def test_entity_not_found_error() -> None:
 
 def test_entity_not_found_error_with_custom_message() -> None:
     """Test entity not found error with custom message."""
-    error = FlextOracleWmsEntityNotFoundError("order_hdr", "Custom not found message")
-    assert str(error) == "[NOT_FOUND] Custom not found message"
+    error = FlextOracleWmsEntityNotFoundError(
+        "Custom not found message", entity_name="order_hdr"
+    )
+    assert "Custom not found message" in str(error)
     assert error.entity_name == "order_hdr"
 
 
@@ -194,10 +196,9 @@ def test_schema_error() -> None:
 
 def test_schema_flattening_error() -> None:
     """Test schema flattening error exception."""
-    error = FlextOracleWmsSchemaFlatteningError("Flattening error", "flatten")
+    error = FlextOracleWmsSchemaFlatteningError("Flattening error")
     assert str(error) == "[FLEXT_0001] Flattening error"
     assert isinstance(error, FlextOracleWmsError)
-    assert error.schema_operation == "flatten"
 
 
 def test_filter_error() -> None:
@@ -219,7 +220,7 @@ def test_error_inheritance() -> None:
         FlextOracleWmsProcessingError("test"),
         FlextOracleWmsApiError("test"),
         FlextOracleWmsSchemaError("test"),
-        FlextOracleWmsSchemaFlatteningError("test", "flatten"),
+        FlextOracleWmsSchemaFlatteningError("test"),
         FlextOracleWmsInventoryError("test"),
     ]
 

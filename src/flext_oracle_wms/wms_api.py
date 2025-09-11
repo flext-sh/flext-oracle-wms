@@ -390,7 +390,7 @@ class OracleWmsMockServer:
             {
                 "results": mock_records,
                 "result_count": len(mock_records)
-                if hasattr(mock_records, "__len__")
+                if isinstance(mock_records, list)
                 else 0,
                 "page_count": 1,
                 "page_nbr": 1,
