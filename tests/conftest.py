@@ -65,7 +65,6 @@ def real_config(_load_test_env: bool) -> FlextOracleWmsClientConfig:
     if not all([base_url, username, password]):
         pytest.skip("Real Oracle WMS credentials not available in .env")
 
-    # Type assertion after validation
     assert base_url is not None
     assert username is not None
     assert password is not None

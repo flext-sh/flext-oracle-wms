@@ -35,10 +35,6 @@ from flext_oracle_wms.wms_operations import (
     validate_string_parameter,
 )
 
-# =============================================================================
-# TYPE DEFINITIONS - Core Oracle WMS Types
-# =============================================================================
-
 # Core record types - USED EVERYWHERE
 TOracleWmsRecord = FlextTypes.Core.Dict
 TOracleWmsRecordBatch = list[TOracleWmsRecord]
@@ -64,11 +60,6 @@ TOracleWmsFilters = dict[str, TOracleWmsFilterValue]
 # Configuration essentials - USED BY CONFIG
 TOracleWmsEnvironment = Annotated[str, StringConstraints(min_length=1, max_length=50)]
 TOracleWmsTimeout = Annotated[float, Field(gt=0, le=300)]
-
-
-# =============================================================================
-# TYPED DICTIONARIES - Structured Data Types
-# =============================================================================
 
 
 class TOracleWmsPaginationInfo(TypedDict):
@@ -105,11 +96,6 @@ class TOracleWmsDiscoveryResult(TypedDict):
     discovery_duration_ms: int
 
 
-# =============================================================================
-# API CATALOG ENUMS - API Classification
-# =============================================================================
-
-
 class FlextOracleWmsApiCategory(StrEnum):
     """Oracle WMS API categories from official documentation."""
 
@@ -117,11 +103,6 @@ class FlextOracleWmsApiCategory(StrEnum):
     AUTOMATION_OPERATIONS = "automation_operations"
     DATA_EXTRACT = "data_extract"
     ENTITY_OPERATIONS = "entity_operations"
-
-
-# =============================================================================
-# CORE DATA MODELS - Essential Oracle WMS Models
-# =============================================================================
 
 
 @dataclass(frozen=True)
@@ -292,10 +273,6 @@ class FlextOracleWmsApiEndpoint(FlextModels):
         return FlextResult[None].ok(None)
 
 
-# =============================================================================
-# EXPORTS
-# =============================================================================
-
 __all__: FlextTypes.Core.StringList = [
     "FlextOracleWmsApiCategory",
     "FlextOracleWmsApiEndpoint",
@@ -314,9 +291,7 @@ __all__: FlextTypes.Core.StringList = [
     "TOracleWmsEnvironment",
     "TOracleWmsFilterValue",
     "TOracleWmsFilters",
-    # Typed Dictionaries
     "TOracleWmsPaginationInfo",
-    # Type Definitions
     "TOracleWmsRecord",
     "TOracleWmsRecordBatch",
     "TOracleWmsSchema",

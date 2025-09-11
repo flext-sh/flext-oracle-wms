@@ -345,7 +345,7 @@ class FlextOracleWmsModuleConfig(FlextConfig):
         params: FlextTypes.Core.Dict = {
             "page_size": self.batch_size,  # Using composition mixin field
         }
-        # Type-safe update of parameters
+
         for key, value in additional_params.items():
             if isinstance(value, (str, int, float, bool)):
                 params[key] = value
@@ -401,10 +401,6 @@ def load_config() -> FlextOracleWmsModuleConfig:
 # Rebuild the model to ensure all types are properly resolved
 FlextOracleWmsModuleConfig.model_rebuild()
 
-
-# =============================================================================
-# EXPORTS
-# =============================================================================
 
 __all__: FlextTypes.Core.StringList = [
     "FlextOracleWmsClientConfig",

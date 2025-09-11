@@ -492,7 +492,6 @@ class OptimizedOracleWmsDiscovery:
         )
 
         if isinstance(value, str) and not self._is_oracle_datetime(field_name, value):
-            # Simple date format without time
             oracle_date_check = value.count("-") == 2 and "T" not in value
             return name_match or oracle_date_check
 

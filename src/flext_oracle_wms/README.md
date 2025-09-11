@@ -176,7 +176,7 @@ pytest -m "oracle_wms" -v
 ```bash
 # Complete validation for this module
 make validate               # Lint + type + security + test
-make lint                   # Ruff linting (all rules)
+make lint
 make type-check             # MyPy strict mode
 make security               # Bandit + pip-audit security scanning
 ```

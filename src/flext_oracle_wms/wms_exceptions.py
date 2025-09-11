@@ -21,10 +21,6 @@ import contextlib
 
 from flext_core import FlextExceptions
 
-# =============================================================================
-# ORACLE WMS BASE EXCEPTION HIERARCHY
-# =============================================================================
-
 
 class FlextOracleWmsError(FlextExceptions.BaseError):
     """Base exception for all Oracle WMS operations.
@@ -111,11 +107,6 @@ class FlextOracleWmsTimeoutError(FlextOracleWmsError):
     Specialized timeout error for Oracle WMS operation deadline violations.
     Provides detailed context about timeout conditions and API call timing.
     """
-
-
-# =============================================================================
-# DOMAIN-SPECIFIC EXCEPTIONS - Oracle WMS Business Logic
-# =============================================================================
 
 
 class FlextOracleWmsDataValidationError(FlextOracleWmsValidationError):
@@ -273,10 +264,6 @@ class FlextOracleWmsSchemaFlatteningError(FlextOracleWmsSchemaError):
         """Initialize schema flattening error."""
         super().__init__(message)
 
-
-# =============================================================================
-# EXPORTS
-# =============================================================================
 
 __all__: FlextTypes.Core.StringList = [
     "FlextOracleWmsApiError",

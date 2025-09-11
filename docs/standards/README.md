@@ -80,7 +80,7 @@ This directory contains comprehensive development standards and guidelines for t
 # Standards compliance validation
 make validate                 # Complete standards validation
 make lint                     # Code organization validation
-make type-check              # Type annotation standards
+make type-check
 make format                  # Code formatting standards
 ```
 

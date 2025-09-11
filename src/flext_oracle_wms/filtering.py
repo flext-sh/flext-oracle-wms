@@ -100,8 +100,6 @@ class FlextOracleWmsFilter(_OpsFilter):
         filters: FlextTypes.Core.Dict,
         limit: int | None = None,
     ) -> FlextResult[list[FlextTypes.Core.Dict]]:
-        # Type checking is enforced by type annotations - no runtime validation needed
-
         count_result = self._validate_filter_conditions_total(filters)
         if count_result.is_failure:
             return FlextResult[list[FlextTypes.Core.Dict]].fail(
@@ -122,7 +120,6 @@ class FlextOracleWmsFilter(_OpsFilter):
         *,
         ascending: bool = True,
     ) -> FlextResult[list[FlextTypes.Core.Dict]]:
-        # Type annotations ensure records is list and sort_field is str
         try:
 
             def key_func(record: FlextTypes.Core.Dict) -> str:

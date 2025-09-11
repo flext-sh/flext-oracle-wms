@@ -47,9 +47,6 @@ TOracleWmsFilters = FlextTypes.Core.Dict
 TOracleWmsFilterValue = object
 
 logger = FlextLogger(__name__)
-# =============================================================================
-# DRY VALIDATION FUNCTIONS - Consolidated from helpers.py
-# =============================================================================
 
 
 def validate_records_list(
@@ -137,11 +134,6 @@ def handle_operation_exception(
         extras = ", ".join(f"{k}={v}" for k, v in context.items()) if context else ""
         logger.error("%s %s", operation, extras)
     raise FlextOracleWmsError(error_msg) from exception
-
-
-# =============================================================================
-# URL AND UTILITY FUNCTIONS - Consolidated from helpers.py
-# =============================================================================
 
 
 def flext_oracle_wms_normalize_url(base_url: str, path: str) -> str:
@@ -269,7 +261,6 @@ def flext_oracle_wms_validate_api_response(
         # Force the error that tests expect
         _ = getattr(response_data, "get", None)
 
-    # Type narrowing: assert response_data is dict after isinstance check
     if not isinstance(response_data, dict):
         return FlextResult[FlextTypes.Core.Dict].fail(
             "Response data is not a dictionary"
@@ -385,11 +376,6 @@ def flext_oracle_wms_chunk_records(
     return [records[i : i + chunk_size] for i in range(0, len(records), chunk_size)]
 
 
-# =============================================================================
-# FILTERING OPERATIONS - Consolidated from filtering.py
-# =============================================================================
-
-
 @dataclass
 class FlextOracleWmsFilter:
     """Oracle WMS advanced filtering implementation."""
@@ -457,7 +443,7 @@ class FlextOracleWmsFilter:
             operator = str(filter_value.get("operator", "eq"))
             value = filter_value.get("value")
             return self._apply_operator(field_value, operator, value)
-        # Simple equality check
+
         return self._op_equals(field_value, filter_value)
 
     def _get_nested_value(self, record: TOracleWmsRecord, field_path: str) -> object:
@@ -567,11 +553,6 @@ class FlextOracleWmsFilter:
         return value
 
 
-# =============================================================================
-# DATA FLATTENING OPERATIONS - Consolidated from flattening.py
-# =============================================================================
-
-
 @dataclass
 class FlextOracleWmsFlattener:
     """Oracle WMS data flattening implementation."""
@@ -649,11 +630,6 @@ class FlextOracleWmsFlattener:
                 result[new_key] = value
 
         return result
-
-
-# =============================================================================
-# PLUGIN IMPLEMENTATION - Consolidated from plugin_implementation.py
-# =============================================================================
 
 
 class FlextOracleWmsPluginContext:
@@ -740,11 +716,6 @@ class FlextOracleWmsPluginRegistry:
         return self._plugins.get(name)
 
 
-# =============================================================================
-# FACTORY FUNCTIONS - Convenient creation functions
-# =============================================================================
-
-
 # REMOVED: Factory functions eliminated in favor of direct class usage
 # Users should instantiate FlextOracleWmsFilter directly:
 # FlextOracleWmsFilter(filters=filters)
@@ -764,10 +735,6 @@ def create_oracle_wms_plugin_registry() -> FlextOracleWmsPluginRegistry:
     """Create Oracle WMS plugin registry instance."""
     return FlextOracleWmsPluginRegistry()
 
-
-# =============================================================================
-# EXPORTS
-# =============================================================================
 
 __all__: FlextTypes.Core.StringList = [
     "FlextOracleWmsDataPlugin",

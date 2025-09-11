@@ -42,9 +42,6 @@ from flext_oracle_wms.wms_exceptions import (
 from flext_oracle_wms.wms_models import TOracleWmsEntityName
 
 logger = FlextLogger(__name__)
-# =============================================================================
-# AUTHENTICATION COMPONENTS
-# =============================================================================
 
 
 class FlextOracleWmsAuthConfig(FlextConfig):
@@ -304,11 +301,6 @@ class FlextOracleWmsAuthPlugin:
                 else "unknown"
             )
         return f"FlextOracleWmsAuthPlugin(name={self.name}, version={self.version}, auth_type={auth_type_str})"
-
-
-# =============================================================================
-# CLIENT COMPONENTS
-# =============================================================================
 
 
 @dataclass
@@ -944,11 +936,6 @@ class FlextOracleWmsClientMock:
         )
 
 
-# =============================================================================
-# FACTORY FUNCTIONS
-# =============================================================================
-
-
 def create_oracle_wms_client(
     config: FlextOracleWmsClientConfig,
 ) -> FlextOracleWmsClient:
@@ -960,10 +947,6 @@ def create_oracle_wms_client(
 # Users should instantiate FlextOracleWmsAuthConfig directly:
 # FlextOracleWmsAuthConfig(auth_type=OracleWMSAuthMethod.BASIC, username="user", password="pass")
 
-
-# =============================================================================
-# EXPORTS
-# =============================================================================
 
 __all__: FlextTypes.Core.StringList = [
     # Authentication

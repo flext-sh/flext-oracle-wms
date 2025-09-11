@@ -53,11 +53,6 @@ DISCOVERY_SUCCESS = True
 DISCOVERY_FAILURE = False
 
 
-# =============================================================================
-# CACHING SYSTEM - Consolidated from cache.py
-# =============================================================================
-
-
 @dataclass(frozen=True)
 class FlextOracleWmsCacheConfig(FlextConfig):
     """Oracle WMS cache configuration using flext-core standards."""
@@ -480,11 +475,6 @@ class FlextOracleWmsCacheManager:
             )
 
 
-# =============================================================================
-# DYNAMIC SCHEMA PROCESSING - Consolidated from dynamic.py
-# =============================================================================
-
-
 class TypeInferenceStrategy(ABC):
     """Strategy Pattern: Abstract base for type inference strategies."""
 
@@ -836,11 +826,6 @@ class FlextOracleWmsDynamicSchemaProcessor:
         return "string"
 
 
-# =============================================================================
-# ENTITY DISCOVERY SYSTEM - Consolidated from discovery.py
-# =============================================================================
-
-
 @dataclass
 class DiscoveryContext:
     """Parameter Object: Encapsulates discovery operation context."""
@@ -1042,7 +1027,7 @@ class FlextOracleWmsEntityDiscovery:
                     "total_count": len(filtered_entities),
                     "timestamp": discovery_result.timestamp,
                 }
-                # Type cast for cache compatibility
+
                 await self.cache_manager.set(cache_key, str(cache_data))
 
             return FlextResult[FlextOracleWmsDiscoveryResult].ok(discovery_result)
@@ -1080,9 +1065,6 @@ class FlextOracleWmsEntityDiscovery:
         return filtered_entities
 
 
-# =============================================================================
-# REMOVED: Factory functions eliminated in favor of direct class usage
-# =============================================================================
 # Users should instantiate classes directly:
 # FlextOracleWmsEntityDiscovery(api_client)
 # FlextOracleWmsDynamicSchemaProcessor()
@@ -1090,10 +1072,6 @@ class FlextOracleWmsEntityDiscovery:
 
 # FlextOracleWmsCacheManager(config)
 
-
-# =============================================================================
-# EXPORTS
-# =============================================================================
 
 __all__: FlextTypes.Core.StringList = [
     "ArrayTypeStrategy",

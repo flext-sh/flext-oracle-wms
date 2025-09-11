@@ -36,10 +36,6 @@ from flext_oracle_wms.wms_models import (
 logger = FlextLogger(__name__)
 
 
-# =============================================================================
-# ORACLE WMS CLOUD API CATALOG - Complete API Definitions
-# =============================================================================
-
 FLEXT_ORACLE_WMS_APIS = {
     # === SETUP AND TRANSACTIONAL DATA APIS ===
     "lgf_init_stage_interface": FlextOracleWmsApiEndpoint(
@@ -202,7 +198,6 @@ FLEXT_ORACLE_WMS_APIS = {
         description="Create or update entity data",
         since_version="10.0",
     ),
-    # Aliases expected by declarative tests
     "create_lpn": FlextOracleWmsApiEndpoint(
         name="create_lpn",
         method="POST",
@@ -231,11 +226,6 @@ FLEXT_ORACLE_WMS_APIS = {
         since_version="10.0",
     ),
 }
-
-
-# =============================================================================
-# ORACLE WMS MOCK SERVER - Testing and Development Support
-# =============================================================================
 
 
 class OracleWmsMockServer:
@@ -508,19 +498,10 @@ class OracleWmsMockServer:
         return entity_fields.get(entity_name, {})
 
 
-# =============================================================================
-# MOCK SERVER FACTORY FUNCTION
-# =============================================================================
-
-
 def get_mock_server(environment: str = "mock_test") -> OracleWmsMockServer:
     """Get Oracle WMS mock server instance."""
     return OracleWmsMockServer(environment)
 
-
-# =============================================================================
-# EXPORTS
-# =============================================================================
 
 __all__: FlextTypes.Core.StringList = [
     # API Catalog

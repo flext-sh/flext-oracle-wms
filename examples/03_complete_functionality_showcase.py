@@ -32,7 +32,7 @@ from pathlib import Path
 
 from dotenv import load_dotenv
 
-from ..flext_oracle_wms import (
+from flext_oracle_wms import (
     FlextOracleWmsApiCategory,
     FlextOracleWmsApiVersion,
     FlextOracleWmsAuthConfig,

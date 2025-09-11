@@ -25,7 +25,7 @@ from pathlib import Path
 
 from flext_core import FlextResult
 
-from ..flext_oracle_wms import (
+from flext_oracle_wms import (
     FlextOracleWmsApiVersion,
     FlextOracleWmsClient,
     FlextOracleWmsClientConfig,

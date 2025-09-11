@@ -4,11 +4,6 @@ Copyright (c) 2025 FLEXT Team. All rights reserved.
 SPDX-License-Identifier: MIT
 """
 
-
-# =============================================================================
-# CONSOLIDATED WMS MODULE IMPORTS - New PEP8 Structure
-# =============================================================================
-
 # WMS Constants - Core constants and enums
 from flext_oracle_wms.wms_constants import (
     FlextOracleWmsApiPaths,
@@ -134,9 +129,6 @@ __description__ = (
     "Oracle WMS integration library using flext-core and flext-api patterns"
 )
 
-# =============================================================================
-# PUBLIC API - Explicitly defined for clarity and backward compatibility
-# =============================================================================
 
 __all__: FlextTypes.Core.StringList = [
     # API Catalog

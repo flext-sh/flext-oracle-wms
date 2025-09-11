@@ -16,10 +16,10 @@ The source code follows Clean Architecture principles with clear separation of c
 src/flext_oracle_wms/
 ├── __init__.py              # Public API gateway with comprehensive exports
 ├── client.py                # Primary client interface for Oracle WMS operations
-├── config.py               # Type-safe configuration management with Pydantic
+├── config.py
 ├── exceptions.py           # Comprehensive error hierarchy for Oracle WMS
 ├── constants.py            # Oracle WMS constants, enums, and defaults
-├── types.py                # Type definitions and aliases for Oracle WMS
+├── types.py
 ├── models.py               # Data models using FLEXT ValueObject patterns
 ├── api_catalog.py          # Declarative API endpoint catalog
 ├── authentication.py       # Multi-method authentication (Basic, Bearer, API Key)
@@ -163,7 +163,7 @@ make coverage-html          # Generate detailed coverage report
 ```bash
 # Complete quality validation
 make validate               # Lint + type + security + test
-make lint                   # Ruff linting (all rules)
+make lint
 make type-check             # MyPy strict mode
 make security               # Bandit + pip-audit security scanning
 ```

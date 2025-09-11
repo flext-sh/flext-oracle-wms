@@ -27,10 +27,6 @@ Note: `FlextOracleWmsApiVersion` lives here to avoid circular imports
 between `wms_constants` and `wms_models`.
 """
 
-# =============================================================================
-# ORACLE WMS-SPECIFIC SEMANTIC CONSTANTS - Modern Python 3.13 Structure
-# =============================================================================
-
 
 class FlextOracleWmsSemanticConstants(FlextConstants):
     """Oracle WMS semantic constants extending FlextConstants.
@@ -351,11 +347,6 @@ class OracleWMSWriteMode(StrEnum):
     DELETE = "delete"
 
 
-# =============================================================================
-# LEGACY COMPATIBILITY CLASSES
-# =============================================================================
-
-
 class FlextOracleWmsDefaults:
     """Default values for Oracle WMS operations (DEPRECATED - use FlextOracleWmsConstants)."""
 
@@ -436,10 +427,6 @@ FlextOracleWmsErrorMessages = FlextOracleWmsSemanticConstants.ErrorMessages
 FlextOracleWmsApiPaths = FlextOracleWmsSemanticConstants.Paths
 FlextOracleWmsResponseFields = FlextOracleWmsSemanticConstants.ResponseFields
 
-
-# =============================================================================
-# EXPORTS
-# =============================================================================
 
 __all__: FlextTypes.Core.StringList = [
     "FlextOracleWmsApiPaths",
