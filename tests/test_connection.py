@@ -29,10 +29,10 @@ def test_real_connection() -> bool:
         config = FlextOracleWmsModuleConfig.for_testing()
 
         logger.info("Configuration loaded:")
-        logger.info("  Base URL: %s", config.base_url)
-        logger.info("  Username: %s", config.username)
+        logger.info("  Base URL: %s", config.oracle_wms_base_url)
+        logger.info("  Username: %s", config.oracle_wms_username)
         logger.info("  API Version: %s", config.api_version)
-        logger.info("  Page Size: %d", config.batch_size)
+        logger.info("  Timeout: %d", config.oracle_wms_timeout)
 
         # Create client and test connection
         logger.info("Creating Oracle WMS client...")

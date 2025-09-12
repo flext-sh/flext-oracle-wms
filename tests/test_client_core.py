@@ -16,7 +16,6 @@ from flext_oracle_wms import (
     FlextOracleWmsClient,
     FlextOracleWmsClientConfig,
     FlextOracleWmsConnectionError,
-    FlextOracleWmsError,
 )
 
 
@@ -54,9 +53,9 @@ class TestFlextOracleWmsClientCore:
         client = FlextOracleWmsClient(mock_config)
 
         # Test property access via config
-        assert client.config.base_url == mock_config.base_url
-        assert client.config.timeout == mock_config.timeout
-        assert client.config.max_retries == mock_config.max_retries
+        assert client.config.oracle_wms_base_url == mock_config.oracle_wms_base_url
+        assert client.config.oracle_wms_timeout == mock_config.oracle_wms_timeout
+        assert client.config.oracle_wms_max_retries == mock_config.oracle_wms_max_retries
         assert client.config.api_version == mock_config.api_version
 
     @pytest.mark.asyncio
@@ -81,12 +80,9 @@ class TestFlextOracleWmsClientCore:
         self, mock_config: FlextOracleWmsClientConfig
     ) -> None:
         """Test client startup failure."""
-        with patch("flext_api.FlextApiClient") as mock_api_client_class:
-            mock_api_client = AsyncMock()
-            mock_api_client.start.return_value = FlextResult[None].fail(
-                "Connection failed"
-            )
-            mock_api_client_class.return_value = mock_api_client
+        with patch("flext_oracle_wms.wms_client.create_flext_api") as mock_create_api:
+            # Make create_flext_api raise an exception to simulate connection failure
+            mock_create_api.side_effect = ConnectionError("Connection failed")
 
             client = FlextOracleWmsClient(mock_config)
 
@@ -348,9 +344,10 @@ class TestFlextOracleWmsClientCore:
 
     def test_client_error_handling_invalid_config(self) -> None:
         """Test client creation with invalid config."""
-        # Client validates config and raises FlextOracleWmsError for None
-        with pytest.raises(FlextOracleWmsError):
-            FlextOracleWmsClient(None)
+        # Client uses global singleton when config is None
+        client = FlextOracleWmsClient(None)
+        assert client.config is not None
+        assert isinstance(client.config, FlextOracleWmsConfig)
 
 
 @pytest.mark.unit

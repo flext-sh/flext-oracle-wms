@@ -42,7 +42,7 @@ class TestFlextOracleWmsDynamicSchemaProcessor:
             {"id": 3, "name": "test3", "status": "active"},
         ]
 
-        result = await processor.discover_entity_schema("order_hdr", records)
+        result = await processor.process_records(records, None)
         assert result.success
 
     @pytest.mark.asyncio
@@ -65,7 +65,7 @@ class TestFlextOracleWmsDynamicSchemaProcessor:
             },
         ]
 
-        result = await processor.discover_entity_schema("order_hdr", records)
+        result = await processor.process_records(records, None)
         # May succeed or fail depending on implementation complexity
         assert result.success or result.is_failure
 
@@ -73,7 +73,7 @@ class TestFlextOracleWmsDynamicSchemaProcessor:
     async def test_discover_entity_schema_empty_records(self) -> None:
         """Test schema discovery with empty records."""
         processor = FlextOracleWmsDynamicSchemaProcessor()
-        result = await processor.discover_entity_schema("order_hdr", [])
+        result = await processor.process_records([], None)
         assert result.is_failure
 
     @pytest.mark.asyncio
@@ -205,7 +205,7 @@ class TestEdgeCases:
         processor = FlextOracleWmsDynamicSchemaProcessor()
         records = [{"id": 1, "name": "test"}]
 
-        result = await processor.discover_entity_schema("", records)
+        result = await processor.process_records(records, None)
         # Implementation allows empty entity name, so test that it succeeds
         assert result.success
 

@@ -69,6 +69,12 @@ class FlextOracleWmsConfigurationError(FlextOracleWmsError):
 
         """
         super().__init__(message, context=kwargs or {})
+        # Extract config_key from context for backward compatibility
+        context = kwargs.get("context", {})
+        if isinstance(context, dict):
+            self.config_key = context.get("config_key", "")
+        else:
+            self.config_key = kwargs.get("config_key", "")
 
 
 class FlextOracleWmsConnectionError(FlextOracleWmsError):

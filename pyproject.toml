@@ -24,6 +24,7 @@ dependencies = [
     "httpx (>=0.28.1)",
     "pydantic-settings (>=2.10.1)",
     "python-dotenv (>=1.1.1,<2.0.0)",
+    "flext-core @ file:///home/marlonsc/flext/flext-core",
 ]
 [[project.authors]]
 name = "FLEXT Team"

@@ -316,7 +316,7 @@ class TestAuthenticator:
         # The constructor should raise an exception for invalid credentials
         with pytest.raises(FlextOracleWmsAuthenticationError) as exc_info:
             FlextOracleWmsAuthenticator(config)
-        
+
         assert "Username and password required for basic auth" in str(exc_info.value)
 
     def test_authenticator_string_representation(self) -> None:

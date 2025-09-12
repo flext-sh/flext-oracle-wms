@@ -6,6 +6,7 @@ SPDX-License-Identifier: MIT
 
 from flext_oracle_wms import (
     FlextOracleWmsClient,
+    FlextOracleWmsConfig,
     FlextOracleWmsModuleConfig,
     flext_oracle_wms_build_entity_url,
     flext_oracle_wms_validate_entity_name,
@@ -18,11 +19,10 @@ class TestClientSimpleNew:
     def setup_method(self) -> None:
         """Set up test fixtures."""
         self.config = FlextOracleWmsModuleConfig(
-            base_url="https://test.wms.com",
-            username="test_user",
-            password="test_pass",
-            timeout_seconds=30.0,
-            batch_size=100,
+            oracle_wms_base_url="https://test.wms.com",
+            oracle_wms_username="test_user",
+            oracle_wms_password="test_pass",
+            oracle_wms_timeout=30.0,
         )
 
     def test_client_creation(self) -> None:
@@ -153,17 +153,17 @@ class TestClientSimpleNew:
 
     def test_client_with_custom_config(self) -> None:
         """Test client with custom configuration."""
-        config = FlextOracleWmsModuleConfig(
-            base_url="https://custom.wms.com",
-            username="custom_user",
-            password="custom_pass",
-            timeout_seconds=60.0,
-            batch_size=150,
+        config = FlextOracleWmsConfig(
+            oracle_wms_base_url="https://custom.wms.com",
+            oracle_wms_username="custom_user",
+            oracle_wms_password="custom_pass",
+            oracle_wms_timeout=60,
+            oracle_wms_max_retries=3,
         )
 
         client = FlextOracleWmsClient(config)
-        assert client.config.timeout_seconds == 60.0
-        assert client.config.batch_size == 150
+        assert client.config.oracle_wms_timeout == 60
+        assert client.config.oracle_wms_max_retries == 3
 
     def test_discover_entities_method_validation(self) -> None:
         """Test that discover_entities method exists and is callable."""
@@ -197,8 +197,8 @@ class TestClientSimpleNew:
 
         # Test that config is accessible
         assert client.config is not None
-        assert hasattr(client.config, "base_url")
-        assert hasattr(client.config, "username")
+        assert hasattr(client.config, "oracle_wms_base_url")
+        assert hasattr(client.config, "oracle_wms_username")
 
     def test_client_internal_properties(self) -> None:
         """Test client internal properties exist."""
@@ -217,8 +217,8 @@ class TestClientSimpleNew:
         assert hasattr(client, "config")
         config = client.config
         assert config is not None
-        assert hasattr(config, "base_url")
-        assert hasattr(config, "username")
+        assert hasattr(config, "oracle_wms_base_url")
+        assert hasattr(config, "oracle_wms_username")
 
     def test_validate_entity_name_edge_cases(self) -> None:
         """Test entity name validation edge cases."""
@@ -257,5 +257,5 @@ class TestClientSimpleNew:
         client = FlextOracleWmsClient(self.config)
 
         # Should be able to access config properties
-        assert client.config.username == "test_user"
-        assert "test.wms.com" in str(client.config.base_url)
+        assert client.config.oracle_wms_username == "test_user"
+        assert "test.wms.com" in str(client.config.oracle_wms_base_url)

@@ -248,10 +248,10 @@ class FlextOracleWmsConstants(FlextOracleWmsSemanticConstants):
     """
 
     # Modern semantic access (Primary API) - direct references
-    Core = FlextOracleWmsSemanticConstants.Core
-    Api = FlextOracleWmsSemanticConstants.Api
+    Core = FlextOracleWmsSemanticConstants.OracleWmsCore
+    Api = FlextOracleWmsSemanticConstants.OracleWmsApi
     Authentication = FlextOracleWmsSemanticConstants.Authentication
-    Entities = FlextOracleWmsSemanticConstants.Entities
+    Entities = FlextOracleWmsSemanticConstants.OracleWmsEntities
     Filtering = FlextOracleWmsSemanticConstants.Filtering
     Pagination = FlextOracleWmsSemanticConstants.Pagination
     Processing = FlextOracleWmsSemanticConstants.Processing
@@ -346,8 +346,12 @@ class FlextOracleWmsDefaults:
     # API Configuration
     DEFAULT_API_VERSION = FlextOracleWmsSemanticConstants.OracleWmsApi.DEFAULT_VERSION
     DEFAULT_TIMEOUT = FlextOracleWmsSemanticConstants.OracleWmsApi.DEFAULT_TIMEOUT
-    DEFAULT_MAX_RETRIES = FlextOracleWmsSemanticConstants.OracleWmsApi.DEFAULT_MAX_RETRIES
-    DEFAULT_RETRY_DELAY = FlextOracleWmsSemanticConstants.OracleWmsApi.DEFAULT_RETRY_DELAY
+    DEFAULT_MAX_RETRIES = (
+        FlextOracleWmsSemanticConstants.OracleWmsApi.DEFAULT_MAX_RETRIES
+    )
+    DEFAULT_RETRY_DELAY = (
+        FlextOracleWmsSemanticConstants.OracleWmsApi.DEFAULT_RETRY_DELAY
+    )
 
     # Authentication
     MIN_TOKEN_LENGTH = FlextOracleWmsSemanticConstants.Authentication.MIN_TOKEN_LENGTH
@@ -393,7 +397,9 @@ class FlextOracleWmsDefaults:
     MAX_ENTITY_NAME_LENGTH = (
         FlextOracleWmsSemanticConstants.OracleWmsEntities.MAX_ENTITY_NAME_LENGTH
     )
-    ENTITY_NAME_PATTERN = FlextOracleWmsSemanticConstants.OracleWmsEntities.ENTITY_NAME_PATTERN
+    ENTITY_NAME_PATTERN = (
+        FlextOracleWmsSemanticConstants.OracleWmsEntities.ENTITY_NAME_PATTERN
+    )
 
     # Filter Limits
     MAX_FILTER_CONDITIONS = (
@@ -405,11 +411,17 @@ class FlextOracleWmsDefaults:
     HTTP_BAD_REQUEST = FlextOracleWmsSemanticConstants.OracleWmsApi.HTTP_BAD_REQUEST
     HTTP_UNAUTHORIZED = FlextOracleWmsSemanticConstants.OracleWmsApi.HTTP_UNAUTHORIZED
     HTTP_FORBIDDEN = FlextOracleWmsSemanticConstants.OracleWmsApi.HTTP_FORBIDDEN
-    MIN_HTTP_STATUS_CODE = FlextOracleWmsSemanticConstants.OracleWmsApi.MIN_HTTP_STATUS_CODE
-    MAX_HTTP_STATUS_CODE = FlextOracleWmsSemanticConstants.OracleWmsApi.MAX_HTTP_STATUS_CODE
+    MIN_HTTP_STATUS_CODE = (
+        FlextOracleWmsSemanticConstants.OracleWmsApi.MIN_HTTP_STATUS_CODE
+    )
+    MAX_HTTP_STATUS_CODE = (
+        FlextOracleWmsSemanticConstants.OracleWmsApi.MAX_HTTP_STATUS_CODE
+    )
 
     # Core constants
-    DEFAULT_ENVIRONMENT = FlextOracleWmsSemanticConstants.OracleWmsCore.DEFAULT_ENVIRONMENT
+    DEFAULT_ENVIRONMENT = (
+        FlextOracleWmsSemanticConstants.OracleWmsCore.DEFAULT_ENVIRONMENT
+    )
 
     # Authentication status codes
     AUTH_ERROR_CODES = FlextOracleWmsSemanticConstants.OracleWmsApi.AUTH_ERROR_CODES

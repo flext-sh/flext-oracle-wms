@@ -86,23 +86,29 @@ class OracleWmsApiService:
             response = await self._api_client.get(endpoint_path)
 
             if not response.success or response.value is None:
-                return FlextResult[FlextTypes.Core.Dict | list[FlextTypes.Core.Dict]].fail(
-                    response.error or "No response from Oracle WMS"
-                )
+                return FlextResult[
+                    FlextTypes.Core.Dict | list[FlextTypes.Core.Dict]
+                ].fail(response.error or "No response from Oracle WMS")
 
             api_resp = response.value
             if not api_resp.is_success:
-                return FlextResult[FlextTypes.Core.Dict | list[FlextTypes.Core.Dict]].fail(
-                    f"Entity data extraction failed: HTTP {api_resp.status_code}"
-                )
+                return FlextResult[
+                    FlextTypes.Core.Dict | list[FlextTypes.Core.Dict]
+                ].fail(f"Entity data extraction failed: HTTP {api_resp.status_code}")
 
             body = api_resp.body
             if isinstance(body, dict):
-                return FlextResult[FlextTypes.Core.Dict | list[FlextTypes.Core.Dict]].ok(body)
+                return FlextResult[
+                    FlextTypes.Core.Dict | list[FlextTypes.Core.Dict]
+                ].ok(body)
             if isinstance(body, list):
                 # Cast to expected type - Oracle WMS returns list of dicts
-                typed_body: list[FlextTypes.Core.Dict] = [item for item in body if isinstance(item, dict)]
-                return FlextResult[FlextTypes.Core.Dict | list[FlextTypes.Core.Dict]].ok(typed_body)
+                typed_body: list[FlextTypes.Core.Dict] = [
+                    item for item in body if isinstance(item, dict)
+                ]
+                return FlextResult[
+                    FlextTypes.Core.Dict | list[FlextTypes.Core.Dict]
+                ].ok(typed_body)
             return FlextResult[FlextTypes.Core.Dict | list[FlextTypes.Core.Dict]].fail(
                 "Invalid response body format"
             )
@@ -110,4 +116,6 @@ class OracleWmsApiService:
         except Exception as e:
             error_msg = f"Entity data extraction failed: {e}"
             self._logger.exception(error_msg)
-            return FlextResult[FlextTypes.Core.Dict | list[FlextTypes.Core.Dict]].fail(error_msg)
+            return FlextResult[FlextTypes.Core.Dict | list[FlextTypes.Core.Dict]].fail(
+                error_msg
+            )

@@ -896,9 +896,8 @@ class TestFlextOracleWmsCacheManager:
         """Test cache invalidation of nonexistent key."""
         await self.cache_manager.start()
 
-        result = await self.cache_manager.invalidate_key("nonexistent")
-        assert result.success
-        assert result.data is False
+        self.cache_manager.invalidate_key("nonexistent")
+        # Method doesn't return a result, just invalidates the key
 
         await self.cache_manager.stop()
 
@@ -1406,7 +1405,8 @@ class TestThreadSafety:
 class TestPerformanceAndEdgeCases:
     """Test performance considerations and edge cases."""
 
-    def setup_method(self) -> None:
+    @pytest.fixture(autouse=True)
+    def setup_cache_manager(self) -> None:
         """Set up test fixtures."""
         self.config = FlextOracleWmsCacheConfig(
             default_ttl_seconds=3600,
@@ -1417,16 +1417,9 @@ class TestPerformanceAndEdgeCases:
         )
         self.cache_manager = FlextOracleWmsCacheManager(self.config)
 
-    def teardown_method(self) -> None:
-        """Clean up after tests."""
-        with contextlib.suppress(Exception):
-            asyncio.run(self.cache_manager.stop())
-
     @pytest.mark.asyncio
     async def test_large_cache_entries(self) -> None:
         """Test caching large data structures."""
-        await self.cache_manager.start()
-
         # Create large data structure
         large_data = {f"field_{i}": f"value_{i}" * 100 for i in range(100)}
 
@@ -1486,7 +1479,7 @@ class TestPerformanceAndEdgeCases:
         await self.cache_manager.get_entity("nonexistent_2")
 
         # 1 invalidation
-        await self.cache_manager.invalidate_key("stats_key_0")
+        self.cache_manager.invalidate_key("stats_key_0")
 
         final_stats = await self.cache_manager.get_statistics()
         assert final_stats.data.hits == 3

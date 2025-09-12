@@ -20,10 +20,12 @@ from flext_oracle_wms.wms_constants import (
     OracleWMSFilterOperator,
 )
 from flext_oracle_wms.wms_exceptions import (
-    FlextOracleWmsDataValidationError,
     FlextOracleWmsError,
 )
-from flext_oracle_wms.wms_operations import FlextOracleWmsFilterConfig
+from flext_oracle_wms.wms_operations import (
+    FlextOracleWmsFilterConfig,
+    handle_operation_exception,
+)
 
 # Import base classes from flext-core instead of creating circular dependency
 
@@ -71,6 +73,18 @@ class FlextOracleWmsFilter(FlextOracleWmsFilterConfig):
 
     def _op_not_like(self, field_value: object, filter_value: object) -> bool:
         return not self._op_like(field_value, filter_value)
+
+    def _op_in(self, field_value: object, filter_value: object) -> bool:
+        """In operator with case sensitivity support."""
+        if isinstance(filter_value, (list, tuple)):
+            if isinstance(field_value, str) and not self.case_sensitive:
+                # Case insensitive comparison
+                return any(
+                    isinstance(item, str) and field_value.lower() == item.lower()
+                    for item in filter_value
+                )
+            return field_value in filter_value
+        return False
 
     async def filter_records_with_options(
         self,
@@ -121,6 +135,14 @@ class FlextOracleWmsFilter(FlextOracleWmsFilterConfig):
 
         """
         try:
+            # Validate input types
+            if not isinstance(records, list):
+                msg = "Records must be a list"
+                raise ValueError(msg)
+
+            if not isinstance(sort_field, str):
+                msg = "Sort field must be a string"
+                raise ValueError(msg)
 
             def key_func(record: FlextTypes.Core.Dict) -> str:
                 value = self._get_nested_value(record, sort_field)
@@ -130,10 +152,8 @@ class FlextOracleWmsFilter(FlextOracleWmsFilterConfig):
 
             sorted_records = sorted(records, key=key_func, reverse=not ascending)
             return FlextResult[list[FlextTypes.Core.Dict]].ok(sorted_records)
-        except FlextOracleWmsDataValidationError:
-            raise
-        except Exception as e:  # pragma: no cover - defensive
-            return FlextResult[list[FlextTypes.Core.Dict]].fail(f"Sort failed: {e}")
+        except Exception as e:
+            handle_operation_exception(e, "sort_records", logger)
 
     def _validate_filter_conditions_total(
         self,
@@ -155,8 +175,8 @@ class FlextOracleWmsFilter(FlextOracleWmsFilterConfig):
             return FlextResult[None].fail(str(e))
 
     # Preserve parent signature so __post_init__ from base class can call it safely
-    def _validate_filter_conditions_count(self) -> None:
-        super()._validate_filter_conditions_count()
+    def _validate_filter_conditions_count(self) -> FlextResult[None]:
+        return super()._validate_filter_conditions_count()
 
 
 def flext_oracle_wms_create_filter(

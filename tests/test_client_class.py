@@ -169,9 +169,9 @@ def test_client_configuration_access() -> None:
 
     # Test configuration access
     assert client.config is not None
-    assert hasattr(client.config, "base_url")
-    assert hasattr(client.config, "username")
-    assert hasattr(client.config, "environment")
+    assert hasattr(client.config, "oracle_wms_base_url")
+    assert hasattr(client.config, "oracle_wms_username")
+    assert hasattr(client.config, "extract_environment_from_url")
 
 
 def test_real_helper_functions() -> None:

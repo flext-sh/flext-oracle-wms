@@ -471,9 +471,14 @@ class FlextOracleWmsFilterConfig:
 
     def _op_equals(self, field_value: object, filter_value: object) -> bool:
         """Equality operator."""
-        return self._normalize_for_comparison(
-            field_value,
-        ) == self._normalize_for_comparison(filter_value)
+        normalized_field = self._normalize_for_comparison(field_value)
+        normalized_filter = self._normalize_for_comparison(filter_value)
+
+        # Handle list filter values (IN operation)
+        if isinstance(normalized_filter, list):
+            return normalized_field in normalized_filter
+
+        return normalized_field == normalized_filter
 
     def _op_not_equals(self, field_value: object, filter_value: object) -> bool:
         """Not equals operator."""
@@ -482,9 +487,7 @@ class FlextOracleWmsFilterConfig:
     def _op_greater_than(self, field_value: object, filter_value: object) -> bool:
         """Greater than operator."""
         try:
-            if isinstance(field_value, (int, float)) and isinstance(
-                filter_value, (int, float)
-            ):
+            if (isinstance(field_value, (int, float)) and isinstance(filter_value, (int, float))) or (isinstance(field_value, str) and isinstance(filter_value, str)):
                 return field_value > filter_value
             return False
         except (TypeError, ValueError):

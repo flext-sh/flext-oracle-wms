@@ -46,13 +46,11 @@ from flext_oracle_wms.wms_client import (
     # REMOVED: Helper functions eliminated in favor of direct class usage
 )
 
-# WMS Configuration - Configuration management
+# WMS Configuration - Single source of truth
 from flext_oracle_wms.wms_config import (
     FlextOracleWmsClientConfig,
+    FlextOracleWmsConfig,
     FlextOracleWmsModuleConfig,
-    WMSAPIVersion,
-    WMSRetryAttempts,
-    load_config,
 )
 from flext_oracle_wms.wms_constants import (
     FlextOracleWmsApiPaths,
@@ -183,6 +181,7 @@ __all__: FlextTypes.Core.StringList = [
     "FlextOracleWmsClient",
     "FlextOracleWmsClientConfig",
     "FlextOracleWmsClientMock",
+    "FlextOracleWmsConfig",
     "FlextOracleWmsConfigurationError",
     "FlextOracleWmsConnectionError",
     "FlextOracleWmsConstants",
@@ -213,6 +212,7 @@ __all__: FlextTypes.Core.StringList = [
     "FlextOracleWmsSemanticConstants",
     "FlextOracleWmsShipmentError",
     "FlextOracleWmsTimeoutError",
+    "FlextOracleWmsUnifiedConfig",
     "FlextOracleWmsValidationError",
     "OracleWMSAuthMethod",
     "OracleWMSEntityType",

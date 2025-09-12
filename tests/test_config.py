@@ -19,20 +19,22 @@ def test_config_creation_valid() -> None:
         oracle_wms_password="test_password",
         environment="development",
         api_version=FlextOracleWmsApiVersion.LGF_V10,
-        timeout=30.0,
-        max_retries=3,
-        verify_ssl=True,
-        enable_logging=True,
+        oracle_wms_timeout=30.0,
+        oracle_wms_max_retries=3,
+        oracle_wms_verify_ssl=True,
+        oracle_wms_enable_logging=True,
     )
 
-    assert config.oracle_wms_base_url == "https://ta29.wms.ocs.oraclecloud.com/raizen_test"
+    assert (
+        config.oracle_wms_base_url == "https://ta29.wms.ocs.oraclecloud.com/raizen_test"
+    )
     assert config.oracle_wms_username == "USER_WMS_INTEGRA"
     assert config.oracle_wms_password == "test_password"
     assert config.api_version == FlextOracleWmsApiVersion.LGF_V10
-    assert config.timeout == 30.0
-    assert config.max_retries == 3
-    assert config.verify_ssl is True
-    assert config.enable_logging is True
+    assert config.oracle_wms_timeout == 30.0
+    assert config.oracle_wms_max_retries == 3
+    assert config.oracle_wms_verify_ssl is True
+    assert config.oracle_wms_enable_logging is True
 
 
 @pytest.mark.unit
@@ -44,10 +46,10 @@ def test_config_validation_success() -> None:
         oracle_wms_password="test_password",
         environment="development",
         api_version=FlextOracleWmsApiVersion.LGF_V10,
-        timeout=30.0,
-        max_retries=3,
-        verify_ssl=True,
-        enable_logging=True,
+        oracle_wms_timeout=30.0,
+        oracle_wms_max_retries=3,
+        oracle_wms_verify_ssl=True,
+        oracle_wms_enable_logging=True,
     )
 
     # This should not raise an exception
@@ -66,12 +68,12 @@ def test_config_validation_invalid_url() -> None:
             oracle_wms_password="test_password",
             api_version=FlextOracleWmsApiVersion.LGF_V10,
             timeout=30,
-            max_retries=3,
-            verify_ssl=True,
-            enable_logging=True,
+            oracle_wms_max_retries=3,
+            oracle_wms_verify_ssl=True,
+            oracle_wms_enable_logging=True,
         )
-    
-    assert "Base URL must start with http:// or https://" in str(exc_info.value)
+
+    assert "Oracle WMS base URL must start with http:// or https://" in str(exc_info.value)
 
 
 @pytest.mark.unit
@@ -83,9 +85,9 @@ def test_config_validation_empty_username() -> None:
         oracle_wms_password="test_password",
         api_version=FlextOracleWmsApiVersion.LGF_V10,
         timeout=30,
-        max_retries=3,
-        verify_ssl=True,
-        enable_logging=True,
+        oracle_wms_max_retries=3,
+        oracle_wms_verify_ssl=True,
+        oracle_wms_enable_logging=True,
     )
 
     result = config.validate_business_rules()
@@ -102,9 +104,9 @@ def test_config_validation_empty_password() -> None:
         oracle_wms_password="",
         api_version=FlextOracleWmsApiVersion.LGF_V10,
         timeout=30,
-        max_retries=3,
-        verify_ssl=True,
-        enable_logging=True,
+        oracle_wms_max_retries=3,
+        oracle_wms_verify_ssl=True,
+        oracle_wms_enable_logging=True,
     )
 
     result = config.validate_business_rules()
@@ -122,10 +124,10 @@ def test_config_validation_invalid_timeout() -> None:
             oracle_wms_password="test_password",
             environment="development",
             api_version=FlextOracleWmsApiVersion.LGF_V10,
-            timeout=-1,  # Invalid negative timeout
-            max_retries=3,
-            verify_ssl=True,
-            enable_logging=True,
+            oracle_wms_timeout=-1,  # Invalid negative timeout
+            oracle_wms_max_retries=3,
+            oracle_wms_verify_ssl=True,
+            oracle_wms_enable_logging=True,
         )
 
     # Check that the error mentions invalid input
@@ -138,18 +140,16 @@ def test_config_validation_invalid_timeout() -> None:
 @pytest.mark.unit
 def test_config_validation_invalid_retries() -> None:
     """Test config validation with invalid retries."""
-    config = FlextOracleWmsClientConfig(
-        oracle_wms_base_url="https://test.wms.oraclecloud.com/test",
-        oracle_wms_username="test_user",
-        oracle_wms_password="test_password",
-        environment="development",
-        api_version=FlextOracleWmsApiVersion.LGF_V10,
-        timeout=30.0,
-        max_retries=-1,  # Invalid negative retries
-        verify_ssl=True,
-        enable_logging=True,
-    )
+    with pytest.raises(ValidationError) as exc_info:
+        FlextOracleWmsClientConfig(
+            oracle_wms_base_url="https://test.wms.oraclecloud.com/test",
+            oracle_wms_username="test_user",
+            oracle_wms_password="test_password",
+            api_version=FlextOracleWmsApiVersion.LGF_V10,
+            oracle_wms_timeout=30.0,
+            oracle_wms_max_retries=-1,  # Invalid negative retries
+            oracle_wms_verify_ssl=True,
+            oracle_wms_enable_logging=True,
+        )
 
-    result = config.validate_business_rules()
-    assert result.is_failure
-    assert "retries" in result.error.lower()
+    assert "Max retries cannot be negative" in str(exc_info.value)

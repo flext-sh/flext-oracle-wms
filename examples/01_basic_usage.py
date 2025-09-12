@@ -26,7 +26,6 @@ from pathlib import Path
 from flext_core import FlextResult, FlextTypes
 
 from flext_oracle_wms import (
-    FlextOracleWmsApiVersion,
     FlextOracleWmsClient,
     FlextOracleWmsClientConfig,
     FlextOracleWmsEntity,
@@ -46,39 +45,20 @@ except ImportError:
 
 
 def create_client_config() -> FlextOracleWmsClientConfig:
-    """Create Oracle WMS client configuration from environment variables."""
-    # Validate required environment variables
-    base_url = os.getenv("ORACLE_WMS_BASE_URL") or os.getenv(
-        "FLEXT_ORACLE_WMS_BASE_URL",
-    )
-    username = os.getenv("ORACLE_WMS_USERNAME") or os.getenv(
-        "FLEXT_ORACLE_WMS_USERNAME",
-    )
-    password = os.getenv("ORACLE_WMS_PASSWORD") or os.getenv(
-        "FLEXT_ORACLE_WMS_PASSWORD",
-    )
+    """Create Oracle WMS client configuration using singleton pattern.
 
-    if not all([base_url, username, password]):
-        msg = (
-            "Missing required environment variables. Please set:\n"
-            "- ORACLE_WMS_BASE_URL (or FLEXT_ORACLE_WMS_BASE_URL)\n"
-            "- ORACLE_WMS_USERNAME (or FLEXT_ORACLE_WMS_USERNAME)\n"
-            "- ORACLE_WMS_PASSWORD (or FLEXT_ORACLE_WMS_PASSWORD)"
-        )
-        raise ValueError(msg)
+    This function demonstrates how to use the global singleton configuration
+    with environment variables and parameter overrides.
+    """
+    # Method 1: Use global singleton with environment variables
+    env_result = FlextOracleWmsClientConfig.create_from_environment()
 
-    # Create configuration with environment-driven settings
-    return FlextOracleWmsClientConfig(
-        base_url=base_url,
-        username=username,
-        password=password,
-        environment=os.getenv("ORACLE_WMS_ENVIRONMENT", "raizen_test"),
-        api_version=FlextOracleWmsApiVersion.LGF_V10,
-        timeout=float(os.getenv("ORACLE_WMS_TIMEOUT", "30")),
-        max_retries=int(os.getenv("ORACLE_WMS_MAX_RETRIES", "3")),
-        verify_ssl=True,
-        enable_logging=True,
-    )
+    if env_result.success:
+        return env_result.value
+
+    # Method 2: Fallback to global singleton with default values
+    # if environment variables are not set
+    return FlextOracleWmsClientConfig.get_oracle_wms_global_instance()
 
 
 async def discover_wms_entities(
@@ -199,18 +179,23 @@ async def main() -> None:
     """Main example function demonstrating basic Oracle WMS usage patterns.
 
     This function demonstrates:
-    1. Configuration from environment variables
-    2. Client initialization
+    1. Configuration using singleton pattern
+    2. Client initialization with global config
     3. Entity discovery
     4. Data querying
     5. Error handling patterns
     """
     try:
-        # Step 1: Create configuration
+        # Step 1: Create configuration using singleton pattern
         config = create_client_config()
+        print(f"Using configuration: {config.oracle_wms_base_url}")
 
-        # Step 2: Initialize client
+        # Step 2: Initialize client (can use global singleton automatically)
+        # Option A: Use explicit config
         client = FlextOracleWmsClient(config)
+
+        # Option B: Use global singleton (no config parameter needed)
+        # client = FlextOracleWmsClient()  # Uses global singleton automatically
 
         # Start the client (required for API operations)
         start_result = await client.start()
