@@ -240,7 +240,7 @@ class FlextOracleWmsSemanticConstants(FlextConstants):
         PROCESSING_FAILED = "Data processing failed"
 
 
-class FlextOracleWmsConstants(FlextOracleWmsSemanticConstants):
+class FlextOracleWmsConstants:
     """Oracle WMS constants with backward compatibility.
 
     Legacy compatibility layer providing both modern semantic access

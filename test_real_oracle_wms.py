@@ -141,6 +141,7 @@ async def test_real_oracle_wms():
 
 async def test_oracle_wms_pipeline() -> None:
     """Test complete TAP -> TARGET pipeline with real data."""
+
     # This would test the complete pipeline but requires implementing
     # the actual data insertion in the target
 

@@ -203,11 +203,11 @@ class TestOracleWmsDeclarativeIntegration:
         config = FlextOracleWmsClientConfig(**env_config)
 
         # Test config validation
-        assert config.base_url.startswith("https://")
-        assert config.username
-        assert config.password
-        assert config.timeout > 0
-        assert config.max_retries > 0
+        assert config.oracle_wms_base_url.startswith("https://")
+        assert config.oracle_wms_username
+        assert config.oracle_wms_password
+        assert config.oracle_wms_timeout > 0
+        assert config.oracle_wms_max_retries > 0
 
         # Test client creation
         client = FlextOracleWmsClient(config)
@@ -473,6 +473,10 @@ class TestPerformanceIntegration:
         oracle_wms_client: FlextOracleWmsClient,
     ) -> None:
         """Test concurrent requests to different entities."""
+        # Skip this test if using real Oracle WMS (no mock server)
+        if not oracle_wms_client.config.oracle_wms_use_mock:
+            pytest.skip("Skipping concurrent test - requires mock server")
+
         entities = ["company", "facility", "item"]
 
         # Create concurrent requests

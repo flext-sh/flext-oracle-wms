@@ -15,7 +15,6 @@ Copyright (c) 2025 FLEXT Team. All rights reserved.
 SPDX-License-Identifier: MIT
 """
 
-
 import pytest
 from flext_core import FlextTypes
 
@@ -80,14 +79,14 @@ class TestFilterValidation:
     def test_validate_filter_conditions_empty(self) -> None:
         """Test validation with empty filters."""
         filter_engine = FlextOracleWmsFilter(case_sensitive=False, max_conditions=50)
-        result = filter_engine._validate_filter_conditions_count({})
-        assert result.success
+        # This method doesn't return anything, it raises an exception if validation fails
+        filter_engine._validate_filter_conditions_count()  # Should not raise
 
     def test_validate_filter_conditions_within_limit(self) -> None:
         """Test validation with filters within limit."""
         filter_engine = FlextOracleWmsFilter(max_conditions=5)
-        result = filter_engine._validate_filter_conditions_count()
-        assert result.success
+        # This method doesn't return anything, it raises an exception if validation fails
+        filter_engine._validate_filter_conditions_count()  # Should not raise
 
     def test_validate_filter_conditions_exceeds_limit(self) -> None:
         """Test validation fails when conditions exceed limit."""
@@ -195,7 +194,7 @@ class TestRecordFiltering:
         """Test filtering with result limit."""
         filter_engine = FlextOracleWmsFilter(case_sensitive=False, max_conditions=50)
         filters = {"status": "active"}
-        result = await filter_engine.filter_records(
+        result = await filter_engine.filter_records_with_options(
             self.sample_records,
             filters,
             limit=1,
@@ -606,9 +605,9 @@ class TestConvenienceFunctions:
         )
 
         assert result.success
-        # For NE operator with single value, it converts to list format
-        # but the actual filtering behavior returns records where status != "inactive"
-        assert len(result.data) == 1  # Only the "inactive" record
+        # For NE operator with single value, it returns records where status != "inactive"
+        assert len(result.data) == 2  # Company A and Company C (both "active")
+        assert all(record["status"] != "inactive" for record in result.data)
 
     @pytest.mark.asyncio
     async def test_filter_by_field_invalid_records(self) -> None:
@@ -696,16 +695,19 @@ class TestErrorHandling:
         """Test that sort_records properly handles validation errors."""
         filter_engine = FlextOracleWmsFilter(case_sensitive=False, max_conditions=50)
 
-        # This should raise FlextOracleWmsDataValidationError via handle_operation_exception
-        with pytest.raises(FlextOracleWmsDataValidationError):
-            await filter_engine.sort_records("invalid_records", "field")
+        # This should return a failed FlextResult due to validation
+        result = await filter_engine.sort_records("invalid_records", "field")
+        assert result.is_failure
+        assert "Records must be a list" in result.error
 
     def test_matches_condition_unknown_operator(self) -> None:
         """Test _matches_condition with unknown operator."""
         filter_engine = FlextOracleWmsFilter(case_sensitive=False, max_conditions=50)
-        result = filter_engine._matches_condition("value", {"unknown_op": "test"})
-        # Should return True since no valid operators were found to fail
-        assert result is True
+        result = filter_engine._matches_condition(
+            {"field": "value"}, "field", {"unknown_op": "test"}
+        )
+        # Should return False for unknown operators
+        assert result is False
 
     def test_matches_condition_invalid_operator_enum(self) -> None:
         """Test _matches_condition with invalid operator enum."""
@@ -762,7 +764,7 @@ class TestPerformanceAndEdgeCases:
         ]
 
         filter_engine = FlextOracleWmsFilter(case_sensitive=False, max_conditions=50)
-        result = await filter_engine.filter_records(
+        result = await filter_engine.filter_records_with_options(
             complex_records,
             {"data.level1.level2.level3.value": "target"},
         )

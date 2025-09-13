@@ -11,12 +11,13 @@ from enum import StrEnum
 from pathlib import Path
 
 from dotenv import load_dotenv
-from flext_core import FlextConstants, FlextTypes
+from flext_core import FlextTypes
 
 from flext_oracle_wms import (
     FlextOracleWmsApiVersion,
     FlextOracleWmsClient,
     FlextOracleWmsClientConfig,
+    FlextOracleWmsDefaults,
 )
 
 
@@ -34,8 +35,8 @@ class WmsEnvironmentConfig:
 
     name: str
     base_url: str
-    timeout: int = FlextConstants.Defaults.TIMEOUT
-    max_retries: int = FlextConstants.Defaults.MAX_RETRIES
+    timeout: int = FlextOracleWmsDefaults.DEFAULT_TIMEOUT
+    max_retries: int = FlextOracleWmsDefaults.DEFAULT_MAX_RETRIES
 
 
 def get_environment_configs() -> dict[Environment, WmsEnvironmentConfig]:
@@ -44,20 +45,20 @@ def get_environment_configs() -> dict[Environment, WmsEnvironmentConfig]:
         Environment.DEVELOPMENT: WmsEnvironmentConfig(
             name="Development",
             base_url="https://dev-wms.oraclecloud.com/dev_env",
-            timeout=FlextConstants.Defaults.DB_TIMEOUT,
-            max_retries=FlextConstants.Defaults.MAX_RETRIES,
+            timeout=FlextOracleWmsDefaults.DEFAULT_TIMEOUT,
+            max_retries=FlextOracleWmsDefaults.DEFAULT_MAX_RETRIES,
         ),
         Environment.STAGING: WmsEnvironmentConfig(
             name="Staging",
             base_url="https://staging-wms.oraclecloud.com/staging_env",
-            timeout=FlextConstants.Defaults.TIMEOUT,
-            max_retries=FlextConstants.Defaults.MAX_RETRIES,
+            timeout=FlextOracleWmsDefaults.DEFAULT_TIMEOUT,
+            max_retries=FlextOracleWmsDefaults.DEFAULT_MAX_RETRIES,
         ),
         Environment.PRODUCTION: WmsEnvironmentConfig(
             name="Production",
             base_url="https://prod-wms.oraclecloud.com/prod_env",
-            timeout=FlextConstants.Defaults.TIMEOUT,
-            max_retries=FlextConstants.Defaults.MAX_RETRIES,
+            timeout=FlextOracleWmsDefaults.DEFAULT_TIMEOUT,
+            max_retries=FlextOracleWmsDefaults.DEFAULT_MAX_RETRIES,
         ),
     }
 
@@ -130,8 +131,8 @@ def create_demo_config() -> FlextOracleWmsClientConfig:
         oracle_wms_username="demo_user",
         oracle_wms_password="demo_password",
         api_version=FlextOracleWmsApiVersion.LGF_V10,
-        oracle_wms_timeout=int(FlextConstants.Defaults.TIMEOUT),
-        oracle_wms_max_retries=FlextConstants.Defaults.MAX_RETRIES,
+        oracle_wms_timeout=int(FlextOracleWmsDefaults.DEFAULT_TIMEOUT),
+        oracle_wms_max_retries=FlextOracleWmsDefaults.DEFAULT_MAX_RETRIES,
         oracle_wms_verify_ssl=True,
         oracle_wms_enable_logging=True,
     )
@@ -170,10 +171,10 @@ def validate_configuration(config: FlextOracleWmsClientConfig) -> FlextTypes.Cor
     min_timeout_seconds = 10  # Minimum timeout threshold
 
     # Validate timeouts and retries
-    if config.timeout <= 0:
+    if config.oracle_wms_timeout <= 0:
         validation_results["errors"].append("Timeout must be positive")
         validation_results["valid"] = False
-    elif config.timeout < min_timeout_seconds:
+    elif config.oracle_wms_timeout < min_timeout_seconds:
         validation_results["warnings"].append(
             "Timeout less than 10 seconds may cause issues",
         )
@@ -181,10 +182,10 @@ def validate_configuration(config: FlextOracleWmsClientConfig) -> FlextTypes.Cor
     # Constants for validation
     max_retries_warning_threshold = 10  # High retry count threshold
 
-    if config.max_retries < 0:
+    if config.oracle_wms_max_retries < 0:
         validation_results["errors"].append("Max retries cannot be negative")
         validation_results["valid"] = False
-    elif config.max_retries > max_retries_warning_threshold:
+    elif config.oracle_wms_max_retries > max_retries_warning_threshold:
         validation_results["warnings"].append("High retry count may cause delays")
 
     # Create configuration summary
@@ -192,10 +193,10 @@ def validate_configuration(config: FlextOracleWmsClientConfig) -> FlextTypes.Cor
         "base_url": config.oracle_wms_base_url,
         "username": config.oracle_wms_username,
         "api_version": config.api_version.value,
-        "timeout": config.timeout,
-        "max_retries": config.max_retries,
-        "verify_ssl": config.verify_ssl,
-        "enable_logging": config.enable_logging,
+        "timeout": config.oracle_wms_timeout,
+        "max_retries": config.oracle_wms_max_retries,
+        "verify_ssl": config.oracle_wms_verify_ssl,
+        "enable_logging": config.oracle_wms_enable_logging,
     }
 
     return validation_results

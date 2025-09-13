@@ -11,18 +11,16 @@ helpers.py + plugin_implementation.py into unified operations.
 from __future__ import annotations
 
 import re
-from collections.abc import Callable, Mapping
+from collections.abc import Mapping
 from dataclasses import dataclass
-from datetime import UTC, datetime
 from logging import Logger
 from urllib.parse import urljoin, urlparse
 
-from flext_core import FlextLogger, FlextResult, FlextTypes
+from flext_core import FlextLogger, FlextResult, FlextTypes, FlextValidations, FlextUtilities
 
 from flext_oracle_wms.wms_constants import (
     FlextOracleWmsDefaults,
     FlextOracleWmsResponseFields,
-    OracleWMSFilterOperator,
 )
 from flext_oracle_wms.wms_exceptions import (
     FlextOracleWmsDataValidationError,
@@ -42,72 +40,7 @@ TOracleWmsFilterValue = object
 logger = FlextLogger(__name__)
 
 
-def validate_records_list(
-    records: object, field_name: str = "records"
-) -> FlextResult[bool]:
-    """Validate records parameter is a list using FlextResult pattern.
-
-    Args:
-        records: Object to validate as list
-        field_name: Name of field for error messages
-
-    Returns:
-        FlextResult[bool]: Success if records is a list, failure with error message otherwise
-
-    """
-    if not isinstance(records, list):
-        pretty = field_name.capitalize()
-        msg = f"{pretty} must be a list"
-        return FlextResult[bool].fail(msg)
-    return FlextResult[bool].ok(data=True)
-
-
-def validate_dict_parameter(param: object, field_name: str) -> FlextResult[bool]:
-    """Validate parameter is a dict using FlextResult pattern.
-
-    Args:
-        param: Object to validate as dict
-        field_name: Name of field for error messages
-
-    Returns:
-        FlextResult[bool]: Success if param is a dict, failure with error message otherwise
-
-    """
-    if not isinstance(param, dict):
-        pretty = field_name.capitalize()
-        msg = f"{pretty} must be a dictionary"
-        return FlextResult[bool].fail(msg)
-    return FlextResult[bool].ok(data=True)
-
-
-def validate_string_parameter(
-    param: object,
-    field_name: str,
-    *,
-    allow_empty: bool = False,
-) -> FlextResult[bool]:
-    """Validate string parameter using FlextResult pattern.
-
-    Args:
-        param: Object to validate as string
-        field_name: Name of field for error messages
-        allow_empty: Whether to allow empty strings
-
-    Returns:
-        FlextResult[bool]: Success if param is valid string, failure with error message otherwise
-
-    """
-    if not isinstance(param, str):
-        pretty = field_name.capitalize()
-        msg = f"{pretty} must be a string"
-        return FlextResult[bool].fail(msg)
-
-    if not allow_empty and not param.strip():
-        pretty = field_name.capitalize()
-        msg = f"{pretty} must be a non-empty string"
-        return FlextResult[bool].fail(msg)
-
-    return FlextResult[bool].ok(data=True)
+# Validation functions removed - use FlextValidations.TypeValidators directly
 
 
 def handle_operation_exception(
@@ -131,14 +64,14 @@ def handle_operation_exception(
 
 def flext_oracle_wms_normalize_url(base_url: str, path: str) -> str:
     """Normalize Oracle WMS URL by joining base URL and path properly."""
-    # Validate using FlextResult pattern
-    base_url_result = validate_string_parameter(base_url, "base_url")
-    if not base_url_result.success:
+    # Validate using flext-core directly
+    base_url_result = FlextValidations.TypeValidators.validate_string(base_url)
+    if base_url_result.is_failure:
         # Legacy tests expect base OracleWmsError
         raise FlextOracleWmsError(base_url_result.error or "Invalid base_url") from None
 
-    path_result = validate_string_parameter(path, "path")
-    if not path_result.success:
+    path_result = FlextValidations.TypeValidators.validate_string(path)
+    if path_result.is_failure:
         # Legacy tests expect base OracleWmsError
         raise FlextOracleWmsError(path_result.error or "Invalid path") from None
 
@@ -149,9 +82,9 @@ def flext_oracle_wms_normalize_url(base_url: str, path: str) -> str:
 def flext_oracle_wms_extract_environment_from_url(url: str) -> TOracleWmsEnvironment:
     """Extract environment identifier from Oracle WMS URL."""
     try:
-        # Validate using FlextResult pattern
-        url_result = validate_string_parameter(url, "url")
-        if not url_result.success:
+        # Validate using flext-core directly
+        url_result = FlextValidations.TypeValidators.validate_string(url)
+        if url_result.is_failure:
             error_message = f"Invalid URL for environment extraction: {url}"
             raise FlextOracleWmsError(error_message) from None
 
@@ -183,20 +116,20 @@ def flext_oracle_wms_build_entity_url(
 ) -> str:
     """Build complete entity URL for Oracle WMS API calls."""
     # Validate all string parameters using FlextResult pattern
-    base_url_result = validate_string_parameter(base_url, "base_url")
-    if not base_url_result.success:
+    base_url_result = FlextValidations.TypeValidators.validate_string(base_url)
+    if base_url_result.is_failure:
         # Legacy tests expect a generic message when any URL component is invalid
         msg = "All URL components must be non-empty strings"
         raise FlextOracleWmsError(msg) from None
 
-    environment_result = validate_string_parameter(environment, "environment")
-    if not environment_result.success:
+    environment_result = FlextValidations.TypeValidators.validate_string(environment)
+    if environment_result.is_failure:
         # Legacy tests expect a generic message when any URL component is invalid
         msg = "All URL components must be non-empty strings"
         raise FlextOracleWmsError(msg) from None
 
-    entity_name_result = validate_string_parameter(entity_name, "entity_name")
-    if not entity_name_result.success:
+    entity_name_result = FlextValidations.TypeValidators.validate_string(entity_name)
+    if entity_name_result.is_failure:
         # Legacy tests expect a generic message when any URL component is invalid
         msg = "All URL components must be non-empty strings"
         raise FlextOracleWmsError(msg) from None
@@ -212,11 +145,9 @@ def flext_oracle_wms_build_entity_url(
 
 def flext_oracle_wms_validate_entity_name(entity_name: str) -> FlextResult[str]:
     """Validate Oracle WMS entity name format."""
-    # Validate using FlextResult pattern
-    string_result = validate_string_parameter(
-        entity_name, "entity name", allow_empty=True
-    )
-    if not string_result.success:
+    # Validate using flext-core directly
+    string_result = FlextValidations.TypeValidators.validate_string(entity_name)
+    if string_result.is_failure:
         return FlextResult[str].fail(string_result.error or "Invalid entity name")
 
     normalized = entity_name.strip().lower()
@@ -327,7 +258,7 @@ def flext_oracle_wms_extract_pagination_info(
 def flext_oracle_wms_format_timestamp(timestamp: str | None = None) -> str:
     """Format timestamp for Oracle WMS operations."""
     if not timestamp:
-        return datetime.now(UTC).isoformat()
+        return FlextUtilities.Generators.generate_iso_timestamp()
     return str(timestamp)
 
 
@@ -349,9 +280,9 @@ def flext_oracle_wms_chunk_records(
             return FlextResult[bool].fail(msg)
         return FlextResult[bool].ok(data=True)
 
-    # Validate using FlextResult pattern
-    records_result = validate_records_list(records, "records")
-    if not records_result.success:
+    # Validate using flext-core directly
+    records_result = FlextValidations.TypeValidators.validate_list(records)
+    if records_result.is_failure:
         raise FlextOracleWmsError(records_result.error or "Invalid records") from None
 
     chunk_size_result = _validate_chunk_size(chunk_size)
@@ -363,200 +294,287 @@ def flext_oracle_wms_chunk_records(
     return [records[i : i + chunk_size] for i in range(0, len(records), chunk_size)]
 
 
-@dataclass
-class FlextOracleWmsFilterConfig:
-    """Oracle WMS advanced filtering configuration."""
+class FlextOracleWmsUnifiedOperations:
+    """Unified Oracle WMS operations class consolidating filtering, flattening, and utilities.
 
-    filters: TOracleWmsFilters
-    max_conditions: int = 50  # FlextOracleWmsDefaults.MAX_FILTER_CONDITIONS
+    This class eliminates duplication by providing all Oracle WMS operations
+    in a single, cohesive interface following SOLID principles.
+    """
 
-    def __post_init__(self) -> None:
-        """Validate filter conditions after initialization."""
-        # Accept being called without explicit filters in shim
-        if not hasattr(self, "filters") or self.filters is None:
-            object.__setattr__(self, "filters", {})
-        self._validate_filter_conditions_count()
+    class _FilterOperations:
+        """Nested class for filtering operations."""
 
-    def _validate_filter_conditions_count(self) -> None:
-        """Validate that filter conditions don't exceed maximum."""
-        if len(self.filters) > self.max_conditions:
-            msg = f"Too many filter conditions. Max: {self.max_conditions}, Got: {len(self.filters)}"
-            raise FlextOracleWmsDataValidationError(msg)
+        def __init__(self, parent: FlextOracleWmsUnifiedOperations) -> None:
+            """Initialize the instance."""
+            self._parent = parent
+            self._filters: TOracleWmsFilters = {}
+            self._max_conditions: int = 50
+            self._case_sensitive: bool = False
 
-    async def filter_records(
-        self,
-        records: TOracleWmsRecordBatch,
-    ) -> TOracleWmsRecordBatch:
-        """Apply filters to records."""
-        # Validate using FlextResult pattern
-        records_result = validate_records_list(records, "records")
-        if not records_result.success:
-            logger.error(
-                "Record filtering failed", extra={"error": records_result.error}
-            )
-            return []
+        def configure(
+            self,
+            *,
+            case_sensitive: bool = False,
+            max_conditions: int = 50,
+            filters: TOracleWmsFilters | None = None,
+        ) -> None:
+            """Configure filter operations."""
+            if max_conditions <= 0:
+                msg = "max_conditions must be positive"
+                raise FlextOracleWmsDataValidationError(msg)
+            max_conditions = min(max_conditions, 100)  # Enforce upper bound
 
-        return self._apply_record_filters(records)
+            self._case_sensitive = case_sensitive
+            self._max_conditions = max_conditions
+            self._filters = filters or {}
 
-    def _apply_record_filters(
-        self,
-        records: TOracleWmsRecordBatch,
-    ) -> TOracleWmsRecordBatch:
-        """Apply all filter conditions to records."""
-        if not self.filters:
-            return records
+        async def filter_records(
+            self,
+            records: list[FlextTypes.Core.Dict],
+            filters: FlextTypes.Core.Dict,
+        ) -> FlextResult[list[FlextTypes.Core.Dict]]:
+            """Filter records with given filters."""
+            # Validate filter count
+            if len(filters) > self._max_conditions:
+                return FlextResult[list[FlextTypes.Core.Dict]].fail(
+                    f"Too many filter conditions. Max: {self._max_conditions}, Got: {len(filters)}"
+                )
 
-        return [record for record in records if self._record_matches_filters(record)]
+            try:
+                filtered_records = [
+                    record
+                    for record in records
+                    if self._record_matches_filters(record, filters)
+                ]
 
-    def _record_matches_filters(self, record: TOracleWmsRecord) -> bool:
-        """Check if record matches all filter conditions."""
-        for field, filter_value in self.filters.items():
-            if not self._matches_condition(record, field, filter_value):
+                return FlextResult[list[FlextTypes.Core.Dict]].ok(filtered_records)
+            except Exception as e:
+                return FlextResult[list[FlextTypes.Core.Dict]].fail(
+                    f"Filtering failed: {e}"
+                )
+
+        def _record_matches_filters(
+            self, record: FlextTypes.Core.Dict, filters: FlextTypes.Core.Dict
+        ) -> bool:
+            """Check if record matches all filter conditions."""
+            for field, filter_value in filters.items():
+                if not self._matches_condition(record, field, filter_value):
+                    return False
+            return True
+
+        def _matches_condition(
+            self,
+            record: FlextTypes.Core.Dict,
+            field: str,
+            filter_value: object,
+        ) -> bool:
+            """Check if record field matches filter condition."""
+            field_value = self._get_nested_value(record, field)
+
+            if isinstance(filter_value, dict):
+                operator = str(filter_value.get("operator", "eq"))
+                value = filter_value.get("value")
+                return self._apply_operator(field_value, operator, value)
+
+            return self._op_equals(field_value, filter_value)
+
+        def _get_nested_value(
+            self, record: FlextTypes.Core.Dict, field_path: str
+        ) -> object:
+            """Get nested field value from record using dot notation."""
+            try:
+                value: object = record
+                for field_part in field_path.split("."):
+                    if isinstance(value, dict):
+                        value = value.get(field_part)
+                    else:
+                        return None
+                return value
+            except (AttributeError, KeyError, TypeError):
+                return None
+
+        def _apply_operator(
+            self, field_value: object, operator: str, filter_value: object
+        ) -> bool:
+            """Apply operator to field value."""
+            if operator == "eq":
+                return self._op_equals(field_value, filter_value)
+            if operator == "ne":
+                return not self._op_equals(field_value, filter_value)
+            if operator == "gt":
+                return self._op_greater_than(field_value, filter_value)
+            if operator == "lt":
+                return self._op_less_than(field_value, filter_value)
+            if operator == "gte":
+                return self._op_greater_than(
+                    field_value, filter_value
+                ) or self._op_equals(field_value, filter_value)
+            if operator == "lte":
+                return self._op_less_than(field_value, filter_value) or self._op_equals(
+                    field_value, filter_value
+                )
+            if operator == "in":
+                return self._op_in(field_value, filter_value)
+            if operator == "contains":
+                return self._op_contains(field_value, filter_value)
+            return False
+
+        def _op_equals(self, field_value: object, filter_value: object) -> bool:
+            """Check if field value equals filter value."""
+            if field_value is None and filter_value is None:
+                return True
+            if field_value is None or filter_value is None:
                 return False
-        return True
 
-    def _matches_condition(
-        self,
-        record: TOracleWmsRecord,
-        field: str,
-        filter_value: TOracleWmsFilterValue,
-    ) -> bool:
-        """Check if record field matches filter condition."""
-        field_value = self._get_nested_value(record, field)
+            if isinstance(field_value, str) and isinstance(filter_value, str):
+                if not self._case_sensitive:
+                    return field_value.lower() == filter_value.lower()
+                return field_value == filter_value
 
-        # Handle different filter value types
-        if isinstance(filter_value, dict):
-            # Advanced filter with operator
-            operator = str(filter_value.get("operator", "eq"))
-            value = filter_value.get("value")
-            return self._apply_operator(field_value, operator, value)
+            return field_value == filter_value
 
-        return self._op_equals(field_value, filter_value)
+        def _op_greater_than(self, field_value: object, filter_value: object) -> bool:
+            """Check if field value is greater than filter value."""
+            try:
+                if isinstance(field_value, (int, float)) and isinstance(
+                    filter_value, (int, float)
+                ):
+                    return field_value > filter_value
+                if isinstance(field_value, str) and isinstance(filter_value, str):
+                    return field_value > filter_value
+                return False
+            except (ValueError, TypeError):
+                return False
 
-    def _get_nested_value(self, record: TOracleWmsRecord, field_path: str) -> object:
-        """Get nested field value from record using dot notation."""
-        try:
-            value: object = record
-            for field_part in field_path.split("."):
+        def _op_less_than(self, field_value: object, filter_value: object) -> bool:
+            """Check if field value is less than filter value."""
+            try:
+                if isinstance(field_value, (int, float)) and isinstance(
+                    filter_value, (int, float)
+                ):
+                    return field_value < filter_value
+                if isinstance(field_value, str) and isinstance(filter_value, str):
+                    return field_value < filter_value
+                return False
+            except (ValueError, TypeError):
+                return False
+
+        def _op_in(self, field_value: object, filter_value: object) -> bool:
+            """Check if field value is in filter value list."""
+            if isinstance(filter_value, list):
+                return field_value in filter_value
+            return False
+
+        def _op_contains(self, field_value: object, filter_value: object) -> bool:
+            """Check if field value contains filter value."""
+            if isinstance(field_value, str) and isinstance(filter_value, str):
+                if not self._case_sensitive:
+                    return filter_value.lower() in field_value.lower()
+                return filter_value in field_value
+            return False
+
+    class _FlattenOperations:
+        """Nested class for flattening operations."""
+
+        def __init__(self, parent: FlextOracleWmsUnifiedOperations) -> None:
+            """Initialize the instance."""
+            self._parent = parent
+            self._separator: str = "_"
+            self._max_depth: int = 5
+            self._preserve_lists: bool = False
+
+        def configure(
+            self,
+            *,
+            separator: str = "_",
+            max_depth: int = 5,
+            preserve_lists: bool = False,
+        ) -> None:
+            """Configure flattening operations."""
+            self._separator = separator
+            self._max_depth = max_depth
+            self._preserve_lists = preserve_lists
+
+        def flatten_records(
+            self,
+            records: list[FlextTypes.Core.Dict],
+        ) -> list[FlextTypes.Core.Dict]:
+            """Flatten nested records."""
+            flattened_records = []
+            for record in records:
+                flattened_record = self._flatten_dict(record)
+                flattened_records.append(flattened_record)
+            return flattened_records
+
+        def _flatten_dict(
+            self,
+            data: FlextTypes.Core.Dict,
+            parent_key: str = "",
+            depth: int = 0,
+        ) -> FlextTypes.Core.Dict:
+            """Flatten a dictionary recursively."""
+            if depth >= self._max_depth:
+                return data
+
+            flattened = {}
+            for key, value in data.items():
+                new_key = f"{parent_key}{self._separator}{key}" if parent_key else key
+
                 if isinstance(value, dict):
-                    value = value.get(field_part)
+                    nested = self._flatten_dict(value, new_key, depth + 1)
+                    flattened.update(nested)
+                elif isinstance(value, list) and not self._preserve_lists:
+                    for i, item in enumerate(value):
+                        if isinstance(item, dict):
+                            nested = self._flatten_dict(
+                                item, f"{new_key}{self._separator}{i}", depth + 1
+                            )
+                            flattened.update(nested)
+                        else:
+                            flattened[f"{new_key}{self._separator}{i}"] = item
                 else:
-                    return None
-            return value
-        except (AttributeError, KeyError, TypeError):
-            return None
+                    flattened[new_key] = value
 
-    def _apply_operator(
-        self,
-        field_value: object,
-        operator: str,
-        filter_value: object,
-    ) -> bool:
-        """Apply filter operator to field value."""
-        operator_map: dict[str, Callable[[object, object], bool]] = {
-            OracleWMSFilterOperator.EQ: self._op_equals,
-            OracleWMSFilterOperator.NE: self._op_not_equals,
-            OracleWMSFilterOperator.GT: self._op_greater_than,
-            OracleWMSFilterOperator.GE: self._op_greater_equal,
-            OracleWMSFilterOperator.LT: self._op_less_than,
-            OracleWMSFilterOperator.LE: self._op_less_equal,
-            OracleWMSFilterOperator.IN: self._op_in,
-            OracleWMSFilterOperator.NOT_IN: self._op_not_in,
-            OracleWMSFilterOperator.LIKE: self._op_like,
-            OracleWMSFilterOperator.NOT_LIKE: self._op_not_like,
-        }
+            return flattened
 
-        op_func = operator_map.get(operator, self._op_equals)
-        return bool(op_func(field_value, filter_value))
+    def __init__(self) -> None:
+        """Initialize unified operations."""
+        self.filter = self._FilterOperations(self)
+        self.flatten = self._FlattenOperations(self)
 
-    def _op_equals(self, field_value: object, filter_value: object) -> bool:
-        """Equality operator."""
-        normalized_field = self._normalize_for_comparison(field_value)
-        normalized_filter = self._normalize_for_comparison(filter_value)
+    # Factory methods for backward compatibility
+    @classmethod
+    def create_filter(
+        cls,
+        *,
+        case_sensitive: bool = False,
+        max_conditions: int = 50,
+    ) -> FlextOracleWmsUnifiedOperations:
+        """Create unified operations configured for filtering."""
+        ops = cls()
+        ops.filter.configure(
+            case_sensitive=case_sensitive, max_conditions=max_conditions
+        )
+        return ops
 
-        # Handle list filter values (IN operation)
-        if isinstance(normalized_filter, list):
-            return normalized_field in normalized_filter
+    @classmethod
+    def create_flattener(
+        cls,
+        *,
+        separator: str = "_",
+        max_depth: int = 5,
+        preserve_lists: bool = False,
+    ) -> FlextOracleWmsUnifiedOperations:
+        """Create unified operations configured for flattening."""
+        ops = cls()
+        ops.flatten.configure(
+            separator=separator, max_depth=max_depth, preserve_lists=preserve_lists
+        )
+        return ops
 
-        return normalized_field == normalized_filter
 
-    def _op_not_equals(self, field_value: object, filter_value: object) -> bool:
-        """Not equals operator."""
-        return not self._op_equals(field_value, filter_value)
-
-    def _op_greater_than(self, field_value: object, filter_value: object) -> bool:
-        """Greater than operator."""
-        try:
-            if (isinstance(field_value, (int, float)) and isinstance(filter_value, (int, float))) or (isinstance(field_value, str) and isinstance(filter_value, str)):
-                return field_value > filter_value
-            return False
-        except (TypeError, ValueError):
-            return False
-
-    def _op_greater_equal(self, field_value: object, filter_value: object) -> bool:
-        """Greater than or equal operator."""
-        try:
-            if isinstance(field_value, (int, float)) and isinstance(
-                filter_value, (int, float)
-            ):
-                return field_value >= filter_value
-            return False
-        except (TypeError, ValueError):
-            return False
-
-    def _op_less_than(self, field_value: object, filter_value: object) -> bool:
-        """Less than operator."""
-        try:
-            if isinstance(field_value, (int, float)) and isinstance(
-                filter_value, (int, float)
-            ):
-                return field_value < filter_value
-            return False
-        except (TypeError, ValueError):
-            return False
-
-    def _op_less_equal(self, field_value: object, filter_value: object) -> bool:
-        """Less than or equal operator."""
-        try:
-            if isinstance(field_value, (int, float)) and isinstance(
-                filter_value, (int, float)
-            ):
-                return field_value <= filter_value
-            return False
-        except (TypeError, ValueError):
-            return False
-
-    def _op_in(self, field_value: object, filter_value: object) -> bool:
-        """In operator."""
-        if isinstance(filter_value, (list, tuple)):
-            return field_value in filter_value
-        return False
-
-    def _op_not_in(self, field_value: object, filter_value: object) -> bool:
-        """Not in operator."""
-        return not self._op_in(field_value, filter_value)
-
-    def _op_like(self, field_value: object, filter_value: object) -> bool:
-        """Like operator (SQL-style pattern matching)."""
-        if not isinstance(field_value, str) or not isinstance(filter_value, str):
-            return False
-
-        # Convert SQL LIKE pattern to regex
-        pattern = filter_value.replace("%", ".*").replace("_", ".")
-        try:
-            return bool(re.match(pattern, field_value, re.IGNORECASE))
-        except re.error:
-            return False
-
-    def _op_not_like(self, field_value: object, filter_value: object) -> bool:
-        """Not like operator."""
-        return not self._op_like(field_value, filter_value)
-
-    def _normalize_for_comparison(self, value: object) -> object:
-        """Normalize value for comparison operations."""
-        if isinstance(value, str):
-            return value.lower().strip()
-        return value
+# Alias for backward compatibility
+FlextOracleWmsFilterConfig = FlextOracleWmsFilter
 
 
 @dataclass
@@ -574,10 +592,10 @@ class FlextOracleWmsFlattener:
     def flatten_record(self, record: TOracleWmsRecord) -> TOracleWmsRecord:
         """Flatten a single Oracle WMS record."""
         try:
-            # Validate using FlextResult pattern
-            record_result = validate_dict_parameter(record, "record")
-            if not record_result.success:
-                msg = f"Record flattening failed: {record_result.error}"
+            # Validate using flext-core directly
+            validation_result = FlextValidations.TypeValidators.validate_dict(record)
+            if validation_result.is_failure:
+                msg = f"Record flattening failed: {validation_result.error}"
                 self._raise_flattening_error(msg)
 
             return self._flatten_dict(record)
@@ -588,10 +606,10 @@ class FlextOracleWmsFlattener:
     def flatten_records(self, records: TOracleWmsRecordBatch) -> TOracleWmsRecordBatch:
         """Flatten multiple Oracle WMS records."""
         try:
-            # Validate using FlextResult pattern
-            records_result = validate_records_list(records, "records")
-            if not records_result.success:
-                msg = f"Batch flattening failed: {records_result.error}"
+            # Validate using flext-core directly
+            validation_result = FlextValidations.TypeValidators.validate_list(records)
+            if validation_result.is_failure:
+                msg = f"Batch flattening failed: {validation_result.error}"
                 self._raise_flattening_error(msg)
 
             return [self.flatten_record(record) for record in records]
@@ -767,8 +785,5 @@ __all__: FlextTypes.Core.StringList = [
     "flext_oracle_wms_validate_api_response",
     "flext_oracle_wms_validate_entity_name",
     "handle_operation_exception",
-    "validate_dict_parameter",
-    # Validation Functions
-    "validate_records_list",
-    "validate_string_parameter",
+    # Validation functions removed - use FlextValidations.TypeValidators directly
 ]

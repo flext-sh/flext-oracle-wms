@@ -9,8 +9,9 @@ Follows Single Responsibility Principle - only handles API calls.
 
 from __future__ import annotations
 
-from flext_api import FlextApiClient
 from flext_core import FlextLogger, FlextResult, FlextTypes
+
+from flext_oracle_wms.http_client import FlextHttpClient
 
 
 class OracleWmsApiService:
@@ -19,7 +20,7 @@ class OracleWmsApiService:
     Single Responsibility: Only handles API calls to Oracle WMS.
     """
 
-    def __init__(self, api_client: FlextApiClient) -> None:
+    def __init__(self, api_client: FlextHttpClient) -> None:
         """Initialize API service."""
         self._api_client = api_client
         self._logger = FlextLogger(__name__)
@@ -51,12 +52,13 @@ class OracleWmsApiService:
                 )
 
             api_resp = response.value
-            if not api_resp.is_success:
+            # Check if response indicates success (assuming it's a dict with status info)
+            if isinstance(api_resp, dict) and api_resp.get("status") != "success":
                 return FlextResult[FlextTypes.Core.Dict].fail(
-                    f"API call failed: HTTP {api_resp.status_code}"
+                    f"API call failed: HTTP {api_resp.get('status_code', 'unknown')}"
                 )
 
-            body = api_resp.body
+            body = api_resp
             data_dict = body if isinstance(body, dict) else {}
             return FlextResult[FlextTypes.Core.Dict].ok(data_dict)
 
@@ -91,26 +93,17 @@ class OracleWmsApiService:
                 ].fail(response.error or "No response from Oracle WMS")
 
             api_resp = response.value
-            if not api_resp.is_success:
+            # Check if response indicates success (assuming it's a dict with status info)
+            if isinstance(api_resp, dict) and api_resp.get("status") != "success":
                 return FlextResult[
                     FlextTypes.Core.Dict | list[FlextTypes.Core.Dict]
-                ].fail(f"Entity data extraction failed: HTTP {api_resp.status_code}")
+                ].fail(
+                    f"Entity data extraction failed: HTTP {api_resp.get('status_code', 'unknown')}"
+                )
 
-            body = api_resp.body
-            if isinstance(body, dict):
-                return FlextResult[
-                    FlextTypes.Core.Dict | list[FlextTypes.Core.Dict]
-                ].ok(body)
-            if isinstance(body, list):
-                # Cast to expected type - Oracle WMS returns list of dicts
-                typed_body: list[FlextTypes.Core.Dict] = [
-                    item for item in body if isinstance(item, dict)
-                ]
-                return FlextResult[
-                    FlextTypes.Core.Dict | list[FlextTypes.Core.Dict]
-                ].ok(typed_body)
-            return FlextResult[FlextTypes.Core.Dict | list[FlextTypes.Core.Dict]].fail(
-                "Invalid response body format"
+            body = api_resp
+            return FlextResult[FlextTypes.Core.Dict | list[FlextTypes.Core.Dict]].ok(
+                body
             )
 
         except Exception as e:

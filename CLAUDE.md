@@ -13,19 +13,22 @@
 ### ⛔ ABSOLUTELY FORBIDDEN (IMMEDIATE TERMINATION POLICIES)
 
 #### 1. **Oracle WMS Direct Integration Violations**
+
 - **FORBIDDEN**: Direct `requests` or `httpx` imports for Oracle WMS operations
 - **FORBIDDEN**: Custom Oracle WMS authentication implementations
 - **FORBIDDEN**: Oracle WMS SQL queries outside flext-db-oracle patterns
 - **FORBIDDEN**: WMS business logic mixed with infrastructure code
 - **MANDATORY**: ALL Oracle WMS operations MUST use FlextOracleWmsClient
 
-#### 2. **Oracle WMS Schema Violations** 
+#### 2. **Oracle WMS Schema Violations**
+
 - **FORBIDDEN**: Hardcoded Oracle WMS entity schemas
 - **FORBIDDEN**: Manual WMS data transformations outside discovery patterns
 - **FORBIDDEN**: WMS inventory/shipping logic in client layer
 - **MANDATORY**: Use FlextOracleWmsEntityDiscovery for ALL schema operations
 
 #### 3. **Enterprise Oracle WMS Security Violations**
+
 - **FORBIDDEN**: Oracle WMS credentials in plain text or config files
 - **FORBIDDEN**: Custom Oracle WMS SSL/TLS handling
 - **FORBIDDEN**: WMS session management outside enterprise patterns
@@ -34,6 +37,7 @@
 ## 🏛️ ORACLE WMS INTEGRATION ARCHITECTURE (ENTERPRISE AUTHORITY)
 
 ### **Zero Tolerance Quality Requirements**
+
 ```bash
 # MANDATORY before ANY Oracle WMS development
 make validate              # Complete pipeline: 100% type safety + 90% coverage + zero security issues
@@ -45,6 +49,7 @@ make docker-validate       # Full Oracle WMS validation in production-like conta
 ### **Production Oracle WMS Configuration (MANDATORY)**
 
 #### Enterprise Oracle WMS Client (FLEXT AUTHORITY)
+
 ```python
 from flext_oracle_wms import FlextOracleWmsClient, FlextOracleWmsClientConfig
 
@@ -66,6 +71,7 @@ wms_client = FlextOracleWmsClient(config)
 ### **Oracle WMS Entity Discovery (PRODUCTION PATTERNS)**
 
 #### Inventory Management (Clean Architecture)
+
 ```python
 from flext_oracle_wms import (
     FlextOracleWmsEntityDiscovery,
@@ -92,6 +98,7 @@ if inventory_result.success:
 ### **Oracle WMS Business Operations (DOMAIN-DRIVEN DESIGN)**
 
 #### Warehouse Operations (Enterprise Patterns)
+
 ```python
 from flext_oracle_wms import (
     FlextOracleWmsOperations,
@@ -105,11 +112,11 @@ class EnterpriseWarehouseService:
         self.wms_client = wms_client
         self.inventory_mgr = FlextOracleWmsInventoryManager(wms_client)
         self.shipment_mgr = FlextOracleWmsShipmentManager(wms_client)
-    
+
     async def process_inbound_shipment(self, shipment_id: str) -> FlextResult[bool]:
         # Enterprise WMS inbound processing with Clean Architecture
         return await self.shipment_mgr.process_inbound(shipment_id)
-    
+
     async def execute_picking_wave(self, wave_id: str) -> FlextResult[PickingResult]:
         # Enterprise WMS picking operations with domain modeling
         return await self.inventory_mgr.execute_picking_wave(wave_id)
@@ -120,6 +127,7 @@ class EnterpriseWarehouseService:
 ### **Oracle WMS Authentication (PRODUCTION REQUIREMENTS)**
 
 #### OAuth2/Enterprise SSO Integration
+
 ```python
 from flext_oracle_wms import FlextOracleWmsAuthenticator, OracleWMSAuthMethod
 
@@ -136,6 +144,7 @@ authenticator = FlextOracleWmsAuthenticator(auth_config)
 ```
 
 ### **Oracle WMS Data Security (ENTERPRISE COMPLIANCE)**
+
 - **GDPR Compliance**: All WMS personal data handling via FlextOracleWmsDataProtection
 - **Audit Logging**: Complete WMS operation audit via FlextObservability patterns
 - **Encryption**: All WMS data encrypted in transit and at rest
@@ -144,17 +153,19 @@ authenticator = FlextOracleWmsAuthenticator(auth_config)
 ## 🔧 ORACLE WMS DEVELOPMENT COMMANDS (ENTERPRISE WORKFLOWS)
 
 ### **Mandatory Quality Gates (ZERO ERRORS TOLERANCE)**
+
 ```bash
 # MANDATORY: Complete Oracle WMS validation pipeline
 make validate                    # 100% type safety + 90% coverage + zero security vulnerabilities
 make oracle-connect             # Enterprise Oracle WMS connectivity verification
 make wms-schema                 # Complete WMS schema validation and compliance
-make wms-inventory              # Production inventory operation validation  
+make wms-inventory              # Production inventory operation validation
 make wms-shipping               # Enterprise shipping workflow validation
 make docker-validate            # Full containerized Oracle WMS validation
 ```
 
 ### **Oracle WMS Quality Standards (PRODUCTION REQUIREMENTS)**
+
 ```bash
 # Type Safety (ZERO TOLERANCE)
 make type-check                 # MyPy strict mode: zero errors across all WMS modules
@@ -169,6 +180,7 @@ make test-oracle                # Oracle database connectivity and schema testin
 ```
 
 ### **Oracle WMS Docker Operations (MAXIMUM CONTAINER USAGE)**
+
 ```bash
 # Enterprise Docker Workflows
 make docker-build               # Build production Oracle WMS containers
@@ -185,6 +197,7 @@ make docker-full-validation     # Complete enterprise validation workflow
 ```
 
 ### **Oracle WMS Development Workflow (CLEAN ARCHITECTURE)**
+
 ```bash
 # Environment Setup
 make setup                      # Complete Oracle WMS development environment
@@ -202,6 +215,7 @@ make diagnose                   # Complete Oracle WMS diagnostics and health che
 ### **Oracle WMS Integration Layers (PRODUCTION SEPARATION)**
 
 #### 1. **Domain Layer (WMS Business Logic)**
+
 ```python
 # src/flext_oracle_wms/domain/
 from flext_oracle_wms.wms_models import (
@@ -213,7 +227,8 @@ from flext_oracle_wms.wms_models import (
 ```
 
 #### 2. **Application Layer (WMS Use Cases)**
-```python  
+
+```python
 # src/flext_oracle_wms/wms_operations.py
 from flext_oracle_wms.wms_operations import (
     FlextOracleWmsInventoryManager,  # Inventory operations
@@ -223,6 +238,7 @@ from flext_oracle_wms.wms_operations import (
 ```
 
 #### 3. **Infrastructure Layer (Oracle WMS Client)**
+
 ```python
 # src/flext_oracle_wms/wms_client.py
 from flext_oracle_wms.wms_client import (
@@ -232,6 +248,7 @@ from flext_oracle_wms.wms_client import (
 ```
 
 #### 4. **Interface Layer (API & Discovery)**
+
 ```python
 # src/flext_oracle_wms/wms_api.py + wms_discovery.py
 from flext_oracle_wms import (
@@ -241,6 +258,7 @@ from flext_oracle_wms import (
 ```
 
 ### **Oracle WMS Configuration Architecture (ENTERPRISE PATTERNS)**
+
 ```python
 # MANDATORY: Enterprise configuration structure
 src/flext_oracle_wms/wms_config.py:
@@ -251,6 +269,7 @@ src/flext_oracle_wms/wms_config.py:
 ```
 
 ### **Oracle WMS Exception Architecture (COMPREHENSIVE ERROR HANDLING)**
+
 ```python
 # Complete Oracle WMS error hierarchy
 src/flext_oracle_wms/wms_exceptions.py:
@@ -265,16 +284,17 @@ src/flext_oracle_wms/wms_exceptions.py:
 ## 📦 FLEXT ECOSYSTEM INTEGRATION (MANDATORY DEPENDENCIES)
 
 ### **FLEXT Foundation Dependencies (ENTERPRISE INTEGRATION)**
+
 ```python
 # MANDATORY: Core FLEXT patterns
 from flext_core import (
     FlextResult,              # Railway-oriented programming (ALL operations)
-    FlextLogger,              # Enterprise logging patterns  
+    FlextLogger,              # Enterprise logging patterns
     FlextContainer,           # Dependency injection container
     FlextConfig,             # Configuration management
 )
 
-# MANDATORY: Enterprise API patterns  
+# MANDATORY: Enterprise API patterns
 from flext_api import (
     FlextApiClient,          # Base API client patterns
     FlextApiAuth,            # Enterprise authentication
@@ -299,6 +319,7 @@ from flext_db_oracle import (
 ### **Oracle WMS Import Standards (ZERO TOLERANCE ENFORCEMENT)**
 
 #### ✅ **MANDATORY: Always Use These Patterns**
+
 ```python
 # CORRECT: Root-level imports ONLY
 from flext_oracle_wms import FlextOracleWmsClient
@@ -311,6 +332,7 @@ result: FlextResult[List[WMSEntity]] = await client.discover_entities()
 ```
 
 #### ❌ **ABSOLUTELY FORBIDDEN: These Import Patterns**
+
 ```python
 # FORBIDDEN: Internal module imports
 from flext_oracle_wms.wms_client import FlextOracleWmsClient  # ❌ VIOLATION
@@ -318,7 +340,7 @@ from flext_oracle_wms.internal.auth import WMSAuth            # ❌ VIOLATION
 
 # FORBIDDEN: Direct Oracle WMS integrations
 import requests                                               # ❌ VIOLATION
-import httpx                                                 # ❌ VIOLATION  
+import httpx                                                 # ❌ VIOLATION
 import oracledb                                              # ❌ VIOLATION (use flext-db-oracle)
 
 # FORBIDDEN: Custom WMS implementations
@@ -328,6 +350,7 @@ class MyWMSClient: pass                                      # ❌ VIOLATION (us
 ## 🔍 ORACLE WMS QUALITY REQUIREMENTS (ENTERPRISE STANDARDS)
 
 ### **Type Safety (100% COMPLIANCE MANDATORY)**
+
 ```python
 # MANDATORY: All Oracle WMS operations must be typed
 async def get_inventory_data(
@@ -336,8 +359,8 @@ async def get_inventory_data(
     filters: Optional[Dict[str, Any]] = None,
 ) -> FlextResult[List[FlextOracleWmsEntity]]:
     """Get inventory data with complete type safety."""
-    
-# MANDATORY: Use FlextResult for ALL operations  
+
+# MANDATORY: Use FlextResult for ALL operations
 result = await wms_client.get_inventory_data("inventory_items")
 if result.success:
     entities: List[FlextOracleWmsEntity] = result.value
@@ -346,6 +369,7 @@ else:
 ```
 
 ### **Error Handling (COMPREHENSIVE COVERAGE)**
+
 ```python
 # MANDATORY: Use Oracle WMS exception hierarchy
 from flext_oracle_wms.wms_exceptions import (
@@ -373,6 +397,7 @@ except FlextOracleWmsConnectionError as e:
 ### **Domain-Driven Oracle WMS Design (MANDATORY PATTERNS)**
 
 #### Enterprise WMS Service Layer
+
 ```python
 # MANDATORY: Clean Architecture separation
 from flext_oracle_wms import (
@@ -385,15 +410,15 @@ from flext_core import FlextResult, get_logger
 
 class EnterpriseWarehouseOrchestrator:
     """Domain service orchestrating Oracle WMS operations."""
-    
+
     def __init__(self, wms_client: FlextOracleWmsClient):
         self.wms_client = wms_client
         self.inventory_mgr = FlextOracleWmsInventoryManager(wms_client)
-        self.shipment_mgr = FlextOracleWmsShipmentManager(wms_client) 
+        self.shipment_mgr = FlextOracleWmsShipmentManager(wms_client)
         self.logger = get_logger(__name__)
-    
+
     async def orchestrate_order_fulfillment(
-        self, 
+        self,
         order_id: str
     ) -> FlextResult[OrderFulfillmentResult]:
         """Orchestrate complete order fulfillment in Oracle WMS."""
@@ -401,18 +426,19 @@ class EnterpriseWarehouseOrchestrator:
         inventory_check = await self.inventory_mgr.check_availability(order_id)
         if inventory_check.is_failure:
             return FlextResult.fail(f"Inventory check failed: {inventory_check.error}")
-        
+
         # Step 2: Create picking wave
         picking_wave = await self.inventory_mgr.create_picking_wave(order_id)
         if picking_wave.is_failure:
             return FlextResult.fail(f"Picking wave creation failed: {picking_wave.error}")
-        
+
         # Step 3: Execute shipment processing
         shipment = await self.shipment_mgr.process_outbound_shipment(order_id)
         return shipment
 ```
 
 #### Oracle WMS Configuration Patterns (ENTERPRISE SECURITY)
+
 ```python
 # MANDATORY: Enterprise configuration with secrets management
 from flext_oracle_wms import FlextOracleWmsClientConfig
@@ -420,27 +446,27 @@ from flext_core import FlextSecretManager
 
 class OracleWMSConfigurationService:
     """Enterprise Oracle WMS configuration management."""
-    
+
     @classmethod
     async def create_production_config(cls) -> FlextOracleWmsClientConfig:
         """Create production Oracle WMS configuration."""
         secret_manager = FlextSecretManager()
-        
+
         return FlextOracleWmsClientConfig(
             # Production Oracle WMS Cloud endpoint
             base_url=await secret_manager.get_secret("ORACLE_WMS_PRODUCTION_URL"),
-            
+
             # Enterprise authentication
             username=await secret_manager.get_secret("ORACLE_WMS_SERVICE_USER"),
             password=await secret_manager.get_secret("ORACLE_WMS_SERVICE_PASS"),
-            
+
             # Production settings
             auth_method=OracleWMSAuthMethod.OAUTH2,
             timeout=300,  # 5 minutes for production operations
             retry_attempts=5,  # Enterprise retry policy
             enable_ssl_verification=True,
             connection_pool_size=20,
-            
+
             # Enterprise monitoring
             enable_metrics=True,
             enable_tracing=True,
@@ -451,6 +477,7 @@ class OracleWMSConfigurationService:
 ### **Oracle WMS Testing Patterns (ENTERPRISE VALIDATION)**
 
 #### Integration Testing with Real Oracle WMS
+
 ```python
 # MANDATORY: Real Oracle WMS integration testing
 import pytest
@@ -458,27 +485,28 @@ from flext_oracle_wms import FlextOracleWmsClient
 from flext_core import FlextResult
 
 @pytest.mark.integration
-@pytest.mark.wms 
+@pytest.mark.wms
 @pytest.mark.oracle
 async def test_oracle_wms_inventory_integration():
     """Test real Oracle WMS inventory operations."""
     # Use test Oracle WMS instance
     config = await OracleWMSConfigurationService.create_test_config()
     wms_client = FlextOracleWmsClient(config)
-    
+
     # Test inventory discovery
     discovery_result = await wms_client.discover_entities(
         entity_type=OracleWMSEntityType.INVENTORY
     )
     assert discovery_result.success
     assert len(discovery_result.value) > 0
-    
+
     # Test inventory operations
     inventory_data = await wms_client.get_inventory_data("test_entity")
     assert inventory_data.success
 ```
 
 #### Docker-based Oracle WMS Testing
+
 ```python
 # MANDATORY: Containerized testing with real Oracle WMS
 @pytest.mark.docker
@@ -488,11 +516,11 @@ async def test_oracle_wms_complete_workflow_in_docker():
     # Docker will provide real Oracle WMS instance
     async with OracleWMSDockerEnvironment() as wms_env:
         wms_client = await wms_env.get_authenticated_client()
-        
+
         # Execute complete business workflow
         orchestrator = EnterpriseWarehouseOrchestrator(wms_client)
         fulfillment_result = await orchestrator.orchestrate_order_fulfillment("TEST_ORDER_001")
-        
+
         assert fulfillment_result.success
         assert fulfillment_result.value.status == "FULFILLED"
 ```
@@ -500,6 +528,7 @@ async def test_oracle_wms_complete_workflow_in_docker():
 ## 🎯 ORACLE WMS CRITICAL SUCCESS METRICS (ENTERPRISE KPIS)
 
 ### **Production Readiness Requirements (ZERO TOLERANCE)**
+
 - **Type Safety**: 100% MyPy compliance across all Oracle WMS modules
 - **Test Coverage**: 90% minimum with real Oracle WMS integration tests
 - **Security Compliance**: Zero security vulnerabilities in Oracle WMS operations
@@ -508,10 +537,11 @@ async def test_oracle_wms_complete_workflow_in_docker():
 - **Error Handling**: 100% of Oracle WMS errors handled via FlextResult patterns
 
 ### **Oracle WMS Integration Health Metrics**
+
 ```bash
 # MANDATORY: Health monitoring commands
 make oracle-connect           # Oracle WMS connectivity health
-make wms-schema              # Schema compliance validation  
+make wms-schema              # Schema compliance validation
 make wms-inventory           # Inventory operations health
 make wms-shipping            # Shipping workflows health
 make docker-validate         # Complete containerized validation
@@ -520,6 +550,7 @@ make docker-validate         # Complete containerized validation
 ## ⚡ PERFORMANCE OPTIMIZATION (ENTERPRISE ORACLE WMS)
 
 ### **Oracle WMS Connection Optimization**
+
 - **Connection Pooling**: Enterprise connection pool management
 - **Caching Strategy**: Intelligent Oracle WMS entity caching
 - **Retry Logic**: Exponential backoff with jitter for Oracle WMS operations
@@ -529,16 +560,18 @@ make docker-validate         # Complete containerized validation
 ## 📋 ORACLE WMS ENTERPRISE INTEGRATION CHECKLIST
 
 ### **Pre-Development Validation (MANDATORY)**
+
 ```bash
 # REQUIRED: Execute BEFORE any Oracle WMS development
 □ make validate                    # Zero errors across all quality gates
-□ make oracle-connect             # Verify Oracle WMS connectivity  
+□ make oracle-connect             # Verify Oracle WMS connectivity
 □ make wms-schema                 # Validate schema compliance
 □ make docker-validate            # Container-based validation
 □ make security                   # Zero security vulnerabilities
 ```
 
 ### **Development Standards Compliance**
+
 ```bash
 # REQUIRED: During development
 □ 100% type safety (MyPy strict mode)
@@ -550,6 +583,7 @@ make docker-validate         # Complete containerized validation
 ```
 
 ### **Production Deployment Readiness**
+
 ```bash
 # REQUIRED: Before production
 □ Enterprise Oracle WMS configuration validated
@@ -577,17 +611,20 @@ make docker-validate         # Complete containerized validation
 ## 🔗 RELATED FLEXT ECOSYSTEM PROJECTS
 
 ### **Core Dependencies (MANDATORY)**
+
 - **flext-core**: Foundation patterns, FlextResult, logging, DI container
 - **flext-api**: Enterprise API client patterns and authentication
 - **flext-db-oracle**: Oracle database connectivity and schema management
 - **flext-observability**: Monitoring, tracing, and alerting
 
 ### **Singer Integration Projects**
+
 - **flext-tap-oracle-wms**: Oracle WMS data extraction via Singer
-- **flext-target-oracle-wms**: Oracle WMS data loading via Singer 
+- **flext-target-oracle-wms**: Oracle WMS data loading via Singer
 - **flext-dbt-oracle-wms**: Oracle WMS data transformations via dbt
 
 ### **Enterprise Platform Integration**
+
 - **flext-auth**: Enterprise authentication and authorization
 - **flext-config**: Centralized configuration management
 - **flext-quality**: Quality gates and validation framework

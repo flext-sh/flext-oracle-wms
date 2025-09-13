@@ -907,7 +907,7 @@ async def _query_all_inventory_data(
 
 ```python
 # Oracle WMS specific error handling
-from typing import List, Dict, object
+from typing import List, Dict
 from dataclasses import dataclass
 
 @dataclass

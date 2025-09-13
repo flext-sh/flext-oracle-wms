@@ -39,15 +39,13 @@ class FlextOracleWmsConfig(FlextConfig):
     # Oracle WMS specific fields - extend the base FlextConfig
     oracle_wms_base_url: str = Field(
         default="https://ta29.wms.ocs.oraclecloud.com/raizen_test",
-        description="Oracle WMS base URL"
+        description="Oracle WMS base URL",
     )
     oracle_wms_username: str = Field(
-        default="USER_WMS_INTEGRA",
-        description="Oracle WMS username"
+        default="USER_WMS_INTEGRA", description="Oracle WMS username"
     )
     oracle_wms_password: str = Field(
-        default="jmCyS7BK94YvhS@",
-        description="Oracle WMS password"
+        default="jmCyS7BK94YvhS@", description="Oracle WMS password"
     )
     api_version: FlextOracleWmsApiVersion = Field(
         default=FlextOracleWmsApiVersion.LGF_V10,
@@ -59,12 +57,20 @@ class FlextOracleWmsConfig(FlextConfig):
     )
 
     # Connection settings - extend base timeout with Oracle WMS specific values
-    oracle_wms_timeout: int = Field(default=30, description="Oracle WMS request timeout in seconds")
-    oracle_wms_max_retries: int = Field(default=3, description="Oracle WMS maximum retry attempts")
-    oracle_wms_verify_ssl: bool = Field(default=True, description="Oracle WMS SSL certificate verification")
+    oracle_wms_timeout: int = Field(
+        default=30, description="Oracle WMS request timeout in seconds"
+    )
+    oracle_wms_max_retries: int = Field(
+        default=3, description="Oracle WMS maximum retry attempts"
+    )
+    oracle_wms_verify_ssl: bool = Field(
+        default=True, description="Oracle WMS SSL certificate verification"
+    )
 
     # Feature flags - extend base logging with Oracle WMS specific flags
-    oracle_wms_enable_logging: bool = Field(default=True, description="Enable Oracle WMS specific logging")
+    oracle_wms_enable_logging: bool = Field(
+        default=True, description="Enable Oracle WMS specific logging"
+    )
     oracle_wms_use_mock: bool = Field(
         default=False,
         description="Use internal mock server explicitly (testing only)",
@@ -116,7 +122,9 @@ class FlextOracleWmsConfig(FlextConfig):
 
         # Validate mock usage
         if self.oracle_wms_use_mock and not self.oracle_wms_base_url:
-            validation_errors.append("Oracle WMS base URL is required even when using mock")
+            validation_errors.append(
+                "Oracle WMS base URL is required even when using mock"
+            )
 
         if validation_errors:
             return FlextResult[None].fail("; ".join(validation_errors))
@@ -184,10 +192,12 @@ class FlextOracleWmsConfig(FlextConfig):
     @classmethod
     def for_testing(cls) -> FlextOracleWmsConfig:
         """Create configuration optimized for testing."""
+        # Use environment variable for test password to avoid hardcoded values
+        test_password = os.getenv("TEST_WMS_PASSWORD", "test_password")
         return cls(
             oracle_wms_base_url="https://test.example.com",
             oracle_wms_username="test_user",
-            oracle_wms_password="test_password",  # noqa: S106
+            oracle_wms_password=test_password,
             api_version=FlextOracleWmsApiVersion.LGF_V10,
             auth_method=OracleWMSAuthMethod.BASIC,
             oracle_wms_timeout=5,
@@ -244,7 +254,9 @@ class FlextOracleWmsConfig(FlextConfig):
                 return FlextResult[FlextOracleWmsConfig].fail(error_msg)
             return FlextResult[FlextOracleWmsConfig].ok(config)
         except Exception as e:
-            return FlextResult[FlextOracleWmsConfig].fail(f"Failed to create production config: {e}")
+            return FlextResult[FlextOracleWmsConfig].fail(
+                f"Failed to create production config: {e}"
+            )
 
     @classmethod
     def get_oracle_wms_global_instance(cls, **kwargs: object) -> FlextOracleWmsConfig:
@@ -287,7 +299,9 @@ class FlextOracleWmsConfig(FlextConfig):
         return config
 
     @classmethod
-    def create_from_environment(cls, **override_kwargs: object) -> FlextResult[FlextOracleWmsConfig]:
+    def create_from_environment(
+        cls, **override_kwargs: object
+    ) -> FlextResult[FlextOracleWmsConfig]:
         """Create Oracle WMS configuration from environment variables.
 
         Uses the singleton pattern from flext-core and extends it with Oracle WMS specific fields.
@@ -315,26 +329,50 @@ class FlextOracleWmsConfig(FlextConfig):
         try:
             # Build configuration from environment variables with overrides
             env_config = {
-                "oracle_wms_base_url": override_kwargs.get("oracle_wms_base_url",
-                    os.getenv("ORACLE_WMS_BASE_URL", "https://ta29.wms.ocs.oraclecloud.com/raizen_test")),
-                "oracle_wms_username": override_kwargs.get("oracle_wms_username",
-                    os.getenv("ORACLE_WMS_USERNAME", "USER_WMS_INTEGRA")),
-                "oracle_wms_password": override_kwargs.get("oracle_wms_password",
-                    os.getenv("ORACLE_WMS_PASSWORD", "jmCyS7BK94YvhS@")),
-                "api_version": override_kwargs.get("api_version",
-                    FlextOracleWmsApiVersion(os.getenv("ORACLE_WMS_API_VERSION", "LGF_V10"))),
-                "auth_method": override_kwargs.get("auth_method",
-                    OracleWMSAuthMethod(os.getenv("ORACLE_WMS_AUTH_METHOD", "BASIC"))),
-                "oracle_wms_timeout": override_kwargs.get("oracle_wms_timeout",
-                    int(os.getenv("ORACLE_WMS_TIMEOUT", "30"))),
-                "oracle_wms_max_retries": override_kwargs.get("oracle_wms_max_retries",
-                    int(os.getenv("ORACLE_WMS_MAX_RETRIES", "3"))),
-                "oracle_wms_verify_ssl": override_kwargs.get("oracle_wms_verify_ssl",
-                    os.getenv("ORACLE_WMS_VERIFY_SSL", "true").lower() == "true"),
-                "oracle_wms_enable_logging": override_kwargs.get("oracle_wms_enable_logging",
-                    os.getenv("ORACLE_WMS_ENABLE_LOGGING", "true").lower() == "true"),
-                "oracle_wms_use_mock": override_kwargs.get("oracle_wms_use_mock",
-                    os.getenv("ORACLE_WMS_USE_MOCK", "false").lower() == "true"),
+                "oracle_wms_base_url": override_kwargs.get(
+                    "oracle_wms_base_url",
+                    os.getenv(
+                        "ORACLE_WMS_BASE_URL",
+                        "https://ta29.wms.ocs.oraclecloud.com/raizen_test",
+                    ),
+                ),
+                "oracle_wms_username": override_kwargs.get(
+                    "oracle_wms_username",
+                    os.getenv("ORACLE_WMS_USERNAME", "USER_WMS_INTEGRA"),
+                ),
+                "oracle_wms_password": override_kwargs.get(
+                    "oracle_wms_password",
+                    os.getenv("ORACLE_WMS_PASSWORD", "jmCyS7BK94YvhS@"),
+                ),
+                "api_version": override_kwargs.get(
+                    "api_version",
+                    FlextOracleWmsApiVersion(
+                        os.getenv("ORACLE_WMS_API_VERSION", "LGF_V10")
+                    ),
+                ),
+                "auth_method": override_kwargs.get(
+                    "auth_method",
+                    OracleWMSAuthMethod(os.getenv("ORACLE_WMS_AUTH_METHOD", "BASIC")),
+                ),
+                "oracle_wms_timeout": override_kwargs.get(
+                    "oracle_wms_timeout", int(os.getenv("ORACLE_WMS_TIMEOUT", "30"))
+                ),
+                "oracle_wms_max_retries": override_kwargs.get(
+                    "oracle_wms_max_retries",
+                    int(os.getenv("ORACLE_WMS_MAX_RETRIES", "3")),
+                ),
+                "oracle_wms_verify_ssl": override_kwargs.get(
+                    "oracle_wms_verify_ssl",
+                    os.getenv("ORACLE_WMS_VERIFY_SSL", "true").lower() == "true",
+                ),
+                "oracle_wms_enable_logging": override_kwargs.get(
+                    "oracle_wms_enable_logging",
+                    os.getenv("ORACLE_WMS_ENABLE_LOGGING", "true").lower() == "true",
+                ),
+                "oracle_wms_use_mock": override_kwargs.get(
+                    "oracle_wms_use_mock",
+                    os.getenv("ORACLE_WMS_USE_MOCK", "false").lower() == "true",
+                ),
             }
 
             # Add any additional override_kwargs that don't conflict
@@ -351,7 +389,9 @@ class FlextOracleWmsConfig(FlextConfig):
                 return FlextResult[FlextOracleWmsConfig].fail(error_msg)
             return FlextResult[FlextOracleWmsConfig].ok(config)
         except Exception as e:
-            return FlextResult[FlextOracleWmsConfig].fail(f"Failed to create config from environment: {e}")
+            return FlextResult[FlextOracleWmsConfig].fail(
+                f"Failed to create config from environment: {e}"
+            )
 
     @classmethod
     def reset_global_instance(cls) -> None:
@@ -365,7 +405,9 @@ class FlextOracleWmsConfig(FlextConfig):
             cls._oracle_wms_global_instance = None
 
     @classmethod
-    def update_global_instance(cls, **kwargs: object) -> FlextResult[FlextOracleWmsConfig]:
+    def update_global_instance(
+        cls, **kwargs: object
+    ) -> FlextResult[FlextOracleWmsConfig]:
         """Update the global singleton instance with new parameters.
 
         This method allows dynamic reconfiguration of the global instance
@@ -396,7 +438,9 @@ class FlextOracleWmsConfig(FlextConfig):
 
             return FlextResult[FlextOracleWmsConfig].ok(config)
         except Exception as e:
-            return FlextResult[FlextOracleWmsConfig].fail(f"Failed to update global instance: {e}")
+            return FlextResult[FlextOracleWmsConfig].fail(
+                f"Failed to update global instance: {e}"
+            )
 
 
 # Simple aliases for test compatibility only

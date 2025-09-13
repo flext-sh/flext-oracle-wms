@@ -305,7 +305,9 @@ class CompleteMockPipeline:
                 {
                     "duration": duration,
                     "schemas_count": len(schemas),
-                    "catalog_streams": len(catalog.get("streams", [])),
+                    "catalog_streams": len(
+                        catalog.get("streams", []) if isinstance(catalog, dict) else []
+                    ),
                     "tap_records": len(tap_records),
                     "target_tables": len(target_results),
                     "dbt_models": len(dbt_results),
@@ -448,6 +450,8 @@ class CompleteMockPipeline:
         streams = []
 
         for entity_name, schema in schemas.items():
+            if not isinstance(schema, dict):
+                continue
             key_properties = schema.get("key_properties", ["id"])
             schema_without_keys = {
                 k: v for k, v in schema.items() if k != "key_properties"
@@ -457,13 +461,15 @@ class CompleteMockPipeline:
             replication_method = (
                 "INCREMENTAL"
                 if any(
-                    prop in schema["properties"]
+                    prop in schema.get("properties", {})
                     for prop in ["mod_ts", "create_ts", "updated_at"]
                 )
                 else "FULL_TABLE"
             )
 
-            replication_key = "mod_ts" if "mod_ts" in schema["properties"] else None
+            replication_key = (
+                "mod_ts" if "mod_ts" in schema.get("properties", {}) else None
+            )
 
             stream = {
                 "tap_stream_id": entity_name,
@@ -496,7 +502,13 @@ class CompleteMockPipeline:
         tap_records = []
 
         for entity_name, entity_info in self.mock_entities.items():
-            sample_data = entity_info["sample_data"].copy()
+            if not isinstance(entity_info, dict):
+                continue
+            sample_data = (
+                entity_info.get("sample_data", {}).copy()
+                if isinstance(entity_info.get("sample_data"), dict)
+                else {}
+            )
 
             # Add Singer metadata
             sample_data["_sdc_extracted_at"] = datetime.now(UTC).isoformat()
@@ -505,7 +517,10 @@ class CompleteMockPipeline:
             sample_data["_sdc_record_hash"] = str(uuid.uuid4())
 
             # Generate multiple records for high-volume entities
-            count = min(entity_info["count"], 5)  # Max 5 sample records
+            count_value = entity_info.get("count", 1)
+            count = min(
+                count_value if isinstance(count_value, int) else 1, 5
+            )  # Max 5 sample records
 
             for i in range(count):
                 record = sample_data.copy()
@@ -522,7 +537,7 @@ class CompleteMockPipeline:
     def _simulate_target_loading(
         self,
         tap_records: list[FlextTypes.Core.Dict],
-    ) -> FlextTypes.Core.Dict:
+    ) -> dict[str, dict[str, object]]:
         """Simulate TARGET loading process."""
         target_results = {}
 
@@ -535,17 +550,21 @@ class CompleteMockPipeline:
                 "records_loaded": len(entity_records),
                 "load_timestamp": datetime.now(UTC).isoformat(),
                 "status": "SUCCESS",
-                "columns": list(entity_records[0]["record"].keys())
-                if entity_records
-                else [],
+                "columns": (
+                    list(entity_records[0]["record"].keys())
+                    if entity_records
+                    and isinstance(entity_records[0], dict)
+                    and isinstance(entity_records[0].get("record"), dict)
+                    else []
+                ),
             }
 
         return target_results
 
     def _simulate_dbt_transformations(
         self,
-        target_results: FlextTypes.Core.Dict,
-    ) -> FlextTypes.Core.Dict:
+        target_results: dict[str, dict[str, object]],
+    ) -> dict[str, dict[str, object]]:
         """Simulate DBT transformation process."""
         dbt_results = {}
 
@@ -625,6 +644,7 @@ class CompleteMockPipeline:
                         target_results.get(src, {}).get("records_loaded", 0)
                         for src in available_sources
                         if src in target_results
+                        and isinstance(target_results.get(src), dict)
                     ),
                     "transformation_timestamp": datetime.now(UTC).isoformat(),
                     "status": "SUCCESS",
@@ -637,8 +657,8 @@ class CompleteMockPipeline:
         schemas: FlextTypes.Core.Dict,
         catalog: FlextTypes.Core.Dict,
         tap_records: list[FlextTypes.Core.Dict],
-        target_results: FlextTypes.Core.Dict,
-        dbt_results: FlextTypes.Core.Dict,
+        target_results: dict[str, dict[str, object]],
+        dbt_results: dict[str, dict[str, object]],
     ) -> FlextResult[str]:
         """Save complete pipeline results."""
         results_dir = Path("complete_pipeline_results")
@@ -682,31 +702,42 @@ class CompleteMockPipeline:
             "oracle_wms": {
                 "entities_count": len(self.mock_entities),
                 "total_records": sum(
-                    info["count"] for info in self.mock_entities.values()
+                    info.get("count", 0)
+                    for info in self.mock_entities.values()
+                    if isinstance(info, dict)
                 ),
                 "entities": list(self.mock_entities.keys()),
             },
             "singer_integration": {
                 "schemas_generated": len(schemas),
-                "catalog_streams": len(catalog["streams"]),
+                "catalog_streams": len(
+                    catalog.get("streams", []) if isinstance(catalog, dict) else []
+                ),
                 "tap_records_extracted": len(tap_records),
                 "replication_methods": list(
                     {
                         stream["metadata"][0]["metadata"]["replication-method"]
-                        for stream in catalog["streams"]
+                        for stream in catalog.get("streams", [])
+                        if isinstance(catalog, dict) and isinstance(stream, dict)
                     },
                 ),
             },
             "target_loading": {
                 "tables_created": len(target_results),
                 "total_records_loaded": sum(
-                    result["records_loaded"] for result in target_results.values()
+                    result.get("records_loaded", 0)
+                    for result in target_results.values()
+                    if isinstance(result, dict)
                 ),
             },
             "dbt_transformations": {
                 "models_created": len(dbt_results),
                 "model_types": list(
-                    {result["model_type"] for result in dbt_results.values()},
+                    {
+                        result.get("model_type", "unknown")
+                        for result in dbt_results.values()
+                        if isinstance(result, dict)
+                    },
                 ),
                 "business_value": [
                     "Executive Dashboards",
@@ -727,7 +758,7 @@ class CompleteMockPipeline:
         with summary_file.open("w", encoding="utf-8") as f:
             json.dump(pipeline_summary, f, indent=2, default=str)
 
-        return FlextResult[None].ok(str(results_dir))
+        return FlextResult[str].ok(str(results_dir))
 
 
 def main() -> None:

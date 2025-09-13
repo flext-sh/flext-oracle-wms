@@ -14,7 +14,7 @@ from dataclasses import dataclass, field
 from enum import StrEnum
 from typing import Annotated, Literal, TypedDict
 
-from flext_core import FlextModels, FlextResult, FlextTypes
+from flext_core import FlextModels, FlextResult, FlextTypes, FlextValidations
 from pydantic import Field, StringConstraints
 
 from flext_oracle_wms.wms_constants import (
@@ -22,11 +22,7 @@ from flext_oracle_wms.wms_constants import (
     FlextOracleWmsDefaults,
     FlextOracleWmsErrorMessages,
 )
-from flext_oracle_wms.wms_operations import (
-    validate_dict_parameter,
-    validate_records_list,
-    validate_string_parameter,
-)
+from flext_oracle_wms.wms_exceptions import FlextOracleWmsDataValidationError
 
 # Core record types - USED EVERYWHERE
 TOracleWmsRecord = FlextTypes.Core.Dict
@@ -114,15 +110,17 @@ class FlextOracleWmsEntity(FlextModels):
         """Validate entity business rules."""
         validation_errors = []
 
-        # Validate entity name
-        name_result = validate_string_parameter(self.name, "entity name")
-        if name_result.is_failure:
-            validation_errors.append(name_result.error)
+        # Validate entity name using flext-core
+        validation_result = FlextValidations.TypeValidators.validate_string(self.name)
+        if validation_result.is_failure:
+            validation_errors.append(validation_result.error)
 
-        # Validate entity endpoint
-        endpoint_result = validate_string_parameter(self.endpoint, "entity endpoint")
-        if endpoint_result.is_failure:
-            validation_errors.append(endpoint_result.error)
+        # Validate entity endpoint using flext-core
+        validation_result = FlextValidations.TypeValidators.validate_string(
+            self.endpoint
+        )
+        if validation_result.is_failure:
+            validation_errors.append(validation_result.error)
 
         if not self.endpoint.startswith("/"):
             validation_errors.append("Entity endpoint must start with /")
@@ -171,7 +169,13 @@ class FlextOracleWmsDiscoveryResult(FlextModels):
         validation_errors = []
 
         try:
-            validate_records_list(self.entities, "entities")
+            validation_result = FlextValidations.TypeValidators.validate_list(
+                self.entities
+            )
+            if validation_result.is_failure:
+                raise FlextOracleWmsDataValidationError(
+                    validation_result.error or "Invalid entities list"
+                )
         except (TypeError, ValueError, AttributeError) as e:
             validation_errors.append(str(e))
 
@@ -210,7 +214,9 @@ class FlextOracleWmsApiResponse(FlextModels):
         validation_errors = []
 
         try:
-            validate_dict_parameter(self.data, "data")
+            validation_result = FlextValidations.TypeValidators.validate_dict(self.data)
+            if validation_result.is_failure:
+                validation_errors.append(validation_result.error)
         except (TypeError, ValueError, AttributeError) as e:
             validation_errors.append(str(e))
 
@@ -224,7 +230,7 @@ class FlextOracleWmsApiResponse(FlextModels):
 
         if validation_errors:
             return FlextResult[None].fail(
-                f"{FlextOracleWmsErrorMessages.INVALID_RESPONSE}: {'; '.join(validation_errors)}",
+                f"{FlextOracleWmsErrorMessages.INVALID_RESPONSE}: {'; '.join(str(e) for e in validation_errors)}",
             )
         return FlextResult[None].ok(None)
 

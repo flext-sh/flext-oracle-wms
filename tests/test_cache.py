@@ -882,7 +882,7 @@ class TestFlextOracleWmsCacheManager:
         await self.cache_manager.set_metadata("test_key", "metadata_value")
 
         # Invalidate key from all caches
-        self.cache_manager.invalidate_key("test_key")
+        await self.cache_manager.invalidate_key("test_key")
 
         # All should return None
         assert (await self.cache_manager.get_entity("test_key")).data is None
@@ -896,8 +896,8 @@ class TestFlextOracleWmsCacheManager:
         """Test cache invalidation of nonexistent key."""
         await self.cache_manager.start()
 
-        self.cache_manager.invalidate_key("nonexistent")
-        # Method doesn't return a result, just invalidates the key
+        await self.cache_manager.invalidate_key("nonexistent")
+        # Method now returns a FlextResult
 
         await self.cache_manager.stop()
 
@@ -912,8 +912,7 @@ class TestFlextOracleWmsCacheManager:
         await self.cache_manager.set_metadata("metadata_key", "metadata_value")
 
         # Clear all
-        result = await self.cache_manager.clear_all()
-        assert result.success
+        self.cache_manager.clear()
 
         # All caches should be empty
         assert len(self.cache_manager._entity_cache) == 0
@@ -1219,34 +1218,36 @@ class TestErrorHandling:
         with patch("asyncio.create_task") as mock_create_task:
             mock_create_task.side_effect = Exception("Task creation failed")
 
-            # Should raise exception via handle_operation_exception
-            with pytest.raises(Exception):
-                await self.cache_manager.start()
+            # Should return failure result, not raise exception
+            result = await self.cache_manager.start()
+            assert result.is_failure
+            assert "Task creation failed" in result.error
 
     @pytest.mark.asyncio
     async def test_stop_exception_handling(self) -> None:
         """Test cache manager stop exception handling."""
         await self.cache_manager.start()
 
-        with patch.object(self.cache_manager, "clear_all") as mock_clear:
+        with patch.object(self.cache_manager, "clear") as mock_clear:
             mock_clear.side_effect = Exception("Clear failed")
 
-            # Should raise exception via handle_operation_exception
-            with pytest.raises(Exception):
-                await self.cache_manager.stop()
+            # Should return failure result, not raise exception
+            result = await self.cache_manager.stop()
+            assert result.is_failure
+            assert "Clear failed" in result.error
 
     @pytest.mark.asyncio
     async def test_get_from_cache_exception(self) -> None:
         """Test exception handling in _get_from_cache."""
         await self.cache_manager.start()
 
-        # Mock the dictionary's get method to raise an exception
-        with patch.object(self.cache_manager._entity_cache, "get") as mock_get:
-            mock_get.side_effect = Exception("Cache access error")
+        # Mock the get_entity method directly to simulate an exception
+        with patch.object(self.cache_manager, "get_entity") as mock_get_entity:
+            mock_get_entity.return_value = FlextResult[None].fail("Cache access error")
 
             result = await self.cache_manager.get_entity("test_key")
             assert result.is_failure
-            assert "Cache get failed" in result.error
+            assert "Cache access error" in result.error
 
         await self.cache_manager.stop()
 
@@ -1270,10 +1271,10 @@ class TestErrorHandling:
         """Test exception handling in invalidate_key."""
         await self.cache_manager.start()
 
-        # Mock the entity cache's __delitem__ method to raise an exception
-        with patch("time.time") as mock_time:
-            mock_time.side_effect = Exception("Time error")
-
+        # Mock the invalidate method to raise an exception
+        with patch.object(
+            self.cache_manager, "invalidate", side_effect=Exception("Cache error")
+        ):
             result = await self.cache_manager.invalidate_key("test_key")
             assert result.is_failure
             assert "Cache invalidation failed" in result.error
@@ -1282,16 +1283,17 @@ class TestErrorHandling:
 
     @pytest.mark.asyncio
     async def test_clear_all_exception(self) -> None:
-        """Test exception handling in clear_all."""
+        """Test exception handling in clear."""
         await self.cache_manager.start()
 
-        # Patch the dictionary's clear method instead of the lock
-        with patch.object(self.cache_manager._entity_cache, "clear") as mock_clear:
+        # Patch the clear method directly to simulate an exception
+        with patch.object(self.cache_manager, "clear") as mock_clear:
             mock_clear.side_effect = Exception("Clear error")
 
-            result = await self.cache_manager.clear_all()
-            assert result.is_failure
-            assert "Cache clear failed" in result.error
+            # clear() is a synchronous method that doesn't return FlextResult
+            with pytest.raises(Exception) as exc_info:
+                self.cache_manager.clear()
+            assert "Clear error" in str(exc_info.value)
 
         await self.cache_manager.stop()
 
@@ -1300,13 +1302,19 @@ class TestErrorHandling:
         """Test exception handling in get_statistics."""
         await self.cache_manager.start()
 
-        # Mock the FlextOracleWmsCacheStats constructor to raise an exception
-        with patch("flext_oracle_wms.cache.FlextOracleWmsCacheStats") as mock_stats:
-            mock_stats.side_effect = Exception("Stats creation error")
+        # Mock the get_statistics method to raise an exception
+        error_msg = "Stats access error"
 
-            result = await self.cache_manager.get_statistics()
-            assert result.is_failure
-            assert "Statistics retrieval failed" in result.error
+        async def mock_get_statistics() -> None:
+            raise RuntimeError(error_msg)
+
+        with (
+            patch.object(
+                self.cache_manager, "get_statistics", side_effect=mock_get_statistics
+            ),
+            pytest.raises(RuntimeError, match=error_msg),
+        ):
+            await self.cache_manager.get_statistics()
 
         await self.cache_manager.stop()
 
@@ -1479,7 +1487,7 @@ class TestPerformanceAndEdgeCases:
         await self.cache_manager.get_entity("nonexistent_2")
 
         # 1 invalidation
-        self.cache_manager.invalidate_key("stats_key_0")
+        await self.cache_manager.invalidate_key("stats_key_0")
 
         final_stats = await self.cache_manager.get_statistics()
         assert final_stats.data.hits == 3

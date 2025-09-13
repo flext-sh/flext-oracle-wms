@@ -13,18 +13,15 @@ from __future__ import annotations
 
 import re
 
-from flext_core import FlextLogger, FlextResult, FlextTypes
+from flext_core import FlextLogger, FlextResult, FlextTypes, FlextValidations
 
 from flext_oracle_wms.wms_constants import (
     FlextOracleWmsDefaults,
     OracleWMSFilterOperator,
 )
 from flext_oracle_wms.wms_exceptions import (
+    FlextOracleWmsDataValidationError,
     FlextOracleWmsError,
-)
-from flext_oracle_wms.wms_operations import (
-    FlextOracleWmsFilterConfig,
-    handle_operation_exception,
 )
 
 # Import base classes from flext-core instead of creating circular dependency
@@ -32,15 +29,25 @@ from flext_oracle_wms.wms_operations import (
 logger = FlextLogger(__name__)
 
 
-class FlextOracleWmsFilter(FlextOracleWmsFilterConfig):
-    """Oracle WMS filter with case sensitivity and validation."""
+class FlextOracleWmsFilter:
+    """Oracle WMS filter with case sensitivity and validation.
+
+    This class provides a unified interface for Oracle WMS filtering operations,
+    consolidating functionality from FlextOracleWmsFilterConfig with additional
+    case sensitivity support.
+    """
 
     def __init__(
-        self, *, case_sensitive: bool = False, max_conditions: int = 50
+        self,
+        *,
+        filters: FlextTypes.Core.Dict | None = None,
+        case_sensitive: bool = False,
+        max_conditions: int = 50,
     ) -> None:
         """Initialize Oracle WMS filter with case sensitivity and validation.
 
         Args:
+            filters: Filter conditions to initialize with
             case_sensitive: Whether string comparisons should be case sensitive
             max_conditions: Maximum number of filter conditions allowed
 
@@ -52,8 +59,18 @@ class FlextOracleWmsFilter(FlextOracleWmsFilterConfig):
         if max_conditions > FlextOracleWmsDefaults.MAX_FILTER_CONDITIONS:
             msg = "max_conditions cannot exceed configured maximum"
             raise FlextOracleWmsError(msg)
-        super().__init__(filters={}, max_conditions=max_conditions)
+
+        self.max_conditions = max_conditions
         self.case_sensitive = case_sensitive
+        self.filters: FlextTypes.Core.Dict = filters or {}
+
+        # Validate filters if provided
+        if self.filters:
+            validation_result = self._validate_filter_conditions_total(self.filters)
+            if validation_result.is_failure:
+                raise FlextOracleWmsDataValidationError(
+                    validation_result.error or "Filter validation failed"
+                )
 
     def _normalize_for_comparison(self, value: object) -> object:
         if isinstance(value, str) and not self.case_sensitive:
@@ -86,6 +103,40 @@ class FlextOracleWmsFilter(FlextOracleWmsFilterConfig):
             return field_value in filter_value
         return False
 
+    async def filter_records(
+        self,
+        records: list[FlextTypes.Core.Dict],
+        filters: FlextTypes.Core.Dict,
+    ) -> FlextResult[list[FlextTypes.Core.Dict]]:
+        """Filter records with given filters.
+
+        Args:
+            records: List of records to filter
+            filters: Filter conditions to apply
+
+        Returns:
+            FlextResult containing filtered records
+
+        """
+        # Validate records parameter using flext-core
+        validation_result = FlextValidations.TypeValidators.validate_list(records)
+        if validation_result.is_failure:
+            raise FlextOracleWmsDataValidationError(
+                validation_result.error or "Invalid records list"
+            )
+
+        # Validate filter conditions
+        count_result = self._validate_filter_conditions_total(filters)
+        if count_result.is_failure:
+            return FlextResult[list[FlextTypes.Core.Dict]].fail(
+                count_result.error or "Filter validation failed"
+            )
+
+        # Store filters for validation
+        self.filters = filters
+        filtered_records = self._apply_record_filters(records)
+        return FlextResult[list[FlextTypes.Core.Dict]].ok(filtered_records)
+
     async def filter_records_with_options(
         self,
         records: list[FlextTypes.Core.Dict],
@@ -109,12 +160,12 @@ class FlextOracleWmsFilter(FlextOracleWmsFilterConfig):
                 count_result.error or "Filter validation failed"
             )
 
-        # Store filters for validation, type issue will be resolved by proper typing
-        object.__setattr__(self, "filters", filters)
-        data = await self.filter_records(records)
-        if limit is not None and isinstance(data, list):
-            return FlextResult[list[FlextTypes.Core.Dict]].ok(data[: int(limit)])
-        return FlextResult[list[FlextTypes.Core.Dict]].ok(data)
+        # Store filters for validation
+        self.filters = filters
+        filtered_records = self._apply_record_filters(records)
+        if limit is not None:
+            filtered_records = filtered_records[:limit]
+        return FlextResult[list[FlextTypes.Core.Dict]].ok(filtered_records)
 
     async def sort_records(
         self,
@@ -134,15 +185,14 @@ class FlextOracleWmsFilter(FlextOracleWmsFilterConfig):
             FlextResult containing sorted records
 
         """
-        try:
-            # Validate input types
-            if not isinstance(records, list):
-                msg = "Records must be a list"
-                raise ValueError(msg)
+        # Validate records parameter using flext-core
+        validation_result = FlextValidations.TypeValidators.validate_list(records)
+        if validation_result.is_failure:
+            return FlextResult[list[FlextTypes.Core.Dict]].fail(
+                validation_result.error or "Invalid records list"
+            )
 
-            if not isinstance(sort_field, str):
-                msg = "Sort field must be a string"
-                raise ValueError(msg)
+        try:
 
             def key_func(record: FlextTypes.Core.Dict) -> str:
                 value = self._get_nested_value(record, sort_field)
@@ -153,7 +203,9 @@ class FlextOracleWmsFilter(FlextOracleWmsFilterConfig):
             sorted_records = sorted(records, key=key_func, reverse=not ascending)
             return FlextResult[list[FlextTypes.Core.Dict]].ok(sorted_records)
         except Exception as e:
-            handle_operation_exception(e, "sort_records", logger)
+            error_msg = f"sort_records failed: {e}"
+            logger.exception(error_msg)
+            return FlextResult[list[FlextTypes.Core.Dict]].fail(error_msg)
 
     def _validate_filter_conditions_total(
         self,
@@ -174,9 +226,165 @@ class FlextOracleWmsFilter(FlextOracleWmsFilterConfig):
         except Exception as e:  # pragma: no cover
             return FlextResult[None].fail(str(e))
 
-    # Preserve parent signature so __post_init__ from base class can call it safely
-    def _validate_filter_conditions_count(self) -> FlextResult[None]:
-        return super()._validate_filter_conditions_count()
+    def _validate_filter_conditions_count(self) -> None:
+        """Validate that filter conditions don't exceed maximum."""
+        if len(self.filters) > self.max_conditions:
+            msg = f"Too many filter conditions. Max: {self.max_conditions}, Got: {len(self.filters)}"
+            raise FlextOracleWmsDataValidationError(msg)
+
+    def _apply_record_filters(
+        self,
+        records: list[FlextTypes.Core.Dict],
+    ) -> list[FlextTypes.Core.Dict]:
+        """Apply all filter conditions to records."""
+        if not self.filters:
+            return records
+
+        return [record for record in records if self._record_matches_filters(record)]
+
+    def _record_matches_filters(self, record: FlextTypes.Core.Dict) -> bool:
+        """Check if record matches all filter conditions."""
+        for field, filter_value in self.filters.items():
+            if not self._matches_condition(record, field, filter_value):
+                return False
+        return True
+
+    def _matches_condition(
+        self,
+        record: FlextTypes.Core.Dict,
+        field: str,
+        filter_value: object,
+    ) -> bool:
+        """Check if record field matches filter condition."""
+        field_value = self._get_nested_value(record, field)
+
+        # Handle different filter value types
+        if isinstance(filter_value, dict):
+            # Advanced filter with operator
+            operator = str(filter_value.get("operator", "eq"))
+            value = filter_value.get("value")
+            return self._apply_operator(field_value, operator, value)
+
+        return self._op_equals(field_value, filter_value)
+
+    def _get_nested_value(
+        self, record: FlextTypes.Core.Dict, field_path: str
+    ) -> object:
+        """Get nested field value from record using dot notation."""
+        try:
+            value: object = record
+            for field_part in field_path.split("."):
+                if isinstance(value, dict):
+                    value = value.get(field_part)
+                else:
+                    return None
+            return value
+        except (AttributeError, KeyError, TypeError):
+            return None
+
+    def _apply_operator(
+        self,
+        field_value: object,
+        operator: str,
+        filter_value: object,
+    ) -> bool:
+        """Apply filter operator to field value."""
+        if operator == "eq":
+            return self._op_equals(field_value, filter_value)
+        if operator == "ne":
+            return not self._op_equals(field_value, filter_value)
+        if operator == "gt":
+            return self._op_greater_than(field_value, filter_value)
+        if operator == "lt":
+            return self._op_less_than(field_value, filter_value)
+        if operator == "gte":
+            return self._op_greater_than(field_value, filter_value) or self._op_equals(
+                field_value, filter_value
+            )
+        if operator == "lte":
+            return self._op_less_than(field_value, filter_value) or self._op_equals(
+                field_value, filter_value
+            )
+        if operator == "in":
+            return self._op_in(field_value, filter_value)
+        if operator == "contains":
+            return self._op_contains(field_value, filter_value)
+        return False
+
+    def _op_equals(self, field_value: object, filter_value: object) -> bool:
+        """Equality operator."""
+        normalized_field = self._normalize_for_comparison(field_value)
+        normalized_filter = self._normalize_for_comparison(filter_value)
+
+        # Handle list filter values (IN operation)
+        if isinstance(normalized_filter, list):
+            return normalized_field in normalized_filter
+
+        return normalized_field == normalized_filter
+
+    def _op_not_equals(self, field_value: object, filter_value: object) -> bool:
+        """Not equals operator."""
+        return not self._op_equals(field_value, filter_value)
+
+    def _op_greater_than(self, field_value: object, filter_value: object) -> bool:
+        """Greater than operator."""
+        try:
+            if isinstance(field_value, (int, float)) and isinstance(
+                filter_value, (int, float)
+            ):
+                return field_value > filter_value
+            if isinstance(field_value, str) and isinstance(filter_value, str):
+                return field_value > filter_value
+            return False
+        except (TypeError, ValueError):
+            return False
+
+    def _op_less_than(self, field_value: object, filter_value: object) -> bool:
+        """Less than operator."""
+        try:
+            if isinstance(field_value, (int, float)) and isinstance(
+                filter_value, (int, float)
+            ):
+                return field_value < filter_value
+            if isinstance(field_value, str) and isinstance(filter_value, str):
+                return field_value < filter_value
+            return False
+        except (TypeError, ValueError):
+            return False
+
+    def _op_greater_equal(self, field_value: object, filter_value: object) -> bool:
+        """Greater than or equal operator."""
+        try:
+            if isinstance(field_value, (int, float)) and isinstance(
+                filter_value, (int, float)
+            ):
+                return field_value >= filter_value
+            return False
+        except (TypeError, ValueError):
+            return False
+
+    def _op_less_equal(self, field_value: object, filter_value: object) -> bool:
+        """Less than or equal operator."""
+        try:
+            if isinstance(field_value, (int, float)) and isinstance(
+                filter_value, (int, float)
+            ):
+                return field_value <= filter_value
+            return False
+        except (TypeError, ValueError):
+            return False
+
+    def _op_not_in(self, field_value: object, filter_value: object) -> bool:
+        """Not in operator."""
+        return not self._op_in(field_value, filter_value)
+
+    def _op_contains(self, field_value: object, filter_value: object) -> bool:
+        """Check if field value contains filter value."""
+        if isinstance(field_value, str) and isinstance(filter_value, str):
+            if not self.case_sensitive:
+                return filter_value.lower() in field_value.lower()
+            return filter_value in field_value
+        return False
 
 
 def flext_oracle_wms_create_filter(
@@ -208,9 +416,8 @@ async def flext_oracle_wms_filter_by_field(
     else:
         op_value = value
     # Set filters before calling filter_records
-    object.__setattr__(engine, "filters", {field: op_value})
-    data = await engine.filter_records(records)
-    return FlextResult[list[FlextTypes.Core.Dict]].ok(data)
+    filters = {field: op_value}
+    return await engine.filter_records(records, filters)
 
 
 async def flext_oracle_wms_filter_by_id_range(
@@ -220,33 +427,70 @@ async def flext_oracle_wms_filter_by_id_range(
     max_id: object | None = None,
 ) -> FlextResult[list[FlextTypes.Core.Dict]]:
     """Filter records by ID range."""
-    engine = FlextOracleWmsFilter()
-    filters: FlextTypes.Core.Dict = {}
-    if min_id is not None:
-        filters[id_field] = {
-            "operator": OracleWMSFilterOperator.GE.value,
-            "value": min_id,
-        }
-    if max_id is not None:
-        # Use same field with LE so the engine evaluates a consistent field
-        # Tests only assert that at least one record is returned, not exact set
-        existing = filters.get(id_field)
-        if (
-            isinstance(existing, dict)
-            and existing.get("operator") == OracleWMSFilterOperator.GE.value
-        ):
-            # When both min and max present, we can keep last; engine applies all filters
-            pass
-        filters[id_field] = {
-            "operator": OracleWMSFilterOperator.LE.value,
-            "value": max_id,
-        }
-    if not filters:
-        return FlextResult[list[FlextTypes.Core.Dict]].ok(records)
-    # Set filters before calling filter_records
-    object.__setattr__(engine, "filters", filters)
-    data = await engine.filter_records(records)
-    return FlextResult[list[FlextTypes.Core.Dict]].ok(data)
+    # Validate records parameter using flext-core validation
+    validation_result = FlextValidations.TypeValidators.validate_list(records)
+    if validation_result.is_failure:
+        error_msg = f"Records must be a list: {validation_result.error}"
+        raise FlextOracleWmsDataValidationError(error_msg)
+
+    if not records:
+        return FlextResult[list[FlextTypes.Core.Dict]].ok([])
+
+    # Apply manual range filtering since we need both min and max on same field
+    filtered_records = []
+    for record in records:
+        field_value = record.get(id_field)
+        if field_value is None:
+            continue
+
+        # Apply min filter
+        if min_id is not None:
+            try:
+                if isinstance(field_value, (int, float)) and isinstance(
+                    min_id, (int, float)
+                ):
+                    # Type narrowing: both are numeric
+                    numeric_field: float = float(field_value)
+                    numeric_min: float = float(min_id)
+                    if numeric_field < numeric_min:
+                        continue
+                elif isinstance(field_value, str) and isinstance(min_id, str):
+                    # Type narrowing: both are strings
+                    str_field: str = field_value
+                    str_min: str = min_id
+                    if str_field < str_min:
+                        continue
+                else:
+                    continue
+            except (TypeError, ValueError):
+                continue
+
+        # Apply max filter
+        if max_id is not None:
+            try:
+                if isinstance(field_value, (int, float)) and isinstance(
+                    max_id, (int, float)
+                ):
+                    # Type narrowing: both are numeric
+                    numeric_field_max: float = float(field_value)
+                    numeric_max: float = float(max_id)
+                    if numeric_field_max > numeric_max:
+                        continue
+                elif isinstance(field_value, str) and isinstance(max_id, str):
+                    # Type narrowing: both are strings
+                    str_field_max: str = field_value
+                    str_max: str = max_id
+                    if str_field_max > str_max:
+                        continue
+                else:
+                    continue
+            except (TypeError, ValueError):
+                continue
+
+        # If we get here, record passes both filters
+        filtered_records.append(record)
+
+    return FlextResult[list[FlextTypes.Core.Dict]].ok(filtered_records)
 
 
 __all__: FlextTypes.Core.StringList = [

@@ -164,7 +164,7 @@ make coverage-html          # Generate detailed coverage report
 # Complete quality validation
 make validate               # Lint + type + security + test
 make lint
-make type-check           
+make type-check
 make security               # Bandit + pip-audit security scanning
 ```
 

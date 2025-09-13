@@ -73,7 +73,9 @@ def test_config_validation_invalid_url() -> None:
             oracle_wms_enable_logging=True,
         )
 
-    assert "Oracle WMS base URL must start with http:// or https://" in str(exc_info.value)
+    assert "Oracle WMS base URL must start with http:// or https://" in str(
+        exc_info.value
+    )
 
 
 @pytest.mark.unit
@@ -152,4 +154,4 @@ def test_config_validation_invalid_retries() -> None:
             oracle_wms_enable_logging=True,
         )
 
-    assert "Max retries cannot be negative" in str(exc_info.value)
+    assert "Oracle WMS max retries cannot be negative" in str(exc_info.value)

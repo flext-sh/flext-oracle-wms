@@ -32,6 +32,10 @@ from flext_oracle_wms import (
     FlextOracleWmsError,
 )
 
+# Constants for example display
+MAX_ENTITIES_TO_SHOW = 5
+MAX_VALUE_DISPLAY_LENGTH = 50
+
 # Load .env file from project root
 try:
     from dotenv import load_dotenv
@@ -151,8 +155,8 @@ async def query_entity_data(
                             if len(str(value)) > MAX_VALUE_DISPLAY_LENGTH
                             else str(value)
                         )
-                    except Exception:
-                        pass
+                    except (KeyError, ValueError, TypeError) as e:
+                        logger.debug(f"Display formatting failed: {e}")
         elif data is not None:
             pass
 
@@ -165,14 +169,12 @@ async def demonstrate_error_handling(client: FlextOracleWmsClient) -> None:
     # Attempt to query a non-existent entity
     result = await client.get_entity_data("NON_EXISTENT_ENTITY")
 
-    if result.is_failure:
-        # Check for specific error types
-        if (
-            "not found" in result.error.lower()
-            or "authentication" in result.error.lower()
-            or "timeout" in result.error.lower()
-        ):
-            pass
+    if result.is_failure and (
+        "not found" in result.error.lower()
+        or "authentication" in result.error.lower()
+        or "timeout" in result.error.lower()
+    ):
+        logger.info(f"Expected error handled: {result.error}")
 
 
 async def main() -> None:
@@ -209,6 +211,7 @@ async def main() -> None:
 
         if entities_result.success:
             entities = entities_result.data
+            print(f"Successfully discovered {len(entities)} entities")
 
             # Step 4: Query data from first available entity
             if entities:
@@ -220,9 +223,15 @@ async def main() -> None:
                     else getattr(first_entity, "name", str(first_entity))
                 )
                 await query_entity_data(client, entity_name)
+        else:
+            # Handle case when Oracle WMS is not available
+            print(f"Entity discovery failed: {entities_result.error}")
+            print("This is expected when Oracle WMS is not available or configured")
 
         # Step 5: Demonstrate error handling
         await demonstrate_error_handling(client)
+
+        print("Example completed successfully")
 
     except ValueError:
         pass

@@ -1,16 +1,7 @@
-"""Oracle WMS Focused Discovery - ADMINISTRATOR Mode.
+"""Oracle WMS Focused Discovery - REAL Implementation.
 
 Copyright (c) 2025 FLEXT Team. All rights reserved.
-SPDX-License-Identifier: MIT.
-
-FOCUSED STRATEGY:
-1. Use ADMINISTRATOR credentials for complete access
-2. Focus on entities that actually have data
-3. Generate Singer schemas with real flattening
-4. Implement modern Singer SDK patterns
-5. Use Oracle metadata for real type discovery
-
-ZERO FALLBACKS - 100% ORACLE DISCOVERY
+SPDX-License-Identifier: MIT
 """
 
 import asyncio

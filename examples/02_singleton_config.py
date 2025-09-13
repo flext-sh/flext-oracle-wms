@@ -33,9 +33,7 @@ async def demonstrate_singleton_config() -> None:
     # Method 2: Update global singleton with new parameters
     logger.info("2. Updating global singleton with new parameters...")
     updated_config = FlextOracleWmsConfig.get_oracle_wms_global_instance(
-        oracle_wms_timeout=60,
-        oracle_wms_max_retries=5,
-        oracle_wms_enable_logging=True
+        oracle_wms_timeout=60, oracle_wms_max_retries=5, oracle_wms_enable_logging=True
     )
     logger.info(f"   Updated Timeout: {updated_config.oracle_wms_timeout}")
     logger.info(f"   Updated Max Retries: {updated_config.oracle_wms_max_retries}")
@@ -45,7 +43,7 @@ async def demonstrate_singleton_config() -> None:
     logger.info("3. Creating from environment variables with overrides...")
     env_result = FlextOracleWmsConfig.create_from_environment(
         oracle_wms_timeout=90,  # Override environment variable
-        oracle_wms_verify_ssl=False  # Override for testing
+        oracle_wms_verify_ssl=False,  # Override for testing
     )
     if env_result.success:
         env_config = env_result.value
@@ -62,7 +60,7 @@ async def demonstrate_singleton_config() -> None:
         oracle_wms_base_url="https://new-environment.wms.oraclecloud.com/test",
         oracle_wms_username="NEW_USER",
         oracle_wms_password="NEW_PASSWORD",
-        oracle_wms_timeout=120
+        oracle_wms_timeout=120,
     )
     if update_result.success:
         updated_global = update_result.value
@@ -78,7 +76,7 @@ async def demonstrate_singleton_config() -> None:
     fresh_config = FlextOracleWmsConfig.get_oracle_wms_global_instance(
         oracle_wms_base_url="https://fresh.wms.oraclecloud.com/fresh",
         oracle_wms_username="FRESH_USER",
-        oracle_wms_password="FRESH_PASSWORD"
+        oracle_wms_password="FRESH_PASSWORD",
     )
     logger.info(f"   Fresh Base URL: {fresh_config.oracle_wms_base_url}")
     logger.info(f"   Fresh Username: {fresh_config.oracle_wms_username}")
@@ -96,7 +94,9 @@ async def demonstrate_singleton_config() -> None:
     if validation_result.success:
         logger.info("   ✅ Configuration validation passed")
     else:
-        logger.error(f"   ❌ Configuration validation failed: {validation_result.error}")
+        logger.error(
+            f"   ❌ Configuration validation failed: {validation_result.error}"
+        )
 
     # Demonstrate environment extraction
     logger.info("8. Extracting environment from URL...")
@@ -132,7 +132,8 @@ def demonstrate_environment_variables() -> None:
     # Show current environment variables
     logger.info("Current Oracle WMS environment variables:")
     oracle_wms_vars = {
-        key: value for key, value in os.environ.items()
+        key: value
+        for key, value in os.environ.items()
         if key.startswith(("FLEXT_", "ORACLE_WMS_"))
     }
 
@@ -147,7 +148,9 @@ def demonstrate_environment_variables() -> None:
 
     # Show how to set environment variables for testing
     logger.info("\nTo set Oracle WMS environment variables:")
-    logger.info("   export FLEXT_ORACLE_WMS_BASE_URL='https://your-wms.oraclecloud.com'")
+    logger.info(
+        "   export FLEXT_ORACLE_WMS_BASE_URL='https://your-wms.oraclecloud.com'"
+    )
     logger.info("   export FLEXT_ORACLE_WMS_USERNAME='your_username'")
     logger.info("   export FLEXT_ORACLE_WMS_PASSWORD='your_password'")
     logger.info("   export FLEXT_ORACLE_WMS_TIMEOUT='60'")
