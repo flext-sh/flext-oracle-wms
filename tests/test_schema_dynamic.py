@@ -132,7 +132,10 @@ class TestFlextOracleWmsDynamicSchemaProcessor:
             {"id": "1", "count": 10},
             {"id": "2", "count": 20},
         ]
-        schema: dict[str, dict[str, object]] = {"id": {"type": "string"}, "count": {"type": "integer"}}
+        schema: dict[str, dict[str, object]] = {
+            "id": {"type": "string"},
+            "count": {"type": "integer"},
+        }
 
         # Correct parameter order: records first, then schema
         confidence = processor._calculate_schema_confidence(records, schema)

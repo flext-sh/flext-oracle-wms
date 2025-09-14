@@ -213,7 +213,9 @@ class TestDataProcessingHelpers:
 
     def test_chunk_records_basic(self) -> None:
         """Test basic record chunking."""
-        records: list[dict[str, object]] = [{"id": i, "value": f"item_{i}"} for i in range(10)]
+        records: list[dict[str, object]] = [
+            {"id": i, "value": f"item_{i}"} for i in range(10)
+        ]
         chunk_size = 3
 
         chunks = list(flext_oracle_wms_chunk_records(records, chunk_size))
@@ -226,7 +228,9 @@ class TestDataProcessingHelpers:
 
     def test_chunk_records_exact_division(self) -> None:
         """Test chunking when records divide evenly."""
-        records: list[dict[str, object]] = [{"id": i, "value": f"item_{i}"} for i in range(9)]
+        records: list[dict[str, object]] = [
+            {"id": i, "value": f"item_{i}"} for i in range(9)
+        ]
         chunk_size = 3
 
         chunks = list(flext_oracle_wms_chunk_records(records, chunk_size))
@@ -247,7 +251,9 @@ class TestDataProcessingHelpers:
 
     def test_chunk_records_single_chunk(self) -> None:
         """Test chunking when all records fit in one chunk."""
-        records: list[dict[str, object]] = [{"id": i, "value": f"item_{i}"} for i in [1, 2, 3]]
+        records: list[dict[str, object]] = [
+            {"id": i, "value": f"item_{i}"} for i in [1, 2, 3]
+        ]
         chunk_size = 5
 
         chunks = list(flext_oracle_wms_chunk_records(records, chunk_size))
@@ -257,7 +263,9 @@ class TestDataProcessingHelpers:
 
     def test_chunk_records_invalid_chunk_size(self) -> None:
         """Test chunking with invalid chunk size."""
-        records: list[dict[str, object]] = [{"id": i, "value": f"item_{i}"} for i in [1, 2, 3]]
+        records: list[dict[str, object]] = [
+            {"id": i, "value": f"item_{i}"} for i in [1, 2, 3]
+        ]
 
         with pytest.raises(Exception, match="Chunk size must be positive"):
             flext_oracle_wms_chunk_records(records, 0)

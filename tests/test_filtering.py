@@ -153,9 +153,8 @@ class TestRecordFiltering:
         result = await filter_engine.filter_records(self.sample_records, {})
 
         assert result.success
-        assert result.data is not None
-        assert len(result.data) == 4
-        assert result.data == self.sample_records
+        assert len(result.value) == 4
+        assert result.value == self.sample_records
 
     @pytest.mark.asyncio
     async def test_filter_records_single_value(self) -> None:
@@ -165,9 +164,8 @@ class TestRecordFiltering:
         result = await filter_engine.filter_records(self.sample_records, filters)
 
         assert result.success
-        assert result.data is not None
-        assert len(result.data) == 2
-        assert all(record["status"] == "active" for record in result.data)
+        assert len(result.value) == 2
+        assert all(record["status"] == "active" for record in result.value)
 
     @pytest.mark.asyncio
     async def test_filter_records_list_values(self) -> None:
@@ -177,9 +175,8 @@ class TestRecordFiltering:
         result = await filter_engine.filter_records(self.sample_records, filters)
 
         assert result.success
-        assert result.data is not None
-        assert len(result.data) == 3
-        assert all(record["status"] in {"active", "pending"} for record in result.data)
+        assert len(result.value) == 3
+        assert all(record["status"] in {"active", "pending"} for record in result.value)
 
     @pytest.mark.asyncio
     async def test_filter_records_numeric_values(self) -> None:
@@ -189,9 +186,9 @@ class TestRecordFiltering:
         result = await filter_engine.filter_records(self.sample_records, filters)
 
         assert result.success
-        assert result.data is not None
-        assert len(result.data) == 1
-        assert result.data[0]["id"] == 2
+        assert result.success
+        assert len(result.value) == 1
+        assert result.value[0]["id"] == 2
 
     @pytest.mark.asyncio
     async def test_filter_records_with_limit(self) -> None:
@@ -205,9 +202,9 @@ class TestRecordFiltering:
         )
 
         assert result.success
-        assert result.data is not None
-        assert len(result.data) == 1
-        assert result.data[0]["status"] == "active"
+        assert result.success
+        assert len(result.value) == 1
+        assert result.value[0]["status"] == "active"
 
     @pytest.mark.asyncio
     async def test_filter_records_no_matches(self) -> None:
@@ -217,8 +214,8 @@ class TestRecordFiltering:
         result = await filter_engine.filter_records(self.sample_records, filters)
 
         assert result.success
-        assert result.data is not None
-        assert len(result.data) == 0
+        assert result.success
+        assert len(result.value) == 0
 
     @pytest.mark.asyncio
     async def test_filter_records_invalid_input_types(self) -> None:
@@ -227,20 +224,23 @@ class TestRecordFiltering:
 
         # Invalid records type
         with pytest.raises(FlextOracleWmsDataValidationError):
-            await filter_engine.filter_records("not_a_list", {})
+            await filter_engine.filter_records("not_a_list", {})  # type: ignore[arg-type]
 
         # Invalid filters type
         with pytest.raises(FlextOracleWmsDataValidationError):
-            await filter_engine.filter_records(self.sample_records, "not_a_dict")
+            await filter_engine.filter_records(self.sample_records, "not_a_dict")  # type: ignore[arg-type]
 
     @pytest.mark.asyncio
     async def test_filter_records_exceeds_condition_limit(self) -> None:
         """Test filtering fails when conditions exceed limit."""
         filter_engine = FlextOracleWmsFilter(max_conditions=2)
-        filters = {"status": ["a", "b", "c"]}  # 3 conditions > 2 limit
+        filters: dict[str, object] = {
+            "status": ["a", "b", "c"]
+        }  # 3 conditions > 2 limit
         result = await filter_engine.filter_records(self.sample_records, filters)
 
         assert result.is_failure
+        assert result.error is not None
         assert "Too many filter conditions" in result.error
 
 
@@ -263,8 +263,8 @@ class TestRecordSorting:
         result = await filter_engine.sort_records(self.unsorted_records, "name")
 
         assert result.success
-        assert len(result.data) == 3
-        assert [r["name"] for r in result.data] == ["Alice", "Bob", "Charlie"]
+        assert len(result.value) == 3
+        assert [r["name"] for r in result.value] == ["Alice", "Bob", "Charlie"]
 
     @pytest.mark.asyncio
     async def test_sort_records_descending_string(self) -> None:
@@ -277,7 +277,7 @@ class TestRecordSorting:
         )
 
         assert result.success
-        assert [r["name"] for r in result.data] == ["Charlie", "Bob", "Alice"]
+        assert [r["name"] for r in result.value] == ["Charlie", "Bob", "Alice"]
 
     @pytest.mark.asyncio
     async def test_sort_records_ascending_numeric(self) -> None:
@@ -286,7 +286,7 @@ class TestRecordSorting:
         result = await filter_engine.sort_records(self.unsorted_records, "id")
 
         assert result.success
-        assert [r["id"] for r in result.data] == [1, 2, 3]
+        assert [r["id"] for r in result.value] == [1, 2, 3]
 
     @pytest.mark.asyncio
     async def test_sort_records_descending_numeric(self) -> None:
@@ -299,12 +299,12 @@ class TestRecordSorting:
         )
 
         assert result.success
-        assert [r["score"] for r in result.data] == [90.0, 85.0, 75.5]
+        assert [r["score"] for r in result.value] == [90.0, 85.0, 75.5]
 
     @pytest.mark.asyncio
     async def test_sort_records_with_none_values(self) -> None:
         """Test sorting records with None values."""
-        records_with_none = [
+        records_with_none: list[dict[str, object]] = [
             {"id": 1, "name": "Alice", "score": None},
             {"id": 2, "name": "Bob", "score": 85.0},
             {"id": 3, "name": None, "score": 90.0},
@@ -314,7 +314,7 @@ class TestRecordSorting:
         result = await filter_engine.sort_records(records_with_none, "name")
 
         assert result.success
-        assert len(result.data) == 3
+        assert len(result.value) == 3
         # None values should be handled (empty string in ascending, "zzz" in descending)
 
     @pytest.mark.asyncio
@@ -323,11 +323,11 @@ class TestRecordSorting:
         filter_engine = FlextOracleWmsFilter(case_sensitive=False, max_conditions=50)
 
         # Invalid records type - should fail gracefully
-        result = await filter_engine.sort_records("not_a_list", "field")
+        result = await filter_engine.sort_records("not_a_list", "field")  # type: ignore[arg-type]
         assert result.is_failure
 
         # Invalid sort field type - should fail gracefully
-        result = await filter_engine.sort_records(self.unsorted_records, 123)
+        result = await filter_engine.sort_records(self.unsorted_records, 123)  # type: ignore[arg-type]
         assert result.is_failure
 
 
@@ -575,8 +575,8 @@ class TestConvenienceFunctions:
         )
 
         assert result.success
-        assert len(result.data) == 2
-        assert all(record["status"] == "active" for record in result.data)
+        assert len(result.value) == 2
+        assert all(record["status"] == "active" for record in result.value)
 
     @pytest.mark.asyncio
     async def test_filter_by_field_numeric_value(self) -> None:
@@ -584,8 +584,8 @@ class TestConvenienceFunctions:
         result = await flext_oracle_wms_filter_by_field(self.sample_records, "id", 2)
 
         assert result.success
-        assert len(result.data) == 1
-        assert result.data[0]["id"] == 2
+        assert len(result.value) == 1
+        assert result.value[0]["id"] == 2
 
     @pytest.mark.asyncio
     async def test_filter_by_field_list_value(self) -> None:
@@ -597,8 +597,8 @@ class TestConvenienceFunctions:
         )
 
         assert result.success
-        assert len(result.data) == 2
-        assert {record["id"] for record in result.data} == {1, 3}
+        assert len(result.value) == 2
+        assert {record["id"] for record in result.value} == {1, 3}
 
     @pytest.mark.asyncio
     async def test_filter_by_field_custom_operator(self) -> None:
@@ -612,14 +612,14 @@ class TestConvenienceFunctions:
 
         assert result.success
         # For NE operator with single value, it returns records where status != "inactive"
-        assert len(result.data) == 2  # Company A and Company C (both "active")
-        assert all(record["status"] != "inactive" for record in result.data)
+        assert len(result.value) == 2  # Company A and Company C (both "active")
+        assert all(record["status"] != "inactive" for record in result.value)
 
     @pytest.mark.asyncio
     async def test_filter_by_field_invalid_records(self) -> None:
         """Test filter by field with invalid records raises error."""
         with pytest.raises(FlextOracleWmsDataValidationError):
-            await flext_oracle_wms_filter_by_field("not_a_list", "field", "value")
+            await flext_oracle_wms_filter_by_field("not_a_list", "field", "value")  # type: ignore[arg-type]
 
     @pytest.mark.asyncio
     async def test_filter_by_id_range_both_bounds(self) -> None:
@@ -632,7 +632,7 @@ class TestConvenienceFunctions:
         )
 
         assert result.success
-        assert len(result.data) >= 1  # Should include records with IDs in range
+        assert len(result.value) >= 1  # Should include records with IDs in range
 
     @pytest.mark.asyncio
     async def test_filter_by_id_range_min_only(self) -> None:
@@ -644,7 +644,7 @@ class TestConvenienceFunctions:
         )
 
         assert result.success
-        assert len(result.data) >= 1
+        assert len(result.value) >= 1
 
     @pytest.mark.asyncio
     async def test_filter_by_id_range_max_only(self) -> None:
@@ -656,7 +656,7 @@ class TestConvenienceFunctions:
         )
 
         assert result.success
-        assert len(result.data) >= 1
+        assert len(result.value) >= 1
 
     @pytest.mark.asyncio
     async def test_filter_by_id_range_no_bounds(self) -> None:
@@ -664,7 +664,7 @@ class TestConvenienceFunctions:
         result = await flext_oracle_wms_filter_by_id_range(self.sample_records, "id")
 
         assert result.success
-        assert len(result.data) == 3  # All records
+        assert len(result.value) == 3  # All records
 
     @pytest.mark.asyncio
     async def test_filter_by_id_range_custom_field(self) -> None:
@@ -681,7 +681,7 @@ class TestConvenienceFunctions:
     async def test_filter_by_id_range_invalid_records(self) -> None:
         """Test filter by ID range with invalid records raises error."""
         with pytest.raises(FlextOracleWmsDataValidationError):
-            await flext_oracle_wms_filter_by_id_range("not_a_list", "id")
+            await flext_oracle_wms_filter_by_id_range("not_a_list", "id")  # type: ignore[arg-type]
 
 
 class TestErrorHandling:
@@ -694,7 +694,7 @@ class TestErrorHandling:
 
         # This should raise FlextOracleWmsDataValidationError via handle_operation_exception
         with pytest.raises(FlextOracleWmsDataValidationError):
-            await filter_engine.filter_records("invalid_records", {})
+            await filter_engine.filter_records("invalid_records", {})  # type: ignore[arg-type]
 
     @pytest.mark.asyncio
     async def test_sort_records_handles_validation_errors(self) -> None:
@@ -702,9 +702,10 @@ class TestErrorHandling:
         filter_engine = FlextOracleWmsFilter(case_sensitive=False, max_conditions=50)
 
         # This should return a failed FlextResult due to validation
-        result = await filter_engine.sort_records("invalid_records", "field")
+        result = await filter_engine.sort_records("invalid_records", "field")  # type: ignore[arg-type]
         assert result.is_failure
-        assert "Records must be a list" in result.error
+        assert result.error is not None
+        assert "Type mismatch" in result.error
 
     def test_matches_condition_unknown_operator(self) -> None:
         """Test _matches_condition with unknown operator."""
@@ -719,7 +720,7 @@ class TestErrorHandling:
         """Test _matches_condition with invalid operator enum."""
         filter_engine = FlextOracleWmsFilter(case_sensitive=False, max_conditions=50)
         # Create a mock record for testing
-        mock_record = {"field": "value"}
+        mock_record: dict[str, object] = {"field": "value"}
         result = filter_engine._matches_condition(
             mock_record, "field", {"invalid": "test"}
         )
@@ -745,7 +746,7 @@ class TestPerformanceAndEdgeCases:
     async def test_filter_large_record_set(self) -> None:
         """Test filtering with large record set."""
         # Create large record set
-        large_records = [
+        large_records: list[dict[str, object]] = [
             {"id": i, "status": "active" if i % 2 == 0 else "inactive"}
             for i in range(1000)
         ]
@@ -758,8 +759,8 @@ class TestPerformanceAndEdgeCases:
         )
 
         assert result.success
-        assert len(result.data) == 100
-        assert all(record["status"] == "active" for record in result.data)
+        assert len(result.value) == 100
+        assert all(record["status"] == "active" for record in result.value)
 
     @pytest.mark.asyncio
     async def test_filter_with_complex_nested_data(self) -> None:
@@ -776,8 +777,8 @@ class TestPerformanceAndEdgeCases:
         )
 
         assert result.success
-        assert len(result.data) == 1
-        assert result.data[0]["id"] == 1
+        assert len(result.value) == 1
+        assert result.value[0]["id"] == 1
 
     def test_filter_handles_unicode_strings(self) -> None:
         """Test that filtering handles unicode strings correctly."""
@@ -795,13 +796,13 @@ class TestPerformanceAndEdgeCases:
         assert filter_engine._get_nested_value({}, "field") is None
 
         # None values in path
-        record_with_none = {"level1": None}
+        record_with_none: dict[str, object] = {"level1": None}
         assert (
             filter_engine._get_nested_value(record_with_none, "level1.level2") is None
         )
 
         # Non-dict intermediate values
-        record_with_scalar = {"level1": "string_value"}
+        record_with_scalar: dict[str, object] = {"level1": "string_value"}
         assert (
             filter_engine._get_nested_value(record_with_scalar, "level1.level2") is None
         )

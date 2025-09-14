@@ -193,7 +193,9 @@ class TestDataProcessingHelpers:
 
     def test_chunk_records_basic(self) -> None:
         """Test basic record chunking."""
-        records: list[dict[str, object]] = [{"id": i} for i in range(10)]  # [{"id": 0}, {"id": 1}, ...]
+        records: list[dict[str, object]] = [
+            {"id": i} for i in range(10)
+        ]  # [{"id": 0}, {"id": 1}, ...]
         chunk_size = 3
 
         chunks = list(flext_oracle_wms_chunk_records(records, chunk_size))
@@ -205,7 +207,9 @@ class TestDataProcessingHelpers:
 
     def test_chunk_records_exact_division(self) -> None:
         """Test chunking when records divide evenly."""
-        records: list[dict[str, object]] = [{"id": i} for i in range(9)]  # [{"id": 0}, {"id": 1}, ...]
+        records: list[dict[str, object]] = [
+            {"id": i} for i in range(9)
+        ]  # [{"id": 0}, {"id": 1}, ...]
         chunk_size = 3
 
         chunks = list(flext_oracle_wms_chunk_records(records, chunk_size))

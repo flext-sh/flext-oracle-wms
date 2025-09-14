@@ -37,8 +37,6 @@ Copyright (c) 2025 FLEXT Team. All rights reserved.
 SPDX-License-Identifier: MIT
 """
 
-from typing import Never
-
 import pytest
 
 from flext_oracle_wms import (
@@ -66,11 +64,11 @@ def test_base_error() -> None:
 
 def test_base_error_with_details() -> None:
     """Test base error with error details."""
-    details = {"code": "E001", "field": "username"}
+    details: dict[str, object] = {"code": "E001", "field": "username"}
     error = FlextOracleWmsError("Test error", context=details)
     assert str(error) == "[E001] Test error"
     assert error.code == "E001"
-    assert error.field == "username"
+    assert error.field == "username"  # type: ignore[attr-defined]
 
 
 def test_connection_error() -> None:
@@ -84,7 +82,7 @@ def test_connection_error_with_retry_count() -> None:
     """Test connection error with retry count."""
     error = FlextOracleWmsConnectionError("Connection failed", retry_count=3)
     assert str(error) == "[GENERIC_ERROR] Connection failed"
-    assert error.retry_count == 3
+    assert error.retry_count == 3  # type: ignore[attr-defined]
 
 
 def test_authentication_error() -> None:
@@ -100,7 +98,7 @@ def test_authentication_error_with_auth_method() -> None:
         "Auth failed", context={"auth_method": "oauth2"}
     )
     assert str(error) == "[GENERIC_ERROR] Auth failed"
-    assert error.auth_method == "oauth2"
+    assert error.auth_method == "oauth2"  # type: ignore[attr-defined]
 
 
 def test_data_validation_error() -> None:
@@ -114,7 +112,7 @@ def test_data_validation_error_with_field() -> None:
     """Test data validation error with field name."""
     error = FlextOracleWmsValidationError("Data error", context={"field_name": "email"})
     assert str(error) == "[GENERIC_ERROR] Data error"
-    assert error.field_name == "email"
+    assert error.field_name == "email"  # type: ignore[attr-defined]
 
 
 def test_configuration_error() -> None:
@@ -146,7 +144,7 @@ def test_entity_not_found_error_with_custom_message() -> None:
         "Custom not found message", entity_name="order_hdr"
     )
     assert "Custom not found message" in str(error)
-    assert error.entity_name == "order_hdr"
+    assert error.entity_name == "order_hdr"  # type: ignore[attr-defined]
 
 
 def test_rate_limit_error() -> None:
@@ -163,7 +161,7 @@ def test_rate_limit_error_with_retry_after() -> None:
         context={"retry_after_seconds": 60.0},
     )
     assert str(error) == "[GENERIC_ERROR] Rate limit exceeded"
-    assert error.retry_after_seconds == 60.0
+    assert error.retry_after_seconds == 60.0  # type: ignore[attr-defined]
 
 
 def test_api_error() -> None:
@@ -181,8 +179,8 @@ def test_api_error_with_status_code() -> None:
         response_body='{"error": "Not found"}',
     )
     assert str(error) == "[GENERIC_ERROR] API error"
-    assert error.status_code == 404
-    assert error.response_body == '{"error": "Not found"}'
+    assert error.status_code == 404  # type: ignore[attr-defined]
+    assert error.response_body == '{"error": "Not found"}'  # type: ignore[attr-defined]
 
 
 def test_schema_error() -> None:
@@ -229,19 +227,19 @@ def test_error_inheritance() -> None:
 
 def test_error_with_multiple_details() -> None:
     """Test error with multiple detail fields."""
-    context = {
+    context: dict[str, object] = {
         "field_name": "order_id",
         "invalid_value": "invalid",
         "entity_name": "order_hdr",
     }
     error = FlextOracleWmsError("Complex error", context=context)
     assert str(error) == "[GENERIC_ERROR] Complex error"
-    assert error.entity_name == "order_hdr"
-    assert error.field_name == "order_id"
-    assert error.invalid_value == "invalid"
+    assert error.entity_name == "order_hdr"  # type: ignore[attr-defined]
+    assert error.field_name == "order_id"  # type: ignore[attr-defined]
+    assert error.invalid_value == "invalid"  # type: ignore[attr-defined]
 
 
-def test_error_raising() -> Never:
+def test_error_raising() -> None:
     """Test raising and catching errors."""
     msg = "Connection failed"
     with pytest.raises(FlextOracleWmsConnectionError):
@@ -283,4 +281,4 @@ def test_base_error_with_entity_name() -> None:
     """Test base error with entity name."""
     error = FlextOracleWmsError("Test error", context={"entity_name": "order_hdr"})
     assert str(error) == "[GENERIC_ERROR] Test error"
-    assert error.entity_name == "order_hdr"
+    assert error.entity_name == "order_hdr"  # type: ignore[attr-defined]

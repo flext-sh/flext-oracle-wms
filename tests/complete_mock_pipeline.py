@@ -315,7 +315,10 @@ class CompleteMockPipeline:
                     "duration": duration,
                     "schemas_count": len(schemas),
                     "catalog_streams": len(
-                        streams if isinstance(catalog, dict) and isinstance(streams := catalog.get("streams", []), list) else []
+                        streams
+                        if isinstance(catalog, dict)
+                        and isinstance(streams := catalog.get("streams", []), list)
+                        else []
                     ),
                     "tap_records": len(tap_records),
                     "target_tables": len(target_results),
@@ -652,7 +655,9 @@ class CompleteMockPipeline:
                     "description": model_info["description"],
                     "source_tables": available_sources,
                     "rows_processed": sum(
-                        self._safe_int(target_results.get(src, {}).get("records_loaded", 0))
+                        self._safe_int(
+                            target_results.get(src, {}).get("records_loaded", 0)
+                        )
                         for src in available_sources
                         if src in target_results
                         and isinstance(target_results.get(src), dict)
@@ -722,7 +727,10 @@ class CompleteMockPipeline:
             "singer_integration": {
                 "schemas_generated": len(schemas),
                 "catalog_streams": len(
-                    streams if isinstance(catalog, dict) and isinstance(streams := catalog.get("streams", []), list) else []
+                    streams
+                    if isinstance(catalog, dict)
+                    and isinstance(streams := catalog.get("streams", []), list)
+                    else []
                 ),
                 "tap_records_extracted": len(tap_records),
                 "replication_methods": list(
@@ -731,7 +739,10 @@ class CompleteMockPipeline:
                         for stream in streams
                         if isinstance(stream, dict)
                     },
-                ) if isinstance(catalog, dict) and isinstance(streams := catalog.get("streams", []), list) else [],
+                )
+                if isinstance(catalog, dict)
+                and isinstance(streams := catalog.get("streams", []), list)
+                else [],
             },
             "target_loading": {
                 "tables_created": len(target_results),

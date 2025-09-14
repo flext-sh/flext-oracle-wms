@@ -33,7 +33,7 @@ import traceback
 from pathlib import Path
 
 from dotenv import load_dotenv
-from flext_core import FlextTypes, get_logger
+from flext_core import FlextLogger, FlextTypes
 
 from flext_oracle_wms import (
     FlextOracleWmsApiCategory,
@@ -47,7 +47,7 @@ from flext_oracle_wms import (
 )
 
 # Initialize logger
-logger = get_logger(__name__)
+logger = FlextLogger(__name__)
 
 
 def load_config_from_environment() -> FlextOracleWmsClientConfig:
@@ -61,22 +61,25 @@ def load_config_from_environment() -> FlextOracleWmsClientConfig:
     base_url = os.getenv("ORACLE_WMS_BASE_URL")
     username = os.getenv("ORACLE_WMS_USERNAME")
     password = os.getenv("ORACLE_WMS_PASSWORD")
-    environment = os.getenv("ORACLE_WMS_ENVIRONMENT", "production")
 
     if not all([base_url, username, password]):
         msg = "Missing required environment variables: ORACLE_WMS_BASE_URL, ORACLE_WMS_USERNAME, ORACLE_WMS_PASSWORD"
         raise ValueError(msg)
 
+    # Type guards after validation
+    if base_url is None or username is None or password is None:
+        msg = "Required environment variables cannot be None"
+        raise ValueError(msg)
+
     return FlextOracleWmsClientConfig(
-        base_url=base_url,
-        username=username,
-        password=password,
-        environment=environment,
+        oracle_wms_base_url=base_url,
+        oracle_wms_username=username,
+        oracle_wms_password=password,
         api_version=FlextOracleWmsApiVersion.LGF_V10,
-        timeout=30.0,
-        max_retries=3,
-        verify_ssl=True,
-        enable_logging=True,
+        oracle_wms_timeout=30,
+        oracle_wms_max_retries=3,
+        oracle_wms_verify_ssl=True,
+        oracle_wms_enable_logging=True,
     )
 
 

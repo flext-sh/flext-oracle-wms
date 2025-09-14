@@ -650,7 +650,7 @@ class NullTypeStrategy(TypeInferenceStrategy):
         """Check if value is None."""
         return value is None
 
-    def infer_type(self, value: object) -> str:
+    def infer_type(self, _value: object) -> str:
         """Return string type for null values."""
         return "string"  # Default for null values
 

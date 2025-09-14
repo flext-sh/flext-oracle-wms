@@ -15,7 +15,7 @@ from flext_oracle_wms import (
 )
 
 
-def load_env_config() -> dict[str, str] | None:
+def load_env_config() -> dict[str, object] | None:
     """Load configuration from .env file."""
     env_path = Path("flext-tap-oracle-wms/.env")
     if not env_path.exists():
@@ -35,7 +35,6 @@ def load_env_config() -> dict[str, str] | None:
 
     # Extract environment from URL dynamically
     base_url = config.get("ORACLE_WMS_BASE_URL", "")
-    environment = "default"  # fallback
     if base_url:
         try:
             # Extract the last path component as environment
@@ -43,20 +42,20 @@ def load_env_config() -> dict[str, str] | None:
             parsed = urlparse(base_url)
             path_parts = parsed.path.strip("/").split("/")
             if path_parts and path_parts[-1]:
-                environment = path_parts[-1]
+                path_parts[-1]
         except Exception:
-            environment = "default"
+            pass
 
     return {
-        "base_url": base_url,
-        "username": config.get("ORACLE_WMS_USERNAME"),
-        "password": config.get("ORACLE_WMS_PASSWORD"),
-        "environment": environment,  # Dynamic extraction from URL
+        "oracle_wms_base_url": base_url,
+        "oracle_wms_username": config.get("ORACLE_WMS_USERNAME"),
+        "oracle_wms_password": config.get("ORACLE_WMS_PASSWORD"),
         "api_version": FlextOracleWmsApiVersion.LGF_V10,  # Enum value
-        "timeout": float(config.get("ORACLE_WMS_TIMEOUT", "30")),
-        "max_retries": int(config.get("ORACLE_WMS_MAX_RETRIES", "3")),
-        "verify_ssl": config.get("ORACLE_WMS_VERIFY_SSL", "true").lower() == "true",
-        "enable_logging": config.get(
+        "oracle_wms_timeout": int(config.get("ORACLE_WMS_TIMEOUT", "30")),
+        "oracle_wms_max_retries": int(config.get("ORACLE_WMS_MAX_RETRIES", "3")),
+        "oracle_wms_verify_ssl": config.get("ORACLE_WMS_VERIFY_SSL", "true").lower()
+        == "true",
+        "oracle_wms_enable_logging": config.get(
             "ORACLE_WMS_ENABLE_REQUEST_LOGGING",
             "true",
         ).lower()
@@ -70,15 +69,24 @@ async def main() -> None:
     env_config = load_env_config()
     if not env_config or not all(
         [
-            env_config.get("base_url"),
-            env_config.get("username"),
-            env_config.get("password"),
+            env_config.get("oracle_wms_base_url"),
+            env_config.get("oracle_wms_username"),
+            env_config.get("oracle_wms_password"),
         ],
     ):
         return
 
     # Create client configuration
-    config = FlextOracleWmsClientConfig(**env_config)
+    config = FlextOracleWmsClientConfig(
+        oracle_wms_base_url=str(env_config["oracle_wms_base_url"]),
+        oracle_wms_username=str(env_config["oracle_wms_username"]),
+        oracle_wms_password=str(env_config["oracle_wms_password"]),
+        api_version=env_config["api_version"],  # type: ignore[arg-type]
+        oracle_wms_timeout=int(env_config["oracle_wms_timeout"]),  # type: ignore[arg-type]
+        oracle_wms_max_retries=int(env_config["oracle_wms_max_retries"]),  # type: ignore[arg-type]
+        oracle_wms_verify_ssl=bool(env_config["oracle_wms_verify_ssl"]),
+        oracle_wms_enable_logging=bool(env_config["oracle_wms_enable_logging"]),
+    )
     client = FlextOracleWmsClient(config)
 
     try:
@@ -105,7 +113,7 @@ async def main() -> None:
             pass
 
         # Get available entities
-        entities_result = await client.get_all_entities()
+        entities_result = await client.discover_entities()
         if entities_result.success:
             pass
 
@@ -114,13 +122,20 @@ async def main() -> None:
             result = await client.get_entity_data(entity, limit=3)
 
             if result.success:
-                data = result.data
-                data.get("count", len(data.get("results", [])))
+                data = result.value
+                if isinstance(data, dict):
+                    results = data.get("results", [])
+                    if isinstance(results, list):
+                        data.get("count", len(results))
+                elif isinstance(data, list):
+                    len(data)
 
         # Test automation APIs (dry run)
 
-        # Test entity status
-        await client.get_entity_status(entity="company", key="test")
+        # Test entity status (using health check as alternative)
+        health_result = await client.health_check()
+        if health_result.success:
+            pass
 
         # Test OBLPN tracking (will fail, but tests structure)
         await client.update_oblpn_tracking_number(
