@@ -1,10 +1,10 @@
-# FLEXT Oracle WMS - Enterprise Oracle WMS Cloud Integration
+# FLEXT Oracle WMS
 
-**Type**: Enterprise Infrastructure Library | **Status**: Production-Ready Core + FLEXT Modernization | **Version**: 0.9.0
+**Oracle Warehouse Management System (WMS) integration framework for the FLEXT data integration ecosystem.**
 
-**The definitive Oracle Warehouse Management System (WMS) Cloud integration library for the FLEXT data integration ecosystem.**
+**Version**: 0.9.0 | **Status**: Framework with implementation gaps | **Last Updated**: September 17, 2025
 
-> 🚀 **Enterprise Status**: Sophisticated Oracle WMS Cloud integration with 25+ APIs, advanced entity discovery, enterprise authentication, and comprehensive testing. Currently undergoing FLEXT ecosystem compliance modernization.
+> **⚠️ STATUS**: Framework with structure but limited proven functionality requiring substantial implementation work to achieve Oracle WMS Cloud integration.
 
 ## 🚀 Quick Start
 
@@ -30,126 +30,97 @@ make setup
 make validate  # Run comprehensive quality gates
 ```
 
-### Real Oracle WMS Integration Example
+### Basic Usage Example
 ```python
+# Note: Tests use fake URLs and expect network failures
 import asyncio
-from flext_oracle_wms import (
-    FlextOracleWmsClient,
-    FlextOracleWmsClientConfig,
-    OracleWMSAuthMethod
-)
+from flext_oracle_wms import FlextOracleWmsClient, FlextOracleWmsModuleConfig
 
-async def discover_wms_entities():
-    # Enterprise-grade configuration
-    config = FlextOracleWmsClientConfig(
-        base_url="https://your-wms.oraclecloud.com",
-        username="wms_api_user",
-        password="secure_password",
-        auth_method=OracleWMSAuthMethod.OAUTH2,
-        timeout=30
-    )
+async def test_client_structure():
+    # Using test configuration (not real Oracle WMS)
+    config = FlextOracleWmsModuleConfig.for_testing()  # Uses test.example.com
+    print(f"Test Base URL: {config.oracle_wms_base_url}")
 
-    # Initialize Oracle WMS client
-    client = FlextOracleWmsClient(config)
-    await client.start()
+    # Test client structure (not real connectivity)
+    with FlextOracleWmsClient(config) as client:
+        # This will fail with test config but tests code structure
+        try:
+            connection_result = client.test_connection()
+            print("Connection test completed (expected to fail with test config)")
+        except Exception as e:
+            print(f"Expected network error: {str(e)[:100]}...")
 
-    # Discover Oracle WMS entities (real API call)
-    result = await client.discover_entities()
-    if result.success:
-        entities = result.data
-        print(f"✅ Discovered {len(entities)} Oracle WMS entities")
-
-        # Query entity data (supports all Oracle WMS entities)
-        if entities:
-            entity_result = await client.get_entity_data(
-                entity_name=entities[0],
-                limit=10
-            )
-            if entity_result.success:
-                print(f"✅ Retrieved data from {entities[0]}")
-    else:
-        print(f"❌ Discovery failed: {result.error}")
-
-# Run the example
-asyncio.run(discover_wms_entities())
+# Run structure test
+asyncio.run(test_client_structure())
 ```
 
-## 🏆 Enterprise Capabilities
+## 🔍 Actual Implementation Status
 
-### ✅ **Production-Ready Oracle WMS Integration**
+### ✅ **What Works (Implemented)**
 
-#### **25+ Oracle WMS Cloud APIs** with LGF v10 and Legacy Support
+#### **22 API Endpoint Definitions** with Proper Structure
 - **Setup & Transactional**: `lgf_init_stage_interface`, `run_stage_interface`, `update_output_interface`
 - **Automation & Operations**: `update_oblpn_tracking_number`, `update_oblpn_dimensions`
-- **Data Extract**: `lgf_entity_extract`, `legacy_entity_extract` + **NEW 2025 Object Store API**
+- **Data Extract**: `lgf_entity_extract`, `legacy_entity_extract`
 - **Entity Operations**: `entity_discovery`, `entity_metadata`, `lgf_entity_list`
-- **2025 Enhancements**: Cart number filtering, parcel shipment details, movement requests
 
-#### **Advanced Entity Discovery & Schema Processing**
-- **Dynamic Entity Discovery**: Automatic detection of Oracle WMS entities via REST API
-- **Schema Inference**: Intelligent type detection and field mapping
-- **Multi-tier Caching**: Configurable TTL with performance optimization
-- **Mock Server Support**: Full development and testing support with real API simulation
+#### **Configuration Framework**
+- **Pydantic-based settings** with type validation
+- **Test configuration** using `for_testing()` method (fake URLs)
+- **FlextResult error handling** patterns throughout codebase
+- **MyPy strict compliance** for type safety
 
-#### **Enterprise Authentication Architecture**
-- **BasicAuth**: Username/password with Oracle WMS Cloud
-- **OAuth2**: Token-based authentication with automatic refresh
-- **API Key**: Header-based API key authentication
-- **Session Management**: Intelligent session handling and renewal
+### ❌ **What Doesn't Work (Implementation Gaps)**
 
-### ✅ **FLEXT Ecosystem Foundation Integration**
+#### **No Proven Oracle WMS Connectivity**
+- Tests use fake URL: `"https://test.example.com"`
+- `for_testing()` method provides mock configuration only
+- Connection tests expect network failures with comments like "expected to fail"
+- No validated integration with real Oracle WMS Cloud instances
 
-#### **FlextResult Pattern Throughout**
-```python
-# All operations return FlextResult for type-safe error handling
-result = await client.discover_entities()
-if result.success:
-    entities = result.data  # Type-safe data access
-    # Process entities with confidence
-else:
-    logger.error(f"Operation failed: {result.error}")  # Structured error handling
-```
+#### **Missing Modern Oracle WMS APIs**
+- Missing LGF v10 APIs: `POST /lgfapi/v10/pick_confirm/`
+- Missing bulk operations: `POST /lgfapi/v10/entity/inventory/bulk_update_inventory_attributes/`
+- Missing object store APIs: `POST /lgfapi/v10/data_extract/export_async_status`
+- No OAuth2 authentication implementation for enterprise security
 
-#### **Type-Safe Configuration with Pydantic**
-```python
-# Enterprise configuration with validation
-config = FlextOracleWmsClientConfig(
-    base_url="https://wms-instance.oraclecloud.com",
-    auth_method=OracleWMSAuthMethod.OAUTH2,
-    timeout=30,
-    max_retries=3,
-    enable_caching=True
-)
-# Automatic validation and type checking
-```
+#### **FLEXT Ecosystem Compliance Violations**
+- **httpx direct usage** in `http_client.py` and `wms_discovery.py` (should use flext-api)
+- **133 classes** across modules (should be unified class per module)
+- **No flext-auth integration** (custom authentication instead)
+- **No flext-cli support** for file operations
 
-#### **Structured Logging & Observability**
-- **FlextLogger Integration**: Consistent logging patterns across FLEXT ecosystem
-- **Correlation IDs**: Request tracking and distributed tracing support
-- **Performance Metrics**: Built-in monitoring for Oracle WMS operations
+### 🔄 **Required Work for FLEXT Compliance**
 
-### 🔄 **Currently Modernizing for Full FLEXT Compliance**
+#### **Phase 1: Foundation Compliance** (Weeks 1-2)
+1. **Replace httpx with flext-api patterns**
+   - Migrate `http_client.py` to use flext-api base classes
+   - Update `wms_discovery.py` imports
 
-#### **FLEXT API Integration** (In Progress)
-- Migrating from direct `httpx` to `flext-api` patterns
-- Maintaining all existing functionality with enhanced enterprise patterns
-- Adding connection pooling and advanced retry logic
+2. **Consolidate class architecture**
+   - Reduce 133 classes to unified classes per module
+   - Implement nested helper pattern per FLEXT standards
 
-#### **Unified Class Architecture** (In Progress)
-- Refactoring to single unified class per module with nested helpers
-- Preserving all existing Oracle WMS functionality
-- Implementing FLEXT domain service patterns
+3. **Integrate flext-auth**
+   - Replace custom authentication with flext-auth providers
+   - Add OAuth2 support for Oracle WMS Cloud
 
-#### **Complete Singer Protocol** (Planned)
-- Enhanced Oracle WMS tap with streaming support
-- Bidirectional Oracle WMS target implementation
-- Complete dbt integration for Oracle WMS transformations
+#### **Phase 2: Oracle WMS Integration** (Weeks 3-4)
+1. **Add missing LGF v10 APIs**
+   - Implement modern pick_confirm API
+   - Add bulk_update_inventory_attributes endpoint
+   - Add object store data extraction capabilities
 
-## 🏗️ Enterprise Architecture in FLEXT Ecosystem
+2. **Establish real connectivity**
+   - Replace fake test URLs with actual Oracle WMS Cloud testing
+   - Implement proper authentication testing
+   - Validate against real Oracle WMS instances
 
-### **Strategic Position: Oracle WMS Integration Authority**
+## 🏗️ Current Architecture Status
 
-flext-oracle-wms serves as the **definitive Oracle WMS integration layer** within the FLEXT ecosystem:
+### **Position in FLEXT Ecosystem**
+
+flext-oracle-wms is positioned as an Oracle WMS integration framework within the FLEXT ecosystem:
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
@@ -159,44 +130,34 @@ flext-oracle-wms serves as the **definitive Oracle WMS integration layer** withi
 ├─────────────────────────────────────────────────────────────────┤
 │ Applications: API | Auth | Web | CLI | Quality | Observability  │
 ├═════════════════════════════════════════════════════════════════┤
-│ Infrastructure: Oracle | LDAP | LDIF | gRPC | [ORACLE-WMS] ⭐    │
+│ Infrastructure: Oracle | LDAP | LDIF | gRPC | [ORACLE-WMS] 🔧    │
 ├─────────────────────────────────────────────────────────────────┤
 │ Singer Ecosystem: Taps(5) | Targets(5) | DBT(4) | Extensions(1) │
 ├─────────────────────────────────────────────────────────────────┤
 │ Foundation: FLEXT-CORE (FlextResult | DI | Domain Patterns)     │
 └─────────────────────────────────────────────────────────────────┘
 ```
-⭐ **flext-oracle-wms**: The specialized Oracle WMS Cloud integration foundation
+🔧 **flext-oracle-wms**: Framework requiring FLEXT compliance implementation
 
-### **Enterprise Responsibilities**
+### **Current Implementation Status**
 
-#### 1. **Oracle WMS Cloud Authority**
-- **25+ Production APIs**: Complete Oracle WMS Cloud LGF v10 and legacy API support
-- **Real-time Entity Discovery**: Dynamic schema detection and endpoint discovery
-- **Enterprise Authentication**: Multi-method auth with automatic token management
-- **Performance Optimization**: Intelligent caching, connection pooling, retry logic
+#### 1. **Oracle WMS Framework** (Partial Implementation)
+- **22 API endpoint definitions** with proper structure
+- **Configuration framework** with Pydantic validation
+- **FlextResult patterns** implemented for error handling
+- **Test infrastructure** using fake URLs for development
 
-#### 2. **FLEXT Ecosystem Integration**
-- **Singer Protocol**: Complete tap/target/streaming implementation for data pipelines
-- **flext-core Foundation**: FlextResult patterns, structured logging, dependency injection
-- **flext-api Standards**: Enterprise HTTP client patterns and authentication
-- **flext-observability**: Built-in monitoring, metrics, and distributed tracing
+#### 2. **FLEXT Integration Gaps**
+- **httpx direct usage** instead of flext-api patterns
+- **133 classes** violating unified class architecture
+- **Custom authentication** instead of flext-auth integration
+- **No flext-cli support** for file operations
 
-#### 3. **Oracle WMS Business Operations**
-```python
-# Enterprise warehouse operations support
-class OracleWmsWarehouseOperations:
-    """Business-level Oracle WMS operations."""
-
-    async def process_inbound_shipment(self, shipment_id: str) -> FlextResult[ShipmentResult]:
-        """Complete inbound processing with Oracle WMS APIs."""
-
-    async def execute_picking_wave(self, wave_id: str) -> FlextResult[PickingResult]:
-        """Execute picking operations via Oracle WMS."""
-
-    async def manage_inventory_cycle_count(self, location: str) -> FlextResult[CountResult]:
-        """Manage cycle counting operations."""
-```
+#### 3. **Oracle WMS Connectivity Gaps**
+- **No real Oracle WMS connectivity** validated
+- **Missing modern LGF v10 APIs** (pick_confirm, bulk operations)
+- **Test-only configuration** with fake URLs
+- **Limited authentication methods** (no OAuth2 implementation)
 
 ## 🚀 Key Enterprise Features
 
