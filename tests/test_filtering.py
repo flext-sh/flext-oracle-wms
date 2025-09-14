@@ -91,7 +91,7 @@ class TestFilterValidation:
     def test_validate_filter_conditions_exceeds_limit(self) -> None:
         """Test validation fails when conditions exceed limit."""
         # Create a filter with too many conditions
-        filters = {
+        filters: dict[str, object] = {
             "field1": {"eq": "value1"},
             "field2": {"eq": "value2"},
             "field3": {"eq": "value3"},
@@ -153,6 +153,7 @@ class TestRecordFiltering:
         result = await filter_engine.filter_records(self.sample_records, {})
 
         assert result.success
+        assert result.data is not None
         assert len(result.data) == 4
         assert result.data == self.sample_records
 
@@ -160,10 +161,11 @@ class TestRecordFiltering:
     async def test_filter_records_single_value(self) -> None:
         """Test filtering with single value condition."""
         filter_engine = FlextOracleWmsFilter(case_sensitive=False, max_conditions=50)
-        filters = {"status": "active"}
+        filters: dict[str, object] = {"status": "active"}
         result = await filter_engine.filter_records(self.sample_records, filters)
 
         assert result.success
+        assert result.data is not None
         assert len(result.data) == 2
         assert all(record["status"] == "active" for record in result.data)
 
@@ -171,10 +173,11 @@ class TestRecordFiltering:
     async def test_filter_records_list_values(self) -> None:
         """Test filtering with list of values (IN operation)."""
         filter_engine = FlextOracleWmsFilter(case_sensitive=False, max_conditions=50)
-        filters = {"status": ["active", "pending"]}
+        filters: dict[str, object] = {"status": ["active", "pending"]}
         result = await filter_engine.filter_records(self.sample_records, filters)
 
         assert result.success
+        assert result.data is not None
         assert len(result.data) == 3
         assert all(record["status"] in {"active", "pending"} for record in result.data)
 
@@ -182,10 +185,11 @@ class TestRecordFiltering:
     async def test_filter_records_numeric_values(self) -> None:
         """Test filtering with numeric values."""
         filter_engine = FlextOracleWmsFilter(case_sensitive=False, max_conditions=50)
-        filters = {"id": 2}
+        filters: dict[str, object] = {"id": 2}
         result = await filter_engine.filter_records(self.sample_records, filters)
 
         assert result.success
+        assert result.data is not None
         assert len(result.data) == 1
         assert result.data[0]["id"] == 2
 
@@ -193,7 +197,7 @@ class TestRecordFiltering:
     async def test_filter_records_with_limit(self) -> None:
         """Test filtering with result limit."""
         filter_engine = FlextOracleWmsFilter(case_sensitive=False, max_conditions=50)
-        filters = {"status": "active"}
+        filters: dict[str, object] = {"status": "active"}
         result = await filter_engine.filter_records_with_options(
             self.sample_records,
             filters,
@@ -201,6 +205,7 @@ class TestRecordFiltering:
         )
 
         assert result.success
+        assert result.data is not None
         assert len(result.data) == 1
         assert result.data[0]["status"] == "active"
 
@@ -208,10 +213,11 @@ class TestRecordFiltering:
     async def test_filter_records_no_matches(self) -> None:
         """Test filtering with no matching records."""
         filter_engine = FlextOracleWmsFilter(case_sensitive=False, max_conditions=50)
-        filters = {"status": "nonexistent"}
+        filters: dict[str, object] = {"status": "nonexistent"}
         result = await filter_engine.filter_records(self.sample_records, filters)
 
         assert result.success
+        assert result.data is not None
         assert len(result.data) == 0
 
     @pytest.mark.asyncio

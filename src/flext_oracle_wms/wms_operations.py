@@ -16,8 +16,15 @@ from dataclasses import dataclass
 from logging import Logger
 from urllib.parse import urljoin, urlparse
 
-from flext_core import FlextLogger, FlextResult, FlextTypes, FlextValidations, FlextUtilities
+from flext_core import (
+    FlextLogger,
+    FlextResult,
+    FlextTypes,
+    FlextUtilities,
+    FlextValidations,
+)
 
+from flext_oracle_wms.filtering import FlextOracleWmsFilter
 from flext_oracle_wms.wms_constants import (
     FlextOracleWmsDefaults,
     FlextOracleWmsResponseFields,
@@ -117,19 +124,19 @@ def flext_oracle_wms_build_entity_url(
     """Build complete entity URL for Oracle WMS API calls."""
     # Validate all string parameters using FlextResult pattern
     base_url_result = FlextValidations.TypeValidators.validate_string(base_url)
-    if base_url_result.is_failure:
+    if base_url_result.is_failure or not base_url.strip():
         # Legacy tests expect a generic message when any URL component is invalid
         msg = "All URL components must be non-empty strings"
         raise FlextOracleWmsError(msg) from None
 
     environment_result = FlextValidations.TypeValidators.validate_string(environment)
-    if environment_result.is_failure:
+    if environment_result.is_failure or not environment.strip():
         # Legacy tests expect a generic message when any URL component is invalid
         msg = "All URL components must be non-empty strings"
         raise FlextOracleWmsError(msg) from None
 
     entity_name_result = FlextValidations.TypeValidators.validate_string(entity_name)
-    if entity_name_result.is_failure:
+    if entity_name_result.is_failure or not entity_name.strip():
         # Legacy tests expect a generic message when any URL component is invalid
         msg = "All URL components must be non-empty strings"
         raise FlextOracleWmsError(msg) from None

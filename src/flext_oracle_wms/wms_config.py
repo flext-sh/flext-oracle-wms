@@ -11,6 +11,7 @@ from __future__ import annotations
 
 import base64
 import os
+from pathlib import Path
 from typing import ClassVar
 from urllib.parse import urlparse
 
@@ -123,7 +124,7 @@ class FlextOracleWmsConfig(FlextConfig):
         # Validate mock usage
         if self.oracle_wms_use_mock and not self.oracle_wms_base_url:
             validation_errors.append(
-                "Oracle WMS base URL is required even when using mock"
+                "Oracle WMS base URL is required even when using real"
             )
 
         if validation_errors:
@@ -219,7 +220,7 @@ class FlextOracleWmsConfig(FlextConfig):
         oracle_wms_verify_ssl: bool = True,
         oracle_wms_enable_logging: bool = True,
         oracle_wms_use_mock: bool = False,
-    ) -> FlextResult[FlextOracleWmsConfig]:
+    ) -> FlextResult[FlextConfig]:
         """Create production Oracle WMS configuration.
 
         Args:
@@ -251,10 +252,10 @@ class FlextOracleWmsConfig(FlextConfig):
             validation_result = config.validate_business_rules()
             if validation_result.is_failure:
                 error_msg = validation_result.error or "Validation failed"
-                return FlextResult[FlextOracleWmsConfig].fail(error_msg)
-            return FlextResult[FlextOracleWmsConfig].ok(config)
+                return FlextResult[FlextConfig].fail(error_msg)
+            return FlextResult[FlextConfig].ok(config)
         except Exception as e:
-            return FlextResult[FlextOracleWmsConfig].fail(
+            return FlextResult[FlextConfig].fail(
                 f"Failed to create production config: {e}"
             )
 
@@ -300,8 +301,11 @@ class FlextOracleWmsConfig(FlextConfig):
 
     @classmethod
     def create_from_environment(
-        cls, **override_kwargs: object
-    ) -> FlextResult[FlextOracleWmsConfig]:
+        cls,
+        *,
+        env_file: str | Path | None = None,
+        extra_settings: FlextTypes.Core.Dict | None = None,
+    ) -> FlextResult[FlextConfig]:
         """Create Oracle WMS configuration from environment variables.
 
         Uses the singleton pattern from flext-core and extends it with Oracle WMS specific fields.
@@ -320,14 +324,20 @@ class FlextOracleWmsConfig(FlextConfig):
             ORACLE_WMS_USE_MOCK: Use mock server (default: false)
 
         Args:
-            **override_kwargs: Configuration parameters to override environment variables
+            env_file: Environment file path (currently unused but required for compatibility)
+            extra_settings: Configuration parameters to override environment variables
 
         Returns:
             FlextResult containing the configuration or error
 
         """
         try:
+            # Note: env_file parameter is required for compatibility with parent class
+            # but not currently used in this implementation
+            _ = env_file  # Suppress unused parameter warning
+
             # Build configuration from environment variables with overrides
+            override_kwargs = extra_settings or {}
             env_config = {
                 "oracle_wms_base_url": override_kwargs.get(
                     "oracle_wms_base_url",
@@ -386,10 +396,10 @@ class FlextOracleWmsConfig(FlextConfig):
             validation_result = config.validate_business_rules()
             if validation_result.is_failure:
                 error_msg = validation_result.error or "Validation failed"
-                return FlextResult[FlextOracleWmsConfig].fail(error_msg)
-            return FlextResult[FlextOracleWmsConfig].ok(config)
+                return FlextResult[FlextConfig].fail(error_msg)
+            return FlextResult[FlextConfig].ok(config)
         except Exception as e:
-            return FlextResult[FlextOracleWmsConfig].fail(
+            return FlextResult[FlextConfig].fail(
                 f"Failed to create config from environment: {e}"
             )
 
@@ -405,9 +415,7 @@ class FlextOracleWmsConfig(FlextConfig):
             cls._oracle_wms_global_instance = None
 
     @classmethod
-    def update_global_instance(
-        cls, **kwargs: object
-    ) -> FlextResult[FlextOracleWmsConfig]:
+    def update_global_instance(cls, **kwargs: object) -> FlextResult[FlextConfig]:
         """Update the global singleton instance with new parameters.
 
         This method allows dynamic reconfiguration of the global instance
@@ -434,11 +442,11 @@ class FlextOracleWmsConfig(FlextConfig):
             validation_result = config.validate_business_rules()
             if validation_result.is_failure:
                 error_msg = validation_result.error or "Validation failed"
-                return FlextResult[FlextOracleWmsConfig].fail(error_msg)
+                return FlextResult[FlextConfig].fail(error_msg)
 
-            return FlextResult[FlextOracleWmsConfig].ok(config)
+            return FlextResult[FlextConfig].ok(config)
         except Exception as e:
-            return FlextResult[FlextOracleWmsConfig].fail(
+            return FlextResult[FlextConfig].fail(
                 f"Failed to update global instance: {e}"
             )
 

@@ -1,11 +1,10 @@
+#!/usr/bin/env python3
 """FLEXT - Enterprise Data Integration Platform.
 
 Copyright (c) 2025 FLEXT Team. All rights reserved.
 SPDX-License-Identifier: MIT
-"""
 
-# !/usr/bin/env python3
-"""Docker Complete Oracle WMS Validation Example.
+Docker Complete Oracle WMS Validation Example.
 
 This example demonstrates COMPLETE Oracle WMS functionality validation
 using Docker containers, as specifically requested by the user.
@@ -38,15 +37,15 @@ from pathlib import Path
 from typing import Any
 
 from dotenv import load_dotenv
-from flext_core import get_logger
+from flext_core import FlextLogger
 
-from ..flext_oracle_wms import (
+from flext_oracle_wms import (
     FlextOracleWmsApiVersion,
     FlextOracleWmsClient,
     FlextOracleWmsClientConfig,
 )
 
-logger = get_logger(__name__)
+logger = FlextLogger(__name__)
 
 
 def load_oracle_wms_config() -> FlextOracleWmsClientConfig:
@@ -146,7 +145,7 @@ async def validate_oracle_wms_connection(
             validation_results["error"] = "Entity discovery failed"
 
     except Exception as e:
-        logger.exception(f"❌ Oracle WMS validation failed: {e}")
+        logger.exception("❌ Oracle WMS validation failed")
         validation_results["error"] = str(e)
 
     finally:
@@ -242,7 +241,7 @@ async def validate_complete_functionality() -> dict[str, Any]:
         )
 
     except Exception as e:
-        logger.exception(f"❌ Complete validation failed: {e}")
+        logger.exception("❌ Complete validation failed")
         validation_summary["errors"].append(str(e))
         validation_summary["success"] = False
 
@@ -289,8 +288,8 @@ async def main() -> None:
     except KeyboardInterrupt:
         logger.info("🛑 Validation interrupted by user")
         sys.exit(1)
-    except Exception as e:
-        logger.exception(f"💥 Unexpected error during validation: {e}")
+    except Exception:
+        logger.exception("💥 Unexpected error during validation")
         sys.exit(1)
 
 

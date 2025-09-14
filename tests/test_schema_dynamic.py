@@ -80,12 +80,12 @@ class TestFlextOracleWmsDynamicSchemaProcessor:
     async def test_process_entity_records(self) -> None:
         """Test entity record processing."""
         processor = FlextOracleWmsDynamicSchemaProcessor()
-        records = [
+        records: list[dict[str, object]] = [
             {"id": "1", "name": "test", "count": "10"},
             {"id": "2", "name": "test2", "count": "20"},
         ]
 
-        schema = {
+        schema: dict[str, dict[str, object]] = {
             "id": {"type": "string"},
             "name": {"type": "string"},
             "count": {"type": "integer"},
@@ -128,11 +128,11 @@ class TestFlextOracleWmsDynamicSchemaProcessor:
         """Test private methods for schema confidence calculation."""
         processor = FlextOracleWmsDynamicSchemaProcessor()
 
-        records = [
+        records: list[dict[str, object]] = [
             {"id": "1", "count": 10},
             {"id": "2", "count": 20},
         ]
-        schema = {"id": {"type": "string"}, "count": {"type": "integer"}}
+        schema: dict[str, dict[str, object]] = {"id": {"type": "string"}, "count": {"type": "integer"}}
 
         # Correct parameter order: records first, then schema
         confidence = processor._calculate_schema_confidence(records, schema)
@@ -143,7 +143,7 @@ class TestFlextOracleWmsDynamicSchemaProcessor:
         """Test private methods for field consistency checking."""
         processor = FlextOracleWmsDynamicSchemaProcessor()
 
-        records = [
+        records: list[dict[str, object]] = [
             {"id": "1", "name": "test1"},
             {"id": "2", "name": "test2"},
             {"id": "3", "name": "test3"},
@@ -253,6 +253,6 @@ class TestEdgeCases:
         assert confidence == 0.0
 
         # Empty records with schema
-        schema = {"id": {"type": "string"}}
+        schema: dict[str, dict[str, object]] = {"id": {"type": "string"}}
         confidence = processor._calculate_schema_confidence([], schema)
         assert confidence == 0.0

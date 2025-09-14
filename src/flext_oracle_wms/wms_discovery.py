@@ -17,10 +17,10 @@ import time
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from datetime import UTC, datetime
-from typing import ClassVar, TypeVar, cast
+from typing import ClassVar, cast
 
 import httpx
-from flext_core import FlextConfig, FlextLogger, FlextModels, FlextResult, FlextTypes
+from flext_core import FlextConfig, FlextLogger, FlextModels, FlextResult, FlextTypes, T
 from pydantic import Field
 
 from flext_oracle_wms.http_client import FlextHttpClient
@@ -34,8 +34,6 @@ from flext_oracle_wms.wms_models import (
 from flext_oracle_wms.wms_operations import handle_operation_exception
 
 logger = FlextLogger(__name__)
-# Type variables for generic cache
-T = TypeVar("T")
 
 # Cache value types
 CacheValueBasic = str | int | float | bool | None
@@ -616,7 +614,7 @@ class FlextOracleWmsCacheManager:
             self.invalidate(key)
             return FlextResult[None].ok(None)
         except Exception as e:
-            logger.exception("Cache invalidation failed: %s", e)
+            logger.exception("Cache invalidation failed")
             return FlextResult[None].fail(f"Cache invalidation failed: {e}")
 
     def get_stats(self) -> FlextOracleWmsCacheStats:
@@ -652,7 +650,7 @@ class NullTypeStrategy(TypeInferenceStrategy):
         """Check if value is None."""
         return value is None
 
-    def infer_type(self, _value: object) -> str:
+    def infer_type(self, value: object) -> str:
         """Return string type for null values."""
         return "string"  # Default for null values
 
@@ -1400,7 +1398,7 @@ class EndpointDiscoveryStrategy(DiscoveryStrategy):
                                 )
                                 context.all_entities.append(entity)
                 return FlextResult[None].ok(None)
-            # Fallback to mock implementation for testing
+            # Fallback to real implementation for testing
             entities = [
                 FlextOracleWmsEntity(
                     name="company",

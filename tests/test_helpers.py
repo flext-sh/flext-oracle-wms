@@ -18,65 +18,7 @@ from flext_oracle_wms import (
     flext_oracle_wms_normalize_url,
     flext_oracle_wms_validate_api_response,
     flext_oracle_wms_validate_entity_name,
-    validate_dict_parameter,
-    validate_records_list,
-    validate_string_parameter,
 )
-
-
-@pytest.mark.unit
-class TestValidationHelpers:
-    """Test validation helper functions."""
-
-    def test_validate_records_list_valid(self) -> None:
-        """Test records list validation with valid input."""
-        records = [{"id": 1}, {"id": 2}]
-        # Should not raise exception
-        validate_records_list(records)
-
-    def test_validate_records_list_empty(self) -> None:
-        """Test records list validation with empty list."""
-        records = []
-        # Should not raise exception
-        validate_records_list(records)
-
-    def test_validate_records_list_invalid(self) -> None:
-        """Test records list validation with invalid input."""
-        result = validate_records_list("not_a_list")
-        assert result.is_failure
-        assert "must be a list" in result.error
-
-    def test_validate_dict_parameter_valid(self) -> None:
-        """Test dict parameter validation with valid input."""
-        param = {"key": "value"}
-        result = validate_dict_parameter(param, "test_field")
-        assert result.success
-        assert result.value is True
-
-    def test_validate_dict_parameter_invalid(self) -> None:
-        """Test dict parameter validation with invalid input."""
-        result = validate_dict_parameter("not_a_dict", "test_field")
-        assert result.is_failure
-        assert "must be a dictionary" in result.error
-
-    def test_validate_string_parameter_valid(self) -> None:
-        """Test string parameter validation with valid input."""
-        param = "valid_string"
-        result = validate_string_parameter(param, "test_field")
-        assert result.success
-        assert result.value is True
-
-    def test_validate_string_parameter_empty(self) -> None:
-        """Test string parameter validation with empty string."""
-        result = validate_string_parameter("", "test_field")
-        assert result.is_failure
-        assert "must be a non-empty string" in result.error
-
-    def test_validate_string_parameter_invalid(self) -> None:
-        """Test string parameter validation with invalid input."""
-        result = validate_string_parameter(None, "test_field")
-        assert result.is_failure
-        assert "must be a string" in result.error
 
 
 @pytest.mark.unit
@@ -175,13 +117,13 @@ class TestUrlHelpers:
             # Should either fail validation or handle gracefully
             assert result.is_failure or result.success
 
-        # Test None separately as it may raise an exception
-        try:
-            result = flext_oracle_wms_validate_entity_name(None)
-            assert result.is_failure or result.success
-        except (AttributeError, TypeError):
-            # This is acceptable behavior for None input
-            pass
+        # Test empty string - should fail validation
+        result = flext_oracle_wms_validate_entity_name("")
+        assert result.is_failure
+
+        # Test invalid characters
+        result = flext_oracle_wms_validate_entity_name("invalid-name!")
+        assert result.is_failure
 
 
 @pytest.mark.unit
@@ -195,6 +137,7 @@ class TestDataProcessingHelpers:
         # Function expects dict, should return failure result with list
         result = flext_oracle_wms_validate_api_response(response)
         assert result.is_failure
+        assert result.error is not None
         assert "not a dictionary" in result.error
 
     def test_validate_api_response_valid_dict(self) -> None:
@@ -212,6 +155,7 @@ class TestDataProcessingHelpers:
             # These should all return failure results since function expects dict
             result = flext_oracle_wms_validate_api_response(response)
             assert result.is_failure
+            assert result.error is not None
             assert "not a dictionary" in result.error
 
     def test_extract_pagination_info_complete(self) -> None:
@@ -233,7 +177,7 @@ class TestDataProcessingHelpers:
 
     def test_extract_pagination_info_minimal(self) -> None:
         """Test extracting pagination info with minimal data."""
-        response = {"results": [{"id": 1}, {"id": 2}]}
+        response: dict[str, object] = {"results": [{"id": 1}, {"id": 2}]}
 
         result = flext_oracle_wms_extract_pagination_info(response)
 
@@ -241,7 +185,7 @@ class TestDataProcessingHelpers:
 
     def test_extract_pagination_info_empty(self) -> None:
         """Test extracting pagination info from empty response."""
-        response = {}
+        response: dict[str, object] = {}
 
         result = flext_oracle_wms_extract_pagination_info(response)
 
@@ -249,31 +193,31 @@ class TestDataProcessingHelpers:
 
     def test_chunk_records_basic(self) -> None:
         """Test basic record chunking."""
-        records = list(range(10))  # [0, 1, 2, ..., 9]
+        records: list[dict[str, object]] = [{"id": i} for i in range(10)]  # [{"id": 0}, {"id": 1}, ...]
         chunk_size = 3
 
         chunks = list(flext_oracle_wms_chunk_records(records, chunk_size))
 
         assert len(chunks) >= 3  # Should have at least 3 chunks
-        assert chunks[0] == [0, 1, 2]
-        assert chunks[1] == [3, 4, 5]
-        assert chunks[2] == [6, 7, 8]
+        assert chunks[0] == [{"id": 0}, {"id": 1}, {"id": 2}]
+        assert chunks[1] == [{"id": 3}, {"id": 4}, {"id": 5}]
+        assert chunks[2] == [{"id": 6}, {"id": 7}, {"id": 8}]
 
     def test_chunk_records_exact_division(self) -> None:
         """Test chunking when records divide evenly."""
-        records = list(range(9))  # [0, 1, 2, ..., 8]
+        records: list[dict[str, object]] = [{"id": i} for i in range(9)]  # [{"id": 0}, {"id": 1}, ...]
         chunk_size = 3
 
         chunks = list(flext_oracle_wms_chunk_records(records, chunk_size))
 
         assert len(chunks) == 3
-        assert chunks[0] == [0, 1, 2]
-        assert chunks[1] == [3, 4, 5]
-        assert chunks[2] == [6, 7, 8]
+        assert chunks[0] == [{"id": 0}, {"id": 1}, {"id": 2}]
+        assert chunks[1] == [{"id": 3}, {"id": 4}, {"id": 5}]
+        assert chunks[2] == [{"id": 6}, {"id": 7}, {"id": 8}]
 
     def test_chunk_records_empty_list(self) -> None:
         """Test chunking empty list."""
-        records = []
+        records: list[dict[str, object]] = []
         chunk_size = 3
 
         chunks = list(flext_oracle_wms_chunk_records(records, chunk_size))
@@ -282,13 +226,13 @@ class TestDataProcessingHelpers:
 
     def test_chunk_records_single_chunk(self) -> None:
         """Test chunking when all records fit in one chunk."""
-        records = [1, 2, 3]
+        records: list[dict[str, object]] = [{"id": 1}, {"id": 2}, {"id": 3}]
         chunk_size = 5
 
         chunks = list(flext_oracle_wms_chunk_records(records, chunk_size))
 
         assert len(chunks) == 1
-        assert chunks[0] == [1, 2, 3]
+        assert chunks[0] == [{"id": 1}, {"id": 2}, {"id": 3}]
 
     def test_format_timestamp_basic(self) -> None:
         """Test basic timestamp formatting."""
@@ -302,7 +246,7 @@ class TestDataProcessingHelpers:
         """Test formatting None timestamp."""
         result = flext_oracle_wms_format_timestamp(None)
 
-        assert isinstance(result, str) or result is None
+        assert isinstance(result, str)
 
     def test_format_timestamp_empty(self) -> None:
         """Test formatting empty timestamp."""

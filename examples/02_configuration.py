@@ -11,7 +11,7 @@ from enum import StrEnum
 from pathlib import Path
 
 from dotenv import load_dotenv
-from flext_core import FlextTypes
+from flext_core import FlextTypes, get_logger
 
 from flext_oracle_wms import (
     FlextOracleWmsApiVersion,
@@ -19,6 +19,9 @@ from flext_oracle_wms import (
     FlextOracleWmsClientConfig,
     FlextOracleWmsDefaults,
 )
+
+# Initialize logger
+logger = get_logger(__name__)
 
 
 class Environment(StrEnum):
@@ -275,8 +278,8 @@ def demonstrate_configuration_patterns() -> None:
             for _warning in validation["warnings"]:
                 pass
 
-    except Exception:
-        pass
+    except Exception as e:
+        logger.warning(f"Configuration validation failed: {e}")
 
     # Pattern 3: Environment-specific configurations
     env_configs = get_environment_configs()

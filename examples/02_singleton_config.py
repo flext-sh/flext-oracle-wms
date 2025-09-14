@@ -119,8 +119,8 @@ async def demonstrate_singleton_config() -> None:
         else:
             logger.error(f"   ❌ Health check failed: {health_result.error}")
 
-    except Exception as e:
-        logger.exception(f"   ❌ Failed to create client: {e}")
+    except Exception:
+        logger.exception("   ❌ Failed to create client")
 
     logger.info("=== Demo Complete ===")
 
@@ -140,9 +140,10 @@ def demonstrate_environment_variables() -> None:
     if oracle_wms_vars:
         for key, value in oracle_wms_vars.items():
             # Mask sensitive values
+            display_value = value
             if "PASSWORD" in key or "SECRET" in key or "KEY" in key:
-                value = "***"
-            logger.info(f"   {key}: {value}")
+                display_value = "***"
+            logger.info(f"   {key}: {display_value}")
     else:
         logger.info("   No Oracle WMS environment variables found")
 
@@ -162,8 +163,8 @@ async def main() -> None:
     try:
         await demonstrate_singleton_config()
         demonstrate_environment_variables()
-    except Exception as e:
-        logger.exception(f"Demo failed: {e}")
+    except Exception:
+        logger.exception("Demo failed")
         raise
 
 

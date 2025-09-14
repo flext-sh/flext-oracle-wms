@@ -192,6 +192,13 @@ class FlextOracleWmsFilter:
                 validation_result.error or "Invalid records list"
             )
 
+        # Validate sort_field parameter
+        sort_field_result = FlextValidations.TypeValidators.validate_string(sort_field)
+        if sort_field_result.is_failure:
+            return FlextResult[list[FlextTypes.Core.Dict]].fail(
+                sort_field_result.error or "Sort field must be a string"
+            )
+
         try:
 
             def key_func(record: FlextTypes.Core.Dict) -> str:

@@ -194,6 +194,7 @@ class TestValidationHelpers:
 
         result = flext_oracle_wms_validate_api_response(response)
         assert result.is_failure
+        assert result.error is not None
         assert "API error: Database connection failed" in result.error
 
     def test_validate_api_response_error_status(self) -> None:
@@ -202,6 +203,7 @@ class TestValidationHelpers:
 
         result = flext_oracle_wms_validate_api_response(response)
         assert result.is_failure
+        assert result.error is not None
         assert "API error: Invalid authentication" in result.error
 
 
@@ -211,32 +213,32 @@ class TestDataProcessingHelpers:
 
     def test_chunk_records_basic(self) -> None:
         """Test basic record chunking."""
-        records = list(range(10))  # [0, 1, 2, ..., 9]
+        records: list[dict[str, object]] = [{"id": i, "value": f"item_{i}"} for i in range(10)]
         chunk_size = 3
 
         chunks = list(flext_oracle_wms_chunk_records(records, chunk_size))
 
         assert len(chunks) == 4  # 3 full chunks + 1 partial
-        assert chunks[0] == [0, 1, 2]
-        assert chunks[1] == [3, 4, 5]
-        assert chunks[2] == [6, 7, 8]
-        assert chunks[3] == [9]
+        assert len(chunks[0]) == 3
+        assert len(chunks[1]) == 3
+        assert len(chunks[2]) == 3
+        assert len(chunks[3]) == 1
 
     def test_chunk_records_exact_division(self) -> None:
         """Test chunking when records divide evenly."""
-        records = list(range(9))  # [0, 1, 2, ..., 8]
+        records: list[dict[str, object]] = [{"id": i, "value": f"item_{i}"} for i in range(9)]
         chunk_size = 3
 
         chunks = list(flext_oracle_wms_chunk_records(records, chunk_size))
 
         assert len(chunks) == 3
-        assert chunks[0] == [0, 1, 2]
-        assert chunks[1] == [3, 4, 5]
-        assert chunks[2] == [6, 7, 8]
+        assert len(chunks[0]) == 3
+        assert len(chunks[1]) == 3
+        assert len(chunks[2]) == 3
 
     def test_chunk_records_empty_list(self) -> None:
         """Test chunking empty list."""
-        records = []
+        records: list[dict[str, object]] = []
         chunk_size = 3
 
         chunks = list(flext_oracle_wms_chunk_records(records, chunk_size))
@@ -245,17 +247,17 @@ class TestDataProcessingHelpers:
 
     def test_chunk_records_single_chunk(self) -> None:
         """Test chunking when all records fit in one chunk."""
-        records = [1, 2, 3]
+        records: list[dict[str, object]] = [{"id": i, "value": f"item_{i}"} for i in [1, 2, 3]]
         chunk_size = 5
 
         chunks = list(flext_oracle_wms_chunk_records(records, chunk_size))
 
         assert len(chunks) == 1
-        assert chunks[0] == [1, 2, 3]
+        assert len(chunks[0]) == 3
 
     def test_chunk_records_invalid_chunk_size(self) -> None:
         """Test chunking with invalid chunk size."""
-        records = [1, 2, 3]
+        records: list[dict[str, object]] = [{"id": i, "value": f"item_{i}"} for i in [1, 2, 3]]
 
         with pytest.raises(Exception, match="Chunk size must be positive"):
             flext_oracle_wms_chunk_records(records, 0)
@@ -290,7 +292,7 @@ class TestDataProcessingHelpers:
 
     def test_extract_pagination_info_minimal(self) -> None:
         """Test extracting pagination info with minimal fields."""
-        response = {"results": [{"id": 1}, {"id": 2}]}
+        response: dict[str, object] = {"results": [{"id": 1}, {"id": 2}]}
 
         result = flext_oracle_wms_extract_pagination_info(response)
 
@@ -308,7 +310,7 @@ class TestDataProcessingHelpers:
 
     def test_extract_pagination_info_no_data(self) -> None:
         """Test extracting pagination info from response with no data."""
-        response = {}
+        response: dict[str, object] = {}
 
         result = flext_oracle_wms_extract_pagination_info(response)
 

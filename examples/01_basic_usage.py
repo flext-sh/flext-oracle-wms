@@ -23,7 +23,7 @@ import asyncio
 import os
 from pathlib import Path
 
-from flext_core import FlextResult, FlextTypes
+from flext_core import FlextResult, FlextTypes, get_logger
 
 from flext_oracle_wms import (
     FlextOracleWmsClient,
@@ -35,6 +35,9 @@ from flext_oracle_wms import (
 # Constants for example display
 MAX_ENTITIES_TO_SHOW = 5
 MAX_VALUE_DISPLAY_LENGTH = 50
+
+# Initialize logger
+logger = get_logger(__name__)
 
 # Load .env file from project root
 try:

@@ -78,6 +78,7 @@ def test_entity_validation_empty_name() -> None:
     entity = FlextOracleWmsEntity(name="", endpoint="/api/items")
     result = entity.validate_business_rules()
     assert result.is_failure
+    assert result.error is not None
     assert "name" in result.error.lower()
 
 
@@ -86,6 +87,7 @@ def test_entity_validation_empty_endpoint() -> None:
     entity = FlextOracleWmsEntity(name="item_master", endpoint="")
     result = entity.validate_business_rules()
     assert result.is_failure
+    assert result.error is not None
     assert "endpoint" in result.error.lower()
 
 
@@ -133,6 +135,7 @@ def test_discovery_result_validation_count_mismatch() -> None:
     )
     validation_result = result.validate_business_rules()
     assert validation_result.is_failure
+    assert validation_result.error is not None
     assert "mismatch" in validation_result.error.lower()
 
 
@@ -186,7 +189,14 @@ def test_response_creation() -> None:
         error_message=None,
     )
     # Test actual fields that exist in the class
-    assert response.data["results"][0]["result"] == "success"
+    assert isinstance(response.data, dict)
+    data = response.data
+    assert isinstance(data, dict)
+    results = data["results"]
+    assert isinstance(results, list)
+    result_item = results[0]
+    assert isinstance(result_item, dict)
+    assert result_item["result"] == "success"
     assert response.status_code == 200
     assert response.success is True
     assert response.error_message is None
@@ -238,7 +248,12 @@ def test_entity_with_schema() -> None:
         endpoint="/api/order_hdr",
         fields={"order_id": {"type": "string"}},
     )
-    assert entity.fields["order_id"]["type"] == "string"
+    assert entity.fields is not None
+    fields = entity.fields
+    assert isinstance(fields, dict)
+    order_id_field = fields["order_id"]
+    assert isinstance(order_id_field, dict)
+    assert order_id_field["type"] == "string"
 
 
 def test_response_basic_creation() -> None:
@@ -273,6 +288,7 @@ def test_entity_validation() -> None:
     )
     # Should not raise an exception
     assert entity.name == "order_hdr"
+    assert entity.fields is not None
     assert len(entity.fields) == 2
 
 
@@ -284,7 +300,14 @@ def test_response_with_list_data() -> None:
         success=True,
     )
     # Test actual fields that exist in the class
-    assert response.data["results"][0]["result"] == "success"
+    assert isinstance(response.data, dict)
+    data = response.data
+    assert isinstance(data, dict)
+    results = data["results"]
+    assert isinstance(results, list)
+    result_item = results[0]
+    assert isinstance(result_item, dict)
+    assert result_item["result"] == "success"
     assert response.status_code == 200
     assert response.success is True
 
@@ -316,6 +339,7 @@ def test_entity_field_count() -> None:
             "modified_date": {"type": "datetime"},
         },
     )
+    assert entity.fields is not None
     assert len(entity.fields) == 4
 
 

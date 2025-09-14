@@ -5,8 +5,9 @@ This demonstrates the declarative approach with massive code reduction.
 
 import asyncio
 from pathlib import Path
+from urllib.parse import urlparse
 
-from ...flext_oracle_wms import (
+from flext_oracle_wms import (
     FLEXT_ORACLE_WMS_APIS,
     FlextOracleWmsApiVersion,
     FlextOracleWmsClient,
@@ -14,7 +15,7 @@ from ...flext_oracle_wms import (
 )
 
 
-def load_env_config():
+def load_env_config() -> dict[str, str] | None:
     """Load configuration from .env file."""
     env_path = Path("flext-tap-oracle-wms/.env")
     if not env_path.exists():
@@ -23,9 +24,13 @@ def load_env_config():
     config = {}
     with env_path.open(encoding="utf-8") as f:
         for line in f:
-            line = line.strip()
-            if line and not line.startswith("#") and "=" in line:
-                key, value = line.split("=", 1)
+            stripped_line = line.strip()
+            if (
+                stripped_line
+                and not stripped_line.startswith("#")
+                and "=" in stripped_line
+            ):
+                key, value = stripped_line.split("=", 1)
                 config[key.strip()] = value.strip()
 
     # Extract environment from URL dynamically
@@ -35,8 +40,6 @@ def load_env_config():
         try:
             # Extract the last path component as environment
             # URL format: https://ta29.wms.ocs.oraclecloud.com/raizen_test
-            from urllib.parse import urlparse
-
             parsed = urlparse(base_url)
             path_parts = parsed.path.strip("/").split("/")
             if path_parts and path_parts[-1]:
@@ -87,7 +90,7 @@ async def main() -> None:
         # Show API catalog
 
         # Categorize APIs
-        categories = {}
+        categories: dict[str, list[str]] = {}
         for api in FLEXT_ORACLE_WMS_APIS.values():
             if api.category not in categories:
                 categories[api.category] = []

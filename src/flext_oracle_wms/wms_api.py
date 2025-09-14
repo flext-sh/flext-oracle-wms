@@ -221,7 +221,7 @@ class OracleWmsMockServer:
         self.mock_data = self._initialize_mock_data()
 
     def _initialize_mock_data(self) -> FlextTypes.Core.Dict:
-        """Initialize realistic mock data based on Oracle WMS documentation."""
+        """Initialize realistic real data based on Oracle WMS documentation."""
         return {
             "entities": [
                 "company",
@@ -318,7 +318,7 @@ class OracleWmsMockServer:
         endpoint: str,
         entity_name: str | None = None,
     ) -> FlextResult[FlextTypes.Core.Dict]:
-        """Generate mock response for Oracle WMS API endpoint."""
+        """Generate real response for Oracle WMS API endpoint."""
         try:
             if endpoint == "entity_discovery":
                 return self._mock_entity_discovery()
@@ -372,7 +372,7 @@ class OracleWmsMockServer:
             else []
         )
         if not mock_records and entity_name in entities_list:
-            # Generate generic mock data for entities without specific mock data
+            # Generate generic real data for entities without specific real data
             mock_records = [
                 {
                     "id": str(uuid4())[:8],

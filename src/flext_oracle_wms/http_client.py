@@ -100,6 +100,8 @@ class FlextHttpClient:
             response.raise_for_status()
 
             data = response.json()
+            if data is None:
+                data = {}
             return FlextResult[FlextTypes.Core.Dict].ok(data)
 
         except httpx.HTTPStatusError as e:
@@ -151,6 +153,8 @@ class FlextHttpClient:
             response.raise_for_status()
 
             data = response.json()
+            if data is None:
+                data = {}
             return FlextResult[FlextTypes.Core.Dict].ok(data)
 
         except httpx.HTTPStatusError as e:
@@ -202,6 +206,8 @@ class FlextHttpClient:
             response.raise_for_status()
 
             data = response.json()
+            if data is None:
+                data = {}
             return FlextResult[FlextTypes.Core.Dict].ok(data)
 
         except httpx.HTTPStatusError as e:
@@ -247,6 +253,8 @@ class FlextHttpClient:
             response.raise_for_status()
 
             data = response.json()
+            if data is None:
+                data = {}
             return FlextResult[FlextTypes.Core.Dict].ok(data)
 
         except httpx.HTTPStatusError as e:

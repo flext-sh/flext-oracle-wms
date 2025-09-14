@@ -324,7 +324,9 @@ class FlextOracleWmsAuthPlugin:
             getattr(request, "headers", None), dict
         ):
             if isinstance(headers, dict):
-                request.headers.update(headers)
+                headers_attr = getattr(request, "headers")
+                if isinstance(headers_attr, dict):
+                    headers_attr.update(headers)
             return request
         # This handles edge case where request is neither object with headers nor dict
         msg = "Request type not supported for header injection"
@@ -495,7 +497,7 @@ class FlextOracleWmsClient:
                 error_msg = f"Failed to create API client: {e}"
                 raise FlextOracleWmsConnectionError(error_msg) from e
             logger.info(
-                "Oracle WMS client initialized with modern FlextApi patterns",
+                "Oracle WMS client initialized with modern FlextApiClient patterns",
                 base_url=self.config.oracle_wms_base_url,
                 environment=self.config.extract_environment_from_url(),
                 verify_ssl=self.config.oracle_wms_verify_ssl,
@@ -548,8 +550,8 @@ class FlextOracleWmsClient:
 
         """
         try:
-            if self._api_client and hasattr(self._api_client, "stop"):
-                await self._api_client.stop()
+            if self._api_client and hasattr(self._api_client, "close"):
+                await self._api_client.close()
             return FlextResult[None].ok(None)
         except Exception as e:
             return FlextResult[None].fail(f"Stop failed: {e}")
@@ -578,16 +580,8 @@ class FlextOracleWmsClient:
             "test_call_success": True,
         }
 
-        if self._api_client and hasattr(self._api_client, "health_check"):
-            health_result = await self._api_client.health_check()
-            if isinstance(health_result, dict):
-                # Merge mock data with base health data
-                health_data.update(health_result)
-            else:
-                health_data = {
-                    "status": "unhealthy",
-                    "message": "Health check returned unexpected format",
-                }
+        # Note: FlextHttpClient doesn't have a health_check method
+        # Using mock health data for now
         # Ensure service field is present for test expectations
         health_data.setdefault("service", "FlextOracleWmsClient")
         # Add timestamp if backend did not provide

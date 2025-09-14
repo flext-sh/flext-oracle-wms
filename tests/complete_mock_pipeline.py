@@ -24,10 +24,19 @@ logger = FlextLogger(__name__)
 class CompleteMockPipeline:
     """Complete Oracle WMS pipeline using realistic mock data."""
 
+    @staticmethod
+    def _safe_int(value: object, default: int = 0) -> int:
+        """Safely convert object to int."""
+        if isinstance(value, int):
+            return value
+        if isinstance(value, str) and value.isdigit():
+            return int(value)
+        return default
+
     def __init__(self) -> None:
         """Initialize with realistic Oracle WMS mock data."""
         # Realistic Oracle WMS entities with actual data structures
-        self.mock_entities = {
+        self.mock_entities: dict[str, object] = {
             "company": {
                 "count": 5,
                 "sample_data": {
@@ -306,7 +315,7 @@ class CompleteMockPipeline:
                     "duration": duration,
                     "schemas_count": len(schemas),
                     "catalog_streams": len(
-                        catalog.get("streams", []) if isinstance(catalog, dict) else []
+                        streams if isinstance(catalog, dict) and isinstance(streams := catalog.get("streams", []), list) else []
                     ),
                     "tap_records": len(tap_records),
                     "target_tables": len(target_results),
@@ -497,17 +506,16 @@ class CompleteMockPipeline:
 
         return {"version": 1, "streams": streams}
 
-    def _simulate_tap_extraction(self) -> list[FlextTypes.Core.Dict]:
+    def _simulate_tap_extraction(self) -> list[dict[str, object]]:
         """Simulate TAP extraction process."""
-        tap_records = []
+        tap_records: list[dict[str, object]] = []
 
         for entity_name, entity_info in self.mock_entities.items():
             if not isinstance(entity_info, dict):
                 continue
+            sample_data_raw = entity_info.get("sample_data", {})
             sample_data = (
-                entity_info.get("sample_data", {}).copy()
-                if isinstance(entity_info.get("sample_data"), dict)
-                else {}
+                sample_data_raw.copy() if isinstance(sample_data_raw, dict) else {}
             )
 
             # Add Singer metadata
@@ -530,7 +538,9 @@ class CompleteMockPipeline:
                     record["order_nbr"] = f"{record['order_nbr']}-{i + 1:03d}"
 
                 record["_sdc_sequence"] = i + 1
-                tap_records.append({"entity": entity_name, "record": record})
+                # Ensure all values are objects
+                record_obj: dict[str, object] = dict(record.items())
+                tap_records.append({"entity": entity_name, "record": record_obj})
 
         return tap_records
 
@@ -555,6 +565,7 @@ class CompleteMockPipeline:
                     if entity_records
                     and isinstance(entity_records[0], dict)
                     and isinstance(entity_records[0].get("record"), dict)
+                    and hasattr(entity_records[0]["record"], "keys")
                     else []
                 ),
             }
@@ -641,7 +652,7 @@ class CompleteMockPipeline:
                     "description": model_info["description"],
                     "source_tables": available_sources,
                     "rows_processed": sum(
-                        target_results.get(src, {}).get("records_loaded", 0)
+                        self._safe_int(target_results.get(src, {}).get("records_loaded", 0))
                         for src in available_sources
                         if src in target_results
                         and isinstance(target_results.get(src), dict)
@@ -702,7 +713,7 @@ class CompleteMockPipeline:
             "oracle_wms": {
                 "entities_count": len(self.mock_entities),
                 "total_records": sum(
-                    info.get("count", 0)
+                    self._safe_int(info.get("count", 0))
                     for info in self.mock_entities.values()
                     if isinstance(info, dict)
                 ),
@@ -711,21 +722,21 @@ class CompleteMockPipeline:
             "singer_integration": {
                 "schemas_generated": len(schemas),
                 "catalog_streams": len(
-                    catalog.get("streams", []) if isinstance(catalog, dict) else []
+                    streams if isinstance(catalog, dict) and isinstance(streams := catalog.get("streams", []), list) else []
                 ),
                 "tap_records_extracted": len(tap_records),
                 "replication_methods": list(
                     {
                         stream["metadata"][0]["metadata"]["replication-method"]
-                        for stream in catalog.get("streams", [])
-                        if isinstance(catalog, dict) and isinstance(stream, dict)
+                        for stream in streams
+                        if isinstance(stream, dict)
                     },
-                ),
+                ) if isinstance(catalog, dict) and isinstance(streams := catalog.get("streams", []), list) else [],
             },
             "target_loading": {
                 "tables_created": len(target_results),
                 "total_records_loaded": sum(
-                    result.get("records_loaded", 0)
+                    self._safe_int(result.get("records_loaded", 0))
                     for result in target_results.values()
                     if isinstance(result, dict)
                 ),

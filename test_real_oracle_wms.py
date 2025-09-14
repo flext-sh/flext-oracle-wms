@@ -12,11 +12,13 @@ This will test ACTUAL Oracle WMS functionality, not mocks.
 import asyncio
 import builtins
 import contextlib
+import os
 
 from flext_core import FlextLogger
 
 # Use public enum re-exported by package
 from flext_oracle_wms import (
+    FlextOracleWmsApiCategory,
     FlextOracleWmsApiVersion,
     FlextOracleWmsClientConfig,
     create_oracle_wms_client,
@@ -24,24 +26,25 @@ from flext_oracle_wms import (
 
 logger = FlextLogger(__name__)
 
+# Constants
+MINIMUM_PASSED_TESTS = 3
 
-async def test_real_oracle_wms():
+
+async def test_real_oracle_wms() -> dict[str, bool]:
     """Test REAL Oracle WMS functionality with valid credentials."""
     # Create REAL configuration with provided credentials
     config = FlextOracleWmsClientConfig(
-        base_url="https://ta29.wms.ocs.oraclecloud.com",
-        username="USER_WMS_INTEGRA",
-        password="jmCyS7BK94YvhS@",
-        environment="raizen_test",
-        timeout=60.0,  # Increased timeout for real network calls
-        max_retries=3,
+        oracle_wms_base_url="https://ta29.wms.ocs.oraclecloud.com",
+        oracle_wms_username="USER_WMS_INTEGRA",
+        oracle_wms_password=os.getenv("ORACLE_WMS_PASSWORD", "jmCyS7BK94YvhS@"),
+        oracle_wms_timeout=60,  # Increased timeout for real network calls
+        oracle_wms_max_retries=3,
         api_version=FlextOracleWmsApiVersion.LGF_V10,
-        verify_ssl=True,
-        enable_logging=True,
+        oracle_wms_verify_ssl=True,
     )
 
     # Create REAL Oracle WMS client (NO MOCK MODE)
-    real_client = create_oracle_wms_client(config, mock_mode=False)
+    real_client = create_oracle_wms_client(config)
 
     test_results = {
         "client_start": False,
@@ -64,11 +67,15 @@ async def test_real_oracle_wms():
 
         entities_result = await real_client.discover_entities()
         if entities_result.success:
-            entities = entities_result.data
+            entities = entities_result.value
             test_results["entity_discovery"] = True
             discovered_entities = entities
         else:
-            discovered_entities = ["company", "facility", "item"]  # Fallback
+            discovered_entities = [
+                {"name": "company"},
+                {"name": "facility"},
+                {"name": "item"},
+            ]  # Fallback
 
         # Test 3: Real Data Extraction
 
@@ -76,14 +83,19 @@ async def test_real_oracle_wms():
             # Test with first available entity
             test_entity = discovered_entities[0]
 
+            entity_name = (
+                str(test_entity.get("name", "company"))
+                if isinstance(test_entity, dict)
+                else "company"
+            )
             data_result = await real_client.get_entity_data(
-                test_entity,
+                entity_name,
                 limit=5,  # Small limit for testing
                 fields="id,create_ts,mod_ts",  # Basic fields
             )
 
             if data_result.success:
-                data = data_result.data
+                data = data_result.value
                 if isinstance(data, dict):
                     data.get("count", 0)
                     results = data.get("results", [])
@@ -118,7 +130,7 @@ async def test_real_oracle_wms():
         # Test 5: API Catalog Validation
 
         available_apis = real_client.get_available_apis()
-        real_client.get_apis_by_category("data_extract")
+        real_client.get_apis_by_category(FlextOracleWmsApiCategory.DATA_EXTRACT)
 
         # Show some key APIs
         key_apis = ["lgf_entity_list", "lgf_entity_discovery", "lgf_data_extract"]
@@ -168,11 +180,14 @@ async def main() -> None:
 
         # Honesty Assessment
 
-        if test_results["client_start"] and test_results["entity_discovery"]:
-            if test_results["entity_data"]:
-                pass
+        if (
+            test_results["client_start"]
+            and test_results["entity_discovery"]
+            and test_results["entity_data"]
+        ):
+            pass
 
-        if passed_tests >= 3:  # Most tests passed
+        if passed_tests >= MINIMUM_PASSED_TESTS:  # Most tests passed
             pass
 
     except Exception:

@@ -28,9 +28,12 @@ Requirements:
 
 import asyncio
 import os
+import time
+import traceback
 from pathlib import Path
 
 from dotenv import load_dotenv
+from flext_core import FlextTypes, get_logger
 
 from flext_oracle_wms import (
     FlextOracleWmsApiCategory,
@@ -42,6 +45,9 @@ from flext_oracle_wms import (
     FlextOracleWmsError,
     OracleWMSAuthMethod,
 )
+
+# Initialize logger
+logger = get_logger(__name__)
 
 
 def load_config_from_environment() -> FlextOracleWmsClientConfig:
@@ -214,7 +220,7 @@ async def showcase_5_api_catalog(client: FlextOracleWmsClient) -> None:
             categories[category] = []
         categories[category].append(api_name)
 
-    for category, apis in categories.items():
+    for apis in categories.values():
         # Constants for API display
         max_apis_to_show = 3
 
@@ -261,9 +267,9 @@ async def showcase_6_error_handling(client: FlextOracleWmsClient) -> None:
         )
         validation = invalid_config.validate_business_rules()
         if not validation.success:
-            pass
-    except Exception:
-        pass
+            logger.info(f"Expected validation failure: {validation.error}")
+    except Exception as e:
+        logger.warning(f"Error handling demonstration: {e}")
 
 
 async def showcase_7_health_monitoring(
@@ -293,8 +299,6 @@ async def showcase_8_performance_tracking(
     """Feature 8: Performance Tracking."""
     # Constants for performance testing
     min_entities_for_concurrent_test = 3
-
-    import time
 
     # Test concurrent requests
     if len(entities) >= min_entities_for_concurrent_test:
@@ -420,8 +424,6 @@ async def main() -> None:
         await client.stop()
 
     except Exception:
-        import traceback
-
         traceback.print_exc()
         return 1
 
