@@ -81,9 +81,9 @@ async def main() -> None:
         oracle_wms_base_url=str(env_config["oracle_wms_base_url"]),
         oracle_wms_username=str(env_config["oracle_wms_username"]),
         oracle_wms_password=str(env_config["oracle_wms_password"]),
-        api_version=env_config["api_version"],  # type: ignore[arg-type]
-        oracle_wms_timeout=int(env_config["oracle_wms_timeout"]),  # type: ignore[arg-type]
-        oracle_wms_max_retries=int(env_config["oracle_wms_max_retries"]),  # type: ignore[arg-type]
+        api_version=env_config["api_version"],
+        oracle_wms_timeout=int(env_config["oracle_wms_timeout"]),
+        oracle_wms_max_retries=int(env_config["oracle_wms_max_retries"]),
         oracle_wms_verify_ssl=bool(env_config["oracle_wms_verify_ssl"]),
         oracle_wms_enable_logging=bool(env_config["oracle_wms_enable_logging"]),
     )

@@ -22,12 +22,28 @@ class FlextOracleWmsError(FlextExceptions.BaseError):
     access them directly on the exception instance.
     """
 
+    # Declare attributes that may be dynamically set for MyPy
+    field: str | None
+    entity_name: str | None
+    field_name: str | None
+    invalid_value: object
+    retry_count: int | None
+    auth_method: str | None
+    retry_after_seconds: float | None
+    status_code: int | None
+    response_body: str | None
+
     def __init__(
         self,
         message: str,
         *,
         code: str | None = None,
         context: FlextTypes.Core.Dict | None = None,
+        field: str | None = None,
+        entity_name: str | None = None,
+        field_name: str | None = None,
+        invalid_value: object = None,
+        **kwargs: object,
     ) -> None:
         """Initialize Oracle WMS error with context.
 
@@ -35,11 +51,41 @@ class FlextOracleWmsError(FlextExceptions.BaseError):
             message: Error message
             code: Optional error code
             context: Optional context dictionary
+            field: Field name for validation errors
+            entity_name: Entity name for entity-related errors
+            field_name: Alternative field name parameter
+            invalid_value: Invalid value that caused the error
+            **kwargs: Additional context parameters
 
         """
-        super().__init__(message, code=code, context=context or {})
+        full_context = dict(context or {})
+        full_context.update(kwargs)
+
+        # Add specific attributes to context
+        if field is not None:
+            full_context["field"] = field
+        if entity_name is not None:
+            full_context["entity_name"] = entity_name
+        if field_name is not None:
+            full_context["field_name"] = field_name
+        if invalid_value is not None:
+            full_context["invalid_value"] = invalid_value
+
+        super().__init__(message, code=code, context=full_context)
+
+        # Initialize declared attributes to None
+        self.field = None
+        self.entity_name = None
+        self.field_name = None
+        self.invalid_value = None
+        self.retry_count = None
+        self.auth_method = None
+        self.retry_after_seconds = None
+        self.status_code = None
+        self.response_body = None
+
         # Attach context keys as attributes for convenient access in tests
-        for key, value in (context or {}).items():
+        for key, value in full_context.items():
             with contextlib.suppress(Exception):
                 setattr(self, key, value)
 
@@ -51,6 +97,26 @@ class FlextOracleWmsValidationError(FlextOracleWmsError):
     validation failures. Provides detailed context about validation failures
     including field names, validation rules, and error details.
     """
+
+    def __init__(
+        self,
+        message: str = "Validation failed",
+        *,
+        field_name: str | None = None,
+        **kwargs: object,
+    ) -> None:
+        """Initialize validation error with context.
+
+        Args:
+            message: Error message
+            field_name: Name of the field that failed validation
+            **kwargs: Additional context parameters
+        """
+        context = dict(kwargs)
+        if field_name is not None:
+            context["field_name"] = field_name
+
+        super().__init__(message, context=context)
 
 
 class FlextOracleWmsConfigurationError(FlextOracleWmsError):
@@ -89,16 +155,27 @@ class FlextOracleWmsConnectionError(FlextOracleWmsError):
 
     """
 
-    def __init__(self, message: str = "Connection failed", **kwargs: object) -> None:
+    def __init__(
+        self,
+        message: str = "Connection failed",
+        *,
+        retry_count: int | None = None,
+        **kwargs: object,
+    ) -> None:
         """Initialize connection error.
 
         Args:
             message: Error message
+            retry_count: Number of retry attempts made
             **kwargs: Additional context parameters
 
         """
+        context = dict(kwargs)
+        if retry_count is not None:
+            context["retry_count"] = retry_count
+
         # Ensure string representation uses [CONNECTION_ERROR] as tests expect
-        super().__init__(message, context=kwargs or {})
+        super().__init__(message, context=context)
 
 
 class FlextOracleWmsProcessingError(FlextOracleWmsError):
@@ -113,6 +190,26 @@ class FlextOracleWmsProcessingError(FlextOracleWmsError):
 
     """
 
+    def __init__(
+        self,
+        message: str = "Processing failed",
+        *,
+        retry_after_seconds: float | None = None,
+        **kwargs: object,
+    ) -> None:
+        """Initialize processing error with context.
+
+        Args:
+            message: Error message
+            retry_after_seconds: Suggested retry delay in seconds
+            **kwargs: Additional context parameters
+        """
+        context = dict(kwargs)
+        if retry_after_seconds is not None:
+            context["retry_after_seconds"] = retry_after_seconds
+
+        super().__init__(message, context=context)
+
 
 class FlextOracleWmsAuthenticationError(FlextOracleWmsError):
     """Oracle WMS authentication error with comprehensive auth context.
@@ -120,6 +217,26 @@ class FlextOracleWmsAuthenticationError(FlextOracleWmsError):
     Specialized authentication error for Oracle WMS authentication and
     authorization failures. Provides detailed context about auth issues.
     """
+
+    def __init__(
+        self,
+        message: str = "Authentication failed",
+        *,
+        auth_method: str | None = None,
+        **kwargs: object,
+    ) -> None:
+        """Initialize authentication error with context.
+
+        Args:
+            message: Error message
+            auth_method: Authentication method that failed
+            **kwargs: Additional context parameters
+        """
+        context = dict(kwargs)
+        if auth_method is not None:
+            context["auth_method"] = auth_method
+
+        super().__init__(message, context=context)
 
 
 class FlextOracleWmsTimeoutError(FlextOracleWmsError):
