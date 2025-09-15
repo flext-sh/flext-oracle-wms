@@ -139,6 +139,7 @@ Oracle WMS Cloud authentication standards:
 ## Implementation Status
 
 ### Current Status
+
 - ✅ **Test configuration** - Framework with fake URLs
 - ✅ **Pydantic validation** - Configuration structure validation
 - ✅ **Environment variable support** - Basic environment loading
@@ -147,6 +148,7 @@ Oracle WMS Cloud authentication standards:
 - ❌ **Production configuration** - No real Oracle WMS Cloud settings
 
 ### Required Implementation
+
 1. Replace test URLs with actual Oracle WMS Cloud endpoints
 2. Implement OAuth2 authentication flow
 3. Add SSL/TLS certificate validation

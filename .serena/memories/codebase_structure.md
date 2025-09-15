@@ -1,6 +1,7 @@
 # Codebase Structure Overview
 
 ## Directory Layout
+
 ```
 flext-oracle-wms/
 ├── src/flext_oracle_wms/           # Main package (18 Python files)
@@ -16,10 +17,11 @@ flext-oracle-wms/
 ```
 
 ## Core Source Modules (src/flext_oracle_wms/)
-1. **__init__.py** - Package exports and API surface
+
+1. \***\*init**.py\*\* - Package exports and API surface
 2. **wms_client.py** - Main Oracle WMS client (570+ lines)
 3. **wms_discovery.py** - Entity discovery logic (1489+ lines, largest file)
-4. **wms_config.py** - Configuration management 
+4. **wms_config.py** - Configuration management
 5. **wms_api.py** - API endpoint definitions (22 endpoints)
 6. **wms_exceptions.py** - Exception hierarchy (16 exception classes)
 7. **wms_operations.py** - Business operations
@@ -34,6 +36,7 @@ flext-oracle-wms/
 16. **wms_constants.py** - Constants and enums
 
 ## Key Statistics
+
 - **Total Lines**: 6,974 lines across all source files
 - **Implementation vs Scaffolding**: ~5,112 implementation lines, ~1,862 comments/docs/empty
 - **Classes**: 99 total (violates FLEXT unified class requirement)
@@ -41,13 +44,15 @@ flext-oracle-wms/
 - **Test Files**: 26 test modules with comprehensive coverage
 
 ## Architecture Patterns
+
 - **Domain-Driven Design**: Separate concerns for client, discovery, operations
-- **Type Safety**: Comprehensive Pydantic models and MyPy annotations  
+- **Type Safety**: Comprehensive Pydantic models and MyPy annotations
 - **Error Handling**: FlextResult pattern for type-safe error handling
 - **Configuration**: Pydantic-based config with validation
 - **Testing**: Mock server for development, real integration target
 
 ## Major Components
+
 - **Client Layer**: FlextOracleWmsClient for Oracle WMS communication
 - **Discovery Engine**: Dynamic schema and entity discovery
 - **Operations Layer**: Business logic for WMS operations

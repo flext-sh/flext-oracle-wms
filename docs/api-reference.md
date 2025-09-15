@@ -69,15 +69,18 @@ config = FlextOracleWmsModuleConfig.for_testing()
 Based on source code analysis of `wms_api.py`:
 
 #### Setup & Transactional Operations
+
 - `lgf_init_stage_interface` - Initialize staging interface
 - `run_stage_interface` - Execute staging operations
 - `update_output_interface` - Update output interface
 
 #### Automation & Warehouse Operations
+
 - `update_oblpn_tracking_number` - Update tracking numbers
 - `update_oblpn_dimensions` - Update package dimensions
 
 #### Data Extract & Discovery
+
 - `lgf_entity_extract` - Extract entity data
 - `legacy_entity_extract` - Legacy data extraction
 - `entity_discovery` - Entity discovery operations
@@ -137,12 +140,14 @@ entity = FlextOracleWmsEntity(
 ## Implementation Status
 
 ### Completed Components
+
 - ✅ **Client interface** - Basic structure implemented
 - ✅ **Configuration** - Test configuration available
 - ✅ **Error handling** - FlextResult patterns throughout
 - ✅ **Type safety** - MyPy strict compliance
 
 ### Implementation Gaps
+
 - ❌ **Real connectivity** - No proven Oracle WMS Cloud integration
 - ❌ **Modern APIs** - Missing LGF v10 endpoints
 - ❌ **Authentication** - Limited to test scenarios

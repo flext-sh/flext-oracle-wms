@@ -35,34 +35,37 @@ src/flext_oracle_wms/
 
 ### FLEXT Compliance Issues
 
-| Issue | Impact | Status |
-|-------|--------|--------|
-| **httpx usage** | Non-compliant | Requires migration to flext-api |
-| **71 classes** | Violates unified pattern | Requires consolidation |
-| **Missing flext-auth** | Incomplete integration | Requires implementation |
+| Issue                  | Impact                   | Status                          |
+| ---------------------- | ------------------------ | ------------------------------- |
+| **httpx usage**        | Non-compliant            | Requires migration to flext-api |
+| **71 classes**         | Violates unified pattern | Requires consolidation          |
+| **Missing flext-auth** | Incomplete integration   | Requires implementation         |
 
 ### Oracle WMS Integration Status
 
-| Component | Status | Notes |
-|-----------|--------|-------|
-| **API Endpoints** | Partial | 22 defined, missing modern LGF v10 |
-| **Authentication** | Framework | Multiple methods supported |
-| **Entity Discovery** | Framework | Structure implemented |
-| **Connectivity** | Unproven | Tests use fake URLs |
+| Component            | Status    | Notes                              |
+| -------------------- | --------- | ---------------------------------- |
+| **API Endpoints**    | Partial   | 22 defined, missing modern LGF v10 |
+| **Authentication**   | Framework | Multiple methods supported         |
+| **Entity Discovery** | Framework | Structure implemented              |
+| **Connectivity**     | Unproven  | Tests use fake URLs                |
 
 ## Required Changes
 
 ### 1. FLEXT Compliance
+
 - Replace httpx with flext-api patterns
 - Consolidate to unified class architecture
 - Integrate flext-auth for authentication
 
 ### 2. Oracle WMS Implementation
+
 - Add missing LGF v10 API endpoints
 - Establish real Oracle WMS connectivity
 - Validate against actual Oracle WMS Cloud
 
 ### 3. Architectural Consolidation
+
 - Implement unified classes per module
 - Add proper domain service patterns
 - Enhance error handling consistency

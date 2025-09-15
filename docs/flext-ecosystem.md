@@ -9,12 +9,14 @@ flext-oracle-wms has partial FLEXT ecosystem integration with significant compli
 ### Current FLEXT Integration
 
 #### flext-core Integration (Partial)
+
 - ✅ **FlextResult usage** - implemented throughout library
 - ✅ **FlextLogger support** - structured logging patterns
 - ❌ **FlextContainer** - dependency injection not integrated
 - ❌ **FlextDomainService** - unified service patterns missing
 
 #### Missing FLEXT Dependencies
+
 - **flext-api** - currently uses httpx directly (violation)
 - **flext-auth** - custom authentication instead of ecosystem patterns
 - **flext-cli** - no CLI operations support
@@ -23,6 +25,7 @@ flext-oracle-wms has partial FLEXT ecosystem integration with significant compli
 ### Integration Gaps Analysis
 
 #### HTTP Client Compliance (Critical)
+
 ```python
 # Current: Non-compliant httpx usage
 import httpx
@@ -34,16 +37,19 @@ client = FlextApiClient()
 ```
 
 #### Class Architecture Compliance (Critical)
+
 - **Current**: 71 classes across 17 modules
 - **Required**: Single unified class per module with nested helpers
 
 #### Authentication Integration (High)
+
 - **Current**: Custom authentication classes
 - **Required**: flext-auth provider integration
 
 ### Required Implementation Work
 
 #### Phase 1: Core Compliance
+
 1. **HTTP Client Migration**
    - Replace httpx usage in `http_client.py` and `wms_discovery.py`
    - Implement flext-api client patterns
@@ -57,6 +63,7 @@ client = FlextApiClient()
    - Integrate FlextContainer for dependency injection
 
 #### Phase 2: Enhanced Integration
+
 1. **Complete Singer Protocol**
    - Enhance tap/target functionality
    - Add streaming capabilities
@@ -68,6 +75,7 @@ client = FlextApiClient()
 ### Success Criteria
 
 For complete FLEXT ecosystem compliance:
+
 - ✅ Zero httpx/requests imports in source code
 - ✅ Single unified class per module
 - ✅ Complete flext-auth integration

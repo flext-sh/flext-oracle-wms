@@ -94,9 +94,7 @@ def test_authentication_error() -> None:
 
 def test_authentication_error_with_auth_method() -> None:
     """Test authentication error with auth method."""
-    error = FlextOracleWmsAuthenticationError(
-        "Auth failed", auth_method="oauth2"
-    )
+    error = FlextOracleWmsAuthenticationError("Auth failed", auth_method="oauth2")
     assert str(error) == "[GENERIC_ERROR] Auth failed"
     assert error.auth_method == "oauth2"
 

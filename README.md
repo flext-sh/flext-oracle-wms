@@ -9,6 +9,7 @@
 ## 🚀 Quick Start
 
 ### Basic Installation & Testing
+
 ```bash
 # Install dependencies
 poetry install
@@ -31,6 +32,7 @@ make validate  # Run comprehensive quality gates
 ```
 
 ### Basic Usage Example
+
 ```python
 # Note: Tests use fake URLs and expect network failures
 import asyncio
@@ -59,12 +61,14 @@ asyncio.run(test_client_structure())
 ### ✅ **What Works (Implemented)**
 
 #### **22 API Endpoint Definitions** with Proper Structure
+
 - **Setup & Transactional**: `lgf_init_stage_interface`, `run_stage_interface`, `update_output_interface`
 - **Automation & Operations**: `update_oblpn_tracking_number`, `update_oblpn_dimensions`
 - **Data Extract**: `lgf_entity_extract`, `legacy_entity_extract`
 - **Entity Operations**: `entity_discovery`, `entity_metadata`, `lgf_entity_list`
 
 #### **Configuration Framework**
+
 - **Pydantic-based settings** with type validation
 - **Test configuration** using `for_testing()` method (fake URLs)
 - **FlextResult error handling** patterns throughout codebase
@@ -73,18 +77,21 @@ asyncio.run(test_client_structure())
 ### ❌ **What Doesn't Work (Implementation Gaps)**
 
 #### **No Proven Oracle WMS Connectivity**
+
 - Tests use fake URL: `"https://test.example.com"`
 - `for_testing()` method provides mock configuration only
 - Connection tests expect network failures with comments like "expected to fail"
 - No validated integration with real Oracle WMS Cloud instances
 
 #### **Missing Modern Oracle WMS APIs**
+
 - Missing LGF v10 APIs: `POST /lgfapi/v10/pick_confirm/`
 - Missing bulk operations: `POST /lgfapi/v10/entity/inventory/bulk_update_inventory_attributes/`
 - Missing object store APIs: `POST /lgfapi/v10/data_extract/export_async_status`
 - No OAuth2 authentication implementation for enterprise security
 
 #### **FLEXT Ecosystem Compliance Violations**
+
 - **httpx direct usage** in `http_client.py` and `wms_discovery.py` (should use flext-api)
 - **133 classes** across modules (should be unified class per module)
 - **No flext-auth integration** (custom authentication instead)
@@ -93,6 +100,7 @@ asyncio.run(test_client_structure())
 ### 🔄 **Required Work for FLEXT Compliance**
 
 #### **Phase 1: Foundation Compliance** (Weeks 1-2)
+
 1. **Replace httpx with flext-api patterns**
    - Migrate `http_client.py` to use flext-api base classes
    - Update `wms_discovery.py` imports
@@ -106,6 +114,7 @@ asyncio.run(test_client_structure())
    - Add OAuth2 support for Oracle WMS Cloud
 
 #### **Phase 2: Oracle WMS Integration** (Weeks 3-4)
+
 1. **Add missing LGF v10 APIs**
    - Implement modern pick_confirm API
    - Add bulk_update_inventory_attributes endpoint
@@ -137,23 +146,27 @@ flext-oracle-wms is positioned as an Oracle WMS integration framework within the
 │ Foundation: FLEXT-CORE (FlextResult | DI | Domain Patterns)     │
 └─────────────────────────────────────────────────────────────────┘
 ```
+
 🔧 **flext-oracle-wms**: Framework requiring FLEXT compliance implementation
 
 ### **Current Implementation Status**
 
 #### 1. **Oracle WMS Framework** (Partial Implementation)
+
 - **22 API endpoint definitions** with proper structure
 - **Configuration framework** with Pydantic validation
 - **FlextResult patterns** implemented for error handling
 - **Test infrastructure** using fake URLs for development
 
 #### 2. **FLEXT Integration Gaps**
+
 - **httpx direct usage** instead of flext-api patterns
 - **133 classes** violating unified class architecture
 - **Custom authentication** instead of flext-auth integration
 - **No flext-cli support** for file operations
 
 #### 3. **Oracle WMS Connectivity Gaps**
+
 - **No real Oracle WMS connectivity** validated
 - **Missing modern LGF v10 APIs** (pick_confirm, bulk operations)
 - **Test-only configuration** with fake URLs
@@ -164,6 +177,7 @@ flext-oracle-wms is positioned as an Oracle WMS integration framework within the
 ### **Production-Grade Oracle WMS Integration**
 
 #### **Comprehensive API Catalog** (25+ Endpoints)
+
 ```python
 # Real Oracle WMS Cloud APIs (LGF v10 + Legacy)
 ORACLE_WMS_APIS = {
@@ -193,6 +207,7 @@ ORACLE_WMS_APIS = {
 ```
 
 #### **Advanced Entity Discovery Engine**
+
 ```python
 # Sophisticated entity discovery with caching and optimization
 async def discover_oracle_wms_entities():
@@ -215,6 +230,7 @@ async def discover_oracle_wms_entities():
 ### **Enterprise-Grade FLEXT Integration**
 
 #### **FlextResult Pattern Implementation**
+
 ```python
 # Type-safe operations with comprehensive error handling
 from flext_oracle_wms import FlextOracleWmsClient
@@ -265,6 +281,7 @@ make oracle-connect  # Requires Oracle WMS credentials
 ### Enterprise Configuration
 
 #### Environment Variables
+
 ```bash
 # Oracle WMS Cloud connection
 export FLEXT_ORACLE_WMS_BASE_URL="https://your-instance.oraclecloud.com"
@@ -285,6 +302,7 @@ export FLEXT_ENABLE_METRICS="true"            # Performance monitoring
 ```
 
 #### Programmatic Configuration
+
 ```python
 from flext_oracle_wms import (
     FlextOracleWmsClient,
@@ -324,6 +342,7 @@ client = FlextOracleWmsClient(config)
 ### Enterprise Usage Patterns
 
 #### Complete Oracle WMS Integration Example
+
 ```python
 import asyncio
 import logging
@@ -458,14 +477,14 @@ rg -n "class [A-Z]" src/ | grep -v "_" | wc -l  # Count unified classes only
 
 ### **Enterprise Quality Targets**
 
-| Metric | Current | Target | Status |
-|--------|---------|--------|--------|
-| **Test Coverage** | 90%+ | 95% | ✅ Achieved |
-| **Type Safety** | Strict MyPy | 100% compliance | ✅ Achieved |
-| **API Coverage** | 25+ endpoints | 30+ endpoints | 🔄 In Progress |
-| **Oracle WMS Integration** | LGF v10 + Legacy | 2025 features | 🔄 In Progress |
-| **FLEXT Compliance** | 70% | 100% | 🔄 In Progress |
-| **Performance** | Good | Enterprise-grade | 🔄 In Progress |
+| Metric                     | Current          | Target           | Status         |
+| -------------------------- | ---------------- | ---------------- | -------------- |
+| **Test Coverage**          | 90%+             | 95%              | ✅ Achieved    |
+| **Type Safety**            | Strict MyPy      | 100% compliance  | ✅ Achieved    |
+| **API Coverage**           | 25+ endpoints    | 30+ endpoints    | 🔄 In Progress |
+| **Oracle WMS Integration** | LGF v10 + Legacy | 2025 features    | 🔄 In Progress |
+| **FLEXT Compliance**       | 70%              | 100%             | 🔄 In Progress |
+| **Performance**            | Good             | Enterprise-grade | 🔄 In Progress |
 
 ### **Zero Tolerance Quality Standards**
 

@@ -24,6 +24,7 @@ result = client.test_connection()  # Expected to fail
 **Cause**: Tests use fake URL `"https://test.example.com"`
 
 **Solution**: This is expected behavior. For real Oracle WMS connectivity:
+
 1. Obtain actual Oracle WMS Cloud instance URL
 2. Configure proper authentication credentials
 3. Implement real Oracle WMS integration (currently not available)
@@ -39,6 +40,7 @@ from flext_core import get_logger  # ImportError
 **Cause**: `get_logger` doesn't exist in flext_core
 
 **Solution**: Use correct flext_core imports:
+
 ```python
 from flext_core import FlextLogger  # Correct import
 logger = FlextLogger(__name__)
@@ -56,6 +58,7 @@ assert error.field == "username"  # MyPy error: attribute not found
 ```
 
 **Solution**: Exception classes now declare attributes explicitly:
+
 ```python
 # Exception classes have been updated with proper type annotations
 error = FlextOracleWmsError("message", field="username")
@@ -67,6 +70,7 @@ assert error.field == "username"  # Now works with MyPy
 **Symptom**: Type errors with configuration objects
 
 **Solution**: Use proper configuration types:
+
 ```python
 from flext_oracle_wms import FlextOracleWmsModuleConfig, FlextOracleWmsApiVersion
 
@@ -87,6 +91,7 @@ import httpx  # FLEXT compliance violation
 ```
 
 **Solution**: This requires implementation work:
+
 1. Replace httpx imports with flext-api
 2. Migrate HTTP client patterns
 3. Update authentication mechanisms
@@ -98,6 +103,7 @@ import httpx  # FLEXT compliance violation
 **Symptom**: Modules contain multiple classes (71 total)
 
 **Solution**: This requires architectural refactoring:
+
 1. Consolidate to single unified class per module
 2. Convert standalone classes to nested helpers
 3. Follow FLEXT domain service patterns
@@ -138,6 +144,7 @@ await filter_engine.filter_records("not_a_list", {})  # Intentionally wrong type
 **Symptom**: Poetry install fails or dependencies conflict
 
 **Solution**:
+
 ```bash
 # Clean installation
 rm -rf .venv poetry.lock
@@ -149,6 +156,7 @@ poetry install
 **Symptom**: Cannot import project modules
 
 **Solution**: Set correct PYTHONPATH:
+
 ```bash
 export PYTHONPATH=src
 # Or use make commands which set this automatically
@@ -162,6 +170,7 @@ make test
 **Symptom**: Cannot access LGF v10 APIs
 
 **Current Status**: Known limitation
+
 - Only 22 legacy API endpoints implemented
 - Missing modern LGF v10 APIs like `pick_confirm`, `bulk_update_inventory_attributes`
 - Requires implementation work
@@ -171,6 +180,7 @@ make test
 **Symptom**: Cannot authenticate with real Oracle WMS Cloud
 
 **Current Status**: Known limitation
+
 - Only test authentication implemented
 - No OAuth2 implementation
 - No real Oracle WMS Cloud connectivity
@@ -180,6 +190,7 @@ make test
 #### Slow test execution
 
 **Solution**: Use faster test commands:
+
 ```bash
 pytest -x --tb=short  # Stop on first failure, short traceback
 pytest --maxfail=1    # Stop after one failure
@@ -188,6 +199,7 @@ pytest --maxfail=1    # Stop after one failure
 #### Memory usage during development
 
 **Solution**: Use efficient development practices:
+
 ```bash
 # Use make commands which are optimized
 make test

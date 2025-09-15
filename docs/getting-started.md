@@ -58,12 +58,14 @@ with FlextOracleWmsClient(config) as client:
 ## Implementation Status
 
 ### What Works
+
 - ✅ **Framework structure** - 6,854 lines across 17 modules
 - ✅ **API endpoint definitions** - 22 endpoints
 - ✅ **FlextResult integration** - error handling patterns
 - ✅ **Type safety** - MyPy strict compliance
 
 ### What Needs Implementation
+
 - ❌ **Real Oracle WMS connectivity** - currently uses fake URLs
 - ❌ **Modern Oracle WMS APIs** - missing LGF v10 endpoints
 - ❌ **FLEXT compliance** - httpx usage, class violations

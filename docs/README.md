@@ -5,6 +5,7 @@
 ## Project Documentation
 
 ### Core Documentation
+
 - **[Project README](../README.md)** - Current implementation status and installation
 - **[Development Roadmap](../TODO.md)** - Required implementation work and compliance gaps
 
@@ -13,14 +14,16 @@
 Based on actual source code analysis (September 17, 2025):
 
 ### Implemented Components
+
 - ✅ **Framework structure** - 6,854 lines across 17 modules
 - ✅ **API endpoint definitions** - 22 endpoints mostly legacy interfaces
 - ✅ **FlextResult integration** - proper error handling patterns
 - ✅ **Type safety** - MyPy strict compliance with Pydantic models
 
 ### Critical Gaps
+
 - **Missing modern Oracle WMS APIs** - no LGF v10 pick_confirm, bulk_inventory_update operations
-- **No proven Oracle WMS connectivity** - test suite uses "https://test.example.com"
+- **No proven Oracle WMS connectivity** - test suite uses "<https://test.example.com>"
 - **FLEXT compliance violations** - httpx usage, 71 classes across modules
 - **Unvalidated integration** - structure without proven Oracle WMS functionality
 
@@ -36,6 +39,7 @@ make type-check        # Type safety verification
 ## Architecture Status
 
 The library provides Oracle WMS integration framework but requires significant development to achieve:
+
 1. Real Oracle WMS Cloud connectivity
 2. Modern Oracle WMS API implementation
 3. FLEXT ecosystem compliance

@@ -71,6 +71,7 @@ pyright
 Current compliance gaps requiring implementation:
 
 #### 1. HTTP Client Compliance (Critical)
+
 ```python
 # Current: Non-compliant httpx usage
 import httpx  # ❌ VIOLATION
@@ -82,6 +83,7 @@ client = FlextApiClient()
 ```
 
 #### 2. Class Architecture Compliance (Critical)
+
 ```python
 # Current: Multiple classes per module (71 classes total)
 class WmsClient: pass
@@ -94,6 +96,7 @@ class FlextOracleWmsClient(FlextDomainService):
 ```
 
 #### 3. Authentication Integration (High Priority)
+
 ```python
 # Current: Custom authentication
 class CustomAuth: pass   # ❌ VIOLATION
@@ -219,10 +222,10 @@ Recommended VS Code settings:
 
 ```json
 {
-    "python.defaultInterpreterPath": ".venv/bin/python",
-    "python.linting.enabled": true,
-    "python.linting.mypyEnabled": true,
-    "python.formatting.provider": "black"
+  "python.defaultInterpreterPath": ".venv/bin/python",
+  "python.linting.enabled": true,
+  "python.linting.mypyEnabled": true,
+  "python.formatting.provider": "black"
 }
 ```
 
