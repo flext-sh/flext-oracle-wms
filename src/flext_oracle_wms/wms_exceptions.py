@@ -111,6 +111,7 @@ class FlextOracleWmsValidationError(FlextOracleWmsError):
             message: Error message
             field_name: Name of the field that failed validation
             **kwargs: Additional context parameters
+
         """
         context = dict(kwargs)
         if field_name is not None:
@@ -203,6 +204,7 @@ class FlextOracleWmsProcessingError(FlextOracleWmsError):
             message: Error message
             retry_after_seconds: Suggested retry delay in seconds
             **kwargs: Additional context parameters
+
         """
         context = dict(kwargs)
         if retry_after_seconds is not None:
@@ -231,6 +233,7 @@ class FlextOracleWmsAuthenticationError(FlextOracleWmsError):
             message: Error message
             auth_method: Authentication method that failed
             **kwargs: Additional context parameters
+
         """
         context = dict(kwargs)
         if auth_method is not None:
