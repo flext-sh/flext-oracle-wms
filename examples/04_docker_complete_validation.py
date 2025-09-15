@@ -79,15 +79,15 @@ def load_oracle_wms_config() -> FlextOracleWmsClientConfig:
         raise ValueError(msg)
 
     return FlextOracleWmsClientConfig(
-        base_url=base_url,
-        username=username,
-        password=password,
+        oracle_wms_base_url=base_url,
+        oracle_wms_username=username,
+        oracle_wms_password=password,
         environment=environment,
         api_version=FlextOracleWmsApiVersion.LGF_V10,
-        timeout=float(os.getenv("ORACLE_WMS_TIMEOUT", "30")),
-        max_retries=int(os.getenv("ORACLE_WMS_MAX_RETRIES", "3")),
-        verify_ssl=os.getenv("ORACLE_WMS_VERIFY_SSL", "true").lower() == "true",
-        enable_logging=True,
+        oracle_wms_timeout=float(os.getenv("ORACLE_WMS_TIMEOUT", "30")),
+        oracle_wms_max_retries=int(os.getenv("ORACLE_WMS_MAX_RETRIES", "3")),
+        oracle_wms_verify_ssl=os.getenv("ORACLE_WMS_VERIFY_SSL", "true").lower() == "true",
+        oracle_wms_enable_logging=True,
     )
 
 

@@ -19,7 +19,7 @@ import math
 from unittest.mock import AsyncMock, Mock, patch
 
 import pytest
-from flext_core import FlextResult
+from flext_core import FlextResult, FlextTypes
 
 from flext_oracle_wms import (
     DISCOVERY_FAILURE,
@@ -104,7 +104,6 @@ class TestEndpointDiscoveryStrategy:
             errors=[],
         )
 
-    @pytest.mark.asyncio
     async def test_execute_discovery_step_success(self) -> None:
         """Test successful discovery step execution."""
         # Mock API response
@@ -112,7 +111,7 @@ class TestEndpointDiscoveryStrategy:
         mock_response.status_code = FlextOracleWmsDefaults.HTTP_OK
         mock_response.data = {"entities": ["company", "facility"]}
 
-        self.mock_api_client.get.return_value = FlextResult[None].ok(mock_response)
+        self.mock_api_client.get.return_value = FlextResult[FlextTypes.Core.Dict].ok(mock_response.data)
 
         # Mock entity parsing
         mock_entities = [
@@ -132,22 +131,20 @@ class TestEndpointDiscoveryStrategy:
             EntityResponseParser,
             "parse_entities_response",
         ) as mock_parse:
-            mock_parse.return_value = FlextResult[None].ok(mock_entities)
+            mock_parse.return_value = FlextResult[list[FlextOracleWmsEntity]].ok(mock_entities)
 
             result = await self.strategy.execute_discovery_step(
                 self.context,
                 self.mock_api_client,
-                "/api/entities",
             )
 
             assert result.success
             assert result.data is True
             assert len(self.context.all_entities) == 2
 
-    @pytest.mark.asyncio
     async def test_execute_discovery_step_api_failure(self) -> None:
         """Test discovery step with API failure."""
-        self.mock_api_client.get.return_value = FlextResult[None].fail(
+        self.mock_api_client.get.return_value = FlextResult[FlextTypes.Core.Dict].fail(
             "API connection failed",
         )
 
@@ -161,14 +158,13 @@ class TestEndpointDiscoveryStrategy:
         assert len(self.context.errors) > 0
         assert "API connection failed" in self.context.errors[0]
 
-    @pytest.mark.asyncio
     async def test_execute_discovery_step_invalid_response(self) -> None:
         """Test discovery step with invalid response structure."""
         # Mock invalid response (missing required attributes)
         mock_response = Mock()
         del mock_response.status_code  # Remove required attribute
 
-        self.mock_api_client.get.return_value = FlextResult[None].ok(mock_response)
+        self.mock_api_client.get.return_value = FlextResult[FlextTypes.Core.Dict].ok(mock_response)
 
         result = await self.strategy.execute_discovery_step(
             self.context,
@@ -186,7 +182,7 @@ class TestEndpointDiscoveryStrategy:
         mock_response.status_code = 404
         mock_response.data = {"error": "Not found"}
 
-        self.mock_api_client.get.return_value = FlextResult[None].ok(mock_response)
+        self.mock_api_client.get.return_value = FlextResult[FlextTypes.Core.Dict].ok(mock_response)
 
         result = await self.strategy.execute_discovery_step(
             self.context,
@@ -217,7 +213,7 @@ class TestEndpointDiscoveryStrategy:
         mock_response = Mock()
         mock_response.status_code = 200
 
-        self.mock_api_client.get.return_value = FlextResult[None].ok(mock_response)
+        self.mock_api_client.get.return_value = FlextResult[FlextTypes.Core.Dict].ok(mock_response)
 
         result = await self.strategy._make_api_request(
             self.mock_api_client,

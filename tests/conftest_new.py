@@ -6,7 +6,6 @@ SPDX-License-Identifier: MIT
 
 import os
 from pathlib import Path
-from typing import cast
 
 import pytest
 from dotenv import load_dotenv
@@ -36,15 +35,14 @@ def load_test() -> bool:
 def mock_config() -> FlextOracleWmsClientConfig:
     """Mock configuration for unit testing."""
     return FlextOracleWmsClientConfig(
-        base_url="https://test.wms.oraclecloud.com/test",
-        username="test_user",
-        password="test_password",
-        environment="test",
+        oracle_wms_base_url="https://test.wms.oraclecloud.com/test",
+        oracle_wms_username="test_user",
+        oracle_wms_password="test_password",
         api_version=FlextOracleWmsApiVersion.LGF_V10,
-        timeout=30,
-        max_retries=3,
-        verify_ssl=True,
-        enable_logging=True,
+        oracle_wms_timeout=30,
+        oracle_wms_max_retries=3,
+        oracle_wms_verify_ssl=True,
+        oracle_wms_enable_logging=True,
     )
 
 
@@ -69,17 +67,14 @@ def real_config(_load_test: bool) -> FlextOracleWmsClientConfig:
     assert password is not None
 
     return FlextOracleWmsClientConfig(
-        base_url=base_url,
-        username=username,
-        password=password,
-        environment=cast(
-            "FlextTypes.Config.Environment", os.getenv("ORACLE_WMS_ENVIRONMENT", "test")
-        ),
+        oracle_wms_base_url=base_url,
+        oracle_wms_username=username,
+        oracle_wms_password=password,
         api_version=FlextOracleWmsApiVersion.LGF_V10,
-        timeout=int(os.getenv("ORACLE_WMS_TIMEOUT", "30")),
-        max_retries=int(os.getenv("ORACLE_WMS_MAX_RETRIES", "3")),
-        verify_ssl=True,
-        enable_logging=True,
+        oracle_wms_timeout=int(os.getenv("ORACLE_WMS_TIMEOUT", "30")),
+        oracle_wms_max_retries=int(os.getenv("ORACLE_WMS_MAX_RETRIES", "3")),
+        oracle_wms_verify_ssl=True,
+        oracle_wms_enable_logging=True,
     )
 
 

@@ -1428,32 +1428,38 @@ class EntityResponseParser:
 
     async def parse_entities_response(
         self,
-        response_data: FlextTypes.Core.Dict,
-    ) -> FlextResult[list[FlextOracleWmsEntity]]:
+        response_data: FlextTypes.Core.Dict | list[str],
+    ) -> FlextResult[list[str]]:
         """Parse entities from API response."""
         try:
-            # Try both "entities" and "results" keys for compatibility
-            entities_data = response_data.get("entities") or response_data.get(
-                "results", []
-            )
-            if not isinstance(entities_data, list):
-                return FlextResult[list[FlextOracleWmsEntity]].fail(
-                    "Invalid entities data format"
+            # Handle direct list of entity names
+            if isinstance(response_data, list):
+                return FlextResult[list[str]].ok(response_data)
+
+            # Handle dict with entity names as keys
+            if isinstance(response_data, dict):
+                # Check if it's a response with entities/results keys
+                entities_data = response_data.get("entities") or response_data.get(
+                    "results"
                 )
+                if entities_data is not None:
+                    if isinstance(entities_data, list):
+                        # Extract names from entity objects or use strings directly
+                        entity_names = []
+                        for item in entities_data:
+                            if isinstance(item, dict) and item.get("name"):
+                                entity_names.append(str(item["name"]))
+                            elif isinstance(item, str):
+                                entity_names.append(item)
+                        return FlextResult[list[str]].ok(entity_names)
+                else:
+                    # Treat dict keys as entity names
+                    entity_names = list(response_data.keys())
+                    return FlextResult[list[str]].ok(entity_names)
 
-            entities: list[FlextOracleWmsEntity] = []
-            for item in entities_data:
-                if isinstance(item, dict) and item.get("name"):
-                    entity = FlextOracleWmsEntity(
-                        name=str(item["name"]),
-                        endpoint=str(item.get("endpoint", "")),
-                        description=str(item.get("description", "")),
-                    )
-                    entities.append(entity)
-
-            return FlextResult[list[FlextOracleWmsEntity]].ok(entities)
+            return FlextResult[list[str]].fail("Invalid entities data format")
         except Exception as e:
-            return FlextResult[list[FlextOracleWmsEntity]].fail(str(e))
+            return FlextResult[list[str]].fail(str(e))
 
 
 # Users should instantiate classes directly:

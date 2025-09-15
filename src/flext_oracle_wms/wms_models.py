@@ -115,6 +115,10 @@ class FlextOracleWmsEntity(FlextModels):
         if validation_result.is_failure:
             validation_errors.append(validation_result.error)
 
+        # Business rule: entity name cannot be empty
+        if not self.name.strip():
+            validation_errors.append("Entity name cannot be empty")
+
         # Validate entity endpoint using flext-core
         validation_result = FlextValidations.TypeValidators.validate_string(
             self.endpoint

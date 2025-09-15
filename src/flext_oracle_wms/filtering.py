@@ -125,6 +125,13 @@ class FlextOracleWmsFilter:
                 validation_result.error or "Invalid records list"
             )
 
+        # Validate filters parameter type
+        filters_validation = FlextValidations.TypeValidators.validate_dict(filters)
+        if filters_validation.is_failure:
+            raise FlextOracleWmsDataValidationError(
+                filters_validation.error or "Invalid filters dictionary"
+            )
+
         # Validate filter conditions
         count_result = self._validate_filter_conditions_total(filters)
         if count_result.is_failure:
