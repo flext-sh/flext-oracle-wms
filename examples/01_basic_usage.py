@@ -23,12 +23,11 @@ import asyncio
 import os
 from pathlib import Path
 
-from flext_core import FlextResult, FlextTypes, get_logger
+from flext_core import FlextLogger, FlextResult, FlextTypes
 
 from flext_oracle_wms import (
     FlextOracleWmsClient,
     FlextOracleWmsClientConfig,
-    FlextOracleWmsEntity,
     FlextOracleWmsError,
 )
 
@@ -37,7 +36,7 @@ MAX_ENTITIES_TO_SHOW = 5
 MAX_VALUE_DISPLAY_LENGTH = 50
 
 # Initialize logger
-logger = get_logger(__name__)
+logger = FlextLogger(__name__)
 
 # Load .env file from project root
 try:
@@ -61,7 +60,8 @@ def create_client_config() -> FlextOracleWmsClientConfig:
     env_result = FlextOracleWmsClientConfig.create_from_environment()
 
     if env_result.success:
-        return env_result.value
+        # Cast the generic FlextConfig to Oracle WMS specific config
+        return FlextOracleWmsClientConfig(**env_result.value.model_dump())
 
     # Method 2: Fallback to global singleton with default values
     # if environment variables are not set
@@ -70,7 +70,7 @@ def create_client_config() -> FlextOracleWmsClientConfig:
 
 async def discover_wms_entities(
     client: FlextOracleWmsClient,
-) -> FlextResult[list[FlextOracleWmsEntity]]:
+) -> FlextResult[list[FlextTypes.Core.Dict]]:
     """Discover available Oracle WMS entities.
 
     Args:
@@ -84,22 +84,21 @@ async def discover_wms_entities(
 
     if result.success:
         entities = result.data
+        if entities is None:
+            return result
 
         # Display entity information
         for entity in entities[:5]:  # Show first 5 entities
-            # entities are strings (entity names), not objects
-            (
-                entity
-                if isinstance(entity, str)
-                else getattr(entity, "name", str(entity))
-            )
+            # entities are dictionaries with name field
+            entity_display = entity.get("name", "Unknown") if isinstance(entity, dict) else str(entity)
+            logger.debug(f"Processing entity: {entity_display}")
             # Additional info only available if entity is an object
             if hasattr(entity, "description") and getattr(entity, "description", None):
                 pass
             if hasattr(entity, "entity_type"):
                 pass
 
-        if len(entities) > MAX_ENTITIES_TO_SHOW:
+        if entities and len(entities) > MAX_ENTITIES_TO_SHOW:
             pass
 
         return result
@@ -109,7 +108,7 @@ async def discover_wms_entities(
 async def query_entity_data(
     client: FlextOracleWmsClient,
     entity_name: str,
-) -> FlextResult[list[FlextTypes.Core.Dict]]:
+) -> FlextResult[FlextTypes.Core.Dict | list[FlextTypes.Core.Dict]]:
     """Query data from a specific Oracle WMS entity.
 
     Args:
@@ -172,7 +171,7 @@ async def demonstrate_error_handling(client: FlextOracleWmsClient) -> None:
     # Attempt to query a non-existent entity
     result = await client.get_entity_data("NON_EXISTENT_ENTITY")
 
-    if result.is_failure and (
+    if result.is_failure and result.error and (
         "not found" in result.error.lower()
         or "authentication" in result.error.lower()
         or "timeout" in result.error.lower()
@@ -214,18 +213,18 @@ async def main() -> None:
 
         if entities_result.success:
             entities = entities_result.data
-            print(f"Successfully discovered {len(entities)} entities")
+            print(f"Successfully discovered {len(entities) if entities else 0} entities")
 
             # Step 4: Query data from first available entity
             if entities:
                 first_entity = entities[0]
-                # first_entity is a string (entity name), not an object
+                # first_entity is a dictionary with entity information
                 entity_name = (
-                    first_entity
-                    if isinstance(first_entity, str)
-                    else getattr(first_entity, "name", str(first_entity))
+                    first_entity.get("name", "Unknown")
+                    if isinstance(first_entity, dict)
+                    else str(first_entity)
                 )
-                await query_entity_data(client, entity_name)
+                await query_entity_data(client, str(entity_name))
         else:
             # Handle case when Oracle WMS is not available
             print(f"Entity discovery failed: {entities_result.error}")

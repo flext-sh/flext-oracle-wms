@@ -110,7 +110,15 @@ async def showcase_2_entity_discovery(
     if not entities_result.success:
         return []
 
-    entities = entities_result.data or []
+    entity_dicts = entities_result.data or []
+
+    # Extract entity names from dictionaries
+    entities: list[str] = [
+        entity.get("name", "Unknown")
+        if isinstance(entity, dict)
+        else str(entity)
+        for entity in entity_dicts
+    ]
 
     # Show first 10 entities as sample
     # Constants for display
@@ -144,7 +152,7 @@ async def showcase_3_data_retrieval(
     entities: FlextTypes.Core.StringList,
 ) -> FlextTypes.Core.Dict:
     """Feature 3: Data Retrieval and Querying."""
-    sample_data = {}
+    sample_data: dict[str, object] = {}
 
     # Test data retrieval from key entities
     test_entities = ["company", "facility", "item"]
@@ -160,9 +168,10 @@ async def showcase_3_data_retrieval(
             data = data_result.data
             if isinstance(data, dict) and "results" in data:
                 results = data["results"]
-                data.get("count", len(results))
-                if results:
-                    first_record = results[0]
+                if isinstance(results, list):
+                    data.get("count", len(results))
+                    if results:
+                        first_record = results[0]
                     (len(first_record) if isinstance(first_record, dict) else 0)
                 sample_data[entity_name] = data
             else:
@@ -188,8 +197,8 @@ async def showcase_4_authentication(config: FlextOracleWmsClientConfig) -> None:
     # Basic Authentication (current method)
     auth_config = FlextOracleWmsAuthConfig(
         auth_type=OracleWMSAuthMethod.BASIC,
-        username=config.username,
-        password=config.password,
+        username=getattr(config, "oracle_wms_username", "invalid"),
+        password=getattr(config, "oracle_wms_password", "invalid"),
     )
 
     # Demonstrate auth validation

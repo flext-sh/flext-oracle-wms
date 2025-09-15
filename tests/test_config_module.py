@@ -29,7 +29,9 @@ SPDX-License-Identifier: MIT
 """
 
 from flext_oracle_wms import (
+    FlextOracleWmsApiVersion,
     FlextOracleWmsModuleConfig,
+    OracleWMSAuthMethod,
 )
 
 
@@ -255,10 +257,10 @@ def test_config_with_optional_fields() -> None:
         oracle_wms_base_url="https://example.com/staging",
         oracle_wms_username="test_user",
         oracle_wms_password="test_pass",
-        api_version="v10",
-        auth_method="basic",
+        api_version=FlextOracleWmsApiVersion.LGF_V10,
+        auth_method=OracleWMSAuthMethod.BASIC,
     )
-    assert config.api_version == "v10"
-    assert config.auth_method == "basic"
+    assert config.api_version == FlextOracleWmsApiVersion.LGF_V10
+    assert config.auth_method == OracleWMSAuthMethod.BASIC
     # The method should extract "staging" from the URL path
     assert config.extract_environment_from_url() == "staging"

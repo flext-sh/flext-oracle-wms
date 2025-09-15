@@ -7,12 +7,16 @@ import asyncio
 from pathlib import Path
 from urllib.parse import urlparse
 
+from flext_core import FlextLogger
+
 from flext_oracle_wms import (
     FLEXT_ORACLE_WMS_APIS,
     FlextOracleWmsApiVersion,
     FlextOracleWmsClient,
     FlextOracleWmsClientConfig,
 )
+
+logger = FlextLogger(__name__)
 
 
 def load_env_config() -> dict[str, object] | None:
@@ -42,9 +46,11 @@ def load_env_config() -> dict[str, object] | None:
             parsed = urlparse(base_url)
             path_parts = parsed.path.strip("/").split("/")
             if path_parts and path_parts[-1]:
-                path_parts[-1]
-        except Exception:
-            pass
+                # Environment extracted from URL path but not used
+                logger.debug(f"Environment detected in URL: {path_parts[-1]}")
+        except (ValueError, AttributeError) as e:
+            # URL parsing failed, continue with default config
+            logger.debug(f"Failed to parse environment from URL: {e}")
 
     return {
         "oracle_wms_base_url": base_url,
@@ -146,10 +152,15 @@ async def main() -> None:
         )
 
         # Test LPN creation (will fail, but tests structure)
-        await client.create_lpn(lpn_nbr="TEST_LPN", qty=10)
+        lpn_result = await client.create_lpn(lpn_nbr="TEST_LPN", qty=10)
+        if lpn_result.is_failure:
+            logger.debug(f"LPN creation failed as expected: {lpn_result.error}")
 
-    except Exception:
-        pass
+    except Exception as e:
+        # Log the exception for debugging purposes
+        logger.warning(f"Test execution encountered error: {e}")
+        # Re-raise to ensure test failures are visible
+        raise
 
     finally:
         # Cleanup

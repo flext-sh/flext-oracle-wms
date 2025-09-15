@@ -24,9 +24,9 @@ class TestAuthenticationMethod:
 
     def test_authentication_method_values(self) -> None:
         """Test authentication method enum values."""
-        assert OracleWMSAuthMethod.BASIC == "basic"
-        assert OracleWMSAuthMethod.BEARER == "bearer"
-        assert OracleWMSAuthMethod.API_KEY == "api_key"
+        assert OracleWMSAuthMethod.BASIC.value == "basic"
+        assert OracleWMSAuthMethod.BEARER.value == "bearer"
+        assert OracleWMSAuthMethod.API_KEY.value == "api_key"
 
     def test_authentication_method_membership(self) -> None:
         """Test authentication method membership."""
@@ -121,7 +121,9 @@ class TestAuthenticationConfig:
 
         result = config.validate_business_rules()
         assert result.is_failure
-        assert "username" in result.error.lower() or "password" in result.error.lower()
+        assert result.error is not None
+        error_lower = result.error.lower()
+        assert "username" in error_lower or "password" in error_lower
 
     def test_config_validation_failure_basic_missing_password(self) -> None:
         """Test config validation fails for basic auth missing password."""
@@ -133,7 +135,9 @@ class TestAuthenticationConfig:
 
         result = config.validate_business_rules()
         assert result.is_failure
-        assert "username" in result.error.lower() or "password" in result.error.lower()
+        assert result.error is not None
+        error_lower = result.error.lower()
+        assert "username" in error_lower or "password" in error_lower
 
     def test_config_validation_failure_bearer_missing_token(self) -> None:
         """Test config validation fails for bearer auth missing token."""
@@ -144,6 +148,7 @@ class TestAuthenticationConfig:
 
         result = config.validate_business_rules()
         assert result.is_failure
+        assert result.error is not None
         assert "token" in result.error.lower()
 
     def test_config_validation_failure_api_key_missing_key(self) -> None:
@@ -155,7 +160,9 @@ class TestAuthenticationConfig:
 
         result = config.validate_business_rules()
         assert result.is_failure
-        assert "api" in result.error.lower() or "key" in result.error.lower()
+        assert result.error is not None
+        error_lower = result.error.lower()
+        assert "api" in error_lower or "key" in error_lower
 
     def test_config_defaults(self) -> None:
         """Test config default values."""

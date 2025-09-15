@@ -19,7 +19,7 @@ def test_config_creation_valid() -> None:
         oracle_wms_password="test_password",
         environment="development",
         api_version=FlextOracleWmsApiVersion.LGF_V10,
-        oracle_wms_timeout=30.0,
+        oracle_wms_timeout=30,
         oracle_wms_max_retries=3,
         oracle_wms_verify_ssl=True,
         oracle_wms_enable_logging=True,
@@ -46,7 +46,7 @@ def test_config_validation_success() -> None:
         oracle_wms_password="test_password",
         environment="development",
         api_version=FlextOracleWmsApiVersion.LGF_V10,
-        oracle_wms_timeout=30.0,
+        oracle_wms_timeout=30,
         oracle_wms_max_retries=3,
         oracle_wms_verify_ssl=True,
         oracle_wms_enable_logging=True,
@@ -67,7 +67,7 @@ def test_config_validation_invalid_url() -> None:
             oracle_wms_username="test_user",
             oracle_wms_password="test_password",
             api_version=FlextOracleWmsApiVersion.LGF_V10,
-            timeout=30,
+            oracle_wms_timeout=30,
             oracle_wms_max_retries=3,
             oracle_wms_verify_ssl=True,
             oracle_wms_enable_logging=True,
@@ -86,7 +86,7 @@ def test_config_validation_empty_username() -> None:
         oracle_wms_username="",
         oracle_wms_password="test_password",
         api_version=FlextOracleWmsApiVersion.LGF_V10,
-        timeout=30,
+        oracle_wms_timeout=30,
         oracle_wms_max_retries=3,
         oracle_wms_verify_ssl=True,
         oracle_wms_enable_logging=True,
@@ -94,6 +94,7 @@ def test_config_validation_empty_username() -> None:
 
     result = config.validate_business_rules()
     assert result.is_failure
+    assert result.error is not None
     assert "username" in result.error.lower()
 
 
@@ -105,7 +106,7 @@ def test_config_validation_empty_password() -> None:
         oracle_wms_username="test_user",
         oracle_wms_password="",
         api_version=FlextOracleWmsApiVersion.LGF_V10,
-        timeout=30,
+        oracle_wms_timeout=30,
         oracle_wms_max_retries=3,
         oracle_wms_verify_ssl=True,
         oracle_wms_enable_logging=True,
@@ -113,6 +114,7 @@ def test_config_validation_empty_password() -> None:
 
     result = config.validate_business_rules()
     assert result.is_failure
+    assert result.error is not None
     assert "password" in result.error.lower()
 
 
@@ -148,7 +150,7 @@ def test_config_validation_invalid_retries() -> None:
             oracle_wms_username="test_user",
             oracle_wms_password="test_password",
             api_version=FlextOracleWmsApiVersion.LGF_V10,
-            oracle_wms_timeout=30.0,
+            oracle_wms_timeout=30,
             oracle_wms_max_retries=-1,  # Invalid negative retries
             oracle_wms_verify_ssl=True,
             oracle_wms_enable_logging=True,

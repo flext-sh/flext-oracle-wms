@@ -11,7 +11,7 @@ from enum import StrEnum
 from pathlib import Path
 
 from dotenv import load_dotenv
-from flext_core import FlextTypes, get_logger
+from flext_core import FlextLogger, FlextTypes
 
 from flext_oracle_wms import (
     FlextOracleWmsApiVersion,
@@ -21,7 +21,7 @@ from flext_oracle_wms import (
 )
 
 # Initialize logger
-logger = get_logger(__name__)
+logger = FlextLogger(__name__)
 
 
 class Environment(StrEnum):

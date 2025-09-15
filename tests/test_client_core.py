@@ -295,6 +295,7 @@ class TestFlextOracleWmsClientCore:
         result = await client.get_entity_data("test_entity")
 
         assert result.is_failure
+        assert result.error is not None
         assert "not initialized" in result.error.lower()
 
     @pytest.mark.asyncio
@@ -352,6 +353,7 @@ class TestFlextOracleWmsClientCore:
 
             result = await client.call_api("unknown_api_xyz")
             assert result.is_failure
+            assert result.error is not None
             assert "Unknown API" in result.error
 
     @pytest.mark.asyncio
@@ -366,6 +368,7 @@ class TestFlextOracleWmsClientCore:
         )
 
         assert result.is_failure
+        assert result.error is not None
         assert "not initialized" in result.error.lower()
 
     def test_client_error_handling_invalid_config(self) -> None:
@@ -419,7 +422,7 @@ class TestClientHelperMethods:
         """Test parsing empty dictionary response."""
         client = FlextOracleWmsClient(mock_config)
 
-        response = {}
+        response: dict[str, object] = {}
         result = client._parse_entity_discovery_response(response)
 
         # Empty response should return fallback entities

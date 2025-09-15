@@ -5,16 +5,21 @@ Copyright (c) 2025 FLEXT Team. All rights reserved. SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
+import json
 from typing import Self
 
 import httpx
+from flext_api import FlextApiClient
 from flext_core import FlextLogger, FlextResult, FlextTypes
 
 logger = FlextLogger(__name__)
 
+# HTTP Status Code Constants
+HTTP_BAD_REQUEST = 400
+
 
 class FlextHttpClient:
-    """Simple HTTP client using httpx with flext-core patterns."""
+    """HTTP client using flext-api foundation with flext-core patterns."""
 
     def __init__(
         self,
@@ -37,7 +42,7 @@ class FlextHttpClient:
         self.timeout = timeout
         self.default_headers = headers or {}
         self.verify_ssl = verify_ssl
-        self._client: httpx.AsyncClient | None = None
+        self._client: FlextApiClient | None = None
 
     async def __aenter__(self) -> Self:
         """Async context manager entry."""
@@ -53,17 +58,19 @@ class FlextHttpClient:
     async def _ensure_client(self) -> None:
         """Ensure HTTP client is initialized."""
         if self._client is None:
-            self._client = httpx.AsyncClient(
+            # Use flext-api foundation instead of direct httpx
+            self._client = FlextApiClient(
                 base_url=self.base_url,
                 timeout=self.timeout,
-                headers=self.default_headers,
-                verify=self.verify_ssl,
+                default_headers=self.default_headers,
+                verify_ssl=self.verify_ssl,
             )
 
     async def close(self) -> None:
         """Close HTTP client."""
         if self._client is not None:
-            await self._client.aclose()
+            # FlextApiClient handles cleanup internally
+            await self._client.close() if hasattr(self._client, "close") else None
             self._client = None
 
     async def get(
@@ -88,33 +95,42 @@ class FlextHttpClient:
             if self._client is None:
                 return FlextResult[FlextTypes.Core.Dict].fail("Client not initialized")
 
+            # Prepare headers using flext-api patterns
             request_headers = self.default_headers.copy()
             if headers:
                 request_headers.update(headers)
 
-            response = await self._client.get(
-                path,
-                params=params,
-                headers=request_headers,
-            )
-            response.raise_for_status()
+            # Use flext-api client for HTTP requests
+            response_result = await self._client.request("GET", path, headers=request_headers, params=params)
 
-            data = response.json()
-            if data is None:
-                data = {}
+            if response_result.is_failure:
+                return FlextResult[FlextTypes.Core.Dict].fail(
+                    f"HTTP request failed: {response_result.error}"
+                )
+
+            response = response_result.unwrap()
+
+            if response.status_code >= HTTP_BAD_REQUEST:
+                return FlextResult[FlextTypes.Core.Dict].fail(
+                    f"HTTP {response.status_code}: {response.body}"
+                )
+
+            # Parse JSON response safely
+            try:
+                if isinstance(response.body, dict):
+                    data = response.body
+                elif isinstance(response.body, str):
+                    data = json.loads(response.body) if response.body else {}
+                else:
+                    data = {}
+            except (ValueError, AttributeError):
+                data = {"text": str(response.body) if response.body else ""}
+
             return FlextResult[FlextTypes.Core.Dict].ok(data)
 
-        except httpx.HTTPStatusError as e:
-            logger.exception(f"HTTP error {e.response.status_code}: {e.response.text}")
-            return FlextResult[FlextTypes.Core.Dict].fail(
-                f"HTTP {e.response.status_code}: {e.response.text}"
-            )
-        except httpx.RequestError as e:
-            logger.exception("Request error")
-            return FlextResult[FlextTypes.Core.Dict].fail(f"Request error: {e}")
         except Exception as e:
-            logger.exception("Unexpected error")
-            return FlextResult[FlextTypes.Core.Dict].fail(f"Unexpected error: {e}")
+            logger.exception("HTTP request error")
+            return FlextResult[FlextTypes.Core.Dict].fail(f"Request error: {e}")
 
     async def post(
         self,
@@ -140,34 +156,49 @@ class FlextHttpClient:
             if self._client is None:
                 return FlextResult[FlextTypes.Core.Dict].fail("Client not initialized")
 
+            # Prepare headers using flext-api patterns
             request_headers = self.default_headers.copy()
             if headers:
                 request_headers.update(headers)
 
-            response = await self._client.post(
-                path,
-                data=data,
-                json=json_data,
-                headers=request_headers,
-            )
-            response.raise_for_status()
+            # Use flext-api client for HTTP requests
+            # Prepare request body
+            request_body = None
+            if json_data:
+                request_body = json_data
+            elif data:
+                request_body = data
 
-            data = response.json()
-            if data is None:
-                data = {}
-            return FlextResult[FlextTypes.Core.Dict].ok(data)
+            response_result = await self._client.request("POST", path, headers=request_headers, body=request_body)
 
-        except httpx.HTTPStatusError as e:
-            logger.exception(f"HTTP error {e.response.status_code}: {e.response.text}")
-            return FlextResult[FlextTypes.Core.Dict].fail(
-                f"HTTP {e.response.status_code}: {e.response.text}"
-            )
-        except httpx.RequestError as e:
-            logger.exception("Request error")
-            return FlextResult[FlextTypes.Core.Dict].fail(f"Request error: {e}")
+            if response_result.is_failure:
+                return FlextResult[FlextTypes.Core.Dict].fail(
+                    f"HTTP request failed: {response_result.error}"
+                )
+
+            response = response_result.unwrap()
+
+            if response.status_code >= HTTP_BAD_REQUEST:
+                return FlextResult[FlextTypes.Core.Dict].fail(
+                    f"HTTP {response.status_code}: {response.body}"
+                )
+
+            # Parse JSON response safely
+            try:
+                if isinstance(response.body, dict):
+                    response_data = response.body
+                elif isinstance(response.body, str):
+                    response_data = json.loads(response.body) if response.body else {}
+                else:
+                    response_data = {}
+            except (ValueError, AttributeError):
+                response_data = {"text": str(response.body) if response.body else ""}
+
+            return FlextResult[FlextTypes.Core.Dict].ok(response_data)
+
         except Exception as e:
-            logger.exception("Unexpected error")
-            return FlextResult[FlextTypes.Core.Dict].fail(f"Unexpected error: {e}")
+            logger.exception("HTTP POST request error")
+            return FlextResult[FlextTypes.Core.Dict].fail(f"Request error: {e}")
 
     async def put(
         self,
@@ -193,31 +224,46 @@ class FlextHttpClient:
             if self._client is None:
                 return FlextResult[FlextTypes.Core.Dict].fail("Client not initialized")
 
+            # Prepare headers using flext-api patterns
             request_headers = self.default_headers.copy()
             if headers:
                 request_headers.update(headers)
 
-            response = await self._client.put(
-                path,
-                data=data,
-                json=json_data,
-                headers=request_headers,
-            )
-            response.raise_for_status()
+            # Use flext-api client for HTTP requests
+            # Prepare request body
+            request_body = None
+            if json_data:
+                request_body = json_data
+            elif data:
+                request_body = data
 
-            data = response.json()
-            if data is None:
-                data = {}
-            return FlextResult[FlextTypes.Core.Dict].ok(data)
+            response_result = await self._client.request("PUT", path, headers=request_headers, body=request_body)
 
-        except httpx.HTTPStatusError as e:
-            logger.exception(f"HTTP error {e.response.status_code}: {e.response.text}")
-            return FlextResult[FlextTypes.Core.Dict].fail(
-                f"HTTP {e.response.status_code}: {e.response.text}"
-            )
-        except httpx.RequestError as e:
-            logger.exception("Request error")
-            return FlextResult[FlextTypes.Core.Dict].fail(f"Request error: {e}")
+            if response_result.is_failure:
+                return FlextResult[FlextTypes.Core.Dict].fail(
+                    f"HTTP request failed: {response_result.error}"
+                )
+
+            response = response_result.unwrap()
+
+            if response.status_code >= HTTP_BAD_REQUEST:
+                return FlextResult[FlextTypes.Core.Dict].fail(
+                    f"HTTP {response.status_code}: {response.body}"
+                )
+
+            # Parse JSON response safely
+            try:
+                if isinstance(response.body, dict):
+                    response_data = response.body
+                elif isinstance(response.body, str):
+                    response_data = json.loads(response.body) if response.body else {}
+                else:
+                    response_data = {}
+            except (ValueError, AttributeError):
+                response_data = {"text": str(response.body) if response.body else ""}
+
+            return FlextResult[FlextTypes.Core.Dict].ok(response_data)
+
         except Exception as e:
             logger.exception("Unexpected error")
             return FlextResult[FlextTypes.Core.Dict].fail(f"Unexpected error: {e}")
@@ -246,15 +292,31 @@ class FlextHttpClient:
             if headers:
                 request_headers.update(headers)
 
-            response = await self._client.delete(
-                path,
-                headers=request_headers,
-            )
-            response.raise_for_status()
+            response_result = await self._client.delete(path, headers=request_headers)
 
-            data = response.json()
-            if data is None:
-                data = {}
+            if response_result.is_failure:
+                return FlextResult[FlextTypes.Core.Dict].fail(
+                    f"HTTP request failed: {response_result.error}"
+                )
+
+            response = response_result.unwrap()
+
+            if response.status_code >= HTTP_BAD_REQUEST:
+                return FlextResult[FlextTypes.Core.Dict].fail(
+                    f"HTTP {response.status_code}: {response.body}"
+                )
+
+            # Parse JSON response safely
+            try:
+                if isinstance(response.body, dict):
+                    data = response.body
+                elif isinstance(response.body, str):
+                    data = json.loads(response.body) if response.body else {}
+                else:
+                    data = {}
+            except (ValueError, AttributeError):
+                data = {"text": str(response.body) if response.body else ""}
+
             return FlextResult[FlextTypes.Core.Dict].ok(data)
 
         except httpx.HTTPStatusError as e:

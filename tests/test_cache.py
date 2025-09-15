@@ -19,7 +19,7 @@ import asyncio
 import contextlib
 import math
 import time
-from unittest.mock import patch
+from unittest.mock import Mock, patch
 
 import pytest
 from flext_core import FlextResult, FlextTypes
@@ -1215,8 +1215,10 @@ class TestErrorHandling:
     @pytest.mark.asyncio
     async def test_start_exception_handling(self) -> None:
         """Test cache manager start exception handling."""
-        with patch("asyncio.create_task") as mock_create_task:
-            mock_create_task.side_effect = Exception("Task creation failed")
+        with patch("asyncio.get_event_loop") as mock_get_loop:
+            mock_loop = Mock()
+            mock_loop.create_task.side_effect = Exception("Task creation failed")
+            mock_get_loop.return_value = mock_loop
 
             # Should return failure result, not raise exception
             result = await self.cache_manager.start()
@@ -1256,8 +1258,8 @@ class TestErrorHandling:
         """Test exception handling in _set_in_cache."""
         await self.cache_manager.start()
 
-        # Mock time.time specifically in the cache module to raise an exception
-        with patch("flext_oracle_wms.cache.time.time") as mock_time:
+        # Mock time.time specifically in the wms_discovery module to raise an exception
+        with patch("flext_oracle_wms.wms_discovery.time.time") as mock_time:
             mock_time.side_effect = Exception("Time error")
 
             result = await self.cache_manager.set_entity("test_key", "test_value")
@@ -1321,7 +1323,7 @@ class TestErrorHandling:
     @pytest.mark.asyncio
     async def test_cleanup_loop_exception_handling(self) -> None:
         """Test exception handling in cleanup loop."""
-        config = create_test_cache_config(cleanup_interval_seconds=0.1)
+        config = create_test_cache_config(cleanup_interval_seconds=1)
         cache_manager = FlextOracleWmsCacheManager(config)
 
         with patch.object(cache_manager, "_cleanup_expired_entries") as mock_cleanup:

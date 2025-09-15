@@ -34,7 +34,6 @@ import os
 import sys
 from datetime import UTC, datetime
 from pathlib import Path
-from typing import Any
 
 from dotenv import load_dotenv
 from flext_core import FlextLogger
@@ -103,7 +102,7 @@ async def validate_oracle_wms_connection(
     """Validate Oracle WMS connection and basic functionality."""
     logger.info("🔌 Validating Oracle WMS connection...")
 
-    validation_results = {
+    validation_results: dict[str, object] = {
         "connection_success": False,
         "health_check_success": False,
         "entities_discovered": 0,
@@ -135,15 +134,16 @@ async def validate_oracle_wms_connection(
             # Test sample entity data retrieval
             if entities:
                 sample_entity = entities[0]
-                logger.info(f"🔍 Testing data retrieval from entity: {sample_entity}")
+                entity_name = sample_entity.get("name") if isinstance(sample_entity, dict) else str(sample_entity)
+                logger.info(f"🔍 Testing data retrieval from entity: {entity_name}")
 
-                data_result = await client.get_entity_data(sample_entity, limit=5)
+                data_result = await client.get_entity_data(str(entity_name), limit=5)
                 if data_result.success:
                     validation_results["sample_entity_data"] = data_result.data
-                    logger.info(f"✅ Successfully retrieved data from {sample_entity}")
+                    logger.info(f"✅ Successfully retrieved data from {entity_name}")
                 else:
                     logger.warning(
-                        f"⚠️ Could not retrieve data from {sample_entity}: {data_result.error}",
+                        f"⚠️ Could not retrieve data from {entity_name}: {data_result.error}",
                     )
 
         else:
@@ -164,7 +164,7 @@ async def validate_oracle_wms_connection(
     return validation_results
 
 
-async def validate_complete_functionality() -> dict[str, Any]:
+async def validate_complete_functionality() -> dict[str, object]:
     """Complete Oracle WMS functionality validation in Docker environment."""
     logger.info("🐳 FLEXT Oracle WMS - Docker Complete Validation")
     logger.info("=" * 60)
@@ -172,7 +172,7 @@ async def validate_complete_functionality() -> dict[str, Any]:
     start_time = datetime.now(UTC)
 
     # Overall validation results
-    validation_summary = {
+    validation_summary: dict[str, object] = {
         "start_time": start_time.isoformat(),
         "docker_environment": True,
         "configuration_valid": False,
@@ -206,7 +206,9 @@ async def validate_complete_functionality() -> dict[str, Any]:
             logger.info("✅ Oracle WMS connectivity validation successful")
         else:
             logger.error("❌ Oracle WMS connectivity validation failed")
-            validation_summary["errors"].append("Connectivity validation failed")
+            errors_list = validation_summary["errors"]
+            if isinstance(errors_list, list):
+                errors_list.append("Connectivity validation failed")
 
         # Step 3: Functionality tests
         logger.info("📋 Step 3: Running complete functionality tests")
@@ -229,7 +231,7 @@ async def validate_complete_functionality() -> dict[str, Any]:
 
         performance_metrics = {
             "execution_time_seconds": execution_time,
-            "entities_per_second": connectivity_results.get("entities_discovered", 0)
+            "entities_per_second": (connectivity_results.get("entities_discovered") or 0)  # type: ignore[operator]
             / max(execution_time, 1),
             "connection_established": connectivity_results.get(
                 "connection_success",
@@ -243,18 +245,20 @@ async def validate_complete_functionality() -> dict[str, Any]:
         validation_summary["success"] = (
             validation_summary["configuration_valid"]
             and connectivity_results.get("connection_success", False)
-            and connectivity_results.get("entities_discovered", 0) > 0
+            and bool(connectivity_results.get("entities_discovered"))
         )
 
     except Exception as e:
         logger.exception("❌ Complete validation failed")
-        validation_summary["errors"].append(str(e))
+        errors_list = validation_summary["errors"]
+        if isinstance(errors_list, list):
+            errors_list.append(str(e))
         validation_summary["success"] = False
 
     return validation_summary
 
 
-def print_validation_summary(results: dict[str, Any]) -> None:
+def print_validation_summary(results: dict[str, object]) -> None:
     """Print comprehensive validation summary."""
     # Overall status
     "✅" if results["success"] else "❌"
@@ -271,8 +275,9 @@ def print_validation_summary(results: dict[str, Any]) -> None:
     results["performance_metrics"]
 
     # Errors
-    if results["errors"]:
-        for _error in results["errors"]:
+    errors = results["errors"]
+    if errors and isinstance(errors, list):
+        for _error in errors:
             pass
 
     if results["success"]:

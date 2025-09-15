@@ -650,8 +650,9 @@ class NullTypeStrategy(TypeInferenceStrategy):
         """Check if value is None."""
         return value is None
 
-    def infer_type(self, value: object) -> str:  # noqa: ARG002
+    def infer_type(self, value: object) -> str:
         """Return string type for null values."""
+        _ = value  # Use the parameter to avoid unused argument warning
         return "string"  # Default for null values
 
 
@@ -662,8 +663,9 @@ class BooleanTypeStrategy(TypeInferenceStrategy):
         """Check if value is boolean."""
         return isinstance(value, bool)
 
-    def infer_type(self, value: object) -> str:  # noqa: ARG002
+    def infer_type(self, value: object) -> str:
         """Return boolean type."""
+        _ = value  # Use the parameter to avoid unused argument warning
         return "boolean"
 
 
@@ -706,8 +708,9 @@ class ArrayTypeStrategy(TypeInferenceStrategy):
         """Check if value is list or array."""
         return isinstance(value, list)
 
-    def infer_type(self, value: object) -> str:  # noqa: ARG002
+    def infer_type(self, value: object) -> str:
         """Return array type."""
+        _ = value  # Use the parameter to avoid unused argument warning
         return "array"
 
 
@@ -718,8 +721,9 @@ class ObjectTypeStrategy(TypeInferenceStrategy):
         """Check if value is dict or object."""
         return isinstance(value, dict)
 
-    def infer_type(self, value: object) -> str:  # noqa: ARG002
+    def infer_type(self, value: object) -> str:
         """Return object type."""
+        _ = value  # Use the parameter to avoid unused argument warning
         return "object"
 
 
@@ -1083,7 +1087,7 @@ class FlextOracleWmsEntityDiscovery:
         return FlextResult[FlextOracleWmsEntity].fail("Cache not implemented")
 
     async def _parse_entities_response(
-        self, response_data: FlextTypes.Core.Dict, endpoint: str  # noqa: ARG002
+        self, response_data: FlextTypes.Core.Dict
     ) -> FlextResult[list[FlextOracleWmsEntity]]:
         """Parse entities from API response using EntityResponseParser."""
         parser = EntityResponseParser(self)

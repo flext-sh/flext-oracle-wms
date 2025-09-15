@@ -22,7 +22,7 @@ class TestClientSimpleNew:
             oracle_wms_base_url="https://test.wms.com",
             oracle_wms_username="test_user",
             oracle_wms_password="test_pass",
-            oracle_wms_timeout=30.0,
+            oracle_wms_timeout=30,
         )
 
     def test_client_creation(self) -> None:
@@ -56,6 +56,7 @@ class TestClientSimpleNew:
         # Test with invalid entity name
         result = flext_oracle_wms_validate_entity_name("")
         assert result.is_failure
+        assert result.error is not None
         assert "cannot be empty" in result.error
 
     def test_build_api_url_basic(self) -> None:
@@ -225,21 +226,21 @@ class TestClientSimpleNew:
         # Test with special chars should fail
         result = flext_oracle_wms_validate_entity_name("order@hdr")
         assert result.is_failure
+        assert result.error is not None
         assert "Invalid entity name format" in result.error
 
     def test_client_initialization_edge_cases(self) -> None:
         """Test client initialization with edge cases."""
         # Test with minimal config
         minimal_config = FlextOracleWmsModuleConfig(
-            base_url="https://test.com",
-            username="user",
-            password="pass",
-            timeout_seconds=30.0,
-            batch_size=100,
+            oracle_wms_base_url="https://test.com",
+            oracle_wms_username="user",
+            oracle_wms_password="pass",
+            oracle_wms_timeout=30,
         )
 
         client = FlextOracleWmsClient(minimal_config)
-        assert "test.com" in str(client.config.base_url)
+        assert "test.com" in str(client.config.oracle_wms_base_url)
 
     def test_build_api_url_edge_cases(self) -> None:
         """Test URL building edge cases using helper function."""

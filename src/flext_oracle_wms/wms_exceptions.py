@@ -103,6 +103,7 @@ class FlextOracleWmsValidationError(FlextOracleWmsError):
         message: str = "Validation failed",
         *,
         field_name: str | None = None,
+        context: FlextTypes.Core.Dict | None = None,
         **kwargs: object,
     ) -> None:
         """Initialize validation error with context.
@@ -110,14 +111,21 @@ class FlextOracleWmsValidationError(FlextOracleWmsError):
         Args:
             message: Error message
             field_name: Name of the field that failed validation
+            context: Additional context dictionary
             **kwargs: Additional context parameters
 
         """
-        context = dict(kwargs)
-        if field_name is not None:
-            context["field_name"] = field_name
+        # Start with provided context or empty dict
+        full_context = dict(context) if context else {}
 
-        super().__init__(message, context=context)
+        # Add kwargs to context
+        full_context.update(kwargs)
+
+        # Add field_name if provided
+        if field_name is not None:
+            full_context["field_name"] = field_name
+
+        super().__init__(message, context=full_context)
 
 
 class FlextOracleWmsConfigurationError(FlextOracleWmsError):
@@ -196,6 +204,7 @@ class FlextOracleWmsProcessingError(FlextOracleWmsError):
         message: str = "Processing failed",
         *,
         retry_after_seconds: float | None = None,
+        context: FlextTypes.Core.Dict | None = None,
         **kwargs: object,
     ) -> None:
         """Initialize processing error with context.
@@ -203,14 +212,21 @@ class FlextOracleWmsProcessingError(FlextOracleWmsError):
         Args:
             message: Error message
             retry_after_seconds: Suggested retry delay in seconds
+            context: Additional context dictionary
             **kwargs: Additional context parameters
 
         """
-        context = dict(kwargs)
-        if retry_after_seconds is not None:
-            context["retry_after_seconds"] = retry_after_seconds
+        # Start with provided context or empty dict
+        full_context = dict(context) if context else {}
 
-        super().__init__(message, context=context)
+        # Add retry_after_seconds if provided
+        if retry_after_seconds is not None:
+            full_context["retry_after_seconds"] = retry_after_seconds
+
+        # Add kwargs to context
+        full_context.update(kwargs)
+
+        super().__init__(message, context=full_context)
 
 
 class FlextOracleWmsAuthenticationError(FlextOracleWmsError):

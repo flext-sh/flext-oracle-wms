@@ -37,6 +37,7 @@ def test_entity_name_validation() -> None:
     # Test with invalid entity name
     result = flext_oracle_wms_validate_entity_name("")
     assert result.is_failure
+    assert result.error is not None
     assert "cannot be empty" in result.error
 
 
