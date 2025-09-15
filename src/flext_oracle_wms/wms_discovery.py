@@ -650,7 +650,7 @@ class NullTypeStrategy(TypeInferenceStrategy):
         """Check if value is None."""
         return value is None
 
-    def infer_type(self, _value: object) -> str:
+    def infer_type(self, value: object) -> str:  # noqa: ARG002
         """Return string type for null values."""
         return "string"  # Default for null values
 
@@ -662,7 +662,7 @@ class BooleanTypeStrategy(TypeInferenceStrategy):
         """Check if value is boolean."""
         return isinstance(value, bool)
 
-    def infer_type(self, _value: object) -> str:
+    def infer_type(self, value: object) -> str:  # noqa: ARG002
         """Return boolean type."""
         return "boolean"
 
@@ -706,7 +706,7 @@ class ArrayTypeStrategy(TypeInferenceStrategy):
         """Check if value is list or array."""
         return isinstance(value, list)
 
-    def infer_type(self, _value: object) -> str:
+    def infer_type(self, value: object) -> str:  # noqa: ARG002
         """Return array type."""
         return "array"
 
@@ -718,7 +718,7 @@ class ObjectTypeStrategy(TypeInferenceStrategy):
         """Check if value is dict or object."""
         return isinstance(value, dict)
 
-    def infer_type(self, _value: object) -> str:
+    def infer_type(self, value: object) -> str:  # noqa: ARG002
         """Return object type."""
         return "object"
 
@@ -1083,11 +1083,34 @@ class FlextOracleWmsEntityDiscovery:
         return FlextResult[FlextOracleWmsEntity].fail("Cache not implemented")
 
     async def _parse_entities_response(
-        self, response_data: FlextTypes.Core.Dict, _endpoint: str
+        self, response_data: FlextTypes.Core.Dict, endpoint: str  # noqa: ARG002
     ) -> FlextResult[list[FlextOracleWmsEntity]]:
         """Parse entities from API response using EntityResponseParser."""
         parser = EntityResponseParser(self)
-        return await parser.parse_entities_response(response_data)
+        entity_names_result = await parser.parse_entities_response(response_data)
+
+        if entity_names_result.is_failure:
+            error_message = entity_names_result.error or "Failed to parse entity names"
+            return FlextResult[list[FlextOracleWmsEntity]].fail(error_message)
+
+        # Convert entity names to FlextOracleWmsEntity objects
+        entities = []
+        entity_names = entity_names_result.data or []
+        for entity_name in entity_names:
+            entity = self._create_entity_from_string_name(entity_name)
+            entities.append(entity)
+
+        return FlextResult[list[FlextOracleWmsEntity]].ok(entities)
+
+    def _create_entity_from_string_name(self, entity_name: str) -> FlextOracleWmsEntity:
+        """Create FlextOracleWmsEntity from string name."""
+        endpoint = f"/{self.environment}/wms/lgfapi/v10/entity/{entity_name}/"
+        description = f"Oracle WMS entity: {entity_name}"
+        return FlextOracleWmsEntity(
+            name=entity_name,
+            endpoint=endpoint,
+            description=description,
+        )
 
     async def discover_entities(
         self,
@@ -1335,10 +1358,13 @@ class EndpointDiscoveryStrategy(DiscoveryStrategy):
         self.discovery = discovery
 
     def _validate_response(
-        self, response: httpx.Response, endpoint: str
+        self, response: httpx.Response | None, endpoint: str
     ) -> FlextResult[None]:
         """Validate API response structure."""
         try:
+            if response is None:
+                return FlextResult[None].fail(f"No response data from {endpoint}")
+
             # Use endpoint for logging context
             _ = endpoint  # Mark as used for linting
             http_ok_min = 200
@@ -1351,6 +1377,26 @@ class EndpointDiscoveryStrategy(DiscoveryStrategy):
             return FlextResult[None].ok(None)
         except Exception as e:
             return FlextResult[None].fail(f"Response validation error: {e}")
+
+    async def _make_api_request(
+        self,
+        api_client: FlextHttpClient,
+        endpoint: str,
+    ) -> FlextResult[FlextTypes.Core.Dict]:
+        """Make API request to specified endpoint."""
+        try:
+            # Make API request using the client
+            result = await api_client.get(endpoint)
+            if result.is_failure:
+                error_msg = result.error or f"API request failed for {endpoint}"
+                return FlextResult[FlextTypes.Core.Dict].fail(error_msg)
+
+            response_data = result.unwrap()
+            return FlextResult[FlextTypes.Core.Dict].ok(response_data)
+        except Exception as e:
+            return FlextResult[FlextTypes.Core.Dict].fail(
+                f"API request error for {endpoint}: {e}"
+            )
 
     async def execute_discovery_step(
         self,
@@ -1438,9 +1484,11 @@ class EntityResponseParser:
 
             # Handle dict with entity names as keys
             if isinstance(response_data, dict):
-                # Check if it's a response with entities/results keys
-                entities_data = response_data.get("entities") or response_data.get(
-                    "results"
+                # Check if it's a response with entities/results/data keys
+                entities_data = (
+                    response_data.get("entities")
+                    or response_data.get("results")
+                    or response_data.get("data")
                 )
                 if entities_data is not None:
                     if isinstance(entities_data, list):
@@ -1457,7 +1505,7 @@ class EntityResponseParser:
                     entity_names = list(response_data.keys())
                     return FlextResult[list[str]].ok(entity_names)
 
-            return FlextResult[list[str]].fail("Invalid entities data format")
+            return FlextResult[list[str]].fail("Unexpected response format")
         except Exception as e:
             return FlextResult[list[str]].fail(str(e))
 

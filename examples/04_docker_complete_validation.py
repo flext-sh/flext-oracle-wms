@@ -78,13 +78,18 @@ def load_oracle_wms_config() -> FlextOracleWmsClientConfig:
         msg = f"Missing required environment variables: {', '.join(missing)}"
         raise ValueError(msg)
 
+    # Type narrowing: ensure these are not None after validation
+    if base_url is None or username is None or password is None or environment is None:
+        msg = "Internal error: None values after validation"
+        raise RuntimeError(msg)
+
     return FlextOracleWmsClientConfig(
         oracle_wms_base_url=base_url,
         oracle_wms_username=username,
         oracle_wms_password=password,
         environment=environment,
         api_version=FlextOracleWmsApiVersion.LGF_V10,
-        oracle_wms_timeout=float(os.getenv("ORACLE_WMS_TIMEOUT", "30")),
+        oracle_wms_timeout=int(os.getenv("ORACLE_WMS_TIMEOUT", "30")),
         oracle_wms_max_retries=int(os.getenv("ORACLE_WMS_MAX_RETRIES", "3")),
         oracle_wms_verify_ssl=os.getenv("ORACLE_WMS_VERIFY_SSL", "true").lower()
         == "true",
@@ -94,7 +99,7 @@ def load_oracle_wms_config() -> FlextOracleWmsClientConfig:
 
 async def validate_oracle_wms_connection(
     client: FlextOracleWmsClient,
-) -> dict[str, Any]:
+) -> dict[str, object]:
     """Validate Oracle WMS connection and basic functionality."""
     logger.info("🔌 Validating Oracle WMS connection...")
 

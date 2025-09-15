@@ -224,11 +224,11 @@ class TestRecordFiltering:
 
         # Invalid records type
         with pytest.raises(FlextOracleWmsDataValidationError):
-            await filter_engine.filter_records("not_a_list", {})
+            await filter_engine.filter_records("not_a_list", {})  # type: ignore[arg-type]
 
         # Invalid filters type
         with pytest.raises(FlextOracleWmsDataValidationError):
-            await filter_engine.filter_records(self.sample_records, "not_a_dict")
+            await filter_engine.filter_records(self.sample_records, "not_a_dict")  # type: ignore[arg-type]
 
     @pytest.mark.asyncio
     async def test_filter_records_exceeds_condition_limit(self) -> None:
@@ -323,11 +323,11 @@ class TestRecordSorting:
         filter_engine = FlextOracleWmsFilter(case_sensitive=False, max_conditions=50)
 
         # Invalid records type - should fail gracefully
-        result = await filter_engine.sort_records("not_a_list", "field")
+        result = await filter_engine.sort_records("not_a_list", "field")  # type: ignore[arg-type]
         assert result.is_failure
 
         # Invalid sort field type - should fail gracefully
-        result = await filter_engine.sort_records(self.unsorted_records, 123)
+        result = await filter_engine.sort_records(self.unsorted_records, 123)  # type: ignore[arg-type]
         assert result.is_failure
 
 
@@ -619,7 +619,7 @@ class TestConvenienceFunctions:
     async def test_filter_by_field_invalid_records(self) -> None:
         """Test filter by field with invalid records raises error."""
         with pytest.raises(FlextOracleWmsDataValidationError):
-            await flext_oracle_wms_filter_by_field("not_a_list", "field", "value")
+            await flext_oracle_wms_filter_by_field("not_a_list", "field", "value")  # type: ignore[arg-type]
 
     @pytest.mark.asyncio
     async def test_filter_by_id_range_both_bounds(self) -> None:
@@ -681,7 +681,7 @@ class TestConvenienceFunctions:
     async def test_filter_by_id_range_invalid_records(self) -> None:
         """Test filter by ID range with invalid records raises error."""
         with pytest.raises(FlextOracleWmsDataValidationError):
-            await flext_oracle_wms_filter_by_id_range("not_a_list", "id")
+            await flext_oracle_wms_filter_by_id_range("not_a_list", "id")  # type: ignore[arg-type]
 
 
 class TestErrorHandling:
@@ -694,7 +694,7 @@ class TestErrorHandling:
 
         # This should raise FlextOracleWmsDataValidationError via handle_operation_exception
         with pytest.raises(FlextOracleWmsDataValidationError):
-            await filter_engine.filter_records("invalid_records", {})
+            await filter_engine.filter_records("invalid_records", {})  # type: ignore[arg-type]
 
     @pytest.mark.asyncio
     async def test_sort_records_handles_validation_errors(self) -> None:
@@ -702,7 +702,7 @@ class TestErrorHandling:
         filter_engine = FlextOracleWmsFilter(case_sensitive=False, max_conditions=50)
 
         # This should return a failed FlextResult due to validation
-        result = await filter_engine.sort_records("invalid_records", "field")
+        result = await filter_engine.sort_records("invalid_records", "field")  # type: ignore[arg-type]
         assert result.is_failure
         assert result.error is not None
         assert "Type mismatch" in result.error

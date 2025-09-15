@@ -32,6 +32,7 @@ from flext_oracle_wms import (
     FlextOracleWmsEntity,
     FlextOracleWmsEntityDiscovery,
 )
+from flext_oracle_wms.wms_discovery import CacheValue
 
 
 class TestDiscoveryConstants:
@@ -143,7 +144,7 @@ class TestEndpointDiscoveryStrategy:
             )
 
             assert result.success
-            assert result.data is True
+            assert result.data is None
             assert len(self.context.all_entities) == 2
 
     async def test_execute_discovery_step_api_failure(self) -> None:
@@ -250,6 +251,7 @@ class TestEndpointDiscoveryStrategy:
         )
 
         assert result.is_failure
+        assert result.error is not None
         assert "No response data from /api/test" in result.error
 
     def test_validate_response_success(self) -> None:
@@ -268,6 +270,7 @@ class TestEndpointDiscoveryStrategy:
         result = self.strategy._validate_response(None, "/api/test")
 
         assert result.is_failure
+        assert result.error is not None
         assert "No response data from /api/test" in result.error
 
     def test_validate_response_missing_attributes(self) -> None:
@@ -278,6 +281,7 @@ class TestEndpointDiscoveryStrategy:
         result = self.strategy._validate_response(mock_response, "/api/test")
 
         assert result.is_failure
+        assert result.error is not None
         assert "Invalid response structure" in result.error
 
     def test_validate_response_bad_status(self) -> None:
@@ -289,6 +293,7 @@ class TestEndpointDiscoveryStrategy:
         result = self.strategy._validate_response(mock_response, "/api/test")
 
         assert result.is_failure
+        assert result.error is not None
         assert "HTTP 500" in result.error
 
 
@@ -303,7 +308,7 @@ class TestEntityResponseParser:
     @pytest.mark.asyncio
     async def test_parse_entities_response_delegation(self) -> None:
         """Test that parser delegates to discovery instance."""
-        response_data = {"entities": ["test"]}
+        response_data: FlextTypes.Core.Dict = {"entities": ["test"]}
         result = await self.parser.parse_entities_response(response_data)
 
         # The parser should handle the response data directly
@@ -339,9 +344,10 @@ class TestFlextOracleWmsEntityDiscovery:
         mock_cache = Mock()
         discovery = FlextOracleWmsEntityDiscovery(
             api_client=self.mock_api_client,
-            cache_manager=mock_cache,
             environment="test",
         )
+        # Set cache_manager after initialization since it's not a constructor parameter
+        discovery.cache_manager = mock_cache
 
         assert discovery.cache_manager == mock_cache
 
@@ -385,11 +391,12 @@ class TestFlextOracleWmsEntityDiscovery:
         )
 
         with patch.object(self.discovery, "_perform_discovery") as mock_perform:
-            mock_perform.return_value = FlextResult[None].ok(mock_discovery_result)
+            mock_perform.return_value = FlextResult[FlextOracleWmsDiscoveryResult].ok(mock_discovery_result)
 
             result = await self.discovery.discover_entities()
 
             assert result.success
+            assert result.data is not None
             assert result.data.total_count == 2
             assert len(result.data.entities) == 2
             assert result.data.discovery_duration_ms is not None
@@ -405,7 +412,7 @@ class TestFlextOracleWmsEntityDiscovery:
             mock_response = Mock()
             mock_response.status_code = 200
             mock_response.data = {"results": ["entity1", "entity2"]}
-            mock_get.return_value = FlextResult[None].ok(mock_response)
+            mock_get.return_value = FlextResult[FlextTypes.Core.Dict].ok(mock_response)
 
             result = await self.discovery.discover_entities(
                 include_patterns=include_patterns,
@@ -437,8 +444,8 @@ class TestFlextOracleWmsEntityDiscovery:
         }
 
         # Mock cache manager to return cached data
-        async def mock_get(_key: str) -> FlextResult[None]:
-            return FlextResult[None].ok(cached_data)
+        async def mock_get(_key: str) -> FlextResult[CacheValue]:
+            return FlextResult[CacheValue].ok(cached_data)
 
         mock_cache.get = mock_get
 
@@ -485,6 +492,7 @@ class TestFlextOracleWmsEntityDiscovery:
             result = await self.discovery.discover_entities()
 
             assert result.is_failure
+            assert result.error is not None
             assert "Discovery failed" in result.error
 
     @pytest.mark.asyncio
@@ -772,6 +780,7 @@ class TestFlextOracleWmsEntityDiscovery:
         result = await parser.parse_entities_response(response_data)
 
         assert result.is_failure
+        assert result.error is not None
         assert "Unexpected response format" in result.error
 
     def test_create_entity_from_string_name(self) -> None:
@@ -954,6 +963,7 @@ class TestFlextOracleWmsEntityDiscovery:
             result = await self.discovery._parse_entities_response({}, "/api/test")
 
             assert result.is_failure
+            assert result.error is not None
             assert "Extraction failed" in result.error
 
     @pytest.mark.asyncio
@@ -985,6 +995,7 @@ class TestFlextOracleWmsEntityDiscovery:
         result = await self.discovery.discover_entities(include_patterns=["company"])
 
         assert result.is_failure
+        assert result.error is not None
         assert "Connection failed" in result.error
 
     @pytest.mark.asyncio
@@ -1298,6 +1309,7 @@ class TestFlextOracleWmsEntityDiscovery:
         result = await self.discovery._get_cached_entity("test_key")
 
         assert result.is_failure
+        assert result.error is not None
         assert "Cache not implemented" in result.error
 
     @pytest.mark.asyncio
@@ -1378,6 +1390,7 @@ class TestErrorHandling:
 
                 result = await self.discovery.discover_entities()
                 assert not result.success
+                assert result.error is not None
                 assert "Discover entities failed" in result.error
 
     @pytest.mark.asyncio
