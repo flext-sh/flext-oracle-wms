@@ -451,6 +451,6 @@ class FlextOracleWmsConfig(FlextConfig):
             )
 
 
-# Simple aliases for test compatibility only
+# Aliases for backward compatibility - used across the codebase
 FlextOracleWmsClientConfig = FlextOracleWmsConfig
 FlextOracleWmsModuleConfig = FlextOracleWmsConfig

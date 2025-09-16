@@ -114,9 +114,7 @@ async def showcase_2_entity_discovery(
 
     # Extract entity names from dictionaries
     entities: list[str] = [
-        entity.get("name", "Unknown")
-        if isinstance(entity, dict)
-        else str(entity)
+        entity.get("name", "Unknown") if isinstance(entity, dict) else str(entity)
         for entity in entity_dicts
     ]
 

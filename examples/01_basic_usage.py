@@ -90,7 +90,11 @@ async def discover_wms_entities(
         # Display entity information
         for entity in entities[:5]:  # Show first 5 entities
             # entities are dictionaries with name field
-            entity_display = entity.get("name", "Unknown") if isinstance(entity, dict) else str(entity)
+            entity_display = (
+                entity.get("name", "Unknown")
+                if isinstance(entity, dict)
+                else str(entity)
+            )
             logger.debug(f"Processing entity: {entity_display}")
             # Additional info only available if entity is an object
             if hasattr(entity, "description") and getattr(entity, "description", None):
@@ -171,10 +175,14 @@ async def demonstrate_error_handling(client: FlextOracleWmsClient) -> None:
     # Attempt to query a non-existent entity
     result = await client.get_entity_data("NON_EXISTENT_ENTITY")
 
-    if result.is_failure and result.error and (
-        "not found" in result.error.lower()
-        or "authentication" in result.error.lower()
-        or "timeout" in result.error.lower()
+    if (
+        result.is_failure
+        and result.error
+        and (
+            "not found" in result.error.lower()
+            or "authentication" in result.error.lower()
+            or "timeout" in result.error.lower()
+        )
     ):
         logger.info(f"Expected error handled: {result.error}")
 
@@ -213,7 +221,9 @@ async def main() -> None:
 
         if entities_result.success:
             entities = entities_result.data
-            print(f"Successfully discovered {len(entities) if entities else 0} entities")
+            print(
+                f"Successfully discovered {len(entities) if entities else 0} entities"
+            )
 
             # Step 4: Query data from first available entity
             if entities:

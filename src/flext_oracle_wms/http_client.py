@@ -101,7 +101,9 @@ class FlextHttpClient:
                 request_headers.update(headers)
 
             # Use flext-api client for HTTP requests
-            response_result = await self._client.request("GET", path, headers=request_headers, params=params)
+            response_result = await self._client.request(
+                "GET", path, headers=request_headers, params=params
+            )
 
             if response_result.is_failure:
                 return FlextResult[FlextTypes.Core.Dict].fail(
@@ -169,7 +171,9 @@ class FlextHttpClient:
             elif data:
                 request_body = data
 
-            response_result = await self._client.request("POST", path, headers=request_headers, body=request_body)
+            response_result = await self._client.request(
+                "POST", path, headers=request_headers, body=request_body
+            )
 
             if response_result.is_failure:
                 return FlextResult[FlextTypes.Core.Dict].fail(
@@ -237,7 +241,9 @@ class FlextHttpClient:
             elif data:
                 request_body = data
 
-            response_result = await self._client.request("PUT", path, headers=request_headers, body=request_body)
+            response_result = await self._client.request(
+                "PUT", path, headers=request_headers, body=request_body
+            )
 
             if response_result.is_failure:
                 return FlextResult[FlextTypes.Core.Dict].fail(

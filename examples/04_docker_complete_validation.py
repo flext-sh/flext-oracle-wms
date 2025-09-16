@@ -134,7 +134,11 @@ async def validate_oracle_wms_connection(
             # Test sample entity data retrieval
             if entities:
                 sample_entity = entities[0]
-                entity_name = sample_entity.get("name") if isinstance(sample_entity, dict) else str(sample_entity)
+                entity_name = (
+                    sample_entity.get("name")
+                    if isinstance(sample_entity, dict)
+                    else str(sample_entity)
+                )
                 logger.info(f"🔍 Testing data retrieval from entity: {entity_name}")
 
                 data_result = await client.get_entity_data(str(entity_name), limit=5)
@@ -231,7 +235,9 @@ async def validate_complete_functionality() -> dict[str, object]:
 
         performance_metrics = {
             "execution_time_seconds": execution_time,
-            "entities_per_second": (connectivity_results.get("entities_discovered") or 0)  # type: ignore[operator]
+            "entities_per_second": (
+                connectivity_results.get("entities_discovered") or 0
+            )  # type: ignore[operator]
             / max(execution_time, 1),
             "connection_established": connectivity_results.get(
                 "connection_success",

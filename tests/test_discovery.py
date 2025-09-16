@@ -113,7 +113,7 @@ class TestEndpointDiscoveryStrategy:
         mock_response.data = {
             "entities": [
                 {"name": "company", "description": "Company"},
-                {"name": "facility", "description": "Facility"}
+                {"name": "facility", "description": "Facility"},
             ]
         }
 
@@ -1394,7 +1394,9 @@ class TestErrorHandling:
         """Test discover_entities handles exceptions."""
         # Mock the cache manager to simulate an error
         with patch.object(self.discovery, "cache_manager") as mock_cache:
-            mock_cache.get.return_value = FlextResult[dict[str, object]].fail("Cache error")
+            mock_cache.get.return_value = FlextResult[dict[str, object]].fail(
+                "Cache error"
+            )
 
             # Mock the API client to simulate an error
             with patch.object(self.discovery, "api_client") as mock_api:

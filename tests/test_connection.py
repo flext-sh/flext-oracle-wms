@@ -53,7 +53,9 @@ async def test_real_connection() -> bool:
         discovery = await client.discover_entities()
         logger.info("✅ DISCOVERY COMPLETED!")
         if discovery.success:
-            logger.info("  Found %d entities", len(discovery.data) if discovery.data else 0)
+            logger.info(
+                "  Found %d entities", len(discovery.data) if discovery.data else 0
+            )
         else:
             logger.info("  Discovery failed: %s", discovery.error)
 
