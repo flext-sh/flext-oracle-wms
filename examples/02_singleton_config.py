@@ -12,7 +12,6 @@ import asyncio
 import os
 
 from flext_core import FlextLogger
-
 from flext_oracle_wms import FlextOracleWmsClient, FlextOracleWmsConfig
 
 logger = FlextLogger(__name__)

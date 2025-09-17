@@ -15,9 +15,9 @@ from pathlib import Path
 from typing import ClassVar
 from urllib.parse import urlparse
 
-from flext_core import FlextConfig, FlextResult, FlextTypes
 from pydantic import Field, field_validator
 
+from flext_core import FlextConfig, FlextModels, FlextResult, FlextTypes
 from flext_oracle_wms.wms_constants import FlextOracleWmsApiVersion, OracleWMSAuthMethod
 
 
@@ -80,11 +80,15 @@ class FlextOracleWmsConfig(FlextConfig):
     @field_validator("oracle_wms_base_url")
     @classmethod
     def validate_oracle_wms_base_url(cls, v: str) -> str:
-        """Validate Oracle WMS base URL format."""
-        if not v.startswith(("http://", "https://")):
-            msg = "Oracle WMS base URL must start with http:// or https://"
-            raise ValueError(msg)
-        return v
+        """Validate Oracle WMS base URL using centralized FlextModels validation."""
+        # Use centralized FlextModels validation instead of duplicate logic
+        validation_result = FlextModels.create_validated_http_url(
+            v.strip() if v else ""
+        )
+        if validation_result.is_failure:
+            error_msg = f"Invalid Oracle WMS base URL: {validation_result.error}"
+            raise ValueError(error_msg)
+        return validation_result.unwrap()
 
     @field_validator("oracle_wms_timeout")
     @classmethod

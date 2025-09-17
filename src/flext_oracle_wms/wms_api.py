@@ -10,7 +10,6 @@ from datetime import UTC, datetime
 from uuid import uuid4
 
 from flext_core import FlextLogger, FlextResult, FlextTypes
-
 from flext_oracle_wms.wms_models import (
     FlextOracleWmsApiCategory,
     FlextOracleWmsApiEndpoint,

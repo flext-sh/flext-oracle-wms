@@ -19,8 +19,8 @@ import math
 from unittest.mock import AsyncMock, Mock, patch
 
 import pytest
-from flext_core import FlextResult, FlextTypes
 
+from flext_core import FlextResult, FlextTypes
 from flext_oracle_wms import (
     DISCOVERY_FAILURE,
     DISCOVERY_SUCCESS,

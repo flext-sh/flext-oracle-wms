@@ -124,7 +124,7 @@ def operation() -> FlextResult[ReturnType]:
 
 - **100% MyPy compliance** - Zero type errors tolerated
 - **Pydantic models** - All data structures validated
-- **No `Any` types** - Explicit typing required
+- **No `object` types** - Explicit typing required
 - **No `type: ignore`** - Fix types at source
 
 ## Testing Strategy

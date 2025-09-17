@@ -7,9 +7,9 @@ import os
 import traceback
 from collections import defaultdict
 
-from flext_core import FlextLogger, FlextTypes
 from pydantic import HttpUrl
 
+from flext_core import FlextLogger, FlextTypes
 from flext_oracle_wms import FlextOracleWmsLegacyClient, FlextOracleWmsModuleConfig
 
 logger = FlextLogger(__name__)

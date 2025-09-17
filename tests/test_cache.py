@@ -22,8 +22,8 @@ import time
 from unittest.mock import Mock, patch
 
 import pytest
-from flext_core import FlextResult, FlextTypes
 
+from flext_core import FlextResult, FlextTypes
 from flext_oracle_wms import (
     FlextOracleWmsCacheConfig,
     FlextOracleWmsCacheEntry,

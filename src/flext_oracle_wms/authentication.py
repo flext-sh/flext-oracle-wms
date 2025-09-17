@@ -12,8 +12,9 @@ from __future__ import annotations
 
 import inspect
 
-from flext_core import FlextResult
 from pydantic import Field
+
+from flext_core import FlextResult
 
 from .wms_client import (
     FlextOracleWmsAuthConfig as _BaseAuthConfig,

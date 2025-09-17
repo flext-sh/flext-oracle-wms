@@ -21,9 +21,7 @@ from flext_core import (
     FlextResult,
     FlextTypes,
     FlextUtilities,
-    FlextValidations,
 )
-
 from flext_oracle_wms.filtering import FlextOracleWmsFilter
 from flext_oracle_wms.wms_constants import (
     FlextOracleWmsDefaults,
@@ -71,16 +69,14 @@ def handle_operation_exception(
 
 def flext_oracle_wms_normalize_url(base_url: str, path: str) -> str:
     """Normalize Oracle WMS URL by joining base URL and path properly."""
-    # Validate using flext-core directly
-    base_url_result = FlextValidations.TypeValidators.validate_string(base_url)
-    if base_url_result.is_failure:
-        # Legacy tests expect base OracleWmsError
-        raise FlextOracleWmsError(base_url_result.error or "Invalid base_url") from None
+    # Simple validation using type annotations - no over-engineering
+    if not isinstance(base_url, str) or not base_url.strip():
+        msg = "base_url must be a non-empty string"
+        raise FlextOracleWmsError(msg)
 
-    path_result = FlextValidations.TypeValidators.validate_string(path)
-    if path_result.is_failure:
-        # Legacy tests expect base OracleWmsError
-        raise FlextOracleWmsError(path_result.error or "Invalid path") from None
+    if not isinstance(path, str) or not path.strip():
+        msg = "path must be a non-empty string"
+        raise FlextOracleWmsError(msg)
 
     # Use urljoin for proper URL construction
     return urljoin(base_url.rstrip("/") + "/", path.lstrip("/"))
@@ -89,11 +85,10 @@ def flext_oracle_wms_normalize_url(base_url: str, path: str) -> str:
 def flext_oracle_wms_extract_environment_from_url(url: str) -> TOracleWmsEnvironment:
     """Extract environment identifier from Oracle WMS URL."""
     try:
-        # Validate using flext-core directly
-        url_result = FlextValidations.TypeValidators.validate_string(url)
-        if url_result.is_failure:
-            error_message = f"Invalid URL for environment extraction: {url}"
-            raise FlextOracleWmsError(error_message) from None
+        # Simple validation using type annotations - no over-engineering
+        if not isinstance(url, str) or not url.strip():
+            msg = "URL must be a non-empty string"
+            raise ValueError(msg)
 
         parsed = urlparse(url)
         path_parts = parsed.path.strip("/").split("/")
@@ -122,24 +117,18 @@ def flext_oracle_wms_build_entity_url(
     api_version: TOracleWmsApiVersion = "v10",
 ) -> str:
     """Build complete entity URL for Oracle WMS API calls."""
-    # Validate all string parameters using FlextResult pattern
-    base_url_result = FlextValidations.TypeValidators.validate_string(base_url)
-    if base_url_result.is_failure or not base_url.strip():
-        # Legacy tests expect a generic message when any URL component is invalid
+    # Simple validation using type annotations - no over-engineering
+    if not isinstance(base_url, str) or not base_url.strip():
         msg = "All URL components must be non-empty strings"
-        raise FlextOracleWmsError(msg) from None
+        raise FlextOracleWmsError(msg)
 
-    environment_result = FlextValidations.TypeValidators.validate_string(environment)
-    if environment_result.is_failure or not environment.strip():
-        # Legacy tests expect a generic message when any URL component is invalid
+    if not isinstance(environment, str) or not environment.strip():
         msg = "All URL components must be non-empty strings"
-        raise FlextOracleWmsError(msg) from None
+        raise FlextOracleWmsError(msg)
 
-    entity_name_result = FlextValidations.TypeValidators.validate_string(entity_name)
-    if entity_name_result.is_failure or not entity_name.strip():
-        # Legacy tests expect a generic message when any URL component is invalid
+    if not isinstance(entity_name, str) or not entity_name.strip():
         msg = "All URL components must be non-empty strings"
-        raise FlextOracleWmsError(msg) from None
+        raise FlextOracleWmsError(msg)
 
     # Treat any semantic version starting with 'v' as LGF API path
     if isinstance(api_version, str) and api_version.lower().startswith("v"):
@@ -152,10 +141,12 @@ def flext_oracle_wms_build_entity_url(
 
 def flext_oracle_wms_validate_entity_name(entity_name: str) -> FlextResult[str]:
     """Validate Oracle WMS entity name format."""
-    # Validate using flext-core directly
-    string_result = FlextValidations.TypeValidators.validate_string(entity_name)
-    if string_result.is_failure:
-        return FlextResult[str].fail(string_result.error or "Invalid entity name")
+    # Simple validation using type annotations - no over-engineering
+    if not isinstance(entity_name, str):
+        return FlextResult[str].fail("Entity name must be a string")
+
+    if not entity_name.strip():
+        return FlextResult[str].fail("Entity name cannot be empty")
 
     normalized = entity_name.strip().lower()
     if not normalized:
@@ -287,10 +278,10 @@ def flext_oracle_wms_chunk_records(
             return FlextResult[bool].fail(msg)
         return FlextResult[bool].ok(data=True)
 
-    # Validate using flext-core directly
-    records_result = FlextValidations.TypeValidators.validate_list(records)
-    if records_result.is_failure:
-        raise FlextOracleWmsError(records_result.error or "Invalid records") from None
+    # Simple validation using type annotations - no over-engineering
+    if not isinstance(records, list):
+        msg = "records must be a list"
+        raise FlextOracleWmsError(msg)
 
     chunk_size_result = _validate_chunk_size(chunk_size)
     if not chunk_size_result.success:
@@ -599,10 +590,9 @@ class FlextOracleWmsFlattener:
     def flatten_record(self, record: TOracleWmsRecord) -> TOracleWmsRecord:
         """Flatten a single Oracle WMS record."""
         try:
-            # Validate using flext-core directly
-            validation_result = FlextValidations.TypeValidators.validate_dict(record)
-            if validation_result.is_failure:
-                msg = f"Record flattening failed: {validation_result.error}"
+            # Simple validation using type annotations - no over-engineering
+            if not isinstance(record, dict):
+                msg = "Record flattening failed: record must be a dictionary"
                 self._raise_flattening_error(msg)
 
             return self._flatten_dict(record)
@@ -613,10 +603,9 @@ class FlextOracleWmsFlattener:
     def flatten_records(self, records: TOracleWmsRecordBatch) -> TOracleWmsRecordBatch:
         """Flatten multiple Oracle WMS records."""
         try:
-            # Validate using flext-core directly
-            validation_result = FlextValidations.TypeValidators.validate_list(records)
-            if validation_result.is_failure:
-                msg = f"Batch flattening failed: {validation_result.error}"
+            # Simple validation using type annotations - no over-engineering
+            if not isinstance(records, list):
+                msg = "Batch flattening failed: records must be a list"
                 self._raise_flattening_error(msg)
 
             return [self.flatten_record(record) for record in records]

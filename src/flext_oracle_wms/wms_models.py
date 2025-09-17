@@ -14,9 +14,9 @@ from dataclasses import dataclass, field
 from enum import StrEnum
 from typing import Annotated, Literal, TypedDict
 
-from flext_core import FlextModels, FlextResult, FlextTypes, FlextValidations
 from pydantic import Field, StringConstraints
 
+from flext_core import FlextModels, FlextResult, FlextTypes
 from flext_oracle_wms.wms_constants import (
     FlextOracleWmsApiVersion,
     FlextOracleWmsDefaults,
@@ -110,21 +110,17 @@ class FlextOracleWmsEntity(FlextModels):
         """Validate entity business rules."""
         validation_errors = []
 
-        # Validate entity name using flext-core
-        validation_result = FlextValidations.TypeValidators.validate_string(self.name)
-        if validation_result.is_failure:
-            validation_errors.append(validation_result.error)
+        # Validate entity name using direct validation
+        if not isinstance(self.name, str):
+            validation_errors.append("Entity name must be a string")
 
         # Business rule: entity name cannot be empty
         if not self.name.strip():
             validation_errors.append("Entity name cannot be empty")
 
-        # Validate entity endpoint using flext-core
-        validation_result = FlextValidations.TypeValidators.validate_string(
-            self.endpoint
-        )
-        if validation_result.is_failure:
-            validation_errors.append(validation_result.error)
+        # Validate entity endpoint using direct validation
+        if not isinstance(self.endpoint, str):
+            validation_errors.append("Entity endpoint must be a string")
 
         if not self.endpoint.startswith("/"):
             validation_errors.append("Entity endpoint must start with /")
@@ -173,13 +169,10 @@ class FlextOracleWmsDiscoveryResult(FlextModels):
         validation_errors = []
 
         try:
-            validation_result = FlextValidations.TypeValidators.validate_list(
-                self.entities
-            )
-            if validation_result.is_failure:
-                raise FlextOracleWmsDataValidationError(
-                    validation_result.error or "Invalid entities list"
-                )
+            # Validate entities list using direct validation
+            if not isinstance(self.entities, list):
+                msg = "Invalid entities list"
+                raise FlextOracleWmsDataValidationError(msg)
         except (TypeError, ValueError, AttributeError) as e:
             validation_errors.append(str(e))
 
@@ -218,9 +211,9 @@ class FlextOracleWmsApiResponse(FlextModels):
         validation_errors = []
 
         try:
-            validation_result = FlextValidations.TypeValidators.validate_dict(self.data)
-            if validation_result.is_failure:
-                validation_errors.append(validation_result.error)
+            # Validate data dict using direct validation
+            if not isinstance(self.data, dict):
+                validation_errors.append("Data must be a dictionary")
         except (TypeError, ValueError, AttributeError) as e:
             validation_errors.append(str(e))
 

@@ -16,12 +16,10 @@ from datetime import UTC, datetime
 from typing import ClassVar
 from urllib.parse import urlencode
 
-from flext_core import FlextConfig, FlextLogger, FlextResult, FlextTypes
 from pydantic import Field
 
+from flext_core import FlextConfig, FlextLogger, FlextResult, FlextTypes
 from flext_oracle_wms.http_client import FlextHttpClient, create_flext_http_client
-
-# Entity discovery is handled directly in the client
 from flext_oracle_wms.wms_api import (
     FLEXT_ORACLE_WMS_APIS,
     FlextOracleWmsApiCategory,

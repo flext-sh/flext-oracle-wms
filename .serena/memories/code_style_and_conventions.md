@@ -5,7 +5,7 @@
 - **MyPy**: Strict mode enabled with comprehensive checks
 - **Type Annotations**: Required for all functions and methods
 - **Pydantic Models**: Used for all data structures
-- **No Any Types**: Explicit typing required, Any types discouraged
+- **No object Types**: Explicit typing required, object types discouraged
 - **Generic Types**: Used extensively (e.g., FlextResult[T])
 
 ## Code Structure Patterns

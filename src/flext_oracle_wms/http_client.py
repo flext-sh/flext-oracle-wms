@@ -9,6 +9,7 @@ import json
 from typing import Self
 
 import httpx
+
 from flext_api import FlextApiClient
 from flext_core import FlextLogger, FlextResult, FlextTypes
 

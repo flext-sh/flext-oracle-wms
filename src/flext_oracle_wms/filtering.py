@@ -13,8 +13,7 @@ from __future__ import annotations
 
 import re
 
-from flext_core import FlextLogger, FlextResult, FlextTypes, FlextValidations
-
+from flext_core import FlextLogger, FlextResult, FlextTypes
 from flext_oracle_wms.wms_constants import (
     FlextOracleWmsDefaults,
     OracleWMSFilterOperator,
@@ -118,19 +117,15 @@ class FlextOracleWmsFilter:
             FlextResult containing filtered records
 
         """
-        # Validate records parameter using flext-core
-        validation_result = FlextValidations.TypeValidators.validate_list(records)
-        if validation_result.is_failure:
-            raise FlextOracleWmsDataValidationError(
-                validation_result.error or "Invalid records list"
-            )
+        # Validate records parameter using direct validation
+        if not isinstance(records, list):
+            msg = "Invalid records list"
+            raise FlextOracleWmsDataValidationError(msg)
 
-        # Validate filters parameter type
-        filters_validation = FlextValidations.TypeValidators.validate_dict(filters)
-        if filters_validation.is_failure:
-            raise FlextOracleWmsDataValidationError(
-                filters_validation.error or "Invalid filters dictionary"
-            )
+        # Validate filters parameter type using direct validation
+        if not isinstance(filters, dict):
+            msg = "Invalid filters dictionary"
+            raise FlextOracleWmsDataValidationError(msg)
 
         # Validate filter conditions
         count_result = self._validate_filter_conditions_total(filters)
@@ -192,18 +187,14 @@ class FlextOracleWmsFilter:
             FlextResult containing sorted records
 
         """
-        # Validate records parameter using flext-core
-        validation_result = FlextValidations.TypeValidators.validate_list(records)
-        if validation_result.is_failure:
-            return FlextResult[list[FlextTypes.Core.Dict]].fail(
-                validation_result.error or "Invalid records list"
-            )
+        # Validate records parameter using direct validation
+        if not isinstance(records, list):
+            return FlextResult[list[FlextTypes.Core.Dict]].fail("Invalid records list")
 
-        # Validate sort_field parameter
-        sort_field_result = FlextValidations.TypeValidators.validate_string(sort_field)
-        if sort_field_result.is_failure:
+        # Validate sort_field parameter using direct validation
+        if not isinstance(sort_field, str):
             return FlextResult[list[FlextTypes.Core.Dict]].fail(
-                sort_field_result.error or "Sort field must be a string"
+                "Sort field must be a string"
             )
 
         try:
@@ -441,10 +432,9 @@ async def flext_oracle_wms_filter_by_id_range(
     max_id: object | None = None,
 ) -> FlextResult[list[FlextTypes.Core.Dict]]:
     """Filter records by ID range."""
-    # Validate records parameter using flext-core validation
-    validation_result = FlextValidations.TypeValidators.validate_list(records)
-    if validation_result.is_failure:
-        error_msg = f"Records must be a list: {validation_result.error}"
+    # Validate records parameter using direct validation
+    if not isinstance(records, list):
+        error_msg = "Records must be a list"
         raise FlextOracleWmsDataValidationError(error_msg)
 
     if not records:

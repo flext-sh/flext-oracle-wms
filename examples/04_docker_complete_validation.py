@@ -36,8 +36,8 @@ from datetime import UTC, datetime
 from pathlib import Path
 
 from dotenv import load_dotenv
-from flext_core import FlextLogger
 
+from flext_core import FlextLogger
 from flext_oracle_wms import (
     FlextOracleWmsApiVersion,
     FlextOracleWmsClient,
@@ -237,7 +237,7 @@ async def validate_complete_functionality() -> dict[str, object]:
             "execution_time_seconds": execution_time,
             "entities_per_second": (
                 connectivity_results.get("entities_discovered") or 0
-            )  # type: ignore[operator]
+            )
             / max(execution_time, 1),
             "connection_established": connectivity_results.get(
                 "connection_success",

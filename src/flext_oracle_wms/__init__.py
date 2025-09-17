@@ -7,7 +7,6 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 from flext_core import FlextTypes
-
 from flext_oracle_wms.dynamic import flext_oracle_wms_create_dynamic_schema_processor
 from flext_oracle_wms.filtering import (
     FlextOracleWmsFilter,
