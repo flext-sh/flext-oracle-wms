@@ -2,7 +2,7 @@
 
 ## Project Purpose
 
-flext-oracle-wms is an Oracle Warehouse Management System (WMS) integration framework for the FLEXT data integration ecosystem. Version 0.9.0 is described as a "framework with implementation gaps" requiring substantial implementation work to achieve Oracle WMS Cloud integration.
+flext-oracle-wms is an Oracle Warehouse Management System (WMS) integration framework for the FLEXT data integration ecosystem. Version 0.9.9 is described as a "framework with implementation gaps" requiring substantial implementation work to achieve Oracle WMS Cloud integration.
 
 ## Status
 

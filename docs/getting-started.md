@@ -2,7 +2,7 @@
 
 **Quick start guide for Oracle WMS integration framework**
 
-**Version**: 0.9.0 | **Last Updated**: September 17, 2025 | **Status**: Framework requiring implementation
+**Version**: 0.9.9 RC | **Last Updated**: September 17, 2025 | **Status**: Framework requiring implementation · 1.0.0 Release Preparation
 
 ---
 
@@ -80,4 +80,4 @@ with FlextOracleWmsClient(config) as client:
 
 ---
 
-**Last Updated**: September 17, 2025 | **Status**: Framework requiring Oracle WMS Cloud integration implementation
+**Last Updated**: September 17, 2025 | **Status**: Framework requiring Oracle WMS Cloud integration implementation · 1.0.0 Release Preparation

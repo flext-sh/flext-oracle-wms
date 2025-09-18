@@ -1308,6 +1308,7 @@ class TestErrorHandling:
         error_msg = "Stats access error"
 
         async def mock_get_statistics() -> None:
+            await asyncio.sleep(0)  # Make it truly async
             raise RuntimeError(error_msg)
 
         with (

@@ -15,6 +15,7 @@ Copyright (c) 2025 FLEXT Team. All rights reserved.
 SPDX-License-Identifier: MIT
 """
 
+import asyncio
 import math
 from unittest.mock import AsyncMock, Mock, patch
 
@@ -455,6 +456,7 @@ class TestFlextOracleWmsEntityDiscovery:
 
         # Mock cache manager to return cached data
         async def mock_get(_key: str) -> FlextResult[CacheValue]:
+            await asyncio.sleep(0)  # Make it truly async
             return FlextResult[CacheValue].ok(cached_data)
 
         mock_cache.get = mock_get

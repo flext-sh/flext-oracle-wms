@@ -2,7 +2,7 @@
 
 **Oracle Warehouse Management System (WMS) integration framework for the FLEXT data integration ecosystem.**
 
-**Version**: 0.9.0 | **Status**: Framework with implementation gaps | **Last Updated**: September 17, 2025
+**Version**: 0.9.9 RC | **Status**: Framework with implementation gaps · 1.0.0 Release Preparation | **Last Updated**: September 17, 2025
 
 > **⚠️ STATUS**: Framework with structure but limited proven functionality requiring substantial implementation work to achieve Oracle WMS Cloud integration.
 
@@ -622,4 +622,4 @@ make test-wms-apis         # All API endpoints validation
 
 ---
 
-**License**: MIT | **Version**: 0.9.0 | **Maintained by**: FLEXT Contributors
+**License**: MIT | **Version**: 0.9.9 RC | **Maintained by**: FLEXT Contributors

@@ -1,18 +1,18 @@
 # FLEXT-ORACLE-WMS CLAUDE.MD
 
 **Enterprise Oracle Warehouse Management System (WMS) Integration Foundation for FLEXT Ecosystem**
-**Version**: 0.9.0 | **Authority**: ORACLE WMS INTEGRATION AUTHORITY | **Updated**: 2025-01-08
-**Status**: Production-ready Oracle WMS integration platform with zero errors across all quality gates
+**Version**: 0.9.9 RC | **Authority**: ORACLE WMS INTEGRATION AUTHORITY | **Updated**: 2025-01-08
+**Status**: Production-ready Oracle WMS integration platform with zero errors across all quality gates · 1.0.0 Release Preparation
 
 **Hierarchy**: This document provides project-specific standards based on workspace-level patterns defined in [../CLAUDE.md](../CLAUDE.md). For architectural principles, quality gates, and MCP server usage, reference the main workspace standards.
 
 ## 🔗 MCP SERVER INTEGRATION
 
-| MCP Server | Purpose | Status |
-|------------|---------|--------|
-| **serena** | Oracle WMS codebase analysis and warehouse system integration patterns | **ACTIVE** |
-| **sequential-thinking** | Oracle WMS architecture and enterprise warehouse problem solving | **ACTIVE** |
-| **github** | Oracle WMS ecosystem integration and warehouse system PRs | **ACTIVE** |
+| MCP Server              | Purpose                                                                | Status     |
+| ----------------------- | ---------------------------------------------------------------------- | ---------- |
+| **serena**              | Oracle WMS codebase analysis and warehouse system integration patterns | **ACTIVE** |
+| **sequential-thinking** | Oracle WMS architecture and enterprise warehouse problem solving       | **ACTIVE** |
+| **github**              | Oracle WMS ecosystem integration and warehouse system PRs              | **ACTIVE** |
 
 **Usage**: `claude mcp list` for available servers, leverage for Oracle WMS-specific development patterns and warehouse system analysis.
 

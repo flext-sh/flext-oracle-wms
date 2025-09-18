@@ -1,7 +1,7 @@
 # flext-oracle-wms Development Roadmap
 
-**Version**: 0.9.0
-**Status**: Framework with implementation gaps
+**Version**: 0.9.9 RC
+**Status**: Framework with implementation gaps · 1.0.0 Release Preparation
 **Last Updated**: September 17, 2025
 
 ## Critical Assessment of Current Implementation

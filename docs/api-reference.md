@@ -2,7 +2,7 @@
 
 **Complete API documentation for flext-oracle-wms**
 
-**Version**: 0.9.0 | **Last Updated**: September 17, 2025 | **Status**: Framework with implementation gaps
+**Version**: 0.9.9 RC | **Last Updated**: September 17, 2025 | **Status**: Framework with implementation gaps · 1.0.0 Release Preparation
 
 ---
 
@@ -155,4 +155,4 @@ entity = FlextOracleWmsEntity(
 
 ---
 
-**Last Updated**: September 17, 2025 | **Status**: Framework requiring Oracle WMS Cloud integration implementation
+**Last Updated**: September 17, 2025 | **Status**: Framework requiring Oracle WMS Cloud integration implementation · 1.0.0 Release Preparation

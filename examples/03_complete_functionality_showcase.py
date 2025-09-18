@@ -217,7 +217,7 @@ async def showcase_4_authentication(config: FlextOracleWmsClientConfig) -> None:
         pass
 
 
-async def showcase_5_api_catalog(client: FlextOracleWmsClient) -> None:
+def showcase_5_api_catalog(client: FlextOracleWmsClient) -> None:
     """Feature 5: API Catalog Management."""
     # Show available APIs
     available_apis = client.get_available_apis()
@@ -411,7 +411,7 @@ async def main() -> None:
         await showcase_4_authentication(config)
 
         # Feature 5: API Catalog
-        await showcase_5_api_catalog(client)
+        showcase_5_api_catalog(client)
 
         # Feature 6: Error Handling
         await showcase_6_error_handling(client)

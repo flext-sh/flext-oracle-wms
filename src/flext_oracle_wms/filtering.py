@@ -425,7 +425,7 @@ async def flext_oracle_wms_filter_by_field(
     return await engine.filter_records(records, filters)
 
 
-async def flext_oracle_wms_filter_by_id_range(
+def flext_oracle_wms_filter_by_id_range(
     records: list[FlextTypes.Core.Dict],
     id_field: str,
     min_id: object | None = None,

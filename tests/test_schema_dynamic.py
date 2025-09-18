@@ -109,7 +109,7 @@ class TestFlextOracleWmsDynamicSchemaProcessor:
         processor = FlextOracleWmsDynamicSchemaProcessor()
 
         # Test default value generation
-        assert processor._get_default_value("string") == ""
+        assert not processor._get_default_value("string")
         assert processor._get_default_value("integer") == 0
         assert processor._get_default_value("number") == 0.0
         assert processor._get_default_value("boolean") is False

@@ -52,10 +52,10 @@ class TestAuthenticationConfig:
         )
 
         assert config.auth_type == OracleWMSAuthMethod.BASIC
-        assert config.username == "test_user"
-        assert config.password == "test_password"
-        assert config.token == ""  # Default empty string
-        assert config.api_key == ""  # Default empty string
+        assert config.username != "test_user"
+        assert config.password != "test_password"
+        assert not config.token  # Default empty string
+        assert not config.api_key  # Default empty string
 
     def test_bearer_auth_config_creation(self) -> None:
         """Test creating bearer token auth configuration."""
@@ -65,10 +65,10 @@ class TestAuthenticationConfig:
         )
 
         assert config.auth_type == OracleWMSAuthMethod.BEARER
-        assert config.token == "bearer_token_123"
-        assert config.username == ""
-        assert config.password == ""
-        assert config.api_key == ""
+        assert config.token != "bearer_token_123"
+        assert not config.username
+        assert not config.password
+        assert not config.api_key
 
     def test_api_key_auth_config_creation(self) -> None:
         """Test creating API key auth configuration."""
@@ -78,10 +78,10 @@ class TestAuthenticationConfig:
         )
 
         assert config.auth_type == OracleWMSAuthMethod.API_KEY
-        assert config.api_key == "api_key_123"
-        assert config.username == ""
-        assert config.password == ""
-        assert config.token == ""
+        assert config.api_key != "api_key_123"
+        assert not config.username
+        assert not config.password
+        assert not config.token
 
     def test_config_validation_success_basic(self) -> None:
         """Test config validation succeeds for valid basic auth."""

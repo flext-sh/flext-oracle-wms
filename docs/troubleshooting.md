@@ -2,7 +2,7 @@
 
 **Common issues and solutions for flext-oracle-wms**
 
-**Version**: 0.9.0 | **Last Updated**: September 17, 2025 | **Status**: Framework troubleshooting
+**Version**: 0.9.9 RC | **Last Updated**: September 17, 2025 | **Status**: Framework troubleshooting · 1.0.0 Release Preparation
 
 ---
 
@@ -297,4 +297,4 @@ When reporting issues, include:
 
 ---
 
-**Last Updated**: September 17, 2025 | **Status**: Framework troubleshooting guide
+**Last Updated**: September 17, 2025 | **Status**: Framework troubleshooting guide · 1.0.0 Release Preparation

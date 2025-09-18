@@ -1,6 +1,6 @@
 # flext-oracle-wms Documentation
 
-**Version 0.9.0 | September 17, 2025 | Status: Partial implementation with FLEXT compliance gaps**
+**Version 0.9.9 | September 17, 2025 | Status: Partial implementation with FLEXT compliance gaps**
 
 ## Project Documentation
 
@@ -47,4 +47,4 @@ The library provides Oracle WMS integration framework but requires significant d
 
 ---
 
-**Last Updated**: September 17, 2025 | **Status**: Development framework requiring implementation completion
+**Last Updated**: September 17, 2025 | **Status**: Development framework requiring implementation completion · 1.0.0 Release Preparation

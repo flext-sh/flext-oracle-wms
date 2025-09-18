@@ -19,7 +19,6 @@ from dataclasses import dataclass
 from datetime import UTC, datetime
 from typing import ClassVar, cast
 
-import httpx
 from pydantic import Field
 
 from flext_core import FlextConfig, FlextLogger, FlextModels, FlextResult, FlextTypes, T
@@ -310,7 +309,7 @@ class FlextOracleWmsCacheManager:
                     ]
                     for key in expired_keys:
                         del self._cache[key]
-                        object.__setattr__(
+                        setattr(
                             self,
                             "_stats",
                             self._stats.__class__(
@@ -1362,7 +1361,7 @@ class EndpointDiscoveryStrategy(DiscoveryStrategy):
         self.discovery = discovery
 
     def _validate_response(
-        self, response: httpx.Response | None, endpoint: str
+        self, response: object | None, endpoint: str
     ) -> FlextResult[None]:
         """Validate API response structure."""
         try:
