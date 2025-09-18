@@ -1,8 +1,20 @@
 # FLEXT-ORACLE-WMS CLAUDE.MD
 
-**Enterprise Oracle Warehouse Management System (WMS) Integration Foundation for FLEXT Ecosystem**  
-**Version**: 0.9.0 | **Authority**: ORACLE WMS INTEGRATION AUTHORITY | **Updated**: 2025-01-08  
+**Enterprise Oracle Warehouse Management System (WMS) Integration Foundation for FLEXT Ecosystem**
+**Version**: 0.9.0 | **Authority**: ORACLE WMS INTEGRATION AUTHORITY | **Updated**: 2025-01-08
 **Status**: Production-ready Oracle WMS integration platform with zero errors across all quality gates
+
+**Hierarchy**: This document provides project-specific standards based on workspace-level patterns defined in [../CLAUDE.md](../CLAUDE.md). For architectural principles, quality gates, and MCP server usage, reference the main workspace standards.
+
+## 🔗 MCP SERVER INTEGRATION
+
+| MCP Server | Purpose | Status |
+|------------|---------|--------|
+| **serena** | Oracle WMS codebase analysis and warehouse system integration patterns | **ACTIVE** |
+| **sequential-thinking** | Oracle WMS architecture and enterprise warehouse problem solving | **ACTIVE** |
+| **github** | Oracle WMS ecosystem integration and warehouse system PRs | **ACTIVE** |
+
+**Usage**: `claude mcp list` for available servers, leverage for Oracle WMS-specific development patterns and warehouse system analysis.
 
 ## 🎯 FLEXT-ORACLE-WMS MISSION (ORACLE WMS INTEGRATION AUTHORITY)
 
@@ -356,7 +368,7 @@ class MyWMSClient: pass                                      # ❌ VIOLATION (us
 async def get_inventory_data(
     self,
     entity_name: str,
-    filters: Optional[Dict[str, Any]] = None,
+    filters: Optional[Dict[str, object]] = None,
 ) -> FlextResult[List[FlextOracleWmsEntity]]:
     """Get inventory data with complete type safety."""
 
@@ -598,7 +610,7 @@ make docker-validate         # Complete containerized validation
 
 **FLEXT-ORACLE-WMS AUTHORITY**: This document establishes flext-oracle-wms as the definitive Oracle Warehouse Management System integration foundation for the entire FLEXT ecosystem.
 
-**ZERO TOLERANCE ENFORCEMENT**: Any deviation from these patterns requires explicit approval from FLEXT architecture authority.
+**ZERO TOLERANCE ENFORCEMENT**: object deviation from these patterns requires explicit approval from FLEXT architecture authority.
 
 **ENTERPRISE GRADE**: Production-ready Oracle WMS integration with comprehensive enterprise features, security, and monitoring.
 

@@ -78,14 +78,10 @@ def create_config_from_environment() -> FlextOracleWmsClientConfig:
       ValueError: If required environment variables are missing
 
     """
-    # Load environment from .env if available
-    try:
-        project_root = Path(__file__).parent.parent
-        env_file = project_root / ".env"
-        if env_file.exists():
-            load_dotenv(env_file)
-    except ImportError:
-        pass  # dotenv not available, use system environment
+    project_root = Path(__file__).parent.parent
+    env_file = project_root / ".env"
+    if env_file.exists():
+        load_dotenv(env_file)
 
     # Get required values
     base_url = os.getenv("ORACLE_WMS_BASE_URL")
