@@ -52,11 +52,11 @@ class FlextOracleWmsCacheConfig(FlextConfig):
     _cache_global_instance: ClassVar[FlextOracleWmsCacheConfig | None] = None
 
     default_ttl_seconds: int = Field(
-        default=300, description="Default TTL in seconds"
+        default=300, description="Default TTL in seconds",
     )  # 5 minutes
     max_cache_entries: int = Field(default=1000, description="Maximum cache entries")
     cleanup_interval_seconds: int = Field(
-        default=300, description="Cleanup interval in seconds"
+        default=300, description="Cleanup interval in seconds",
     )  # 5 minutes
     enable_statistics: bool = Field(default=True, description="Enable cache statistics")
     enable_async_cleanup: bool = Field(default=True, description="Enable async cleanup")
@@ -493,7 +493,7 @@ class FlextOracleWmsCacheManager:
             return FlextResult[FlextOracleWmsCacheStats].ok(self._stats)
         except Exception as e:
             return FlextResult[FlextOracleWmsCacheStats].fail(
-                f"Statistics retrieval failed: {e}"
+                f"Statistics retrieval failed: {e}",
             )
 
     async def _evict_oldest_entry(
@@ -768,7 +768,7 @@ class FlextOracleWmsDynamicSchemaProcessor:
         try:
             if not records:
                 return FlextResult[dict[str, FlextTypes.Core.Dict]].fail(
-                    "No records to process"
+                    "No records to process",
                 )
 
             # Sample records for schema inference
@@ -797,7 +797,7 @@ class FlextOracleWmsDynamicSchemaProcessor:
 
         except Exception as e:
             return FlextResult[dict[str, FlextTypes.Core.Dict]].fail(
-                f"Process dynamic schema failed: {e}"
+                f"Process dynamic schema failed: {e}",
             )
 
     # Public convenience methods expected by tests
@@ -827,7 +827,7 @@ class FlextOracleWmsDynamicSchemaProcessor:
         try:
             if not isinstance(records, list) or not records:
                 return FlextResult[dict[str, FlextTypes.Core.Dict]].fail(
-                    "No records to process"
+                    "No records to process",
                 )
 
             if not schema:
@@ -838,7 +838,7 @@ class FlextOracleWmsDynamicSchemaProcessor:
             return FlextResult[dict[str, FlextTypes.Core.Dict]].ok(schema)
         except Exception as e:  # pragma: no cover - defensive
             return FlextResult[dict[str, FlextTypes.Core.Dict]].fail(
-                f"Process entity records failed: {e}"
+                f"Process entity records failed: {e}",
             )
 
     # ---------------------------------------------------------------------
@@ -1038,7 +1038,7 @@ class FlextOracleWmsEntityDiscovery:
     """Oracle WMS entity discovery using Strategy and Command patterns."""
 
     def __init__(
-        self, api_client: FlextHttpClient, environment: str = "default"
+        self, api_client: FlextHttpClient, environment: str = "default",
     ) -> None:
         """Initialize entity discovery with API client."""
         self.api_client = api_client
@@ -1073,7 +1073,7 @@ class FlextOracleWmsEntityDiscovery:
         self.cache_manager = cache_manager
 
     async def _cache_discovery_result(
-        self, key: str, result: FlextOracleWmsDiscoveryResult
+        self, key: str, result: FlextOracleWmsDiscoveryResult,
     ) -> None:
         """Cache discovery result (no-op implementation for compatibility)."""
 
@@ -1086,7 +1086,7 @@ class FlextOracleWmsEntityDiscovery:
         return FlextResult[FlextOracleWmsEntity].fail("Cache not implemented")
 
     async def _parse_entities_response(
-        self, response_data: FlextTypes.Core.Dict
+        self, response_data: FlextTypes.Core.Dict,
     ) -> FlextResult[list[FlextOracleWmsEntity]]:
         """Parse entities from API response using EntityResponseParser."""
         parser = EntityResponseParser(self)
@@ -1254,7 +1254,7 @@ class FlextOracleWmsEntityDiscovery:
 
         except Exception as e:
             return FlextResult[FlextOracleWmsDiscoveryResult].fail(
-                f"Discover entities failed: {e}"
+                f"Discover entities failed: {e}",
             )
 
     async def discover_entity_schema(
@@ -1275,7 +1275,7 @@ class FlextOracleWmsEntityDiscovery:
             discovery_result = await self.discover_entities()
             if discovery_result.is_failure:
                 return FlextResult[FlextOracleWmsEntity].fail(
-                    f"Entity discovery failed: {discovery_result.error}"
+                    f"Entity discovery failed: {discovery_result.error}",
                 )
 
             # Find the specific entity
@@ -1285,12 +1285,12 @@ class FlextOracleWmsEntityDiscovery:
                     return FlextResult[FlextOracleWmsEntity].ok(entity)
 
             return FlextResult[FlextOracleWmsEntity].fail(
-                f"Entity '{entity_name}' not found"
+                f"Entity '{entity_name}' not found",
             )
 
         except Exception as e:
             return FlextResult[FlextOracleWmsEntity].fail(
-                f"Entity schema discovery failed: {e}"
+                f"Entity schema discovery failed: {e}",
             )
 
     def _apply_entity_filters(
@@ -1321,7 +1321,7 @@ class FlextOracleWmsEntityDiscovery:
         return filtered_entities
 
     def _deduplicate_entities(
-        self, entities: list[FlextOracleWmsEntity]
+        self, entities: list[FlextOracleWmsEntity],
     ) -> list[FlextOracleWmsEntity]:
         """Remove duplicate entities by name, keeping the first occurrence."""
         seen_names = set()
@@ -1361,7 +1361,7 @@ class EndpointDiscoveryStrategy(DiscoveryStrategy):
         self.discovery = discovery
 
     def _validate_response(
-        self, response: object | None, endpoint: str
+        self, response: object | None, endpoint: str,
     ) -> FlextResult[None]:
         """Validate API response structure."""
         try:
@@ -1374,7 +1374,7 @@ class EndpointDiscoveryStrategy(DiscoveryStrategy):
             http_ok_max = 299
             if response.status_code < http_ok_min or response.status_code > http_ok_max:
                 return FlextResult[None].fail(
-                    f"Bad HTTP status: {response.status_code}"
+                    f"Bad HTTP status: {response.status_code}",
                 )
 
             return FlextResult[None].ok(None)
@@ -1398,7 +1398,7 @@ class EndpointDiscoveryStrategy(DiscoveryStrategy):
             return FlextResult[FlextTypes.Core.Dict].ok(response_data)
         except Exception as e:
             return FlextResult[FlextTypes.Core.Dict].fail(
-                f"API request error for {endpoint}: {e}"
+                f"API request error for {endpoint}: {e}",
             )
 
     async def execute_discovery_step(
@@ -1442,7 +1442,7 @@ class EndpointDiscoveryStrategy(DiscoveryStrategy):
                                     name=entity_data["name"],
                                     endpoint=f"/api/{entity_data['name']}",
                                     description=entity_data.get(
-                                        "description", f"{entity_data['name']} entity"
+                                        "description", f"{entity_data['name']} entity",
                                     ),
                                 )
                                 context.all_entities.append(entity)

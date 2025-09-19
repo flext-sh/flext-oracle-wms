@@ -221,7 +221,7 @@ async def main() -> None:
         if entities_result.success:
             entities = entities_result.data
             print(
-                f"Successfully discovered {len(entities) if entities else 0} entities"
+                f"Successfully discovered {len(entities) if entities else 0} entities",
             )
 
             # Step 4: Query data from first available entity

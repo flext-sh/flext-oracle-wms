@@ -157,7 +157,7 @@ class FocusedOracleWmsDiscovery:
             await self.client.stop()
 
     async def _quick_data_scan(
-        self, entities: FlextTypes.Core.StringList
+        self, entities: FlextTypes.Core.StringList,
     ) -> FlextTypes.Core.Dict:
         """Quick scan to find entities with actual data."""
         data_entities = {}
@@ -224,7 +224,7 @@ class FocusedOracleWmsDiscovery:
         return data_entities
 
     async def _get_entity_structures(
-        self, entities: FlextTypes.Core.StringList
+        self, entities: FlextTypes.Core.StringList,
     ) -> FlextTypes.Core.Dict:
         """Get entity structures even without data."""
         structures = {}

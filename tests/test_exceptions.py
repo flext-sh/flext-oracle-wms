@@ -123,7 +123,7 @@ def test_configuration_error() -> None:
 def test_configuration_error_with_config_key() -> None:
     """Test configuration error with config key."""
     error = FlextOracleWmsConfigurationError(
-        "Config error", context={"config_key": "base_url"}
+        "Config error", context={"config_key": "base_url"},
     )
     assert str(error) == "[GENERIC_ERROR] Config error"
     assert error.config_key == "base_url"
@@ -139,7 +139,7 @@ def test_entity_not_found_error() -> None:
 def test_entity_not_found_error_with_custom_message() -> None:
     """Test entity not found error with custom message."""
     error = FlextOracleWmsEntityNotFoundError(
-        "Custom not found message", entity_name="order_hdr"
+        "Custom not found message", entity_name="order_hdr",
     )
     assert "Custom not found message" in str(error)
     assert error.entity_name == "order_hdr"

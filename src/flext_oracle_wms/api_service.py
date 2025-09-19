@@ -42,19 +42,19 @@ class OracleWmsApiService:
                 response = await self._api_client.delete(endpoint_path)
             else:
                 return FlextResult[FlextTypes.Core.Dict].fail(
-                    f"Unsupported HTTP method: {method}"
+                    f"Unsupported HTTP method: {method}",
                 )
 
             if not response.success or response.value is None:
                 return FlextResult[FlextTypes.Core.Dict].fail(
-                    response.error or "No response from Oracle WMS"
+                    response.error or "No response from Oracle WMS",
                 )
 
             api_resp = response.value
             # Check if response indicates success (assuming it's a dict with status info)
             if isinstance(api_resp, dict) and api_resp.get("status") != "success":
                 return FlextResult[FlextTypes.Core.Dict].fail(
-                    f"API call failed: HTTP {api_resp.get('status_code', 'unknown')}"
+                    f"API call failed: HTTP {api_resp.get('status_code', 'unknown')}",
                 )
 
             body = api_resp
@@ -97,17 +97,17 @@ class OracleWmsApiService:
                 return FlextResult[
                     FlextTypes.Core.Dict | list[FlextTypes.Core.Dict]
                 ].fail(
-                    f"Entity data extraction failed: HTTP {api_resp.get('status_code', 'unknown')}"
+                    f"Entity data extraction failed: HTTP {api_resp.get('status_code', 'unknown')}",
                 )
 
             body = api_resp
             return FlextResult[FlextTypes.Core.Dict | list[FlextTypes.Core.Dict]].ok(
-                body
+                body,
             )
 
         except Exception as e:
             error_msg = f"Entity data extraction failed: {e}"
             self._logger.exception(error_msg)
             return FlextResult[FlextTypes.Core.Dict | list[FlextTypes.Core.Dict]].fail(
-                error_msg
+                error_msg,
             )

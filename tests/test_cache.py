@@ -1161,7 +1161,7 @@ class TestFactoryFunction:
             config=FlextOracleWmsCacheConfig(
                 default_ttl_seconds=1800,
                 max_cache_entries=500,
-            )
+            ),
         )
 
         assert cache_manager.config.default_ttl_seconds == 1800
@@ -1173,7 +1173,7 @@ class TestFactoryFunction:
             config=FlextOracleWmsCacheConfig(
                 default_ttl_seconds=1800,  # Minimum
                 max_cache_entries=200,
-            )
+            ),
         )
 
         # Should use minimum TTL
@@ -1183,7 +1183,7 @@ class TestFactoryFunction:
     def test_create_cache_manager_single_custom_parameter(self) -> None:
         """Test creating cache manager with single custom parameter."""
         cache_manager = FlextOracleWmsCacheManager(
-            config=FlextOracleWmsCacheConfig(max_cache_entries=750)
+            config=FlextOracleWmsCacheConfig(max_cache_entries=750),
         )
 
         assert cache_manager.config.max_cache_entries == 750
@@ -1275,7 +1275,7 @@ class TestErrorHandling:
 
         # Mock the invalidate method to raise an exception
         with patch.object(
-            self.cache_manager, "invalidate", side_effect=Exception("Cache error")
+            self.cache_manager, "invalidate", side_effect=Exception("Cache error"),
         ):
             result = await self.cache_manager.invalidate_key("test_key")
             assert result.is_failure
@@ -1313,7 +1313,7 @@ class TestErrorHandling:
 
         with (
             patch.object(
-                self.cache_manager, "get_statistics", side_effect=mock_get_statistics
+                self.cache_manager, "get_statistics", side_effect=mock_get_statistics,
             ),
             pytest.raises(RuntimeError, match=error_msg),
         ):

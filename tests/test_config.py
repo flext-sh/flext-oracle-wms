@@ -74,7 +74,7 @@ def test_config_validation_invalid_url() -> None:
         )
 
     assert "Oracle WMS base URL must start with http:// or https://" in str(
-        exc_info.value
+        exc_info.value,
     )
 
 

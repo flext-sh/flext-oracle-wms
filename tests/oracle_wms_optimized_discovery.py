@@ -103,7 +103,7 @@ class OptimizedOracleWmsDiscovery:
         entities_result = await self.client.discover_entities()
         if not entities_result.success:
             return FlextResult[None].fail(
-                f"Entity discovery failed: {entities_result.error}"
+                f"Entity discovery failed: {entities_result.error}",
             )
 
         all_entities = entities_result.data
@@ -545,7 +545,7 @@ class OptimizedOracleWmsDiscovery:
         return potential_keys[:3]  # Max 3 key properties
 
     def _generate_singer_catalog(
-        self, schemas: FlextTypes.Core.Dict
+        self, schemas: FlextTypes.Core.Dict,
     ) -> FlextTypes.Core.Dict:
         """Generate Singer catalog from schemas."""
         streams = []

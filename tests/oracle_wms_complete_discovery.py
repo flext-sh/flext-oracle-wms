@@ -108,7 +108,7 @@ class OracleWmsCompleteDiscovery:
                     )
                 else:
                     result: FlextResult[object] = FlextResult[None].fail(
-                        "Unknown API category"
+                        "Unknown API category",
                     )
 
                 api_results[api_name] = {
@@ -203,7 +203,7 @@ class OracleWmsCompleteDiscovery:
             return FlextResult[None].fail(f"Entity operations API test failed: {e}")
 
     async def _test_setup_api(
-        self, api_name: str, endpoint: FlextOracleWmsApiEndpoint
+        self, api_name: str, endpoint: FlextOracleWmsApiEndpoint,
     ) -> FlextResult[object]:
         """Test setup and transactional APIs."""
         # These typically require POST data - test with minimal payload
@@ -216,7 +216,7 @@ class OracleWmsCompleteDiscovery:
             return FlextResult[None].fail(f"Setup API test failed: {e}")
 
     async def _test_automation_api(
-        self, api_name: str, endpoint: FlextOracleWmsApiEndpoint
+        self, api_name: str, endpoint: FlextOracleWmsApiEndpoint,
     ) -> FlextResult[object]:
         """Test automation and operations APIs."""
         try:

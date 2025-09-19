@@ -98,7 +98,7 @@ def main() -> None:
     """Executa análise completa dos dados Oracle WMS."""
     # Configuração - usando variáveis de ambiente para credenciais sensíveis
     password = os.getenv(
-        "ORACLE_WMS_PASSWORD", "jmCyS7BK94YvhS@"
+        "ORACLE_WMS_PASSWORD", "jmCyS7BK94YvhS@",
     )  # Fallback para desenvolvimento
 
     config = FlextOracleWmsModuleConfig(

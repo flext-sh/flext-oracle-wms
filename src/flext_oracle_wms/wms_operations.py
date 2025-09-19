@@ -179,7 +179,7 @@ def flext_oracle_wms_validate_api_response(
     # Validate response_data is a dictionary
     if not isinstance(response_data, dict):
         return FlextResult[FlextTypes.Core.Dict].fail(
-            "Response data is not a dictionary"
+            "Response data is not a dictionary",
         )
 
     response_dict: FlextTypes.Core.Dict = response_data
@@ -286,7 +286,7 @@ def flext_oracle_wms_chunk_records(
     chunk_size_result = _validate_chunk_size(chunk_size)
     if not chunk_size_result.success:
         raise FlextOracleWmsError(
-            chunk_size_result.error or "Invalid chunk_size"
+            chunk_size_result.error or "Invalid chunk_size",
         ) from None
 
     return [records[i : i + chunk_size] for i in range(0, len(records), chunk_size)]
@@ -335,7 +335,7 @@ class FlextOracleWmsUnifiedOperations:
             # Validate filter count
             if len(filters) > self._max_conditions:
                 return FlextResult[list[FlextTypes.Core.Dict]].fail(
-                    f"Too many filter conditions. Max: {self._max_conditions}, Got: {len(filters)}"
+                    f"Too many filter conditions. Max: {self._max_conditions}, Got: {len(filters)}",
                 )
 
             try:
@@ -348,11 +348,11 @@ class FlextOracleWmsUnifiedOperations:
                 return FlextResult[list[FlextTypes.Core.Dict]].ok(filtered_records)
             except Exception as e:
                 return FlextResult[list[FlextTypes.Core.Dict]].fail(
-                    f"Filtering failed: {e}"
+                    f"Filtering failed: {e}",
                 )
 
         def _record_matches_filters(
-            self, record: FlextTypes.Core.Dict, filters: FlextTypes.Core.Dict
+            self, record: FlextTypes.Core.Dict, filters: FlextTypes.Core.Dict,
         ) -> bool:
             """Check if record matches all filter conditions."""
             for field, filter_value in filters.items():
@@ -377,7 +377,7 @@ class FlextOracleWmsUnifiedOperations:
             return self._op_equals(field_value, filter_value)
 
         def _get_nested_value(
-            self, record: FlextTypes.Core.Dict, field_path: str
+            self, record: FlextTypes.Core.Dict, field_path: str,
         ) -> object:
             """Get nested field value from record using dot notation."""
             try:
@@ -392,7 +392,7 @@ class FlextOracleWmsUnifiedOperations:
                 return None
 
         def _apply_operator(
-            self, field_value: object, operator: str, filter_value: object
+            self, field_value: object, operator: str, filter_value: object,
         ) -> bool:
             """Apply operator to field value."""
             if operator == "eq":
@@ -405,11 +405,11 @@ class FlextOracleWmsUnifiedOperations:
                 return self._op_less_than(field_value, filter_value)
             if operator == "gte":
                 return self._op_greater_than(
-                    field_value, filter_value
+                    field_value, filter_value,
                 ) or self._op_equals(field_value, filter_value)
             if operator == "lte":
                 return self._op_less_than(field_value, filter_value) or self._op_equals(
-                    field_value, filter_value
+                    field_value, filter_value,
                 )
             if operator == "in":
                 return self._op_in(field_value, filter_value)
@@ -435,7 +435,7 @@ class FlextOracleWmsUnifiedOperations:
             """Check if field value is greater than filter value."""
             try:
                 if isinstance(field_value, (int, float)) and isinstance(
-                    filter_value, (int, float)
+                    filter_value, (int, float),
                 ):
                     return field_value > filter_value
                 if isinstance(field_value, str) and isinstance(filter_value, str):
@@ -448,7 +448,7 @@ class FlextOracleWmsUnifiedOperations:
             """Check if field value is less than filter value."""
             try:
                 if isinstance(field_value, (int, float)) and isinstance(
-                    filter_value, (int, float)
+                    filter_value, (int, float),
                 ):
                     return field_value < filter_value
                 if isinstance(field_value, str) and isinstance(filter_value, str):
@@ -525,7 +525,7 @@ class FlextOracleWmsUnifiedOperations:
                     for i, item in enumerate(value):
                         if isinstance(item, dict):
                             nested = self._flatten_dict(
-                                item, f"{new_key}{self._separator}{i}", depth + 1
+                                item, f"{new_key}{self._separator}{i}", depth + 1,
                             )
                             flattened.update(nested)
                         else:
@@ -551,7 +551,7 @@ class FlextOracleWmsUnifiedOperations:
         """Create unified operations configured for filtering."""
         ops = cls()
         ops.filter.configure(
-            case_sensitive=case_sensitive, max_conditions=max_conditions
+            case_sensitive=case_sensitive, max_conditions=max_conditions,
         )
         return ops
 
@@ -566,7 +566,7 @@ class FlextOracleWmsUnifiedOperations:
         """Create unified operations configured for flattening."""
         ops = cls()
         ops.flatten.configure(
-            separator=separator, max_depth=max_depth, preserve_lists=preserve_lists
+            separator=separator, max_depth=max_depth, preserve_lists=preserve_lists,
         )
         return ops
 
@@ -690,7 +690,7 @@ class FlextOracleWmsPlugin:
             return FlextResult[None].ok(None)
         except (TypeError, ValueError, AttributeError, RuntimeError) as e:
             return FlextResult[None].fail(
-                f"Oracle WMS plugin initialization failed: {e}"
+                f"Oracle WMS plugin initialization failed: {e}",
             )
 
     async def cleanup(self) -> FlextResult[None]:

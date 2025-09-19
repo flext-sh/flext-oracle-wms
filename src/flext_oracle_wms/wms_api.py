@@ -326,7 +326,7 @@ class OracleWmsMockServer:
             if endpoint == "entity_metadata" and entity_name:
                 return self._mock_entity_metadata(entity_name)
             return FlextResult[FlextTypes.Core.Dict].fail(
-                f"Unknown mock endpoint: {endpoint}"
+                f"Unknown mock endpoint: {endpoint}",
             )
         except Exception as e:
             logger.exception("Mock server error")
@@ -399,7 +399,7 @@ class OracleWmsMockServer:
         )
 
     def _mock_entity_metadata(
-        self, entity_name: str
+        self, entity_name: str,
     ) -> FlextResult[FlextTypes.Core.Dict]:
         """Mock entity metadata response."""
         base_fields = {

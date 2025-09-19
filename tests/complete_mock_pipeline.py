@@ -318,7 +318,7 @@ class CompleteMockPipeline:
                         streams
                         if isinstance(catalog, dict)
                         and isinstance(streams := catalog.get("streams", []), list)
-                        else []
+                        else [],
                     ),
                     "tap_records": len(tap_records),
                     "target_tables": len(target_results),
@@ -340,7 +340,7 @@ class CompleteMockPipeline:
                 sample_data = entity_info["sample_data"]
                 if isinstance(sample_data, dict):
                     properties, key_properties = self._create_entity_properties(
-                        sample_data
+                        sample_data,
                     )
                     self._add_singer_metadata(properties)
                     schema = self._build_singer_schema(properties, key_properties)
@@ -425,7 +425,7 @@ class CompleteMockPipeline:
         return {"type": ["string", "null"]}
 
     def _is_key_field(
-        self, field: str, existing_keys: FlextTypes.Core.StringList
+        self, field: str, existing_keys: FlextTypes.Core.StringList,
     ) -> bool:
         """Determine if field should be a key property."""
         return field == "id" or (field.endswith("_code") and not existing_keys)
@@ -530,7 +530,7 @@ class CompleteMockPipeline:
             # Generate multiple records for high-volume entities
             count_value = entity_info.get("count", 1)
             count = min(
-                count_value if isinstance(count_value, int) else 1, 5
+                count_value if isinstance(count_value, int) else 1, 5,
             )  # Max 5 sample records
 
             for i in range(count):
@@ -656,7 +656,7 @@ class CompleteMockPipeline:
                     "source_tables": available_sources,
                     "rows_processed": sum(
                         self._safe_int(
-                            target_results.get(src, {}).get("records_loaded", 0)
+                            target_results.get(src, {}).get("records_loaded", 0),
                         )
                         for src in available_sources
                         if src in target_results
@@ -730,7 +730,7 @@ class CompleteMockPipeline:
                     streams
                     if isinstance(catalog, dict)
                     and isinstance(streams := catalog.get("streams", []), list)
-                    else []
+                    else [],
                 ),
                 "tap_records_extracted": len(tap_records),
                 "replication_methods": list(

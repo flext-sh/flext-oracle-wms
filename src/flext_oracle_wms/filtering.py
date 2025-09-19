@@ -68,7 +68,7 @@ class FlextOracleWmsFilter:
             validation_result = self._validate_filter_conditions_total(self.filters)
             if validation_result.is_failure:
                 raise FlextOracleWmsDataValidationError(
-                    validation_result.error or "Filter validation failed"
+                    validation_result.error or "Filter validation failed",
                 )
 
     def _normalize_for_comparison(self, value: object) -> object:
@@ -131,7 +131,7 @@ class FlextOracleWmsFilter:
         count_result = self._validate_filter_conditions_total(filters)
         if count_result.is_failure:
             return FlextResult[list[FlextTypes.Core.Dict]].fail(
-                count_result.error or "Filter validation failed"
+                count_result.error or "Filter validation failed",
             )
 
         # Store filters for validation
@@ -159,7 +159,7 @@ class FlextOracleWmsFilter:
         count_result = self._validate_filter_conditions_total(filters)
         if count_result.is_failure:
             return FlextResult[list[FlextTypes.Core.Dict]].fail(
-                count_result.error or "Filter validation failed"
+                count_result.error or "Filter validation failed",
             )
 
         # Store filters for validation
@@ -194,7 +194,7 @@ class FlextOracleWmsFilter:
         # Validate sort_field parameter using direct validation
         if not isinstance(sort_field, str):
             return FlextResult[list[FlextTypes.Core.Dict]].fail(
-                "Sort field must be a string"
+                "Sort field must be a string",
             )
 
         try:
@@ -273,7 +273,7 @@ class FlextOracleWmsFilter:
         return self._op_equals(field_value, filter_value)
 
     def _get_nested_value(
-        self, record: FlextTypes.Core.Dict, field_path: str
+        self, record: FlextTypes.Core.Dict, field_path: str,
     ) -> object:
         """Get nested field value from record using dot notation."""
         try:
@@ -304,11 +304,11 @@ class FlextOracleWmsFilter:
             return self._op_less_than(field_value, filter_value)
         if operator == "gte":
             return self._op_greater_than(field_value, filter_value) or self._op_equals(
-                field_value, filter_value
+                field_value, filter_value,
             )
         if operator == "lte":
             return self._op_less_than(field_value, filter_value) or self._op_equals(
-                field_value, filter_value
+                field_value, filter_value,
             )
         if operator == "in":
             return self._op_in(field_value, filter_value)
@@ -335,7 +335,7 @@ class FlextOracleWmsFilter:
         """Greater than operator."""
         try:
             if isinstance(field_value, (int, float)) and isinstance(
-                filter_value, (int, float)
+                filter_value, (int, float),
             ):
                 return field_value > filter_value
             if isinstance(field_value, str) and isinstance(filter_value, str):
@@ -348,7 +348,7 @@ class FlextOracleWmsFilter:
         """Less than operator."""
         try:
             if isinstance(field_value, (int, float)) and isinstance(
-                filter_value, (int, float)
+                filter_value, (int, float),
             ):
                 return field_value < filter_value
             if isinstance(field_value, str) and isinstance(filter_value, str):
@@ -361,7 +361,7 @@ class FlextOracleWmsFilter:
         """Greater than or equal operator."""
         try:
             if isinstance(field_value, (int, float)) and isinstance(
-                filter_value, (int, float)
+                filter_value, (int, float),
             ):
                 return field_value >= filter_value
             return False
@@ -372,7 +372,7 @@ class FlextOracleWmsFilter:
         """Less than or equal operator."""
         try:
             if isinstance(field_value, (int, float)) and isinstance(
-                filter_value, (int, float)
+                filter_value, (int, float),
             ):
                 return field_value <= filter_value
             return False
@@ -451,7 +451,7 @@ def flext_oracle_wms_filter_by_id_range(
         if min_id is not None:
             try:
                 if isinstance(field_value, (int, float)) and isinstance(
-                    min_id, (int, float)
+                    min_id, (int, float),
                 ):
                     # Type narrowing: both are numeric
                     numeric_field: float = float(field_value)
@@ -473,7 +473,7 @@ def flext_oracle_wms_filter_by_id_range(
         if max_id is not None:
             try:
                 if isinstance(field_value, (int, float)) and isinstance(
-                    max_id, (int, float)
+                    max_id, (int, float),
                 ):
                     # Type narrowing: both are numeric
                     numeric_field_max: float = float(field_value)
