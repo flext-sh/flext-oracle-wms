@@ -43,10 +43,12 @@ class FlextOracleWmsConfig(FlextConfig):
         description="Oracle WMS base URL",
     )
     oracle_wms_username: str = Field(
-        default="USER_WMS_INTEGRA", description="Oracle WMS username",
+        default="USER_WMS_INTEGRA",
+        description="Oracle WMS username",
     )
     oracle_wms_password: str = Field(
-        default="jmCyS7BK94YvhS@", description="Oracle WMS password",
+        default="jmCyS7BK94YvhS@",
+        description="Oracle WMS password",
     )
     api_version: FlextOracleWmsApiVersion = Field(
         default=FlextOracleWmsApiVersion.LGF_V10,
@@ -59,18 +61,22 @@ class FlextOracleWmsConfig(FlextConfig):
 
     # Connection settings - extend base timeout with Oracle WMS specific values
     oracle_wms_timeout: int = Field(
-        default=30, description="Oracle WMS request timeout in seconds",
+        default=30,
+        description="Oracle WMS request timeout in seconds",
     )
     oracle_wms_max_retries: int = Field(
-        default=3, description="Oracle WMS maximum retry attempts",
+        default=3,
+        description="Oracle WMS maximum retry attempts",
     )
     oracle_wms_verify_ssl: bool = Field(
-        default=True, description="Oracle WMS SSL certificate verification",
+        default=True,
+        description="Oracle WMS SSL certificate verification",
     )
 
     # Feature flags - extend base logging with Oracle WMS specific flags
     oracle_wms_enable_logging: bool = Field(
-        default=True, description="Enable Oracle WMS specific logging",
+        default=True,
+        description="Enable Oracle WMS specific logging",
     )
     oracle_wms_use_mock: bool = Field(
         default=False,
@@ -369,7 +375,8 @@ class FlextOracleWmsConfig(FlextConfig):
                     OracleWMSAuthMethod(os.getenv("ORACLE_WMS_AUTH_METHOD", "BASIC")),
                 ),
                 "oracle_wms_timeout": override_kwargs.get(
-                    "oracle_wms_timeout", int(os.getenv("ORACLE_WMS_TIMEOUT", "30")),
+                    "oracle_wms_timeout",
+                    int(os.getenv("ORACLE_WMS_TIMEOUT", "30")),
                 ),
                 "oracle_wms_max_retries": override_kwargs.get(
                     "oracle_wms_max_retries",

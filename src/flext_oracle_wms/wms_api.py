@@ -399,7 +399,8 @@ class OracleWmsMockServer:
         )
 
     def _mock_entity_metadata(
-        self, entity_name: str,
+        self,
+        entity_name: str,
     ) -> FlextResult[FlextTypes.Core.Dict]:
         """Mock entity metadata response."""
         base_fields = {

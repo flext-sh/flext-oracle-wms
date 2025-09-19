@@ -711,7 +711,9 @@ class TestErrorHandling:
         """Test _matches_condition with unknown operator."""
         filter_engine = FlextOracleWmsFilter(case_sensitive=False, max_conditions=50)
         result = filter_engine._matches_condition(
-            {"field": "value"}, "field", {"unknown_op": "test"},
+            {"field": "value"},
+            "field",
+            {"unknown_op": "test"},
         )
         # Should return False for unknown operators
         assert result is False
@@ -722,7 +724,9 @@ class TestErrorHandling:
         # Create a mock record for testing
         mock_record: dict[str, object] = {"field": "value"}
         result = filter_engine._matches_condition(
-            mock_record, "field", {"invalid": "test"},
+            mock_record,
+            "field",
+            {"invalid": "test"},
         )
         # Should return False since invalid operator falls back to equals comparison
         # and "value" != {"invalid": "test"}

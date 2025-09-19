@@ -279,7 +279,8 @@ class FlextOracleWmsAuthPlugin:
 
     # Minimal before/after hooks to satisfy interface used by tests
     async def before_request(
-        self, request: FlextTypes.Core.Dict | object,
+        self,
+        request: FlextTypes.Core.Dict | object,
     ) -> FlextTypes.Core.Dict | object:
         """Process request before sending to add authentication headers.
 
@@ -319,7 +320,8 @@ class FlextOracleWmsAuthPlugin:
 
         # Handle object-like requests with headers attribute
         if hasattr(request, "headers") and isinstance(
-            getattr(request, "headers", None), dict,
+            getattr(request, "headers", None),
+            dict,
         ):
             if isinstance(headers, dict):
                 headers_attr = request.headers
@@ -331,7 +333,8 @@ class FlextOracleWmsAuthPlugin:
         raise FlextOracleWmsError(msg)
 
     async def after_response(
-        self, response: FlextTypes.Core.Dict,
+        self,
+        response: FlextTypes.Core.Dict,
     ) -> FlextTypes.Core.Dict:
         """Process response after receiving from server.
 
@@ -443,10 +446,14 @@ class FlextOracleWmsClient:
 
         # Setup authentication using global config singleton
         username = getattr(
-            self.config, "oracle_wms_username", getattr(self.config, "username", ""),
+            self.config,
+            "oracle_wms_username",
+            getattr(self.config, "username", ""),
         )
         password = getattr(
-            self.config, "oracle_wms_password", getattr(self.config, "password", ""),
+            self.config,
+            "oracle_wms_password",
+            getattr(self.config, "password", ""),
         )
 
         auth_config = FlextOracleWmsAuthConfig.get_global_instance()
@@ -454,7 +461,9 @@ class FlextOracleWmsClient:
         auth_config.username = username
         auth_config.password = password
         auth_config.auth_type = getattr(
-            self.config, "auth_method", OracleWMSAuthMethod.BASIC,
+            self.config,
+            "auth_method",
+            OracleWMSAuthMethod.BASIC,
         )
         self._authenticator = FlextOracleWmsAuthenticator(auth_config)
 
@@ -852,7 +861,8 @@ class FlextOracleWmsClient:
 
     # Helper methods used by tests (parsing and listing)
     def _parse_entity_discovery_response(
-        self, data: object,
+        self,
+        data: object,
     ) -> FlextTypes.Core.StringList:
         if isinstance(data, dict):
             if "entities" in data and isinstance(data["entities"], list):
@@ -875,7 +885,8 @@ class FlextOracleWmsClient:
         return []
 
     def _filter_valid_entities(
-        self, entities: FlextTypes.Core.StringList,
+        self,
+        entities: FlextTypes.Core.StringList,
     ) -> FlextTypes.Core.StringList:
         return [
             e for e in entities if isinstance(e, str) and e and not e.startswith("_")

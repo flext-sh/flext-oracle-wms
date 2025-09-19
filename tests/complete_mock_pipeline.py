@@ -425,7 +425,9 @@ class CompleteMockPipeline:
         return {"type": ["string", "null"]}
 
     def _is_key_field(
-        self, field: str, existing_keys: FlextTypes.Core.StringList,
+        self,
+        field: str,
+        existing_keys: FlextTypes.Core.StringList,
     ) -> bool:
         """Determine if field should be a key property."""
         return field == "id" or (field.endswith("_code") and not existing_keys)
@@ -530,7 +532,8 @@ class CompleteMockPipeline:
             # Generate multiple records for high-volume entities
             count_value = entity_info.get("count", 1)
             count = min(
-                count_value if isinstance(count_value, int) else 1, 5,
+                count_value if isinstance(count_value, int) else 1,
+                5,
             )  # Max 5 sample records
 
             for i in range(count):

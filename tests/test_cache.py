@@ -1275,7 +1275,9 @@ class TestErrorHandling:
 
         # Mock the invalidate method to raise an exception
         with patch.object(
-            self.cache_manager, "invalidate", side_effect=Exception("Cache error"),
+            self.cache_manager,
+            "invalidate",
+            side_effect=Exception("Cache error"),
         ):
             result = await self.cache_manager.invalidate_key("test_key")
             assert result.is_failure
@@ -1313,7 +1315,9 @@ class TestErrorHandling:
 
         with (
             patch.object(
-                self.cache_manager, "get_statistics", side_effect=mock_get_statistics,
+                self.cache_manager,
+                "get_statistics",
+                side_effect=mock_get_statistics,
             ),
             pytest.raises(RuntimeError, match=error_msg),
         ):

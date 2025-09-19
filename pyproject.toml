@@ -45,6 +45,7 @@ Documentation = "https://github.com/flext-sh/flext/blob/main/README.md"
 [tool.ruff]
 extend = "../ruff-shared.toml"
 lint.isort.known-first-party = ["flext_oracle_wms"]
+
 [tool.mypy]
 # Strict mode - enables all recommended checks
 strict = true
@@ -53,7 +54,7 @@ strict = true
 check_untyped_defs = true
 disallow_any_decorated = false
 disallow_any_explicit = true
-disallow_any_expr = false          # Too restrictive for real-world usage
+disallow_any_expr = false           # Too restrictive for real-world usage
 disallow_any_generics = true
 disallow_any_unimported = true
 disallow_incomplete_defs = true
@@ -266,5 +267,3 @@ types-psutil = ">=7.0.0"
 [tool.poetry.group.security.dependencies]
 bandit = ">=1.8.0"
 pip-audit = ">=2.7.3"
-
-

@@ -32,7 +32,9 @@ async def demonstrate_singleton_config() -> None:
     # Method 2: Update global singleton with new parameters
     logger.info("2. Updating global singleton with new parameters...")
     updated_config = FlextOracleWmsConfig.get_oracle_wms_global_instance(
-        oracle_wms_timeout=60, oracle_wms_max_retries=5, oracle_wms_enable_logging=True,
+        oracle_wms_timeout=60,
+        oracle_wms_max_retries=5,
+        oracle_wms_enable_logging=True,
     )
     logger.info(f"   Updated Timeout: {updated_config.oracle_wms_timeout}")
     logger.info(f"   Updated Max Retries: {updated_config.oracle_wms_max_retries}")

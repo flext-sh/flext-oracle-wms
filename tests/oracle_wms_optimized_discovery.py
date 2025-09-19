@@ -545,7 +545,8 @@ class OptimizedOracleWmsDiscovery:
         return potential_keys[:3]  # Max 3 key properties
 
     def _generate_singer_catalog(
-        self, schemas: FlextTypes.Core.Dict,
+        self,
+        schemas: FlextTypes.Core.Dict,
     ) -> FlextTypes.Core.Dict:
         """Generate Singer catalog from schemas."""
         streams = []

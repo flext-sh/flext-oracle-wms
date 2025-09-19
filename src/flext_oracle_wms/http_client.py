@@ -49,7 +49,10 @@ class FlextHttpClient:
         return self
 
     async def __aexit__(
-        self, exc_type: object, exc_val: object, exc_tb: object,
+        self,
+        exc_type: object,
+        exc_val: object,
+        exc_tb: object,
     ) -> None:
         """Async context manager exit."""
         await self.close()
@@ -101,7 +104,10 @@ class FlextHttpClient:
 
             # Use flext-api client for HTTP requests
             response_result = await self._client.request(
-                "GET", path, headers=request_headers, params=params,
+                "GET",
+                path,
+                headers=request_headers,
+                params=params,
             )
 
             if response_result.is_failure:
@@ -171,7 +177,10 @@ class FlextHttpClient:
                 request_body = data
 
             response_result = await self._client.request(
-                "POST", path, headers=request_headers, body=request_body,
+                "POST",
+                path,
+                headers=request_headers,
+                body=request_body,
             )
 
             if response_result.is_failure:
@@ -241,7 +250,10 @@ class FlextHttpClient:
                 request_body = data
 
             response_result = await self._client.request(
-                "PUT", path, headers=request_headers, body=request_body,
+                "PUT",
+                path,
+                headers=request_headers,
+                body=request_body,
             )
 
             if response_result.is_failure:

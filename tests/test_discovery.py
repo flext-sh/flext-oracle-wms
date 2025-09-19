@@ -698,7 +698,9 @@ class TestFlextOracleWmsEntityDiscovery:
 
         # Test the actual filtering logic that exists
         filtered_entities = self.discovery._apply_entity_filters(
-            entities, ["comp*", "fac*"], ["test_*"],
+            entities,
+            ["comp*", "fac*"],
+            ["test_*"],
         )
 
         result = filtered_entities
@@ -1233,7 +1235,9 @@ class TestFlextOracleWmsEntityDiscovery:
         ]
 
         result = self.discovery._apply_entity_filters(
-            entities, include_patterns=None, exclude_patterns=None,
+            entities,
+            include_patterns=None,
+            exclude_patterns=None,
         )
 
         assert len(result) == 2
@@ -1413,7 +1417,8 @@ class TestErrorHandling:
     async def test_discover_entity_schema_exception(self) -> None:
         """Test discover_entity_schema handles exceptions."""
         with patch.object(
-            self.discovery.schema_processor, "process_records",
+            self.discovery.schema_processor,
+            "process_records",
         ) as mock_process:
             mock_process.side_effect = Exception("Schema error")
 
