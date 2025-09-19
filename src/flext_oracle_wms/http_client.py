@@ -8,8 +8,6 @@ from __future__ import annotations
 import json
 from typing import Self
 
-import httpx
-
 from flext_api import FlextApiClient
 from flext_core import FlextLogger, FlextResult, FlextTypes
 
@@ -326,14 +324,6 @@ class FlextHttpClient:
 
             return FlextResult[FlextTypes.Core.Dict].ok(data)
 
-        except httpx.HTTPStatusError as e:
-            logger.exception(f"HTTP error {e.response.status_code}: {e.response.text}")
-            return FlextResult[FlextTypes.Core.Dict].fail(
-                f"HTTP {e.response.status_code}: {e.response.text}"
-            )
-        except httpx.RequestError as e:
-            logger.exception("Request error")
-            return FlextResult[FlextTypes.Core.Dict].fail(f"Request error: {e}")
         except Exception as e:
             logger.exception("Unexpected error")
             return FlextResult[FlextTypes.Core.Dict].fail(f"Unexpected error: {e}")
