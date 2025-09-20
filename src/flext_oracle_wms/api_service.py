@@ -45,7 +45,7 @@ class OracleWmsApiService:
                     f"Unsupported HTTP method: {method}",
                 )
 
-            if not response.success or response.value is None:
+            if not response.success:
                 return FlextResult[FlextTypes.Core.Dict].fail(
                     response.error or "No response from Oracle WMS",
                 )
@@ -86,7 +86,7 @@ class OracleWmsApiService:
 
             response = await self._api_client.get(endpoint_path)
 
-            if not response.success or response.value is None:
+            if not response.success:
                 return FlextResult[
                     FlextTypes.Core.Dict | list[FlextTypes.Core.Dict]
                 ].fail(response.error or "No response from Oracle WMS")

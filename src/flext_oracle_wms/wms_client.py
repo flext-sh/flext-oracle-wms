@@ -659,7 +659,7 @@ class FlextOracleWmsClient:
         if not self._api_client:
             return FlextResult[FlextTypes.Core.Dict].fail("Client not initialized")
         response = await self._api_client.get(endpoint_path)
-        if not response.success or response.value is None:
+        if not response.success:
             return FlextResult[FlextTypes.Core.Dict].fail(
                 response.error or "No response",
             )
