@@ -18,7 +18,7 @@ from urllib.parse import urlencode
 
 from pydantic import Field
 
-from flext_core import FlextConfig, FlextLogger, FlextResult, FlextTypes
+from flext_core import FlextConfig, FlextConstants, FlextLogger, FlextResult, FlextTypes
 from flext_oracle_wms.http_client import FlextHttpClient, create_flext_http_client
 from flext_oracle_wms.wms_api import (
     FLEXT_ORACLE_WMS_APIS,
@@ -1032,7 +1032,10 @@ class FlextOracleWmsClientMock:
                     )
                 except ValueError:
                     limit = None
-                if limit is not None and limit >= 0:
+                if (
+                    limit is not None
+                    and limit >= FlextConstants.Performance.MIN_CURRENT_STEP
+                ):
                     results_data = results_data[:limit]
             return FlextResult[list[FlextTypes.Core.Dict]].ok(
                 results_data if isinstance(results_data, list) else [],
