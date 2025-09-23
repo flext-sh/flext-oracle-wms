@@ -13,7 +13,7 @@ flext-oracle-wms has partial FLEXT ecosystem integration with significant compli
 - ✅ **FlextResult usage** - implemented throughout library
 - ✅ **FlextLogger support** - structured logging patterns
 - ❌ **FlextContainer** - dependency injection not integrated
-- ❌ **FlextDomainService** - unified service patterns missing
+- ❌ **FlextService** - unified service patterns missing
 
 #### Missing FLEXT Dependencies
 

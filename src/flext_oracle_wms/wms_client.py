@@ -18,7 +18,13 @@ from urllib.parse import urlencode
 
 from pydantic import Field
 
-from flext_core import FlextConfig, FlextConstants, FlextLogger, FlextResult, FlextTypes
+from flext_core import (
+    FlextConfig,
+    FlextConstants,
+    FlextLogger,
+    FlextResult,
+    FlextTypes,
+)
 from flext_oracle_wms.http_client import FlextHttpClient, create_flext_http_client
 from flext_oracle_wms.wms_api import (
     FLEXT_ORACLE_WMS_APIS,
@@ -153,17 +159,27 @@ class FlextOracleWmsAuthenticator:
             if self.config.auth_type == OracleWMSAuthMethod.BASIC:
                 credentials = f"{self.config.username}:{self.config.password}"
                 encoded = base64.b64encode(credentials.encode()).decode()
-                headers["Authorization"] = f"Basic {encoded}"
+                headers[FlextConstants.Platform.HEADER_AUTHORIZATION] = (
+                    f"Basic {encoded}"
+                )
 
             elif self.config.auth_type == OracleWMSAuthMethod.BEARER:
-                headers["Authorization"] = f"Bearer {self.config.token}"
+                headers[FlextConstants.Platform.HEADER_AUTHORIZATION] = (
+                    f"Bearer {self.config.token}"
+                )
 
             elif self.config.auth_type == OracleWMSAuthMethod.API_KEY:
                 if self.config.api_key:
-                    headers["X-API-Key"] = self.config.api_key
+                    headers[FlextConstants.Platform.HEADER_API_KEY] = (
+                        self.config.api_key
+                    )
 
-            headers["Content-Type"] = "application/json"
-            headers["Accept"] = "application/json"
+            headers[FlextConstants.Platform.HEADER_CONTENT_TYPE] = (
+                FlextConstants.Platform.MIME_TYPE_JSON
+            )
+            headers[FlextConstants.Platform.HEADER_ACCEPT] = (
+                FlextConstants.Platform.MIME_TYPE_JSON
+            )
             if isinstance(extra_headers, dict):
                 headers.update(extra_headers)
             # Some test suites expect a FlextResult, others expect dict directly.
@@ -235,7 +251,7 @@ class FlextOracleWmsAuthPlugin:
         self,
         authenticator: FlextOracleWmsAuthenticator | None = None,
         name: str = "auth",
-        version: str = "0.9.0",
+        version: str = FlextConstants.Core.VERSION,
     ) -> None:
         """Initialize authentication plugin."""
         self.name = name
@@ -793,7 +809,7 @@ class FlextOracleWmsClient:
 
             # Execute API call
             response = None
-            if prepared_call.method.upper() == "GET":
+            if prepared_call.method.upper() == FlextConstants.Platform.HTTP_METHOD_GET:
                 # Build URL with query parameters
                 path_with_params = prepared_call.full_path
                 if prepared_call.params:
@@ -801,7 +817,9 @@ class FlextOracleWmsClient:
                         f"{prepared_call.full_path}?{urlencode(prepared_call.params)}"
                     )
                 response = await self._api_client.get(path_with_params)
-            elif prepared_call.method.upper() == "POST":
+            elif (
+                prepared_call.method.upper() == FlextConstants.Platform.HTTP_METHOD_POST
+            ):
                 # Send JSON when dict provided, otherwise raw data
                 json_payload = (
                     prepared_call.data if isinstance(prepared_call.data, dict) else None

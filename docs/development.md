@@ -90,7 +90,7 @@ class WmsClient: pass
 class WmsHelper: pass     # ❌ VIOLATION
 
 # Required: Single unified class per module
-class FlextOracleWmsClient(FlextDomainService):
+class FlextOracleWmsClient(FlextService):
     class _ClientHelper:  # ✅ NESTED HELPER
         pass
 ```
