@@ -22,7 +22,6 @@ from flext_oracle_wms.wms_constants import (
     FlextOracleWmsDefaults,
     FlextOracleWmsErrorMessages,
 )
-from flext_oracle_wms.wms_exceptions import FlextOracleWmsDataValidationError
 
 # Core record types - USED EVERYWHERE
 TOracleWmsRecord = FlextTypes.Core.Dict
@@ -110,17 +109,9 @@ class FlextOracleWmsEntity(FlextModels):
         """Validate entity business rules."""
         validation_errors = []
 
-        # Validate entity name using direct validation
-        if not isinstance(self.name, str):
-            validation_errors.append("Entity name must be a string")
-
         # Business rule: entity name cannot be empty
         if not self.name.strip():
             validation_errors.append("Entity name cannot be empty")
-
-        # Validate entity endpoint using direct validation
-        if not isinstance(self.endpoint, str):
-            validation_errors.append("Entity endpoint must be a string")
 
         if not self.endpoint.startswith("/"):
             validation_errors.append("Entity endpoint must start with /")
@@ -168,13 +159,7 @@ class FlextOracleWmsDiscoveryResult(FlextModels):
         """Validate discovery result."""
         validation_errors = []
 
-        try:
-            # Validate entities list using direct validation
-            if not isinstance(self.entities, list):
-                msg = "Invalid entities list"
-                raise FlextOracleWmsDataValidationError(msg)
-        except (TypeError, ValueError, AttributeError) as e:
-            validation_errors.append(str(e))
+        # Entities list is already typed as list[TOracleWmsEntityInfo]
 
         if self.total_count < 0:
             validation_errors.append("Total count cannot be negative")
@@ -210,12 +195,7 @@ class FlextOracleWmsApiResponse(FlextModels):
         """Validate API response."""
         validation_errors = []
 
-        try:
-            # Validate data dict using direct validation
-            if not isinstance(self.data, dict):
-                validation_errors.append("Data must be a dictionary")
-        except (TypeError, ValueError, AttributeError) as e:
-            validation_errors.append(str(e))
+        # Data is already typed as FlextTypes.Core.Dict
 
         min_code = FlextOracleWmsDefaults.MIN_HTTP_STATUS_CODE
         max_code = FlextOracleWmsDefaults.MAX_HTTP_STATUS_CODE

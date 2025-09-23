@@ -1382,10 +1382,14 @@ class EndpointDiscoveryStrategy(DiscoveryStrategy):
             _ = endpoint  # Mark as used for linting
             http_ok_min = 200
             http_ok_max = 299
-            if response.status_code < http_ok_min or response.status_code > http_ok_max:
-                return FlextResult[None].fail(
-                    f"Bad HTTP status: {response.status_code}",
-                )
+
+            # Type check for response object with status_code attribute
+            if hasattr(response, "status_code"):
+                status_code = getattr(response, "status_code")
+                if status_code < http_ok_min or status_code > http_ok_max:
+                    return FlextResult[None].fail(
+                        f"Bad HTTP status: {status_code}",
+                    )
 
             return FlextResult[None].ok(None)
         except Exception as e:

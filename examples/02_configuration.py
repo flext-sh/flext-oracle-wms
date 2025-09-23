@@ -38,7 +38,7 @@ class WmsEnvironmentConfig:
 
     name: str
     base_url: str
-    timeout: int = FlextOracleWmsDefaults.DEFAULT_TIMEOUT
+    timeout: float = FlextOracleWmsDefaults.DEFAULT_TIMEOUT
     max_retries: int = FlextOracleWmsDefaults.DEFAULT_MAX_RETRIES
 
 
@@ -107,7 +107,9 @@ def create_config_from_environment() -> FlextOracleWmsClientConfig:
     env_result = FlextOracleWmsClientConfig.create_from_environment()
 
     if env_result.success:
-        return env_result.value
+        # Convert FlextConfig to FlextOracleWmsClientConfig
+        config_data = env_result.value.model_dump()
+        return FlextOracleWmsClientConfig(**config_data)
 
     # Method 2: Fallback to global singleton with default values
     # if environment variables are not set
@@ -252,15 +254,18 @@ def demonstrate_configuration_patterns() -> None:
         env_config = create_config_from_environment()
         validation = validate_configuration(env_config)
 
-        if validation["warnings"]:
-            for _warning in validation["warnings"]:
+        warnings = validation.get("warnings", [])
+        if warnings and isinstance(warnings, list):
+            for _warning in warnings:
                 pass
 
         if validation["valid"]:
             pass
         else:
-            for _error in validation["errors"]:
-                pass
+            errors = validation.get("errors", [])
+            if errors and isinstance(errors, list):
+                for _error in errors:
+                    pass
 
     except ValueError:
         pass

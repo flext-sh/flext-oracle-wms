@@ -63,7 +63,7 @@ def handle_operation_exception(
     if logger is not None:
         # Compatibilidade com asserções: args[1] deve conter a operação, args[2] os extras
         extras = ", ".join(f"{k}={v}" for k, v in context.items()) if context else ""
-        logger.error("%s %s", operation, extras)
+        logger.error(f"{operation}: {extras}")
     raise FlextOracleWmsError(error_msg) from exception
 
 
@@ -142,8 +142,6 @@ def flext_oracle_wms_build_entity_url(
 def flext_oracle_wms_validate_entity_name(entity_name: str) -> FlextResult[str]:
     """Validate Oracle WMS entity name format."""
     # Simple validation using type annotations - no over-engineering
-    if not isinstance(entity_name, str):
-        return FlextResult[str].fail("Entity name must be a string")
 
     if not entity_name.strip():
         return FlextResult[str].fail("Entity name cannot be empty")
@@ -279,9 +277,6 @@ def flext_oracle_wms_chunk_records(
         return FlextResult[bool].ok(data=True)
 
     # Simple validation using type annotations - no over-engineering
-    if not isinstance(records, list):
-        msg = "records must be a list"
-        raise FlextOracleWmsError(msg)
 
     chunk_size_result = _validate_chunk_size(chunk_size)
     if not chunk_size_result.success:
@@ -607,9 +602,6 @@ class FlextOracleWmsFlattener:
         """Flatten a single Oracle WMS record."""
         try:
             # Simple validation using type annotations - no over-engineering
-            if not isinstance(record, dict):
-                msg = "Record flattening failed: record must be a dictionary"
-                self._raise_flattening_error(msg)
 
             return self._flatten_dict(record)
         except Exception as e:
@@ -620,9 +612,6 @@ class FlextOracleWmsFlattener:
         """Flatten multiple Oracle WMS records."""
         try:
             # Simple validation using type annotations - no over-engineering
-            if not isinstance(records, list):
-                msg = "Batch flattening failed: records must be a list"
-                self._raise_flattening_error(msg)
 
             return [self.flatten_record(record) for record in records]
         except Exception as e:

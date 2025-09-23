@@ -63,7 +63,7 @@ class FlextHttpClient:
             # Use flext-api foundation instead of direct httpx
             self._client = FlextApiClient(
                 base_url=self.base_url,
-                timeout=self.timeout,
+                timeout=int(self.timeout),
                 default_headers=self.default_headers,
                 verify_ssl=self.verify_ssl,
             )

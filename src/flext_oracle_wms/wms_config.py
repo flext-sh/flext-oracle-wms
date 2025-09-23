@@ -94,7 +94,7 @@ class FlextOracleWmsConfig(FlextConfig):
         if validation_result.is_failure:
             error_msg = f"Invalid Oracle WMS base URL: {validation_result.error}"
             raise ValueError(error_msg)
-        return validation_result.unwrap()
+        return str(validation_result.unwrap())
 
     @field_validator("oracle_wms_timeout")
     @classmethod

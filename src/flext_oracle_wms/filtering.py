@@ -117,15 +117,7 @@ class FlextOracleWmsFilter:
             FlextResult containing filtered records
 
         """
-        # Validate records parameter using direct validation
-        if not isinstance(records, list):
-            msg = "Invalid records list"
-            raise FlextOracleWmsDataValidationError(msg)
-
-        # Validate filters parameter type using direct validation
-        if not isinstance(filters, dict):
-            msg = "Invalid filters dictionary"
-            raise FlextOracleWmsDataValidationError(msg)
+        # Parameters are already properly typed
 
         # Validate filter conditions
         count_result = self._validate_filter_conditions_total(filters)
@@ -187,15 +179,7 @@ class FlextOracleWmsFilter:
             FlextResult containing sorted records
 
         """
-        # Validate records parameter using direct validation
-        if not isinstance(records, list):
-            return FlextResult[list[FlextTypes.Core.Dict]].fail("Invalid records list")
-
-        # Validate sort_field parameter using direct validation
-        if not isinstance(sort_field, str):
-            return FlextResult[list[FlextTypes.Core.Dict]].fail(
-                "Sort field must be a string",
-            )
+        # Parameters are already properly typed
 
         try:
 
@@ -440,10 +424,7 @@ def flext_oracle_wms_filter_by_id_range(
     max_id: object | None = None,
 ) -> FlextResult[list[FlextTypes.Core.Dict]]:
     """Filter records by ID range."""
-    # Validate records parameter using direct validation
-    if not isinstance(records, list):
-        error_msg = "Records must be a list"
-        raise FlextOracleWmsDataValidationError(error_msg)
+    # Records parameter is already properly typed
 
     if not records:
         return FlextResult[list[FlextTypes.Core.Dict]].ok([])
