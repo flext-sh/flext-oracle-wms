@@ -15,7 +15,7 @@ import re
 
 from flext_core import FlextLogger, FlextResult, FlextTypes
 from flext_oracle_wms.wms_constants import (
-    FlextOracleWmsDefaults,
+    FlextOracleWmsConstants,
     OracleWMSFilterOperator,
 )
 from flext_oracle_wms.wms_exceptions import (
@@ -55,7 +55,7 @@ class FlextOracleWmsFilter:
             msg = "max_conditions must be positive"
             raise FlextOracleWmsError(msg)
         # Enforce upper bound according to defaults used by tests
-        if max_conditions > FlextOracleWmsDefaults.MAX_FILTER_CONDITIONS:
+        if max_conditions > FlextOracleWmsConstants.Filtering.MAX_FILTER_CONDITIONS:
             msg = "max_conditions cannot exceed configured maximum"
             raise FlextOracleWmsError(msg)
 
@@ -65,7 +65,9 @@ class FlextOracleWmsFilter:
 
         # Validate filters if provided
         if self.filters:
-            validation_result = self._validate_filter_conditions_total(self.filters)
+            validation_result: FlextResult[object] = (
+                self._validate_filter_conditions_total(self.filters)
+            )
             if validation_result.is_failure:
                 raise FlextOracleWmsDataValidationError(
                     validation_result.error or "Filter validation failed",
@@ -120,7 +122,9 @@ class FlextOracleWmsFilter:
         # Parameters are already properly typed
 
         # Validate filter conditions
-        count_result = self._validate_filter_conditions_total(filters)
+        count_result: FlextResult[object] = self._validate_filter_conditions_total(
+            filters
+        )
         if count_result.is_failure:
             return FlextResult[list[FlextTypes.Core.Dict]].fail(
                 count_result.error or "Filter validation failed",
@@ -148,7 +152,9 @@ class FlextOracleWmsFilter:
             FlextResult containing filtered records
 
         """
-        count_result = self._validate_filter_conditions_total(filters)
+        count_result: FlextResult[object] = self._validate_filter_conditions_total(
+            filters
+        )
         if count_result.is_failure:
             return FlextResult[list[FlextTypes.Core.Dict]].fail(
                 count_result.error or "Filter validation failed",
@@ -215,7 +221,7 @@ class FlextOracleWmsFilter:
         except Exception as e:  # pragma: no cover
             return FlextResult[None].fail(str(e))
 
-    def _validate_filter_conditions_count(self) -> None:
+    def _validate_filter_conditions_count(self: object) -> None:
         """Validate that filter conditions don't exceed maximum."""
         if len(self.filters) > self.max_conditions:
             msg = f"Too many filter conditions. Max: {self.max_conditions}, Got: {len(self.filters)}"

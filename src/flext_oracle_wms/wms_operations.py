@@ -13,7 +13,8 @@ from __future__ import annotations
 import re
 from collections.abc import Mapping
 from dataclasses import dataclass
-from logging import Logger
+
+# Use FlextLogger from flext_core instead
 from urllib.parse import urljoin, urlparse
 
 from flext_core import (
@@ -24,8 +25,7 @@ from flext_core import (
 )
 from flext_oracle_wms.filtering import FlextOracleWmsFilter
 from flext_oracle_wms.wms_constants import (
-    FlextOracleWmsDefaults,
-    FlextOracleWmsResponseFields,
+    FlextOracleWmsConstants,
 )
 from flext_oracle_wms.wms_exceptions import (
     FlextOracleWmsDataValidationError,
@@ -51,7 +51,7 @@ logger = FlextLogger(__name__)
 def handle_operation_exception(
     exception: Exception,
     operation: str,
-    logger: FlextLogger | Logger | None = None,
+    logger: FlextLogger | None = None,
     **context: object,
 ) -> None:
     """DRY function for handling operations exceptions.
@@ -151,14 +151,14 @@ def flext_oracle_wms_validate_entity_name(entity_name: str) -> FlextResult[str]:
         return FlextResult[str].fail("cannot be empty")
 
     # Check length
-    max_length = FlextOracleWmsDefaults.MAX_ENTITY_NAME_LENGTH
+    max_length = FlextOracleWmsConstants.Entities.MAX_ENTITY_NAME_LENGTH
     if len(normalized) > max_length:
         return FlextResult[str].fail(
             f"Entity name too long (max {max_length} characters)",
         )
 
     # Check pattern
-    pattern = FlextOracleWmsDefaults.ENTITY_NAME_PATTERN
+    pattern = FlextOracleWmsConstants.Entities.ENTITY_NAME_PATTERN
     if not re.match(pattern, normalized):
         return FlextResult[str].fail("Invalid entity name format")
 
@@ -217,7 +217,7 @@ def flext_oracle_wms_extract_pagination_info(
     response_data: FlextTypes.Core.Dict,
 ) -> TOracleWmsPaginationInfo:
     """Extract pagination information from Oracle WMS API response."""
-    fields = FlextOracleWmsResponseFields
+    fields = FlextOracleWmsConstants.ResponseFields
 
     # Safe extraction of pagination fields with proper type checking
     page_num_val = response_data.get(fields.PAGE_NUMBER, 1)
@@ -226,7 +226,7 @@ def flext_oracle_wms_extract_pagination_info(
     page_count_val = response_data.get(fields.PAGE_COUNT, 1)
     total_pages = int(page_count_val) if isinstance(page_count_val, (int, str)) else 1
 
-    result_count_val = response_data.get(fields.RESULT_COUNT, 0)
+    result_count_val: FlextResult[object] = response_data.get(fields.RESULT_COUNT, 0)
     total_results = (
         int(result_count_val) if isinstance(result_count_val, (int, str)) else 0
     )
@@ -260,7 +260,7 @@ def flext_oracle_wms_format_timestamp(timestamp: str | None = None) -> str:
 
 def flext_oracle_wms_chunk_records(
     records: TOracleWmsRecordBatch,
-    chunk_size: int = 50,  # FlextOracleWmsDefaults.DEFAULT_BATCH_SIZE
+    chunk_size: int = 50,  # FlextOracleWmsConstants.Processing.DEFAULT_BATCH_SIZE
 ) -> list[TOracleWmsRecordBatch]:
     """Chunk records into smaller batches for processing."""
 
@@ -278,7 +278,7 @@ def flext_oracle_wms_chunk_records(
 
     # Simple validation using type annotations - no over-engineering
 
-    chunk_size_result = _validate_chunk_size(chunk_size)
+    chunk_size_result: FlextResult[object] = _validate_chunk_size(chunk_size)
     if not chunk_size_result.success:
         raise FlextOracleWmsError(
             chunk_size_result.error or "Invalid chunk_size",
@@ -543,7 +543,7 @@ class FlextOracleWmsUnifiedOperations:
 
             return flattened
 
-    def __init__(self) -> None:
+    def __init__(self: object) -> None:
         """Initialize unified operations."""
         self.filter = self._FilterOperations(self)
         self.flatten = self._FlattenOperations(self)
@@ -590,7 +590,7 @@ FlextOracleWmsFilterConfig = FlextOracleWmsFilter
 class FlextOracleWmsFlattener:
     """Oracle WMS data flattening implementation."""
 
-    max_depth: int = 10  # FlextOracleWmsDefaults.MAX_SCHEMA_DEPTH
+    max_depth: int = 10  # FlextOracleWmsConstants.Processing.MAX_SCHEMA_DEPTH
     separator: str = "_"
     preserve_arrays: bool = False
 
@@ -666,7 +666,7 @@ class FlextOracleWmsPluginContext:
         logger_instance: object | None = None,
     ) -> None:
         """Initialize Oracle WMS plugin context."""
-        self.config = config or {}
+        self.config: dict[str, object] = config or {}
         self.logger = logger_instance
 
 
@@ -722,7 +722,7 @@ class FlextOracleWmsDataPlugin:
 class FlextOracleWmsPluginRegistry:
     """Oracle WMS plugin registry implementation."""
 
-    def __init__(self) -> None:
+    def __init__(self: object) -> None:
         """Initialize plugin registry."""
         self._plugins: dict[str, FlextOracleWmsPlugin] = {}
         self._logger = FlextLogger(__name__)

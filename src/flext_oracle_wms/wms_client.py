@@ -34,7 +34,7 @@ from flext_oracle_wms.wms_api import (
 )
 from flext_oracle_wms.wms_config import FlextOracleWmsConfig
 from flext_oracle_wms.wms_constants import (
-    FlextOracleWmsDefaults,
+    FlextOracleWmsConstants,
     OracleWMSAuthMethod,
 )
 from flext_oracle_wms.wms_exceptions import (
@@ -60,15 +60,15 @@ class FlextOracleWmsAuthConfig(FlextConfig):
     username: str = Field(default="", description="Username for basic auth")
     password: str = Field(default="", description="Password for basic auth")
     token: str | None = Field(default="", description="Bearer token")
-    api_key: str = Field(default="", description="API key")
+    api_key: str | None = Field(default=None, description="API key")
     auth_timeout: float = Field(
-        default=FlextOracleWmsDefaults.DEFAULT_TIMEOUT,
+        default=FlextOracleWmsConstants.Api.DEFAULT_TIMEOUT,
         description="Request timeout in seconds",
     )
 
     def validate_business_rules(self) -> FlextResult[None]:
         """Validate authentication configuration business rules."""
-        validation_errors = []
+        validation_errors: list[str] = []
 
         # Validate authentication based on method
         if self.auth_type == OracleWMSAuthMethod.BASIC:
@@ -76,7 +76,7 @@ class FlextOracleWmsAuthConfig(FlextConfig):
                 validation_errors.append(
                     "Username and password required for basic auth",
                 )
-        elif self.auth_type == OracleWMSAuthMethod.BEARER and not self.token:
+        elif self.auth_type == OracleWMSAuthMethod.OAUTH2 and not self.token:
             validation_errors.append("Token required for bearer auth")
         elif self.auth_type == OracleWMSAuthMethod.API_KEY and not self.api_key:
             validation_errors.append("API key required in header for API key auth")
@@ -140,7 +140,7 @@ class FlextOracleWmsAuthenticator:
     def __init__(self, config: FlextOracleWmsAuthConfig) -> None:
         """Initialize authenticator with configuration."""
         self.config = config
-        validation_result = self.config.validate_business_rules()
+        validation_result: FlextResult[object] = self.config.validate_business_rules()
         if not validation_result.success:
             msg: str = (
                 f"Invalid authentication configuration: {validation_result.error}"
@@ -222,12 +222,14 @@ class FlextOracleWmsAuthenticator:
             elif self.config.auth_type == OracleWMSAuthMethod.BEARER:
                 if (
                     not self.config.token
-                    or len(self.config.token) < FlextOracleWmsDefaults.MIN_TOKEN_LENGTH
+                    or len(self.config.token)
+                    < FlextOracleWmsConstants.Authentication.MIN_TOKEN_LENGTH
                 ):
                     return FlextResult[bool].fail("Invalid bearer token")
             elif self.config.auth_type == OracleWMSAuthMethod.API_KEY and (
                 not self.config.api_key
-                or len(self.config.api_key) < FlextOracleWmsDefaults.MIN_API_KEY_LENGTH
+                or len(self.config.api_key)
+                < FlextOracleWmsConstants.Authentication.MIN_API_KEY_LENGTH
             ):
                 return FlextResult[bool].fail("Invalid API key")
 
@@ -267,11 +269,13 @@ class FlextOracleWmsAuthPlugin:
             password = str(context.get("password", ""))
             token = str(context.get("token", ""))
             api_key = str(context.get("api_key", ""))
-            timeout_val = context.get("timeout", FlextOracleWmsDefaults.DEFAULT_TIMEOUT)
+            timeout_val = context.get(
+                "timeout", FlextOracleWmsConstants.Api.DEFAULT_TIMEOUT
+            )
             timeout = (
                 float(timeout_val)
                 if isinstance(timeout_val, (int, float, str))
-                else FlextOracleWmsDefaults.DEFAULT_TIMEOUT
+                else FlextOracleWmsConstants.Api.DEFAULT_TIMEOUT
             )
 
             auth_config = FlextOracleWmsAuthConfig(
@@ -325,7 +329,7 @@ class FlextOracleWmsAuthPlugin:
             )
         # Handle dict-like requests (most common case)
         if isinstance(request, dict):
-            headers_value = request.get("headers", {})
+            headers_value: dict[str, object] = request.get("headers", {})
             existing_headers = (
                 dict(headers_value) if isinstance(headers_value, dict) else {}
             )
@@ -449,9 +453,11 @@ class FlextOracleWmsClient:
         """
         # Use global singleton if no config provided
         if config is None:
-            self.config = FlextOracleWmsConfig.get_oracle_wms_global_instance()
+            self.config: dict[str, object] = (
+                FlextOracleWmsConfig.get_oracle_wms_global_instance()
+            )
         else:
-            self.config = config
+            self.config: dict[str, object] = config
 
         self._api_client: FlextHttpClient | None = None
         self._authenticator: FlextOracleWmsAuthenticator | None = None
@@ -472,7 +478,7 @@ class FlextOracleWmsClient:
             getattr(self.config, "password", ""),
         )
 
-        auth_config = FlextOracleWmsAuthConfig.get_global_instance()
+        auth_config: dict[str, object] = FlextOracleWmsAuthConfig.get_global_instance()
         # Update with actual values from config
         auth_config.username = username
         auth_config.password = password
@@ -489,7 +495,9 @@ class FlextOracleWmsClient:
             # Get authentication headers
             auth_headers: FlextTypes.Core.Headers = {}
             if self._authenticator:
-                auth_result = await self._authenticator.get_auth_headers()
+                auth_result: FlextResult[
+                    object
+                ] = await self._authenticator.get_auth_headers()
                 # Handle both FlextResult and dict return types
                 if isinstance(auth_result, FlextResult):
                     # FlextResult type
@@ -630,9 +638,11 @@ class FlextOracleWmsClient:
                 mock_server = get_mock_server(
                     self.config.extract_environment_from_url(),
                 )
-                mock_result = mock_server.get_mock_response("entity_discovery")
+                mock_result: FlextResult[object] = mock_server.get_mock_response(
+                    "entity_discovery"
+                )
                 if mock_result.success and mock_result.value:
-                    entities = mock_result.value.get("results", [])
+                    entities: list[object] = mock_result.value.get("results", [])
                     if isinstance(entities, list):
                         return FlextResult[list[FlextTypes.Core.Dict]].ok(entities)
                     return FlextResult[list[FlextTypes.Core.Dict]].fail(
@@ -655,7 +665,7 @@ class FlextOracleWmsClient:
                 return FlextResult[list[FlextTypes.Core.Dict]].fail("No entities found")
 
             body = response.value
-            entities = body.get("results", [])
+            entities: list[object] = body.get("results", [])
             if isinstance(entities, list):
                 return FlextResult[list[FlextTypes.Core.Dict]].ok(entities)
             return FlextResult[list[FlextTypes.Core.Dict]].fail(
@@ -708,9 +718,13 @@ class FlextOracleWmsClient:
                 mock_server = get_mock_server(
                     self.config.extract_environment_from_url(),
                 )
-                mock_result = mock_server.get_mock_response("entity_data", entity_name)
+                mock_result: FlextResult[object] = mock_server.get_mock_response(
+                    "entity_data", entity_name
+                )
                 if mock_result.success and mock_result.value:
-                    results_data = mock_result.value.get("results", [])
+                    results_data: FlextResult[object] = mock_result.value.get(
+                        "results", []
+                    )
                     return FlextResult[
                         FlextTypes.Core.Dict | list[FlextTypes.Core.Dict]
                     ].ok(
@@ -739,7 +753,7 @@ class FlextOracleWmsClient:
             )
             full_path = full_path.replace("{entity_name}", entity_name)
 
-            query_params = dict(params or {})
+            query_params: dict[str, object] = dict(params or {})
             # Accept optional limit/page_size in kwargs for tests
             if "limit" in kwargs and "limit" not in query_params:
                 query_params["limit"] = kwargs["limit"]
@@ -748,7 +762,7 @@ class FlextOracleWmsClient:
             # Build URL with query parameters
             if query_params:
                 full_path = f"{full_path}?{urlencode(query_params)}"
-            resp_result = await self._api_client.get(full_path)
+            resp_result: FlextResult[object] = await self._api_client.get(full_path)
 
             if not resp_result.success:
                 return FlextResult[
@@ -861,7 +875,7 @@ class FlextOracleWmsClient:
                 )
 
             body = api_resp
-            data_dict = body if isinstance(body, dict) else {}
+            data_dict: dict[str, object] = body if isinstance(body, dict) else {}
             return FlextResult[FlextTypes.Core.Dict].ok(data_dict)
 
         except (
@@ -1016,14 +1030,16 @@ class FlextOracleWmsClientMock:
 
     def __init__(self, config: FlextOracleWmsConfig) -> None:
         """Initialize mock client."""
-        self.config = config
+        self.config: dict[str, object] = config
         self.mock_server = get_mock_server(config.extract_environment_from_url())
 
     async def discover_entities(self) -> FlextResult[list[FlextTypes.Core.Dict]]:
         """Mock entity discovery."""
-        mock_result = self.mock_server.get_mock_response("entity_discovery")
+        mock_result: FlextResult[object] = self.mock_server.get_mock_response(
+            "entity_discovery"
+        )
         if mock_result.success and mock_result.value:
-            entities_data = mock_result.value.get("entities", [])
+            entities_data: dict[str, object] = mock_result.value.get("entities", [])
             return FlextResult[list[FlextTypes.Core.Dict]].ok(
                 entities_data if isinstance(entities_data, list) else [],
             )
@@ -1038,9 +1054,11 @@ class FlextOracleWmsClientMock:
     ) -> FlextResult[list[FlextTypes.Core.Dict]]:
         """Mock entity data retrieval."""
         # Allow simple filtering via params in mock path to exercise parameter usage
-        mock_result = self.mock_server.get_mock_response("entity_data", entity_name)
+        mock_result: FlextResult[object] = self.mock_server.get_mock_response(
+            "entity_data", entity_name
+        )
         if mock_result.success and mock_result.value:
-            results_data = mock_result.value.get("results", [])
+            results_data: FlextResult[object] = mock_result.value.get("results", [])
             if isinstance(results_data, list) and isinstance(params, dict):
                 # Filter by optional "limit" parameter for demonstration
                 limit_val = params.get("limit")

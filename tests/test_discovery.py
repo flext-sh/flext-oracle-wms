@@ -25,6 +25,7 @@ from flext_core import FlextResult, FlextTypes
 from flext_oracle_wms import (
     DISCOVERY_FAILURE,
     DISCOVERY_SUCCESS,
+    CacheValue,
     DiscoveryContext,
     EndpointDiscoveryStrategy,
     EntityResponseParser,
@@ -33,7 +34,6 @@ from flext_oracle_wms import (
     FlextOracleWmsEntity,
     FlextOracleWmsEntityDiscovery,
 )
-from flext_oracle_wms.wms_discovery import CacheValue
 
 
 class TestDiscoveryConstants:

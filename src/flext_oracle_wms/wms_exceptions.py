@@ -58,7 +58,7 @@ class FlextOracleWmsError(FlextExceptions.BaseError):
             **kwargs: Additional context parameters
 
         """
-        full_context = dict(context or {})
+        full_context: dict[str, object] = dict(context or {})
         full_context.update(kwargs)
 
         # Add specific attributes to context
@@ -116,7 +116,7 @@ class FlextOracleWmsValidationError(FlextOracleWmsError):
 
         """
         # Start with provided context or empty dict
-        full_context = dict(context) if context else {}
+        full_context: dict[str, object] = dict(context) if context else {}
 
         # Add kwargs to context
         full_context.update(kwargs)
@@ -145,11 +145,11 @@ class FlextOracleWmsConfigurationError(FlextOracleWmsError):
         """
         super().__init__(message, context=kwargs or {})
         # Extract config_key from context for backward compatibility
-        context = kwargs.get("context", {})
+        context: dict[str, object] = kwargs.get("context", {})
         if isinstance(context, dict):
-            self.config_key = context.get("config_key", "")
+            self.config_key: dict[str, object] = context.get("config_key", "")
         else:
-            self.config_key = kwargs.get("config_key", "")
+            self.config_key: dict[str, object] = kwargs.get("config_key", "")
 
 
 class FlextOracleWmsConnectionError(FlextOracleWmsError):
@@ -217,7 +217,7 @@ class FlextOracleWmsProcessingError(FlextOracleWmsError):
 
         """
         # Start with provided context or empty dict
-        full_context = dict(context) if context else {}
+        full_context: dict[str, object] = dict(context) if context else {}
 
         # Add retry_after_seconds if provided
         if retry_after_seconds is not None:

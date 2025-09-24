@@ -238,7 +238,6 @@ assert error.entity_name == "test"  # Properly handled
 ### Enable Debug Logging
 
 ```python
-import logging
 logging.basicConfig(level=logging.DEBUG)
 
 from flext_core import FlextLogger

@@ -33,7 +33,7 @@ class FlextOracleWmsAuthConfig(_BaseAuthConfig):
     token: str | None = Field(default="", description="Bearer token")
     api_key: str = Field(default="", description="API key")
 
-    def validate_business_rules(self) -> FlextResult[None]:
+    def validate_business_rules(self: object) -> FlextResult[None]:
         """Validate business rules function.
 
         Returns:

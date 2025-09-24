@@ -127,11 +127,15 @@ class FlextHttpClient:
                 if isinstance(response.body, dict):
                     data = response.body
                 elif isinstance(response.body, str):
-                    data = json.loads(response.body) if response.body else {}
+                    data: dict[str, object] = (
+                        json.loads(response.body) if response.body else {}
+                    )
                 else:
                     data = {}
             except (ValueError, AttributeError):
-                data = {"text": str(response.body) if response.body else ""}
+                data: dict[str, object] = {
+                    "text": str(response.body) if response.body else ""
+                }
 
             return FlextResult[FlextTypes.Core.Dict].ok(data)
 
@@ -200,11 +204,15 @@ class FlextHttpClient:
                 if isinstance(response.body, dict):
                     response_data = response.body
                 elif isinstance(response.body, str):
-                    response_data = json.loads(response.body) if response.body else {}
+                    response_data: dict[str, object] = (
+                        json.loads(response.body) if response.body else {}
+                    )
                 else:
                     response_data = {}
             except (ValueError, AttributeError):
-                response_data = {"text": str(response.body) if response.body else ""}
+                response_data: dict[str, object] = {
+                    "text": str(response.body) if response.body else ""
+                }
 
             return FlextResult[FlextTypes.Core.Dict].ok(response_data)
 
@@ -273,11 +281,15 @@ class FlextHttpClient:
                 if isinstance(response.body, dict):
                     response_data = response.body
                 elif isinstance(response.body, str):
-                    response_data = json.loads(response.body) if response.body else {}
+                    response_data: dict[str, object] = (
+                        json.loads(response.body) if response.body else {}
+                    )
                 else:
                     response_data = {}
             except (ValueError, AttributeError):
-                response_data = {"text": str(response.body) if response.body else ""}
+                response_data: dict[str, object] = {
+                    "text": str(response.body) if response.body else ""
+                }
 
             return FlextResult[FlextTypes.Core.Dict].ok(response_data)
 
@@ -309,7 +321,9 @@ class FlextHttpClient:
             if headers:
                 request_headers.update(headers)
 
-            response_result = await self._client.delete(path, headers=request_headers)
+            response_result: FlextResult[object] = await self._client.delete(
+                path, headers=request_headers
+            )
 
             if response_result.is_failure:
                 return FlextResult[FlextTypes.Core.Dict].fail(
@@ -328,11 +342,15 @@ class FlextHttpClient:
                 if isinstance(response.body, dict):
                     data = response.body
                 elif isinstance(response.body, str):
-                    data = json.loads(response.body) if response.body else {}
+                    data: dict[str, object] = (
+                        json.loads(response.body) if response.body else {}
+                    )
                 else:
                     data = {}
             except (ValueError, AttributeError):
-                data = {"text": str(response.body) if response.body else ""}
+                data: dict[str, object] = {
+                    "text": str(response.body) if response.body else ""
+                }
 
             return FlextResult[FlextTypes.Core.Dict].ok(data)
 

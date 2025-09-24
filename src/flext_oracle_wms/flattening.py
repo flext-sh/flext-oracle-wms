@@ -77,7 +77,7 @@ class FlextOracleWmsDataFlattener(_OpsFlattener):
     ) -> FlextResult[list[FlextTypes.Core.Dict]]:
         """Flatten records returning FlextResult for error handling."""
         try:
-            result = self.flatten_records(records)
+            result: FlextResult[object] = self.flatten_records(records)
             return FlextResult[list[FlextTypes.Core.Dict]].ok(result)
         except Exception as e:  # pragma: no cover - delegate errors
             return FlextResult[list[FlextTypes.Core.Dict]].fail(str(e))

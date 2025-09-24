@@ -114,9 +114,9 @@ class FlextOracleWmsConfig(FlextConfig):
             raise ValueError(msg)
         return v
 
-    def validate_business_rules(self) -> FlextResult[None]:
+    def validate_business_rules(self: object) -> FlextResult[None]:
         """Validate Oracle WMS specific business rules."""
-        validation_errors = []
+        validation_errors: list[str] = []
 
         # Validate authentication based on method
         if self.auth_method == OracleWMSAuthMethod.BASIC:
@@ -149,7 +149,7 @@ class FlextOracleWmsConfig(FlextConfig):
             config: FlextOracleWmsConfig,
         ) -> FlextTypes.Core.Headers:
             """Get authentication headers based on configuration."""
-            headers = {}
+            headers: dict[str, str] = {}
 
             if config.auth_method == OracleWMSAuthMethod.BASIC:
                 credentials = (
@@ -171,7 +171,7 @@ class FlextOracleWmsConfig(FlextConfig):
             return f"{base}/{path}"
 
     # Convenience methods using nested helpers
-    def get_auth_headers(self) -> FlextTypes.Core.Headers:
+    def get_auth_headers(self: object) -> FlextTypes.Core.Headers:
         """Get authentication headers."""
         return self._AuthHelper.get_auth_headers(self)
 
@@ -179,7 +179,7 @@ class FlextOracleWmsConfig(FlextConfig):
         """Build full endpoint URL."""
         return self._ConnectionHelper.build_endpoint_url(self, path)
 
-    def extract_environment_from_url(self) -> str:
+    def extract_environment_from_url(self: object) -> str:
         """Extract environment from Oracle WMS base URL."""
         try:
             parsed = urlparse(self.oracle_wms_base_url)
@@ -201,7 +201,7 @@ class FlextOracleWmsConfig(FlextConfig):
         return "development"
 
     @classmethod
-    def for_testing(cls) -> FlextOracleWmsConfig:
+    def for_testing(cls: object) -> FlextOracleWmsConfig:
         """Create configuration optimized for testing."""
         # Use environment variable for test password to avoid hardcoded values
         test_password = os.getenv("TEST_WMS_PASSWORD", "test_password")
@@ -248,7 +248,7 @@ class FlextOracleWmsConfig(FlextConfig):
 
         """
         try:
-            config = cls(
+            config: dict[str, object] = cls(
                 oracle_wms_base_url=oracle_wms_base_url,
                 oracle_wms_username=oracle_wms_username,
                 oracle_wms_password=oracle_wms_password,
@@ -259,7 +259,7 @@ class FlextOracleWmsConfig(FlextConfig):
                 oracle_wms_enable_logging=oracle_wms_enable_logging,
                 oracle_wms_use_mock=oracle_wms_use_mock,
             )
-            validation_result = config.validate_business_rules()
+            validation_result: FlextResult[object] = config.validate_business_rules()
             if validation_result.is_failure:
                 error_msg = validation_result.error or "Validation failed"
                 return FlextResult[FlextConfig].fail(error_msg)
@@ -297,7 +297,7 @@ class FlextOracleWmsConfig(FlextConfig):
             return cls._oracle_wms_global_instance
 
         # Create new instance with default values
-        config = cls()
+        config: dict[str, object] = cls()
 
         # Apply any provided kwargs
         if kwargs:
@@ -402,9 +402,9 @@ class FlextOracleWmsConfig(FlextConfig):
                     env_config[key] = value
 
             # Get the global singleton instance with environment configuration
-            config = cls.get_oracle_wms_global_instance(**env_config)
+            config: dict[str, object] = cls.get_oracle_wms_global_instance(**env_config)
 
-            validation_result = config.validate_business_rules()
+            validation_result: FlextResult[object] = config.validate_business_rules()
             if validation_result.is_failure:
                 error_msg = validation_result.error or "Validation failed"
                 return FlextResult[FlextConfig].fail(error_msg)
@@ -415,7 +415,7 @@ class FlextOracleWmsConfig(FlextConfig):
             )
 
     @classmethod
-    def reset_global_instance(cls) -> None:
+    def reset_global_instance(cls: object) -> None:
         """Reset the global singleton instance.
 
         This allows for dynamic reconfiguration by clearing the current
@@ -442,7 +442,7 @@ class FlextOracleWmsConfig(FlextConfig):
         """
         try:
             # Get current global instance or create new one
-            config = cls.get_oracle_wms_global_instance()
+            config: dict[str, object] = cls.get_oracle_wms_global_instance()
 
             # Update with new parameters
             for key, value in kwargs.items():
@@ -450,7 +450,7 @@ class FlextOracleWmsConfig(FlextConfig):
                     setattr(config, key, value)
 
             # Validate updated configuration
-            validation_result = config.validate_business_rules()
+            validation_result: FlextResult[object] = config.validate_business_rules()
             if validation_result.is_failure:
                 error_msg = validation_result.error or "Validation failed"
                 return FlextResult[FlextConfig].fail(error_msg)

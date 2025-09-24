@@ -58,7 +58,7 @@ class OracleWmsApiService:
                 )
 
             body = api_resp
-            data_dict = body if isinstance(body, dict) else {}
+            data_dict: dict[str, object] = body if isinstance(body, dict) else {}
             return FlextResult[FlextTypes.Core.Dict].ok(data_dict)
 
         except Exception as e:

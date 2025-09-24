@@ -345,7 +345,6 @@ client = FlextOracleWmsClient(config)
 
 ```python
 import asyncio
-import logging
 from pathlib import Path
 from flext_oracle_wms import (
     FlextOracleWmsClient,

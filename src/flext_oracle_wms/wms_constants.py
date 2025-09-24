@@ -1,452 +1,176 @@
-"""Oracle WMS Constants - Consolidated Constants and Enums.
+"""FLEXT Oracle WMS Constants - Domain-specific Oracle WMS constants.
 
 Copyright (c) 2025 FLEXT Team. All rights reserved.
-SPDX-License-Identifier: MIT.
-
-Consolidated constants extending flext-core platform constants.
-This module consolidates all Oracle WMS-specific constants, enums, and default values.
+SPDX-License-Identifier: MIT
 """
 
 from __future__ import annotations
 
 from enum import StrEnum
-from typing import ClassVar, Literal
+from typing import Final
 
-from flext_core import FlextConstants, FlextTypes
+from flext_core import FlextConstants
 
-"""Constants and enums for Oracle WMS module.
-
-Note: `FlextOracleWmsApiVersion` lives here to avoid circular imports
-between `wms_constants` and `wms_models`.
-"""
+# Python 3.13+ Type Aliases - ONLY Oracle WMS-specific
+# Note: Using enum classes instead of type aliases for better runtime behavior
 
 
-class FlextOracleWmsSemanticConstants(FlextConstants):
-    """Oracle WMS semantic constants extending FlextConstants.
+class FlextOracleWmsConstants(FlextConstants):
+    """Single unified Oracle WMS constants class following FLEXT standards.
 
-    Modern Python 3.13 constants following semantic grouping patterns.
-    Extends the FLEXT ecosystem constants with Oracle WMS-specific
-    values while maintaining full backward compatibility.
+    Contains all constants for Oracle WMS domain operations.
+    Follows FLEXT pattern: one class per module with nested subclasses.
+    All constants are flat class attributes inheriting from FlextConstants.
     """
 
-    class OracleWmsCore:
-        """Core Oracle WMS system constants."""
+    # =========================================================================
+    # VERSION METADATA (DOMAIN-SPECIFIC ONLY)
+    # =========================================================================
 
-        NAME = "flext-oracle-wms"
-        VERSION = "0.9.0"
-        ECOSYSTEM_SIZE = 33
-        DEFAULT_ENVIRONMENT = "default"
+    FLEXT_ORACLE_WMS_VERSION: Final[str] = "0.9.0"  # Domain-specific version
 
-    class OracleWmsApi:
-        """API configuration constants."""
+    # =========================================================================
+    # DOMAIN-SPECIFIC CONSTANTS ONLY - FLAT CLASS STRUCTURE
+    # =========================================================================
 
-        # API versions
-        VERSIONS: ClassVar[FlextTypes.Core.StringList] = ["v10", "v9", "v8"]
-        DEFAULT_VERSION: Literal["v10"] = "v10"
+    # Application metadata constants
+    APPLICATION_NAME: Final[str] = "flext-oracle-wms"
+    APPLICATION_DESCRIPTION: Final[str] = "FLEXT Oracle WMS Cloud Integration"
+    APPLICATION_AUTHOR: Final[str] = "FLEXT Team"
+    APPLICATION_LICENSE: Final[str] = "MIT"
 
-        # Base paths
-        LGF_API_BASE = "/wms/lgfapi"
+    # Oracle WMS API constants
+    API_VERSION_DEFAULT: Final[str] = "v2"
+    API_BASE_URL_DEFAULT: Final[str] = "https://wms.oraclecloud.com"
+    API_TIMEOUT_DEFAULT: Final[int] = FlextConstants.Defaults.TIMEOUT * 2  # 60 seconds
+    API_MAX_RETRIES: Final[int] = 3
+    API_RATE_LIMIT_PER_MINUTE: Final[int] = 1000
 
-        # Timeouts and limits
-        DEFAULT_TIMEOUT = 30.0
-        DEFAULT_MAX_RETRIES = 3
-        DEFAULT_RETRY_DELAY = 1.0
+    # Authentication constants
+    AUTH_METHOD_BASIC: Final[str] = "basic"
+    AUTH_METHOD_OAUTH2: Final[str] = "oauth2"
+    AUTH_METHOD_API_KEY: Final[str] = "api_key"
+    OAUTH2_TOKEN_ENDPOINT: Final[str] = "/oauth2/token"  # noqa: S105  # URL path endpoint (not a password)
+    OAUTH2_SCOPE_DEFAULT: Final[str] = "wms.read wms.write"
 
-        # HTTP status codes
-        HTTP_OK = 200
-        HTTP_BAD_REQUEST = 400
-        HTTP_UNAUTHORIZED = 401
-        HTTP_FORBIDDEN = 403
-        MIN_HTTP_STATUS_CODE = 100
-        MAX_HTTP_STATUS_CODE = 599
+    # Entity types
+    ENTITY_TYPE_INVENTORY: Final[str] = "inventory"
+    ENTITY_TYPE_ORDER: Final[str] = "order"
+    ENTITY_TYPE_SHIPMENT: Final[str] = "shipment"
+    ENTITY_TYPE_PICKING: Final[str] = "picking"
+    ENTITY_TYPE_LOCATION: Final[str] = "location"
+    ENTITY_TYPE_ITEM: Final[str] = "item"
 
-        AUTH_ERROR_CODES: ClassVar[tuple[int, ...]] = (401, 403)
+    # Batch processing constants
+    DEFAULT_BATCH_SIZE: Final[int] = FlextConstants.Defaults.PAGE_SIZE * 10  # 1000
+    MAX_BATCH_SIZE: Final[int] = FlextConstants.Defaults.PAGE_SIZE * 100  # 10000
+    DEFAULT_PAGE_SIZE: Final[int] = FlextConstants.Defaults.PAGE_SIZE  # 100
 
-    class Authentication:
-        """Authentication configuration constants."""
+    # Cache constants
+    CACHE_TTL_DEFAULT: Final[int] = 3600  # 1 hour
+    CACHE_MAX_SIZE: Final[int] = 10000
+    CACHE_CLEANUP_INTERVAL: Final[int] = 300  # 5 minutes
 
-        METHODS: ClassVar[FlextTypes.Core.StringList] = ["basic", "bearer", "api_key"]
-        MIN_TOKEN_LENGTH = 10
-        MIN_API_KEY_LENGTH = 10
+    # Error handling constants
+    MAX_RETRY_ATTEMPTS: Final[int] = 3
+    RETRY_DELAY_BASE: Final[int] = 1  # seconds
+    RETRY_DELAY_MAX: Final[int] = 60  # seconds
 
-    class OracleWmsEntities:
-        """Oracle WMS entity type constants."""
+    # Performance thresholds
+    PERFORMANCE_WARNING_THRESHOLD: Final[int] = 5000  # 5 seconds
+    PERFORMANCE_CRITICAL_THRESHOLD: Final[int] = 10000  # 10 seconds
 
-        CORE_ENTITIES: ClassVar[FlextTypes.Core.StringList] = [
-            "company",
-            "facility",
-            "location",
-            "item",
-        ]
+    # API constants
+    class Api:
+        """Oracle WMS API constants."""
 
-        ORDER_ENTITIES: ClassVar[FlextTypes.Core.StringList] = [
-            "order_hdr",
-            "order_dtl",
-        ]
+        DEFAULT_TIMEOUT: Final[int] = 60  # seconds
+        MIN_HTTP_STATUS_CODE: Final[int] = 200
+        MAX_HTTP_STATUS_CODE: Final[int] = 599
 
-        INVENTORY_ENTITIES: ClassVar[FlextTypes.Core.StringList] = [
-            "inventory",
-            "allocation",
-        ]
+    # =========================================================================
+    # DOMAIN-SPECIFIC ENUMS - NOT available in FlextConstants
+    # =========================================================================
 
-        MOVEMENT_ENTITIES: ClassVar[FlextTypes.Core.StringList] = [
-            "pick_hdr",
-            "pick_dtl",
-        ]
+    class OracleWMSEntityType(StrEnum):
+        """Oracle WMS entity types - domain-specific to warehouse management."""
 
-        SHIPMENT_ENTITIES: ClassVar[FlextTypes.Core.StringList] = [
-            "shipment",
-            "oblpn",
-        ]
+        INVENTORY = "inventory"
+        ORDER = "order"
+        SHIPMENT = "shipment"
+        PICKING = "picking"
+        LOCATION = "location"
+        ITEM = "item"
 
-        # Entity validation
-        MAX_ENTITY_NAME_LENGTH = 100
-        ENTITY_NAME_PATTERN = r"^[a-z0-9_]+$"
+    class OracleWMSApiVersion(StrEnum):
+        """Oracle WMS API versions."""
 
-    class Filtering:
-        """Data filtering constants."""
+        V1 = "v1"
+        V2 = "v2"
+        LGF_V10 = "v10"
+        LEGACY = "legacy"
 
-        OPERATORS: ClassVar[FlextTypes.Core.StringList] = [
-            "eq",
-            "ne",
-            "gt",
-            "ge",
-            "lt",
-            "le",
-            "in",
-            "not_in",
-            "like",
-            "not_like",
-        ]
+    class OracleWMSAuthMethod(StrEnum):
+        """Oracle WMS authentication methods."""
 
-        MAX_FILTER_CONDITIONS = 50
+        BASIC = "basic"
+        OAUTH2 = "oauth2"
+        API_KEY = "api_key"
 
-    class Pagination:
-        """Pagination configuration constants."""
+    class OracleWMSOperationStatus(StrEnum):
+        """Oracle WMS operation status enumeration."""
 
-        MODES: ClassVar[FlextTypes.Core.StringList] = ["offset", "cursor", "token"]
-        DEFAULT_PAGE_SIZE = 100
-        MAX_PAGE_SIZE = 1000
-        MIN_PAGE_SIZE = 1
-
-    class Processing:
-        """Data processing configuration constants."""
-
-        WRITE_MODES: ClassVar[FlextTypes.Core.StringList] = [
-            "insert",
-            "update",
-            "upsert",
-            "delete",
-        ]
-        DEFAULT_BATCH_SIZE = 50
-        MAX_BATCH_SIZE = 500
-
-        # Rate limiting
-        DEFAULT_RATE_LIMIT = 60  # requests per minute
-        MIN_REQUEST_DELAY = 0.1  # seconds
-
-        # Schema discovery
-        DEFAULT_SAMPLE_SIZE = 100
-        MIN_CONFIDENCE_THRESHOLD = 0.7
-        MAX_SCHEMA_DEPTH = 10
-
-    class Connections:
-        """Connection management constants."""
-
-        DEFAULT_POOL_SIZE = 5
-        MAX_POOL_SIZE = 20
-        DEFAULT_CONNECT_TIMEOUT = 10
-        DEFAULT_READ_TIMEOUT = 30
-
-    class Caching:
-        """Caching configuration constants."""
-
-        DEFAULT_CACHE_TTL = 300  # 5 minutes
-        MAX_CACHE_SIZE = 1000
-
-    class Paths:
-        """API path constants."""
-
-        # Entity paths
-        ENTITY_DISCOVERY = "/entity/"
-        ENTITY_DATA = "/entity/{entity_name}/"
-        ENTITY_BY_ID = "/entity/{entity_name}/{entity_id}/"
-
-        # Metadata paths
-        METADATA_BASE = "/metadata"
-        SCHEMA_BASE = "/schema"
-
-        # Operation paths
-        INIT_STAGE = "/init_stage_interface/"
-        RUN_STAGE = "/run_stage_interface/"
-
-        # Status paths
-        STATUS_CHECK = "/status/"
-        HEALTH_CHECK = "/health/"
-
-    class ResponseFields:
-        """Standard response field names."""
-
-        # Pagination fields
-        RESULT_COUNT = "result_count"
-        PAGE_COUNT = "page_count"
-        PAGE_NUMBER = "page_nbr"
-        NEXT_PAGE = "next_page"
-        PREVIOUS_PAGE = "previous_page"
-        RESULTS = "results"
-
-        # Data fields
-        DATA = "data"
-        ID = "id"
-        URL = "url"
-
-        # Metadata fields
-        CREATE_USER = "create_user"
-        CREATE_TS = "create_ts"
-        MOD_USER = "mod_user"
-        MOD_TS = "mod_ts"
-
-        # Status fields
-        STATUS = "status"
-        MESSAGE = "message"
+        PENDING = "pending"
+        RUNNING = "running"
+        SUCCESS = "success"
         ERROR = "error"
+        TIMEOUT = "timeout"
+        CANCELLED = "cancelled"
 
-    class ErrorMessages:
-        """Standard error messages for Oracle WMS operations."""
+    class OracleWMSDataQuality(StrEnum):
+        """Oracle WMS data quality levels."""
 
-        # Connection errors
-        CONNECTION_FAILED = "Failed to connect to Oracle WMS"
-        AUTHENTICATION_FAILED = "Authentication failed"
-        TIMEOUT_ERROR = "Request timeout"
+        HIGH = "high"
+        MEDIUM = "medium"
+        LOW = "low"
+        UNKNOWN = "unknown"
 
-        # API errors
-        API_ERROR = "Oracle WMS API error"
-        INVALID_ENDPOINT = "Invalid API endpoint"
-        INVALID_RESPONSE = "Invalid API response format"
+    class OracleWMSFilterOperator(StrEnum):
+        """Oracle WMS filter operators."""
 
-        # Entity errors
-        ENTITY_NOT_FOUND = "Entity not found"
-        INVALID_ENTITY_TYPE = "Invalid entity type"
-        ENTITY_VALIDATION_FAILED = "Entity validation failed"
-
-        # Data errors
-        INVALID_DATA_FORMAT = "Invalid data format"
-        DATA_VALIDATION_FAILED = "Data validation failed"
-        SCHEMA_GENERATION_FAILED = "Schema generation failed"
-
-        # Processing errors
-        FLATTENING_FAILED = "Data flattening failed"
-        DISCOVERY_FAILED = "Entity discovery failed"
-        PROCESSING_FAILED = "Data processing failed"
+        EQ = "eq"
+        NE = "ne"
+        GT = "gt"
+        GTE = "gte"
+        LT = "lt"
+        LTE = "lte"
+        IN = "in"
+        NOT_IN = "not_in"
+        CONTAINS = "contains"
+        STARTS_WITH = "starts_with"
+        ENDS_WITH = "ends_with"
 
 
-class FlextOracleWmsConstants:
-    """Oracle WMS constants with backward compatibility.
+# Export aliases for backward compatibility
+FlextOracleWmsApiVersion = FlextOracleWmsConstants.OracleWMSApiVersion
+FlextOracleWmsDefaults = FlextOracleWmsConstants
+FlextOracleWmsSemanticConstants = FlextOracleWmsConstants
+OracleWMSEntityType = FlextOracleWmsConstants.OracleWMSEntityType
+OracleWMSFilterOperator = FlextOracleWmsConstants.OracleWMSFilterOperator
+OracleWMSAuthMethod = FlextOracleWmsConstants.OracleWMSAuthMethod
+OracleWMSApiVersion = FlextOracleWmsConstants.OracleWMSApiVersion
+OracleWMSDataQuality = FlextOracleWmsConstants.OracleWMSDataQuality
+OracleWMSOperationStatus = FlextOracleWmsConstants.OracleWMSOperationStatus
 
-    Legacy compatibility layer providing both modern semantic access
-    and traditional flat constant access patterns for smooth migration.
-    """
-
-    # Modern semantic access (Primary API) - direct references
-    Core = FlextOracleWmsSemanticConstants.OracleWmsCore
-    Api = FlextOracleWmsSemanticConstants.OracleWmsApi
-    Authentication = FlextOracleWmsSemanticConstants.Authentication
-    Entities = FlextOracleWmsSemanticConstants.OracleWmsEntities
-    Filtering = FlextOracleWmsSemanticConstants.Filtering
-    Pagination = FlextOracleWmsSemanticConstants.Pagination
-    Processing = FlextOracleWmsSemanticConstants.Processing
-    Connections = FlextOracleWmsSemanticConstants.Connections
-    Caching = FlextOracleWmsSemanticConstants.Caching
-    Paths = FlextOracleWmsSemanticConstants.Paths
-    ResponseFields = FlextOracleWmsSemanticConstants.ResponseFields
-    ErrorMessages = FlextOracleWmsSemanticConstants.ErrorMessages
-
-
-# =================================================================
-# ENUM CLASSES - Core Oracle WMS Enums
-# =================================================================
-
-
-class OracleWMSAuthMethod(StrEnum):
-    """Oracle WMS authentication methods."""
-
-    BASIC = "basic"
-    BEARER = "bearer"
-    API_KEY = "api_key"
-
-
-class FlextOracleWmsApiVersion(StrEnum):
-    """Oracle WMS API versions."""
-
-    LEGACY = "legacy"  # /wms/api/
-    LGF_V10 = "v10"  # /wms/lgfapi/v10/
-
-
-class OracleWMSEntityType(StrEnum):
-    """Oracle WMS entity types."""
-
-    # Core entities
-    COMPANY = "company"
-    FACILITY = "facility"
-    LOCATION = "location"
-    ITEM = "item"
-
-    # Order entities
-    ORDER_HDR = "order_hdr"
-    ORDER_DTL = "order_dtl"
-
-    # Inventory entities
-    INVENTORY = "inventory"
-    ALLOCATION = "allocation"
-
-    # Movement entities
-    PICK_HDR = "pick_hdr"
-    PICK_DTL = "pick_dtl"
-
-    # Shipment entities
-    SHIPMENT = "shipment"
-    OBLPN = "oblpn"
-
-
-class OracleWMSFilterOperator(StrEnum):
-    """Oracle WMS filter operators."""
-
-    EQ = "eq"
-    NE = "ne"
-    GT = "gt"
-    GE = "ge"
-    LT = "lt"
-    LE = "le"
-    IN = "in"
-    NOT_IN = "not_in"
-    LIKE = "like"
-    NOT_LIKE = "not_like"
-
-
-class OracleWMSPageMode(StrEnum):
-    """Oracle WMS pagination modes."""
-
-    OFFSET = "offset"
-    CURSOR = "cursor"
-    PAGE_MARKER = "page_token"
-
-
-class OracleWMSWriteMode(StrEnum):
-    """Oracle WMS write modes."""
-
-    INSERT = "insert"
-    UPDATE = "update"
-    UPSERT = "upsert"
-    DELETE = "delete"
-
-
-class FlextOracleWmsDefaults:
-    """Default values for Oracle WMS operations (DEPRECATED - use FlextOracleWmsConstants)."""
-
-    # API Configuration
-    DEFAULT_API_VERSION = FlextOracleWmsSemanticConstants.OracleWmsApi.DEFAULT_VERSION
-    DEFAULT_TIMEOUT = FlextOracleWmsSemanticConstants.OracleWmsApi.DEFAULT_TIMEOUT
-    DEFAULT_MAX_RETRIES = (
-        FlextOracleWmsSemanticConstants.OracleWmsApi.DEFAULT_MAX_RETRIES
-    )
-    DEFAULT_RETRY_DELAY = (
-        FlextOracleWmsSemanticConstants.OracleWmsApi.DEFAULT_RETRY_DELAY
-    )
-
-    # Authentication
-    MIN_TOKEN_LENGTH = FlextOracleWmsSemanticConstants.Authentication.MIN_TOKEN_LENGTH
-    MIN_API_KEY_LENGTH = (
-        FlextOracleWmsSemanticConstants.Authentication.MIN_API_KEY_LENGTH
-    )
-
-    # Pagination
-    DEFAULT_PAGE_SIZE = FlextOracleWmsSemanticConstants.Pagination.DEFAULT_PAGE_SIZE
-    MAX_PAGE_SIZE = FlextOracleWmsSemanticConstants.Pagination.MAX_PAGE_SIZE
-    MIN_PAGE_SIZE = FlextOracleWmsSemanticConstants.Pagination.MIN_PAGE_SIZE
-
-    # Batch Processing
-    DEFAULT_BATCH_SIZE = FlextOracleWmsSemanticConstants.Processing.DEFAULT_BATCH_SIZE
-    MAX_BATCH_SIZE = FlextOracleWmsSemanticConstants.Processing.MAX_BATCH_SIZE
-
-    # Rate Limiting
-    DEFAULT_RATE_LIMIT = FlextOracleWmsSemanticConstants.Processing.DEFAULT_RATE_LIMIT
-    MIN_REQUEST_DELAY = FlextOracleWmsSemanticConstants.Processing.MIN_REQUEST_DELAY
-
-    # Schema Discovery
-    DEFAULT_SAMPLE_SIZE = FlextOracleWmsSemanticConstants.Processing.DEFAULT_SAMPLE_SIZE
-    MIN_CONFIDENCE_THRESHOLD = (
-        FlextOracleWmsSemanticConstants.Processing.MIN_CONFIDENCE_THRESHOLD
-    )
-    MAX_SCHEMA_DEPTH = FlextOracleWmsSemanticConstants.Processing.MAX_SCHEMA_DEPTH
-
-    # Connections
-    DEFAULT_POOL_SIZE = FlextOracleWmsSemanticConstants.Connections.DEFAULT_POOL_SIZE
-    MAX_POOL_SIZE = FlextOracleWmsSemanticConstants.Connections.MAX_POOL_SIZE
-    DEFAULT_CONNECT_TIMEOUT = (
-        FlextOracleWmsSemanticConstants.Connections.DEFAULT_CONNECT_TIMEOUT
-    )
-    DEFAULT_READ_TIMEOUT = (
-        FlextOracleWmsSemanticConstants.Connections.DEFAULT_READ_TIMEOUT
-    )
-
-    # Caching
-    DEFAULT_CACHE_TTL = FlextOracleWmsSemanticConstants.Caching.DEFAULT_CACHE_TTL
-    MAX_CACHE_SIZE = FlextOracleWmsSemanticConstants.Caching.MAX_CACHE_SIZE
-
-    # Entity Validation
-    MAX_ENTITY_NAME_LENGTH = (
-        FlextOracleWmsSemanticConstants.OracleWmsEntities.MAX_ENTITY_NAME_LENGTH
-    )
-    ENTITY_NAME_PATTERN = (
-        FlextOracleWmsSemanticConstants.OracleWmsEntities.ENTITY_NAME_PATTERN
-    )
-
-    # Filter Limits
-    MAX_FILTER_CONDITIONS = (
-        FlextOracleWmsSemanticConstants.Filtering.MAX_FILTER_CONDITIONS
-    )
-
-    # HTTP status codes
-    HTTP_OK = FlextOracleWmsSemanticConstants.OracleWmsApi.HTTP_OK
-    HTTP_BAD_REQUEST = FlextOracleWmsSemanticConstants.OracleWmsApi.HTTP_BAD_REQUEST
-    HTTP_UNAUTHORIZED = FlextOracleWmsSemanticConstants.OracleWmsApi.HTTP_UNAUTHORIZED
-    HTTP_FORBIDDEN = FlextOracleWmsSemanticConstants.OracleWmsApi.HTTP_FORBIDDEN
-    MIN_HTTP_STATUS_CODE = (
-        FlextOracleWmsSemanticConstants.OracleWmsApi.MIN_HTTP_STATUS_CODE
-    )
-    MAX_HTTP_STATUS_CODE = (
-        FlextOracleWmsSemanticConstants.OracleWmsApi.MAX_HTTP_STATUS_CODE
-    )
-
-    # Core constants
-    DEFAULT_ENVIRONMENT = (
-        FlextOracleWmsSemanticConstants.OracleWmsCore.DEFAULT_ENVIRONMENT
-    )
-
-    # Authentication status codes
-    AUTH_ERROR_CODES = FlextOracleWmsSemanticConstants.OracleWmsApi.AUTH_ERROR_CODES
-
-
-# Legacy class aliases for backward compatibility
-FlextOracleWmsErrorMessages = FlextOracleWmsSemanticConstants.ErrorMessages
-FlextOracleWmsApiPaths = FlextOracleWmsSemanticConstants.Paths
-FlextOracleWmsResponseFields = FlextOracleWmsSemanticConstants.ResponseFields
-
-
-__all__: FlextTypes.Core.StringList = [
-    "FlextOracleWmsApiPaths",
+__all__ = [
     "FlextOracleWmsApiVersion",
     "FlextOracleWmsConstants",
-    # Legacy Compatibility
     "FlextOracleWmsDefaults",
-    "FlextOracleWmsErrorMessages",
-    "FlextOracleWmsResponseFields",
-    # Modern Semantic Constants (Primary API)
     "FlextOracleWmsSemanticConstants",
-    # Enum Classes
+    "OracleWMSApiVersion",
     "OracleWMSAuthMethod",
+    "OracleWMSDataQuality",
     "OracleWMSEntityType",
     "OracleWMSFilterOperator",
-    "OracleWMSPageMode",
-    "OracleWMSWriteMode",
+    "OracleWMSOperationStatus",
 ]

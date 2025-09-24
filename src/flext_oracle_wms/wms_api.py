@@ -217,9 +217,9 @@ class OracleWmsMockServer:
     def __init__(self, mock_environment: str = "mock_test") -> None:
         """Initialize Oracle WMS mock server."""
         self.environment = mock_environment
-        self.mock_data = self._initialize_mock_data()
+        self.mock_data: dict[str, object] = self._initialize_mock_data()
 
-    def _initialize_mock_data(self) -> FlextTypes.Core.Dict:
+    def _initialize_mock_data(self: object) -> FlextTypes.Core.Dict:
         """Initialize realistic real data based on Oracle WMS documentation."""
         return {
             "entities": [
@@ -332,7 +332,7 @@ class OracleWmsMockServer:
             logger.exception("Mock server error")
             return FlextResult[FlextTypes.Core.Dict].fail(f"Mock server error: {e}")
 
-    def _mock_entity_discovery(self) -> FlextResult[FlextTypes.Core.Dict]:
+    def _mock_entity_discovery(self: object) -> FlextResult[FlextTypes.Core.Dict]:
         """Mock entity discovery response."""
         entities = [
             {
@@ -363,7 +363,7 @@ class OracleWmsMockServer:
     def _mock_entity_data(self, entity_name: str) -> FlextResult[FlextTypes.Core.Dict]:
         """Mock entity data response."""
         data_key = f"{entity_name}_data"
-        mock_records = self.mock_data.get(data_key, [])
+        mock_records: list[object] = self.mock_data.get(data_key, [])
 
         entities_list = (
             self.mock_data["entities"]
