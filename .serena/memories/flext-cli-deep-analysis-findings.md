@@ -92,7 +92,7 @@ After deep investigation, flext-cli contains **significantly more substantial im
 
 ### Missing Integration Points
 
-- Advanced FlextProcessing pipeline usage
+- Advanced FlextProcessors pipeline usage
 - Full FlextObservability integration
 - FlextSecurity pattern implementation
 
