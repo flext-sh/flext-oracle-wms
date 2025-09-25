@@ -504,7 +504,7 @@ class FlextOracleWmsUnifiedOperations:
             records: list[FlextTypes.Core.Dict],
         ) -> list[FlextTypes.Core.Dict]:
             """Flatten nested records."""
-            flattened_records = []
+            flattened_records: list[dict[str, object]] = []
             for record in records:
                 flattened_record = self._flatten_dict(record)
                 flattened_records.append(flattened_record)

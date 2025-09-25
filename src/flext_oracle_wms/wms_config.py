@@ -18,7 +18,7 @@ from urllib.parse import urlparse
 from pydantic import Field, field_validator
 
 from flext_core import FlextConfig, FlextModels, FlextResult, FlextTypes
-from flext_oracle_wms.wms_constants import FlextOracleWmsApiVersion, OracleWMSAuthMethod
+from flext_oracle_wms.wms_constants import FlextOracleWmsConstants
 
 
 class FlextOracleWmsConfig(FlextConfig):

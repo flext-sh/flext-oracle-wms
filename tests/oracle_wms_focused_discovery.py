@@ -430,7 +430,7 @@ class FocusedOracleWmsDiscovery:
         fields: FlextTypes.Core.StringList,
     ) -> FlextTypes.Core.StringList:
         """Get Oracle WMS key properties for entity."""
-        keys = []
+        keys: list[str] = []
 
         # Always include id if present
         if "id" in fields:

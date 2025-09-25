@@ -40,7 +40,7 @@ TOracleWmsEntityName = Annotated[
 
 # Filter types - USED BY FILTERING MODULE
 TOracleWmsFilterValue = (
-    str | int | float | bool | list[str | int | float] | FlextTypes.Core.Dict
+    (str | int | float) | (bool | list[str | int | float]) | FlextTypes.Core.Dict
 )
 TOracleWmsFilters = dict[str, TOracleWmsFilterValue]
 

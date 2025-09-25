@@ -198,7 +198,9 @@ class TestOracleWmsDeclarativeIntegration:
         ]
         assert len(lgf_apis) >= 5, "Should have multiple LGF v10 APIs"
 
-    async def test_client_configuration(self, env_config: FlextTypes.Core.Dict) -> None:
+    async def test_client_configuration_and_lifecycle(
+        self, env_config: FlextTypes.Core.Dict
+    ) -> None:
         """Test client configuration and initialization."""
         config = FlextOracleWmsClientConfig(**env_config)
 
@@ -220,7 +222,9 @@ class TestOracleWmsDeclarativeIntegration:
         stop_result = await client.stop()
         assert stop_result.success, f"Client stop failed: {stop_result.error}"
 
-    async def test_health_check(self, oracle_wms_client: FlextOracleWmsClient) -> None:
+    async def test_oracle_wms_health_check(
+        self, oracle_wms_client: FlextOracleWmsClient
+    ) -> None:
         """Test Oracle WMS API health check."""
         health_result = await oracle_wms_client.health_check()
 

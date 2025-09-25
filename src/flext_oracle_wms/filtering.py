@@ -436,7 +436,7 @@ def flext_oracle_wms_filter_by_id_range(
         return FlextResult[list[FlextTypes.Core.Dict]].ok([])
 
     # Apply manual range filtering since we need both min and max on same field
-    filtered_records = []
+    filtered_records: list[dict[str, object]] = []
     for record in records:
         field_value = record.get(id_field)
         if field_value is None:

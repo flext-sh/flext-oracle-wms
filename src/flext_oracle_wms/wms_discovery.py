@@ -41,10 +41,10 @@ from flext_oracle_wms.wms_operations import handle_operation_exception
 logger = FlextLogger(__name__)
 
 # Cache value types
-CacheValueBasic = str | int | float | bool | None
+CacheValueBasic = (str | int | float) | (bool | None)
 CacheValueDict = FlextTypes.Core.Dict
 CacheValueList = list[CacheValueBasic | CacheValueDict]
-CacheValue = CacheValueDict | CacheValueList | CacheValueBasic
+CacheValue = (CacheValueDict | CacheValueList) | CacheValueBasic
 
 # Constants for FlextResult boolean values to avoid FBT003 lint errors
 DISCOVERY_SUCCESS = True
@@ -1106,7 +1106,7 @@ class FlextOracleWmsEntityDiscovery:
             return FlextResult[list[FlextOracleWmsEntity]].fail(error_message)
 
         # Convert entity names to FlextOracleWmsEntity objects
-        entities = []
+        entities: list[FlextOracleWmsEntity] = []
         entity_names = entity_names_result.data or []
         for entity_name in entity_names:
             entity = self._create_entity_from_string_name(entity_name)
@@ -1517,7 +1517,7 @@ class EntityResponseParser:
                 if entities_data is not None:
                     if isinstance(entities_data, list):
                         # Extract names from entity objects or use strings directly
-                        entity_names = []
+                        entity_names: list[str] = []
                         for item in entities_data:
                             if isinstance(item, dict) and item.get("name"):
                                 entity_names.append(str(item["name"]))

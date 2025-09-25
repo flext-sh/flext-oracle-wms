@@ -21,7 +21,7 @@ from .wms_client import (
     FlextOracleWmsAuthenticator,
     FlextOracleWmsAuthPlugin,
 )
-from .wms_constants import OracleWMSAuthMethod
+from .wms_constants import FlextOracleWmsConstants
 
 
 class FlextOracleWmsAuthConfig(_BaseAuthConfig):
@@ -40,15 +40,15 @@ class FlextOracleWmsAuthConfig(_BaseAuthConfig):
             FlextResult[None]: Description.
 
         """
-        if self.auth_type == OracleWMSAuthMethod.BASIC:
+        if self.auth_type == FlextOracleWmsConstants.OracleWMSAuthMethod.BASIC:
             if not self.username or not self.password:
                 return FlextResult[None].fail(
                     "Username and password required for basic auth",
                 )
-        elif self.auth_type == OracleWMSAuthMethod.BEARER:
+        elif self.auth_type == FlextOracleWmsConstants.OracleWMSAuthMethod.BEARER:
             if not self.token:
                 return FlextResult[None].fail("Token required for bearer auth")
-        elif self.auth_type == OracleWMSAuthMethod.API_KEY and not self.api_key:
+        elif self.auth_type == FlextOracleWmsConstants.OracleWMSAuthMethod.API_KEY and not self.api_key:
             return FlextResult[None].fail("API key required in header for API key auth")
         return FlextResult[None].ok(None)
 
@@ -69,7 +69,7 @@ class FlextOracleWmsAuthConfig(_BaseAuthConfig):
             try:
                 auth_type = super().__getattribute__("auth_type")
                 value = super().__getattribute__("__dict__").get("username", None)
-                if auth_type == OracleWMSAuthMethod.BEARER:
+                if auth_type == FlextOracleWmsConstants.OracleWMSAuthMethod.BEARER:
                     frames = inspect.stack()
                     for fr in frames:
                         fname = fr.filename
@@ -77,7 +77,7 @@ class FlextOracleWmsAuthConfig(_BaseAuthConfig):
                             return value  # None
                         if fname.endswith("test_authentication_simple_coverage.py"):
                             return ""
-                if auth_type == OracleWMSAuthMethod.API_KEY:
+                if auth_type == FlextOracleWmsConstants.OracleWMSAuthMethod.API_KEY:
                     # For API_KEY, both suites expect empty string
                     return ""
                 return value

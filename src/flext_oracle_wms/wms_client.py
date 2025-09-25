@@ -154,7 +154,7 @@ class FlextOracleWmsAuthenticator:
     ) -> FlextResult[FlextTypes.Core.Headers] | FlextTypes.Core.Headers:
         """Get authentication headers based on configuration."""
         try:
-            headers = {}
+            headers: dict[str, str] = {}
 
             if self.config.auth_type == OracleWMSAuthMethod.BASIC:
                 credentials = f"{self.config.username}:{self.config.password}"

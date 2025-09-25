@@ -509,7 +509,7 @@ class OptimizedOracleWmsDiscovery:
     ) -> FlextTypes.Core.StringList:
         """Determine key properties for Oracle WMS entity."""
         # Oracle WMS key patterns
-        potential_keys = []
+        potential_keys: list[str] = []
 
         # Always include id if present
         if "id" in fields:

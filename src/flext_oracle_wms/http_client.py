@@ -78,7 +78,7 @@ class FlextHttpClient:
     async def get(
         self,
         path: str,
-        params: dict[str, str | int | float | bool | None] | None = None,
+        params: dict[str, str | int, float] | bool | None = None,
         headers: dict[str, str] | None = None,
     ) -> FlextResult[FlextTypes.Core.Dict]:
         """Make GET request.
