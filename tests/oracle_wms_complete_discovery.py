@@ -613,7 +613,7 @@ class OracleWmsCompleteDiscovery:
     async def save_complete_discovery_results(self) -> FlextResult[str]:
         """Save complete discovery results to files."""
         results_dir = Path("oracle_wms_complete_results")
-        results_dir.mkdir(exist_ok=True)
+        await asyncio.to_thread(results_dir.mkdir, exist_ok=True)
 
         timestamp = datetime.now(UTC).strftime("%Y%m%d_%H%M%S")
 

@@ -23,5 +23,5 @@ __all__ = [
     "FlextOracleWmsCacheEntry",
     "FlextOracleWmsCacheManager",
     "FlextOracleWmsCacheStats",
-    # REMOVED: "flext_oracle_wms_create_cache_manager" - use FlextOracleWmsCacheManager directly
+    # REMOVED: flext_oracle_wms_create_cache_manager - use FlextOracleWmsCacheManager directly
 ]

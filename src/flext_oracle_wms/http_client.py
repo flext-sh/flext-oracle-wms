@@ -6,7 +6,7 @@ Copyright (c) 2025 FLEXT Team. All rights reserved. SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 import json
-from typing import Self
+from typing import Self, override
 
 from flext_api import FlextApiClient
 from flext_core import FlextLogger, FlextResult, FlextTypes
@@ -20,6 +20,7 @@ HTTP_BAD_REQUEST = 400
 class FlextHttpClient:
     """HTTP client using flext-api foundation with flext-core patterns."""
 
+    @override
     def __init__(
         self,
         base_url: str,
@@ -78,7 +79,7 @@ class FlextHttpClient:
     async def get(
         self,
         path: str,
-        params: dict[str, str | int, float] | bool | None = None,
+        params: dict[str, str | int | float] | None = None,
         headers: dict[str, str] | None = None,
     ) -> FlextResult[FlextTypes.Core.Dict]:
         """Make GET request.

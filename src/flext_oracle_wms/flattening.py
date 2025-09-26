@@ -5,6 +5,8 @@ Copyright (c) 2025 FLEXT Team. All rights reserved. SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
+from typing import override
+
 from flext_core import FlextResult, FlextTypes
 from flext_oracle_wms.wms_operations import FlextOracleWmsFlattener as _OpsFlattener
 
@@ -12,6 +14,7 @@ from flext_oracle_wms.wms_operations import FlextOracleWmsFlattener as _OpsFlatt
 class FlextOracleWmsDataFlattener(_OpsFlattener):
     """Oracle WMS data flattener with custom separator support."""
 
+    @override
     def __init__(
         self,
         separator: str = "_",

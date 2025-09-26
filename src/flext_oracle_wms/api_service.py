@@ -9,6 +9,8 @@ Follows Single Responsibility Principle - only handles API calls.
 
 from __future__ import annotations
 
+from typing import override
+
 from flext_core import FlextLogger, FlextResult, FlextTypes
 from flext_oracle_wms.http_client import FlextHttpClient
 
@@ -19,6 +21,7 @@ class OracleWmsApiService:
     Single Responsibility: Only handles API calls to Oracle WMS.
     """
 
+    @override
     def __init__(self, api_client: FlextHttpClient) -> None:
         """Initialize API service."""
         self._api_client = api_client

@@ -48,7 +48,10 @@ class FlextOracleWmsAuthConfig(_BaseAuthConfig):
         elif self.auth_type == FlextOracleWmsConstants.OracleWMSAuthMethod.BEARER:
             if not self.token:
                 return FlextResult[None].fail("Token required for bearer auth")
-        elif self.auth_type == FlextOracleWmsConstants.OracleWMSAuthMethod.API_KEY and not self.api_key:
+        elif (
+            self.auth_type == FlextOracleWmsConstants.OracleWMSAuthMethod.API_KEY
+            and not self.api_key
+        ):
             return FlextResult[None].fail("API key required in header for API key auth")
         return FlextResult[None].ok(None)
 

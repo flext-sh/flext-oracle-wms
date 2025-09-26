@@ -6,8 +6,6 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from flext_core import FlextTypes
-
 # from flext_oracle_wms.dynamic import flext_oracle_wms_create_dynamic_schema_processor
 from flext_oracle_wms.filtering import (
     FlextOracleWmsFilter,
@@ -19,6 +17,7 @@ from flext_oracle_wms.flattening import (
     FlextOracleWmsDataFlattener,
     flext_oracle_wms_create_data_flattener,
 )
+from flext_oracle_wms.typings import FlextOracleWmsTypes
 from flext_oracle_wms.wms_api import (
     FLEXT_ORACLE_WMS_APIS,
     FlextOracleWmsApiCategory,
@@ -145,7 +144,7 @@ __description__ = (
 )
 
 
-__all__: FlextTypes.Core.StringList = [
+__all__: FlextOracleWmsTypes.Core.StringList = [
     "DISCOVERY_FAILURE",
     "DISCOVERY_SUCCESS",
     "FLEXT_ORACLE_WMS_APIS",

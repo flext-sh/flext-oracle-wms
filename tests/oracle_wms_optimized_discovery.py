@@ -579,7 +579,7 @@ class OptimizedOracleWmsDiscovery:
     async def save_optimized_results(self) -> FlextResult[str]:
         """Save optimized discovery results."""
         results_dir = Path("oracle_wms_optimized_results")
-        results_dir.mkdir(exist_ok=True)
+        await asyncio.to_thread(results_dir.mkdir, exist_ok=True)
 
         timestamp = datetime.now(UTC).strftime("%Y%m%d_%H%M%S")
 

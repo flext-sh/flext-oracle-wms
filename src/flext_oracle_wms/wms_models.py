@@ -42,7 +42,7 @@ TOracleWmsEntityName = Annotated[
 TOracleWmsFilterValue = (
     (str | int | float) | (bool | list[str | int | float]) | FlextTypes.Core.Dict
 )
-TOracleWmsFilters = dict[str, TOracleWmsFilterValue]
+TOracleWmsFilters = dict["str", "TOracleWmsFilterValue"]
 
 # Configuration essentials - USED BY CONFIG
 TOracleWmsEnvironment = Annotated[str, StringConstraints(min_length=1, max_length=50)]

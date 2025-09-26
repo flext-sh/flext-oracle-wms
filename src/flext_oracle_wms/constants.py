@@ -12,26 +12,32 @@ from flext_core import FlextConstants
 
 
 class FlextOracleWmsConstants(FlextConstants):
-    """Oracle WMS integration-specific constants following flext-core patterns."""
+    """Oracle WMS integration-specific constants following FLEXT unified pattern with nested domains."""
 
-    # Oracle WMS API Configuration
-    DEFAULT_WMS_TIMEOUT = 30
-    DEFAULT_MAX_RETRIES = 3
-    DEFAULT_RETRY_DELAY = 1
+    class Connection:
+        """Oracle WMS connection and API configuration constants."""
 
-    # WMS Entity Types
-    WMS_ENTITY_TYPES: ClassVar[list[str]] = [
-        "INVENTORY",
-        "SHIPMENT",
-        "PICKING",
-        "RECEIVING",
-        "WAREHOUSE",
-    ]
+        DEFAULT_TIMEOUT = FlextConstants.Network.DEFAULT_TIMEOUT
+        DEFAULT_MAX_RETRIES = FlextConstants.Reliability.MAX_RETRY_ATTEMPTS
+        DEFAULT_RETRY_DELAY = FlextConstants.Reliability.RETRY_DELAY_SECONDS
 
-    # WMS Operation Configuration
-    DEFAULT_BATCH_SIZE = 1000
-    MAX_BATCH_SIZE = 10000
-    DEFAULT_PAGE_SIZE = 100
+    class Entities:
+        """Oracle WMS entity types and definitions."""
+
+        TYPES: ClassVar[list[str]] = [
+            "INVENTORY",
+            "SHIPMENT",
+            "PICKING",
+            "RECEIVING",
+            "WAREHOUSE",
+        ]
+
+    class Processing:
+        """Oracle WMS data processing configuration constants."""
+
+        DEFAULT_BATCH_SIZE = FlextConstants.Performance.BatchProcessing.DEFAULT_SIZE
+        MAX_BATCH_SIZE = FlextConstants.Performance.BatchProcessing.MAX_ITEMS
+        DEFAULT_PAGE_SIZE = FlextConstants.Performance.Pagination.DEFAULT_PAGE_SIZE
 
 
 __all__ = ["FlextOracleWmsConstants"]

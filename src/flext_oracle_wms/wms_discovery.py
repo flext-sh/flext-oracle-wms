@@ -17,7 +17,7 @@ import time
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from datetime import UTC, datetime
-from typing import ClassVar, cast
+from typing import ClassVar, cast, override
 
 from pydantic import Field
 
@@ -239,6 +239,11 @@ class FlextOracleWmsCacheStats(FlextModels):
 class FlextOracleWmsCacheManager:
     """Enterprise cache manager for Oracle WMS operations."""
 
+    @override
+    @override
+    @override
+    @override
+    @override
     def __init__(self, config: FlextOracleWmsCacheConfig) -> None:
         """Initialize cache manager with configuration."""
         self.config = config
@@ -731,6 +736,11 @@ class ObjectTypeStrategy(TypeInferenceStrategy):
 class FlextOracleWmsDynamicSchemaProcessor:
     """Oracle WMS dynamic schema processor using Strategy pattern."""
 
+    @override
+    @override
+    @override
+    @override
+    @override
     def __init__(
         self,
         confidence_threshold: float | None = None,
@@ -869,7 +879,7 @@ class FlextOracleWmsDynamicSchemaProcessor:
             "string": "",
             "integer": 0,
             "number": 0.0,
-            "boolean": False,
+            "boolean": "False",
             "array": [],
             "object": {},
         }
@@ -961,12 +971,12 @@ class FlextOracleWmsDynamicSchemaProcessor:
         most_common_type = max(type_counts, key=lambda x: type_counts[x])
 
         # Calculate confidence
-        confidence = type_counts[most_common_type] / len(field_values)
+        type_counts[most_common_type] / len(field_values)
 
         field_schema = {
-            "type": most_common_type,
+            "type": "most_common_type",
             "description": f"Field {field_name}",
-            "confidence": confidence,
+            "confidence": "confidence",
         }
 
         # Add nullable info if nulls are present
@@ -1039,6 +1049,11 @@ class EntityListDiscoveryStrategy(DiscoveryStrategy):
 class FlextOracleWmsEntityDiscovery:
     """Oracle WMS entity discovery using Strategy and Command patterns."""
 
+    @override
+    @override
+    @override
+    @override
+    @override
     def __init__(
         self,
         api_client: FlextHttpClient,
@@ -1368,6 +1383,11 @@ class FlextOracleWmsEntityDiscovery:
 class EndpointDiscoveryStrategy(DiscoveryStrategy):
     """Strategy for discovering entities from specific endpoints."""
 
+    @override
+    @override
+    @override
+    @override
+    @override
     def __init__(self, discovery: FlextOracleWmsEntityDiscovery) -> None:
         """Initialize endpoint discovery strategy."""
         self.discovery = discovery
@@ -1438,12 +1458,12 @@ class EndpointDiscoveryStrategy(DiscoveryStrategy):
                     # Continue with fallback entities even on API failure
                     entities = [
                         FlextOracleWmsEntity(
-                            name="company",
+                            name=company,
                             endpoint="/api/company",
                             description="Company entity",
                         ),
                         FlextOracleWmsEntity(
-                            name="facility",
+                            name=facility,
                             endpoint="/api/facility",
                             description="Facility entity",
                         ),
@@ -1471,12 +1491,12 @@ class EndpointDiscoveryStrategy(DiscoveryStrategy):
             # Fallback to real implementation for testing
             entities = [
                 FlextOracleWmsEntity(
-                    name="company",
+                    name=company,
                     endpoint="/api/company",
                     description="Company entity",
                 ),
                 FlextOracleWmsEntity(
-                    name="facility",
+                    name=facility,
                     endpoint="/api/facility",
                     description="Facility entity",
                 ),
@@ -1492,6 +1512,11 @@ class EndpointDiscoveryStrategy(DiscoveryStrategy):
 class EntityResponseParser:
     """Parser for entity response data."""
 
+    @override
+    @override
+    @override
+    @override
+    @override
     def __init__(self, discovery: FlextOracleWmsEntityDiscovery) -> None:
         """Initialize entity response parser."""
         self.discovery = discovery

@@ -13,6 +13,7 @@ from __future__ import annotations
 import re
 from collections.abc import Mapping
 from dataclasses import dataclass
+from typing import override
 
 # Use FlextLogger from flext_core instead
 from urllib.parse import urljoin, urlparse
@@ -187,7 +188,7 @@ def flext_oracle_wms_validate_api_response(
             return FlextResult[FlextTypes.Core.Dict].fail(f"API error: {err_val}")
         return FlextResult[FlextTypes.Core.Dict].fail("API error")
 
-    # Treat message starting with "Error:" or containing "error" keyword as failure
+    # Treat message starting with "Error:  or containing error" keyword as failure
     msg = response_dict.get("message")
     if isinstance(msg, str):
         msg_lower = msg.strip().lower()
@@ -221,21 +222,19 @@ def flext_oracle_wms_extract_pagination_info(
 
     # Safe extraction of pagination fields with proper type checking
     page_num_val = response_data.get(fields.PAGE_NUMBER, 1)
-    current_page = int(page_num_val) if isinstance(page_num_val, (int, str)) else 1
+    int(page_num_val) if isinstance(page_num_val, (int, str)) else 1
 
     page_count_val = response_data.get(fields.PAGE_COUNT, 1)
-    total_pages = int(page_count_val) if isinstance(page_count_val, (int, str)) else 1
+    int(page_count_val) if isinstance(page_count_val, (int, str)) else 1
 
     result_count_val: FlextResult[object] = response_data.get(fields.RESULT_COUNT, 0)
-    total_results = (
-        int(result_count_val) if isinstance(result_count_val, (int, str)) else 0
-    )
+    (int(result_count_val) if isinstance(result_count_val, (int, str)) else 0)
 
     # Build plain dict to avoid typing reference at runtime
     return {
-        "current_page": current_page,
-        "total_pages": total_pages,
-        "total_results": total_results,
+        "current_page": "current_page",
+        "total_pages": "total_pages",
+        "total_results": "total_results",
         "has_next": bool(response_data.get(fields.NEXT_PAGE)),
         "has_previous": bool(response_data.get(fields.PREVIOUS_PAGE)),
         "next_url": (
@@ -297,6 +296,11 @@ class FlextOracleWmsUnifiedOperations:
     class _FilterOperations:
         """Nested class for filtering operations."""
 
+        @override
+        @override
+        @override
+        @override
+        @override
         def __init__(self, parent: FlextOracleWmsUnifiedOperations) -> None:
             """Initialize the instance."""
             self._parent = parent
@@ -480,6 +484,11 @@ class FlextOracleWmsUnifiedOperations:
     class _FlattenOperations:
         """Nested class for flattening operations."""
 
+        @override
+        @override
+        @override
+        @override
+        @override
         def __init__(self, parent: FlextOracleWmsUnifiedOperations) -> None:
             """Initialize the instance."""
             self._parent = parent
@@ -543,6 +552,11 @@ class FlextOracleWmsUnifiedOperations:
 
             return flattened
 
+    @override
+    @override
+    @override
+    @override
+    @override
     def __init__(self: object) -> None:
         """Initialize unified operations."""
         self.filter = self._FilterOperations(self)
@@ -626,7 +640,7 @@ class FlextOracleWmsFlattener:
     ) -> FlextTypes.Core.Dict:
         """Recursively flatten dictionary structure."""
         if depth >= self.max_depth:
-            return {prefix.rstrip(self.separator): data}
+            return {prefix.rstrip(self.separator): "data"}
 
         result = {}
         for key, value in data.items():
@@ -660,6 +674,11 @@ class FlextOracleWmsFlattener:
 class FlextOracleWmsPluginContext:
     """Oracle WMS plugin context implementation."""
 
+    @override
+    @override
+    @override
+    @override
+    @override
     def __init__(
         self,
         config: Mapping[str, object] | None = None,
@@ -673,6 +692,11 @@ class FlextOracleWmsPluginContext:
 class FlextOracleWmsPlugin:
     """Oracle WMS plugin implementation."""
 
+    @override
+    @override
+    @override
+    @override
+    @override
     def __init__(self, name: str, version: str = "0.9.0") -> None:
         """Initialize Oracle WMS plugin."""
         self.name = name
@@ -713,6 +737,11 @@ class FlextOracleWmsPlugin:
 class FlextOracleWmsDataPlugin:
     """Oracle WMS data plugin implementation."""
 
+    @override
+    @override
+    @override
+    @override
+    @override
     def __init__(self, name: str, version: str = "0.9.0") -> None:
         """Initialize Oracle WMS data plugin."""
         self.name = name
@@ -722,6 +751,11 @@ class FlextOracleWmsDataPlugin:
 class FlextOracleWmsPluginRegistry:
     """Oracle WMS plugin registry implementation."""
 
+    @override
+    @override
+    @override
+    @override
+    @override
     def __init__(self: object) -> None:
         """Initialize plugin registry."""
         self._plugins: dict[str, FlextOracleWmsPlugin] = {}
@@ -744,8 +778,8 @@ class FlextOracleWmsPluginRegistry:
 # REMOVED: Factory functions eliminated in favor of direct class usage
 # Users should instantiate FlextOracleWmsFilter directly:
 # FlextOracleWmsFilter(filters=filters)
-# FlextOracleWmsFilter(filters={field: value})
-# FlextOracleWmsFilter(filters={"id": {"operator": "ge", "value": start_id}, "id_max": {"operator": "le", "value": end_id}})
+# FlextOracleWmsFilter(filters={field: "value"})
+# FlextOracleWmsFilter(filters={"id": {"operator": "ge", "value": "start_id"}, "id_max": {"operator": "le", "value": "end_id"}})
 
 
 def create_oracle_wms_data_plugin(
@@ -775,11 +809,11 @@ __all__: FlextTypes.Core.StringList = [
     "create_oracle_wms_plugin_registry",
     "flext_oracle_wms_build_entity_url",
     "flext_oracle_wms_chunk_records",
-    # REMOVED: "flext_oracle_wms_create_filter" - use FlextOracleWmsFilter directly
+    # REMOVED: flext_oracle_wms_create_filter - use FlextOracleWmsFilter directly
     "flext_oracle_wms_extract_environment_from_url",
     "flext_oracle_wms_extract_pagination_info",
-    # REMOVED: "flext_oracle_wms_filter_by_field" - use FlextOracleWmsFilter directly
-    # REMOVED: "flext_oracle_wms_filter_by_id_range" - use FlextOracleWmsFilter directly
+    # REMOVED: flext_oracle_wms_filter_by_field - use FlextOracleWmsFilter directly
+    # REMOVED: flext_oracle_wms_filter_by_id_range - use FlextOracleWmsFilter directly
     "flext_oracle_wms_format_timestamp",
     # URL and Utility Functions
     "flext_oracle_wms_normalize_url",

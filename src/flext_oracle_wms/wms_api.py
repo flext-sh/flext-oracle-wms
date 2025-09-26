@@ -7,6 +7,7 @@ SPDX-License-Identifier: MIT.
 from __future__ import annotations
 
 from datetime import UTC, datetime
+from typing import override
 from uuid import uuid4
 
 from flext_core import FlextLogger, FlextResult, FlextTypes
@@ -22,8 +23,8 @@ logger = FlextLogger(__name__)
 FLEXT_ORACLE_WMS_APIS = {
     # === SETUP AND TRANSACTIONAL DATA APIS ===
     "lgf_init_stage_interface": FlextOracleWmsApiEndpoint(
-        name="lgf_init_stage_interface",
-        method="POST",
+        name=lgf_init_stage_interface,
+        method=POST,
         path="/init_stage_interface/{entity_name}/",
         version=FlextOracleWmsApiVersion.LGF_V10,
         category=FlextOracleWmsApiCategory.SETUP_TRANSACTIONAL,
@@ -32,8 +33,8 @@ FLEXT_ORACLE_WMS_APIS = {
         since_version="10.0",
     ),
     "run_stage_interface": FlextOracleWmsApiEndpoint(
-        name="run_stage_interface",
-        method="POST",
+        name=run_stage_interface,
+        method=POST,
         path="/run_stage_interface/",
         version=FlextOracleWmsApiVersion.LEGACY,
         category=FlextOracleWmsApiCategory.SETUP_TRANSACTIONAL,
@@ -41,8 +42,8 @@ FLEXT_ORACLE_WMS_APIS = {
         since_version="6.1",
     ),
     "update_output_interface": FlextOracleWmsApiEndpoint(
-        name="update_output_interface",
-        method="POST",
+        name=update_output_interface,
+        method=POST,
         path="/update_output_interface/",
         version=FlextOracleWmsApiVersion.LEGACY,
         category=FlextOracleWmsApiCategory.SETUP_TRANSACTIONAL,
@@ -53,8 +54,8 @@ FLEXT_ORACLE_WMS_APIS = {
     ),
     # === AUTOMATION & OPERATIONS APIS ===
     "update_oblpn_tracking_number": FlextOracleWmsApiEndpoint(
-        name="update_oblpn_tracking_number",
-        method="POST",
+        name=update_oblpn_tracking_number,
+        method=POST,
         path="/update_oblpn_tracking_nbr/",
         version=FlextOracleWmsApiVersion.LEGACY,
         category=FlextOracleWmsApiCategory.AUTOMATION_OPERATIONS,
@@ -62,8 +63,8 @@ FLEXT_ORACLE_WMS_APIS = {
         since_version="6.1",
     ),
     "update_oblpn_dimensions": FlextOracleWmsApiEndpoint(
-        name="update_oblpn_dimensions",
-        method="POST",
+        name=update_oblpn_dimensions,
+        method=POST,
         path="/update_oblpn_dims/",
         version=FlextOracleWmsApiVersion.LEGACY,
         category=FlextOracleWmsApiCategory.AUTOMATION_OPERATIONS,
@@ -71,8 +72,8 @@ FLEXT_ORACLE_WMS_APIS = {
         since_version="6.2",
     ),
     "ship_oblpn": FlextOracleWmsApiEndpoint(
-        name="ship_oblpn",
-        method="POST",
+        name=ship_oblpn,
+        method=POST,
         path="/ship_oblpn/",
         version=FlextOracleWmsApiVersion.LEGACY,
         category=FlextOracleWmsApiCategory.AUTOMATION_OPERATIONS,
@@ -80,8 +81,8 @@ FLEXT_ORACLE_WMS_APIS = {
         since_version="6.2",
     ),
     "get_next_number": FlextOracleWmsApiEndpoint(
-        name="get_next_number",
-        method="GET",
+        name=get_next_number,
+        method=GET,
         path="/get_next_numbers/",
         version=FlextOracleWmsApiVersion.LEGACY,
         category=FlextOracleWmsApiCategory.AUTOMATION_OPERATIONS,
@@ -89,8 +90,8 @@ FLEXT_ORACLE_WMS_APIS = {
         since_version="7.0.0",
     ),
     "get_status": FlextOracleWmsApiEndpoint(
-        name="get_status",
-        method="GET",
+        name=get_status,
+        method=GET,
         path="/get_status/",
         version=FlextOracleWmsApiVersion.LEGACY,
         category=FlextOracleWmsApiCategory.AUTOMATION_OPERATIONS,
@@ -99,8 +100,8 @@ FLEXT_ORACLE_WMS_APIS = {
     ),
     # === DATA EXTRACT APIS ===
     "lgf_entity_extract": FlextOracleWmsApiEndpoint(
-        name="lgf_entity_extract",
-        method="GET",
+        name=lgf_entity_extract,
+        method=GET,
         path="/entity/{entity_name}/",
         version=FlextOracleWmsApiVersion.LGF_V10,
         category=FlextOracleWmsApiCategory.DATA_EXTRACT,
@@ -108,8 +109,8 @@ FLEXT_ORACLE_WMS_APIS = {
         since_version="10.0",
     ),
     "legacy_entity_extract": FlextOracleWmsApiEndpoint(
-        name="legacy_entity_extract",
-        method="GET",
+        name=legacy_entity_extract,
+        method=GET,
         path="/extract_data/{entity_name}/",
         version=FlextOracleWmsApiVersion.LEGACY,
         category=FlextOracleWmsApiCategory.DATA_EXTRACT,
@@ -118,8 +119,8 @@ FLEXT_ORACLE_WMS_APIS = {
     ),
     # === ENTITY OPERATIONS APIS ===
     "entity_discovery": FlextOracleWmsApiEndpoint(
-        name="entity_discovery",
-        method="GET",
+        name=entity_discovery,
+        method=GET,
         path="/entity/",
         version=FlextOracleWmsApiVersion.LGF_V10,
         category=FlextOracleWmsApiCategory.ENTITY_OPERATIONS,
@@ -127,8 +128,8 @@ FLEXT_ORACLE_WMS_APIS = {
         since_version="10.0",
     ),
     "entity_metadata": FlextOracleWmsApiEndpoint(
-        name="entity_metadata",
-        method="GET",
+        name=entity_metadata,
+        method=GET,
         path="/entity/{entity_name}/metadata/",
         version=FlextOracleWmsApiVersion.LGF_V10,
         category=FlextOracleWmsApiCategory.ENTITY_OPERATIONS,
@@ -137,8 +138,8 @@ FLEXT_ORACLE_WMS_APIS = {
     ),
     # Additional representative endpoints to satisfy completeness expectation
     "lgf_entity_list": FlextOracleWmsApiEndpoint(
-        name="lgf_entity_list",
-        method="GET",
+        name=lgf_entity_list,
+        method=GET,
         path="/entity/",
         version=FlextOracleWmsApiVersion.LGF_V10,
         category=FlextOracleWmsApiCategory.ENTITY_OPERATIONS,
@@ -146,8 +147,8 @@ FLEXT_ORACLE_WMS_APIS = {
         since_version="10.0",
     ),
     "lgf_entity_detail": FlextOracleWmsApiEndpoint(
-        name="lgf_entity_detail",
-        method="GET",
+        name=lgf_entity_detail,
+        method=GET,
         path="/entity/{entity_name}/detail/",
         version=FlextOracleWmsApiVersion.LGF_V10,
         category=FlextOracleWmsApiCategory.ENTITY_OPERATIONS,
@@ -155,8 +156,8 @@ FLEXT_ORACLE_WMS_APIS = {
         since_version="10.0",
     ),
     "legacy_entity_list": FlextOracleWmsApiEndpoint(
-        name="legacy_entity_list",
-        method="GET",
+        name=legacy_entity_list,
+        method=GET,
         path="/entities/",
         version=FlextOracleWmsApiVersion.LEGACY,
         category=FlextOracleWmsApiCategory.ENTITY_OPERATIONS,
@@ -164,8 +165,8 @@ FLEXT_ORACLE_WMS_APIS = {
         since_version="6.1",
     ),
     "legacy_entity_status": FlextOracleWmsApiEndpoint(
-        name="legacy_entity_status",
-        method="GET",
+        name=legacy_entity_status,
+        method=GET,
         path="/status/{entity_name}/",
         version=FlextOracleWmsApiVersion.LEGACY,
         category=FlextOracleWmsApiCategory.ENTITY_OPERATIONS,
@@ -173,8 +174,8 @@ FLEXT_ORACLE_WMS_APIS = {
         since_version="6.1",
     ),
     "lgf_post_entity": FlextOracleWmsApiEndpoint(
-        name="lgf_post_entity",
-        method="POST",
+        name=lgf_post_entity,
+        method=POST,
         path="/entity/{entity_name}/",
         version=FlextOracleWmsApiVersion.LGF_V10,
         category=FlextOracleWmsApiCategory.SETUP_TRANSACTIONAL,
@@ -182,8 +183,8 @@ FLEXT_ORACLE_WMS_APIS = {
         since_version="10.0",
     ),
     "create_lpn": FlextOracleWmsApiEndpoint(
-        name="create_lpn",
-        method="POST",
+        name=create_lpn,
+        method=POST,
         path="/init_stage_interface/lpn/",
         version=FlextOracleWmsApiVersion.LGF_V10,
         category=FlextOracleWmsApiCategory.AUTOMATION_OPERATIONS,
@@ -191,8 +192,8 @@ FLEXT_ORACLE_WMS_APIS = {
         since_version="10.0",
     ),
     "update_oblpn": FlextOracleWmsApiEndpoint(
-        name="update_oblpn",
-        method="POST",
+        name=update_oblpn,
+        method=POST,
         path="/update_oblpn_dims/",
         version=FlextOracleWmsApiVersion.LEGACY,
         category=FlextOracleWmsApiCategory.AUTOMATION_OPERATIONS,
@@ -200,8 +201,8 @@ FLEXT_ORACLE_WMS_APIS = {
         since_version="6.2",
     ),
     "lgf_delete_entity": FlextOracleWmsApiEndpoint(
-        name="lgf_delete_entity",
-        method="DELETE",
+        name=lgf_delete_entity,
+        method=DELETE,
         path="/entity/{entity_name}/",
         version=FlextOracleWmsApiVersion.LGF_V10,
         category=FlextOracleWmsApiCategory.SETUP_TRANSACTIONAL,
@@ -214,6 +215,7 @@ FLEXT_ORACLE_WMS_APIS = {
 class OracleWmsMockServer:
     """Mock server simulating Oracle WMS Cloud API v10 responses."""
 
+    @override
     def __init__(self, mock_environment: str = "mock_test") -> None:
         """Initialize Oracle WMS mock server."""
         self.environment = mock_environment
@@ -336,10 +338,10 @@ class OracleWmsMockServer:
         """Mock entity discovery response."""
         entities = [
             {
-                "name": entity_name,
+                "name": "entity_name",
                 "description": f"Oracle WMS {entity_name} entity",
                 "endpoint": f"/entity/{entity_name}/",
-                "supports_extract": True,
+                "supports_extract": "True",
                 "supports_insert": entity_name in {"order_hdr", "order_dtl", "item"},
                 "primary_key": self._get_mock_primary_key(entity_name),
             }
@@ -352,7 +354,7 @@ class OracleWmsMockServer:
 
         return FlextResult[FlextTypes.Core.Dict].ok(
             {
-                "entities": entities,
+                "entities": "entities",
                 "total_count": len(entities),
                 "discovered_at": datetime.now(UTC).isoformat(),
                 "api_version": "v10",
@@ -387,13 +389,13 @@ class OracleWmsMockServer:
 
         return FlextResult[FlextTypes.Core.Dict].ok(
             {
-                "results": mock_records,
+                "results": "mock_records",
                 "result_count": len(mock_records)
                 if isinstance(mock_records, list)
                 else 0,
                 "page_count": 1,
                 "page_nbr": 1,
-                "entity_name": entity_name,
+                "entity_name": "entity_name",
                 "extracted_at": datetime.now(UTC).isoformat(),
             },
         )
@@ -426,11 +428,11 @@ class OracleWmsMockServer:
 
         return FlextResult[FlextTypes.Core.Dict].ok(
             {
-                "entity_name": entity_name,
-                "fields": base_fields,
+                "entity_name": "entity_name",
+                "fields": "base_fields",
                 "primary_key": self._get_mock_primary_key(entity_name),
                 "replication_key": "mod_date",
-                "supports_incremental": True,
+                "supports_incremental": "True",
                 "description": f"Oracle WMS {entity_name} entity metadata",
             },
         )

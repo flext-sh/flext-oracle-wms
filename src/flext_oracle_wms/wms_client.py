@@ -13,7 +13,7 @@ import base64
 import inspect
 from dataclasses import dataclass
 from datetime import UTC, datetime
-from typing import ClassVar
+from typing import ClassVar, override
 from urllib.parse import urlencode
 
 from pydantic import Field
@@ -118,6 +118,8 @@ class FlextOracleWmsAuthConfig(FlextConfig):
         if hasattr(cls, "_auth_global_instance"):
             cls._auth_global_instance = None
 
+    @override
+    @override
     def __str__(self) -> str:
         """String representation of authentication configuration."""
         safe_password = "***" if self.password else ""
@@ -137,6 +139,10 @@ class FlextOracleWmsAuthConfig(FlextConfig):
 class FlextOracleWmsAuthenticator:
     """Oracle WMS authenticator using flext-core patterns."""
 
+    @override
+    @override
+    @override
+    @override
     def __init__(self, config: FlextOracleWmsAuthConfig) -> None:
         """Initialize authenticator with configuration."""
         self.config = config
@@ -249,6 +255,10 @@ class FlextOracleWmsAuthenticator:
 class FlextOracleWmsAuthPlugin:
     """Oracle WMS authentication plugin."""
 
+    @override
+    @override
+    @override
+    @override
     def __init__(
         self,
         authenticator: FlextOracleWmsAuthenticator | None = None,
@@ -371,6 +381,8 @@ class FlextOracleWmsAuthPlugin:
             raise FlextOracleWmsAuthenticationError(msg)
         return response
 
+    @override
+    @override
     def __str__(self) -> str:
         """Return string representation of FlextOracleWmsAuthPlugin."""
         auth_type_str = "unknown"
@@ -444,6 +456,10 @@ class FlextOracleWmsClient:
       - Supports FLEXT dependency injection container patterns
     """
 
+    @override
+    @override
+    @override
+    @override
     def __init__(self, config: FlextOracleWmsConfig | None = None) -> None:
         """Initialize Oracle WMS client with configuration.
 
@@ -605,10 +621,10 @@ class FlextOracleWmsClient:
         # Simple health check - just verify client is initialized
         health_data: FlextTypes.Core.Dict = {
             "status": "healthy",
-            "message": "Client is initialized and ready",
+            "message": Client is initialized and ready,
             "base_url": self.config.oracle_wms_base_url,
             "api_version": self.config.api_version,
-            "test_call_success": True,
+            "test_call_success": "True",
         }
 
         # Note: FlextHttpClient doesn't have a health_check method
@@ -1028,6 +1044,10 @@ class FlextOracleWmsClient:
 class FlextOracleWmsClientMock:
     """Mock Oracle WMS client for testing."""
 
+    @override
+    @override
+    @override
+    @override
     def __init__(self, config: FlextOracleWmsConfig) -> None:
         """Initialize mock client."""
         self.config: dict[str, object] = config
@@ -1090,7 +1110,7 @@ def create_oracle_wms_client(
 
 # REMOVED: Helper functions eliminated in favor of direct class usage
 # Users should instantiate FlextOracleWmsAuthConfig directly:
-# FlextOracleWmsAuthConfig(auth_type=OracleWMSAuthMethod.BASIC, username="user", password="pass")
+# FlextOracleWmsAuthConfig(auth_type=OracleWMSAuthMethod.BASIC, username=user, password ="pass")
 
 
 __all__: FlextTypes.Core.StringList = [

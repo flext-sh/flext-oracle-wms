@@ -12,6 +12,7 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 import re
+from typing import override
 
 from flext_core import FlextLogger, FlextResult, FlextTypes
 from flext_oracle_wms.wms_constants import (
@@ -36,6 +37,7 @@ class FlextOracleWmsFilter:
     case sensitivity support.
     """
 
+    @override
     def __init__(
         self,
         *,
@@ -412,14 +414,9 @@ async def flext_oracle_wms_filter_by_field(
     engine = FlextOracleWmsFilter()
     op_value: object
     if operator == OracleWMSFilterOperator.NE:
-        op_value = {
-            "operator": (operator or OracleWMSFilterOperator.EQ).value,
-            "value": value,
-        }
-    else:
-        op_value = value
+        pass
     # Set filters before calling filter_records
-    filters = {field: op_value}
+    filters = {field: "op_value"}
     return await engine.filter_records(records, filters)
 
 

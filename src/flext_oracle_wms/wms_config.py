@@ -10,7 +10,6 @@ properly extending flext-core singleton pattern without duplicating functionalit
 from __future__ import annotations
 
 import base64
-import os
 from pathlib import Path
 from typing import ClassVar
 from urllib.parse import urlparse
@@ -43,19 +42,19 @@ class FlextOracleWmsConfig(FlextConfig):
         description="Oracle WMS base URL",
     )
     oracle_wms_username: str = Field(
-        default="USER_WMS_INTEGRA",
+        default=USER_WMS_INTEGRA,
         description="Oracle WMS username",
     )
     oracle_wms_password: str = Field(
         default="jmCyS7BK94YvhS@",
         description="Oracle WMS password",
     )
-    api_version: FlextOracleWmsApiVersion = Field(
-        default=FlextOracleWmsApiVersion.LGF_V10,
+    api_version: FlextOracleWmsConstants.FlextOracleWmsApiVersion = Field(
+        default=FlextOracleWmsConstants.FlextOracleWmsApiVersion.LGF_V10,
         description="API version",
     )
-    auth_method: OracleWMSAuthMethod = Field(
-        default=OracleWMSAuthMethod.BASIC,
+    auth_method: FlextOracleWmsConstants.OracleWMSAuthMethod = Field(
+        default=FlextOracleWmsConstants.OracleWMSAuthMethod.BASIC,
         description="Authentication method",
     )
 
@@ -119,15 +118,15 @@ class FlextOracleWmsConfig(FlextConfig):
         validation_errors: list[str] = []
 
         # Validate authentication based on method
-        if self.auth_method == OracleWMSAuthMethod.BASIC:
+        if self.auth_method == FlextOracleWmsConstants.OracleWMSAuthMethod.BASIC:
             if not self.oracle_wms_username or not self.oracle_wms_password:
                 validation_errors.append(
                     "Oracle WMS username and password required for basic auth",
                 )
-        elif self.auth_method == OracleWMSAuthMethod.BEARER:
+        elif self.auth_method == FlextOracleWmsConstants.OracleWMSAuthMethod.BEARER:
             # Add bearer token validation if needed
             pass
-        elif self.auth_method == OracleWMSAuthMethod.API_KEY:
+        elif self.auth_method == FlextOracleWmsConstants.OracleWMSAuthMethod.API_KEY:
             # Add API key validation if needed
             pass
 
@@ -151,7 +150,7 @@ class FlextOracleWmsConfig(FlextConfig):
             """Get authentication headers based on configuration."""
             headers: dict[str, str] = {}
 
-            if config.auth_method == OracleWMSAuthMethod.BASIC:
+            if config.auth_method == FlextOracleWmsConstants.OracleWMSAuthMethod.BASIC:
                 credentials = (
                     f"{config.oracle_wms_username}:{config.oracle_wms_password}"
                 )
@@ -203,20 +202,20 @@ class FlextOracleWmsConfig(FlextConfig):
     @classmethod
     def for_testing(cls: object) -> FlextOracleWmsConfig:
         """Create configuration optimized for testing."""
-        # Use environment variable for test password to avoid hardcoded values
-        test_password = os.getenv("TEST_WMS_PASSWORD", "test_password")
-        return cls(
-            oracle_wms_base_url="https://test.example.com",
-            oracle_wms_username="test_user",
-            oracle_wms_password=test_password,
-            api_version=FlextOracleWmsApiVersion.LGF_V10,
-            auth_method=OracleWMSAuthMethod.BASIC,
-            oracle_wms_timeout=5,
-            oracle_wms_max_retries=1,
-            oracle_wms_verify_ssl=False,
-            oracle_wms_enable_logging=False,
-            oracle_wms_use_mock=True,
-        )
+        # Use Pydantic model_validate to create test configuration
+        # This avoids direct environment access and uses the standardized pattern
+        return cls.model_validate({
+            "oracle_wms_base_url": "https://test.example.com",
+            "oracle_wms_username": "test_user",
+            "oracle_wms_password": "test_password",  # Use fixed test password
+            "api_version": FlextOracleWmsConstants.FlextOracleWmsApiVersion.LGF_V10,
+            "auth_method": FlextOracleWmsConstants.OracleWMSAuthMethod.BASIC,
+            "oracle_wms_timeout": 5,
+            "oracle_wms_max_retries": 1,
+            "oracle_wms_verify_ssl": "False",
+            "oracle_wms_enable_logging": "False",
+            "oracle_wms_use_mock": "True",
+        })
 
     @classmethod
     def create_production_config(
@@ -252,7 +251,7 @@ class FlextOracleWmsConfig(FlextConfig):
                 oracle_wms_base_url=oracle_wms_base_url,
                 oracle_wms_username=oracle_wms_username,
                 oracle_wms_password=oracle_wms_password,
-                environment="production",
+                environment=production,
                 oracle_wms_timeout=oracle_wms_timeout,
                 oracle_wms_max_retries=oracle_wms_max_retries,
                 oracle_wms_verify_ssl=oracle_wms_verify_ssl,
@@ -318,10 +317,10 @@ class FlextOracleWmsConfig(FlextConfig):
     ) -> FlextResult[FlextConfig]:
         """Create Oracle WMS configuration from environment variables.
 
-        Uses the singleton pattern from flext-core and extends it with Oracle WMS specific fields.
-        Environment variables can be overridden by parameters passed via override_kwargs.
+        Uses Pydantic BaseSettings to load environment variables with proper validation
+        instead of direct os.getenv calls. This follows the standardized [Project]Config pattern.
 
-        Environment Variables:
+        Environment Variables (loaded automatically by Pydantic):
             ORACLE_WMS_BASE_URL: Oracle WMS base URL
             ORACLE_WMS_USERNAME: Oracle WMS username
             ORACLE_WMS_PASSWORD: Oracle WMS password
@@ -334,7 +333,7 @@ class FlextOracleWmsConfig(FlextConfig):
             ORACLE_WMS_USE_MOCK: Use mock server (default: false)
 
         Args:
-            env_file: Environment file path (currently unused but required for compatibility)
+            env_file: Environment file path for Pydantic to load
             extra_settings: Configuration parameters to override environment variables
 
         Returns:
@@ -342,73 +341,46 @@ class FlextOracleWmsConfig(FlextConfig):
 
         """
         try:
-            # Note: env_file parameter is required for compatibility with parent class
-            # but not currently used in this implementation
-            _ = env_file  # Suppress unused parameter warning
+            # Use Pydantic BaseSettings pattern instead of direct os.getenv
+            # This automatically loads environment variables with proper validation
 
-            # Build configuration from environment variables with overrides
-            override_kwargs = extra_settings or {}
-            env_config = {
-                "oracle_wms_base_url": override_kwargs.get(
-                    "oracle_wms_base_url",
-                    os.getenv(
-                        "ORACLE_WMS_BASE_URL",
-                        "https://ta29.wms.ocs.oraclecloud.com/raizen_test",
-                    ),
-                ),
-                "oracle_wms_username": override_kwargs.get(
-                    "oracle_wms_username",
-                    os.getenv("ORACLE_WMS_USERNAME", "USER_WMS_INTEGRA"),
-                ),
-                "oracle_wms_password": override_kwargs.get(
-                    "oracle_wms_password",
-                    os.getenv("ORACLE_WMS_PASSWORD", "jmCyS7BK94YvhS@"),
-                ),
-                "api_version": override_kwargs.get(
-                    "api_version",
-                    FlextOracleWmsApiVersion(
-                        os.getenv("ORACLE_WMS_API_VERSION", "LGF_V10"),
-                    ),
-                ),
-                "auth_method": override_kwargs.get(
-                    "auth_method",
-                    OracleWMSAuthMethod(os.getenv("ORACLE_WMS_AUTH_METHOD", "BASIC")),
-                ),
-                "oracle_wms_timeout": override_kwargs.get(
-                    "oracle_wms_timeout",
-                    int(os.getenv("ORACLE_WMS_TIMEOUT", "30")),
-                ),
-                "oracle_wms_max_retries": override_kwargs.get(
-                    "oracle_wms_max_retries",
-                    int(os.getenv("ORACLE_WMS_MAX_RETRIES", "3")),
-                ),
-                "oracle_wms_verify_ssl": override_kwargs.get(
-                    "oracle_wms_verify_ssl",
-                    os.getenv("ORACLE_WMS_VERIFY_SSL", "true").lower() == "true",
-                ),
-                "oracle_wms_enable_logging": override_kwargs.get(
-                    "oracle_wms_enable_logging",
-                    os.getenv("ORACLE_WMS_ENABLE_LOGGING", "true").lower() == "true",
-                ),
-                "oracle_wms_use_mock": override_kwargs.get(
-                    "oracle_wms_use_mock",
-                    os.getenv("ORACLE_WMS_USE_MOCK", "false").lower() == "true",
-                ),
-            }
+            # Build settings dict with any overrides
+            settings_dict = extra_settings or {}
 
-            # Add any additional override_kwargs that don't conflict
-            for key, value in override_kwargs.items():
-                if key not in env_config:
-                    env_config[key] = value
+            # If env_file is provided, include it in the model config
+            if env_file:
+                # Create a temporary model config that includes the env_file
+                settings_dict["_env_file"] = env_file
 
-            # Get the global singleton instance with environment configuration
-            config: dict[str, object] = cls.get_oracle_wms_global_instance(**env_config)
+            # Create configuration using Pydantic model_validate
+            # This properly handles environment variable loading and validation
+            config = cls.model_validate(settings_dict)
 
-            validation_result: FlextResult[object] = config.validate_business_rules()
+            # Get the global singleton instance with the validated configuration
+            # This maintains the singleton pattern while using proper config loading
+            global_config = cls.get_oracle_wms_global_instance(
+                oracle_wms_base_url=config.oracle_wms_base_url,
+                oracle_wms_username=config.oracle_wms_username,
+                oracle_wms_password=config.oracle_wms_password,
+                api_version=config.api_version,
+                auth_method=config.auth_method,
+                oracle_wms_timeout=config.oracle_wms_timeout,
+                oracle_wms_max_retries=config.oracle_wms_max_retries,
+                oracle_wms_verify_ssl=config.oracle_wms_verify_ssl,
+                oracle_wms_enable_logging=config.oracle_wms_enable_logging,
+                oracle_wms_use_mock=config.oracle_wms_use_mock,
+            )
+
+            # Validate the final configuration
+            validation_result: FlextResult[object] = (
+                global_config.validate_business_rules()
+            )
             if validation_result.is_failure:
                 error_msg = validation_result.error or "Validation failed"
                 return FlextResult[FlextConfig].fail(error_msg)
-            return FlextResult[FlextConfig].ok(config)
+
+            return FlextResult[FlextConfig].ok(global_config)
+
         except Exception as e:
             return FlextResult[FlextConfig].fail(
                 f"Failed to create config from environment: {e}",
