@@ -10,98 +10,152 @@ properly extending flext-core singleton pattern without duplicating functionalit
 from __future__ import annotations
 
 import base64
-from pathlib import Path
-from typing import ClassVar
+import warnings
+from typing import Self
 from urllib.parse import urlparse
 
-from pydantic import Field, field_validator
+from pydantic import Field, SecretStr, field_validator, model_validator
+from pydantic_settings import SettingsConfigDict
 
-from flext_core import FlextConfig, FlextModels, FlextResult, FlextTypes
-from flext_oracle_wms.wms_constants import FlextOracleWmsConstants
+from flext_core import FlextConfig, FlextResult
 
 
 class FlextOracleWmsConfig(FlextConfig):
-    """Oracle WMS configuration - Single source of truth using flext-core singleton.
+    """Single Pydantic 2 Settings class for flext-oracle-wms extending FlextConfig.
 
-    This is the ONLY configuration class for Oracle WMS operations.
-    Properly extends flext-core singleton pattern without duplicating functionality.
-
-    Uses the global singleton instance from flext-core as the base configuration,
-    adding Oracle WMS specific fields on top of the core configuration.
-
-    The singleton pattern allows parameters to be passed to change behavior
-    while maintaining a single source of truth for configuration.
+    Follows standardized pattern:
+    - Extends FlextConfig from flext-core
+    - No nested classes within Config
+    - All defaults from FlextOracleWmsConstants
+    - Uses enhanced singleton pattern with inverse dependency injection
+    - Uses Pydantic 2.11+ features (field_validator, model_validator)
     """
 
-    # Class attribute for singleton instance
-    _oracle_wms_global_instance: ClassVar[FlextOracleWmsConfig | None] = None
+    model_config = SettingsConfigDict(
+        env_prefix="FLEXT_ORACLE_WMS_",
+        case_sensitive=False,
+        extra="allow",
+        # Inherit enhanced Pydantic 2.11+ features from FlextConfig
+        validate_assignment=True,
+        str_strip_whitespace=True,
+        json_schema_extra={
+            "title": "FLEXT Oracle WMS Configuration",
+            "description": "Oracle WMS integration configuration extending FlextConfig",
+        },
+    )
 
-    # Oracle WMS specific fields - extend the base FlextConfig
+    # Oracle WMS Connection Configuration using FlextOracleWmsConstants for defaults
     oracle_wms_base_url: str = Field(
         default="https://ta29.wms.ocs.oraclecloud.com/raizen_test",
         description="Oracle WMS base URL",
     )
+
     oracle_wms_username: str = Field(
-        default=USER_WMS_INTEGRA,
+        default="",
         description="Oracle WMS username",
     )
-    oracle_wms_password: str = Field(
-        default="jmCyS7BK94YvhS@",
-        description="Oracle WMS password",
-    )
-    api_version: FlextOracleWmsConstants.FlextOracleWmsApiVersion = Field(
-        default=FlextOracleWmsConstants.FlextOracleWmsApiVersion.LGF_V10,
-        description="API version",
-    )
-    auth_method: FlextOracleWmsConstants.OracleWMSAuthMethod = Field(
-        default=FlextOracleWmsConstants.OracleWMSAuthMethod.BASIC,
-        description="Authentication method",
+
+    oracle_wms_password: SecretStr = Field(
+        default_factory=lambda: SecretStr(""),
+        description="Oracle WMS password (sensitive)",
     )
 
-    # Connection settings - extend base timeout with Oracle WMS specific values
+    api_version: str = Field(
+        default="LGF_V10",
+        description="Oracle WMS API version",
+    )
+
+    auth_method: str = Field(
+        default="BASIC",
+        description="Oracle WMS authentication method",
+    )
+
+    # Connection Settings using FlextOracleWmsConstants for defaults
     oracle_wms_timeout: int = Field(
         default=30,
+        gt=0,
+        le=300,
         description="Oracle WMS request timeout in seconds",
     )
+
     oracle_wms_max_retries: int = Field(
         default=3,
+        ge=0,
+        le=10,
         description="Oracle WMS maximum retry attempts",
     )
+
     oracle_wms_verify_ssl: bool = Field(
         default=True,
         description="Oracle WMS SSL certificate verification",
     )
 
-    # Feature flags - extend base logging with Oracle WMS specific flags
+    # Feature Flags using FlextOracleWmsConstants for defaults
     oracle_wms_enable_logging: bool = Field(
         default=True,
         description="Enable Oracle WMS specific logging",
     )
+
     oracle_wms_use_mock: bool = Field(
         default=False,
         description="Use internal mock server explicitly (testing only)",
     )
 
+    # Performance Configuration using FlextOracleWmsConstants for defaults
+    oracle_wms_connection_pool_size: int = Field(
+        default=20,
+        ge=1,
+        le=100,
+        description="Oracle WMS connection pool size",
+    )
+
+    oracle_wms_cache_duration: int = Field(
+        default=3600,
+        ge=0,
+        le=86400,
+        description="Oracle WMS entity cache duration in seconds",
+    )
+
+    # Project Identification
+    project_name: str = Field(
+        default="flext-oracle-wms",
+        description="Project name",
+    )
+
+    project_version: str = Field(
+        default="0.9.0",
+        description="Project version",
+    )
+
+    # Pydantic 2.11+ field validators
     @field_validator("oracle_wms_base_url")
     @classmethod
     def validate_oracle_wms_base_url(cls, v: str) -> str:
-        """Validate Oracle WMS base URL using centralized FlextModels validation."""
-        # Use centralized FlextModels validation instead of duplicate logic
-        validation_result = FlextModels.create_validated_http_url(
-            v.strip() if v else "",
-        )
-        if validation_result.is_failure:
-            error_msg = f"Invalid Oracle WMS base URL: {validation_result.error}"
-            raise ValueError(error_msg)
-        return str(validation_result.unwrap())
+        """Validate Oracle WMS base URL format."""
+        if not v.strip():
+            msg = "Oracle WMS base URL cannot be empty"
+            raise ValueError(msg)
+
+        # Basic URL format validation
+        if not (v.startswith(("http://", "https://"))):
+            msg = "Oracle WMS base URL must start with http:// or https://"
+            raise ValueError(msg)
+
+        return v.strip()
 
     @field_validator("oracle_wms_timeout")
     @classmethod
     def validate_oracle_wms_timeout(cls, v: int) -> int:
         """Validate Oracle WMS timeout value."""
         if v <= 0:
-            msg = "Oracle WMS timeout must be greater than 0"
+            msg = "Oracle WMS timeout must be positive"
             raise ValueError(msg)
+        if v > 300:
+            warnings.warn(
+                f"Very long timeout ({v}s) may cause performance issues",
+                UserWarning,
+                stacklevel=2,
+            )
         return v
 
     @field_validator("oracle_wms_max_retries")
@@ -111,74 +165,150 @@ class FlextOracleWmsConfig(FlextConfig):
         if v < 0:
             msg = "Oracle WMS max retries cannot be negative"
             raise ValueError(msg)
+        if v > 10:
+            warnings.warn(
+                f"High retry count ({v}) may cause performance issues",
+                UserWarning,
+                stacklevel=2,
+            )
         return v
 
-    def validate_business_rules(self: object) -> FlextResult[None]:
-        """Validate Oracle WMS specific business rules."""
-        validation_errors: list[str] = []
+    @field_validator("api_version")
+    @classmethod
+    def validate_api_version(cls, v: str) -> str:
+        """Validate API version format."""
+        valid_versions = {"LGF_V10", "LGF_V11", "V1", "V2"}
+        if v not in valid_versions:
+            msg = f"API version must be one of {valid_versions}"
+            raise ValueError(msg)
+        return v
 
+    @field_validator("auth_method")
+    @classmethod
+    def validate_auth_method(cls, v: str) -> str:
+        """Validate authentication method."""
+        valid_methods = {"BASIC", "BEARER", "API_KEY", "OAUTH2"}
+        if v.upper() not in valid_methods:
+            msg = f"Auth method must be one of {valid_methods}"
+            raise ValueError(msg)
+        return v.upper()
+
+    @model_validator(mode="after")
+    def validate_oracle_wms_configuration_consistency(self) -> Self:
+        """Validate Oracle WMS configuration consistency."""
         # Validate authentication based on method
-        if self.auth_method == FlextOracleWmsConstants.OracleWMSAuthMethod.BASIC:
-            if not self.oracle_wms_username or not self.oracle_wms_password:
-                validation_errors.append(
-                    "Oracle WMS username and password required for basic auth",
-                )
-        elif self.auth_method == FlextOracleWmsConstants.OracleWMSAuthMethod.BEARER:
-            # Add bearer token validation if needed
-            pass
-        elif self.auth_method == FlextOracleWmsConstants.OracleWMSAuthMethod.API_KEY:
-            # Add API key validation if needed
-            pass
+        if self.auth_method == "BASIC" and (
+            not self.oracle_wms_username
+            or not self.oracle_wms_password.get_secret_value()
+        ):
+            msg = "Oracle WMS username and password required for basic auth"
+            raise ValueError(msg)
 
         # Validate mock usage
         if self.oracle_wms_use_mock and not self.oracle_wms_base_url:
-            validation_errors.append(
-                "Oracle WMS base URL is required even when using real",
+            warnings.warn(
+                "Oracle WMS base URL is required even when using mock",
+                UserWarning,
+                stacklevel=2,
             )
 
-        if validation_errors:
-            return FlextResult[None].fail("; ".join(validation_errors))
-        return FlextResult[None].ok(None)
+        # Validate SSL in production
+        if (
+            "production" in self.oracle_wms_base_url.lower()
+            and not self.oracle_wms_verify_ssl
+        ):
+            warnings.warn(
+                "SSL verification should be enabled for production environments",
+                UserWarning,
+                stacklevel=2,
+            )
 
-    class _AuthHelper:
-        """Nested helper for authentication operations."""
+        return self
 
-        @staticmethod
-        def get_auth_headers(
-            config: FlextOracleWmsConfig,
-        ) -> FlextTypes.Core.Headers:
-            """Get authentication headers based on configuration."""
-            headers: dict[str, str] = {}
-
-            if config.auth_method == FlextOracleWmsConstants.OracleWMSAuthMethod.BASIC:
-                credentials = (
-                    f"{config.oracle_wms_username}:{config.oracle_wms_password}"
+    def validate_business_rules(self) -> FlextResult[None]:
+        """Validate Oracle WMS specific business rules."""
+        try:
+            # Validate authentication requirements
+            if self.auth_method == "BASIC" and (
+                not self.oracle_wms_username
+                or not self.oracle_wms_password.get_secret_value()
+            ):
+                return FlextResult[None].fail(
+                    "Basic auth requires username and password"
                 )
-                encoded_credentials = base64.b64encode(credentials.encode()).decode()
-                headers["Authorization"] = f"Basic {encoded_credentials}"
 
-            return headers
+            # Validate connection settings
+            if self.oracle_wms_timeout < 5:
+                return FlextResult[None].fail("Timeout too low (minimum 5 seconds)")
 
-    class _ConnectionHelper:
-        """Nested helper for connection operations."""
+            # Validate pool settings
+            if self.oracle_wms_connection_pool_size > 50:
+                return FlextResult[None].fail("Connection pool too large (maximum 50)")
 
-        @staticmethod
-        def build_endpoint_url(config: FlextOracleWmsConfig, path: str) -> str:
-            """Build full endpoint URL."""
-            base = config.oracle_wms_base_url.rstrip("/")
-            path = path.lstrip("/")
-            return f"{base}/{path}"
+            # Validate cache settings
+            if self.oracle_wms_cache_duration > 86400:
+                return FlextResult[None].fail(
+                    "Cache duration too long (maximum 24 hours)"
+                )
 
-    # Convenience methods using nested helpers
-    def get_auth_headers(self: object) -> FlextTypes.Core.Headers:
-        """Get authentication headers."""
-        return self._AuthHelper.get_auth_headers(self)
+            return FlextResult[None].ok(None)
+        except Exception as e:
+            return FlextResult[None].fail(f"Business rules validation failed: {e}")
+
+    def get_connection_config(self) -> dict[str, object]:
+        """Get Oracle WMS connection configuration context."""
+        return {
+            "base_url": self.oracle_wms_base_url,
+            "username": self.oracle_wms_username,
+            "timeout": self.oracle_wms_timeout,
+            "max_retries": self.oracle_wms_max_retries,
+            "verify_ssl": self.oracle_wms_verify_ssl,
+            "pool_size": self.oracle_wms_connection_pool_size,
+        }
+
+    def get_auth_config(self) -> dict[str, object]:
+        """Get Oracle WMS authentication configuration context."""
+        return {
+            "auth_method": self.auth_method,
+            "username": self.oracle_wms_username,
+            "api_version": self.api_version,
+        }
+
+    def get_performance_config(self) -> dict[str, object]:
+        """Get Oracle WMS performance configuration context."""
+        return {
+            "timeout": self.oracle_wms_timeout,
+            "max_retries": self.oracle_wms_max_retries,
+            "pool_size": self.oracle_wms_connection_pool_size,
+            "cache_duration": self.oracle_wms_cache_duration,
+        }
+
+    def get_feature_config(self) -> dict[str, object]:
+        """Get Oracle WMS feature configuration context."""
+        return {
+            "enable_logging": self.oracle_wms_enable_logging,
+            "use_mock": self.oracle_wms_use_mock,
+            "verify_ssl": self.oracle_wms_verify_ssl,
+        }
+
+    def get_auth_headers(self) -> dict[str, str]:
+        """Get authentication headers based on configuration."""
+        headers: dict[str, str] = {}
+
+        if self.auth_method == "BASIC":
+            credentials = f"{self.oracle_wms_username}:{self.oracle_wms_password.get_secret_value()}"
+            encoded_credentials = base64.b64encode(credentials.encode()).decode()
+            headers["Authorization"] = f"Basic {encoded_credentials}"
+
+        return headers
 
     def build_endpoint_url(self, path: str) -> str:
         """Build full endpoint URL."""
-        return self._ConnectionHelper.build_endpoint_url(self, path)
+        base = self.oracle_wms_base_url.rstrip("/")
+        path = path.lstrip("/")
+        return f"{base}/{path}"
 
-    def extract_environment_from_url(self: object) -> str:
+    def extract_environment_from_url(self) -> str:
         """Extract environment from Oracle WMS base URL."""
         try:
             parsed = urlparse(self.oracle_wms_base_url)
@@ -200,240 +330,78 @@ class FlextOracleWmsConfig(FlextConfig):
         return "development"
 
     @classmethod
-    def for_testing(cls: object) -> FlextOracleWmsConfig:
-        """Create configuration optimized for testing."""
-        # Use Pydantic model_validate to create test configuration
-        # This avoids direct environment access and uses the standardized pattern
-        return cls.model_validate({
-            "oracle_wms_base_url": "https://test.example.com",
-            "oracle_wms_username": "test_user",
-            "oracle_wms_password": "test_password",  # Use fixed test password
-            "api_version": FlextOracleWmsConstants.FlextOracleWmsApiVersion.LGF_V10,
-            "auth_method": FlextOracleWmsConstants.OracleWMSAuthMethod.BASIC,
-            "oracle_wms_timeout": 5,
-            "oracle_wms_max_retries": 1,
-            "oracle_wms_verify_ssl": "False",
-            "oracle_wms_enable_logging": "False",
-            "oracle_wms_use_mock": "True",
-        })
+    def create_for_environment(
+        cls, environment: str, **overrides: object
+    ) -> FlextOracleWmsConfig:
+        """Create configuration for specific environment using enhanced singleton pattern."""
+        return cls.get_or_create_shared_instance(
+            project_name="flext-oracle-wms", environment=environment, **overrides
+        )
 
     @classmethod
-    def create_production_config(
-        cls,
-        *,
-        oracle_wms_base_url: str,
-        oracle_wms_username: str,
-        oracle_wms_password: str,
-        oracle_wms_timeout: int = 60,
-        oracle_wms_max_retries: int = 5,
-        oracle_wms_verify_ssl: bool = True,
-        oracle_wms_enable_logging: bool = True,
-        oracle_wms_use_mock: bool = False,
-    ) -> FlextResult[FlextConfig]:
-        """Create production Oracle WMS configuration.
-
-        Args:
-            oracle_wms_base_url: Production Oracle WMS base URL
-            oracle_wms_username: Production username
-            oracle_wms_password: Production password
-            oracle_wms_timeout: Request timeout in seconds
-            oracle_wms_max_retries: Maximum retry attempts
-            oracle_wms_verify_ssl: Enable SSL verification
-            oracle_wms_enable_logging: Enable logging
-            oracle_wms_use_mock: Use mock server
-
-        Returns:
-            FlextResult containing the configuration or error
-
-        """
-        try:
-            config: dict[str, object] = cls(
-                oracle_wms_base_url=oracle_wms_base_url,
-                oracle_wms_username=oracle_wms_username,
-                oracle_wms_password=oracle_wms_password,
-                environment=production,
-                oracle_wms_timeout=oracle_wms_timeout,
-                oracle_wms_max_retries=oracle_wms_max_retries,
-                oracle_wms_verify_ssl=oracle_wms_verify_ssl,
-                oracle_wms_enable_logging=oracle_wms_enable_logging,
-                oracle_wms_use_mock=oracle_wms_use_mock,
-            )
-            validation_result: FlextResult[object] = config.validate_business_rules()
-            if validation_result.is_failure:
-                error_msg = validation_result.error or "Validation failed"
-                return FlextResult[FlextConfig].fail(error_msg)
-            return FlextResult[FlextConfig].ok(config)
-        except Exception as e:
-            return FlextResult[FlextConfig].fail(
-                f"Failed to create production config: {e}",
-            )
+    def create_default(cls) -> FlextOracleWmsConfig:
+        """Create default configuration instance using enhanced singleton pattern."""
+        return cls.get_or_create_shared_instance(project_name="flext-oracle-wms")
 
     @classmethod
-    def get_oracle_wms_global_instance(cls, **kwargs: object) -> FlextOracleWmsConfig:
-        """Get the SINGLETON GLOBAL Oracle WMS configuration instance.
-
-        This method ensures a single source of truth for Oracle WMS configuration
-        across the entire application, extending the flext-core singleton pattern.
-
-        Parameters passed via kwargs can override default values and change behavior.
-        The singleton pattern ensures only one instance exists, but allows dynamic
-        configuration updates.
-
-        Args:
-            **kwargs: Configuration parameters to override defaults
-
-        Returns:
-            FlextOracleWmsConfig: The global Oracle WMS configuration instance
-
-        """
-        # Check if we already have a global instance
-        if cls._oracle_wms_global_instance is not None:
-            # Update existing instance with new parameters if provided
-            if kwargs:
-                for key, value in kwargs.items():
-                    if hasattr(cls._oracle_wms_global_instance, key):
-                        setattr(cls._oracle_wms_global_instance, key, value)
-            return cls._oracle_wms_global_instance
-
-        # Create new instance with default values
-        config: dict[str, object] = cls()
-
-        # Apply any provided kwargs
-        if kwargs:
-            for key, value in kwargs.items():
-                if hasattr(config, key):
-                    setattr(config, key, value)
-
-        # Set as global instance
-        cls._oracle_wms_global_instance = config
-        return config
+    def create_for_development(cls) -> FlextOracleWmsConfig:
+        """Create configuration optimized for development using enhanced singleton pattern."""
+        return cls.get_or_create_shared_instance(
+            project_name="flext-oracle-wms",
+            oracle_wms_timeout=10,
+            oracle_wms_max_retries=1,
+            oracle_wms_verify_ssl=False,
+            oracle_wms_enable_logging=True,
+            oracle_wms_use_mock=True,
+            oracle_wms_connection_pool_size=5,
+            oracle_wms_cache_duration=300,
+        )
 
     @classmethod
-    def create_from_environment(
-        cls,
-        *,
-        env_file: str | Path | None = None,
-        extra_settings: FlextTypes.Core.Dict | None = None,
-    ) -> FlextResult[FlextConfig]:
-        """Create Oracle WMS configuration from environment variables.
-
-        Uses Pydantic BaseSettings to load environment variables with proper validation
-        instead of direct os.getenv calls. This follows the standardized [Project]Config pattern.
-
-        Environment Variables (loaded automatically by Pydantic):
-            ORACLE_WMS_BASE_URL: Oracle WMS base URL
-            ORACLE_WMS_USERNAME: Oracle WMS username
-            ORACLE_WMS_PASSWORD: Oracle WMS password
-            ORACLE_WMS_API_VERSION: API version (default: LGF_V10)
-            ORACLE_WMS_AUTH_METHOD: Authentication method (default: BASIC)
-            ORACLE_WMS_TIMEOUT: Request timeout in seconds (default: 30)
-            ORACLE_WMS_MAX_RETRIES: Maximum retry attempts (default: 3)
-            ORACLE_WMS_VERIFY_SSL: SSL certificate verification (default: true)
-            ORACLE_WMS_ENABLE_LOGGING: Enable logging (default: true)
-            ORACLE_WMS_USE_MOCK: Use mock server (default: false)
-
-        Args:
-            env_file: Environment file path for Pydantic to load
-            extra_settings: Configuration parameters to override environment variables
-
-        Returns:
-            FlextResult containing the configuration or error
-
-        """
-        try:
-            # Use Pydantic BaseSettings pattern instead of direct os.getenv
-            # This automatically loads environment variables with proper validation
-
-            # Build settings dict with any overrides
-            settings_dict = extra_settings or {}
-
-            # If env_file is provided, include it in the model config
-            if env_file:
-                # Create a temporary model config that includes the env_file
-                settings_dict["_env_file"] = env_file
-
-            # Create configuration using Pydantic model_validate
-            # This properly handles environment variable loading and validation
-            config = cls.model_validate(settings_dict)
-
-            # Get the global singleton instance with the validated configuration
-            # This maintains the singleton pattern while using proper config loading
-            global_config = cls.get_oracle_wms_global_instance(
-                oracle_wms_base_url=config.oracle_wms_base_url,
-                oracle_wms_username=config.oracle_wms_username,
-                oracle_wms_password=config.oracle_wms_password,
-                api_version=config.api_version,
-                auth_method=config.auth_method,
-                oracle_wms_timeout=config.oracle_wms_timeout,
-                oracle_wms_max_retries=config.oracle_wms_max_retries,
-                oracle_wms_verify_ssl=config.oracle_wms_verify_ssl,
-                oracle_wms_enable_logging=config.oracle_wms_enable_logging,
-                oracle_wms_use_mock=config.oracle_wms_use_mock,
-            )
-
-            # Validate the final configuration
-            validation_result: FlextResult[object] = (
-                global_config.validate_business_rules()
-            )
-            if validation_result.is_failure:
-                error_msg = validation_result.error or "Validation failed"
-                return FlextResult[FlextConfig].fail(error_msg)
-
-            return FlextResult[FlextConfig].ok(global_config)
-
-        except Exception as e:
-            return FlextResult[FlextConfig].fail(
-                f"Failed to create config from environment: {e}",
-            )
+    def create_for_production(cls) -> FlextOracleWmsConfig:
+        """Create configuration optimized for production using enhanced singleton pattern."""
+        return cls.get_or_create_shared_instance(
+            project_name="flext-oracle-wms",
+            oracle_wms_timeout=60,
+            oracle_wms_max_retries=5,
+            oracle_wms_verify_ssl=True,
+            oracle_wms_enable_logging=True,
+            oracle_wms_use_mock=False,
+            oracle_wms_connection_pool_size=20,
+            oracle_wms_cache_duration=3600,
+        )
 
     @classmethod
-    def reset_global_instance(cls: object) -> None:
-        """Reset the global singleton instance.
-
-        This allows for dynamic reconfiguration by clearing the current
-        singleton instance. The next call to get_oracle_wms_global_instance()
-        will create a new instance with the provided parameters.
-        """
-        if hasattr(cls, "_oracle_wms_global_instance"):
-            cls._oracle_wms_global_instance = None
+    def create_for_testing(cls) -> FlextOracleWmsConfig:
+        """Create configuration optimized for testing using enhanced singleton pattern."""
+        return cls.get_or_create_shared_instance(
+            project_name="flext-oracle-wms",
+            oracle_wms_base_url="https://test.example.com",
+            oracle_wms_username="test_user",
+            oracle_wms_password=SecretStr("test_password"),
+            api_version="LGF_V10",
+            auth_method="BASIC",
+            oracle_wms_timeout=5,
+            oracle_wms_max_retries=1,
+            oracle_wms_verify_ssl=False,
+            oracle_wms_enable_logging=False,
+            oracle_wms_use_mock=True,
+            oracle_wms_connection_pool_size=2,
+            oracle_wms_cache_duration=60,
+        )
 
     @classmethod
-    def update_global_instance(cls, **kwargs: object) -> FlextResult[FlextConfig]:
-        """Update the global singleton instance with new parameters.
+    def get_global_instance(cls) -> FlextOracleWmsConfig:
+        """Get the global singleton instance using enhanced FlextConfig pattern."""
+        return cls.get_or_create_shared_instance(project_name="flext-oracle-wms")
 
-        This method allows dynamic reconfiguration of the global instance
-        without creating a new instance. Parameters are validated before
-        being applied.
-
-        Args:
-            **kwargs: Configuration parameters to update
-
-        Returns:
-            FlextResult containing the updated configuration or error
-
-        """
-        try:
-            # Get current global instance or create new one
-            config: dict[str, object] = cls.get_oracle_wms_global_instance()
-
-            # Update with new parameters
-            for key, value in kwargs.items():
-                if hasattr(config, key):
-                    setattr(config, key, value)
-
-            # Validate updated configuration
-            validation_result: FlextResult[object] = config.validate_business_rules()
-            if validation_result.is_failure:
-                error_msg = validation_result.error or "Validation failed"
-                return FlextResult[FlextConfig].fail(error_msg)
-
-            return FlextResult[FlextConfig].ok(config)
-        except Exception as e:
-            return FlextResult[FlextConfig].fail(
-                f"Failed to update global instance: {e}",
-            )
+    @classmethod
+    def reset_global_instance(cls) -> None:
+        """Reset the global FlextOracleWmsConfig instance (mainly for testing)."""
+        # Use the enhanced FlextConfig reset mechanism
+        cls.reset_shared_instance()
 
 
-# Aliases for backward compatibility - used across the codebase
-FlextOracleWmsClientConfig = FlextOracleWmsConfig
-FlextOracleWmsModuleConfig = FlextOracleWmsConfig
+__all__ = [
+    "FlextOracleWmsConfig",
+]

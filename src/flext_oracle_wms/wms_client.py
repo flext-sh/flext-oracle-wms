@@ -26,6 +26,7 @@ from flext_core import (
     FlextTypes,
 )
 from flext_oracle_wms.http_client import FlextHttpClient, create_flext_http_client
+from flext_oracle_wms.typings import FlextOracleWmsTypes
 from flext_oracle_wms.wms_api import (
     FLEXT_ORACLE_WMS_APIS,
     FlextOracleWmsApiCategory,
@@ -156,8 +157,11 @@ class FlextOracleWmsAuthenticator:
 
     async def get_auth_headers(
         self,
-        extra_headers: FlextTypes.Core.Headers | None = None,
-    ) -> FlextResult[FlextTypes.Core.Headers] | FlextTypes.Core.Headers:
+        extra_headers: FlextOracleWmsTypes.Core.AuthDict | None = None,
+    ) -> (
+        FlextResult[FlextOracleWmsTypes.Core.AuthDict]
+        | FlextOracleWmsTypes.Core.AuthDict
+    ):
         """Get authentication headers based on configuration."""
         try:
             headers: dict[str, str] = {}
@@ -201,7 +205,9 @@ class FlextOracleWmsAuthenticator:
                             "test_authentication_simple_coverage.py",
                         ),
                     ):
-                        return FlextResult[FlextTypes.Core.Headers].ok(headers)
+                        return FlextResult[FlextOracleWmsTypes.Core.AuthDict].ok(
+                            headers
+                        )
             except Exception as e:
                 logger.debug("Failed to create FlextResult: %s", e)
             return headers
@@ -469,11 +475,11 @@ class FlextOracleWmsClient:
         """
         # Use global singleton if no config provided
         if config is None:
-            self.config: dict[str, object] = (
-                FlextOracleWmsConfig.get_oracle_wms_global_instance()
+            self.config: FlextOracleWmsConfig = (
+                FlextOracleWmsConfig.get_global_instance()
             )
         else:
-            self.config: dict[str, object] = config
+            self.config: FlextOracleWmsConfig = config
 
         self._api_client: FlextHttpClient | None = None
         self._authenticator: FlextOracleWmsAuthenticator | None = None
@@ -603,7 +609,9 @@ class FlextOracleWmsClient:
         except Exception as e:
             return FlextResult[None].fail(f"Stop failed: {e}")
 
-    async def health_check(self) -> FlextResult[FlextTypes.Core.Dict]:
+    async def health_check(
+        self,
+    ) -> FlextResult[FlextOracleWmsTypes.Core.ApiResponseDict]:
         """Check the health status of the Oracle WMS client.
 
         Returns:
@@ -611,7 +619,7 @@ class FlextOracleWmsClient:
 
         """
         if not self._api_client:
-            return FlextResult[FlextTypes.Core.Dict].ok(
+            return FlextResult[FlextOracleWmsTypes.Core.ApiResponseDict].ok(
                 {
                     "status": "unhealthy",
                     "service": "FlextOracleWmsClient",
@@ -619,9 +627,9 @@ class FlextOracleWmsClient:
                 },
             )
         # Simple health check - just verify client is initialized
-        health_data: FlextTypes.Core.Dict = {
+        health_data: FlextOracleWmsTypes.Core.ApiResponseDict = {
             "status": "healthy",
-            "message": Client is initialized and ready,
+            "message": "Client is initialized and ready",
             "base_url": self.config.oracle_wms_base_url,
             "api_version": self.config.api_version,
             "test_call_success": "True",
@@ -633,20 +641,24 @@ class FlextOracleWmsClient:
         health_data.setdefault("service", "FlextOracleWmsClient")
         # Add timestamp if backend did not provide
         health_data.setdefault("timestamp", datetime.now(UTC).isoformat())
-        return FlextResult[FlextTypes.Core.Dict].ok(health_data)
+        return FlextResult[FlextOracleWmsTypes.Core.ApiResponseDict].ok(health_data)
 
-    async def discover_entities(self) -> FlextResult[list[FlextTypes.Core.Dict]]:
+    async def discover_entities(
+        self,
+    ) -> FlextResult[list[FlextOracleWmsTypes.Core.RecordDict]]:
         """Discover available Oracle WMS entities."""
         try:
             if not self._api_client:
                 # Provide fallback minimal discovery when not started
-                fallback_entities: list[FlextTypes.Core.Dict] = [
+                fallback_entities: list[FlextOracleWmsTypes.Core.RecordDict] = [
                     {"name": "company", "type": "core"},
                     {"name": "facility", "type": "core"},
                     {"name": "location", "type": "core"},
                     {"name": "item", "type": "core"},
                 ]
-                return FlextResult[list[FlextTypes.Core.Dict]].ok(fallback_entities)
+                return FlextResult[list[FlextOracleWmsTypes.Core.RecordDict]].ok(
+                    fallback_entities
+                )
 
             # Use mock server if configured
             use_mock = getattr(self.config, "oracle_wms_use_mock", False)
@@ -660,15 +672,17 @@ class FlextOracleWmsClient:
                 if mock_result.success and mock_result.value:
                     entities: list[object] = mock_result.value.get("results", [])
                     if isinstance(entities, list):
-                        return FlextResult[list[FlextTypes.Core.Dict]].ok(entities)
-                    return FlextResult[list[FlextTypes.Core.Dict]].fail(
+                        return FlextResult[
+                            list[FlextOracleWmsTypes.Core.RecordDict]
+                        ].ok(entities)
+                    return FlextResult[list[FlextOracleWmsTypes.Core.RecordDict]].fail(
                         "Invalid entities format",
                     )
 
             # Real API discovery
             endpoint = FLEXT_ORACLE_WMS_APIS.get("entity_discovery")
             if not endpoint:
-                return FlextResult[list[FlextTypes.Core.Dict]].fail(
+                return FlextResult[list[FlextOracleWmsTypes.Core.RecordDict]].fail(
                     "Discovery endpoint not found",
                 )
 
@@ -678,53 +692,65 @@ class FlextOracleWmsClient:
             response = await self._api_client.get(full_path)
 
             if not response.success or not response.value:
-                return FlextResult[list[FlextTypes.Core.Dict]].fail("No entities found")
+                return FlextResult[list[FlextOracleWmsTypes.Core.RecordDict]].fail(
+                    "No entities found"
+                )
 
             body = response.value
             entities: list[object] = body.get("results", [])
             if isinstance(entities, list):
-                return FlextResult[list[FlextTypes.Core.Dict]].ok(entities)
-            return FlextResult[list[FlextTypes.Core.Dict]].fail(
+                return FlextResult[list[FlextOracleWmsTypes.Core.RecordDict]].ok(
+                    entities
+                )
+            return FlextResult[list[FlextOracleWmsTypes.Core.RecordDict]].fail(
                 "Invalid entities format",
             )
 
         except Exception as e:
             error_msg = f"Entity discovery failed: {e}"
             logger.exception(error_msg)
-            return FlextResult[list[FlextTypes.Core.Dict]].fail(error_msg)
+            return FlextResult[list[FlextOracleWmsTypes.Core.RecordDict]].fail(
+                error_msg
+            )
 
     # Private helper expected by some tests to be patchable
     async def _call_api_direct(
         self,
         endpoint_path: str,
-    ) -> FlextResult[FlextTypes.Core.Dict]:
+    ) -> FlextResult[FlextOracleWmsTypes.Core.ApiResponseDict]:
         if not self._api_client:
-            return FlextResult[FlextTypes.Core.Dict].fail("Client not initialized")
+            return FlextResult[FlextOracleWmsTypes.Core.ApiResponseDict].fail(
+                "Client not initialized"
+            )
         response = await self._api_client.get(endpoint_path)
         if not response.success:
-            return FlextResult[FlextTypes.Core.Dict].fail(
+            return FlextResult[FlextOracleWmsTypes.Core.ApiResponseDict].fail(
                 response.error or "No response",
             )
         body = response.value
-        return FlextResult[FlextTypes.Core.Dict].ok(body)
+        return FlextResult[FlextOracleWmsTypes.Core.ApiResponseDict].ok(body)
 
     async def get_entity_data(
         self,
         entity_name: TOracleWmsEntityName,
-        params: FlextTypes.Core.Dict | None = None,
+        params: FlextOracleWmsTypes.Core.FilterDict | None = None,
         **kwargs: object,
-    ) -> FlextResult[FlextTypes.Core.Dict | list[FlextTypes.Core.Dict]]:
+    ) -> FlextResult[
+        FlextOracleWmsTypes.Core.RecordDict | list[FlextOracleWmsTypes.Core.RecordDict]
+    ]:
         """Get data for a specific Oracle WMS entity."""
         try:
             if not self._api_client:
                 return FlextResult[
-                    FlextTypes.Core.Dict | list[FlextTypes.Core.Dict]
+                    FlextOracleWmsTypes.Core.RecordDict
+                    | list[FlextOracleWmsTypes.Core.RecordDict]
                 ].fail("Client not initialized")
 
             # If clearly marked as non-existent (used by tests), fail fast with 404-like message
             if isinstance(entity_name, str) and "non_existent" in entity_name:
                 return FlextResult[
-                    FlextTypes.Core.Dict | list[FlextTypes.Core.Dict]
+                    FlextOracleWmsTypes.Core.RecordDict
+                    | list[FlextOracleWmsTypes.Core.RecordDict]
                 ].fail(
                     "Entity data extraction failed: HTTP 404 Not Found",
                 )

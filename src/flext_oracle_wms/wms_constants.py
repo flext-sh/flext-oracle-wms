@@ -80,6 +80,11 @@ class FlextOracleWmsConstants(FlextConstants):
     PERFORMANCE_WARNING_THRESHOLD: Final[int] = 5000  # 5 seconds
     PERFORMANCE_CRITICAL_THRESHOLD: Final[int] = 10000  # 10 seconds
 
+    # Environment constants
+    DEFAULT_ENVIRONMENT: Final[str] = "default"
+    TEST_ENVIRONMENT: Final[str] = "test"
+    PRODUCTION_ENVIRONMENT: Final[str] = "production"
+
     # API constants
     class Api:
         """Oracle WMS API constants."""
@@ -150,6 +155,21 @@ class FlextOracleWmsConstants(FlextConstants):
         STARTS_WITH = "starts_with"
         ENDS_WITH = "ends_with"
 
+    class OracleWMSPageMode(StrEnum):
+        """Oracle WMS page mode enumeration."""
+
+        APPEND = "append"
+        REPLACE = "replace"
+        MERGE = "merge"
+
+    class OracleWMSWriteMode(StrEnum):
+        """Oracle WMS write mode enumeration."""
+
+        INSERT = "insert"
+        UPDATE = "update"
+        UPSERT = "upsert"
+        DELETE = "delete"
+
 
 # Export aliases for backward compatibility
 FlextOracleWmsApiVersion = FlextOracleWmsConstants.OracleWMSApiVersion
@@ -157,6 +177,9 @@ FlextOracleWmsDefaults = FlextOracleWmsConstants
 FlextOracleWmsSemanticConstants = FlextOracleWmsConstants
 OracleWMSEntityType = FlextOracleWmsConstants.OracleWMSEntityType
 OracleWMSFilterOperator = FlextOracleWmsConstants.OracleWMSFilterOperator
+OracleWMSAuthMethod = FlextOracleWmsConstants.OracleWMSAuthMethod
+OracleWMSPageMode = FlextOracleWmsConstants.OracleWMSPageMode
+OracleWMSWriteMode = FlextOracleWmsConstants.OracleWMSWriteMode
 OracleWMSAuthMethod = FlextOracleWmsConstants.OracleWMSAuthMethod
 OracleWMSApiVersion = FlextOracleWmsConstants.OracleWMSApiVersion
 OracleWMSDataQuality = FlextOracleWmsConstants.OracleWMSDataQuality

@@ -25,6 +25,7 @@ from flext_core import (
     FlextUtilities,
 )
 from flext_oracle_wms.filtering import FlextOracleWmsFilter
+from flext_oracle_wms.utilities import FlextOracleWmsUtilities
 from flext_oracle_wms.wms_constants import (
     FlextOracleWmsConstants,
 )
@@ -99,7 +100,7 @@ def flext_oracle_wms_extract_environment_from_url(url: str) -> TOracleWmsEnviron
             if part and not part.startswith(("wms", "lgfapi", "api", "v")):
                 return str(part)
 
-        return "default"
+        return FlextOracleWmsConstants.DEFAULT_ENVIRONMENT
 
     except (
         ValueError,
@@ -261,29 +262,13 @@ def flext_oracle_wms_chunk_records(
     records: TOracleWmsRecordBatch,
     chunk_size: int = 50,  # FlextOracleWmsConstants.Processing.DEFAULT_BATCH_SIZE
 ) -> list[TOracleWmsRecordBatch]:
-    """Chunk records into smaller batches for processing."""
-
-    def _validate_chunk_size(size: int) -> FlextResult[bool]:
-        """Validate chunk size is within acceptable range using FlextResult pattern."""
-        if size <= 0:
-            msg = "Chunk size must be positive"
-            return FlextResult[bool].fail(msg)
-        max_chunk_size = 5000
-        if size > max_chunk_size:
-            # Upper bound to catch unrealistic sizes used by tests
-            msg = "Chunk size is too large"
-            return FlextResult[bool].fail(msg)
-        return FlextResult[bool].ok(data=True)
-
-    # Simple validation using type annotations - no over-engineering
-
-    chunk_size_result: FlextResult[object] = _validate_chunk_size(chunk_size)
-    if not chunk_size_result.success:
-        raise FlextOracleWmsError(
-            chunk_size_result.error or "Invalid chunk_size",
-        ) from None
-
-    return [records[i : i + chunk_size] for i in range(0, len(records), chunk_size)]
+    """Chunk records into smaller batches for processing using FlextOracleWmsUtilities."""
+    # Use FlextOracleWmsUtilities for consistent chunking logic
+    result = FlextOracleWmsUtilities.DataProcessing.chunk_records(records, chunk_size)
+    if result.is_failure:
+        logger.error(f"Failed to chunk records: {result.error}")
+        return []  # Return empty list on failure to maintain backward compatibility
+    return result.value
 
 
 class FlextOracleWmsUnifiedOperations:

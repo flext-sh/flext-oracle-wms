@@ -1057,7 +1057,7 @@ class FlextOracleWmsEntityDiscovery:
     def __init__(
         self,
         api_client: FlextHttpClient,
-        environment: str = "default",
+        environment: str = FlextOracleWmsConstants.DEFAULT_ENVIRONMENT,
     ) -> None:
         """Initialize entity discovery with API client."""
         self.api_client = api_client
@@ -1458,12 +1458,12 @@ class EndpointDiscoveryStrategy(DiscoveryStrategy):
                     # Continue with fallback entities even on API failure
                     entities = [
                         FlextOracleWmsEntity(
-                            name=company,
+                            name="company",
                             endpoint="/api/company",
                             description="Company entity",
                         ),
                         FlextOracleWmsEntity(
-                            name=facility,
+                            name="facility",
                             endpoint="/api/facility",
                             description="Facility entity",
                         ),
@@ -1491,12 +1491,12 @@ class EndpointDiscoveryStrategy(DiscoveryStrategy):
             # Fallback to real implementation for testing
             entities = [
                 FlextOracleWmsEntity(
-                    name=company,
+                    name="company",
                     endpoint="/api/company",
                     description="Company entity",
                 ),
                 FlextOracleWmsEntity(
-                    name=facility,
+                    name="facility",
                     endpoint="/api/facility",
                     description="Facility entity",
                 ),

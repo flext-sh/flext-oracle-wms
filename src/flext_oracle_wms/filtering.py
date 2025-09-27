@@ -15,6 +15,8 @@ import re
 from typing import override
 
 from flext_core import FlextLogger, FlextResult, FlextTypes
+
+# Import base classes from flext-core instead of creating circular dependency
 from flext_oracle_wms.wms_constants import (
     FlextOracleWmsConstants,
     OracleWMSFilterOperator,
@@ -23,8 +25,6 @@ from flext_oracle_wms.wms_exceptions import (
     FlextOracleWmsDataValidationError,
     FlextOracleWmsError,
 )
-
-# Import base classes from flext-core instead of creating circular dependency
 
 logger = FlextLogger(__name__)
 
@@ -407,12 +407,11 @@ def flext_oracle_wms_create_filter(
 async def flext_oracle_wms_filter_by_field(
     records: list[FlextTypes.Core.Dict],
     field: str,
-    value: object,
+    _value: object,
     operator: OracleWMSFilterOperator | None = None,
 ) -> FlextResult[list[FlextTypes.Core.Dict]]:
     """Filter records by field value and operator."""
     engine = FlextOracleWmsFilter()
-    op_value: object
     if operator == OracleWMSFilterOperator.NE:
         pass
     # Set filters before calling filter_records

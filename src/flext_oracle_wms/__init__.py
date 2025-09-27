@@ -18,6 +18,7 @@ from flext_oracle_wms.flattening import (
     flext_oracle_wms_create_data_flattener,
 )
 from flext_oracle_wms.typings import FlextOracleWmsTypes
+from flext_oracle_wms.utilities import FlextOracleWmsUtilities
 from flext_oracle_wms.wms_api import (
     FLEXT_ORACLE_WMS_APIS,
     FlextOracleWmsApiCategory,
@@ -34,9 +35,7 @@ from flext_oracle_wms.wms_client import (
     create_oracle_wms_client,
 )
 from flext_oracle_wms.wms_config import (
-    FlextOracleWmsClientConfig,
     FlextOracleWmsConfig,
-    FlextOracleWmsModuleConfig,
 )
 from flext_oracle_wms.wms_constants import (
     FlextOracleWmsApiVersion,
@@ -165,7 +164,6 @@ __all__: FlextOracleWmsTypes.Core.StringList = [
     "FlextOracleWmsCacheManager",
     "FlextOracleWmsCacheStats",
     "FlextOracleWmsClient",
-    "FlextOracleWmsClientConfig",
     "FlextOracleWmsClientMock",
     "FlextOracleWmsConfig",
     "FlextOracleWmsConfigurationError",
@@ -183,7 +181,6 @@ __all__: FlextOracleWmsTypes.Core.StringList = [
     "FlextOracleWmsFilter",
     "FlextOracleWmsFlattener",
     "FlextOracleWmsInventoryError",
-    "FlextOracleWmsModuleConfig",
     "FlextOracleWmsPickingError",
     "FlextOracleWmsPlugin",
     "FlextOracleWmsPluginContext",
@@ -194,6 +191,7 @@ __all__: FlextOracleWmsTypes.Core.StringList = [
     "FlextOracleWmsShipmentError",
     "FlextOracleWmsTimeoutError",
     "FlextOracleWmsUnifiedOperations",
+    "FlextOracleWmsUtilities",
     "FlextOracleWmsValidationError",
     "OracleWMSAuthMethod",
     "OracleWMSEntityType",

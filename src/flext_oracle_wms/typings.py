@@ -152,6 +152,57 @@ class FlextOracleWmsTypes(FlextTypes):
         type AnalyticsConfig = dict[str, FlextTypes.Core.JsonValue | dict[str, object]]
 
     # =========================================================================
+    # CORE TYPES - Essential Oracle WMS types extending FlextTypes.Core
+    # =========================================================================
+
+    class Core(FlextTypes.Core):
+        """Core Oracle WMS types extending FlextTypes.Core.
+
+        Essential domain-specific types for Oracle WMS operations.
+        Replaces generic dict[str, object] with semantic Oracle WMS types.
+        """
+
+        # Connection and API types
+        type ConnectionDict = dict[str, str | int | bool | dict[str, object]]
+        type ConfigDict = dict[str, FlextTypes.Core.ConfigValue | dict[str, object]]
+        type ApiResponseDict = dict[str, FlextTypes.Core.JsonValue | dict[str, object]]
+        type AuthDict = dict[str, str | dict[str, object]]
+
+        # Warehouse and inventory types
+        type WarehouseDict = dict[str, FlextTypes.Core.JsonValue | dict[str, object]]
+        type InventoryDict = dict[str, FlextTypes.Core.JsonValue | dict[str, object]]
+        type LocationDict = dict[str, str | dict[str, FlextTypes.Core.JsonValue]]
+        type StockDict = dict[str, int | float | str | dict[str, object]]
+
+        # Task and workflow types
+        type TaskDict = dict[str, str | bool | int | dict[str, object]]
+        type WorkflowDict = dict[str, FlextTypes.Core.JsonValue | dict[str, object]]
+        type ProcessDict = dict[str, str | dict[str, FlextTypes.Core.JsonValue]]
+        type BusinessRuleDict = dict[str, bool | str | dict[str, object]]
+
+        # Integration and reporting types
+        type IntegrationDict = dict[
+            str, FlextTypes.Core.ConfigValue | dict[str, object]
+        ]
+        type MessageDict = dict[str, str | dict[str, object]]
+        type ReportDict = dict[str, FlextTypes.Core.JsonValue | dict[str, object]]
+        type MetricDict = dict[str, str | dict[str, FlextTypes.Core.JsonValue]]
+
+        # Data processing types
+        type RecordDict = dict[str, object]
+        type FilterDict = dict[str, object]
+        type ResultDict = dict[str, object]
+        type ContextDict = dict[str, object]
+        type EntityDict = dict[str, object]
+        type DataDict = dict[str, object]
+
+        # Collection types for Oracle WMS operations
+        type RecordList = list[RecordDict]
+        type EntityList = list[EntityDict]
+        type ResultList = list[ResultDict]
+        type StringList = list[str]
+
+    # =========================================================================
     # ORACLE WMS PROJECT TYPES - Domain-specific project types extending FlextTypes
     # =========================================================================
 

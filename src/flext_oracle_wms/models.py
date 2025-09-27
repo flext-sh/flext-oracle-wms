@@ -1,11 +1,9 @@
-"""Module docstring."""
-
-from __future__ import annotations
-
 """Models for Oracle WMS operations.
 
 This module provides data models for Oracle WMS operations.
 """
+
+from __future__ import annotations
 
 from flext_core import FlextModels
 
