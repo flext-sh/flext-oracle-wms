@@ -11,14 +11,15 @@ from typing import Self, override
 from flext_api import FlextApiClient
 from flext_core import FlextLogger, FlextResult, FlextTypes
 
-logger = FlextLogger(__name__)
-
 # HTTP Status Code Constants
 HTTP_BAD_REQUEST = 400
 
 
 class FlextHttpClient:
     """HTTP client using flext-api foundation with flext-core patterns."""
+
+    # Shared logger for all HTTP client operations
+    _logger = FlextLogger(__name__)
 
     @override
     def __init__(
@@ -141,7 +142,7 @@ class FlextHttpClient:
             return FlextResult[FlextTypes.Core.Dict].ok(data)
 
         except Exception as e:
-            logger.exception("HTTP request error")
+            FlextHttpClient._logger.exception("HTTP request error")
             return FlextResult[FlextTypes.Core.Dict].fail(f"Request error: {e}")
 
     async def post(
@@ -218,7 +219,7 @@ class FlextHttpClient:
             return FlextResult[FlextTypes.Core.Dict].ok(response_data)
 
         except Exception as e:
-            logger.exception("HTTP POST request error")
+            FlextHttpClient._logger.exception("HTTP POST request error")
             return FlextResult[FlextTypes.Core.Dict].fail(f"Request error: {e}")
 
     async def put(
@@ -295,7 +296,7 @@ class FlextHttpClient:
             return FlextResult[FlextTypes.Core.Dict].ok(response_data)
 
         except Exception as e:
-            logger.exception("Unexpected error")
+            FlextHttpClient._logger.exception("Unexpected error")
             return FlextResult[FlextTypes.Core.Dict].fail(f"Unexpected error: {e}")
 
     async def delete(
@@ -356,7 +357,7 @@ class FlextHttpClient:
             return FlextResult[FlextTypes.Core.Dict].ok(data)
 
         except Exception as e:
-            logger.exception("Unexpected error")
+            FlextHttpClient._logger.exception("Unexpected error")
             return FlextResult[FlextTypes.Core.Dict].fail(f"Unexpected error: {e}")
 
 

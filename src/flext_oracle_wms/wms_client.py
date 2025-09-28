@@ -25,6 +25,7 @@ from flext_core import (
     FlextResult,
     FlextTypes,
 )
+from flext_oracle_wms.config import FlextOracleWmsConfig
 from flext_oracle_wms.http_client import FlextHttpClient, create_flext_http_client
 from flext_oracle_wms.typings import FlextOracleWmsTypes
 from flext_oracle_wms.wms_api import (
@@ -33,7 +34,6 @@ from flext_oracle_wms.wms_api import (
     FlextOracleWmsApiEndpoint,
     get_mock_server,
 )
-from flext_oracle_wms.wms_config import FlextOracleWmsConfig
 from flext_oracle_wms.wms_constants import (
     FlextOracleWmsConstants,
     OracleWMSAuthMethod,

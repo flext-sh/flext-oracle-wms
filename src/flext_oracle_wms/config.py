@@ -11,13 +11,20 @@ from __future__ import annotations
 
 import base64
 import warnings
-from typing import Self
+from typing import Self, cast
 from urllib.parse import urlparse
 
 from pydantic import Field, SecretStr, field_validator, model_validator
 from pydantic_settings import SettingsConfigDict
 
 from flext_core import FlextConfig, FlextResult
+
+# Constants for validation limits
+MAX_TIMEOUT_SECONDS = 300
+MAX_RETRIES = 10
+MIN_TIMEOUT_SECONDS = 5
+MAX_CONNECTION_POOL_SIZE = 50
+MAX_CACHE_DURATION_SECONDS = 86400
 
 
 class FlextOracleWmsConfig(FlextConfig):
@@ -150,7 +157,7 @@ class FlextOracleWmsConfig(FlextConfig):
         if v <= 0:
             msg = "Oracle WMS timeout must be positive"
             raise ValueError(msg)
-        if v > 300:
+        if v > MAX_TIMEOUT_SECONDS:
             warnings.warn(
                 f"Very long timeout ({v}s) may cause performance issues",
                 UserWarning,
@@ -165,7 +172,7 @@ class FlextOracleWmsConfig(FlextConfig):
         if v < 0:
             msg = "Oracle WMS max retries cannot be negative"
             raise ValueError(msg)
-        if v > 10:
+        if v > MAX_RETRIES:
             warnings.warn(
                 f"High retry count ({v}) may cause performance issues",
                 UserWarning,
@@ -238,15 +245,19 @@ class FlextOracleWmsConfig(FlextConfig):
                 )
 
             # Validate connection settings
-            if self.oracle_wms_timeout < 5:
-                return FlextResult[None].fail("Timeout too low (minimum 5 seconds)")
+            if self.oracle_wms_timeout < MIN_TIMEOUT_SECONDS:
+                return FlextResult[None].fail(
+                    f"Timeout too low (minimum {MIN_TIMEOUT_SECONDS} seconds)"
+                )
 
             # Validate pool settings
-            if self.oracle_wms_connection_pool_size > 50:
-                return FlextResult[None].fail("Connection pool too large (maximum 50)")
+            if self.oracle_wms_connection_pool_size > MAX_CONNECTION_POOL_SIZE:
+                return FlextResult[None].fail(
+                    f"Connection pool too large (maximum {MAX_CONNECTION_POOL_SIZE})"
+                )
 
             # Validate cache settings
-            if self.oracle_wms_cache_duration > 86400:
+            if self.oracle_wms_cache_duration > MAX_CACHE_DURATION_SECONDS:
                 return FlextResult[None].fail(
                     "Cache duration too long (maximum 24 hours)"
                 )
@@ -334,66 +345,84 @@ class FlextOracleWmsConfig(FlextConfig):
         cls, environment: str, **overrides: object
     ) -> FlextOracleWmsConfig:
         """Create configuration for specific environment using enhanced singleton pattern."""
-        return cls.get_or_create_shared_instance(
-            project_name="flext-oracle-wms", environment=environment, **overrides
+        return cast(
+            "FlextOracleWmsConfig",
+            cls.get_or_create_shared_instance(
+                project_name="flext-oracle-wms", environment=environment, **overrides
+            ),
         )
 
     @classmethod
     def create_default(cls) -> FlextOracleWmsConfig:
         """Create default configuration instance using enhanced singleton pattern."""
-        return cls.get_or_create_shared_instance(project_name="flext-oracle-wms")
+        return cast(
+            "FlextOracleWmsConfig",
+            cls.get_or_create_shared_instance(project_name="flext-oracle-wms"),
+        )
 
     @classmethod
     def create_for_development(cls) -> FlextOracleWmsConfig:
         """Create configuration optimized for development using enhanced singleton pattern."""
-        return cls.get_or_create_shared_instance(
-            project_name="flext-oracle-wms",
-            oracle_wms_timeout=10,
-            oracle_wms_max_retries=1,
-            oracle_wms_verify_ssl=False,
-            oracle_wms_enable_logging=True,
-            oracle_wms_use_mock=True,
-            oracle_wms_connection_pool_size=5,
-            oracle_wms_cache_duration=300,
+        return cast(
+            "FlextOracleWmsConfig",
+            cls.get_or_create_shared_instance(
+                project_name="flext-oracle-wms",
+                oracle_wms_timeout=10,
+                oracle_wms_max_retries=1,
+                oracle_wms_verify_ssl=False,
+                oracle_wms_enable_logging=True,
+                oracle_wms_use_mock=True,
+                oracle_wms_connection_pool_size=5,
+                oracle_wms_cache_duration=300,
+            ),
         )
 
     @classmethod
     def create_for_production(cls) -> FlextOracleWmsConfig:
         """Create configuration optimized for production using enhanced singleton pattern."""
-        return cls.get_or_create_shared_instance(
-            project_name="flext-oracle-wms",
-            oracle_wms_timeout=60,
-            oracle_wms_max_retries=5,
-            oracle_wms_verify_ssl=True,
-            oracle_wms_enable_logging=True,
-            oracle_wms_use_mock=False,
-            oracle_wms_connection_pool_size=20,
-            oracle_wms_cache_duration=3600,
+        return cast(
+            "FlextOracleWmsConfig",
+            cls.get_or_create_shared_instance(
+                project_name="flext-oracle-wms",
+                oracle_wms_timeout=60,
+                oracle_wms_max_retries=5,
+                oracle_wms_verify_ssl=True,
+                oracle_wms_enable_logging=True,
+                oracle_wms_use_mock=False,
+                oracle_wms_connection_pool_size=20,
+                oracle_wms_cache_duration=3600,
+            ),
         )
 
     @classmethod
     def create_for_testing(cls) -> FlextOracleWmsConfig:
         """Create configuration optimized for testing using enhanced singleton pattern."""
-        return cls.get_or_create_shared_instance(
-            project_name="flext-oracle-wms",
-            oracle_wms_base_url="https://test.example.com",
-            oracle_wms_username="test_user",
-            oracle_wms_password=SecretStr("test_password"),
-            api_version="LGF_V10",
-            auth_method="BASIC",
-            oracle_wms_timeout=5,
-            oracle_wms_max_retries=1,
-            oracle_wms_verify_ssl=False,
-            oracle_wms_enable_logging=False,
-            oracle_wms_use_mock=True,
-            oracle_wms_connection_pool_size=2,
-            oracle_wms_cache_duration=60,
+        return cast(
+            "FlextOracleWmsConfig",
+            cls.get_or_create_shared_instance(
+                project_name="flext-oracle-wms",
+                oracle_wms_base_url="https://test.example.com",
+                oracle_wms_username="test_user",
+                oracle_wms_password=SecretStr("test_password"),
+                api_version="LGF_V10",
+                auth_method="BASIC",
+                oracle_wms_timeout=5,
+                oracle_wms_max_retries=1,
+                oracle_wms_verify_ssl=False,
+                oracle_wms_enable_logging=False,
+                oracle_wms_use_mock=True,
+                oracle_wms_connection_pool_size=2,
+                oracle_wms_cache_duration=60,
+            ),
         )
 
     @classmethod
     def get_global_instance(cls) -> FlextOracleWmsConfig:
         """Get the global singleton instance using enhanced FlextConfig pattern."""
-        return cls.get_or_create_shared_instance(project_name="flext-oracle-wms")
+        return cast(
+            "FlextOracleWmsConfig",
+            cls.get_or_create_shared_instance(project_name="flext-oracle-wms"),
+        )
 
     @classmethod
     def reset_global_instance(cls) -> None:
@@ -402,6 +431,32 @@ class FlextOracleWmsConfig(FlextConfig):
         cls.reset_shared_instance()
 
 
+class FlextOracleWmsModuleConfig:
+    """Module-level configuration for flext-oracle-wms.
+
+    This class holds configuration that is specific to the module
+    and not necessarily tied to environment variables.
+    """
+
+    def __init__(self) -> None:
+        """Initialize module-level configuration with default values."""
+        self.enable_caching: bool = True
+        self.cache_ttl_seconds: int = 3600
+        self.max_concurrent_requests: int = 10
+        self.enable_metrics: bool = True
+        self.enable_tracing: bool = False
+
+
+# Backward compatibility aliases
+FlextOracleWmsClientConfig = FlextOracleWmsConfig
+
 __all__ = [
+    "MAX_CACHE_DURATION_SECONDS",
+    "MAX_CONNECTION_POOL_SIZE",
+    "MAX_RETRIES",
+    "MAX_TIMEOUT_SECONDS",
+    "MIN_TIMEOUT_SECONDS",
+    "FlextOracleWmsClientConfig",
     "FlextOracleWmsConfig",
+    "FlextOracleWmsModuleConfig",
 ]

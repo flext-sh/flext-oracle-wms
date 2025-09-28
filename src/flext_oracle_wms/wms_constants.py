@@ -50,7 +50,7 @@ class FlextOracleWmsConstants(FlextConstants):
     AUTH_METHOD_BASIC: Final[str] = "basic"
     AUTH_METHOD_OAUTH2: Final[str] = "oauth2"
     AUTH_METHOD_API_KEY: Final[str] = "api_key"
-    OAUTH2_TOKEN_ENDPOINT: Final[str] = "/oauth2/token"
+    OAUTH2_TOKEN_ENDPOINT: Final[str] = "/oauth2/token"  # noqa: S105 # Not a password, OAuth2 endpoint path
     OAUTH2_SCOPE_DEFAULT: Final[str] = "wms.read wms.write"
 
     # Entity types

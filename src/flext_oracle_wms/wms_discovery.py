@@ -38,8 +38,6 @@ from flext_oracle_wms.wms_models import (
 )
 from flext_oracle_wms.wms_operations import handle_operation_exception
 
-logger = FlextLogger(__name__)
-
 # Cache value types
 CacheValueBasic = (str | int | float) | (bool | None)
 CacheValueDict = FlextTypes.Core.Dict
@@ -239,7 +237,9 @@ class FlextOracleWmsCacheStats(FlextModels):
 class FlextOracleWmsCacheManager:
     """Enterprise cache manager for Oracle WMS operations."""
 
-    @override
+    # Shared logger for cache operations
+    _logger = FlextLogger(__name__)
+
     @override
     def __init__(self, config: FlextOracleWmsCacheConfig) -> None:
         """Initialize cache manager with configuration."""
@@ -268,7 +268,9 @@ class FlextOracleWmsCacheManager:
             msg = f"Invalid cache configuration: {validation_result.error}"
             raise ValueError(msg)
 
-        logger.debug("Oracle WMS cache manager initialized", config=self.config)
+        FlextOracleWmsEntityDiscovery.logger.debug(
+            "Oracle WMS cache manager initialized", config=self.config
+        )
 
         # Don't start cleanup task automatically - only when start() is called
 
@@ -300,7 +302,7 @@ class FlextOracleWmsCacheManager:
             self._cleanup_task = loop.create_task(self._cleanup_expired_entries())
         except RuntimeError:
             # No event loop running, cleanup will be manual
-            logger.debug("No event loop available, using manual cleanup")
+            self._logger.debug("No event loop available, using manual cleanup")
 
     async def _cleanup_expired_entries(self) -> None:
         """Background task to clean up expired cache entries."""
@@ -328,13 +330,13 @@ class FlextOracleWmsCacheManager:
                         )
 
                     if expired_keys:
-                        logger.debug(
+                        self._logger.debug(
                             f"Cleaned up {len(expired_keys)} expired cache entries",
                         )
         except asyncio.CancelledError:
             return
         except Exception:
-            logger.exception("Cache cleanup error")
+            self._logger.exception("Cache cleanup error")
 
     async def get(self, key: str) -> FlextResult[object]:
         """Get value from cache."""
@@ -569,7 +571,7 @@ class FlextOracleWmsCacheManager:
             return FlextResult[None].ok(None)
 
         except Exception as e:
-            handle_operation_exception(e, "cache set", logger)
+            handle_operation_exception(e, "cache set", self._logger)
             return FlextResult[None].fail(f"Cache set failed: {e}")
 
     def invalidate(self, key: str) -> None:
@@ -617,7 +619,7 @@ class FlextOracleWmsCacheManager:
             self.invalidate(key)
             return FlextResult[None].ok(None)
         except Exception as e:
-            logger.exception("Cache invalidation failed")
+            self._logger.exception("Cache invalidation failed")
             return FlextResult[None].fail(f"Cache invalidation failed: {e}")
 
     def get_stats(self: FlextOracleWmsCacheManager) -> FlextOracleWmsCacheStats:
@@ -733,7 +735,6 @@ class ObjectTypeStrategy(TypeInferenceStrategy):
 class FlextOracleWmsDynamicSchemaProcessor:
     """Oracle WMS dynamic schema processor using Strategy pattern."""
 
-    @override
     @override
     def __init__(
         self,
@@ -1025,7 +1026,7 @@ class EntityListDiscoveryStrategy(DiscoveryStrategy):
         try:
             # Se o cliente não expõe 'get', não invente dados
             if not hasattr(api_client, "get"):
-                logger.debug(
+                self.logger.debug(
                     "API client does not expose 'get' method; skipping discovery step",
                 )
                 return FlextResult[None].ok(None)
@@ -1043,7 +1044,9 @@ class EntityListDiscoveryStrategy(DiscoveryStrategy):
 class FlextOracleWmsEntityDiscovery:
     """Oracle WMS entity discovery using Strategy and Command patterns."""
 
-    @override
+    # Shared logger for all discovery operations
+    logger = FlextLogger(__name__)
+
     @override
     def __init__(
         self,
@@ -1183,7 +1186,9 @@ class FlextOracleWmsEntityDiscovery:
                         and item.get("name")
                         and item.get("endpoint")
                     ]
-                    logger.debug("Using cached discovery result")
+                    FlextOracleWmsEntityDiscovery._logger.debug(
+                        "Using cached discovery result"
+                    )
                     return FlextResult[FlextOracleWmsDiscoveryResult].ok(
                         FlextOracleWmsDiscoveryResult(
                             entities=entities,
@@ -1375,7 +1380,6 @@ class EndpointDiscoveryStrategy(DiscoveryStrategy):
     """Strategy for discovering entities from specific endpoints."""
 
     @override
-    @override
     def __init__(self, discovery: FlextOracleWmsEntityDiscovery) -> None:
         """Initialize endpoint discovery strategy."""
         self.discovery = discovery
@@ -1500,7 +1504,6 @@ class EndpointDiscoveryStrategy(DiscoveryStrategy):
 class EntityResponseParser:
     """Parser for entity response data."""
 
-    @override
     @override
     def __init__(self, discovery: FlextOracleWmsEntityDiscovery) -> None:
         """Initialize entity response parser."""

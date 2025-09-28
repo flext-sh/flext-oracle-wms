@@ -56,15 +56,13 @@ def create_client_config() -> FlextOracleWmsClientConfig:
     with environment variables and parameter overrides.
     """
     # Method 1: Use global singleton with environment variables
-    env_result = FlextOracleWmsClientConfig.create_from_environment()
-
-    if env_result.success:
-        # Cast the generic FlextConfig to Oracle WMS specific config
-        return FlextOracleWmsClientConfig(**env_result.value.model_dump())
-
-    # Method 2: Fallback to global singleton with default values
-    # if environment variables are not set
-    return FlextOracleWmsClientConfig.get_oracle_wms_global_instance()
+    # The new config automatically loads from environment variables
+    try:
+        return FlextOracleWmsClientConfig.create_default()
+    except Exception:
+        # Method 2: Fallback to global singleton with default values
+        # if environment variables are not set
+        return FlextOracleWmsClientConfig.get_global_instance()
 
 
 async def discover_wms_entities(
@@ -81,7 +79,7 @@ async def discover_wms_entities(
     """
     result = await client.discover_entities()
 
-    if result.success:
+    if result.is_success:
         entities = result.data
         if entities is None:
             return result
@@ -128,7 +126,7 @@ async def query_entity_data(
         limit=10,  # Limit results for example
     )
 
-    if result.success:
+    if result.is_success:
         data = result.data
 
         # Display sample data structure with safety checks

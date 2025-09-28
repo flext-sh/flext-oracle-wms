@@ -7,6 +7,7 @@ SPDX-License-Identifier: MIT
 from flext_oracle_wms import (
     FlextOracleWmsClient,
     FlextOracleWmsConfig,
+    FlextOracleWmsModuleConfig,
     FlextOracleWmsPlugin,
     flext_oracle_wms_build_entity_url,
     flext_oracle_wms_validate_entity_name,

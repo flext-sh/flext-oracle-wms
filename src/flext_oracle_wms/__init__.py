@@ -6,6 +6,12 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
+from flext_oracle_wms.config import (
+    FlextOracleWmsClientConfig,
+    FlextOracleWmsConfig,
+    FlextOracleWmsModuleConfig,
+)
+
 # from flext_oracle_wms.dynamic import flext_oracle_wms_create_dynamic_schema_processor
 from flext_oracle_wms.filtering import (
     FlextOracleWmsFilter,
@@ -34,12 +40,10 @@ from flext_oracle_wms.wms_client import (
     FlextOracleWmsClientMock,
     create_oracle_wms_client,
 )
-from flext_oracle_wms.wms_config import (
-    FlextOracleWmsConfig,
-)
 from flext_oracle_wms.wms_constants import (
     FlextOracleWmsApiVersion,
     FlextOracleWmsConstants,
+    FlextOracleWmsDefaults,
     OracleWMSAuthMethod,
     OracleWMSEntityType,
     OracleWMSFilterOperator,
@@ -164,6 +168,7 @@ __all__: FlextOracleWmsTypes.Core.StringList = [
     "FlextOracleWmsCacheManager",
     "FlextOracleWmsCacheStats",
     "FlextOracleWmsClient",
+    "FlextOracleWmsClientConfig",
     "FlextOracleWmsClientMock",
     "FlextOracleWmsConfig",
     "FlextOracleWmsConfigurationError",
@@ -172,6 +177,7 @@ __all__: FlextOracleWmsTypes.Core.StringList = [
     "FlextOracleWmsDataFlattener",
     "FlextOracleWmsDataPlugin",
     "FlextOracleWmsDataValidationError",
+    "FlextOracleWmsDefaults",
     "FlextOracleWmsDiscoveryResult",
     "FlextOracleWmsDynamicSchemaProcessor",
     "FlextOracleWmsEntity",
@@ -181,6 +187,7 @@ __all__: FlextOracleWmsTypes.Core.StringList = [
     "FlextOracleWmsFilter",
     "FlextOracleWmsFlattener",
     "FlextOracleWmsInventoryError",
+    "FlextOracleWmsModuleConfig",
     "FlextOracleWmsPickingError",
     "FlextOracleWmsPlugin",
     "FlextOracleWmsPluginContext",

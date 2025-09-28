@@ -17,9 +17,6 @@ from flext_oracle_wms.wms_models import (
     FlextOracleWmsApiVersion,
 )
 
-logger = FlextLogger(__name__)
-
-
 FLEXT_ORACLE_WMS_APIS = {
     # === SETUP AND TRANSACTIONAL DATA APIS ===
     "lgf_init_stage_interface": FlextOracleWmsApiEndpoint(
@@ -215,6 +212,9 @@ FLEXT_ORACLE_WMS_APIS = {
 class OracleWmsMockServer:
     """Mock server simulating Oracle WMS Cloud API v10 responses."""
 
+    # Shared logger for all mock server operations
+    _logger = FlextLogger(__name__)
+
     @override
     def __init__(self, mock_environment: str = "mock_test") -> None:
         """Initialize Oracle WMS mock server."""
@@ -331,7 +331,7 @@ class OracleWmsMockServer:
                 f"Unknown mock endpoint: {endpoint}",
             )
         except Exception as e:
-            logger.exception("Mock server error")
+            OracleWmsMockServer._logger.exception("Mock server error")
             return FlextResult[FlextTypes.Core.Dict].fail(f"Mock server error: {e}")
 
     def _mock_entity_discovery(self: object) -> FlextResult[FlextTypes.Core.Dict]:

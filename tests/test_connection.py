@@ -68,7 +68,7 @@ async def test_real_connection() -> bool:
             for entity in discovery.data[:3]:  # Show first 3
                 logger.info(
                     "  - %s",
-                    str(entity),
+                    entity,
                 )
 
         # Test that we can construct data retrieval calls

@@ -44,8 +44,6 @@ TOracleWmsPaginationInfo = FlextTypes.Core.Dict
 TOracleWmsFilters = FlextTypes.Core.Dict
 TOracleWmsFilterValue = object
 
-logger = FlextLogger(__name__)
-
 
 # Validation functions removed - use FlextValidations.TypeValidators directly
 
@@ -266,7 +264,9 @@ def flext_oracle_wms_chunk_records(
     # Use FlextOracleWmsUtilities for consistent chunking logic
     result = FlextOracleWmsUtilities.DataProcessing.chunk_records(records, chunk_size)
     if result.is_failure:
-        logger.error(f"Failed to chunk records: {result.error}")
+        FlextOracleWmsUnifiedOperations.logger.error(
+            f"Failed to chunk records: {result.error}"
+        )
         return []  # Return empty list on failure to maintain backward compatibility
     return result.value
 
@@ -277,6 +277,9 @@ class FlextOracleWmsUnifiedOperations:
     This class eliminates duplication by providing all Oracle WMS operations
     in a single, cohesive interface following SOLID principles.
     """
+
+    # Shared logger for all unified operations
+    logger = FlextLogger(__name__)
 
     class _FilterOperations:
         """Nested class for filtering operations."""
@@ -538,7 +541,6 @@ class FlextOracleWmsUnifiedOperations:
             return flattened
 
     @override
-    @override
     def __init__(self: object) -> None:
         """Initialize unified operations."""
         self.filter = self._FilterOperations(self)
@@ -657,7 +659,6 @@ class FlextOracleWmsPluginContext:
     """Oracle WMS plugin context implementation."""
 
     @override
-    @override
     def __init__(
         self,
         config: Mapping[str, object] | None = None,
@@ -671,7 +672,6 @@ class FlextOracleWmsPluginContext:
 class FlextOracleWmsPlugin:
     """Oracle WMS plugin implementation."""
 
-    @override
     @override
     def __init__(self, name: str, version: str = "0.9.0") -> None:
         """Initialize Oracle WMS plugin."""
@@ -714,7 +714,6 @@ class FlextOracleWmsDataPlugin:
     """Oracle WMS data plugin implementation."""
 
     @override
-    @override
     def __init__(self, name: str, version: str = "0.9.0") -> None:
         """Initialize Oracle WMS data plugin."""
         self.name = name
@@ -724,7 +723,6 @@ class FlextOracleWmsDataPlugin:
 class FlextOracleWmsPluginRegistry:
     """Oracle WMS plugin registry implementation."""
 
-    @override
     @override
     def __init__(self: object) -> None:
         """Initialize plugin registry."""

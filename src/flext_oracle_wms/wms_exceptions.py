@@ -35,9 +35,6 @@ class FlextOracleWmsError(FlextExceptions.BaseError):
     response_body: str | None
 
     @override
-    @override
-    @override
-    @override
     def __init__(
         self,
         message: str,
@@ -104,9 +101,6 @@ class FlextOracleWmsValidationError(FlextOracleWmsError):
     """
 
     @override
-    @override
-    @override
-    @override
     def __init__(
         self,
         message: str = "Validation failed",
@@ -145,9 +139,6 @@ class FlextOracleWmsConfigurationError(FlextOracleWmsError):
     """
 
     @override
-    @override
-    @override
-    @override
     def __init__(self, message: str = "Config error", **kwargs: object) -> None:
         """Initialize configuration error.
 
@@ -158,11 +149,11 @@ class FlextOracleWmsConfigurationError(FlextOracleWmsError):
         """
         super().__init__(message, context=kwargs or {})
         # Extract config_key from context for backward compatibility
-        context: dict[str, object] = kwargs.get("context", {})
+        context = kwargs.get("context", {})
         if isinstance(context, dict):
-            self.config_key: dict[str, object] = context.get("config_key", "")
+            self.config_key: str = str(context.get("config_key", ""))
         else:
-            self.config_key: dict[str, object] = kwargs.get("config_key", "")
+            self.config_key: str = str(kwargs.get("config_key", ""))
 
 
 class FlextOracleWmsConnectionError(FlextOracleWmsError):
@@ -177,9 +168,6 @@ class FlextOracleWmsConnectionError(FlextOracleWmsError):
 
     """
 
-    @override
-    @override
-    @override
     @override
     def __init__(
         self,
@@ -216,9 +204,6 @@ class FlextOracleWmsProcessingError(FlextOracleWmsError):
 
     """
 
-    @override
-    @override
-    @override
     @override
     def __init__(
         self,
@@ -258,9 +243,6 @@ class FlextOracleWmsAuthenticationError(FlextOracleWmsError):
     """
 
     @override
-    @override
-    @override
-    @override
     def __init__(
         self,
         message: str = "Authentication failed",
@@ -295,9 +277,6 @@ class FlextOracleWmsDataValidationError(FlextOracleWmsValidationError):
     """Data validation error for Oracle WMS operations."""
 
     @override
-    @override
-    @override
-    @override
     def __init__(self, message: str = "Oracle WMS data validation failed") -> None:
         """Initialize data validation error."""
         super().__init__(message)
@@ -306,9 +285,6 @@ class FlextOracleWmsDataValidationError(FlextOracleWmsValidationError):
 class FlextOracleWmsApiError(FlextOracleWmsError):
     """Oracle WMS API request and response errors with HTTP context."""
 
-    @override
-    @override
-    @override
     @override
     def __init__(
         self,
@@ -336,9 +312,6 @@ class FlextOracleWmsInventoryError(FlextOracleWmsProcessingError):
     """Oracle WMS inventory-specific errors with WMS context."""
 
     @override
-    @override
-    @override
-    @override
     def __init__(
         self,
         message: str = "Oracle WMS inventory error",
@@ -363,9 +336,6 @@ class FlextOracleWmsInventoryError(FlextOracleWmsProcessingError):
 class FlextOracleWmsShipmentError(FlextOracleWmsProcessingError):
     """Oracle WMS shipment-specific errors with WMS context."""
 
-    @override
-    @override
-    @override
     @override
     def __init__(
         self,
@@ -392,9 +362,6 @@ class FlextOracleWmsPickingError(FlextOracleWmsProcessingError):
     """Oracle WMS picking-specific errors with WMS context."""
 
     @override
-    @override
-    @override
-    @override
     def __init__(
         self,
         message: str = "Oracle WMS picking error",
@@ -420,9 +387,6 @@ class FlextOracleWmsEntityNotFoundError(FlextOracleWmsValidationError):
     """Oracle WMS entity not found errors with entity context."""
 
     @override
-    @override
-    @override
-    @override
     def __init__(
         self,
         message: str = "Oracle WMS entity not found",
@@ -444,9 +408,6 @@ class FlextOracleWmsEntityNotFoundError(FlextOracleWmsValidationError):
 class FlextOracleWmsSchemaError(FlextOracleWmsValidationError):
     """Oracle WMS schema processing errors with schema context."""
 
-    @override
-    @override
-    @override
     @override
     def __init__(
         self,
@@ -470,9 +431,6 @@ class FlextOracleWmsSchemaError(FlextOracleWmsValidationError):
 class FlextOracleWmsSchemaFlatteningError(FlextOracleWmsSchemaError):
     """Schema flattening error for Oracle WMS nested data processing."""
 
-    @override
-    @override
-    @override
     @override
     def __init__(self, message: str = "Oracle WMS schema flattening failed") -> None:
         """Initialize schema flattening error."""

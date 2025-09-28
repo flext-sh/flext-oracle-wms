@@ -17,7 +17,6 @@ from flext_oracle_wms import (
     FlextOracleWmsApiVersion,
     FlextOracleWmsClient,
     FlextOracleWmsClientConfig,
-    FlextOracleWmsDefaults,
 )
 
 # Initialize logger
@@ -38,8 +37,8 @@ class WmsEnvironmentConfig:
 
     name: str
     base_url: str
-    timeout: float = FlextOracleWmsDefaults.DEFAULT_TIMEOUT
-    max_retries: int = FlextOracleWmsDefaults.DEFAULT_MAX_RETRIES
+    timeout: float = 30
+    max_retries: int = 3
 
 
 def get_environment_configs() -> dict[Environment, WmsEnvironmentConfig]:
@@ -48,20 +47,20 @@ def get_environment_configs() -> dict[Environment, WmsEnvironmentConfig]:
         Environment.DEVELOPMENT: WmsEnvironmentConfig(
             name="Development",
             base_url="https://dev-wms.oraclecloud.com/dev_env",
-            timeout=FlextOracleWmsDefaults.DEFAULT_TIMEOUT,
-            max_retries=FlextOracleWmsDefaults.DEFAULT_MAX_RETRIES,
+            timeout=30,
+            max_retries=3,
         ),
         Environment.STAGING: WmsEnvironmentConfig(
             name="Staging",
             base_url="https://staging-wms.oraclecloud.com/staging_env",
-            timeout=FlextOracleWmsDefaults.DEFAULT_TIMEOUT,
-            max_retries=FlextOracleWmsDefaults.DEFAULT_MAX_RETRIES,
+            timeout=30,
+            max_retries=3,
         ),
         Environment.PRODUCTION: WmsEnvironmentConfig(
             name="Production",
             base_url="https://prod-wms.oraclecloud.com/prod_env",
-            timeout=FlextOracleWmsDefaults.DEFAULT_TIMEOUT,
-            max_retries=FlextOracleWmsDefaults.DEFAULT_MAX_RETRIES,
+            timeout=30,
+            max_retries=3,
         ),
     }
 
@@ -104,16 +103,16 @@ def create_config_from_environment() -> FlextOracleWmsClientConfig:
         raise ValueError(msg)
 
     # Method 1: Use global singleton with environment variables
-    env_result = FlextOracleWmsClientConfig.create_from_environment()
+    # The config automatically loads from environment variables
+    env_config = FlextOracleWmsClientConfig.get_global_instance()
 
-    if env_result.success:
-        # Convert FlextConfig to FlextOracleWmsClientConfig
-        config_data = env_result.value.model_dump()
-        return FlextOracleWmsClientConfig(**config_data)
+    # Validate that required fields are set from environment
+    if env_config.oracle_wms_username and env_config.oracle_wms_password.get_secret_value():
+        return env_config
 
-    # Method 2: Fallback to global singleton with default values
+    # Method 2: Fallback to default configuration
     # if environment variables are not set
-    return FlextOracleWmsClientConfig.get_oracle_wms_global_instance()
+    return FlextOracleWmsClientConfig.create_default()
 
 
 def create_demo_config() -> FlextOracleWmsClientConfig:
@@ -127,19 +126,20 @@ def create_demo_config() -> FlextOracleWmsClientConfig:
 
     """
     # Use global singleton with demo parameters
-    return FlextOracleWmsClientConfig.get_oracle_wms_global_instance(
+    return FlextOracleWmsClientConfig.create_for_environment(
+        "demo",
         oracle_wms_base_url="https://demo-wms.oraclecloud.com/demo",
         oracle_wms_username="demo_user",
         oracle_wms_password="demo_password",
-        api_version=FlextOracleWmsApiVersion.LGF_V10,
-        oracle_wms_timeout=int(FlextOracleWmsDefaults.DEFAULT_TIMEOUT),
-        oracle_wms_max_retries=FlextOracleWmsDefaults.DEFAULT_MAX_RETRIES,
+        api_version="LGF_V10",
+        oracle_wms_timeout=30,
+        oracle_wms_max_retries=3,
         oracle_wms_verify_ssl=True,
         oracle_wms_enable_logging=True,
     )
 
 
-def validate_configuration(config: FlextOracleWmsClientConfig) -> FlextTypes.Core.Dict:
+def validate_configuration(config: FlextOracleWmsClientConfig) -> dict[str, object]:
     """Validate Oracle WMS client configuration.
 
     Args:
@@ -149,12 +149,16 @@ def validate_configuration(config: FlextOracleWmsClientConfig) -> FlextTypes.Cor
       Dictionary containing validation results
 
     """
-    validation_results = {
+    validation_results: dict[str, object] = {
         "valid": True,
         "warnings": [],
         "errors": [],
         "configuration_summary": {},
     }
+
+    errors = validation_results["errors"]
+    warnings = validation_results["warnings"]
+    config_summary = validation_results["configuration_summary"]
 
     # Validate base URL
     if not config.oracle_wms_base_url:

@@ -26,8 +26,6 @@ from flext_oracle_wms.wms_exceptions import (
     FlextOracleWmsError,
 )
 
-logger = FlextLogger(__name__)
-
 
 class FlextOracleWmsFilter:
     """Oracle WMS filter with case sensitivity and validation.
@@ -36,6 +34,9 @@ class FlextOracleWmsFilter:
     consolidating functionality from FlextOracleWmsFilterConfig with additional
     case sensitivity support.
     """
+
+    # Shared logger for all filter operations
+    _logger = FlextLogger(__name__)
 
     @override
     def __init__(
@@ -67,7 +68,7 @@ class FlextOracleWmsFilter:
 
         # Validate filters if provided
         if self.filters:
-            validation_result: FlextResult[object] = (
+            validation_result: FlextResult[None] = (
                 self._validate_filter_conditions_total(self.filters)
             )
             if validation_result.is_failure:
@@ -124,7 +125,7 @@ class FlextOracleWmsFilter:
         # Parameters are already properly typed
 
         # Validate filter conditions
-        count_result: FlextResult[object] = self._validate_filter_conditions_total(
+        count_result: FlextResult[None] = self._validate_filter_conditions_total(
             filters
         )
         if count_result.is_failure:
@@ -154,7 +155,7 @@ class FlextOracleWmsFilter:
             FlextResult containing filtered records
 
         """
-        count_result: FlextResult[object] = self._validate_filter_conditions_total(
+        count_result: FlextResult[None] = self._validate_filter_conditions_total(
             filters
         )
         if count_result.is_failure:
@@ -201,7 +202,7 @@ class FlextOracleWmsFilter:
             return FlextResult[list[FlextTypes.Core.Dict]].ok(sorted_records)
         except Exception as e:
             error_msg = f"sort_records failed: {e}"
-            logger.exception(error_msg)
+            FlextOracleWmsFilter._logger.exception(error_msg)
             return FlextResult[list[FlextTypes.Core.Dict]].fail(error_msg)
 
     def _validate_filter_conditions_total(
