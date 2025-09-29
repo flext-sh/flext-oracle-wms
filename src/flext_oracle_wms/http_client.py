@@ -9,7 +9,8 @@ import json
 from typing import Self, override
 
 from flext_api import FlextApiClient
-from flext_core import FlextLogger, FlextResult, FlextTypes
+from flext_core import FlextLogger, FlextResult
+from flext_oracle_wms.typings import FlextOracleWmsTypes
 
 # HTTP Status Code Constants
 HTTP_BAD_REQUEST = 400
@@ -82,7 +83,7 @@ class FlextHttpClient:
         path: str,
         params: dict[str, str | int | float] | None = None,
         headers: dict[str, str] | None = None,
-    ) -> FlextResult[FlextTypes.Core.Dict]:
+    ) -> FlextResult[FlextOracleWmsTypes.Core.Dict]:
         """Make GET request.
 
         Args:
@@ -97,7 +98,9 @@ class FlextHttpClient:
         try:
             await self._ensure_client()
             if self._client is None:
-                return FlextResult[FlextTypes.Core.Dict].fail("Client not initialized")
+                return FlextResult[FlextOracleWmsTypes.Core.Dict].fail(
+                    "Client not initialized"
+                )
 
             # Prepare headers using flext-api patterns
             request_headers = self.default_headers.copy()
@@ -113,14 +116,14 @@ class FlextHttpClient:
             )
 
             if response_result.is_failure:
-                return FlextResult[FlextTypes.Core.Dict].fail(
+                return FlextResult[FlextOracleWmsTypes.Core.Dict].fail(
                     f"HTTP request failed: {response_result.error}",
                 )
 
             response = response_result.unwrap()
 
             if response.status_code >= HTTP_BAD_REQUEST:
-                return FlextResult[FlextTypes.Core.Dict].fail(
+                return FlextResult[FlextOracleWmsTypes.Core.Dict].fail(
                     f"HTTP {response.status_code}: {response.body}",
                 )
 
@@ -139,11 +142,13 @@ class FlextHttpClient:
                     "text": str(response.body) if response.body else ""
                 }
 
-            return FlextResult[FlextTypes.Core.Dict].ok(data)
+            return FlextResult[FlextOracleWmsTypes.Core.Dict].ok(data)
 
         except Exception as e:
             FlextHttpClient._logger.exception("HTTP request error")
-            return FlextResult[FlextTypes.Core.Dict].fail(f"Request error: {e}")
+            return FlextResult[FlextOracleWmsTypes.Core.Dict].fail(
+                f"Request error: {e}"
+            )
 
     async def post(
         self,
@@ -151,7 +156,7 @@ class FlextHttpClient:
         data: dict[str, object] | None = None,
         json_data: dict[str, object] | None = None,
         headers: dict[str, str] | None = None,
-    ) -> FlextResult[FlextTypes.Core.Dict]:
+    ) -> FlextResult[FlextOracleWmsTypes.Core.Dict]:
         """Make POST request.
 
         Args:
@@ -167,7 +172,9 @@ class FlextHttpClient:
         try:
             await self._ensure_client()
             if self._client is None:
-                return FlextResult[FlextTypes.Core.Dict].fail("Client not initialized")
+                return FlextResult[FlextOracleWmsTypes.Core.Dict].fail(
+                    "Client not initialized"
+                )
 
             # Prepare headers using flext-api patterns
             request_headers = self.default_headers.copy()
@@ -190,14 +197,14 @@ class FlextHttpClient:
             )
 
             if response_result.is_failure:
-                return FlextResult[FlextTypes.Core.Dict].fail(
+                return FlextResult[FlextOracleWmsTypes.Core.Dict].fail(
                     f"HTTP request failed: {response_result.error}",
                 )
 
             response = response_result.unwrap()
 
             if response.status_code >= HTTP_BAD_REQUEST:
-                return FlextResult[FlextTypes.Core.Dict].fail(
+                return FlextResult[FlextOracleWmsTypes.Core.Dict].fail(
                     f"HTTP {response.status_code}: {response.body}",
                 )
 
@@ -216,11 +223,13 @@ class FlextHttpClient:
                     "text": str(response.body) if response.body else ""
                 }
 
-            return FlextResult[FlextTypes.Core.Dict].ok(response_data)
+            return FlextResult[FlextOracleWmsTypes.Core.Dict].ok(response_data)
 
         except Exception as e:
             FlextHttpClient._logger.exception("HTTP POST request error")
-            return FlextResult[FlextTypes.Core.Dict].fail(f"Request error: {e}")
+            return FlextResult[FlextOracleWmsTypes.Core.Dict].fail(
+                f"Request error: {e}"
+            )
 
     async def put(
         self,
@@ -228,7 +237,7 @@ class FlextHttpClient:
         data: dict[str, object] | None = None,
         json_data: dict[str, object] | None = None,
         headers: dict[str, str] | None = None,
-    ) -> FlextResult[FlextTypes.Core.Dict]:
+    ) -> FlextResult[FlextOracleWmsTypes.Core.Dict]:
         """Make PUT request.
 
         Args:
@@ -244,7 +253,9 @@ class FlextHttpClient:
         try:
             await self._ensure_client()
             if self._client is None:
-                return FlextResult[FlextTypes.Core.Dict].fail("Client not initialized")
+                return FlextResult[FlextOracleWmsTypes.Core.Dict].fail(
+                    "Client not initialized"
+                )
 
             # Prepare headers using flext-api patterns
             request_headers = self.default_headers.copy()
@@ -267,14 +278,14 @@ class FlextHttpClient:
             )
 
             if response_result.is_failure:
-                return FlextResult[FlextTypes.Core.Dict].fail(
+                return FlextResult[FlextOracleWmsTypes.Core.Dict].fail(
                     f"HTTP request failed: {response_result.error}",
                 )
 
             response = response_result.unwrap()
 
             if response.status_code >= HTTP_BAD_REQUEST:
-                return FlextResult[FlextTypes.Core.Dict].fail(
+                return FlextResult[FlextOracleWmsTypes.Core.Dict].fail(
                     f"HTTP {response.status_code}: {response.body}",
                 )
 
@@ -293,17 +304,19 @@ class FlextHttpClient:
                     "text": str(response.body) if response.body else ""
                 }
 
-            return FlextResult[FlextTypes.Core.Dict].ok(response_data)
+            return FlextResult[FlextOracleWmsTypes.Core.Dict].ok(response_data)
 
         except Exception as e:
             FlextHttpClient._logger.exception("Unexpected error")
-            return FlextResult[FlextTypes.Core.Dict].fail(f"Unexpected error: {e}")
+            return FlextResult[FlextOracleWmsTypes.Core.Dict].fail(
+                f"Unexpected error: {e}"
+            )
 
     async def delete(
         self,
         path: str,
         headers: dict[str, str] | None = None,
-    ) -> FlextResult[FlextTypes.Core.Dict]:
+    ) -> FlextResult[FlextOracleWmsTypes.Core.Dict]:
         """Make DELETE request.
 
         Args:
@@ -317,7 +330,9 @@ class FlextHttpClient:
         try:
             await self._ensure_client()
             if self._client is None:
-                return FlextResult[FlextTypes.Core.Dict].fail("Client not initialized")
+                return FlextResult[FlextOracleWmsTypes.Core.Dict].fail(
+                    "Client not initialized"
+                )
 
             request_headers = self.default_headers.copy()
             if headers:
@@ -328,14 +343,14 @@ class FlextHttpClient:
             )
 
             if response_result.is_failure:
-                return FlextResult[FlextTypes.Core.Dict].fail(
+                return FlextResult[FlextOracleWmsTypes.Core.Dict].fail(
                     f"HTTP request failed: {response_result.error}",
                 )
 
             response = response_result.unwrap()
 
             if response.status_code >= HTTP_BAD_REQUEST:
-                return FlextResult[FlextTypes.Core.Dict].fail(
+                return FlextResult[FlextOracleWmsTypes.Core.Dict].fail(
                     f"HTTP {response.status_code}: {response.body}",
                 )
 
@@ -354,11 +369,13 @@ class FlextHttpClient:
                     "text": str(response.body) if response.body else ""
                 }
 
-            return FlextResult[FlextTypes.Core.Dict].ok(data)
+            return FlextResult[FlextOracleWmsTypes.Core.Dict].ok(data)
 
         except Exception as e:
             FlextHttpClient._logger.exception("Unexpected error")
-            return FlextResult[FlextTypes.Core.Dict].fail(f"Unexpected error: {e}")
+            return FlextResult[FlextOracleWmsTypes.Core.Dict].fail(
+                f"Unexpected error: {e}"
+            )
 
 
 # Factory function following flext-core patterns

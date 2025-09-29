@@ -13,7 +13,8 @@ from __future__ import annotations
 import contextlib
 from typing import override
 
-from flext_core import FlextExceptions, FlextTypes
+from flext_core import FlextExceptions
+from flext_oracle_wms.typings import FlextOracleWmsTypes
 
 
 class FlextOracleWmsError(FlextExceptions.BaseError):
@@ -40,7 +41,7 @@ class FlextOracleWmsError(FlextExceptions.BaseError):
         message: str,
         *,
         code: str | None = None,
-        context: FlextTypes.Core.Dict | None = None,
+        context: FlextOracleWmsTypes.Core.Dict | None = None,
         field: str | None = None,
         entity_name: str | None = None,
         field_name: str | None = None,
@@ -106,7 +107,7 @@ class FlextOracleWmsValidationError(FlextOracleWmsError):
         message: str = "Validation failed",
         *,
         field_name: str | None = None,
-        context: FlextTypes.Core.Dict | None = None,
+        context: FlextOracleWmsTypes.Core.Dict | None = None,
         **kwargs: object,
     ) -> None:
         """Initialize validation error with context.
@@ -210,7 +211,7 @@ class FlextOracleWmsProcessingError(FlextOracleWmsError):
         message: str = "Processing failed",
         *,
         retry_after_seconds: float | None = None,
-        context: FlextTypes.Core.Dict | None = None,
+        context: FlextOracleWmsTypes.Core.Dict | None = None,
         **kwargs: object,
     ) -> None:
         """Initialize processing error with context.
@@ -437,7 +438,7 @@ class FlextOracleWmsSchemaFlatteningError(FlextOracleWmsSchemaError):
         super().__init__(message)
 
 
-__all__: FlextTypes.Core.StringList = [
+__all__: FlextOracleWmsTypes.Core.StringList = [
     "FlextOracleWmsApiError",
     "FlextOracleWmsAuthenticationError",
     "FlextOracleWmsConfigurationError",

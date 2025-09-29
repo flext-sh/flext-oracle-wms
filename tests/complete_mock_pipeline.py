@@ -288,7 +288,7 @@ class CompleteMockPipeline:
             dbt_results = self._simulate_dbt_transformations(target_results)
 
             # Phase 6: Save Complete Results
-            save_result = self._save_complete_pipeline_results(
+            save_result: FlextResult[str] = self._save_complete_pipeline_results(
                 schemas,
                 catalog,
                 tap_records,
@@ -485,7 +485,7 @@ class CompleteMockPipeline:
                 "mod_ts" if "mod_ts" in schema.get("properties", {}) else None
             )
 
-            stream = {
+            stream: dict[str, object] = {
                 "tap_stream_id": entity_name,
                 "stream": entity_name,
                 "schema": schema_without_keys,
@@ -789,7 +789,7 @@ class CompleteMockPipeline:
 def main() -> None:
     """Main execution."""
     pipeline = CompleteMockPipeline()
-    result = pipeline.run_complete_pipeline()
+    result: FlextResult[FlextTypes.Core.Dict] = pipeline.run_complete_pipeline()
 
     if result.success:
         pass

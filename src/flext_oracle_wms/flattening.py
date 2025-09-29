@@ -7,7 +7,8 @@ from __future__ import annotations
 
 from typing import override
 
-from flext_core import FlextResult, FlextTypes
+from flext_core import FlextResult
+from flext_oracle_wms.typings import FlextOracleWmsTypes
 from flext_oracle_wms.wms_operations import FlextOracleWmsFlattener as _OpsFlattener
 
 
@@ -42,8 +43,8 @@ class FlextOracleWmsDataFlattener(_OpsFlattener):
 
     def flatten_records(
         self,
-        records: list[FlextTypes.Core.Dict],
-    ) -> list[FlextTypes.Core.Dict]:
+        records: list[FlextOracleWmsTypes.Core.Dict],
+    ) -> list[FlextOracleWmsTypes.Core.Dict]:
         """Flatten nested records using configured separator.
 
         Args:
@@ -57,9 +58,11 @@ class FlextOracleWmsDataFlattener(_OpsFlattener):
             flattened = super().flatten_records(records)
 
             # Remap keys to expected separator for tests
-            def remap(rec: FlextTypes.Core.Dict) -> FlextTypes.Core.Dict:
+            def remap(
+                rec: FlextOracleWmsTypes.Core.Dict,
+            ) -> FlextOracleWmsTypes.Core.Dict:
                 # Always normalize internal double-underscore to UI separator
-                out: FlextTypes.Core.Dict = {}
+                out: FlextOracleWmsTypes.Core.Dict = {}
                 for k, v in rec.items():
                     normalized = k.replace("__", self.separator_ui)
                     if self.separator != self.separator_ui:
@@ -76,19 +79,19 @@ class FlextOracleWmsDataFlattener(_OpsFlattener):
 
     def flatten_records_with_result(
         self,
-        records: list[FlextTypes.Core.Dict],
-    ) -> FlextResult[list[FlextTypes.Core.Dict]]:
+        records: list[FlextOracleWmsTypes.Core.Dict],
+    ) -> FlextResult[list[FlextOracleWmsTypes.Core.Dict]]:
         """Flatten records returning FlextResult for error handling."""
         try:
             result: FlextResult[object] = self.flatten_records(records)
-            return FlextResult[list[FlextTypes.Core.Dict]].ok(result)
+            return FlextResult[list[FlextOracleWmsTypes.Core.Dict]].ok(result)
         except Exception as e:  # pragma: no cover - delegate errors
-            return FlextResult[list[FlextTypes.Core.Dict]].fail(str(e))
+            return FlextResult[list[FlextOracleWmsTypes.Core.Dict]].fail(str(e))
 
     async def unflatten_records(
         self,
-        records: list[FlextTypes.Core.Dict],
-    ) -> FlextResult[list[FlextTypes.Core.Dict]]:
+        records: list[FlextOracleWmsTypes.Core.Dict],
+    ) -> FlextResult[list[FlextOracleWmsTypes.Core.Dict]]:
         """Unflatten records back to nested structure.
 
         Args:
@@ -99,12 +102,12 @@ class FlextOracleWmsDataFlattener(_OpsFlattener):
 
         """
         # Minimal unflatten: return records as-is (tests only check shape basics)
-        return FlextResult[list[FlextTypes.Core.Dict]].ok(records)
+        return FlextResult[list[FlextOracleWmsTypes.Core.Dict]].ok(records)
 
     async def get_flattening_stats(
         self,
-        records: list[FlextTypes.Core.Dict],
-    ) -> FlextResult[FlextTypes.Core.Dict]:
+        records: list[FlextOracleWmsTypes.Core.Dict],
+    ) -> FlextResult[FlextOracleWmsTypes.Core.Dict]:
         """Get statistics about flattening operation.
 
         Args:
@@ -115,7 +118,7 @@ class FlextOracleWmsDataFlattener(_OpsFlattener):
 
         """
         super().flatten_records(records)
-        stats: FlextTypes.Core.Dict = {
+        stats: FlextOracleWmsTypes.Core.Dict = {
             "total_records": len(records),
             "max_depth": self.max_depth,
             "nested_records": sum(
@@ -124,7 +127,7 @@ class FlextOracleWmsDataFlattener(_OpsFlattener):
                 if any(isinstance(v, (dict, list)) for v in r.values())
             ),
         }
-        return FlextResult[FlextTypes.Core.Dict].ok(stats)
+        return FlextResult[FlextOracleWmsTypes.Core.Dict].ok(stats)
 
 
 def flext_oracle_wms_create_data_flattener(

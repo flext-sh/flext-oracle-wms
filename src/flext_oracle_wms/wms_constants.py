@@ -50,7 +50,7 @@ class FlextOracleWmsConstants(FlextConstants):
     AUTH_METHOD_BASIC: Final[str] = "basic"
     AUTH_METHOD_OAUTH2: Final[str] = "oauth2"
     AUTH_METHOD_API_KEY: Final[str] = "api_key"
-    OAUTH2_TOKEN_ENDPOINT: Final[str] = "/oauth2/token"  # noqa: S105 # Not a password, OAuth2 endpoint path
+    OAUTH2_TOKEN_ENDPOINT: Final[str] = "/oauth2/token"
     OAUTH2_SCOPE_DEFAULT: Final[str] = "wms.read wms.write"
 
     # Entity types
@@ -169,6 +169,73 @@ class FlextOracleWmsConstants(FlextConstants):
         UPDATE = "update"
         UPSERT = "upsert"
         DELETE = "delete"
+
+    # =========================================================================
+    # DOMAIN-SPECIFIC CONSTANTS ONLY - NESTED CLASS STRUCTURE
+    # =========================================================================
+
+    class Connection:
+        """Oracle WMS connection and API configuration constants."""
+
+        DEFAULT_TIMEOUT = FlextConstants.Network.DEFAULT_TIMEOUT
+        DEFAULT_MAX_RETRIES = FlextConstants.Reliability.MAX_RETRY_ATTEMPTS
+        DEFAULT_RETRY_DELAY = FlextConstants.Reliability.RETRY_DELAY_SECONDS
+
+    class Entities:
+        """Oracle WMS entity types and definitions."""
+
+        TYPES: Final[list[str]] = [
+            "INVENTORY",
+            "SHIPMENT",
+            "PICKING",
+            "RECEIVING",
+            "WAREHOUSE",
+        ]
+
+        MAX_ENTITY_NAME_LENGTH: Final[int] = 100
+        ENTITY_NAME_PATTERN: Final[str] = r"^[a-zA-Z][a-zA-Z0-9_]*$"
+
+    class Processing:
+        """Oracle WMS data processing configuration constants."""
+
+        DEFAULT_BATCH_SIZE = FlextConstants.Performance.BatchProcessing.DEFAULT_SIZE
+        MAX_BATCH_SIZE = FlextConstants.Performance.BatchProcessing.MAX_ITEMS
+        DEFAULT_PAGE_SIZE = FlextConstants.Performance.Pagination.DEFAULT_PAGE_SIZE
+        MAX_SCHEMA_DEPTH: Final[int] = 10
+
+    class Filtering:
+        """Oracle WMS filtering configuration constants."""
+
+        MAX_FILTER_CONDITIONS: Final[int] = 50
+
+    class ErrorMessages:
+        """Oracle WMS error message constants."""
+
+        ENTITY_VALIDATION_FAILED: Final[str] = "Entity validation failed"
+        DISCOVERY_FAILED: Final[str] = "Entity discovery failed"
+        INVALID_RESPONSE: Final[str] = "Invalid API response"
+
+    class ResponseFields:
+        """Oracle WMS API response field constants."""
+
+        RESULT_COUNT: Final[str] = "result_count"
+        RESULTS: Final[str] = "results"
+        TOTAL_COUNT: Final[str] = "total_count"
+        PAGE_NUMBER: Final[str] = "page_number"
+        PAGE_COUNT: Final[str] = "page_count"
+        NEXT_PAGE: Final[str] = "next_page"
+        PREVIOUS_PAGE: Final[str] = "previous_page"
+
+    class Authentication:
+        """Oracle WMS authentication constants."""
+
+        MIN_TOKEN_LENGTH: Final[int] = 10
+        MIN_API_KEY_LENGTH: Final[int] = 20
+
+    class Pagination:
+        """Oracle WMS pagination constants."""
+
+        DEFAULT_PAGE_SIZE: Final[int] = 100
 
 
 # Export aliases for backward compatibility

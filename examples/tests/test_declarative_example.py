@@ -87,8 +87,8 @@ async def main() -> None:
         oracle_wms_username=str(env_config["oracle_wms_username"]),
         oracle_wms_password=str(env_config["oracle_wms_password"]),
         api_version=env_config["api_version"],
-        oracle_wms_timeout=int(env_config["oracle_wms_timeout"]),
-        oracle_wms_max_retries=int(env_config["oracle_wms_max_retries"]),
+        oracle_wms_timeout=int(str(env_config["oracle_wms_timeout"])),
+        oracle_wms_max_retries=int(str(env_config["oracle_wms_max_retries"])),
         oracle_wms_verify_ssl=bool(env_config["oracle_wms_verify_ssl"]),
         oracle_wms_enable_logging=bool(env_config["oracle_wms_enable_logging"]),
     )
@@ -97,7 +97,7 @@ async def main() -> None:
     try:
         # Start the client
         start_result = await client.start()
-        if not start_result.success:
+        if not start_result.is_success:
             return
 
         # Show API catalog
@@ -114,19 +114,19 @@ async def main() -> None:
 
         # Health check
         health_result = await client.health_check()
-        if health_result.success:
+        if health_result.is_success:
             pass
 
         # Get available entities
         entities_result = await client.discover_entities()
-        if entities_result.success:
+        if entities_result.is_success:
             pass
 
         # Test LGF API v10 - Get entity data
         for entity in ["company", "facility", "item"]:
             result = await client.get_entity_data(entity, limit=3)
 
-            if result.success:
+            if result.is_success:
                 data = result.value
                 if isinstance(data, dict):
                     results = data.get("results", [])
@@ -139,7 +139,7 @@ async def main() -> None:
 
         # Test entity status (using health check as alternative)
         health_result = await client.health_check()
-        if health_result.success:
+        if health_result.is_success:
             pass
 
         # Test OBLPN tracking (will fail, but tests structure)

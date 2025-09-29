@@ -16,19 +16,20 @@ from typing import Annotated, Literal, TypedDict
 
 from pydantic import Field, StringConstraints
 
-from flext_core import FlextModels, FlextResult, FlextTypes
+from flext_core import FlextModels, FlextResult
+from flext_oracle_wms.typings import FlextOracleWmsTypes
 from flext_oracle_wms.wms_constants import (
     FlextOracleWmsApiVersion,
     FlextOracleWmsConstants,
 )
 
 # Core record types - USED EVERYWHERE
-TOracleWmsRecord = FlextTypes.Core.Dict
+TOracleWmsRecord = FlextOracleWmsTypes.Core.Dict
 TOracleWmsRecordBatch = list[TOracleWmsRecord]
-TOracleWmsSchema = dict[str, FlextTypes.Core.Dict]
+TOracleWmsSchema = dict[str, FlextOracleWmsTypes.Core.Dict]
 
 # API types - USED BY CLIENT
-TOracleWmsApiResponse = FlextTypes.Core.Dict
+TOracleWmsApiResponse = FlextOracleWmsTypes.Core.Dict
 TOracleWmsApiVersion = Literal["v10", "v9", "v8", "legacy"]
 
 # Entity naming - USED BY CLIENT/DISCOVERY
@@ -40,7 +41,9 @@ TOracleWmsEntityName = Annotated[
 
 # Filter types - USED BY FILTERING MODULE
 TOracleWmsFilterValue = (
-    (str | int | float) | (bool | list[str | int | float]) | FlextTypes.Core.Dict
+    (str | int | float)
+    | (bool | list[str | int | float])
+    | FlextOracleWmsTypes.Core.Dict
 )
 TOracleWmsFilters = dict["str", "TOracleWmsFilterValue"]
 
@@ -99,12 +102,12 @@ class FlextOracleWmsEntity(FlextModels):
     name: str
     endpoint: str
     description: str | None = None
-    fields: FlextTypes.Core.Dict | None = field(default_factory=dict)
+    fields: FlextOracleWmsTypes.Core.Dict | None = field(default_factory=dict)
     primary_key: str | None = None
     replication_key: str | None = None
     supports_incremental: bool = False
 
-    def validate_business_rules(self: object) -> FlextResult[None]:
+    def validate_business_rules(self) -> FlextResult[None]:
         """Validate entity business rules."""
         validation_errors: list[str] = []
 
@@ -130,7 +133,7 @@ class FlextOracleWmsEntity(FlextModels):
             )
         return FlextResult[None].ok(None)
 
-    def to_dict_basic(self: object) -> FlextTypes.Core.Dict:
+    def to_dict_basic(self) -> FlextOracleWmsTypes.Core.Dict:
         """Convert entity to basic dict format (used by discovery)."""
         return {
             "name": self.name,
@@ -151,10 +154,10 @@ class FlextOracleWmsDiscoveryResult(FlextModels):
     timestamp: str = ""
     discovery_duration_ms: float = 0.0
     has_errors: bool = False
-    errors: FlextTypes.Core.StringList = field(default_factory=list)
+    errors: FlextOracleWmsTypes.Core.StringList = field(default_factory=list)
     api_version: str | None = "v10"
 
-    def validate_business_rules(self: object) -> FlextResult[None]:
+    def validate_business_rules(self) -> FlextResult[None]:
         """Validate discovery result."""
         validation_errors: list[str] = []
 
@@ -185,16 +188,16 @@ class FlextOracleWmsDiscoveryResult(FlextModels):
 class FlextOracleWmsApiResponse(FlextModels):
     """Oracle WMS API response wrapper - USED BY CLIENT."""
 
-    data: FlextTypes.Core.Dict = field(default_factory=dict)
+    data: FlextOracleWmsTypes.Core.Dict = field(default_factory=dict)
     status_code: int = 200
     success: bool = True
     error_message: str | None = None
 
-    def validate_business_rules(self: object) -> FlextResult[None]:
+    def validate_business_rules(self) -> FlextResult[None]:
         """Validate API response."""
         validation_errors: list[str] = []
 
-        # Data is already typed as FlextTypes.Core.Dict
+        # Data is already typed as FlextOracleWmsTypes.Core.Dict
 
         min_code = FlextOracleWmsConstants.Api.MIN_HTTP_STATUS_CODE
         max_code = FlextOracleWmsConstants.Api.MAX_HTTP_STATUS_CODE
@@ -229,7 +232,7 @@ class FlextOracleWmsApiEndpoint(FlextModels):
             return f"/{environment}/wms/lgfapi/v10{self.path}"
         return f"/{environment}/wms/api{self.path}"
 
-    def validate_business_rules(self: object) -> FlextResult[None]:
+    def validate_business_rules(self) -> FlextResult[None]:
         """Validate Oracle WMS API endpoint business rules."""
         validation_errors: list[str] = []
 
@@ -251,7 +254,7 @@ class FlextOracleWmsApiEndpoint(FlextModels):
         return FlextResult[None].ok(None)
 
 
-__all__: FlextTypes.Core.StringList = [
+__all__: FlextOracleWmsTypes.Core.StringList = [
     "FlextOracleWmsApiCategory",
     "FlextOracleWmsApiEndpoint",
     "FlextOracleWmsApiResponse",

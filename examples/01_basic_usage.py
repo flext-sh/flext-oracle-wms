@@ -80,7 +80,7 @@ async def discover_wms_entities(
     result = await client.discover_entities()
 
     if result.is_success:
-        entities = result.data
+        entities = result.value
         if entities is None:
             return result
 
@@ -127,7 +127,7 @@ async def query_entity_data(
     )
 
     if result.is_success:
-        data = result.data
+        data = result.value
 
         # Display sample data structure with safety checks
         if data:
@@ -208,7 +208,7 @@ async def main() -> None:
 
         # Start the client (required for API operations)
         start_result = await client.start()
-        if start_result.success:
+        if start_result.is_success:
             pass
         else:
             return
@@ -216,8 +216,8 @@ async def main() -> None:
         # Step 3: Discover entities
         entities_result = await discover_wms_entities(client)
 
-        if entities_result.success:
-            entities = entities_result.data
+        if entities_result.is_success:
+            entities = entities_result.value
             print(
                 f"Successfully discovered {len(entities) if entities else 0} entities",
             )

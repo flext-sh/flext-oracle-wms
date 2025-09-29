@@ -11,8 +11,9 @@ from __future__ import annotations
 
 from typing import override
 
-from flext_core import FlextLogger, FlextResult, FlextTypes
+from flext_core import FlextLogger, FlextResult
 from flext_oracle_wms.http_client import FlextHttpClient
+from flext_oracle_wms.typings import FlextOracleWmsTypes
 
 
 class OracleWmsApiService:
@@ -31,8 +32,8 @@ class OracleWmsApiService:
         self,
         endpoint_path: str,
         method: str = "GET",
-        data: FlextTypes.Core.Dict | None = None,
-    ) -> FlextResult[FlextTypes.Core.Dict]:
+        data: FlextOracleWmsTypes.Core.Dict | None = None,
+    ) -> FlextResult[FlextOracleWmsTypes.Core.Dict]:
         """Make API call to Oracle WMS endpoint."""
         try:
             if method.upper() == "GET":
@@ -44,37 +45,39 @@ class OracleWmsApiService:
             elif method.upper() == "DELETE":
                 response = await self._api_client.delete(endpoint_path)
             else:
-                return FlextResult[FlextTypes.Core.Dict].fail(
+                return FlextResult[FlextOracleWmsTypes.Core.Dict].fail(
                     f"Unsupported HTTP method: {method}",
                 )
 
             if not response.success:
-                return FlextResult[FlextTypes.Core.Dict].fail(
+                return FlextResult[FlextOracleWmsTypes.Core.Dict].fail(
                     response.error or "No response from Oracle WMS",
                 )
 
             api_resp = response.value
             # Check if response indicates success (assuming it's a dict with status info)
             if isinstance(api_resp, dict) and api_resp.get("status") != "success":
-                return FlextResult[FlextTypes.Core.Dict].fail(
+                return FlextResult[FlextOracleWmsTypes.Core.Dict].fail(
                     f"API call failed: HTTP {api_resp.get('status_code', 'unknown')}",
                 )
 
             body = api_resp
             data_dict: dict[str, object] = body if isinstance(body, dict) else {}
-            return FlextResult[FlextTypes.Core.Dict].ok(data_dict)
+            return FlextResult[FlextOracleWmsTypes.Core.Dict].ok(data_dict)
 
         except Exception as e:
             error_msg = f"API call failed: {e}"
             self._logger.exception(error_msg)
-            return FlextResult[FlextTypes.Core.Dict].fail(error_msg)
+            return FlextResult[FlextOracleWmsTypes.Core.Dict].fail(error_msg)
 
     async def get_entity_data(
         self,
         entity_name: str,
         environment: str,
-        filters: FlextTypes.Core.Dict | None = None,
-    ) -> FlextResult[FlextTypes.Core.Dict | list[FlextTypes.Core.Dict]]:
+        filters: FlextOracleWmsTypes.Core.Dict | None = None,
+    ) -> FlextResult[
+        FlextOracleWmsTypes.Core.Dict | list[FlextOracleWmsTypes.Core.Dict]
+    ]:
         """Get data for a specific entity."""
         try:
             endpoint_path = f"/{environment}/wms/lgfapi/v10/entity/{entity_name}/"
@@ -91,26 +94,30 @@ class OracleWmsApiService:
 
             if not response.success:
                 return FlextResult[
-                    FlextTypes.Core.Dict | list[FlextTypes.Core.Dict]
+                    FlextOracleWmsTypes.Core.Dict | list[FlextOracleWmsTypes.Core.Dict]
                 ].fail(response.error or "No response from Oracle WMS")
 
             api_resp = response.value
             # Check if response indicates success (assuming it's a dict with status info)
             if isinstance(api_resp, dict) and api_resp.get("status") != "success":
                 return FlextResult[
-                    FlextTypes.Core.Dict | list[FlextTypes.Core.Dict]
+                    FlextOracleWmsTypes.Core.Dict | list[FlextOracleWmsTypes.Core.Dict]
                 ].fail(
                     f"Entity data extraction failed: HTTP {api_resp.get('status_code', 'unknown')}",
                 )
 
             body = api_resp
-            return FlextResult[FlextTypes.Core.Dict | list[FlextTypes.Core.Dict]].ok(
+            return FlextResult[
+                FlextOracleWmsTypes.Core.Dict | list[FlextOracleWmsTypes.Core.Dict]
+            ].ok(
                 body,
             )
 
         except Exception as e:
             error_msg = f"Entity data extraction failed: {e}"
             self._logger.exception(error_msg)
-            return FlextResult[FlextTypes.Core.Dict | list[FlextTypes.Core.Dict]].fail(
+            return FlextResult[
+                FlextOracleWmsTypes.Core.Dict | list[FlextOracleWmsTypes.Core.Dict]
+            ].fail(
                 error_msg,
             )

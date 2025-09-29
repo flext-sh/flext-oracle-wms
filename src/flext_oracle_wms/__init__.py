@@ -23,6 +23,7 @@ from flext_oracle_wms.flattening import (
     FlextOracleWmsDataFlattener,
     flext_oracle_wms_create_data_flattener,
 )
+from flext_oracle_wms.protocols import FlextOracleWmsProtocols
 from flext_oracle_wms.typings import FlextOracleWmsTypes
 from flext_oracle_wms.utilities import FlextOracleWmsUtilities
 from flext_oracle_wms.wms_api import (
@@ -193,6 +194,7 @@ __all__: FlextOracleWmsTypes.Core.StringList = [
     "FlextOracleWmsPluginContext",
     "FlextOracleWmsPluginRegistry",
     "FlextOracleWmsProcessingError",
+    "FlextOracleWmsProtocols",
     "FlextOracleWmsSchemaError",
     "FlextOracleWmsSchemaFlatteningError",
     "FlextOracleWmsShipmentError",

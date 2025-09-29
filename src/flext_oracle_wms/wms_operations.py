@@ -21,10 +21,10 @@ from urllib.parse import urljoin, urlparse
 from flext_core import (
     FlextLogger,
     FlextResult,
-    FlextTypes,
     FlextUtilities,
 )
 from flext_oracle_wms.filtering import FlextOracleWmsFilter
+from flext_oracle_wms.typings import FlextOracleWmsTypes
 from flext_oracle_wms.utilities import FlextOracleWmsUtilities
 from flext_oracle_wms.wms_constants import (
     FlextOracleWmsConstants,
@@ -38,10 +38,10 @@ from flext_oracle_wms.wms_exceptions import (
 # Type aliases for Oracle WMS operations
 TOracleWmsEnvironment = str
 TOracleWmsApiVersion = str
-TOracleWmsRecord = FlextTypes.Core.Dict
+TOracleWmsRecord = FlextOracleWmsTypes.Core.Dict
 TOracleWmsRecordBatch = list[TOracleWmsRecord]
-TOracleWmsPaginationInfo = FlextTypes.Core.Dict
-TOracleWmsFilters = FlextTypes.Core.Dict
+TOracleWmsPaginationInfo = FlextOracleWmsTypes.Core.Dict
+TOracleWmsFilters = FlextOracleWmsTypes.Core.Dict
 TOracleWmsFilterValue = object
 
 
@@ -167,7 +167,7 @@ def flext_oracle_wms_validate_entity_name(entity_name: str) -> FlextResult[str]:
 
 def flext_oracle_wms_validate_api_response(
     response_data: object,
-) -> FlextResult[FlextTypes.Core.Dict]:
+) -> FlextResult[FlextOracleWmsTypes.Core.Dict]:
     """Validate Oracle WMS API response format.
 
     Note: Intentionally avoids upfront strict type validation to mirror legacy
@@ -176,23 +176,25 @@ def flext_oracle_wms_validate_api_response(
     """
     # Validate response_data is a dictionary
     if not isinstance(response_data, dict):
-        return FlextResult[FlextTypes.Core.Dict].fail(
+        return FlextResult[FlextOracleWmsTypes.Core.Dict].fail(
             "Response data is not a dictionary",
         )
 
-    response_dict: FlextTypes.Core.Dict = response_data
+    response_dict: FlextOracleWmsTypes.Core.Dict = response_data
     if any(k in response_dict for k in ("error",)):
         err_val = response_dict.get("error")
         if isinstance(err_val, str) and err_val.strip():
-            return FlextResult[FlextTypes.Core.Dict].fail(f"API error: {err_val}")
-        return FlextResult[FlextTypes.Core.Dict].fail("API error")
+            return FlextResult[FlextOracleWmsTypes.Core.Dict].fail(
+                f"API error: {err_val}"
+            )
+        return FlextResult[FlextOracleWmsTypes.Core.Dict].fail("API error")
 
     # Treat message starting with "Error:  or containing error" keyword as failure
     msg = response_dict.get("message")
     if isinstance(msg, str):
         msg_lower = msg.strip().lower()
         if msg_lower.startswith("error") or "error" in msg_lower:
-            return FlextResult[FlextTypes.Core.Dict].fail(f"API error: {msg}")
+            return FlextResult[FlextOracleWmsTypes.Core.Dict].fail(f"API error: {msg}")
 
     # If status field explicitly indicates error, treat as failure
     status_val = response_dict.get("status")
@@ -203,18 +205,20 @@ def flext_oracle_wms_validate_api_response(
     }:
         message_text = response_dict.get("message")
         if isinstance(message_text, str) and message_text:
-            return FlextResult[FlextTypes.Core.Dict].fail(f"API error: {message_text}")
-        return FlextResult[FlextTypes.Core.Dict].fail("API error")
+            return FlextResult[FlextOracleWmsTypes.Core.Dict].fail(
+                f"API error: {message_text}"
+            )
+        return FlextResult[FlextOracleWmsTypes.Core.Dict].fail("API error")
 
     if any(k in response_dict for k in ("data", "results", "message", "status")):
-        return FlextResult[FlextTypes.Core.Dict].ok(response_dict)
+        return FlextResult[FlextOracleWmsTypes.Core.Dict].ok(response_dict)
 
     # Default to success when structure is acceptable dict
-    return FlextResult[FlextTypes.Core.Dict].ok(response_dict)
+    return FlextResult[FlextOracleWmsTypes.Core.Dict].ok(response_dict)
 
 
 def flext_oracle_wms_extract_pagination_info(
-    response_data: FlextTypes.Core.Dict,
+    response_data: FlextOracleWmsTypes.Core.Dict,
 ) -> TOracleWmsPaginationInfo:
     """Extract pagination information from Oracle WMS API response."""
     fields = FlextOracleWmsConstants.ResponseFields
@@ -281,6 +285,10 @@ class FlextOracleWmsUnifiedOperations:
     # Shared logger for all unified operations
     logger = FlextLogger(__name__)
 
+    # Instance attributes (initialized in __init__)
+    filter: _FilterOperations
+    flatten: _FlattenOperations
+
     class _FilterOperations:
         """Nested class for filtering operations."""
 
@@ -315,13 +323,13 @@ class FlextOracleWmsUnifiedOperations:
 
         async def filter_records(
             self,
-            records: list[FlextTypes.Core.Dict],
-            filters: FlextTypes.Core.Dict,
-        ) -> FlextResult[list[FlextTypes.Core.Dict]]:
+            records: list[FlextOracleWmsTypes.Core.Dict],
+            filters: FlextOracleWmsTypes.Core.Dict,
+        ) -> FlextResult[list[FlextOracleWmsTypes.Core.Dict]]:
             """Filter records with given filters."""
             # Validate filter count
             if len(filters) > self._max_conditions:
-                return FlextResult[list[FlextTypes.Core.Dict]].fail(
+                return FlextResult[list[FlextOracleWmsTypes.Core.Dict]].fail(
                     f"Too many filter conditions. Max: {self._max_conditions}, Got: {len(filters)}",
                 )
 
@@ -332,16 +340,18 @@ class FlextOracleWmsUnifiedOperations:
                     if self._record_matches_filters(record, filters)
                 ]
 
-                return FlextResult[list[FlextTypes.Core.Dict]].ok(filtered_records)
+                return FlextResult[list[FlextOracleWmsTypes.Core.Dict]].ok(
+                    filtered_records
+                )
             except Exception as e:
-                return FlextResult[list[FlextTypes.Core.Dict]].fail(
+                return FlextResult[list[FlextOracleWmsTypes.Core.Dict]].fail(
                     f"Filtering failed: {e}",
                 )
 
         def _record_matches_filters(
             self,
-            record: FlextTypes.Core.Dict,
-            filters: FlextTypes.Core.Dict,
+            record: FlextOracleWmsTypes.Core.Dict,
+            filters: FlextOracleWmsTypes.Core.Dict,
         ) -> bool:
             """Check if record matches all filter conditions."""
             for field, filter_value in filters.items():
@@ -351,7 +361,7 @@ class FlextOracleWmsUnifiedOperations:
 
         def _matches_condition(
             self,
-            record: FlextTypes.Core.Dict,
+            record: FlextOracleWmsTypes.Core.Dict,
             field: str,
             filter_value: object,
         ) -> bool:
@@ -367,7 +377,7 @@ class FlextOracleWmsUnifiedOperations:
 
         def _get_nested_value(
             self,
-            record: FlextTypes.Core.Dict,
+            record: FlextOracleWmsTypes.Core.Dict,
             field_path: str,
         ) -> object:
             """Get nested field value from record using dot notation."""
@@ -498,8 +508,8 @@ class FlextOracleWmsUnifiedOperations:
 
         def flatten_records(
             self,
-            records: list[FlextTypes.Core.Dict],
-        ) -> list[FlextTypes.Core.Dict]:
+            records: list[FlextOracleWmsTypes.Core.Dict],
+        ) -> list[FlextOracleWmsTypes.Core.Dict]:
             """Flatten nested records."""
             flattened_records: list[dict[str, object]] = []
             for record in records:
@@ -509,10 +519,10 @@ class FlextOracleWmsUnifiedOperations:
 
         def _flatten_dict(
             self,
-            data: FlextTypes.Core.Dict,
+            data: FlextOracleWmsTypes.Core.Dict,
             parent_key: str = "",
             depth: int = 0,
-        ) -> FlextTypes.Core.Dict:
+        ) -> FlextOracleWmsTypes.Core.Dict:
             """Flatten a dictionary recursively."""
             if depth >= self._max_depth:
                 return data
@@ -618,10 +628,10 @@ class FlextOracleWmsFlattener:
 
     def _flatten_dict(
         self,
-        data: FlextTypes.Core.Dict,
+        data: FlextOracleWmsTypes.Core.Dict,
         prefix: str = "",
         depth: int = 0,
-    ) -> FlextTypes.Core.Dict:
+    ) -> FlextOracleWmsTypes.Core.Dict:
         """Recursively flatten dictionary structure."""
         if depth >= self.max_depth:
             return {prefix.rstrip(self.separator): "data"}
@@ -763,7 +773,7 @@ def create_oracle_wms_plugin_registry() -> FlextOracleWmsPluginRegistry:
     return FlextOracleWmsPluginRegistry()
 
 
-__all__: FlextTypes.Core.StringList = [
+__all__: FlextOracleWmsTypes.Core.StringList = [
     "FlextOracleWmsDataPlugin",
     # Filtering Operations
     "FlextOracleWmsFilterConfig",

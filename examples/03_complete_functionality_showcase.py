@@ -45,6 +45,7 @@ from flext_oracle_wms import (
     FlextOracleWmsError,
     OracleWMSAuthMethod,
 )
+from flext_oracle_wms.constants import FlextOracleWmsConstants
 
 # Initialize logger
 logger = FlextLogger(__name__)
@@ -76,8 +77,8 @@ def load_config_from_environment() -> FlextOracleWmsClientConfig:
         oracle_wms_username=username,
         oracle_wms_password=password,
         api_version=FlextOracleWmsApiVersion.LGF_V10,
-        oracle_wms_timeout=30,
-        oracle_wms_max_retries=3,
+        oracle_wms_timeout=FlextOracleWmsConstants.Connection.DEFAULT_TIMEOUT,
+        oracle_wms_max_retries=FlextOracleWmsConstants.Connection.DEFAULT_MAX_RETRIES,
         oracle_wms_verify_ssl=True,
         oracle_wms_enable_logging=True,
     )
@@ -91,7 +92,7 @@ async def showcase_1_client_initialization(
 
     # Start the client
     start_result = await client.start()
-    if start_result.success:
+    if start_result.is_success:
         pass
     else:
         msg = f"Failed to start client: {start_result.error}"
@@ -107,20 +108,20 @@ async def showcase_2_entity_discovery(
     # Discover all entities
     entities_result = await client.discover_entities()
 
-    if not entities_result.success:
+    if not entities_result.is_success:
         return []
 
-    entity_dicts = entities_result.data or []
+    entity_dicts = entities_result.value or []
 
     # Extract entity names from dictionaries
     entities: list[str] = [
-        entity.get("name", "Unknown") if isinstance(entity, dict) else str(entity)
+        str(entity.get("name", "Unknown")) if isinstance(entity, dict) else str(entity)
         for entity in entity_dicts
     ]
 
     # Show first 10 entities as sample
     # Constants for display
-    max_entities_to_show = 10
+    max_entities_to_show = FlextOracleWmsConstants.Processing.DEFAULT_BATCH_SIZE // 5
 
     for _i, _entity in enumerate(entities[:max_entities_to_show]):
         pass
@@ -162,8 +163,8 @@ async def showcase_3_data_retrieval(
         # Basic data retrieval
         data_result = await client.get_entity_data(entity_name, limit=5)
 
-        if data_result.success:
-            data = data_result.data
+        if data_result.is_success:
+            data = data_result.value
             if isinstance(data, dict) and "results" in data:
                 results = data["results"]
                 if isinstance(results, list):
@@ -184,7 +185,7 @@ async def showcase_3_data_retrieval(
             filters={"active": "Y"},
         )
 
-        if filtered_result.success:
+        if filtered_result.is_success:
             pass
 
     return sample_data
@@ -201,7 +202,7 @@ async def showcase_4_authentication(config: FlextOracleWmsClientConfig) -> None:
 
     # Demonstrate auth validation
     validation_result = auth_config.validate_business_rules()
-    if validation_result.success:
+    if validation_result.is_success:
         pass
 
     # Create authenticator
@@ -209,22 +210,22 @@ async def showcase_4_authentication(config: FlextOracleWmsClientConfig) -> None:
 
     # Test header generation
     headers_result = await authenticator.get_auth_headers()
-    if headers_result.success:
+    if hasattr(headers_result, "is_success") and headers_result.is_success:
         pass
 
     # Show available auth methods
-    for _method in OracleWMSAuthMethod:
+    for _method in OracleWMSAuthMethod.__members__.values():
         pass
+
+
+from flext_oracle_wms import FLEXT_ORACLE_WMS_APIS
 
 
 def showcase_5_api_catalog(client: FlextOracleWmsClient) -> None:
     """Feature 5: API Catalog Management."""
-    # Show available APIs
-    available_apis = client.get_available_apis()
-
     # Group by category
     categories = {}
-    for api_name, api_info in available_apis.items():
+    for api_name, api_info in FLEXT_ORACLE_WMS_APIS.items():
         category = api_info.category
         if category not in categories:
             categories[category] = []
@@ -232,7 +233,7 @@ def showcase_5_api_catalog(client: FlextOracleWmsClient) -> None:
 
     for apis in categories.values():
         # Constants for API display
-        max_apis_to_show = 3
+        max_apis_to_show = FlextOracleWmsConstants.Connection.DEFAULT_MAX_RETRIES
 
         # Show first 3 APIs as sample
         for _api in apis[:max_apis_to_show]:
@@ -241,10 +242,10 @@ def showcase_5_api_catalog(client: FlextOracleWmsClient) -> None:
             pass
 
     # Show API versions
-    {api.version for api in available_apis.values()}
+    {api.version for api in FLEXT_ORACLE_WMS_APIS.values()}
 
     # Test specific API categories
-    for category in FlextOracleWmsApiCategory:
+    for category in FlextOracleWmsApiCategory.__members__.values():
         category_apis = client.get_apis_by_category(category)
         if category_apis:
             pass
@@ -254,12 +255,12 @@ async def showcase_6_error_handling(client: FlextOracleWmsClient) -> None:
     """Feature 6: Error Handling and Recovery."""
     # Test 1: Invalid entity name
     invalid_result = await client.get_entity_data("invalid_entity_xyz123")
-    if not invalid_result.success:
+    if not invalid_result.is_success:
         pass
 
     # Test 2: Invalid API call
     api_result = await client.call_api("non_existent_api_xyz")
-    if not api_result.success:
+    if not api_result.is_success:
         pass
 
     # Test 3: Configuration validation
@@ -276,7 +277,7 @@ async def showcase_6_error_handling(client: FlextOracleWmsClient) -> None:
             enable_logging=True,
         )
         validation = invalid_config.validate_business_rules()
-        if not validation.success:
+        if not validation.is_success:
             logger.info(f"Expected validation failure: {validation.error}")
     except Exception as e:
         logger.warning(f"Error handling demonstration: {e}")
@@ -284,13 +285,13 @@ async def showcase_6_error_handling(client: FlextOracleWmsClient) -> None:
 
 async def showcase_7_health_monitoring(
     client: FlextOracleWmsClient,
-) -> FlextTypes.Core.Dict:
+) -> object:
     """Feature 7: Health Monitoring."""
     # Perform health check
     health_result = await client.health_check()
 
-    if health_result.success:
-        health_data = health_result.data or {}
+    if health_result.is_success:
+        health_data = health_result.value or {}
 
         for key in health_data:
             if key == "test_call_success":
@@ -299,8 +300,6 @@ async def showcase_7_health_monitoring(
         return health_data
     return {}
 
-    return None
-
 
 async def showcase_8_performance_tracking(
     client: FlextOracleWmsClient,
@@ -308,7 +307,9 @@ async def showcase_8_performance_tracking(
 ) -> None:
     """Feature 8: Performance Tracking."""
     # Constants for performance testing
-    min_entities_for_concurrent_test = 3
+    min_entities_for_concurrent_test = (
+        FlextOracleWmsConstants.Connection.DEFAULT_MAX_RETRIES
+    )
 
     # Test concurrent requests
     if len(entities) >= min_entities_for_concurrent_test:
@@ -326,7 +327,9 @@ async def showcase_8_performance_tracking(
         end_time - start_time
 
         successful_requests = sum(
-            1 for result in results if hasattr(result, "success") and result.success
+            1
+            for result in results
+            if hasattr(result, "is_success") and result.is_success
         )
 
         if successful_requests > 0:
@@ -340,7 +343,7 @@ async def showcase_8_performance_tracking(
             result = await client.get_entity_data("company", limit=page_size)
             end_time = time.time()
 
-            if result.success:
+            if result.is_success:
                 pass
 
 
@@ -359,9 +362,9 @@ async def showcase_9_cache_management(client: FlextOracleWmsClient) -> None:
     second_result = await client.discover_entities()
     second_time = time.time() - start_time
 
-    if first_result.success and second_result.success:
-        first_count = len(first_result.data or [])
-        second_count = len(second_result.data or [])
+    if first_result.is_success and second_result.is_success:
+        first_count = len(first_result.value or [])
+        second_count = len(second_result.value or [])
 
         if second_time < first_time:
             pass
@@ -392,7 +395,7 @@ async def showcase_10_enterprise_features(
     # Enterprise Compliance Features
 
 
-async def main() -> None:
+async def main() -> int:
     """Main showcase execution."""
     try:
         # Load configuration

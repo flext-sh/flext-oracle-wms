@@ -417,12 +417,22 @@ class FlextOracleWmsConfig(FlextConfig):
         )
 
     @classmethod
+    def for_testing(cls) -> FlextOracleWmsConfig:
+        """Alias for create_for_testing for backward compatibility."""
+        return cls.create_for_testing()
+
+    @classmethod
     def get_global_instance(cls) -> FlextOracleWmsConfig:
         """Get the global singleton instance using enhanced FlextConfig pattern."""
         return cast(
             "FlextOracleWmsConfig",
             cls.get_or_create_shared_instance(project_name="flext-oracle-wms"),
         )
+
+    @classmethod
+    def get_oracle_wms_global_instance(cls) -> FlextOracleWmsConfig:
+        """Alias for get_global_instance for backward compatibility."""
+        return cls.get_global_instance()
 
     @classmethod
     def reset_global_instance(cls) -> None:

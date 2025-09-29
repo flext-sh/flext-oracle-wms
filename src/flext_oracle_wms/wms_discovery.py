@@ -26,9 +26,9 @@ from flext_core import (
     FlextLogger,
     FlextModels,
     FlextResult,
-    FlextTypes,
 )
 from flext_oracle_wms.http_client import FlextHttpClient
+from flext_oracle_wms.typings import FlextOracleWmsTypes
 from flext_oracle_wms.wms_constants import FlextOracleWmsConstants, OracleWMSEntityType
 from flext_oracle_wms.wms_models import (
     FlextOracleWmsDiscoveryResult,
@@ -40,7 +40,7 @@ from flext_oracle_wms.wms_operations import handle_operation_exception
 
 # Cache value types
 CacheValueBasic = (str | int | float) | (bool | None)
-CacheValueDict = FlextTypes.Core.Dict
+CacheValueDict = FlextOracleWmsTypes.Core.Dict
 CacheValueList = list[CacheValueBasic | CacheValueDict]
 CacheValue = (CacheValueDict | CacheValueList) | CacheValueBasic
 
@@ -774,7 +774,7 @@ class FlextOracleWmsDynamicSchemaProcessor:
         """Process Oracle WMS records to generate dynamic schema."""
         try:
             if not records:
-                return FlextResult[dict[str, FlextTypes.Core.Dict]].fail(
+                return FlextResult[dict[str, FlextOracleWmsTypes.Core.Dict]].fail(
                     "No records to process",
                 )
 
@@ -800,10 +800,10 @@ class FlextOracleWmsDynamicSchemaProcessor:
                     field_schema["entity_type_hint"] = str(entity_type)
                 schema[field_name] = field_schema
 
-            return FlextResult[dict[str, FlextTypes.Core.Dict]].ok(schema)
+            return FlextResult[dict[str, FlextOracleWmsTypes.Core.Dict]].ok(schema)
 
         except Exception as e:
-            return FlextResult[dict[str, FlextTypes.Core.Dict]].fail(
+            return FlextResult[dict[str, FlextOracleWmsTypes.Core.Dict]].fail(
                 f"Process dynamic schema failed: {e}",
             )
 
@@ -824,7 +824,7 @@ class FlextOracleWmsDynamicSchemaProcessor:
         self,
         _entity_name: str,
         records: TOracleWmsRecordBatch,
-        schema: dict[str, FlextTypes.Core.Dict] | None,
+        schema: dict[str, FlextOracleWmsTypes.Core.Dict] | None,
     ) -> FlextResult[TOracleWmsSchema]:
         """Process records with a provided schema.
 
@@ -833,7 +833,7 @@ class FlextOracleWmsDynamicSchemaProcessor:
         """
         try:
             if not isinstance(records, list) or not records:
-                return FlextResult[dict[str, FlextTypes.Core.Dict]].fail(
+                return FlextResult[dict[str, FlextOracleWmsTypes.Core.Dict]].fail(
                     "No records to process",
                 )
 
@@ -842,9 +842,9 @@ class FlextOracleWmsDynamicSchemaProcessor:
                 return await self.process_records(records, None)
 
             # Optionally, we could validate/adjust schema against records.
-            return FlextResult[dict[str, FlextTypes.Core.Dict]].ok(schema)
+            return FlextResult[dict[str, FlextOracleWmsTypes.Core.Dict]].ok(schema)
         except Exception as e:  # pragma: no cover - defensive
-            return FlextResult[dict[str, FlextTypes.Core.Dict]].fail(
+            return FlextResult[dict[str, FlextOracleWmsTypes.Core.Dict]].fail(
                 f"Process entity records failed: {e}",
             )
 
@@ -899,8 +899,8 @@ class FlextOracleWmsDynamicSchemaProcessor:
 
     def _calculate_schema_confidence(
         self,
-        records: list[FlextTypes.Core.Dict],
-        schema: dict[str, FlextTypes.Core.Dict],
+        records: list[FlextOracleWmsTypes.Core.Dict],
+        schema: dict[str, FlextOracleWmsTypes.Core.Dict],
     ) -> float:
         """Calculate a simplistic confidence score for a schema against records.
 
@@ -932,7 +932,7 @@ class FlextOracleWmsDynamicSchemaProcessor:
 
     def _check_field_consistency(
         self,
-        records: list[FlextTypes.Core.Dict],
+        records: list[FlextOracleWmsTypes.Core.Dict],
         field_name: str,
     ) -> float:
         """Return consistency ratio for presence of a field across records."""
@@ -945,7 +945,7 @@ class FlextOracleWmsDynamicSchemaProcessor:
         self,
         field_name: str,
         records: TOracleWmsRecordBatch,
-    ) -> FlextTypes.Core.Dict:
+    ) -> FlextOracleWmsTypes.Core.Dict:
         """Infer schema for a specific field across records."""
         field_values = [
             record[field_name]
@@ -996,10 +996,10 @@ class FlextOracleWmsDynamicSchemaProcessor:
 class DiscoveryContext:
     """Parameter Object: Encapsulates discovery operation context."""
 
-    include_patterns: FlextTypes.Core.StringList | None
-    exclude_patterns: FlextTypes.Core.StringList | None
+    include_patterns: FlextOracleWmsTypes.Core.StringList | None
+    exclude_patterns: FlextOracleWmsTypes.Core.StringList | None
     all_entities: list[FlextOracleWmsEntity]
-    errors: FlextTypes.Core.StringList
+    errors: FlextOracleWmsTypes.Core.StringList
 
 
 class DiscoveryStrategy(ABC):
@@ -1102,7 +1102,7 @@ class FlextOracleWmsEntityDiscovery:
 
     async def _parse_entities_response(
         self,
-        response_data: FlextTypes.Core.Dict,
+        response_data: FlextOracleWmsTypes.Core.Dict,
     ) -> FlextResult[list[FlextOracleWmsEntity]]:
         """Parse entities from API response using EntityResponseParser."""
         parser = EntityResponseParser(self)
@@ -1135,8 +1135,8 @@ class FlextOracleWmsEntityDiscovery:
 
     async def discover_entities(
         self,
-        include_patterns: FlextTypes.Core.StringList | None = None,
-        exclude_patterns: FlextTypes.Core.StringList | None = None,
+        include_patterns: FlextOracleWmsTypes.Core.StringList | None = None,
+        exclude_patterns: FlextOracleWmsTypes.Core.StringList | None = None,
         *,
         use_cache: bool = True,
     ) -> FlextResult[FlextOracleWmsDiscoveryResult]:
@@ -1151,8 +1151,8 @@ class FlextOracleWmsEntityDiscovery:
                 )
                 if cached_result.success and isinstance(cached_result.value, dict):
                     data = cached_result.value
-                    raw_entities: list[FlextTypes.Core.Dict] = []
-                    entities_data: FlextTypes.Core.List = []
+                    raw_entities: list[FlextOracleWmsTypes.Core.Dict] = []
+                    entities_data: FlextOracleWmsTypes.Core.List = []
                     if isinstance(data, dict):
                         raw_data: object = data.get("entities", [])
                         if isinstance(raw_data, list):
@@ -1168,7 +1168,9 @@ class FlextOracleWmsEntityDiscovery:
                             description=str(item.get("description"))
                             if isinstance(item.get("description"), str)
                             else None,
-                            fields=cast("FlextTypes.Core.Dict", item.get("fields"))
+                            fields=cast(
+                                "FlextOracleWmsTypes.Core.Dict", item.get("fields")
+                            )
                             if isinstance(item.get("fields"), dict)
                             else None,
                             primary_key=str(item.get("primary_key"))
@@ -1318,8 +1320,8 @@ class FlextOracleWmsEntityDiscovery:
     def _apply_entity_filters(
         self,
         entities: list[FlextOracleWmsEntity],
-        include_patterns: FlextTypes.Core.StringList | None,
-        exclude_patterns: FlextTypes.Core.StringList | None,
+        include_patterns: FlextOracleWmsTypes.Core.StringList | None,
+        exclude_patterns: FlextOracleWmsTypes.Core.StringList | None,
     ) -> list[FlextOracleWmsEntity]:
         """Apply include/exclude patterns to entity list."""
         filtered_entities = entities
@@ -1415,19 +1417,19 @@ class EndpointDiscoveryStrategy(DiscoveryStrategy):
         self,
         api_client: FlextHttpClient,
         endpoint: str,
-    ) -> FlextResult[FlextTypes.Core.Dict]:
+    ) -> FlextResult[FlextOracleWmsTypes.Core.Dict]:
         """Make API request to specified endpoint."""
         try:
             # Make API request using the client
             result: FlextResult[object] = await api_client.get(endpoint)
             if result.is_failure:
                 error_msg = result.error or f"API request failed for {endpoint}"
-                return FlextResult[FlextTypes.Core.Dict].fail(error_msg)
+                return FlextResult[FlextOracleWmsTypes.Core.Dict].fail(error_msg)
 
-            response_data: FlextTypes.Core.Dict = result.unwrap()
-            return FlextResult[FlextTypes.Core.Dict].ok(response_data)
+            response_data: FlextOracleWmsTypes.Core.Dict = result.unwrap()
+            return FlextResult[FlextOracleWmsTypes.Core.Dict].ok(response_data)
         except Exception as e:
-            return FlextResult[FlextTypes.Core.Dict].fail(
+            return FlextResult[FlextOracleWmsTypes.Core.Dict].fail(
                 f"API request error for {endpoint}: {e}",
             )
 
@@ -1464,7 +1466,7 @@ class EndpointDiscoveryStrategy(DiscoveryStrategy):
                     return FlextResult[None].ok(None)
 
                 # If successful, parse response and add entities
-                response_data: FlextTypes.Core.Dict = result.unwrap()
+                response_data: FlextOracleWmsTypes.Core.Dict = result.unwrap()
                 if isinstance(response_data, dict) and "entities" in response_data:
                     entities_data = response_data["entities"]
                     if isinstance(entities_data, list):
@@ -1511,7 +1513,7 @@ class EntityResponseParser:
 
     async def parse_entities_response(
         self,
-        response_data: FlextTypes.Core.Dict | list[str],
+        response_data: FlextOracleWmsTypes.Core.Dict | list[str],
     ) -> FlextResult[list[str]]:
         """Parse entities from API response."""
         try:
@@ -1555,7 +1557,7 @@ class EntityResponseParser:
 # FlextOracleWmsCacheManager(config)
 
 
-__all__: FlextTypes.Core.StringList = [
+__all__: FlextOracleWmsTypes.Core.StringList = [
     "ArrayTypeStrategy",
     "BooleanTypeStrategy",
     "DiscoveryContext",

@@ -118,7 +118,7 @@ async def validate_oracle_wms_connection(
 
         # Health check
         health_result = await client.health_check()
-        if health_result.success:
+        if health_result.is_success:
             validation_results["health_check_success"] = True
             logger.info("✅ Oracle WMS health check passed")
         else:
@@ -126,8 +126,8 @@ async def validate_oracle_wms_connection(
 
         # Discover entities
         entities_result = await client.discover_entities()
-        if entities_result.success and entities_result.data:
-            entities = entities_result.data
+        if entities_result.is_success and entities_result.value:
+            entities = entities_result.value
             validation_results["entities_discovered"] = len(entities)
             logger.info(f"✅ Discovered {len(entities)} Oracle WMS entities")
 
@@ -142,8 +142,8 @@ async def validate_oracle_wms_connection(
                 logger.info(f"🔍 Testing data retrieval from entity: {entity_name}")
 
                 data_result = await client.get_entity_data(str(entity_name), limit=5)
-                if data_result.success:
-                    validation_results["sample_entity_data"] = data_result.data
+                if data_result.is_success:
+                    validation_results["sample_entity_data"] = data_result.value
                     logger.info(f"✅ Successfully retrieved data from {entity_name}")
                 else:
                     logger.warning(
@@ -195,9 +195,9 @@ async def validate_complete_functionality() -> dict[str, object]:
         config = load_oracle_wms_config()
         validation_summary["configuration_valid"] = True
         logger.info("✅ Configuration loaded successfully")
-        logger.info(f"   - Base URL: {config.base_url}")
-        logger.info(f"   - Environment: {config.environment}")
-        logger.info(f"   - API Version: {config.api_version.value}")
+        logger.info(f"   - Base URL: {config.oracle_wms_base_url}")
+        logger.info(f"   - Environment: {config.extract_environment_from_url()}")
+        logger.info(f"   - API Version: {config.api_version}")
 
         # Step 2: Create client and validate connectivity
         logger.info("📋 Step 2: Creating Oracle WMS client and validating connectivity")
@@ -236,7 +236,7 @@ async def validate_complete_functionality() -> dict[str, object]:
         performance_metrics = {
             "execution_time_seconds": execution_time,
             "entities_per_second": (
-                connectivity_results.get("entities_discovered") or 0
+                int(str(connectivity_results.get("entities_discovered") or 0))
             )
             / max(execution_time, 1),
             "connection_established": connectivity_results.get(

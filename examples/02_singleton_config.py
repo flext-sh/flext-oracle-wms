@@ -13,6 +13,7 @@ import os
 
 from flext_core import FlextLogger
 from flext_oracle_wms import FlextOracleWmsClient, FlextOracleWmsConfig
+from flext_oracle_wms.constants import FlextOracleWmsConstants
 
 logger = FlextLogger(__name__)
 
@@ -29,52 +30,47 @@ async def demonstrate_singleton_config() -> None:
     logger.info(f"   App Name: {config.app_name}")
     logger.info(f"   Config Type: {type(config).__name__}")
 
-    # Method 2: Update global singleton with new parameters
+    # Method 2: Create new config instance with different parameters
     logger.info("2. Updating global singleton with new parameters...")
-    updated_config = FlextOracleWmsConfig.get_oracle_wms_global_instance(
-        oracle_wms_timeout=60,
-        oracle_wms_max_retries=5,
-        oracle_wms_enable_logging=True,
-    )
+    updated_config = FlextOracleWmsConfig.create_for_development()
     logger.info(f"   Updated Timeout: {updated_config.oracle_wms_timeout}")
     logger.info(f"   Updated Max Retries: {updated_config.oracle_wms_max_retries}")
     logger.info(f"   Same instance? {config is updated_config}")
 
     # Method 3: Create from environment variables with overrides
-    logger.info("3. Creating from environment variables with overrides...")
-    env_result = FlextOracleWmsConfig.create_from_environment(
-        oracle_wms_timeout=90,  # Override environment variable
+    logger.info("3. Creating from environment with overrides...")
+    env_config = FlextOracleWmsConfig.create_for_environment(
+        "test_env",
+        oracle_wms_timeout=FlextOracleWmsConstants.Connection.DEFAULT_TIMEOUT
+        * 3,  # Override environment variable
         oracle_wms_verify_ssl=False,  # Override for testing
     )
-    if env_result.success:
-        env_config = env_result.value
-        logger.info(f"   Oracle WMS URL: {env_config.oracle_wms_base_url}")
-        logger.info(f"   Username: {env_config.oracle_wms_username}")
-        logger.info(f"   Timeout: {env_config.oracle_wms_timeout}")
-        logger.info(f"   Verify SSL: {env_config.oracle_wms_verify_ssl}")
-    else:
-        logger.error(f"   Failed to create from environment: {env_result.error}")
+    logger.info(f"   Oracle WMS URL: {env_config.oracle_wms_base_url}")
+    logger.info(f"   Username: {env_config.oracle_wms_username}")
+    logger.info(f"   Timeout: {env_config.oracle_wms_timeout}")
+    logger.info(f"   Verify SSL: {env_config.oracle_wms_verify_ssl}")
 
-    # Method 4: Dynamic reconfiguration using update_global_instance
-    logger.info("4. Dynamic reconfiguration...")
-    update_result = FlextOracleWmsConfig.update_global_instance(
+    # Method 4: Create new configuration for different environment
+    logger.info("4. Creating configuration for different environment...")
+    new_config = FlextOracleWmsConfig.create_for_environment(
+        "prod",
         oracle_wms_base_url="https://new-environment.wms.oraclecloud.com/test",
         oracle_wms_username="NEW_USER",
         oracle_wms_password="NEW_PASSWORD",
-        oracle_wms_timeout=120,
+        oracle_wms_timeout=FlextOracleWmsConstants.Connection.DEFAULT_TIMEOUT * 4,
     )
-    if update_result.success:
-        updated_global = update_result.value
-        logger.info(f"   New Base URL: {updated_global.oracle_wms_base_url}")
-        logger.info(f"   New Username: {updated_global.oracle_wms_username}")
-        logger.info(f"   New Timeout: {updated_global.oracle_wms_timeout}")
+    if new_config:
+        logger.info(f"   New Base URL: {new_config.oracle_wms_base_url}")
+        logger.info(f"   New Username: {new_config.oracle_wms_username}")
+        logger.info(f"   New Timeout: {new_config.oracle_wms_timeout}")
     else:
-        logger.error(f"   Failed to update global instance: {update_result.error}")
+        logger.error("   Failed to create new configuration")
 
     # Method 5: Reset and create fresh instance
     logger.info("5. Resetting global instance...")
     FlextOracleWmsConfig.reset_global_instance()
-    fresh_config = FlextOracleWmsConfig.get_oracle_wms_global_instance(
+    fresh_config = FlextOracleWmsConfig.create_for_environment(
+        "fresh",
         oracle_wms_base_url="https://fresh.wms.oraclecloud.com/fresh",
         oracle_wms_username="FRESH_USER",
         oracle_wms_password="FRESH_PASSWORD",
@@ -92,7 +88,7 @@ async def demonstrate_singleton_config() -> None:
     # Demonstrate configuration validation
     logger.info("7. Validating configuration...")
     validation_result = test_config.validate_business_rules()
-    if validation_result.success:
+    if validation_result.is_success:
         logger.info("   ✅ Configuration validation passed")
     else:
         logger.error(
@@ -114,7 +110,7 @@ async def demonstrate_singleton_config() -> None:
 
         # Test health check
         health_result = await client.health_check()
-        if health_result.success:
+        if health_result.is_success:
             logger.info("   ✅ Health check passed")
             logger.info(f"   Service: {health_result.value.get('service', 'Unknown')}")
         else:

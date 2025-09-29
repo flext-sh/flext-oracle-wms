@@ -40,13 +40,15 @@ class FlextOracleWmsTypes(FlextTypes):
 
         type WmsConnectionConfig = dict[str, str | int | bool | dict[str, object]]
         type DatabaseConnection = dict[
-            str, FlextTypes.Core.ConfigValue | dict[str, object]
+            str, FlextOracleWmsTypes.Core.ConfigValue | dict[str, object]
         ]
-        type ApiConnection = dict[str, str | dict[str, FlextTypes.Core.JsonValue]]
+        type ApiConnection = dict[
+            str, str | dict[str, FlextOracleWmsTypes.Core.JsonValue]
+        ]
         type AuthenticationConfig = dict[str, str | dict[str, object]]
         type SessionConfig = dict[str, int | bool | str | dict[str, object]]
         type SecurityConfig = dict[
-            str, bool | str | dict[str, FlextTypes.Core.ConfigValue]
+            str, bool | str | dict[str, FlextOracleWmsTypes.Core.ConfigValue]
         ]
 
     # =========================================================================
@@ -57,16 +59,18 @@ class FlextOracleWmsTypes(FlextTypes):
         """Oracle WMS warehouse complex types."""
 
         type WarehouseConfiguration = dict[
-            str, FlextTypes.Core.JsonValue | dict[str, object]
+            str, FlextOracleWmsTypes.Core.JsonValue | dict[str, object]
         ]
-        type LocationDefinition = dict[str, str | dict[str, FlextTypes.Core.JsonValue]]
+        type LocationDefinition = dict[
+            str, str | dict[str, FlextOracleWmsTypes.Core.JsonValue]
+        ]
         type ZoneConfiguration = dict[str, str | list[str] | dict[str, object]]
         type AreaDefinition = dict[
-            str, str | int | dict[str, FlextTypes.Core.JsonValue]
+            str, str | int | dict[str, FlextOracleWmsTypes.Core.JsonValue]
         ]
         type CapacityConfiguration = dict[str, int | float | dict[str, object]]
         type LayoutConfiguration = dict[
-            str, FlextTypes.Core.JsonValue | dict[str, object]
+            str, FlextOracleWmsTypes.Core.JsonValue | dict[str, object]
         ]
 
     # =========================================================================
@@ -76,14 +80,16 @@ class FlextOracleWmsTypes(FlextTypes):
     class Inventory:
         """Oracle WMS inventory complex types."""
 
-        type InventoryItem = dict[str, FlextTypes.Core.JsonValue | dict[str, object]]
+        type InventoryItem = dict[
+            str, FlextOracleWmsTypes.Core.JsonValue | dict[str, object]
+        ]
         type StockLevel = dict[str, int | float | str | dict[str, object]]
         type MovementRecord = dict[
-            str, str | int | dict[str, FlextTypes.Core.JsonValue]
+            str, str | int | dict[str, FlextOracleWmsTypes.Core.JsonValue]
         ]
         type AllocationRule = dict[str, str | bool | dict[str, object]]
         type ReservationConfig = dict[
-            str, FlextTypes.Core.JsonValue | dict[str, object]
+            str, FlextOracleWmsTypes.Core.JsonValue | dict[str, object]
         ]
         type CycleCountConfig = dict[str, int | bool | str | dict[str, object]]
 
@@ -94,9 +100,13 @@ class FlextOracleWmsTypes(FlextTypes):
     class TaskManagement:
         """Oracle WMS task management complex types."""
 
-        type TaskDefinition = dict[str, str | dict[str, FlextTypes.Core.JsonValue]]
+        type TaskDefinition = dict[
+            str, str | dict[str, FlextOracleWmsTypes.Core.JsonValue]
+        ]
         type TaskExecution = dict[str, str | bool | int | dict[str, object]]
-        type WorkOrder = dict[str, FlextTypes.Core.JsonValue | dict[str, object]]
+        type WorkOrder = dict[
+            str, FlextOracleWmsTypes.Core.JsonValue | dict[str, object]
+        ]
         type TaskPriority = dict[str, int | str | dict[str, object]]
         type ResourceAllocation = dict[str, str | int | list[str] | dict[str, object]]
         type PerformanceMetrics = dict[str, int | float | dict[str, object]]
@@ -109,12 +119,16 @@ class FlextOracleWmsTypes(FlextTypes):
         """Oracle WMS workflow complex types."""
 
         type WorkflowDefinition = dict[
-            str, str | list[dict[str, FlextTypes.Core.JsonValue]]
+            str, str | list[dict[str, FlextOracleWmsTypes.Core.JsonValue]]
         ]
-        type ProcessStep = dict[str, str | dict[str, FlextTypes.Core.JsonValue]]
+        type ProcessStep = dict[
+            str, str | dict[str, FlextOracleWmsTypes.Core.JsonValue]
+        ]
         type BusinessRule = dict[str, bool | str | dict[str, object]]
         type ApprovalProcess = dict[str, str | bool | list[str] | dict[str, object]]
-        type StatusTracking = dict[str, str | dict[str, FlextTypes.Core.JsonValue]]
+        type StatusTracking = dict[
+            str, str | dict[str, FlextOracleWmsTypes.Core.JsonValue]
+        ]
         type EventHandling = dict[str, str | dict[str, object]]
 
     # =========================================================================
@@ -125,13 +139,15 @@ class FlextOracleWmsTypes(FlextTypes):
         """Oracle WMS integration complex types."""
 
         type IntegrationConfig = dict[
-            str, FlextTypes.Core.ConfigValue | dict[str, object]
+            str, FlextOracleWmsTypes.Core.ConfigValue | dict[str, object]
         ]
-        type DataMapping = dict[str, str | dict[str, FlextTypes.Core.JsonValue]]
+        type DataMapping = dict[
+            str, str | dict[str, FlextOracleWmsTypes.Core.JsonValue]
+        ]
         type MessageFormat = dict[str, str | dict[str, object]]
         type SyncConfiguration = dict[str, bool | int | str | dict[str, object]]
         type ErrorHandling = dict[
-            str, str | bool | dict[str, FlextTypes.Core.JsonValue]
+            str, str | bool | dict[str, FlextOracleWmsTypes.Core.JsonValue]
         ]
         type RetryPolicy = dict[str, int | float | bool | dict[str, object]]
 
@@ -143,20 +159,24 @@ class FlextOracleWmsTypes(FlextTypes):
         """Oracle WMS reporting complex types."""
 
         type ReportConfiguration = dict[
-            str, FlextTypes.Core.JsonValue | dict[str, object]
+            str, FlextOracleWmsTypes.Core.JsonValue | dict[str, object]
         ]
-        type MetricDefinition = dict[str, str | dict[str, FlextTypes.Core.JsonValue]]
+        type MetricDefinition = dict[
+            str, str | dict[str, FlextOracleWmsTypes.Core.JsonValue]
+        ]
         type DashboardConfig = dict[str, str | list[dict[str, object]]]
         type AlertConfiguration = dict[str, str | bool | int | dict[str, object]]
-        type DataExport = dict[str, str | dict[str, FlextTypes.Core.JsonValue]]
-        type AnalyticsConfig = dict[str, FlextTypes.Core.JsonValue | dict[str, object]]
+        type DataExport = dict[str, str | dict[str, FlextOracleWmsTypes.Core.JsonValue]]
+        type AnalyticsConfig = dict[
+            str, FlextOracleWmsTypes.Core.JsonValue | dict[str, object]
+        ]
 
     # =========================================================================
-    # CORE TYPES - Essential Oracle WMS types extending FlextTypes.Core
+    # CORE TYPES - Essential Oracle WMS types extending FlextOracleWmsTypes.Core
     # =========================================================================
 
     class Core(FlextTypes.Core):
-        """Core Oracle WMS types extending FlextTypes.Core.
+        """Core Oracle WMS types extending FlextOracleWmsTypes.Core.
 
         Essential domain-specific types for Oracle WMS operations.
         Replaces generic dict[str, object] with semantic Oracle WMS types.
@@ -164,29 +184,45 @@ class FlextOracleWmsTypes(FlextTypes):
 
         # Connection and API types
         type ConnectionDict = dict[str, str | int | bool | dict[str, object]]
-        type ConfigDict = dict[str, FlextTypes.Core.ConfigValue | dict[str, object]]
-        type ApiResponseDict = dict[str, FlextTypes.Core.JsonValue | dict[str, object]]
+        type ConfigDict = dict[
+            str, FlextOracleWmsTypes.Core.ConfigValue | dict[str, object]
+        ]
+        type ApiResponseDict = dict[
+            str, FlextOracleWmsTypes.Core.JsonValue | dict[str, object]
+        ]
         type AuthDict = dict[str, str | dict[str, object]]
 
         # Warehouse and inventory types
-        type WarehouseDict = dict[str, FlextTypes.Core.JsonValue | dict[str, object]]
-        type InventoryDict = dict[str, FlextTypes.Core.JsonValue | dict[str, object]]
-        type LocationDict = dict[str, str | dict[str, FlextTypes.Core.JsonValue]]
+        type WarehouseDict = dict[
+            str, FlextOracleWmsTypes.Core.JsonValue | dict[str, object]
+        ]
+        type InventoryDict = dict[
+            str, FlextOracleWmsTypes.Core.JsonValue | dict[str, object]
+        ]
+        type LocationDict = dict[
+            str, str | dict[str, FlextOracleWmsTypes.Core.JsonValue]
+        ]
         type StockDict = dict[str, int | float | str | dict[str, object]]
 
         # Task and workflow types
         type TaskDict = dict[str, str | bool | int | dict[str, object]]
-        type WorkflowDict = dict[str, FlextTypes.Core.JsonValue | dict[str, object]]
-        type ProcessDict = dict[str, str | dict[str, FlextTypes.Core.JsonValue]]
+        type WorkflowDict = dict[
+            str, FlextOracleWmsTypes.Core.JsonValue | dict[str, object]
+        ]
+        type ProcessDict = dict[
+            str, str | dict[str, FlextOracleWmsTypes.Core.JsonValue]
+        ]
         type BusinessRuleDict = dict[str, bool | str | dict[str, object]]
 
         # Integration and reporting types
         type IntegrationDict = dict[
-            str, FlextTypes.Core.ConfigValue | dict[str, object]
+            str, FlextOracleWmsTypes.Core.ConfigValue | dict[str, object]
         ]
         type MessageDict = dict[str, str | dict[str, object]]
-        type ReportDict = dict[str, FlextTypes.Core.JsonValue | dict[str, object]]
-        type MetricDict = dict[str, str | dict[str, FlextTypes.Core.JsonValue]]
+        type ReportDict = dict[
+            str, FlextOracleWmsTypes.Core.JsonValue | dict[str, object]
+        ]
+        type MetricDict = dict[str, str | dict[str, FlextOracleWmsTypes.Core.JsonValue]]
 
         # Data processing types
         type RecordDict = dict[str, object]
@@ -240,10 +276,10 @@ class FlextOracleWmsTypes(FlextTypes):
         ]
 
         # Oracle WMS-specific project configurations
-        type WmsProjectConfig = dict[str, FlextTypes.Core.ConfigValue | object]
+        type WmsProjectConfig = dict[str, FlextOracleWmsTypes.Core.ConfigValue | object]
         type WarehouseConfig = dict[str, str | int | bool | list[str]]
         type InventoryConfig = dict[str, bool | str | dict[str, object]]
-        type LogisticsConfig = dict[str, FlextTypes.Core.ConfigValue | object]
+        type LogisticsConfig = dict[str, FlextOracleWmsTypes.Core.ConfigValue | object]
 
 
 # =============================================================================
