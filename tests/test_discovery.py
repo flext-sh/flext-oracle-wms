@@ -15,9 +15,8 @@ Copyright (c) 2025 FLEXT Team. All rights reserved.
 SPDX-License-Identifier: MIT
 """
 
-import asyncio
 import math
-from unittest.mock import AsyncMock, Mock, patch
+from unittest.mock import Mock, patch
 
 import pytest
 
@@ -98,7 +97,7 @@ class TestEndpointDiscoveryStrategy:
         """Set up test fixtures."""
         self.mock_discovery = Mock(spec=FlextOracleWmsEntityDiscovery)
         self.strategy = EndpointDiscoveryStrategy(self.mock_discovery)
-        self.mock_api_client = AsyncMock()
+        self.mock_api_client = Mock()
         self.context = DiscoveryContext(
             include_patterns=None,
             exclude_patterns=None,
@@ -106,7 +105,7 @@ class TestEndpointDiscoveryStrategy:
             errors=[],
         )
 
-    async def test_execute_discovery_step_success(self) -> None:
+    def test_execute_discovery_step_success(self) -> None:
         """Test successful discovery step execution."""
         # Mock API response
         mock_response = Mock()
@@ -144,7 +143,7 @@ class TestEndpointDiscoveryStrategy:
                 mock_entities,
             )
 
-            result = await self.strategy.execute_discovery_step(
+            result = self.strategy.execute_discovery_step(
                 self.context,
                 self.mock_api_client,
             )
@@ -153,13 +152,13 @@ class TestEndpointDiscoveryStrategy:
             assert result.data is None
             assert len(self.context.all_entities) == 2
 
-    async def test_execute_discovery_step_api_failure(self) -> None:
+    def test_execute_discovery_step_api_failure(self) -> None:
         """Test discovery step with API failure."""
         self.mock_api_client.get.return_value = FlextResult[FlextTypes.Core.Dict].fail(
             "API connection failed",
         )
 
-        result = await self.strategy.execute_discovery_step(
+        result = self.strategy.execute_discovery_step(
             self.context,
             self.mock_api_client,
         )
@@ -169,7 +168,7 @@ class TestEndpointDiscoveryStrategy:
         assert len(self.context.errors) > 0
         assert "API connection failed" in self.context.errors[0]
 
-    async def test_execute_discovery_step_invalid_response(self) -> None:
+    def test_execute_discovery_step_invalid_response(self) -> None:
         """Test discovery step with invalid response structure."""
         # Mock invalid response (missing required attributes)
         mock_response = Mock()
@@ -179,7 +178,7 @@ class TestEndpointDiscoveryStrategy:
             mock_response,
         )
 
-        result = await self.strategy.execute_discovery_step(
+        result = self.strategy.execute_discovery_step(
             self.context,
             self.mock_api_client,
         )
@@ -188,8 +187,7 @@ class TestEndpointDiscoveryStrategy:
         assert result.data is None
         assert len(self.context.errors) > 0
 
-    @pytest.mark.asyncio
-    async def test_execute_discovery_step_http_error(self) -> None:
+    def test_execute_discovery_step_http_error(self) -> None:
         """Test discovery step with HTTP error status."""
         mock_response = Mock()
         mock_response.status_code = 404
@@ -199,7 +197,7 @@ class TestEndpointDiscoveryStrategy:
             mock_response,
         )
 
-        result = await self.strategy.execute_discovery_step(
+        result = self.strategy.execute_discovery_step(
             self.context,
             self.mock_api_client,
         )
@@ -208,12 +206,11 @@ class TestEndpointDiscoveryStrategy:
         assert result.data is None
         assert any("HTTP 404" in error for error in self.context.errors)
 
-    @pytest.mark.asyncio
-    async def test_execute_discovery_step_exception(self) -> None:
+    def test_execute_discovery_step_exception(self) -> None:
         """Test discovery step with exception."""
         self.mock_api_client.get.side_effect = Exception("Network error")
 
-        result = await self.strategy.execute_discovery_step(
+        result = self.strategy.execute_discovery_step(
             self.context,
             self.mock_api_client,
         )
@@ -225,8 +222,7 @@ class TestEndpointDiscoveryStrategy:
         assert result.error is not None
         assert "Network error" in result.error
 
-    @pytest.mark.asyncio
-    async def test_make_api_request_success(self) -> None:
+    def test_make_api_request_success(self) -> None:
         """Test successful API request."""
         mock_response = Mock()
         mock_response.status_code = 200
@@ -235,7 +231,7 @@ class TestEndpointDiscoveryStrategy:
             mock_response,
         )
 
-        result = await self.strategy._make_api_request(
+        result = self.strategy._make_api_request(
             self.mock_api_client,
             "/api/test",
         )
@@ -243,18 +239,16 @@ class TestEndpointDiscoveryStrategy:
         assert result.success
         assert result.data == mock_response
 
-    @pytest.mark.asyncio
-    async def test_make_api_request_failure(self) -> None:
+    def test_make_api_request_failure(self) -> None:
         """Test failed API request."""
         # This test is disabled as the _make_api_request method doesn't exist in current implementation
         pytest.skip("Method _make_api_request not implemented in current architecture")
 
-    @pytest.mark.asyncio
-    async def test_make_api_request_no_data(self) -> None:
+    def test_make_api_request_no_data(self) -> None:
         """Test API request with no response data."""
         self.mock_api_client.get.return_value = FlextResult[None].ok(None)
 
-        result = await self.strategy._make_api_request(
+        result = self.strategy._make_api_request(
             self.mock_api_client,
             "/api/test",
         )
@@ -314,11 +308,10 @@ class TestEntityResponseParser:
         self.mock_discovery = Mock(spec=FlextOracleWmsEntityDiscovery)
         self.parser = EntityResponseParser(self.mock_discovery)
 
-    @pytest.mark.asyncio
-    async def test_parse_entities_response_delegation(self) -> None:
+    def test_parse_entities_response_delegation(self) -> None:
         """Test that parser delegates to discovery instance."""
         response_data: FlextTypes.Core.Dict = {"entities": ["test"]}
-        result = await self.parser.parse_entities_response(response_data)
+        result = self.parser.parse_entities_response(response_data)
 
         # The parser should handle the response data directly
         assert result.success or result.is_failure
@@ -329,7 +322,7 @@ class TestFlextOracleWmsEntityDiscovery:
 
     def setup_method(self) -> None:
         """Set up test fixtures."""
-        self.mock_api_client = AsyncMock()
+        self.mock_api_client = Mock()
         self.discovery = FlextOracleWmsEntityDiscovery(
             api_client=self.mock_api_client,
             environment="test",
@@ -374,8 +367,7 @@ class TestFlextOracleWmsEntityDiscovery:
 
         assert self.discovery.discovery_endpoints == expected_patterns
 
-    @pytest.mark.asyncio
-    async def test_discover_entities_fresh_discovery(self) -> None:
+    def test_discover_entities_fresh_discovery(self) -> None:
         """Test fresh entity discovery without cache."""
         # Mock the _perform_discovery method
         mock_entities = [
@@ -404,7 +396,7 @@ class TestFlextOracleWmsEntityDiscovery:
                 mock_discovery_result,
             )
 
-            result = await self.discovery.discover_entities()
+            result = self.discovery.discover_entities()
 
             assert result.success
             assert result.data is not None
@@ -412,8 +404,7 @@ class TestFlextOracleWmsEntityDiscovery:
             assert len(result.data.entities) == 2
             assert result.data.discovery_duration_ms is not None
 
-    @pytest.mark.asyncio
-    async def test_discover_entities_with_patterns(self) -> None:
+    def test_discover_entities_with_patterns(self) -> None:
         """Test entity discovery with include/exclude patterns."""
         include_patterns = ["comp*", "fac*"]
         exclude_patterns = ["test_*"]
@@ -425,15 +416,14 @@ class TestFlextOracleWmsEntityDiscovery:
             mock_response.data = {"results": ["entity1", "entity2"]}
             mock_get.return_value = FlextResult[FlextTypes.Core.Dict].ok(mock_response)
 
-            result = await self.discovery.discover_entities(
+            result = self.discovery.discover_entities(
                 include_patterns=include_patterns,
                 exclude_patterns=exclude_patterns,
             )
 
             assert result.success
 
-    @pytest.mark.asyncio
-    async def test_discover_entities_with_cache_hit(self) -> None:
+    def test_discover_entities_with_cache_hit(self) -> None:
         """Test entity discovery with cache hit."""
         mock_cache = Mock()
         self.discovery.cache_manager = mock_cache
@@ -455,21 +445,20 @@ class TestFlextOracleWmsEntityDiscovery:
         }
 
         # Mock cache manager to return cached data
-        async def mock_get(_key: str) -> FlextResult[CacheValue]:
-            await asyncio.sleep(0)  # Make it truly async
+        def mock_get(_key: str) -> FlextResult[CacheValue]:
+            time.sleep(0)
             return FlextResult[CacheValue].ok(cached_data)
 
         mock_cache.get = mock_get
 
-        result = await self.discovery.discover_entities(use_cache=True)
+        result = self.discovery.discover_entities(use_cache=True)
 
         assert result.success
         assert result.data is not None
         assert len(result.data.entities) == 1
         assert result.data.entities[0].name == "company"
 
-    @pytest.mark.asyncio
-    async def test_discover_entities_cache_miss(self) -> None:
+    def test_discover_entities_cache_miss(self) -> None:
         """Test entity discovery with cache miss."""
         mock_cache = Mock()
         self.discovery.cache_manager = mock_cache
@@ -492,31 +481,28 @@ class TestFlextOracleWmsEntityDiscovery:
                 mock_discovery_result,
             )
 
-            result = await self.discovery.discover_entities(use_cache=True)
+            result = self.discovery.discover_entities(use_cache=True)
 
             assert result.success
             mock_cache_set.assert_called_once()
 
-    @pytest.mark.asyncio
-    async def test_discover_entities_discovery_failure(self) -> None:
+    def test_discover_entities_discovery_failure(self) -> None:
         """Test entity discovery with discovery failure."""
         with patch.object(self.discovery, "_perform_discovery") as mock_perform:
             mock_perform.return_value = FlextResult[None].fail("Discovery failed")
 
-            result = await self.discovery.discover_entities()
+            result = self.discovery.discover_entities()
 
             assert result.is_failure
             assert result.error is not None
             assert "Discovery failed" in result.error
 
-    @pytest.mark.asyncio
-    async def test_discover_entities_no_data(self) -> None:
+    def test_discover_entities_no_data(self) -> None:
         """Test entity discovery with no data returned."""
         # This test is disabled as the method doesn't exist in current implementation
         pytest.skip("Method _perform_discovery not implemented in current architecture")
 
-    @pytest.mark.asyncio
-    async def test_discover_entity_schema_success(self) -> None:
+    def test_discover_entity_schema_success(self) -> None:
         """Test successful entity schema discovery."""
         mock_entity = FlextOracleWmsEntity(
             name="company",
@@ -532,13 +518,12 @@ class TestFlextOracleWmsEntityDiscovery:
             )
             mock_discover.return_value = mock_result
 
-            result = await self.discovery.discover_entity_schema("company")
+            result = self.discovery.discover_entity_schema("company")
 
             assert result.success
             assert result.data == mock_entity
 
-    @pytest.mark.asyncio
-    async def test_discover_entity_schema_with_cache(self) -> None:
+    def test_discover_entity_schema_with_cache(self) -> None:
         """Test entity schema discovery with cache."""
         mock_cache = Mock()
         self.discovery.cache_manager = mock_cache
@@ -552,15 +537,14 @@ class TestFlextOracleWmsEntityDiscovery:
         with patch.object(self.discovery, "_get_cached_entity") as mock_cache_get:
             mock_cache_get.return_value = FlextResult[None].ok(mock_entity)
 
-            result = await self.discovery.discover_entity_schema(
+            result = self.discovery.discover_entity_schema(
                 "company",
             )
 
             assert result.success
             assert result.data == mock_entity
 
-    @pytest.mark.asyncio
-    async def test_discover_entity_schema_cache_and_store(self) -> None:
+    def test_discover_entity_schema_cache_and_store(self) -> None:
         """Test entity schema discovery with cache miss and storage."""
         mock_cache = Mock()
         self.discovery.cache_manager = mock_cache
@@ -582,15 +566,14 @@ class TestFlextOracleWmsEntityDiscovery:
             )
             mock_discover.return_value = mock_result
 
-            result = await self.discovery.discover_entity_schema(
+            result = self.discovery.discover_entity_schema(
                 "company",
             )
 
             assert result.success
             mock_cache_set.assert_called_once()
 
-    @pytest.mark.asyncio
-    async def test_perform_discovery_success(self) -> None:
+    def test_perform_discovery_success(self) -> None:
         """Test successful discovery performance."""
         # Mock strategy execution
         with patch.object(
@@ -609,14 +592,13 @@ class TestFlextOracleWmsEntityDiscovery:
                 ]
                 mock_process.return_value = mock_entities
 
-                result = await self.discovery.discover_entities()
+                result = self.discovery.discover_entities()
 
                 assert result.success
                 assert result.data is not None
                 assert len(result.data) == 1
 
-    @pytest.mark.asyncio
-    async def test_perform_discovery_with_patterns(self) -> None:
+    def test_perform_discovery_with_patterns(self) -> None:
         """Test discovery with include/exclude patterns."""
         include_patterns = ["comp*"]
         exclude_patterns = ["test_*"]
@@ -630,7 +612,7 @@ class TestFlextOracleWmsEntityDiscovery:
             with patch.object(self.discovery, "_apply_post_processing") as mock_process:
                 mock_process.return_value = []
 
-                result = await self.discovery.discover_entities(
+                result = self.discovery.discover_entities(
                     include_patterns,
                     exclude_patterns,
                 )
@@ -731,68 +713,62 @@ class TestFlextOracleWmsEntityDiscovery:
         assert result.data.has_errors is True
         assert len(result.data.errors) == 1
 
-    @pytest.mark.asyncio
-    async def test_extract_entity_list_from_dict_entities(self) -> None:
+    def test_extract_entity_list_from_dict_entities(self) -> None:
         """Test entity list extraction from dict with 'entities' key."""
         response_data = {"entities": ["company", "facility", "item"]}
         parser = EntityResponseParser(self.discovery)
 
-        result = await parser.parse_entities_response(response_data)
+        result = parser.parse_entities_response(response_data)
 
         assert result.success
         assert result.data == ["company", "facility", "item"]
 
-    @pytest.mark.asyncio
-    async def test_extract_entity_list_from_dict_results(self) -> None:
+    def test_extract_entity_list_from_dict_results(self) -> None:
         """Test entity list extraction from dict with 'results' key."""
         response_data = {"results": ["order", "shipment"]}
         parser = EntityResponseParser(self.discovery)
 
-        result = await parser.parse_entities_response(response_data)
+        result = parser.parse_entities_response(response_data)
 
         assert result.success
         assert result.data == ["order", "shipment"]
 
-    @pytest.mark.asyncio
-    async def test_extract_entity_list_from_dict_data(self) -> None:
+    def test_extract_entity_list_from_dict_data(self) -> None:
         """Test entity list extraction from dict with 'data' key."""
         response_data = {"data": ["location", "inventory"]}
         parser = EntityResponseParser(self.discovery)
 
-        result = await parser.parse_entities_response(response_data)
+        result = parser.parse_entities_response(response_data)
 
         assert result.success
         assert result.data == ["location", "inventory"]
 
-    @pytest.mark.asyncio
-    async def test_extract_entity_list_from_dict_keys(self) -> None:
+    def test_extract_entity_list_from_dict_keys(self) -> None:
         """Test entity list extraction from dict keys."""
         response_data = {"company": {}, "facility": {}, "item": {}}
         parser = EntityResponseParser(self.discovery)
 
-        result = await parser.parse_entities_response(response_data)
+        result = parser.parse_entities_response(response_data)
 
         assert result.success
         assert set(result.data) == {"company", "facility", "item"}
 
-    @pytest.mark.asyncio
-    async def test_extract_entity_list_from_list(self) -> None:
+    def test_extract_entity_list_from_list(self) -> None:
         """Test entity list extraction from direct list."""
         response_data = ["company", "facility", "item"]
         parser = EntityResponseParser(self.discovery)
 
-        result = await parser.parse_entities_response(response_data)
+        result = parser.parse_entities_response(response_data)
 
         assert result.success
         assert result.data == response_data
 
-    @pytest.mark.asyncio
-    async def test_extract_entity_list_unexpected_format(self) -> None:
+    def test_extract_entity_list_unexpected_format(self) -> None:
         """Test entity list extraction with unexpected format."""
         response_data = "unexpected_string"
         parser = EntityResponseParser(self.discovery)
 
-        result = await parser.parse_entities_response(response_data)
+        result = parser.parse_entities_response(response_data)
 
         assert result.is_failure
         assert result.error is not None
@@ -896,12 +872,11 @@ class TestFlextOracleWmsEntityDiscovery:
         assert entity is not None
         assert entity.fields is None
 
-    @pytest.mark.asyncio
-    async def test_parse_entities_response_string_list(self) -> None:
+    def test_parse_entities_response_string_list(self) -> None:
         """Test parsing entities from string list."""
         response_data = {"entities": ["company", "facility"]}
 
-        result = await self.discovery._parse_entities_response(
+        result = self.discovery._parse_entities_response(
             response_data,
         )
 
@@ -911,8 +886,7 @@ class TestFlextOracleWmsEntityDiscovery:
         assert result.data[0].name == "company"
         assert result.data[1].name == "facility"
 
-    @pytest.mark.asyncio
-    async def test_parse_entities_response_metadata_list(self) -> None:
+    def test_parse_entities_response_metadata_list(self) -> None:
         """Test parsing entities from metadata list."""
         response_data = {
             "results": [
@@ -921,7 +895,7 @@ class TestFlextOracleWmsEntityDiscovery:
             ],
         }
 
-        result = await self.discovery._parse_entities_response(
+        result = self.discovery._parse_entities_response(
             response_data,
         )
 
@@ -930,8 +904,7 @@ class TestFlextOracleWmsEntityDiscovery:
         assert result.data[0].description == "Company entity"
         assert result.data[1].description == "Facility entity"
 
-    @pytest.mark.asyncio
-    async def test_parse_entities_response_mixed_types(self) -> None:
+    def test_parse_entities_response_mixed_types(self) -> None:
         """Test parsing entities from mixed string and metadata."""
         response_data = {
             "entities": [
@@ -941,15 +914,14 @@ class TestFlextOracleWmsEntityDiscovery:
             ],
         }
 
-        result = await self.discovery._parse_entities_response(
+        result = self.discovery._parse_entities_response(
             response_data,
         )
 
         assert result.success
         assert len(result.data) == 3
 
-    @pytest.mark.asyncio
-    async def test_parse_entities_response_empty_list(self) -> None:
+    def test_parse_entities_response_empty_list(self) -> None:
         """Test parsing entities from empty response."""
         with patch.object(
             self.discovery,
@@ -957,13 +929,12 @@ class TestFlextOracleWmsEntityDiscovery:
         ) as mock_extract:
             mock_extract.return_value = FlextResult[None].ok(None)
 
-            result = await self.discovery._parse_entities_response({})
+            result = self.discovery._parse_entities_response({})
 
             assert result.success
             assert result.data == []
 
-    @pytest.mark.asyncio
-    async def test_parse_entities_response_extraction_failure(self) -> None:
+    def test_parse_entities_response_extraction_failure(self) -> None:
         """Test parsing entities with extraction failure."""
         with patch.object(
             self.discovery,
@@ -971,14 +942,13 @@ class TestFlextOracleWmsEntityDiscovery:
         ) as mock_extract:
             mock_extract.return_value = FlextResult[None].fail("Extraction failed")
 
-            result = await mock_extract({})
+            result = mock_extract({})
 
             assert result.is_failure
             assert result.error is not None
             assert "Extraction failed" in result.error
 
-    @pytest.mark.asyncio
-    async def test_discover_single_entity_success(self) -> None:
+    def test_discover_single_entity_success(self) -> None:
         """Test successful single entity discovery."""
         mock_response = Mock()
         mock_response.status_code = FlextOracleWmsDefaults.HTTP_OK
@@ -989,28 +959,26 @@ class TestFlextOracleWmsEntityDiscovery:
         self.mock_api_client.get.return_value = FlextResult[None].ok(mock_response)
 
         # Use the actual discover_entities method with include_patterns
-        result = await self.discovery.discover_entities(include_patterns=["company"])
+        result = self.discovery.discover_entities(include_patterns=["company"])
 
         assert result.success
         assert result.value is not None
         assert len(result.value.entities) > 0
 
-    @pytest.mark.asyncio
-    async def test_discover_single_entity_all_endpoints_fail(self) -> None:
+    def test_discover_single_entity_all_endpoints_fail(self) -> None:
         """Test single entity discovery when all endpoints fail."""
         self.mock_api_client.get.return_value = FlextResult[None].fail(
             "Connection failed",
         )
 
         # Use the actual discover_entities method
-        result = await self.discovery.discover_entities(include_patterns=["company"])
+        result = self.discovery.discover_entities(include_patterns=["company"])
 
         assert result.is_failure
         assert result.error is not None
         assert "Connection failed" in result.error
 
-    @pytest.mark.asyncio
-    async def test_discover_single_entity_http_error(self) -> None:
+    def test_discover_single_entity_http_error(self) -> None:
         """Test single entity discovery with HTTP error."""
         mock_response = Mock()
         mock_response.status_code = 404
@@ -1018,14 +986,13 @@ class TestFlextOracleWmsEntityDiscovery:
         self.mock_api_client.get.return_value = FlextResult[None].ok(mock_response)
 
         # Use the actual discover_entities method
-        result = await self.discovery.discover_entities(
+        result = self.discovery.discover_entities(
             include_patterns=["nonexistent"],
         )
 
         assert result.is_failure
 
-    @pytest.mark.asyncio
-    async def test_extract_entity_schema_from_results(self) -> None:
+    def test_extract_entity_schema_from_results(self) -> None:
         """Test schema extraction from results array."""
         response_data = {
             "results": [
@@ -1039,7 +1006,7 @@ class TestFlextOracleWmsEntityDiscovery:
             ],
         }
 
-        result = await self.discovery._extract_entity_schema(
+        result = self.discovery._extract_entity_schema(
             response_data,
             "company",
             "/api/company",
@@ -1055,14 +1022,13 @@ class TestFlextOracleWmsEntityDiscovery:
         assert result.data.fields["score"]["type"] == "number"
         assert result.data.fields["is_verified"]["type"] == "boolean"
 
-    @pytest.mark.asyncio
-    async def test_extract_entity_schema_from_data(self) -> None:
+    def test_extract_entity_schema_from_data(self) -> None:
         """Test schema extraction from data array."""
         response_data = {
             "data": [{"facility_code": "FAC001", "location": {"city": "New York"}}],
         }
 
-        result = await self.discovery._extract_entity_schema(
+        result = self.discovery._extract_entity_schema(
             response_data,
             "facility",
             "/api/facility",
@@ -1072,12 +1038,11 @@ class TestFlextOracleWmsEntityDiscovery:
         assert result.data.fields["facility_code"]["type"] == "string"
         assert result.data.fields["location"]["type"] == "object"
 
-    @pytest.mark.asyncio
-    async def test_extract_entity_schema_no_sample_data(self) -> None:
+    def test_extract_entity_schema_no_sample_data(self) -> None:
         """Test schema extraction with no sample data."""
         response_data = {"results": []}
 
-        result = await self.discovery._extract_entity_schema(
+        result = self.discovery._extract_entity_schema(
             response_data,
             "empty",
             "/api/empty",
@@ -1299,16 +1264,14 @@ class TestFlextOracleWmsEntityDiscovery:
         assert len(result) == 2
         assert result == entities
 
-    @pytest.mark.asyncio
-    async def test_get_cached_discovery_not_implemented(self) -> None:
+    def test_get_cached_discovery_not_implemented(self) -> None:
         """Test cached discovery returns not implemented."""
-        result = await self.discovery._get_cached_discovery("test_key")
+        result = self.discovery._get_cached_discovery("test_key")
 
         assert result.is_failure
         assert "Cache not implemented" in result.error
 
-    @pytest.mark.asyncio
-    async def test_cache_discovery_result_no_op(self) -> None:
+    def test_cache_discovery_result_no_op(self) -> None:
         """Test cache discovery result is no-op."""
         mock_result = FlextOracleWmsDiscoveryResult(
             entities=[],
@@ -1319,19 +1282,17 @@ class TestFlextOracleWmsEntityDiscovery:
         )
 
         # Should not raise any errors
-        await self.discovery._cache_discovery_result("test_key", mock_result)
+        self.discovery._cache_discovery_result("test_key", mock_result)
 
-    @pytest.mark.asyncio
-    async def test_get_cached_entity_not_implemented(self) -> None:
+    def test_get_cached_entity_not_implemented(self) -> None:
         """Test cached entity returns not implemented."""
-        result = await self.discovery._get_cached_entity("test_key")
+        result = self.discovery._get_cached_entity("test_key")
 
         assert result.is_failure
         assert result.error is not None
         assert "Cache not implemented" in result.error
 
-    @pytest.mark.asyncio
-    async def test_cache_entity_result_no_op(self) -> None:
+    def test_cache_entity_result_no_op(self) -> None:
         """Test cache entity result is no-op."""
         mock_entity = FlextOracleWmsEntity(
             name="test",
@@ -1340,7 +1301,7 @@ class TestFlextOracleWmsEntityDiscovery:
         )
 
         # Should not raise any errors
-        await self.discovery._cache_entity_result("test_key", mock_entity)
+        self.discovery._cache_entity_result("test_key", mock_entity)
 
 
 class TestFactoryFunction:
@@ -1348,7 +1309,7 @@ class TestFactoryFunction:
 
     def test_create_entity_discovery_default(self) -> None:
         """Test creating entity discovery with default parameters."""
-        mock_api_client = AsyncMock()
+        mock_api_client = Mock()
 
         discovery = FlextOracleWmsEntityDiscovery(
             api_client=mock_api_client,
@@ -1362,7 +1323,7 @@ class TestFactoryFunction:
 
     def test_create_entity_discovery_custom(self) -> None:
         """Test creating entity discovery with custom parameters."""
-        mock_api_client = AsyncMock()
+        mock_api_client = Mock()
 
         discovery = FlextOracleWmsEntityDiscovery(
             api_client=mock_api_client,
@@ -1374,7 +1335,7 @@ class TestFactoryFunction:
 
     def test_create_entity_discovery_no_cache(self) -> None:
         """Test creating entity discovery without caching."""
-        mock_api_client = AsyncMock()
+        mock_api_client = Mock()
 
         discovery = FlextOracleWmsEntityDiscovery(
             api_client=mock_api_client,
@@ -1389,14 +1350,13 @@ class TestErrorHandling:
 
     def setup_method(self) -> None:
         """Set up test fixtures."""
-        self.mock_api_client = AsyncMock()
+        self.mock_api_client = Mock()
         self.discovery = FlextOracleWmsEntityDiscovery(
             api_client=self.mock_api_client,
             environment="test",
         )
 
-    @pytest.mark.asyncio
-    async def test_discover_entities_exception(self) -> None:
+    def test_discover_entities_exception(self) -> None:
         """Test discover_entities handles exceptions."""
         # Mock the cache manager to simulate an error
         with patch.object(self.discovery, "cache_manager") as mock_cache:
@@ -1408,13 +1368,12 @@ class TestErrorHandling:
             with patch.object(self.discovery, "api_client") as mock_api:
                 mock_api.get.side_effect = Exception("API error")
 
-                result = await self.discovery.discover_entities()
+                result = self.discovery.discover_entities()
                 assert not result.success
                 assert result.error is not None
                 assert "Discover entities failed" in result.error
 
-    @pytest.mark.asyncio
-    async def test_discover_entity_schema_exception(self) -> None:
+    def test_discover_entity_schema_exception(self) -> None:
         """Test discover_entity_schema handles exceptions."""
         with patch.object(
             self.discovery.schema_processor,
@@ -1424,18 +1383,16 @@ class TestErrorHandling:
 
             # Should raise exception via handle_operation_exception
             with pytest.raises(Exception):
-                await self.discovery.discover_entity_schema("test", [])
+                self.discovery.discover_entity_schema("test", [])
 
-    @pytest.mark.asyncio
-    async def test_parse_entities_response_exception(self) -> None:
+    def test_parse_entities_response_exception(self) -> None:
         """Test parse_entities_response handles exceptions."""
         # This test is disabled as the method doesn't exist in current implementation
         pytest.skip(
             "Method parse_entities_response not implemented in current architecture",
         )
 
-    @pytest.mark.asyncio
-    async def test_extract_entity_schema_exception(self) -> None:
+    def test_extract_entity_schema_exception(self) -> None:
         """Test _extract_entity_schema handles exceptions."""
         # Mock the method to raise an exception during field inference
         with patch.object(self.discovery, "_infer_field_type") as mock_infer:
@@ -1445,7 +1402,7 @@ class TestErrorHandling:
 
             # Should raise exception via handle_operation_exception
             with pytest.raises(Exception):
-                await self.discovery._extract_entity_schema(
+                self.discovery._extract_entity_schema(
                     response_data,
                     "test",
                     "/api/test",
@@ -1457,7 +1414,7 @@ class TestEdgeCases:
 
     def setup_method(self) -> None:
         """Set up test fixtures."""
-        self.mock_api_client = AsyncMock()
+        self.mock_api_client = Mock()
         self.discovery = FlextOracleWmsEntityDiscovery(
             api_client=self.mock_api_client,
             environment="",  # Edge case: empty environment
@@ -1471,8 +1428,7 @@ class TestEdgeCases:
             endpoint.startswith("/") for endpoint in self.discovery.discovery_endpoints
         )
 
-    @pytest.mark.asyncio
-    async def test_discover_entities_empty_response(self) -> None:
+    def test_discover_entities_empty_response(self) -> None:
         """Test discovery with empty response from all endpoints."""
         with patch.object(
             EndpointDiscoveryStrategy,
@@ -1480,7 +1436,7 @@ class TestEdgeCases:
         ) as mock_step:
             mock_step.return_value = FlextResult[None].ok(data=False)
 
-            result = await self.discovery.discover_entities()
+            result = self.discovery.discover_entities()
 
             assert result.success
             assert result.data.total_count == 0

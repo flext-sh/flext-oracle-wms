@@ -46,21 +46,21 @@ class FlextHttpClient:
         self.verify_ssl = verify_ssl
         self._client: FlextApiClient | None = None
 
-    async def __aenter__(self) -> Self:
-        """Async context manager entry."""
-        await self._ensure_client()
+    def __aenter__(self) -> Self:
+        """Context manager entry."""
+        self._ensure_client()
         return self
 
-    async def __aexit__(
+    def __aexit__(
         self,
         exc_type: object,
         exc_val: object,
         exc_tb: object,
     ) -> None:
-        """Async context manager exit."""
-        await self.close()
+        """Context manager exit."""
+        self.close()
 
-    async def _ensure_client(self) -> None:
+    def _ensure_client(self) -> None:
         """Ensure HTTP client is initialized."""
         if self._client is None:
             # Use flext-api foundation instead of direct httpx
@@ -71,14 +71,14 @@ class FlextHttpClient:
                 verify_ssl=self.verify_ssl,
             )
 
-    async def close(self) -> None:
+    def close(self) -> None:
         """Close HTTP client."""
         if self._client is not None:
             # FlextApiClient handles cleanup internally
-            await self._client.close() if hasattr(self._client, "close") else None
+            self._client.close() if hasattr(self._client, "close") else None
             self._client = None
 
-    async def get(
+    def get(
         self,
         path: str,
         params: dict[str, str | int | float] | None = None,
@@ -96,7 +96,7 @@ class FlextHttpClient:
 
         """
         try:
-            await self._ensure_client()
+            self._ensure_client()
             if self._client is None:
                 return FlextResult[FlextOracleWmsTypes.Core.Dict].fail(
                     "Client not initialized"
@@ -108,7 +108,7 @@ class FlextHttpClient:
                 request_headers.update(headers)
 
             # Use flext-api client for HTTP requests
-            response_result = await self._client.request(
+            response_result = self._client.request(
                 "GET",
                 path,
                 headers=request_headers,
@@ -150,7 +150,7 @@ class FlextHttpClient:
                 f"Request error: {e}"
             )
 
-    async def post(
+    def post(
         self,
         path: str,
         data: dict[str, object] | None = None,
@@ -170,7 +170,7 @@ class FlextHttpClient:
 
         """
         try:
-            await self._ensure_client()
+            self._ensure_client()
             if self._client is None:
                 return FlextResult[FlextOracleWmsTypes.Core.Dict].fail(
                     "Client not initialized"
@@ -189,7 +189,7 @@ class FlextHttpClient:
             elif data:
                 request_body = data
 
-            response_result = await self._client.request(
+            response_result = self._client.request(
                 "POST",
                 path,
                 headers=request_headers,
@@ -231,7 +231,7 @@ class FlextHttpClient:
                 f"Request error: {e}"
             )
 
-    async def put(
+    def put(
         self,
         path: str,
         data: dict[str, object] | None = None,
@@ -251,7 +251,7 @@ class FlextHttpClient:
 
         """
         try:
-            await self._ensure_client()
+            self._ensure_client()
             if self._client is None:
                 return FlextResult[FlextOracleWmsTypes.Core.Dict].fail(
                     "Client not initialized"
@@ -270,7 +270,7 @@ class FlextHttpClient:
             elif data:
                 request_body = data
 
-            response_result = await self._client.request(
+            response_result = self._client.request(
                 "PUT",
                 path,
                 headers=request_headers,
@@ -312,7 +312,7 @@ class FlextHttpClient:
                 f"Unexpected error: {e}"
             )
 
-    async def delete(
+    def delete(
         self,
         path: str,
         headers: dict[str, str] | None = None,
@@ -328,7 +328,7 @@ class FlextHttpClient:
 
         """
         try:
-            await self._ensure_client()
+            self._ensure_client()
             if self._client is None:
                 return FlextResult[FlextOracleWmsTypes.Core.Dict].fail(
                     "Client not initialized"
@@ -338,7 +338,7 @@ class FlextHttpClient:
             if headers:
                 request_headers.update(headers)
 
-            response_result: FlextResult[object] = await self._client.delete(
+            response_result: FlextResult[object] = self._client.delete(
                 path, headers=request_headers
             )
 

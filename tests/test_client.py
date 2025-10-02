@@ -101,7 +101,7 @@ class TestClientSimpleNew:
         """Test client stop method exists."""
         client = FlextOracleWmsClient(self.config)
 
-        # Test that stop method exists and is callable (async)
+        # Test that stop method exists and is callable ()
         assert hasattr(client, "stop")
         assert callable(client.stop)
 
@@ -117,7 +117,7 @@ class TestClientSimpleNew:
         """Test entity discovery method exists."""
         client = FlextOracleWmsClient(self.config)
 
-        # Test that the method exists and is callable (async)
+        # Test that the method exists and is callable ()
         assert hasattr(client, "discover_entities")
         assert callable(client.discover_entities)
 
@@ -188,7 +188,7 @@ class TestClientSimpleNew:
         client = FlextOracleWmsClient(self.config)
 
         # This should return a result object, not raise an exception
-        # Note: health_check is async, so we test that the method exists
+        # Note: health_check is , so we test that the method exists
         assert hasattr(client, "health_check")
         assert callable(client.health_check)
 

@@ -4,8 +4,6 @@ Copyright (c) 2025 FLEXT Team. All rights reserved.
 SPDX-License-Identifier: MIT
 """
 
-import pytest
-
 from flext_core import FlextTypes
 from flext_oracle_wms import (
     FlextOracleWmsDataFlattener,
@@ -34,8 +32,7 @@ class TestFlextOracleWmsDataFlattener:
         assert flattener.max_depth == 3
         assert flattener.preserve_lists is False
 
-    @pytest.mark.asyncio
-    async def test_flatten_simple_record(self) -> None:
+    def test_flatten_simple_record(self) -> None:
         """Test flattening a simple record."""
         flattener = FlextOracleWmsDataFlattener()
         record: FlextTypes.Core.Dict = {
@@ -50,8 +47,7 @@ class TestFlextOracleWmsDataFlattener:
         assert result[0]["id"] == "123"
         assert result[0]["name"] == "Test Item"
 
-    @pytest.mark.asyncio
-    async def test_flatten_nested_record(self) -> None:
+    def test_flatten_nested_record(self) -> None:
         """Test flattening a nested record."""
         flattener = FlextOracleWmsDataFlattener()
         record: FlextTypes.Core.Dict = {
@@ -72,8 +68,7 @@ class TestFlextOracleWmsDataFlattener:
         assert flattened["details_category_id"] == "cat1"
         assert flattened["details_category_name"] == "Category 1"
 
-    @pytest.mark.asyncio
-    async def test_unflatten_record(self) -> None:
+    def test_unflatten_record(self) -> None:
         """Test unflattening a flattened record."""
         flattener = FlextOracleWmsDataFlattener()
         flattened_record: FlextTypes.Core.Dict = {
@@ -83,7 +78,7 @@ class TestFlextOracleWmsDataFlattener:
             "details_category_name": "Category 1",
         }
 
-        result = await flattener.unflatten_records([flattened_record])
+        result = flattener.unflatten_records([flattened_record])
         assert result.success
         assert result.data is not None
         assert len(result.data) == 1
@@ -91,8 +86,7 @@ class TestFlextOracleWmsDataFlattener:
         assert unflattened["id"] == "123"
         # Note: Current implementation uses dot notation, not the original nested structure
 
-    @pytest.mark.asyncio
-    async def test_get_flattening_stats(self) -> None:
+    def test_get_flattening_stats(self) -> None:
         """Test getting flattening statistics."""
         flattener = FlextOracleWmsDataFlattener()
         records: list[FlextTypes.Core.Dict] = [
@@ -101,7 +95,7 @@ class TestFlextOracleWmsDataFlattener:
             {"id": "3", "info": {"nested": {"deep": "value"}}},
         ]
 
-        result = await flattener.get_flattening_stats(records)
+        result = flattener.get_flattening_stats(records)
         assert result.success
         assert result.data is not None
         stats = result.data
@@ -135,8 +129,7 @@ class TestFlattenerFactoryFunction:
 class TestFlattenerErrorHandling:
     """Test error handling in flattener operations."""
 
-    @pytest.mark.asyncio
-    async def test_flatten_empty_records(self) -> None:
+    def test_flatten_empty_records(self) -> None:
         """Test flattening empty records list."""
         flattener = FlextOracleWmsDataFlattener()
 
@@ -144,22 +137,20 @@ class TestFlattenerErrorHandling:
         assert isinstance(result, list)
         assert len(result) == 0
 
-    @pytest.mark.asyncio
-    async def test_unflatten_empty_records(self) -> None:
+    def test_unflatten_empty_records(self) -> None:
         """Test unflattening empty records list."""
         flattener = FlextOracleWmsDataFlattener()
 
-        result = await flattener.unflatten_records([])
+        result = flattener.unflatten_records([])
         assert result.success
         assert result.data is not None
         assert len(result.data) == 0
 
-    @pytest.mark.asyncio
-    async def test_stats_empty_records(self) -> None:
+    def test_stats_empty_records(self) -> None:
         """Test getting stats for empty records."""
         flattener = FlextOracleWmsDataFlattener()
 
-        result = await flattener.get_flattening_stats([])
+        result = flattener.get_flattening_stats([])
         assert result.success
         assert result.data is not None
         stats = result.data

@@ -10,7 +10,7 @@
 
 ### Prerequisites
 
-- **Python 3.13+** - Required for modern async patterns and type safety
+- **Python 3.13+** - Required for modern patterns and type safety
 - **Oracle WMS Cloud Access** - Valid Oracle WMS Cloud instance with API access
 - **FLEXT Ecosystem** - Integration with flext-core patterns
 

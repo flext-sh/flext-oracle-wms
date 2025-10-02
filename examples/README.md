@@ -54,7 +54,7 @@ config = FlextOracleWmsClientConfig(
 client = FlextOracleWmsClient(config)
 
 # Discover available entities
-result = await client.discover_entities()
+result = client.discover_entities()
 if result.success:
     print(f"Found {len(result.data)} WMS entities")
     for entity in result.data:
@@ -96,16 +96,15 @@ Usage:
     python [example_file.py]:
 """
 
-import asyncio
 from flext_oracle_wms import FlextOracleWmsClient, FlextOracleWmsClientConfig
 
-async def main():
+def main():
     """Main example function with comprehensive error handling."""
     # Implementation here
     pass
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    run(main())
 ```
 
 ## 🔧 **Prerequisites**

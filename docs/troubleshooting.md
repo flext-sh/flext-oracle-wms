@@ -132,7 +132,7 @@ def test_real_connection():
 **Symptom**: Tests intentionally pass wrong types to test validation
 
 ```python
-await filter_engine.filter_records("not_a_list", {})  # Intentionally wrong type
+filter_engine.filter_records("not_a_list", {})  # Intentionally wrong type
 ```
 
 **Solution**: These are negative tests. Use `# type: ignore` if needed for intentional type violations in tests

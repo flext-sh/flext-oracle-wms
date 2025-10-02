@@ -202,14 +202,23 @@ class FlextOracleWmsConfig(FlextConfig):
 
     @model_validator(mode="after")
     def validate_oracle_wms_configuration_consistency(self) -> Self:
-        """Validate Oracle WMS configuration consistency."""
-        # Validate authentication based on method
+        """Validate Oracle WMS configuration consistency.
+
+        Note: Authentication validation relaxed - auth is now optional when using
+        flext-auth providers directly via FlextOracleWmsClient(auth_provider=...).
+        """
+        # Authentication is now optional (can be provided via auth_provider parameter)
+        # Only warn if using BASIC auth without credentials
         if self.auth_method == "BASIC" and (
             not self.oracle_wms_username
             or not self.oracle_wms_password.get_secret_value()
         ):
-            msg = "Oracle WMS username and password required for basic auth"
-            raise ValueError(msg)
+            warnings.warn(
+                "BASIC auth method specified but username/password missing. "
+                "Either provide credentials or use FlextOracleWmsClient with auth_provider parameter.",
+                UserWarning,
+                stacklevel=2,
+            )
 
         # Validate mock usage
         if self.oracle_wms_use_mock and not self.oracle_wms_base_url:
@@ -233,17 +242,12 @@ class FlextOracleWmsConfig(FlextConfig):
         return self
 
     def validate_business_rules(self) -> FlextResult[None]:
-        """Validate Oracle WMS specific business rules."""
-        try:
-            # Validate authentication requirements
-            if self.auth_method == "BASIC" and (
-                not self.oracle_wms_username
-                or not self.oracle_wms_password.get_secret_value()
-            ):
-                return FlextResult[None].fail(
-                    "Basic auth requires username and password"
-                )
+        """Validate Oracle WMS specific business rules.
 
+        Note: Authentication validation relaxed - auth is now optional when using
+        flext-auth providers directly.
+        """
+        try:
             # Validate connection settings
             if self.oracle_wms_timeout < MIN_TIMEOUT_SECONDS:
                 return FlextResult[None].fail(
@@ -303,14 +307,32 @@ class FlextOracleWmsConfig(FlextConfig):
         }
 
     def get_auth_headers(self) -> dict[str, str]:
-        """Get authentication headers based on configuration."""
-        headers: dict[str, str] = {}
+        """DEPRECATED: Use flext-auth providers instead.
 
+        This method is deprecated and will be removed in a future version.
+        Use flext-auth providers (BasicAuthProvider, ApiKeyAuthProvider, etc.) instead.
+
+        Example:
+            >>> from flext_auth.providers import BasicAuthProvider
+            >>> provider = BasicAuthProvider(
+            ...     config={
+            ...         "username": config.oracle_wms_username,
+            ...         "password": config.oracle_wms_password.get_secret_value(),
+            ...     }
+            ... )
+
+        """
+        warnings.warn(
+            "get_auth_headers() is deprecated. Use flext-auth providers instead.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+
+        headers: dict[str, str] = {}
         if self.auth_method == "BASIC":
             credentials = f"{self.oracle_wms_username}:{self.oracle_wms_password.get_secret_value()}"
             encoded_credentials = base64.b64encode(credentials.encode()).decode()
             headers["Authorization"] = f"Basic {encoded_credentials}"
-
         return headers
 
     def build_endpoint_url(self, path: str) -> str:
@@ -423,11 +445,13 @@ class FlextOracleWmsConfig(FlextConfig):
 
     @classmethod
     def get_global_instance(cls) -> FlextOracleWmsConfig:
-        """Get the global singleton instance using enhanced FlextConfig pattern."""
-        return cast(
-            "FlextOracleWmsConfig",
-            cls.get_or_create_shared_instance(project_name="flext-oracle-wms"),
-        )
+        """Get the global singleton instance using enhanced FlextConfig pattern.
+
+        Note: This method is inherited from FlextConfig and should not be overridden.
+        FlextConfig.get_global_instance() already handles the singleton pattern correctly.
+        """
+        # Call parent implementation directly - DO NOT call get_or_create_shared_instance
+        return cast("FlextOracleWmsConfig", super().get_global_instance())
 
     @classmethod
     def get_oracle_wms_global_instance(cls) -> FlextOracleWmsConfig:

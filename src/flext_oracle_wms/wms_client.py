@@ -1,29 +1,24 @@
-"""Oracle WMS Client - Consolidated Client and Authentication.
+"""Oracle WMS Client - Integrated with flext-auth.
 
 Copyright (c) 2025 FLEXT Contributors
 SPDX-License-Identifier: MIT
 
-Consolidated Oracle WMS client implementation combining client.py + authentication.py.
-This module provides the primary client interface with integrated authentication support.
+Oracle WMS client implementation using flext-api and flext-auth for HTTP and authentication.
+This module provides the primary client interface with flext-auth provider integration.
 """
 
 from __future__ import annotations
 
-import base64
-import inspect
 from dataclasses import dataclass
 from datetime import UTC, datetime
-from typing import ClassVar, override
+from typing import override
 from urllib.parse import urlencode
 
-from pydantic import Field
+from flext_api.models import FlextApiModels
+from flext_auth.providers import BaseAuthProvider
 
-from flext_core import (
-    FlextConfig,
-    FlextConstants,
-    FlextLogger,
-    FlextResult,
-)
+from flext_auth import HttpAuthMiddleware
+from flext_core import FlextConstants, FlextLogger, FlextResult
 from flext_oracle_wms.config import FlextOracleWmsConfig
 from flext_oracle_wms.http_client import FlextHttpClient, create_flext_http_client
 from flext_oracle_wms.typings import FlextOracleWmsTypes
@@ -33,373 +28,12 @@ from flext_oracle_wms.wms_api import (
     FlextOracleWmsApiEndpoint,
     get_mock_server,
 )
-from flext_oracle_wms.wms_constants import (
-    FlextOracleWmsConstants,
-    OracleWMSAuthMethod,
-)
 from flext_oracle_wms.wms_exceptions import (
-    FlextOracleWmsAuthenticationError,
     FlextOracleWmsConnectionError,
-    FlextOracleWmsError,
 )
 from flext_oracle_wms.wms_models import TOracleWmsEntityName
 
 logger = FlextLogger(__name__)
-
-
-class FlextOracleWmsAuthConfig(FlextConfig):
-    """Oracle WMS authentication configuration using flext-core singleton pattern."""
-
-    # Class attribute for singleton instance
-    _auth_global_instance: ClassVar[FlextOracleWmsAuthConfig | None] = None
-
-    auth_type: OracleWMSAuthMethod = Field(
-        default=OracleWMSAuthMethod.BASIC,
-        description="Authentication method",
-    )
-    username: str = Field(default="", description="Username for basic auth")
-    password: str = Field(default="", description="Password for basic auth")
-    token: str | None = Field(default="", description="Bearer token")
-    api_key: str | None = Field(default=None, description="API key")
-    auth_timeout: float = Field(
-        default=FlextOracleWmsConstants.Api.DEFAULT_TIMEOUT,
-        description="Request timeout in seconds",
-    )
-
-    def validate_business_rules(self) -> FlextResult[None]:
-        """Validate authentication configuration business rules."""
-        validation_errors: list[str] = []
-
-        # Validate authentication based on method
-        if self.auth_type == OracleWMSAuthMethod.BASIC:
-            if not self.username or not self.password:
-                validation_errors.append(
-                    "Username and password required for basic auth",
-                )
-        elif self.auth_type == OracleWMSAuthMethod.OAUTH2 and not self.token:
-            validation_errors.append("Token required for bearer auth")
-        elif self.auth_type == OracleWMSAuthMethod.API_KEY and not self.api_key:
-            validation_errors.append("API key required in header for API key auth")
-
-        if validation_errors:
-            return FlextResult[None].fail("; ".join(validation_errors))
-        return FlextResult[None].ok(None)
-
-    @classmethod
-    def get_global_instance(cls, **kwargs: object) -> FlextOracleWmsAuthConfig:
-        """Get the global singleton authentication configuration instance.
-
-        Args:
-            **kwargs: Configuration parameters to override defaults
-
-        Returns:
-            FlextOracleWmsAuthConfig: The global authentication configuration instance
-
-        """
-        # Check if we already have a global instance
-        if cls._auth_global_instance is not None:
-            # Update existing instance with new parameters if provided
-            if kwargs:
-                for key, value in kwargs.items():
-                    if hasattr(cls._auth_global_instance, key):
-                        setattr(cls._auth_global_instance, key, value)
-            return cls._auth_global_instance
-
-        # Create new instance with default values
-        config = cls()
-
-        # Set as global instance
-        cls._auth_global_instance = config
-        return config
-
-    @classmethod
-    def reset_global_instance(cls) -> None:
-        """Reset the global singleton authentication instance."""
-        if hasattr(cls, "_auth_global_instance"):
-            cls._auth_global_instance = None
-
-    @override
-    def __str__(self) -> str:
-        """String representation of authentication configuration."""
-        safe_password = "***" if self.password else ""
-        safe_token = "***" if self.token else ""
-        safe_key = "***" if self.api_key else ""
-        return (
-            f"FlextOracleWmsAuthConfig(auth_type={self.auth_type}, "
-            f"username='{self.username}', password='{safe_password}', "
-            f"token='{safe_token}', api_key='{safe_key}', timeout={self.auth_timeout})"
-        )
-
-    def model_post_init(self, __context: object, /) -> None:  # pydantic v2 hook
-        """Post-init hook for authentication configuration."""
-        return
-
-
-class FlextOracleWmsAuthenticator:
-    """Oracle WMS authenticator using flext-core patterns."""
-
-    @override
-    def __init__(self, config: FlextOracleWmsAuthConfig) -> None:
-        """Initialize authenticator with configuration."""
-        self.config = config
-        validation_result: FlextResult[object] = self.config.validate_business_rules()
-        if not validation_result.success:
-            msg: str = (
-                f"Invalid authentication configuration: {validation_result.error}"
-            )
-            raise FlextOracleWmsAuthenticationError(msg)
-        logger.debug("Oracle WMS authenticator initialized", auth_type=config.auth_type)
-
-    async def get_auth_headers(
-        self,
-        extra_headers: FlextOracleWmsTypes.Core.AuthDict | None = None,
-    ) -> (
-        FlextResult[FlextOracleWmsTypes.Core.AuthDict]
-        | FlextOracleWmsTypes.Core.AuthDict
-    ):
-        """Get authentication headers based on configuration."""
-        try:
-            headers: dict[str, str] = {}
-
-            if self.config.auth_type == OracleWMSAuthMethod.BASIC:
-                credentials = f"{self.config.username}:{self.config.password}"
-                encoded = base64.b64encode(credentials.encode()).decode()
-                headers[FlextConstants.Platform.HEADER_AUTHORIZATION] = (
-                    f"Basic {encoded}"
-                )
-
-            elif self.config.auth_type == OracleWMSAuthMethod.BEARER:
-                headers[FlextConstants.Platform.HEADER_AUTHORIZATION] = (
-                    f"Bearer {self.config.token}"
-                )
-
-            elif self.config.auth_type == OracleWMSAuthMethod.API_KEY:
-                if self.config.api_key:
-                    headers[FlextConstants.Platform.HEADER_API_KEY] = (
-                        self.config.api_key
-                    )
-
-            headers[FlextConstants.Platform.HEADER_CONTENT_TYPE] = (
-                FlextConstants.Platform.MIME_TYPE_JSON
-            )
-            headers[FlextConstants.Platform.HEADER_ACCEPT] = (
-                FlextConstants.Platform.MIME_TYPE_JSON
-            )
-            if isinstance(extra_headers, dict):
-                headers.update(extra_headers)
-            # Some test suites expect a FlextResult, others expect dict directly.
-            # Detect the caller test file and adapt the return type accordingly.
-            try:  # pragma: no cover - behavior validated via tests
-                for fr in inspect.stack():
-                    fname = fr.filename
-                    if fname.endswith(
-                        (
-                            "test_authentication_coverage.py",
-                            "test_authentication.py",
-                            "test_authentication_simple.py",
-                            "test_authentication_simple_coverage.py",
-                        ),
-                    ):
-                        return FlextResult[FlextOracleWmsTypes.Core.AuthDict].ok(
-                            headers
-                        )
-            except Exception as e:
-                logger.debug("Failed to create FlextResult: %s", e)
-            return headers
-
-        except (ValueError, TypeError, AttributeError, KeyError) as e:
-            msg = f"Generate auth headers failed: {e}"
-            raise FlextOracleWmsAuthenticationError(msg) from e
-
-    # Back-compat private method used in some tests to patch validation requests
-    async def _make_validation_request(
-        self,
-    ) -> FlextResult[FlextOracleWmsTypes.Core.Dict]:
-        try:
-            # Simulate a lightweight validation call result
-            return FlextResult[FlextOracleWmsTypes.Core.Dict].ok({
-                "status": "authenticated"
-            })
-        except Exception as e:  # pragma: no cover - defensive
-            return FlextResult[FlextOracleWmsTypes.Core.Dict].fail(str(e))
-
-    async def validate_credentials(self) -> FlextResult[bool]:
-        """Validate credentials."""
-        try:
-            # Basic validation - actual validation would be against Oracle WMS API
-            if self.config.auth_type == OracleWMSAuthMethod.BASIC:
-                if not self.config.username or not self.config.password:
-                    return FlextResult[bool].fail("Invalid basic auth credentials")
-            elif self.config.auth_type == OracleWMSAuthMethod.BEARER:
-                if (
-                    not self.config.token
-                    or len(self.config.token)
-                    < FlextOracleWmsConstants.Authentication.MIN_TOKEN_LENGTH
-                ):
-                    return FlextResult[bool].fail("Invalid bearer token")
-            elif self.config.auth_type == OracleWMSAuthMethod.API_KEY and (
-                not self.config.api_key
-                or len(self.config.api_key)
-                < FlextOracleWmsConstants.Authentication.MIN_API_KEY_LENGTH
-            ):
-                return FlextResult[bool].fail("Invalid API key")
-
-            return FlextResult[bool].ok(data=True)
-
-        except (
-            ConnectionError,
-            TimeoutError,
-            OSError,
-            TypeError,
-            ValueError,
-            AttributeError,
-        ) as e:
-            return FlextResult[bool].fail(f"Validate credentials failed: {e}")
-
-
-class FlextOracleWmsAuthPlugin:
-    """Oracle WMS authentication plugin."""
-
-    @override
-    def __init__(
-        self,
-        authenticator: FlextOracleWmsAuthenticator | None = None,
-        name: str = "auth",
-        version: str = FlextConstants.Core.VERSION,
-    ) -> None:
-        """Initialize authentication plugin."""
-        self.name = name
-        self.version = version
-        self.authenticator: FlextOracleWmsAuthenticator | None = authenticator
-
-    async def initialize(
-        self, context: FlextOracleWmsTypes.Core.Dict
-    ) -> FlextResult[None]:
-        """Initialize authentication plugin with context."""
-        try:
-            # Create config from context with proper type extraction
-            auth_type = context.get("auth_type", OracleWMSAuthMethod.BASIC)
-            username = str(context.get("username", ""))
-            password = str(context.get("password", ""))
-            token = str(context.get("token", ""))
-            api_key = str(context.get("api_key", ""))
-            timeout_val = context.get(
-                "timeout", FlextOracleWmsConstants.Api.DEFAULT_TIMEOUT
-            )
-            timeout = (
-                float(timeout_val)
-                if isinstance(timeout_val, (int, float, str))
-                else FlextOracleWmsConstants.Api.DEFAULT_TIMEOUT
-            )
-
-            auth_config = FlextOracleWmsAuthConfig(
-                auth_type=auth_type
-                if isinstance(auth_type, OracleWMSAuthMethod)
-                else OracleWMSAuthMethod.BASIC,
-                username=username,
-                password=password,
-                token=token,
-                api_key=api_key,
-                auth_timeout=timeout,
-            )
-            self.authenticator = FlextOracleWmsAuthenticator(auth_config)
-            return FlextResult[None].ok(None)
-        except (TypeError, ValueError, AttributeError, RuntimeError) as e:
-            return FlextResult[None].fail(f"Auth plugin initialization failed: {e}")
-
-    def _raise_auth_error(self, message: str) -> None:
-        """Helper to raise authentication error in inner function."""
-        raise FlextOracleWmsAuthenticationError(message)
-
-    # Minimal before/after hooks to satisfy interface used by tests
-    async def before_request(
-        self,
-        request: FlextOracleWmsTypes.Core.Dict | object,
-    ) -> FlextOracleWmsTypes.Core.Dict | object:
-        """Process request before sending to add authentication headers.
-
-        Args:
-            request: Request data to process
-
-        Returns:
-            Processed request with authentication headers
-
-        """
-        if self.authenticator is None:
-            msg = "Authenticator not initialized"
-            raise FlextOracleWmsAuthenticationError(msg)
-        headers = await self.authenticator.get_auth_headers()
-        # Normalize possible FlextResult return to dict
-        try:
-            if isinstance(headers, FlextResult):
-                if not headers.success:
-                    error_msg = headers.error or "Auth headers failed"
-                    self._raise_auth_error(error_msg)
-                headers = headers.value
-        except Exception:
-            # If flext_core not available here, log and proceed; tests cover both paths
-            logger.debug(
-                "flext_core unavailable during auth header normalization; proceeding with dict headers",
-            )
-        # Handle dict-like requests (most common case)
-        if isinstance(request, dict):
-            headers_value: dict[str, object] = request.get("headers", {})
-            existing_headers = (
-                dict(headers_value) if isinstance(headers_value, dict) else {}
-            )
-            if isinstance(headers, dict):
-                existing_headers.update(headers)
-            request["headers"] = existing_headers
-            return request
-
-        # Handle object-like requests with headers attribute
-        if hasattr(request, "headers") and isinstance(
-            getattr(request, "headers", None),
-            dict,
-        ):
-            if isinstance(headers, dict):
-                headers_attr = request.headers
-                if isinstance(headers_attr, dict):
-                    headers_attr.update(headers)
-            return request
-        # This handles edge case where request is neither object with headers nor dict
-        msg = "Request type not supported for header injection"
-        raise FlextOracleWmsError(msg)
-
-    async def after_response(
-        self,
-        response: FlextOracleWmsTypes.Core.Dict,
-    ) -> FlextOracleWmsTypes.Core.Dict:
-        """Process response after receiving from server.
-
-        Args:
-            response: Response data to process
-
-        Returns:
-            Processed response data
-
-        """
-        status = getattr(response, "status_code", 200)
-        if isinstance(status, int) and status in {401, 403}:
-            msg = "Authentication failed"
-            raise FlextOracleWmsAuthenticationError(msg)
-        return response
-
-    @override
-    def __str__(self) -> str:
-        """Return string representation of FlextOracleWmsAuthPlugin."""
-        auth_type_str = "unknown"
-        if (
-            self.authenticator
-            and getattr(self.authenticator, "config", None) is not None
-        ):
-            auth_type = getattr(self.authenticator.config, "auth_type", None)
-            auth_type_str = (
-                getattr(auth_type, "value", str(auth_type)).lower()
-                if auth_type is not None
-                else "unknown"
-            )
-        return f"FlextOracleWmsAuthPlugin(name={self.name}, version={self.version}, auth_type={auth_type_str})"
 
 
 @dataclass
@@ -460,11 +94,17 @@ class FlextOracleWmsClient:
     """
 
     @override
-    def __init__(self, config: FlextOracleWmsConfig | None = None) -> None:
-        """Initialize Oracle WMS client with configuration.
+    def __init__(
+        self,
+        config: FlextOracleWmsConfig | None = None,
+        auth_provider: BaseAuthProvider | None = None,
+    ) -> None:
+        """Initialize Oracle WMS client with configuration and authentication provider.
 
         Args:
             config: Optional configuration instance. If None, uses global singleton.
+            auth_provider: Optional flext-auth provider for authentication.
+                          If None, client will operate without authentication.
 
         """
         # Use global singleton if no config provided
@@ -476,63 +116,46 @@ class FlextOracleWmsClient:
             self.config: FlextOracleWmsConfig = config
 
         self._api_client: FlextHttpClient | None = None
-        self._authenticator: FlextOracleWmsAuthenticator | None = None
+        self._auth_provider: BaseAuthProvider | None = auth_provider
+        self._auth_middleware: HttpAuthMiddleware | None = None
         # Back-compat internal attributes expected by some tests
         self._client: object | None = None
         self._discovered_entities: FlextOracleWmsTypes.Core.StringList = []
         self._auth_headers: FlextOracleWmsTypes.Core.Headers = {}
 
-        # Setup authentication using global config singleton
-        username = getattr(
-            self.config,
-            "oracle_wms_username",
-            getattr(self.config, "username", ""),
-        )
-        password = getattr(
-            self.config,
-            "oracle_wms_password",
-            getattr(self.config, "password", ""),
-        )
+        # Setup auth middleware if provider given
+        if self._auth_provider:
+            self._auth_middleware = HttpAuthMiddleware(
+                provider=self._auth_provider,
+                auto_refresh=True,
+                header_name="Authorization",
+            )
 
-        auth_config: dict[str, object] = FlextOracleWmsAuthConfig.get_global_instance()
-        # Update with actual values from config
-        auth_config.username = username
-        auth_config.password = password
-        auth_config.auth_type = getattr(
-            self.config,
-            "auth_method",
-            OracleWMSAuthMethod.BASIC,
-        )
-        self._authenticator = FlextOracleWmsAuthenticator(auth_config)
-
-    async def initialize(self) -> FlextResult[None]:
+    def initialize(self) -> FlextResult[None]:
         """Initialize the Oracle WMS client."""
         try:
-            # Get authentication headers
-            auth_headers: FlextOracleWmsTypes.Core.Headers = {}
-            if self._authenticator:
-                auth_result: FlextResult[
-                    object
-                ] = await self._authenticator.get_auth_headers()
-                # Handle both FlextResult and dict return types
-                if isinstance(auth_result, FlextResult):
-                    # FlextResult type
-                    if not auth_result.success:
-                        return FlextResult[None].fail(
-                            f"Authentication failed: {auth_result.error}",
-                        )
-                    if auth_result.value:
-                        auth_headers.update(auth_result.value)
-                        # Maintain back-compat attribute for tests
-                        self._auth_headers = dict(auth_result.value)
-                elif isinstance(auth_result, dict):
-                    # Direct dict type
-                    auth_headers.update(auth_result)
-                    self._auth_headers = dict(auth_result)
+            # Initialize auth headers (for backward compatibility)
+            auth_headers: FlextOracleWmsTypes.Core.Headers = {
+                FlextConstants.Platform.HEADER_CONTENT_TYPE: FlextConstants.Platform.MIME_TYPE_JSON,
+                FlextConstants.Platform.HEADER_ACCEPT: FlextConstants.Platform.MIME_TYPE_JSON,
+            }
+
+            # If auth middleware is configured, get initial auth headers
+            if self._auth_middleware and self._auth_provider:
+                # Create dummy request to get auth headers from middleware
+                dummy_request = FlextApiModels.HttpRequest(
+                    method="GET", url="/", headers=dict(auth_headers)
+                )
+
+                # Process request through middleware to add auth
+                auth_result = self._auth_middleware.process_request(dummy_request)
+                if auth_result.is_success:
+                    processed_request = auth_result.unwrap()
+                    if hasattr(processed_request, "headers"):
+                        auth_headers.update(processed_request.headers)
+                        self._auth_headers = dict(processed_request.headers)
 
             # Use modern factory function to create API client
-
-            # create_client returns FlextHttpClient directly (raises on failure)
             try:
                 self._api_client = create_flext_http_client(
                     base_url=self.config.oracle_wms_base_url,
@@ -544,10 +167,11 @@ class FlextOracleWmsClient:
                 error_msg = f"Failed to create API client: {e}"
                 raise FlextOracleWmsConnectionError(error_msg) from e
             logger.info(
-                "Oracle WMS client initialized with modern FlextApiClient patterns",
+                "Oracle WMS client initialized with flext-auth integration",
                 base_url=self.config.oracle_wms_base_url,
                 environment=self.config.extract_environment_from_url(),
                 verify_ssl=self.config.oracle_wms_verify_ssl,
+                has_auth=self._auth_middleware is not None,
             )
             # Back-compat pointer
             self._client = self._api_client
@@ -569,14 +193,14 @@ class FlextOracleWmsClient:
             return FlextResult[None].fail(f"Client initialization failed: {e}")
 
     # Back-compat: start/stop/health_check helpers expected by tests
-    async def start(self) -> FlextResult[None]:
+    def start(self) -> FlextResult[None]:
         """Start the Oracle WMS client and initialize connection.
 
         Returns:
             FlextResult indicating success or failure
 
         """
-        init = await self.initialize()
+        init = self.initialize()
         if not init.success:
             # Raise connection error to satisfy tests expecting exception
             msg = "Connection failed"
@@ -586,10 +210,10 @@ class FlextOracleWmsClient:
             # Try to call start if it exists (avoids hasattr issues with mocks)
             start_method = getattr(self._api_client, "start", None)
             if start_method is not None:
-                await start_method()
+                start_method()
         return FlextResult[None].ok(None)
 
-    async def stop(self) -> FlextResult[None]:
+    def stop(self) -> FlextResult[None]:
         """Stop the Oracle WMS client and cleanup resources.
 
         Returns:
@@ -598,12 +222,12 @@ class FlextOracleWmsClient:
         """
         try:
             if self._api_client and hasattr(self._api_client, "close"):
-                await self._api_client.close()
+                self._api_client.close()
             return FlextResult[None].ok(None)
         except Exception as e:
             return FlextResult[None].fail(f"Stop failed: {e}")
 
-    async def health_check(
+    def health_check(
         self,
     ) -> FlextResult[FlextOracleWmsTypes.Core.ApiResponseDict]:
         """Check the health status of the Oracle WMS client.
@@ -637,7 +261,7 @@ class FlextOracleWmsClient:
         health_data.setdefault("timestamp", datetime.now(UTC).isoformat())
         return FlextResult[FlextOracleWmsTypes.Core.ApiResponseDict].ok(health_data)
 
-    async def discover_entities(
+    def discover_entities(
         self,
     ) -> FlextResult[list[FlextOracleWmsTypes.Core.RecordDict]]:
         """Discover available Oracle WMS entities."""
@@ -683,7 +307,7 @@ class FlextOracleWmsClient:
             full_path = endpoint.get_full_path(
                 self.config.extract_environment_from_url(),
             )
-            response = await self._api_client.get(full_path)
+            response = self._api_client.get(full_path)
 
             if not response.success or not response.value:
                 return FlextResult[list[FlextOracleWmsTypes.Core.RecordDict]].fail(
@@ -708,7 +332,7 @@ class FlextOracleWmsClient:
             )
 
     # Private helper expected by some tests to be patchable
-    async def _call_api_direct(
+    def _call_api_direct(
         self,
         endpoint_path: str,
     ) -> FlextResult[FlextOracleWmsTypes.Core.ApiResponseDict]:
@@ -716,7 +340,7 @@ class FlextOracleWmsClient:
             return FlextResult[FlextOracleWmsTypes.Core.ApiResponseDict].fail(
                 "Client not initialized"
             )
-        response = await self._api_client.get(endpoint_path)
+        response = self._api_client.get(endpoint_path)
         if not response.success:
             return FlextResult[FlextOracleWmsTypes.Core.ApiResponseDict].fail(
                 response.error or "No response",
@@ -724,7 +348,7 @@ class FlextOracleWmsClient:
         body = response.value
         return FlextResult[FlextOracleWmsTypes.Core.ApiResponseDict].ok(body)
 
-    async def get_entity_data(
+    def get_entity_data(
         self,
         entity_name: TOracleWmsEntityName,
         params: FlextOracleWmsTypes.Core.FilterDict | None = None,
@@ -799,7 +423,7 @@ class FlextOracleWmsClient:
             # Build URL with query parameters
             if query_params:
                 full_path = f"{full_path}?{urlencode(query_params)}"
-            resp_result: FlextResult[object] = await self._api_client.get(full_path)
+            resp_result: FlextResult[object] = self._api_client.get(full_path)
 
             if not resp_result.success:
                 return FlextResult[
@@ -842,7 +466,7 @@ class FlextOracleWmsClient:
                 f"Get entity data for {entity_name} failed: {e}",
             )
 
-    async def call_api(
+    def call_api(
         self,
         api_name: str,
         **kwargs: object,
@@ -873,7 +497,7 @@ class FlextOracleWmsClient:
                     path_with_params = (
                         f"{prepared_call.full_path}?{urlencode(prepared_call.params)}"
                     )
-                response = await self._api_client.get(path_with_params)
+                response = self._api_client.get(path_with_params)
             elif (
                 prepared_call.method.upper() == FlextConstants.Platform.HTTP_METHOD_POST
             ):
@@ -894,7 +518,7 @@ class FlextOracleWmsClient:
                 request_data = (
                     json_payload if json_payload is not None else data_payload
                 )
-                response = await self._api_client.post(
+                response = self._api_client.post(
                     prepared_call.full_path,
                     json_data=request_data if isinstance(request_data, dict) else None,
                 )
@@ -996,7 +620,7 @@ class FlextOracleWmsClient:
         }
 
     # Minimal stubs for specialized WMS actions used in tests
-    async def ship_oblpn(
+    def ship_oblpn(
         self,
         *_args: object,
         **kwargs: object,
@@ -1011,9 +635,9 @@ class FlextOracleWmsClient:
             FlextResult containing API response
 
         """
-        return await self.call_api("ship_oblpn", **kwargs)
+        return self.call_api("ship_oblpn", **kwargs)
 
-    async def create_lpn(
+    def create_lpn(
         self,
         *_args: object,
         **kwargs: object,
@@ -1028,9 +652,9 @@ class FlextOracleWmsClient:
             FlextResult containing API response
 
         """
-        return await self.call_api("init_stage_interface", **kwargs)
+        return self.call_api("init_stage_interface", **kwargs)
 
-    async def update_oblpn_tracking_number(
+    def update_oblpn_tracking_number(
         self,
         *_args: object,
         **kwargs: object,
@@ -1045,7 +669,7 @@ class FlextOracleWmsClient:
             FlextResult containing API response
 
         """
-        return await self.call_api("update_oblpn_tracking_number", **kwargs)
+        return self.call_api("update_oblpn_tracking_number", **kwargs)
 
     def _prepare_api_call(
         self,
@@ -1077,7 +701,7 @@ class FlextOracleWmsClientMock:
         self.config: dict[str, object] = config
         self.mock_server = get_mock_server(config.extract_environment_from_url())
 
-    async def discover_entities(
+    def discover_entities(
         self,
     ) -> FlextResult[list[FlextOracleWmsTypes.Core.Dict]]:
         """Mock entity discovery."""
@@ -1093,7 +717,7 @@ class FlextOracleWmsClientMock:
             f"Mock discovery failed: {mock_result.error}",
         )
 
-    async def get_entity_data(
+    def get_entity_data(
         self,
         entity_name: TOracleWmsEntityName,
         params: FlextOracleWmsTypes.Core.Dict | None = None,
@@ -1129,28 +753,33 @@ class FlextOracleWmsClientMock:
 
 def create_oracle_wms_client(
     config: FlextOracleWmsConfig,
+    auth_provider: BaseAuthProvider | None = None,
 ) -> FlextOracleWmsClient:
-    """Create Oracle WMS client instance."""
-    return FlextOracleWmsClient(config)
+    """Create Oracle WMS client instance with flext-auth integration.
 
+    Args:
+        config: WMS configuration
+        auth_provider: Optional flext-auth provider (JwtAuthProvider, ApiKeyAuthProvider, BasicAuthProvider)
 
-# REMOVED: Helper functions eliminated in favor of direct class usage
-# Users should instantiate FlextOracleWmsAuthConfig directly:
-# FlextOracleWmsAuthConfig(auth_type=OracleWMSAuthMethod.BASIC, username=user, password ="pass")
+    Returns:
+        FlextOracleWmsClient instance with auth integration
+
+    Example:
+        >>> from flext_auth import JwtAuthProvider
+        >>> provider = JwtAuthProvider(config={"secret_key": "my-secret"})
+        >>> client = create_oracle_wms_client(wms_config, auth_provider=provider)
+
+    """
+    return FlextOracleWmsClient(config, auth_provider=auth_provider)
 
 
 __all__: FlextOracleWmsTypes.Core.StringList = [
-    # Authentication
-    "FlextOracleWmsAuthConfig",
-    "FlextOracleWmsAuthPlugin",
-    "FlextOracleWmsAuthenticator",
+    # Helper Classes
+    "ApiCallRequest",
     # Client
     "FlextOracleWmsClient",
     "FlextOracleWmsClientMock",
+    "PreparedApiCall",
     # Factory Functions
     "create_oracle_wms_client",
-    # REMOVED: Factory functions eliminated in favor of direct class usage
-    # "flext_oracle_wms_create_api_key_auth"
-    # "flext_oracle_wms_create_basic_auth"
-    # "flext_oracle_wms_create_bearer_auth"
 ]

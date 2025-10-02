@@ -92,7 +92,7 @@ Based on Oracle WMS best practices research:
 
 - `POST /lgfapi/v10/pick_confirm/` - Enhanced pick confirmation
 - `POST /lgfapi/v10/entity/inventory/bulk_update_inventory_attributes/` - Bulk operations
-- `POST /lgfapi/v10/data_extract/export_async_status` - Object store integration
+- `POST /lgfapi/v10/data_extract/export_status` - Object store integration
 
 ## Error Handling
 

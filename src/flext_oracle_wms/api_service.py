@@ -28,7 +28,7 @@ class OracleWmsApiService:
         self._api_client = api_client
         self._logger = FlextLogger(__name__)
 
-    async def call_api(
+    def call_api(
         self,
         endpoint_path: str,
         method: str = "GET",
@@ -37,13 +37,13 @@ class OracleWmsApiService:
         """Make API call to Oracle WMS endpoint."""
         try:
             if method.upper() == "GET":
-                response = await self._api_client.get(endpoint_path)
+                response = self._api_client.get(endpoint_path)
             elif method.upper() == "POST":
-                response = await self._api_client.post(endpoint_path, data=data)
+                response = self._api_client.post(endpoint_path, data=data)
             elif method.upper() == "PUT":
-                response = await self._api_client.put(endpoint_path, data=data)
+                response = self._api_client.put(endpoint_path, data=data)
             elif method.upper() == "DELETE":
-                response = await self._api_client.delete(endpoint_path)
+                response = self._api_client.delete(endpoint_path)
             else:
                 return FlextResult[FlextOracleWmsTypes.Core.Dict].fail(
                     f"Unsupported HTTP method: {method}",
@@ -70,7 +70,7 @@ class OracleWmsApiService:
             self._logger.exception(error_msg)
             return FlextResult[FlextOracleWmsTypes.Core.Dict].fail(error_msg)
 
-    async def get_entity_data(
+    def get_entity_data(
         self,
         entity_name: str,
         environment: str,
@@ -90,7 +90,7 @@ class OracleWmsApiService:
                         params[key] = str(value)
                 endpoint_path += "?" + "&".join(f"{k}={v}" for k, v in params.items())
 
-            response = await self._api_client.get(endpoint_path)
+            response = self._api_client.get(endpoint_path)
 
             if not response.success:
                 return FlextResult[

@@ -212,8 +212,7 @@ class TestAuthenticator:
         with pytest.raises(FlextOracleWmsAuthenticationError):
             FlextOracleWmsAuthenticator(config)
 
-    @pytest.mark.asyncio
-    async def test_basic_auth_headers_generation(self) -> None:
+    def test_basic_auth_headers_generation(self) -> None:
         """Test basic auth headers are generated correctly."""
         config = FlextOracleWmsAuthConfig(
             auth_type=OracleWMSAuthMethod.BASIC,
@@ -222,7 +221,7 @@ class TestAuthenticator:
         )
 
         authenticator = FlextOracleWmsAuthenticator(config)
-        headers = await authenticator.get_auth_headers()
+        headers = authenticator.get_auth_headers()
 
         assert "Authorization" in headers
         assert headers["Authorization"].startswith("Basic ")
@@ -232,8 +231,7 @@ class TestAuthenticator:
         decoded = base64.b64decode(encoded_credentials).decode("utf-8")
         assert decoded == "test_user:test_password"
 
-    @pytest.mark.asyncio
-    async def test_bearer_auth_headers_generation(self) -> None:
+    def test_bearer_auth_headers_generation(self) -> None:
         """Test bearer auth headers are generated correctly."""
         config = FlextOracleWmsAuthConfig(
             auth_type=OracleWMSAuthMethod.BEARER,
@@ -241,13 +239,12 @@ class TestAuthenticator:
         )
 
         authenticator = FlextOracleWmsAuthenticator(config)
-        headers = await authenticator.get_auth_headers()
+        headers = authenticator.get_auth_headers()
 
         assert "Authorization" in headers
         assert headers["Authorization"] == "Bearer test_bearer_token"
 
-    @pytest.mark.asyncio
-    async def test_api_keys_generation(self) -> None:
+    def test_api_keys_generation(self) -> None:
         """Test API key headers are generated correctly."""
         config = FlextOracleWmsAuthConfig(
             auth_type=OracleWMSAuthMethod.API_KEY,
@@ -255,13 +252,12 @@ class TestAuthenticator:
         )
 
         authenticator = FlextOracleWmsAuthenticator(config)
-        headers = await authenticator.get_auth_headers()
+        headers = authenticator.get_auth_headers()
 
         assert "X-API-Key" in headers
         assert headers["X-API-Key"] == "test_api_key"
 
-    @pytest.mark.asyncio
-    async def test_auth_headers_with_additional_headers(self) -> None:
+    def test_auth_headers_with_additional_headers(self) -> None:
         """Test auth headers generation with additional custom headers."""
         config = FlextOracleWmsAuthConfig(
             auth_type=OracleWMSAuthMethod.BASIC,
@@ -275,7 +271,7 @@ class TestAuthenticator:
             "X-Custom": "value",
         }
 
-        headers = await authenticator.get_auth_headers(custom_headers)
+        headers = authenticator.get_auth_headers(custom_headers)
 
         # Should contain both auth and custom headers
         assert "Authorization" in headers
@@ -284,8 +280,7 @@ class TestAuthenticator:
         assert headers["Content-Type"] == "application/json"
         assert headers["X-Custom"] == "value"
 
-    @pytest.mark.asyncio
-    async def test_validate_credentials_success(self) -> None:
+    def test_validate_credentials_success(self) -> None:
         """Test successful authentication validation."""
         config = FlextOracleWmsAuthConfig(
             auth_type=OracleWMSAuthMethod.BASIC,
@@ -301,11 +296,10 @@ class TestAuthenticator:
                 {"status": "authenticated"},
             )
 
-            result = await authenticator.validate_credentials()
+            result = authenticator.validate_credentials()
             assert result.success
 
-    @pytest.mark.asyncio
-    async def test_validate_credentials_failure(self) -> None:
+    def test_validate_credentials_failure(self) -> None:
         """Test authentication validation failure."""
         config = FlextOracleWmsAuthConfig(
             auth_type=OracleWMSAuthMethod.BASIC,
@@ -352,8 +346,7 @@ class TestAuthPlugin:
         assert plugin.authenticator == authenticator
         assert isinstance(plugin.authenticator, FlextOracleWmsAuthenticator)
 
-    @pytest.mark.asyncio
-    async def test_plugin_get_auth_headers(self) -> None:
+    def test_plugin_get_auth_headers(self) -> None:
         """Test plugin auth headers functionality."""
         config = FlextOracleWmsAuthConfig(
             auth_type=OracleWMSAuthMethod.BASIC,
@@ -370,12 +363,11 @@ class TestAuthPlugin:
                 {"Authorization": "Basic dGVzdA=="},
             )
 
-            result = await plugin.authenticator.get_auth_headers()
+            result = plugin.authenticator.get_auth_headers()
             assert result.success
             mock_headers.assert_called_once()
 
-    @pytest.mark.asyncio
-    async def test_plugin_credentials_validation_failure(self) -> None:
+    def test_plugin_credentials_validation_failure(self) -> None:
         """Test plugin credentials validation failure."""
         config = FlextOracleWmsAuthConfig(
             auth_type=OracleWMSAuthMethod.BASIC,
@@ -393,7 +385,7 @@ class TestAuthPlugin:
         ) as mock_validate:
             mock_validate.return_value = FlextResult[None].fail("Auth failed")
 
-            result = await plugin.authenticator.validate_credentials()
+            result = plugin.authenticator.validate_credentials()
             assert result.is_failure
             assert "Auth failed" in result.error
 
@@ -412,8 +404,7 @@ class TestAuthPlugin:
         assert plugin.authenticator is not None
         assert isinstance(plugin.authenticator, FlextOracleWmsAuthenticator)
 
-    @pytest.mark.asyncio
-    async def test_plugin_get_headers_via_authenticator(self) -> None:
+    def test_plugin_get_headers_via_authenticator(self) -> None:
         """Test plugin get headers via authenticator."""
         config = FlextOracleWmsAuthConfig(
             auth_type=OracleWMSAuthMethod.BASIC,
@@ -430,12 +421,11 @@ class TestAuthPlugin:
                 {"Authorization": "Basic dGVzdA=="},
             )
 
-            result = await plugin.authenticator.get_auth_headers()
+            result = plugin.authenticator.get_auth_headers()
             assert result.success
             assert "Authorization" in result.data
 
-    @pytest.mark.asyncio
-    async def test_plugin_validate_credentials(self) -> None:
+    def test_plugin_validate_credentials(self) -> None:
         """Test plugin credentials validation."""
         config = FlextOracleWmsAuthConfig(
             auth_type=OracleWMSAuthMethod.BASIC,
@@ -453,13 +443,12 @@ class TestAuthPlugin:
         ) as mock_validate:
             mock_validate.return_value = FlextResult[None].ok(data=True)
 
-            result = await plugin.authenticator.validate_credentials()
+            result = plugin.authenticator.validate_credentials()
 
             assert result.success
             assert result.data is True
 
-    @pytest.mark.asyncio
-    async def test_plugin_auth_error_handling(self) -> None:
+    def test_plugin_auth_error_handling(self) -> None:
         """Test plugin authentication error handling."""
         config = FlextOracleWmsAuthConfig(
             auth_type=OracleWMSAuthMethod.BASIC,
@@ -474,7 +463,7 @@ class TestAuthPlugin:
         with patch.object(plugin.authenticator, "get_auth_headers") as mock_headers:
             mock_headers.return_value = FlextResult[None].fail("Auth failed")
 
-            result = await plugin.authenticator.get_auth_headers()
+            result = plugin.authenticator.get_auth_headers()
             assert result.is_failure
             assert "Auth failed" in result.error
 

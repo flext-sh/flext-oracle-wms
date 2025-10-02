@@ -321,7 +321,7 @@ class FlextOracleWmsUnifiedOperations:
             self._max_conditions = max_conditions
             self._filters = filters or {}
 
-        async def filter_records(
+        def filter_records(
             self,
             records: list[FlextOracleWmsTypes.Core.Dict],
             filters: FlextOracleWmsTypes.Core.Dict,
@@ -689,7 +689,7 @@ class FlextOracleWmsPlugin:
         self.version = version
         self._logger = FlextLogger(__name__)
 
-    async def initialize(
+    def initialize(
         self,
         context: FlextOracleWmsPluginContext,
     ) -> FlextResult[None]:
@@ -708,7 +708,7 @@ class FlextOracleWmsPlugin:
                 f"Oracle WMS plugin initialization failed: {e}",
             )
 
-    async def cleanup(self) -> FlextResult[None]:
+    def cleanup(self) -> FlextResult[None]:
         """Cleanup Oracle WMS plugin resources."""
         try:
             self._logger.info(

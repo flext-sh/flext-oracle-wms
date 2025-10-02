@@ -19,7 +19,9 @@ class FlextOracleWmsConstants(FlextConstants):
 
         DEFAULT_TIMEOUT = FlextConstants.Network.DEFAULT_TIMEOUT
         DEFAULT_MAX_RETRIES = FlextConstants.Reliability.MAX_RETRY_ATTEMPTS
-        DEFAULT_RETRY_DELAY = FlextConstants.Reliability.RETRY_DELAY_SECONDS
+        DEFAULT_RETRY_DELAY = FlextConstants.Reliability.DEFAULT_RETRY_DELAY_SECONDS
+        DEFAULT_POOL_SIZE = FlextConstants.Network.DEFAULT_CONNECTION_POOL_SIZE
+        MAX_POOL_SIZE = FlextConstants.Network.MAX_CONNECTION_POOL_SIZE
 
     class Entities:
         """Oracle WMS entity types and definitions."""
@@ -40,7 +42,7 @@ class FlextOracleWmsConstants(FlextConstants):
 
         DEFAULT_BATCH_SIZE = FlextConstants.Performance.BatchProcessing.DEFAULT_SIZE
         MAX_BATCH_SIZE = FlextConstants.Performance.BatchProcessing.MAX_ITEMS
-        DEFAULT_PAGE_SIZE = FlextConstants.Performance.Pagination.DEFAULT_PAGE_SIZE
+        DEFAULT_PAGE_SIZE = FlextConstants.Performance.DEFAULT_PAGE_SIZE
         MAX_SCHEMA_DEPTH: ClassVar[int] = 10
 
     class Filtering:

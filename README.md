@@ -35,10 +35,9 @@ make validate  # Run comprehensive quality gates
 
 ```python
 # Note: Tests use fake URLs and expect network failures
-import asyncio
 from flext_oracle_wms import FlextOracleWmsClient, FlextOracleWmsModuleConfig
 
-async def test_client_structure():
+def test_client_structure():
     # Using test configuration (not real Oracle WMS)
     config = FlextOracleWmsModuleConfig.for_testing()  # Uses test.example.com
     print(f"Test Base URL: {config.oracle_wms_base_url}")
@@ -53,7 +52,7 @@ async def test_client_structure():
             print(f"Expected network error: {str(e)[:100]}...")
 
 # Run structure test
-asyncio.run(test_client_structure())
+run(test_client_structure())
 ```
 
 ## 🔍 Actual Implementation Status
@@ -87,7 +86,7 @@ asyncio.run(test_client_structure())
 
 - Missing LGF v10 APIs: `POST /lgfapi/v10/pick_confirm/`
 - Missing bulk operations: `POST /lgfapi/v10/entity/inventory/bulk_update_inventory_attributes/`
-- Missing object store APIs: `POST /lgfapi/v10/data_extract/export_async_status`
+- Missing object store APIs: `POST /lgfapi/v10/data_extract/export_status`
 - No OAuth2 authentication implementation for enterprise security
 
 #### **FLEXT Ecosystem Compliance Violations**
@@ -193,7 +192,7 @@ ORACLE_WMS_APIS = {
     # Data Extract & Discovery (Including 2025 Enhancements)
     "lgf_entity_extract": "GET /entity/{entity_name}/",
     "data_extract_object_store": "POST /data_extract/push_to_object_store",  # NEW 2025
-    "export_async_status": "GET /data_extract/export_async_status",  # NEW 2025
+    "export_status": "GET /data_extract/export_status",  # NEW 2025
 
     # Entity Management
     "entity_discovery": "GET /entity/",
@@ -210,11 +209,11 @@ ORACLE_WMS_APIS = {
 
 ```python
 # Sophisticated entity discovery with caching and optimization
-async def discover_oracle_wms_entities():
+def discover_oracle_wms_entities():
     discovery_engine = FlextOracleWmsEntityDiscovery(client)
 
     # Dynamic entity discovery with intelligent caching
-    result = await discovery_engine.discover_entities(
+    result = discovery_engine.discover_entities(
         include_schema=True,
         cache_duration=3600,
         performance_mode="optimized"
@@ -235,16 +234,16 @@ async def discover_oracle_wms_entities():
 # Type-safe operations with comprehensive error handling
 from flext_oracle_wms import FlextOracleWmsClient
 
-async def safe_oracle_wms_operations():
+def safe_oracle_wms_operations():
     client = FlextOracleWmsClient()
 
     # All operations return FlextResult for consistent error handling
-    discovery_result = await client.discover_entities()
+    discovery_result = client.discover_entities()
     if discovery_result.success:
         entities = discovery_result.data  # Type-safe access
 
         # Chained operations with error propagation
-        entity_result = await client.get_entity_data(entities[0])
+        entity_result = client.get_entity_data(entities[0])
         if entity_result.success:
             return entity_result.data
         else:
@@ -260,7 +259,7 @@ async def safe_oracle_wms_operations():
 ### Prerequisites
 
 - **Oracle WMS Cloud Access**: Valid Oracle WMS Cloud instance with API access
-- **Python 3.13+**: Required for modern async patterns and type safety
+- **Python 3.13+**: Required for modern patterns and type safety
 - **FLEXT Ecosystem**: Integration with flext-core, flext-api, flext-auth (in progress)
 
 ### Installation
@@ -344,7 +343,6 @@ client = FlextOracleWmsClient(config)
 #### Complete Oracle WMS Integration Example
 
 ```python
-import asyncio
 from pathlib import Path
 from flext_oracle_wms import (
     FlextOracleWmsClient,
@@ -354,17 +352,17 @@ from flext_oracle_wms import (
     FlextOracleWmsError
 )
 
-async def enterprise_oracle_wms_workflow():
+def enterprise_oracle_wms_workflow():
     """Complete enterprise Oracle WMS integration workflow."""
 
     # Initialize client with automatic configuration
     client = FlextOracleWmsClient()  # Uses environment variables
-    await client.start()
+    client.start()
 
     try:
         # 1. Entity Discovery with Advanced Features
         discovery = FlextOracleWmsEntityDiscovery(client)
-        entities_result = await discovery.discover_entities(
+        entities_result = discovery.discover_entities(
             entity_type=OracleWMSEntityType.INVENTORY,
             include_schema=True,
             cache_duration=3600
@@ -376,7 +374,7 @@ async def enterprise_oracle_wms_workflow():
 
             # 2. Entity Data Query with Filtering
             for entity in entities[:3]:  # Process first 3 entities
-                data_result = await client.get_entity_data(
+                data_result = client.get_entity_data(
                     entity_name=entity.name,
                     filters={
                         "create_ts__gt": "2025-01-01T00:00:00Z",
@@ -391,7 +389,7 @@ async def enterprise_oracle_wms_workflow():
 
             # 3. NEW 2025 Feature: Data Extract to Object Store
             extractor = FlextOracleWmsDataExtractor(client)
-            extract_result = await extractor.push_to_object_store(
+            extract_result = extractor.push_to_object_store(
                 entities=["inventory_item", "inventory_history"],
                 format="json",
                 file_size_mb=100
@@ -402,7 +400,7 @@ async def enterprise_oracle_wms_workflow():
                 logging.info(f"✅ Started extract job: {job.unique_identifier}")
 
                 # Monitor extract status
-                status_result = await extractor.get_export_status(job.unique_identifier)
+                status_result = extractor.get_export_status(job.unique_identifier)
                 if status_result.success:
                     logging.info(f"Extract status: {status_result.data.status}")
 
@@ -413,12 +411,12 @@ async def enterprise_oracle_wms_workflow():
         logging.error(f"❌ Oracle WMS operation failed: {e}")
 
     finally:
-        await client.stop()
+        client.stop()
 
 # Run enterprise workflow
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)
-    asyncio.run(enterprise_oracle_wms_workflow())
+    run(enterprise_oracle_wms_workflow())
 ```
 
 ## 🛠️ Development & Quality Standards
@@ -507,7 +505,7 @@ rg -n "class [A-Z]" src/ | grep -v "_" | wc -l  # Count unified classes only
 2. **Oracle WMS 2025 Features Integration**
    - [ ] Object Store Data Extract API implementation
    - [ ] Enhanced entity support (inventory_history, movement_requests)
-   - [ ] Async operations support with status monitoring
+   - [ ] operations support with status monitoring
 
 ### **Strategic Enhancements** (Next 6 months)
 

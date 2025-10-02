@@ -19,7 +19,6 @@ Usage:
     python examples/basic_usage.py
 """
 
-import asyncio
 import os
 from pathlib import Path
 
@@ -65,7 +64,7 @@ def create_client_config() -> FlextOracleWmsClientConfig:
         return FlextOracleWmsClientConfig.get_global_instance()
 
 
-async def discover_wms_entities(
+def discover_wms_entities(
     client: FlextOracleWmsClient,
 ) -> FlextResult[list[FlextTypes.Core.Dict]]:
     """Discover available Oracle WMS entities.
@@ -77,7 +76,7 @@ async def discover_wms_entities(
       FlextResult containing list of discovered entities or error details
 
     """
-    result = await client.discover_entities()
+    result = client.discover_entities()
 
     if result.is_success:
         entities = result.value
@@ -106,7 +105,7 @@ async def discover_wms_entities(
     return result
 
 
-async def query_entity_data(
+def query_entity_data(
     client: FlextOracleWmsClient,
     entity_name: str,
 ) -> FlextResult[FlextTypes.Core.Dict | list[FlextTypes.Core.Dict]]:
@@ -121,7 +120,7 @@ async def query_entity_data(
 
     """
     # Query with basic parameters
-    result = await client.get_entity_data(
+    result = client.get_entity_data(
         entity_name=entity_name,
         limit=10,  # Limit results for example
     )
@@ -167,10 +166,10 @@ async def query_entity_data(
     return result
 
 
-async def demonstrate_error_handling(client: FlextOracleWmsClient) -> None:
+def demonstrate_error_handling(client: FlextOracleWmsClient) -> None:
     """Demonstrate proper error handling patterns with FlextResult."""
     # Attempt to query a non-existent entity
-    result = await client.get_entity_data("NON_EXISTENT_ENTITY")
+    result = client.get_entity_data("NON_EXISTENT_ENTITY")
 
     if (
         result.is_failure
@@ -184,7 +183,7 @@ async def demonstrate_error_handling(client: FlextOracleWmsClient) -> None:
         logger.info(f"Expected error handled: {result.error}")
 
 
-async def main() -> None:
+def main() -> None:
     """Main example function demonstrating basic Oracle WMS usage patterns.
 
     This function demonstrates:
@@ -197,7 +196,6 @@ async def main() -> None:
     try:
         # Step 1: Create configuration using singleton pattern
         config = create_client_config()
-        print(f"Using configuration: {config.oracle_wms_base_url}")
 
         # Step 2: Initialize client (can use global singleton automatically)
         # Option A: Use explicit config
@@ -207,20 +205,17 @@ async def main() -> None:
         # client = FlextOracleWmsClient()  # Uses global singleton automatically
 
         # Start the client (required for API operations)
-        start_result = await client.start()
+        start_result = client.start()
         if start_result.is_success:
             pass
         else:
             return
 
         # Step 3: Discover entities
-        entities_result = await discover_wms_entities(client)
+        entities_result = discover_wms_entities(client)
 
         if entities_result.is_success:
             entities = entities_result.value
-            print(
-                f"Successfully discovered {len(entities) if entities else 0} entities",
-            )
 
             # Step 4: Query data from first available entity
             if entities:
@@ -231,16 +226,13 @@ async def main() -> None:
                     if isinstance(first_entity, dict)
                     else str(first_entity)
                 )
-                await query_entity_data(client, str(entity_name))
+                query_entity_data(client, str(entity_name))
         else:
             # Handle case when Oracle WMS is not available
-            print(f"Entity discovery failed: {entities_result.error}")
-            print("This is expected when Oracle WMS is not available or configured")
+            pass
 
         # Step 5: Demonstrate error handling
-        await demonstrate_error_handling(client)
-
-        print("Example completed successfully")
+        demonstrate_error_handling(client)
 
     except ValueError:
         pass
@@ -258,4 +250,4 @@ if __name__ == "__main__":
     # Set debug logging for example
     os.environ.setdefault("FLEXT_LOG_LEVEL", "info")
 
-    asyncio.run(main())
+    run(main())

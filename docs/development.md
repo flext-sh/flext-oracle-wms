@@ -10,7 +10,7 @@
 
 ### Prerequisites
 
-- **Python 3.13+** - Required for modern async patterns and type safety
+- **Python 3.13+** - Required for modern patterns and type safety
 - **Poetry** - Dependency management
 - **Oracle WMS Cloud access** - For real integration testing (not currently available)
 
@@ -75,7 +75,7 @@ Current compliance gaps requiring implementation:
 ```python
 # Current: Non-compliant httpx usage
 import httpx  # ❌ VIOLATION
-client = httpx.AsyncClient()
+client = httpx.Client()
 
 # Required: flext-api integration
 from flext_api import FlextApiClient  # ✅ REQUIRED

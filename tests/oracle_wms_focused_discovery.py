@@ -4,7 +4,6 @@ Copyright (c) 2025 FLEXT Team. All rights reserved.
 SPDX-License-Identifier: MIT
 """
 
-import asyncio
 import json
 from datetime import UTC, datetime
 from pathlib import Path
@@ -64,15 +63,15 @@ class FocusedOracleWmsDiscovery:
         self.entities_with_data = {}
         self.complete_schemas = {}
 
-    async def execute_focused_discovery(self) -> FlextResult[FlextTypes.Core.Dict]:
+    def execute_focused_discovery(self) -> FlextResult[FlextTypes.Core.Dict]:
         """Execute complete focused discovery."""
         try:
             # Start client
-            await self.client.start()
+            self.client.start()
 
             # Phase 1: Fast entity discovery
 
-            entities_result = await self.client.discover_entities()
+            entities_result = self.client.discover_entities()
             if not entities_result.success:
                 return FlextResult[None].fail(
                     f"Entity discovery failed: {entities_result.error}",
@@ -85,12 +84,12 @@ class FocusedOracleWmsDiscovery:
             # Test quick entities first
             available_quick = [e for e in self.quick_test_entities if e in all_entities]
 
-            data_entities = await self._quick_data_scan(available_quick)
+            data_entities = self._quick_data_scan(available_quick)
 
             # If we found some, test more
             if data_entities and len(all_entities) > len(available_quick):
                 remaining = [e for e in all_entities if e not in available_quick][:30]
-                additional_data = await self._quick_data_scan(remaining)
+                additional_data = self._quick_data_scan(remaining)
                 data_entities.update(additional_data)
 
             self.entities_with_data = data_entities
@@ -99,20 +98,20 @@ class FocusedOracleWmsDiscovery:
 
             if not data_entities:
                 # Generate schemas from available structures anyway
-                structure_entities = await self._get_entity_structures(
+                structure_entities = self._get_entity_structures(
                     available_quick[:5],
                 )
-                schemas = await self._generate_schemas_from_structures(
+                schemas = self._generate_schemas_from_structures(
                     structure_entities,
                 )
             else:
-                schemas = await self._generate_schemas_from_data(data_entities)
+                schemas = self._generate_schemas_from_data(data_entities)
 
             self.complete_schemas = schemas
 
             # Phase 4: Save results
 
-            save_result = await self._save_focused_results()
+            save_result = self._save_focused_results()
 
             # Results summary
 
@@ -154,9 +153,9 @@ class FocusedOracleWmsDiscovery:
             logger.exception("Focused discovery failed")
             return FlextResult[None].fail(f"Discovery failed: {e}")
         finally:
-            await self.client.stop()
+            self.client.stop()
 
-    async def _quick_data_scan(
+    def _quick_data_scan(
         self,
         entities: FlextTypes.Core.StringList,
     ) -> FlextTypes.Core.Dict:
@@ -166,7 +165,7 @@ class FocusedOracleWmsDiscovery:
         for entity_name in entities:
             try:
                 # Quick test with limit=1 to check for data
-                result = await self.client.get_entity_data(entity_name, limit=1)
+                result = self.client.get_entity_data(entity_name, limit=1)
 
                 if result.success:
                     data = result.data
@@ -176,7 +175,7 @@ class FocusedOracleWmsDiscovery:
 
                         if count > 0 or (results and len(results) > 0):
                             # Entity has data - get more details
-                            detailed_result = await self.client.get_entity_data(
+                            detailed_result = self.client.get_entity_data(
                                 entity_name,
                                 limit=3,
                             )
@@ -224,7 +223,7 @@ class FocusedOracleWmsDiscovery:
 
         return data_entities
 
-    async def _get_entity_structures(
+    def _get_entity_structures(
         self,
         entities: FlextTypes.Core.StringList,
     ) -> FlextTypes.Core.Dict:
@@ -233,7 +232,7 @@ class FocusedOracleWmsDiscovery:
 
         for entity_name in entities:
             try:
-                result = await self.client.get_entity_data(entity_name, limit=1)
+                result = self.client.get_entity_data(entity_name, limit=1)
                 if result.success:
                     data = result.data
                     if isinstance(data, dict):
@@ -268,7 +267,7 @@ class FocusedOracleWmsDiscovery:
                 safe[k] = f"<{type(v).__name__}>"
         return safe
 
-    async def _generate_schemas_from_data(
+    def _generate_schemas_from_data(
         self,
         data_entities: FlextTypes.Core.Dict,
     ) -> FlextTypes.Core.Dict:
@@ -282,7 +281,7 @@ class FocusedOracleWmsDiscovery:
 
         return schemas
 
-    async def _generate_schemas_from_structures(
+    def _generate_schemas_from_structures(
         self,
         structure_entities: FlextTypes.Core.Dict,
     ) -> FlextTypes.Core.Dict:
@@ -460,10 +459,10 @@ class FocusedOracleWmsDiscovery:
 
         return keys or (["id"] if "id" in fields else [])
 
-    async def _save_focused_results(self) -> FlextResult[str]:
+    def _save_focused_results(self) -> FlextResult[str]:
         """Save focused discovery results."""
         results_dir = Path("oracle_wms_focused_results")
-        await asyncio.to_thread(results_dir.mkdir, exist_ok=True)
+        to_thread(results_dir.mkdir, exist_ok=True)
 
         timestamp = datetime.now(UTC).strftime("%Y%m%d_%H%M%S")
 
@@ -533,10 +532,10 @@ class FocusedOracleWmsDiscovery:
         return {"version": 1, "streams": streams}
 
 
-async def main() -> None:
+def main() -> None:
     """Main execution."""
     discovery = FocusedOracleWmsDiscovery()
-    result = await discovery.execute_focused_discovery()
+    result = discovery.execute_focused_discovery()
 
     if result.success:
         data = result.data
@@ -546,4 +545,4 @@ async def main() -> None:
 
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    main()

@@ -9,7 +9,6 @@ This module provides comprehensive entity discovery, schema processing, and cach
 
 from __future__ import annotations
 
-import asyncio
 import contextlib
 import re
 import threading
@@ -65,7 +64,7 @@ class FlextOracleWmsCacheConfig(FlextConfig):
         description="Cleanup interval in seconds",
     )  # 5 minutes
     enable_statistics: bool = Field(default=True, description="Enable cache statistics")
-    enable_async_cleanup: bool = Field(default=True, description="Enable async cleanup")
+    enable_cleanup: bool = Field(default=True, description="Enable cleanup")
 
     @classmethod
     def get_global_instance(cls, **kwargs: object) -> FlextOracleWmsCacheConfig:
@@ -251,7 +250,7 @@ class FlextOracleWmsCacheManager:
         self._schema_cache: dict[str, FlextOracleWmsCacheEntry] = self._cache
         self._metadata_cache: dict[str, FlextOracleWmsCacheEntry] = self._cache
         self._lock = threading.RLock()
-        self._cleanup_task: asyncio.Task[None] | None = None
+        self._cleanup_task: Task[None] | None = None
         self._stats = FlextOracleWmsCacheStats(
             hits=0,
             misses=0,
@@ -274,22 +273,22 @@ class FlextOracleWmsCacheManager:
 
         # Don't start cleanup task automatically - only when start() is called
 
-    async def start(self) -> FlextResult[None]:
+    def start(self) -> FlextResult[None]:
         """Start background cleanup if enabled."""
         try:
-            if self.config.enable_async_cleanup:
+            if self.config.enable_cleanup:
                 self._start_cleanup_task()
             return FlextResult[None].ok(None)
         except Exception as e:  # pragma: no cover - defensive
             return FlextResult[None].fail(f"Cache manager start failed: {e}")
 
-    async def stop(self) -> FlextResult[None]:
+    def stop(self) -> FlextResult[None]:
         """Stop background cleanup and clear caches."""
         try:
             if self._cleanup_task is not None:
                 self._cleanup_task.cancel()
                 with contextlib.suppress(Exception):
-                    await asyncio.sleep(0)
+                    sleep(0)
             self.clear()
             return FlextResult[None].ok(None)
         except Exception as e:  # pragma: no cover - defensive
@@ -298,17 +297,17 @@ class FlextOracleWmsCacheManager:
     def _start_cleanup_task(self: FlextOracleWmsCacheManager) -> None:
         """Start background cleanup task."""
         try:
-            loop = asyncio.get_event_loop()
+            loop = get_event_loop()
             self._cleanup_task = loop.create_task(self._cleanup_expired_entries())
         except RuntimeError:
             # No event loop running, cleanup will be manual
             self._logger.debug("No event loop available, using manual cleanup")
 
-    async def _cleanup_expired_entries(self) -> None:
+    def _cleanup_expired_entries(self) -> None:
         """Background task to clean up expired cache entries."""
         try:
             while True:
-                await asyncio.sleep(self.config.cleanup_interval_seconds)
+                sleep(self.config.cleanup_interval_seconds)
                 with self._lock:
                     expired_keys = [
                         key for key, entry in self._cache.items() if entry.is_expired()
@@ -333,12 +332,12 @@ class FlextOracleWmsCacheManager:
                         self._logger.debug(
                             f"Cleaned up {len(expired_keys)} expired cache entries",
                         )
-        except asyncio.CancelledError:
+        except CancelledError:
             return
         except Exception:
             self._logger.exception("Cache cleanup error")
 
-    async def get(self, key: str) -> FlextResult[object]:
+    def get(self, key: str) -> FlextResult[object]:
         """Get value from cache."""
         try:
             with self._lock:
@@ -378,7 +377,7 @@ class FlextOracleWmsCacheManager:
             return FlextResult[object].fail(f"Cache get failed: {e}")
 
     # Convenience wrappers expected by tests -------------------------------------------------
-    async def set_entity(
+    def set_entity(
         self,
         key: str,
         value: object,
@@ -395,7 +394,7 @@ class FlextOracleWmsCacheManager:
             FlextResult indicating success or failure
 
         """
-        result: FlextResult[object] = await self.set(key, value, ttl_seconds)
+        result: FlextResult[object] = self.set(key, value, ttl_seconds)
         success_value = True
         return (
             FlextResult[bool].ok(success_value)
@@ -403,7 +402,7 @@ class FlextOracleWmsCacheManager:
             else FlextResult[bool].fail(result.error or "error")
         )
 
-    async def get_entity(self, key: str) -> FlextResult[object | None]:
+    def get_entity(self, key: str) -> FlextResult[object | None]:
         """Get entity from cache.
 
         Args:
@@ -413,7 +412,7 @@ class FlextOracleWmsCacheManager:
             FlextResult containing cached value or None
 
         """
-        result = await self.get(key)
+        result = self.get(key)
         if result.success:
             # On miss, tests expect success with None
             if isinstance(result.error, str):  # pragma: no cover - defensive
@@ -426,7 +425,7 @@ class FlextOracleWmsCacheManager:
             return FlextResult[object | None].ok(None)
         return FlextResult[object | None].fail(result.error or "error")
 
-    async def set_schema(
+    def set_schema(
         self,
         key: str,
         value: object,
@@ -443,9 +442,9 @@ class FlextOracleWmsCacheManager:
             FlextResult indicating success or failure
 
         """
-        return await self.set_entity(key, value, ttl_seconds)
+        return self.set_entity(key, value, ttl_seconds)
 
-    async def get_schema(self, key: str) -> FlextResult[object | None]:
+    def get_schema(self, key: str) -> FlextResult[object | None]:
         """Get schema from cache.
 
         Args:
@@ -455,9 +454,9 @@ class FlextOracleWmsCacheManager:
             FlextResult containing cached schema or None
 
         """
-        return await self.get_entity(key)
+        return self.get_entity(key)
 
-    async def set_metadata(
+    def set_metadata(
         self,
         key: str,
         value: object,
@@ -474,9 +473,9 @@ class FlextOracleWmsCacheManager:
             FlextResult indicating success or failure
 
         """
-        return await self.set_entity(key, value, ttl_seconds)
+        return self.set_entity(key, value, ttl_seconds)
 
-    async def get_metadata(self, key: str) -> FlextResult[object | None]:
+    def get_metadata(self, key: str) -> FlextResult[object | None]:
         """Get metadata from cache.
 
         Args:
@@ -486,9 +485,9 @@ class FlextOracleWmsCacheManager:
             FlextResult containing cached metadata or None
 
         """
-        return await self.get_entity(key)
+        return self.get_entity(key)
 
-    async def get_statistics(self) -> FlextResult[FlextOracleWmsCacheStats]:
+    def get_statistics(self) -> FlextResult[FlextOracleWmsCacheStats]:
         """Get cache statistics.
 
         Returns:
@@ -502,7 +501,7 @@ class FlextOracleWmsCacheManager:
                 f"Statistics retrieval failed: {e}",
             )
 
-    async def _evict_oldest_entry(
+    def _evict_oldest_entry(
         self,
         cache_map: dict[str, FlextOracleWmsCacheEntry[CacheValue]],
     ) -> None:
@@ -521,7 +520,7 @@ class FlextOracleWmsCacheManager:
             last_cleanup=self._stats.last_cleanup,
         )
 
-    async def set(
+    def set(
         self,
         key: str,
         value: CacheValue,
@@ -605,7 +604,7 @@ class FlextOracleWmsCacheManager:
             )
 
     # Back-compat alias used by tests
-    async def invalidate_key(self, key: str) -> FlextResult[None]:
+    def invalidate_key(self, key: str) -> FlextResult[None]:
         """Invalidate specific cache entry (backward compatibility alias).
 
         Args:
@@ -766,7 +765,7 @@ class FlextOracleWmsDynamicSchemaProcessor:
             else 0.8
         )
 
-    async def process_records(
+    def process_records(
         self,
         records: TOracleWmsRecordBatch,
         entity_type: OracleWMSEntityType | None = None,
@@ -808,7 +807,7 @@ class FlextOracleWmsDynamicSchemaProcessor:
             )
 
     # Public convenience methods expected by tests
-    async def discover_entity_schema(
+    def discover_entity_schema(
         self,
         _entity_name: str,
         records: TOracleWmsRecordBatch,
@@ -818,9 +817,9 @@ class FlextOracleWmsDynamicSchemaProcessor:
         Maintains a permissive behavior: empty entity names are allowed
         by tests, so we do not validate here.
         """
-        return await self.process_records(records, None)
+        return self.process_records(records, None)
 
-    async def process_entity_records(
+    def process_entity_records(
         self,
         _entity_name: str,
         records: TOracleWmsRecordBatch,
@@ -839,7 +838,7 @@ class FlextOracleWmsDynamicSchemaProcessor:
 
             if not schema:
                 # Minimal inference fall back
-                return await self.process_records(records, None)
+                return self.process_records(records, None)
 
             # Optionally, we could validate/adjust schema against records.
             return FlextResult[dict[str, FlextOracleWmsTypes.Core.Dict]].ok(schema)
@@ -1006,7 +1005,7 @@ class DiscoveryStrategy(ABC):
     """Strategy Pattern: Abstract base for discovery strategies."""
 
     @abstractmethod
-    async def execute_discovery_step(
+    def execute_discovery_step(
         self,
         context: DiscoveryContext,
         api_client: FlextHttpClient,
@@ -1017,7 +1016,7 @@ class DiscoveryStrategy(ABC):
 class EntityListDiscoveryStrategy(DiscoveryStrategy):
     """Strategy for discovering entity list from API."""
 
-    async def execute_discovery_step(
+    def execute_discovery_step(
         self,
         context: DiscoveryContext,
         api_client: FlextHttpClient,
@@ -1085,7 +1084,7 @@ class FlextOracleWmsEntityDiscovery:
         """Set cache manager for discovery operations."""
         self.cache_manager = cache_manager
 
-    async def _cache_discovery_result(
+    def _cache_discovery_result(
         self,
         key: str,
         result: FlextOracleWmsDiscoveryResult,
@@ -1094,19 +1093,19 @@ class FlextOracleWmsEntityDiscovery:
 
         # No-op implementation for test compatibility
 
-    async def _get_cached_entity(self, key: str) -> FlextResult[FlextOracleWmsEntity]:
+    def _get_cached_entity(self, key: str) -> FlextResult[FlextOracleWmsEntity]:
         """Get cached entity (not implemented)."""
         # Use key parameter to avoid unused argument warning
         _ = key  # Suppress unused parameter warning
         return FlextResult[FlextOracleWmsEntity].fail("Cache not implemented")
 
-    async def _parse_entities_response(
+    def _parse_entities_response(
         self,
         response_data: FlextOracleWmsTypes.Core.Dict,
     ) -> FlextResult[list[FlextOracleWmsEntity]]:
         """Parse entities from API response using EntityResponseParser."""
         parser = EntityResponseParser(self)
-        entity_names_result: FlextResult[object] = await parser.parse_entities_response(
+        entity_names_result: FlextResult[object] = parser.parse_entities_response(
             response_data
         )
 
@@ -1133,7 +1132,7 @@ class FlextOracleWmsEntityDiscovery:
             description=description,
         )
 
-    async def discover_entities(
+    def discover_entities(
         self,
         include_patterns: FlextOracleWmsTypes.Core.StringList | None = None,
         exclude_patterns: FlextOracleWmsTypes.Core.StringList | None = None,
@@ -1146,9 +1145,7 @@ class FlextOracleWmsEntityDiscovery:
 
             # Try cache first
             if use_cache and self.cache_manager:
-                cached_result: FlextResult[object] = await self.cache_manager.get(
-                    cache_key
-                )
+                cached_result: FlextResult[object] = self.cache_manager.get(cache_key)
                 if cached_result.success and isinstance(cached_result.value, dict):
                     data = cached_result.value
                     raw_entities: list[FlextOracleWmsTypes.Core.Dict] = []
@@ -1212,12 +1209,12 @@ class FlextOracleWmsEntityDiscovery:
 
             # Execute all discovery strategies and then fetch from real API
             for strategy in self.strategies:
-                _ = await strategy.execute_discovery_step(context, self.api_client)
+                _ = strategy.execute_discovery_step(context, self.api_client)
 
             # After strategies, use real API to populate entities
             discovered_entities: list[FlextOracleWmsEntity] = []
             try:
-                response = await self.api_client.get(
+                response = self.api_client.get(
                     f"/{self.environment}/wms/lgfapi/v10/entity/",
                 )
                 if response.success and response.value:
@@ -1272,7 +1269,7 @@ class FlextOracleWmsEntityDiscovery:
                     "timestamp": discovery_result.timestamp,
                 }
 
-                await self.cache_manager.set(cache_key, str(cache_data))
+                self.cache_manager.set(cache_key, str(cache_data))
 
             return FlextResult[FlextOracleWmsDiscoveryResult].ok(discovery_result)
 
@@ -1281,7 +1278,7 @@ class FlextOracleWmsEntityDiscovery:
                 f"Discover entities failed: {e}",
             )
 
-    async def discover_entity_schema(
+    def discover_entity_schema(
         self,
         entity_name: str,
     ) -> FlextResult[FlextOracleWmsEntity]:
@@ -1296,7 +1293,7 @@ class FlextOracleWmsEntityDiscovery:
         """
         try:
             # First discover all entities
-            discovery_result: FlextResult[object] = await self.discover_entities()
+            discovery_result: FlextResult[object] = self.discover_entities()
             if discovery_result.is_failure:
                 return FlextResult[FlextOracleWmsEntity].fail(
                     f"Entity discovery failed: {discovery_result.error}",
@@ -1413,7 +1410,7 @@ class EndpointDiscoveryStrategy(DiscoveryStrategy):
         except Exception as e:
             return FlextResult[None].fail(f"Response validation error: {e}")
 
-    async def _make_api_request(
+    def _make_api_request(
         self,
         api_client: FlextHttpClient,
         endpoint: str,
@@ -1421,7 +1418,7 @@ class EndpointDiscoveryStrategy(DiscoveryStrategy):
         """Make API request to specified endpoint."""
         try:
             # Make API request using the client
-            result: FlextResult[object] = await api_client.get(endpoint)
+            result: FlextResult[object] = api_client.get(endpoint)
             if result.is_failure:
                 error_msg = result.error or f"API request failed for {endpoint}"
                 return FlextResult[FlextOracleWmsTypes.Core.Dict].fail(error_msg)
@@ -1433,7 +1430,7 @@ class EndpointDiscoveryStrategy(DiscoveryStrategy):
                 f"API request error for {endpoint}: {e}",
             )
 
-    async def execute_discovery_step(
+    def execute_discovery_step(
         self,
         context: DiscoveryContext,
         api_client: FlextHttpClient,
@@ -1443,7 +1440,7 @@ class EndpointDiscoveryStrategy(DiscoveryStrategy):
             # Try to make actual API call if client supports it
             if hasattr(api_client, "get"):
                 # Attempt to discover entities via API
-                result: FlextResult[object] = await api_client.get(
+                result: FlextResult[object] = api_client.get(
                     "/test/wms/lgfapi/v10/entity/"
                 )
                 if result.is_failure:
@@ -1511,7 +1508,7 @@ class EntityResponseParser:
         """Initialize entity response parser."""
         self.discovery = discovery
 
-    async def parse_entities_response(
+    def parse_entities_response(
         self,
         response_data: FlextOracleWmsTypes.Core.Dict | list[str],
     ) -> FlextResult[list[str]]:

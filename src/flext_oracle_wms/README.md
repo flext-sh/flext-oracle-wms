@@ -79,10 +79,10 @@ config = FlextOracleWmsClientConfig(
 
 # Initialize client
 client = FlextOracleWmsClient(config)
-await client.start()
+client.start()
 
 # Discover entities
-result = await client.discover_entities()
+result = client.discover_entities()
 from flext_core import FlextLogger
 if result.success:
     logger = FlextLogger(__name__)
@@ -95,7 +95,7 @@ if result.success:
 
 ```python
 # Query entity data with filtering
-result = await client.get_entity_data(
+result = client.get_entity_data(
     entity_name="item",
     limit=100,
     fields="item_id,item_name,item_desc",
@@ -114,7 +114,7 @@ from flext_core import FlextLogger
 from flext_oracle_wms.exceptions import FlextOracleWmsConnectionError
 
 try:
-    result = await client.get_entity_data("inventory")
+    result = client.get_entity_data("inventory")
     if result.is_failure:
         # Handle business logic errors via FlextResult
         from flext_core import FlextLogger
@@ -192,7 +192,7 @@ make security               # Bandit + pip-audit security scanning
 ### External Dependencies
 
 - **Pydantic v2.11.7+** - Data validation and settings management with modern patterns
-- **HTTPX v0.28.1+** - Async HTTP client for Oracle WMS API communication
+- **HTTPX v0.28.1+** - HTTP client for Oracle WMS API communication
 - **Python 3.13+** - Latest Python with enhanced type system and performance optimizations
 
 ## 📚 **Additional Resources**

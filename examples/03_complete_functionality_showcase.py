@@ -26,7 +26,6 @@ Requirements:
     - All FLEXT dependencies installed
 """
 
-import asyncio
 import os
 import time
 import traceback
@@ -84,14 +83,14 @@ def load_config_from_environment() -> FlextOracleWmsClientConfig:
     )
 
 
-async def showcase_1_client_initialization(
+def showcase_1_client_initialization(
     config: FlextOracleWmsClientConfig,
 ) -> FlextOracleWmsClient:
     """Feature 1: Client Configuration and Initialization."""
     client = FlextOracleWmsClient(config)
 
     # Start the client
-    start_result = await client.start()
+    start_result = client.start()
     if start_result.is_success:
         pass
     else:
@@ -101,12 +100,12 @@ async def showcase_1_client_initialization(
     return client
 
 
-async def showcase_2_entity_discovery(
+def showcase_2_entity_discovery(
     client: FlextOracleWmsClient,
 ) -> FlextTypes.Core.StringList:
     """Feature 2: Entity Discovery (320+ entities)."""
     # Discover all entities
-    entities_result = await client.discover_entities()
+    entities_result = client.discover_entities()
 
     if not entities_result.is_success:
         return []
@@ -146,7 +145,7 @@ async def showcase_2_entity_discovery(
     return entities
 
 
-async def showcase_3_data_retrieval(
+def showcase_3_data_retrieval(
     client: FlextOracleWmsClient,
     entities: FlextTypes.Core.StringList,
 ) -> FlextTypes.Core.Dict:
@@ -161,7 +160,7 @@ async def showcase_3_data_retrieval(
             continue
 
         # Basic data retrieval
-        data_result = await client.get_entity_data(entity_name, limit=5)
+        data_result = client.get_entity_data(entity_name, limit=5)
 
         if data_result.is_success:
             data = data_result.value
@@ -178,7 +177,7 @@ async def showcase_3_data_retrieval(
 
     # Demonstrate filtered queries (if company data is available)
     if "company" in sample_data:
-        filtered_result = await client.get_entity_data(
+        filtered_result = client.get_entity_data(
             entity_name="company",
             limit=3,
             fields="company_code,company_name",
@@ -191,7 +190,7 @@ async def showcase_3_data_retrieval(
     return sample_data
 
 
-async def showcase_4_authentication(config: FlextOracleWmsClientConfig) -> None:
+def showcase_4_authentication(config: FlextOracleWmsClientConfig) -> None:
     """Feature 4: Authentication Methods."""
     # Basic Authentication (current method)
     auth_config = FlextOracleWmsAuthConfig(
@@ -209,7 +208,7 @@ async def showcase_4_authentication(config: FlextOracleWmsClientConfig) -> None:
     authenticator = FlextOracleWmsAuthenticator(auth_config)
 
     # Test header generation
-    headers_result = await authenticator.get_auth_headers()
+    headers_result = authenticator.get_auth_headers()
     if hasattr(headers_result, "is_success") and headers_result.is_success:
         pass
 
@@ -251,15 +250,15 @@ def showcase_5_api_catalog(client: FlextOracleWmsClient) -> None:
             pass
 
 
-async def showcase_6_error_handling(client: FlextOracleWmsClient) -> None:
+def showcase_6_error_handling(client: FlextOracleWmsClient) -> None:
     """Feature 6: Error Handling and Recovery."""
     # Test 1: Invalid entity name
-    invalid_result = await client.get_entity_data("invalid_entity_xyz123")
+    invalid_result = client.get_entity_data("invalid_entity_xyz123")
     if not invalid_result.is_success:
         pass
 
     # Test 2: Invalid API call
-    api_result = await client.call_api("non_existent_api_xyz")
+    api_result = client.call_api("non_existent_api_xyz")
     if not api_result.is_success:
         pass
 
@@ -283,12 +282,12 @@ async def showcase_6_error_handling(client: FlextOracleWmsClient) -> None:
         logger.warning(f"Error handling demonstration: {e}")
 
 
-async def showcase_7_health_monitoring(
+def showcase_7_health_monitoring(
     client: FlextOracleWmsClient,
 ) -> object:
     """Feature 7: Health Monitoring."""
     # Perform health check
-    health_result = await client.health_check()
+    health_result = client.health_check()
 
     if health_result.is_success:
         health_data = health_result.value or {}
@@ -301,7 +300,7 @@ async def showcase_7_health_monitoring(
     return {}
 
 
-async def showcase_8_performance_tracking(
+def showcase_8_performance_tracking(
     client: FlextOracleWmsClient,
     entities: FlextTypes.Core.StringList,
 ) -> None:
@@ -321,7 +320,7 @@ async def showcase_8_performance_tracking(
         tasks = [client.get_entity_data(entity, limit=2) for entity in test_entities]
 
         # Execute concurrently
-        results = await asyncio.gather(*tasks, return_exceptions=True)
+        results = gather(*tasks, return_exceptions=True)
 
         end_time = time.time()
         end_time - start_time
@@ -340,26 +339,26 @@ async def showcase_8_performance_tracking(
         page_sizes = [1, 5, 10]
         for page_size in page_sizes:
             start_time = time.time()
-            result = await client.get_entity_data("company", limit=page_size)
+            result = client.get_entity_data("company", limit=page_size)
             end_time = time.time()
 
             if result.is_success:
                 pass
 
 
-async def showcase_9_cache_management(client: FlextOracleWmsClient) -> None:
+def showcase_9_cache_management(client: FlextOracleWmsClient) -> None:
     """Feature 9: Cache Management."""
     # Note: Cache functionality may not be directly exposed,
     # but we can demonstrate repeated calls and performance
 
     # First call (should populate cache)
     start_time = time.time()
-    first_result = await client.discover_entities()
+    first_result = client.discover_entities()
     first_time = time.time() - start_time
 
     # Second call (should use cache if available)
     start_time = time.time()
-    second_result = await client.discover_entities()
+    second_result = client.discover_entities()
     second_time = time.time() - start_time
 
     if first_result.is_success and second_result.is_success:
@@ -373,7 +372,7 @@ async def showcase_9_cache_management(client: FlextOracleWmsClient) -> None:
             pass
 
 
-async def showcase_10_enterprise_features(
+def showcase_10_enterprise_features(
     _client: FlextOracleWmsClient,
     config: FlextOracleWmsClientConfig,
 ) -> None:
@@ -395,46 +394,46 @@ async def showcase_10_enterprise_features(
     # Enterprise Compliance Features
 
 
-async def main() -> int:
+def main() -> int:
     """Main showcase execution."""
     try:
         # Load configuration
         config = load_config_from_environment()
 
         # Feature 1: Client Initialization
-        client = await showcase_1_client_initialization(config)
+        client = showcase_1_client_initialization(config)
 
         # Feature 2: Entity Discovery
-        entities = await showcase_2_entity_discovery(client)
+        entities = showcase_2_entity_discovery(client)
 
         # Feature 3: Data Retrieval
-        await showcase_3_data_retrieval(client, entities)
+        showcase_3_data_retrieval(client, entities)
 
         # Feature 4: Authentication
-        await showcase_4_authentication(config)
+        showcase_4_authentication(config)
 
         # Feature 5: API Catalog
         showcase_5_api_catalog(client)
 
         # Feature 6: Error Handling
-        await showcase_6_error_handling(client)
+        showcase_6_error_handling(client)
 
         # Feature 7: Health Monitoring
-        await showcase_7_health_monitoring(client)
+        showcase_7_health_monitoring(client)
 
         # Feature 8: Performance Tracking
-        await showcase_8_performance_tracking(client, entities)
+        showcase_8_performance_tracking(client, entities)
 
         # Feature 9: Cache Management
-        await showcase_9_cache_management(client)
+        showcase_9_cache_management(client)
 
         # Feature 10: Enterprise Features
-        await showcase_10_enterprise_features(client, config)
+        showcase_10_enterprise_features(client, config)
 
         # Summary
 
         # Stop client
-        await client.stop()
+        client.stop()
 
     except Exception:
         traceback.print_exc()
@@ -444,4 +443,4 @@ async def main() -> int:
 
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    run(main())

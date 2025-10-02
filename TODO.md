@@ -31,7 +31,7 @@ Based on Oracle documentation research, missing LGF v10 APIs:
 
 - `POST /lgfapi/v10/pick_confirm/` - Enhanced pick confirmation (replaces legacy)
 - `POST /lgfapi/v10/entity/inventory/bulk_update_inventory_attributes/` - Bulk inventory operations
-- `POST /lgfapi/v10/data_extract/export_async_status` - Object store data extraction
+- `POST /lgfapi/v10/data_extract/export_status` - Object store data extraction
 - OAuth2 authentication support for enterprise security
 
 #### 3. **FLEXT Ecosystem Compliance Violations**

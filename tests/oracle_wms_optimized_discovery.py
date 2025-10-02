@@ -11,7 +11,6 @@ OPTIMIZED approach:
 5. No fallbacks, no estimations - 100% Oracle discovery
 """
 
-import asyncio
 import json
 import operator
 from datetime import UTC, datetime
@@ -87,20 +86,20 @@ class OptimizedOracleWmsDiscovery:
         self.high_value_entities = {}  # Entities with data
         self.complete_schemas = {}
 
-    async def start_discovery(self) -> FlextResult[None]:
+    def start_discovery(self) -> FlextResult[None]:
         """Start optimized discovery."""
-        start_result = await self.client.start()
+        start_result = self.client.start()
         if not start_result.success:
             return FlextResult[None].fail(f"Client start failed: {start_result.error}")
 
         return FlextResult[None].ok(None)
 
-    async def discover_priority_entities_fast(
+    def discover_priority_entities_fast(
         self,
     ) -> FlextResult[FlextTypes.Core.Dict]:
         """Fast discovery of priority entities with data."""
         # Get all entities first
-        entities_result = await self.client.discover_entities()
+        entities_result = self.client.discover_entities()
         if not entities_result.success:
             return FlextResult[None].fail(
                 f"Entity discovery failed: {entities_result.error}",
@@ -113,7 +112,7 @@ class OptimizedOracleWmsDiscovery:
         other_entities = [e for e in all_entities if e not in self.priority_entities]
 
         # Process priority entities first
-        priority_results = await self._process_entity_batch(
+        priority_results = self._process_entity_batch(
             available_priority,
             "PRIORITY",
             batch_size=10,
@@ -130,7 +129,7 @@ class OptimizedOracleWmsDiscovery:
 
         # If we found entities with data, process some additional ones
         if entities_with_data and len(other_entities) > 0:
-            additional_results = await self._process_entity_batch(
+            additional_results = self._process_entity_batch(
                 other_entities[:50],  # Test first 50 additional entities
                 "ADDITIONAL",
                 batch_size=15,
@@ -164,7 +163,7 @@ class OptimizedOracleWmsDiscovery:
             },
         )
 
-    async def _process_entity_batch(
+    def _process_entity_batch(
         self,
         entities: FlextTypes.Core.StringList,
         batch_size: int = 10,
@@ -183,7 +182,7 @@ class OptimizedOracleWmsDiscovery:
                 self._analyze_single_entity(entity_name) for entity_name in batch
             ]
 
-            batch_results = await asyncio.gather(*batch_tasks, return_exceptions=True)
+            batch_results = gather(*batch_tasks, return_exceptions=True)
 
             # Process results
             for entity_name, result in zip(batch, batch_results, strict=False):
@@ -206,15 +205,15 @@ class OptimizedOracleWmsDiscovery:
             sum(1 for r in results.values() if r.get("has_data", False))
 
             # Small delay to be respectful to the API
-            await asyncio.sleep(0.1)
+            sleep(0.1)
 
         return results
 
-    async def _analyze_single_entity(self, entity_name: str) -> FlextTypes.Core.Dict:
+    def _analyze_single_entity(self, entity_name: str) -> FlextTypes.Core.Dict:
         """Analyze single entity for data and structure."""
         try:
             # Get entity data with small sample
-            data_result = await self.client.get_entity_data(
+            data_result = self.client.get_entity_data(
                 entity_name,
                 limit=3,  # Small sample for analysis
                 offset=0,
@@ -290,7 +289,7 @@ class OptimizedOracleWmsDiscovery:
                 safe_record[k] = f"<{type(v).__name__}>"
         return safe_record
 
-    async def generate_complete_singer_schemas(
+    def generate_complete_singer_schemas(
         self,
     ) -> FlextResult[FlextTypes.Core.Dict]:
         """Generate complete Singer schemas for high-value entities."""
@@ -576,10 +575,10 @@ class OptimizedOracleWmsDiscovery:
 
         return {"version": 1, "streams": streams}
 
-    async def save_optimized_results(self) -> FlextResult[str]:
+    def save_optimized_results(self) -> FlextResult[str]:
         """Save optimized discovery results."""
         results_dir = Path("oracle_wms_optimized_results")
-        await asyncio.to_thread(results_dir.mkdir, exist_ok=True)
+        to_thread(results_dir.mkdir, exist_ok=True)
 
         timestamp = datetime.now(UTC).strftime("%Y%m%d_%H%M%S")
 
@@ -629,37 +628,37 @@ class OptimizedOracleWmsDiscovery:
 
         return FlextResult[None].ok(str(results_dir))
 
-    async def cleanup(self) -> FlextResult[None]:
+    def cleanup(self) -> FlextResult[None]:
         """Clean up resources."""
         try:
-            await self.client.stop()
+            self.client.stop()
             return FlextResult[None].ok(None)
         except Exception as e:
             return FlextResult[None].fail(f"Cleanup failed: {e}")
 
 
-async def run_optimized_discovery() -> None:
+def run_optimized_discovery() -> None:
     """Run optimized Oracle WMS discovery."""
     discovery = OptimizedOracleWmsDiscovery()
 
     try:
         # Start discovery
-        start_result = await discovery.start_discovery()
+        start_result = discovery.start_discovery()
         if not start_result.success:
             return
 
         # Discover priority entities with data
-        entities_result = await discovery.discover_priority_entities_fast()
+        entities_result = discovery.discover_priority_entities_fast()
         if not entities_result.success:
             return
 
         # Generate Singer schemas
-        schemas_result = await discovery.generate_complete_singer_schemas()
+        schemas_result = discovery.generate_complete_singer_schemas()
         if not schemas_result.success:
             return
 
         # Save results
-        save_result = await discovery.save_optimized_results()
+        save_result = discovery.save_optimized_results()
         if not save_result.success:
             return
 
@@ -680,8 +679,8 @@ async def run_optimized_discovery() -> None:
     except Exception:
         logger.exception("Optimized discovery failed")
     finally:
-        await discovery.cleanup()
+        discovery.cleanup()
 
 
 if __name__ == "__main__":
-    asyncio.run(run_optimized_discovery())
+    run_optimized_discovery()

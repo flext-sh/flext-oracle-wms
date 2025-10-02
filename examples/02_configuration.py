@@ -5,6 +5,7 @@ integration using the ACTUAL API that exists and functions properly.
 
 """
 
+import contextlib
 import os
 from dataclasses import dataclass
 from enum import StrEnum
@@ -209,7 +210,7 @@ def validate_configuration(config: FlextOracleWmsClientConfig) -> dict[str, Any]
     return validation_results
 
 
-async def test_configuration(
+def test_configuration(
     config: FlextOracleWmsClientConfig,
 ) -> dict[str, Any]:
     """Test Oracle WMS configuration by attempting connection.
@@ -232,23 +233,23 @@ async def test_configuration(
 
     try:
         # Test connection
-        await client.start()
+        client.start()
         test_results["connection_success"] = True
 
         # Test health check
-        health_result = await client.health_check()
+        health_result = client.health_check()
         if health_result.is_success:
             test_results["health_check_success"] = True
 
         # Test entity discovery
-        entities_result = await client.discover_entities()
+        entities_result = client.discover_entities()
         if entities_result.is_success and entities_result.value:
             test_results["entities_discovered"] = len(entities_result.value)
 
     except Exception as e:
         test_results["error"] = str(e)
     finally:
-        await client.stop()
+        client.stop()
 
     return test_results
 
@@ -297,13 +298,8 @@ def demonstrate_configuration_patterns() -> None:
 
 def main() -> None:
     """Main function demonstrating Oracle WMS configuration patterns."""
-    try:
+    with contextlib.suppress(Exception):
         demonstrate_configuration_patterns()
-        print("Configuration examples completed successfully")
-        print("Environment configuration created successfully")
-        print("Configuration is valid and ready for use")
-    except Exception as e:
-        print(f"Configuration example failed: {e}")
 
 
 if __name__ == "__main__":

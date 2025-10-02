@@ -272,7 +272,7 @@ def test_performance_benchmark():
 
 - **pytest v7.4.0+** - Primary testing framework with advanced features
 - **pytest-cov v4.1.0+** - Coverage reporting and analysis
-- **pytest-asyncio v0.21.0+** - Async test support for client operations
+- **pytest-v0.21.0+** - test support for client operations
 - **pytest-mock v3.11.0+** - Mock object support for unit testing
 
 ### Additional Testing Tools

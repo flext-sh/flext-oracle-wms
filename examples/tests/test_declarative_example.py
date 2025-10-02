@@ -3,7 +3,6 @@
 This demonstrates the declarative approach with massive code reduction.
 """
 
-import asyncio
 from pathlib import Path
 from urllib.parse import urlparse
 
@@ -68,7 +67,7 @@ def load_env_config() -> dict[str, object] | None:
     }
 
 
-async def main() -> None:
+def main() -> None:
     """Demonstrate declarative Oracle WMS Client usage."""
     # Load configuration
     env_config = load_env_config()
@@ -96,7 +95,7 @@ async def main() -> None:
 
     try:
         # Start the client
-        start_result = await client.start()
+        start_result = client.start()
         if not start_result.is_success:
             return
 
@@ -113,18 +112,18 @@ async def main() -> None:
             pass
 
         # Health check
-        health_result = await client.health_check()
+        health_result = client.health_check()
         if health_result.is_success:
             pass
 
         # Get available entities
-        entities_result = await client.discover_entities()
+        entities_result = client.discover_entities()
         if entities_result.is_success:
             pass
 
         # Test LGF API v10 - Get entity data
         for entity in ["company", "facility", "item"]:
-            result = await client.get_entity_data(entity, limit=3)
+            result = client.get_entity_data(entity, limit=3)
 
             if result.is_success:
                 data = result.value
@@ -138,12 +137,12 @@ async def main() -> None:
         # Test automation APIs (dry run)
 
         # Test entity status (using health check as alternative)
-        health_result = await client.health_check()
+        health_result = client.health_check()
         if health_result.is_success:
             pass
 
         # Test OBLPN tracking (will fail, but tests structure)
-        await client.update_oblpn_tracking_number(
+        client.update_oblpn_tracking_number(
             company_code="TEST",
             facility_code="TEST",
             oblpn_nbr="TEST123",
@@ -151,7 +150,7 @@ async def main() -> None:
         )
 
         # Test LPN creation (will fail, but tests structure)
-        lpn_result = await client.create_lpn(lpn_nbr="TEST_LPN", qty=10)
+        lpn_result = client.create_lpn(lpn_nbr="TEST_LPN", qty=10)
         if lpn_result.is_failure:
             logger.debug(f"LPN creation failed as expected: {lpn_result.error}")
 
@@ -163,8 +162,8 @@ async def main() -> None:
 
     finally:
         # Cleanup
-        await client.stop()
+        client.stop()
 
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    main()

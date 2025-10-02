@@ -4,8 +4,6 @@ Copyright (c) 2025 FLEXT Team. All rights reserved.
 SPDX-License-Identifier: MIT
 """
 
-import pytest
-
 from flext_oracle_wms import (
     FlextOracleWmsDefaults,
     FlextOracleWmsDynamicSchemaProcessor,
@@ -32,8 +30,7 @@ class TestFlextOracleWmsDynamicSchemaProcessor:
         assert processor.confidence_threshold == 0.9
         assert processor.sample_size == 50
 
-    @pytest.mark.asyncio
-    async def test_discover_entity_schema_simple(self) -> None:
+    def test_discover_entity_schema_simple(self) -> None:
         """Test schema discovery with simple records."""
         processor = FlextOracleWmsDynamicSchemaProcessor()
         records = [
@@ -42,11 +39,10 @@ class TestFlextOracleWmsDynamicSchemaProcessor:
             {"id": 3, "name": "test3", "status": "active"},
         ]
 
-        result = await processor.process_records(records, None)
+        result = processor.process_records(records, None)
         assert result.success
 
-    @pytest.mark.asyncio
-    async def test_discover_entity_schema_complex(self) -> None:
+    def test_discover_entity_schema_complex(self) -> None:
         """Test schema discovery with complex nested records."""
         processor = FlextOracleWmsDynamicSchemaProcessor()
         records = [
@@ -65,19 +61,17 @@ class TestFlextOracleWmsDynamicSchemaProcessor:
             },
         ]
 
-        result = await processor.process_records(records, None)
+        result = processor.process_records(records, None)
         # May succeed or fail depending on implementation complexity
         assert result.success or result.is_failure
 
-    @pytest.mark.asyncio
-    async def test_discover_entity_schema_empty_records(self) -> None:
+    def test_discover_entity_schema_empty_records(self) -> None:
         """Test schema discovery with empty records."""
         processor = FlextOracleWmsDynamicSchemaProcessor()
-        result = await processor.process_records([], None)
+        result = processor.process_records([], None)
         assert result.is_failure
 
-    @pytest.mark.asyncio
-    async def test_process_entity_records(self) -> None:
+    def test_process_entity_records(self) -> None:
         """Test entity record processing."""
         processor = FlextOracleWmsDynamicSchemaProcessor()
         records: list[dict[str, object]] = [
@@ -91,7 +85,7 @@ class TestFlextOracleWmsDynamicSchemaProcessor:
             "count": {"type": "integer"},
         }
 
-        result = await processor.process_entity_records("test_entity", records, schema)
+        result = processor.process_entity_records("test_entity", records, schema)
         assert result.success or result.is_failure  # Depends on implementation
 
     def test_private_methods_field_type_inference(self) -> None:
@@ -202,24 +196,22 @@ class TestFactoryFunction:
 class TestEdgeCases:
     """Test edge cases and error conditions."""
 
-    @pytest.mark.asyncio
-    async def test_discover_schema_invalid_entity_name(self) -> None:
+    def test_discover_schema_invalid_entity_name(self) -> None:
         """Test schema discovery with invalid entity name."""
         processor = FlextOracleWmsDynamicSchemaProcessor()
         records = [{"id": 1, "name": "test"}]
 
-        result = await processor.process_records(records, None)
+        result = processor.process_records(records, None)
         # Implementation allows empty entity name, so test that it succeeds
         assert result.success
 
-    @pytest.mark.asyncio
-    async def test_process_records_invalid_schema(self) -> None:
+    def test_process_records_invalid_schema(self) -> None:
         """Test record processing with invalid schema."""
         processor = FlextOracleWmsDynamicSchemaProcessor()
         records = [{"id": 1, "name": "test"}]
 
         # Empty schema
-        result = await processor.process_entity_records("test", records, {})
+        result = processor.process_entity_records("test", records, {})
         assert result.is_failure or result.success  # Depends on implementation
 
     def test_type_inference_edge_cases(self) -> None:

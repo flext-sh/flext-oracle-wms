@@ -35,7 +35,7 @@ src/flext_oracle_wms/
 
 ### Oracle WMS Cloud Integration
 
-- **Type-safe REST API client** with async support and comprehensive error handling
+- **Type-safe REST API client** with support and comprehensive error handling
 - **Multi-method authentication** supporting Basic, Bearer token, and API key methods
 - **Automatic entity discovery** with schema introspection and validation
 - **Declarative API catalog** for endpoint management and versioning
@@ -73,7 +73,7 @@ config = FlextOracleWmsClientConfig(
 
 # Enterprise client with comprehensive error handling
 client = FlextOracleWmsClient(config)
-result = await client.discover_entities()
+result = client.discover_entities()
 
 # Railway-oriented programming with FlextResult
 if result.success:
@@ -110,7 +110,7 @@ from flext_oracle_wms.exceptions import (
 )
 
 try:
-    result = await client.query_entity_data("INVENTORY")
+    result = client.query_entity_data("INVENTORY")
     if result.is_failure:
         # Handle business logic errors via FlextResult
         logger.error(f"Query failed: {result.error}")
@@ -179,7 +179,7 @@ make security               # Bandit + pip-audit security scanning
 ### External Dependencies
 
 - **Pydantic v2.11.7+** - Data validation and settings management
-- **HTTPX v0.28.1+** - Async HTTP client for Oracle WMS API communication
+- **HTTPX v0.28.1+** - HTTP client for Oracle WMS API communication
 - **Python 3.13+** - Latest Python with enhanced type system and performance
 
 ## 📚 **Additional Resources**

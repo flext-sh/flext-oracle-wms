@@ -88,7 +88,7 @@ class FlextOracleWmsDataFlattener(_OpsFlattener):
         except Exception as e:  # pragma: no cover - delegate errors
             return FlextResult[list[FlextOracleWmsTypes.Core.Dict]].fail(str(e))
 
-    async def unflatten_records(
+    def unflatten_records(
         self,
         records: list[FlextOracleWmsTypes.Core.Dict],
     ) -> FlextResult[list[FlextOracleWmsTypes.Core.Dict]]:
@@ -104,7 +104,7 @@ class FlextOracleWmsDataFlattener(_OpsFlattener):
         # Minimal unflatten: return records as-is (tests only check shape basics)
         return FlextResult[list[FlextOracleWmsTypes.Core.Dict]].ok(records)
 
-    async def get_flattening_stats(
+    def get_flattening_stats(
         self,
         records: list[FlextOracleWmsTypes.Core.Dict],
     ) -> FlextResult[FlextOracleWmsTypes.Core.Dict]:

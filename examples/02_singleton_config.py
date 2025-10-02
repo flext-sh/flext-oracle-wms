@@ -8,7 +8,6 @@ Copyright (c) 2025 FLEXT Team. All rights reserved.
 SPDX-License-Identifier: MIT
 """
 
-import asyncio
 import os
 
 from flext_core import FlextLogger
@@ -18,7 +17,7 @@ from flext_oracle_wms.constants import FlextOracleWmsConstants
 logger = FlextLogger(__name__)
 
 
-async def demonstrate_singleton_config() -> None:
+def demonstrate_singleton_config() -> None:
     """Demonstrate Oracle WMS configuration singleton usage with dynamic parameters."""
     logger.info("=== Oracle WMS Configuration Singleton Demo ===")
 
@@ -109,7 +108,7 @@ async def demonstrate_singleton_config() -> None:
         logger.info(f"   Client config URL: {client.config.oracle_wms_base_url}")
 
         # Test health check
-        health_result = await client.health_check()
+        health_result = client.health_check()
         if health_result.is_success:
             logger.info("   ✅ Health check passed")
             logger.info(f"   Service: {health_result.value.get('service', 'Unknown')}")
@@ -155,10 +154,10 @@ def demonstrate_environment_variables() -> None:
     logger.info("   export FLEXT_ORACLE_WMS_MAX_RETRIES='5'")
 
 
-async def main() -> None:
+def main() -> None:
     """Main function."""
     try:
-        await demonstrate_singleton_config()
+        demonstrate_singleton_config()
         demonstrate_environment_variables()
     except Exception:
         logger.exception("Demo failed")
@@ -166,4 +165,4 @@ async def main() -> None:
 
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    run(main())

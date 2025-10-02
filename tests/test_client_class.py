@@ -79,11 +79,11 @@ def test_client_basic_properties() -> None:
 
 
 def test_discover_entities_class() -> None:
-    """Test entity discovery method exists (async)."""
+    """Test entity discovery method exists ()."""
     config = FlextOracleWmsConfig.create_for_testing()
     client = FlextOracleWmsClient(config)
 
-    # Test that method exists and is callable (async method)
+    # Test that method exists and is callable (method)
     assert hasattr(client, "discover_entities")
     assert callable(client.discover_entities)
 
@@ -101,11 +101,11 @@ def test_specialized_wms_methods_class() -> None:
 
 
 def test_health_check_method_class() -> None:
-    """Test health check method exists (async)."""
+    """Test health check method exists ()."""
     config = FlextOracleWmsConfig.create_for_testing()
     client = FlextOracleWmsClient(config)
 
-    # Test that health_check method exists and is callable (async method)
+    # Test that health_check method exists and is callable (method)
     assert hasattr(client, "health_check")
     assert callable(client.health_check)
 
@@ -157,7 +157,7 @@ def test_client_lifecycle_methods() -> None:
     config = FlextOracleWmsConfig.create_for_testing()
     client = FlextOracleWmsClient(config)
 
-    # Test that async lifecycle methods exist
+    # Test that lifecycle methods exist
     assert hasattr(client, "start")
     assert hasattr(client, "stop")
     assert callable(client.start)

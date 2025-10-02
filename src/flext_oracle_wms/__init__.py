@@ -6,6 +6,14 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
+from flext_auth.providers import (
+    ApiKeyAuthProvider,
+    BasicAuthProvider,
+    JwtAuthProvider,
+)
+
+# Authentication through flext-auth (use these for Oracle WMS authentication)
+from flext_auth import HttpAuthMiddleware
 from flext_oracle_wms.config import (
     FlextOracleWmsClientConfig,
     FlextOracleWmsConfig,
@@ -34,9 +42,6 @@ from flext_oracle_wms.wms_api import (
     get_mock_server,
 )
 from flext_oracle_wms.wms_client import (
-    FlextOracleWmsAuthConfig,
-    FlextOracleWmsAuthenticator,
-    FlextOracleWmsAuthPlugin,
     FlextOracleWmsClient,
     FlextOracleWmsClientMock,
     create_oracle_wms_client,
@@ -149,9 +154,13 @@ __description__ = (
 
 
 __all__: FlextOracleWmsTypes.Core.StringList = [
+    # Oracle WMS
     "DISCOVERY_FAILURE",
     "DISCOVERY_SUCCESS",
     "FLEXT_ORACLE_WMS_APIS",
+    # flext-auth providers (for Oracle WMS authentication)
+    "ApiKeyAuthProvider",
+    "BasicAuthProvider",
     "DiscoveryContext",
     "EndpointDiscoveryStrategy",
     "EntityResponseParser",
@@ -160,10 +169,7 @@ __all__: FlextOracleWmsTypes.Core.StringList = [
     "FlextOracleWmsApiError",
     "FlextOracleWmsApiResponse",
     "FlextOracleWmsApiVersion",
-    "FlextOracleWmsAuthConfig",
-    "FlextOracleWmsAuthPlugin",
     "FlextOracleWmsAuthenticationError",
-    "FlextOracleWmsAuthenticator",
     "FlextOracleWmsCacheConfig",
     "FlextOracleWmsCacheEntry",
     "FlextOracleWmsCacheManager",
@@ -202,6 +208,8 @@ __all__: FlextOracleWmsTypes.Core.StringList = [
     "FlextOracleWmsUnifiedOperations",
     "FlextOracleWmsUtilities",
     "FlextOracleWmsValidationError",
+    "HttpAuthMiddleware",
+    "JwtAuthProvider",
     "OracleWMSAuthMethod",
     "OracleWMSEntityType",
     "OracleWMSFilterOperator",

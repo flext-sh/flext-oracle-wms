@@ -108,7 +108,7 @@ class FlextOracleWmsFilter:
             return field_value in filter_value
         return False
 
-    async def filter_records(
+    def filter_records(
         self,
         records: list[FlextOracleWmsTypes.Core.Dict],
         filters: FlextOracleWmsTypes.Core.Dict,
@@ -139,7 +139,7 @@ class FlextOracleWmsFilter:
         filtered_records = self._apply_record_filters(records)
         return FlextResult[list[FlextOracleWmsTypes.Core.Dict]].ok(filtered_records)
 
-    async def filter_records_with_options(
+    def filter_records_with_options(
         self,
         records: list[FlextOracleWmsTypes.Core.Dict],
         filters: FlextOracleWmsTypes.Core.Dict,
@@ -171,7 +171,7 @@ class FlextOracleWmsFilter:
             filtered_records = filtered_records[:limit]
         return FlextResult[list[FlextOracleWmsTypes.Core.Dict]].ok(filtered_records)
 
-    async def sort_records(
+    def sort_records(
         self,
         records: list[FlextOracleWmsTypes.Core.Dict],
         sort_field: str,
@@ -406,7 +406,7 @@ def flext_oracle_wms_create_filter(
     )
 
 
-async def flext_oracle_wms_filter_by_field(
+def flext_oracle_wms_filter_by_field(
     records: list[FlextOracleWmsTypes.Core.Dict],
     field: str,
     _value: object,
@@ -418,7 +418,7 @@ async def flext_oracle_wms_filter_by_field(
         pass
     # Set filters before calling filter_records
     filters = {field: "op_value"}
-    return await engine.filter_records(records, filters)
+    return engine.filter_records(records, filters)
 
 
 def flext_oracle_wms_filter_by_id_range(

@@ -6,13 +6,29 @@
 
 **Hierarchy**: This document provides project-specific standards based on workspace-level patterns defined in [../CLAUDE.md](../CLAUDE.md). For architectural principles, quality gates, and MCP server usage, reference the main workspace standards.
 
-## 🔗 MCP SERVER INTEGRATION
+## 📋 DOCUMENT STRUCTURE & REFERENCES
 
-| MCP Server              | Purpose                                                                | Status     |
-| ----------------------- | ---------------------------------------------------------------------- | ---------- |
-| **serena**              | Oracle WMS codebase analysis and warehouse system integration patterns | **ACTIVE** |
-| **sequential-thinking** | Oracle WMS architecture and enterprise warehouse problem solving       | **ACTIVE** |
-| **github**              | Oracle WMS ecosystem integration and warehouse system PRs              | **ACTIVE** |
+**Quick Links**:
+- **[~/.claude/commands/flext.md](~/.claude/commands/flext.md)**: Optimization command for module refactoring (USE with `/flext` command)
+- **[../CLAUDE.md](../CLAUDE.md)**: FLEXT ecosystem standards and domain library rules
+
+**Document Purpose**:
+- **This file (CLAUDE.md)**: Project-specific flext-oracle-wms standards, ORACLE WMS INTEGRATION patterns, and warehouse management authority
+- **flext.md command**: Practical refactoring workflows and MCP tool usage patterns (HOW-TO)
+- **Workspace CLAUDE.md**: Domain library standards and ecosystem architectural principles (WHAT and WHY)
+
+**DO NOT DUPLICATE**: This file focuses on flext-oracle-wms Oracle Warehouse Management System authority specifics and enterprise WMS integration patterns.
+
+**Usage**: Reference [~/.claude/commands/flext.md](~/.claude/commands/flext.md) for MCP workflows. Use `/flext` command for Oracle WMS module optimization and Clean Architecture refactoring.
+
+## 🔗 MCP SERVER INTEGRATION (MANDATORY)
+
+| MCP Server              | Purpose                                                                | Status          |
+| ----------------------- | ---------------------------------------------------------------------- | --------------- |
+| **serena-flext**        | Semantic code analysis, symbol manipulation, refactoring               | **MANDATORY**   |
+| **sequential-thinking** | Oracle WMS architecture and enterprise warehouse problem solving       | **RECOMMENDED** |
+| **context7**            | Third-party library documentation (Oracle WMS, flext-db-oracle)        | **RECOMMENDED** |
+| **github**              | Repository operations and Oracle WMS ecosystem PRs                     | **ACTIVE**      |
 
 **Usage**: `claude mcp list` for available servers, leverage for Oracle WMS-specific development patterns and warehouse system analysis.
 

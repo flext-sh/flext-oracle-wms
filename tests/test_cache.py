@@ -15,7 +15,6 @@ Copyright (c) 2025 FLEXT Team. All rights reserved.
 SPDX-License-Identifier: MIT
 """
 
-import asyncio
 import contextlib
 import math
 import time
@@ -42,7 +41,7 @@ def create_test_cache_config(
         "max_cache_entries": 1000,
         "cleanup_interval_seconds": 300,
         "enable_statistics": True,
-        "enable_async_cleanup": True,
+        "enable_cleanup": True,
     }
     defaults.update(overrides)
     return FlextOracleWmsCacheConfig(**defaults)
@@ -78,14 +77,14 @@ class TestFlextOracleWmsCacheConfig:
             max_cache_entries=1000,
             cleanup_interval_seconds=300,
             enable_statistics=True,
-            enable_async_cleanup=True,
+            enable_cleanup=True,
         )
 
         assert config.default_ttl_seconds == 3600  # 1 hour
         assert config.max_cache_entries == 1000
         assert config.cleanup_interval_seconds == 300  # 5 minutes
         assert config.enable_statistics is True
-        assert config.enable_async_cleanup is True
+        assert config.enable_cleanup is True
 
     def test_cache_config_creation_custom(self) -> None:
         """Test creating cache config with custom values."""
@@ -94,14 +93,14 @@ class TestFlextOracleWmsCacheConfig:
             max_cache_entries=500,
             cleanup_interval_seconds=600,
             enable_statistics=False,
-            enable_async_cleanup=False,
+            enable_cleanup=False,
         )
 
         assert config.default_ttl_seconds == 7200
         assert config.max_cache_entries == 500
         assert config.cleanup_interval_seconds == 600
         assert config.enable_statistics is False
-        assert config.enable_async_cleanup is False
+        assert config.enable_cleanup is False
 
     def test_cache_config_validation_success(self) -> None:
         """Test cache config validation with valid values."""
@@ -110,7 +109,7 @@ class TestFlextOracleWmsCacheConfig:
             max_cache_entries=1000,
             cleanup_interval_seconds=300,
             enable_statistics=True,
-            enable_async_cleanup=True,
+            enable_cleanup=True,
         )
 
         result = config.validate_business_rules()
@@ -666,7 +665,7 @@ class TestFlextOracleWmsCacheManager:
             max_cache_entries=100,
             cleanup_interval_seconds=300,
             enable_statistics=True,
-            enable_async_cleanup=True,
+            enable_cleanup=True,
         )
         self.cache_manager = FlextOracleWmsCacheManager(self.config)
 
@@ -675,7 +674,7 @@ class TestFlextOracleWmsCacheManager:
         # Ensure cache manager is stopped
         if hasattr(self, "cache_manager"):
             with contextlib.suppress(Exception):
-                asyncio.run(self.cache_manager.stop())
+                self.cache_manager.stop()
 
     def test_cache_manager_initialization(self) -> None:
         """Test cache manager initialization."""
@@ -686,39 +685,36 @@ class TestFlextOracleWmsCacheManager:
         assert self.cache_manager._cleanup_task is None
         assert isinstance(self.cache_manager._stats, FlextOracleWmsCacheStats)
 
-    @pytest.mark.asyncio
-    async def test_cache_manager_start_success(self) -> None:
+    def test_cache_manager_start_success(self) -> None:
         """Test successful cache manager start."""
-        result = await self.cache_manager.start()
+        result = self.cache_manager.start()
 
         assert result.success
         assert self.cache_manager._cleanup_task is not None
 
         # Clean up
-        await self.cache_manager.stop()
+        self.cache_manager.stop()
 
-    @pytest.mark.asyncio
-    async def test_cache_manager_start_without_cleanup(self) -> None:
-        """Test cache manager start without async cleanup."""
-        config = create_test_cache_config(enable_async_cleanup=False)
+    def test_cache_manager_start_without_cleanup(self) -> None:
+        """Test cache manager start without cleanup."""
+        config = create_test_cache_config(enable_cleanup=False)
         cache_manager = FlextOracleWmsCacheManager(config)
 
-        result = await cache_manager.start()
+        result = cache_manager.start()
 
         assert result.success
         assert cache_manager._cleanup_task is None
 
-        await cache_manager.stop()
+        cache_manager.stop()
 
-    @pytest.mark.asyncio
-    async def test_cache_manager_stop_success(self) -> None:
+    def test_cache_manager_stop_success(self) -> None:
         """Test successful cache manager stop."""
-        await self.cache_manager.start()
+        self.cache_manager.start()
 
         # Add some test data
-        await self.cache_manager.set_entity("test_key", "test_value")
+        self.cache_manager.set_entity("test_key", "test_value")
 
-        result = await self.cache_manager.stop()
+        result = self.cache_manager.stop()
 
         assert result.success
         assert len(self.cache_manager._entity_cache) == 0
@@ -726,20 +722,18 @@ class TestFlextOracleWmsCacheManager:
         if self.cache_manager._cleanup_task:
             assert self.cache_manager._cleanup_task.cancelled()
 
-    @pytest.mark.asyncio
-    async def test_cache_manager_stop_without_start(self) -> None:
+    def test_cache_manager_stop_without_start(self) -> None:
         """Test cache manager stop without prior start."""
-        result = await self.cache_manager.stop()
+        result = self.cache_manager.stop()
 
         assert result.success
 
-    @pytest.mark.asyncio
-    async def test_entity_cache_operations(self) -> None:
+    def test_entity_cache_operations(self) -> None:
         """Test entity cache set and get operations."""
-        await self.cache_manager.start()
+        self.cache_manager.start()
 
         # Test set operation
-        set_result = await self.cache_manager.set_entity(
+        set_result = self.cache_manager.set_entity(
             "entity_1",
             {"name": "Test Entity"},
         )
@@ -747,29 +741,27 @@ class TestFlextOracleWmsCacheManager:
         assert set_result.data is True
 
         # Test get operation
-        get_result = await self.cache_manager.get_entity("entity_1")
+        get_result = self.cache_manager.get_entity("entity_1")
         assert get_result.success
         assert get_result.data == {"name": "Test Entity"}
 
-        await self.cache_manager.stop()
+        self.cache_manager.stop()
 
-    @pytest.mark.asyncio
-    async def test_entity_cache_miss(self) -> None:
+    def test_entity_cache_miss(self) -> None:
         """Test entity cache miss."""
-        await self.cache_manager.start()
+        self.cache_manager.start()
 
-        get_result = await self.cache_manager.get_entity("nonexistent_key")
+        get_result = self.cache_manager.get_entity("nonexistent_key")
         assert get_result.success
         assert get_result.data is None
 
-        await self.cache_manager.stop()
+        self.cache_manager.stop()
 
-    @pytest.mark.asyncio
-    async def test_entity_cache_with_custom_ttl(self) -> None:
+    def test_entity_cache_with_custom_ttl(self) -> None:
         """Test entity cache with custom TTL."""
-        await self.cache_manager.start()
+        self.cache_manager.start()
 
-        set_result = await self.cache_manager.set_entity(
+        set_result = self.cache_manager.set_entity(
             "entity_ttl",
             "test_value",
             ttl_seconds=7200,
@@ -780,136 +772,129 @@ class TestFlextOracleWmsCacheManager:
         entry = self.cache_manager._entity_cache["entity_ttl"]
         assert entry.ttl_seconds == 7200
 
-        await self.cache_manager.stop()
+        self.cache_manager.stop()
 
-    @pytest.mark.asyncio
-    async def test_schema_cache_operations(self) -> None:
+    def test_schema_cache_operations(self) -> None:
         """Test schema cache set and get operations."""
-        await self.cache_manager.start()
+        self.cache_manager.start()
 
         schema_data = {
             "fields": {"id": {"type": "integer"}, "name": {"type": "string"}},
         }
 
-        set_result = await self.cache_manager.set_schema("schema_1", schema_data)
+        set_result = self.cache_manager.set_schema("schema_1", schema_data)
         assert set_result.success
 
-        get_result = await self.cache_manager.get_schema("schema_1")
+        get_result = self.cache_manager.get_schema("schema_1")
         assert get_result.success
         assert get_result.data == schema_data
 
-        await self.cache_manager.stop()
+        self.cache_manager.stop()
 
-    @pytest.mark.asyncio
-    async def test_metadata_cache_operations(self) -> None:
+    def test_metadata_cache_operations(self) -> None:
         """Test metadata cache set and get operations."""
-        await self.cache_manager.start()
+        self.cache_manager.start()
 
         metadata = {"last_updated": "2024-01-01", "version": "1.0"}
 
-        set_result = await self.cache_manager.set_metadata("meta_1", metadata)
+        set_result = self.cache_manager.set_metadata("meta_1", metadata)
         assert set_result.success
 
-        get_result = await self.cache_manager.get_metadata("meta_1")
+        get_result = self.cache_manager.get_metadata("meta_1")
         assert get_result.success
         assert get_result.data == metadata
 
-        await self.cache_manager.stop()
+        self.cache_manager.stop()
 
-    @pytest.mark.asyncio
-    async def test_cache_expiration(self) -> None:
+    def test_cache_expiration(self) -> None:
         """Test cache entry expiration."""
         config = create_test_cache_config(default_ttl_seconds=1)  # 1 second TTL
         cache_manager = FlextOracleWmsCacheManager(config)
-        await cache_manager.start()
+        cache_manager.start()
 
         # Set a value with short TTL
-        await cache_manager.set_entity("expiring_key", "expiring_value")
+        cache_manager.set_entity("expiring_key", "expiring_value")
 
         # Should be available immediately
-        result = await cache_manager.get_entity("expiring_key")
+        result = cache_manager.get_entity("expiring_key")
         assert result.success
         assert result.data == "expiring_value"
 
         # Wait for expiration
-        await asyncio.sleep(1.1)
+        sleep(1.1)
 
         # Should be expired and return None
-        result = await cache_manager.get_entity("expiring_key")
+        result = cache_manager.get_entity("expiring_key")
         assert result.success
         assert result.data is None
 
-        await cache_manager.stop()
+        cache_manager.stop()
 
-    @pytest.mark.asyncio
-    async def test_cache_eviction(self) -> None:
+    def test_cache_eviction(self) -> None:
         """Test cache eviction when max entries exceeded."""
         config = create_test_cache_config(max_cache_entries=2)
         cache_manager = FlextOracleWmsCacheManager(config)
-        await cache_manager.start()
+        cache_manager.start()
 
         # Fill cache to capacity
-        await cache_manager.set_entity("key1", "value1")
-        await cache_manager.set_entity("key2", "value2")
+        cache_manager.set_entity("key1", "value1")
+        cache_manager.set_entity("key2", "value2")
 
         # Adding third entry should evict oldest
-        await cache_manager.set_entity("key3", "value3")
+        cache_manager.set_entity("key3", "value3")
 
         # key1 should be evicted (oldest)
-        result = await cache_manager.get_entity("key1")
+        result = cache_manager.get_entity("key1")
         assert result.success
         assert result.data is None
 
         # key2 and key3 should still exist
-        result = await cache_manager.get_entity("key2")
+        result = cache_manager.get_entity("key2")
         assert result.success
         assert result.data == "value2"
 
-        result = await cache_manager.get_entity("key3")
+        result = cache_manager.get_entity("key3")
         assert result.success
         assert result.data == "value3"
 
-        await cache_manager.stop()
+        cache_manager.stop()
 
-    @pytest.mark.asyncio
-    async def test_cache_invalidation(self) -> None:
+    def test_cache_invalidation(self) -> None:
         """Test cache key invalidation."""
-        await self.cache_manager.start()
+        self.cache_manager.start()
 
         # Set values in multiple caches
-        await self.cache_manager.set_entity("test_key", "entity_value")
-        await self.cache_manager.set_schema("test_key", "schema_value")
-        await self.cache_manager.set_metadata("test_key", "metadata_value")
+        self.cache_manager.set_entity("test_key", "entity_value")
+        self.cache_manager.set_schema("test_key", "schema_value")
+        self.cache_manager.set_metadata("test_key", "metadata_value")
 
         # Invalidate key from all caches
-        await self.cache_manager.invalidate_key("test_key")
+        self.cache_manager.invalidate_key("test_key")
 
         # All should return None
-        assert (await self.cache_manager.get_entity("test_key")).data is None
-        assert (await self.cache_manager.get_schema("test_key")).data is None
-        assert (await self.cache_manager.get_metadata("test_key")).data is None
+        assert (self.cache_manager.get_entity("test_key")).data is None
+        assert (self.cache_manager.get_schema("test_key")).data is None
+        assert (self.cache_manager.get_metadata("test_key")).data is None
 
-        await self.cache_manager.stop()
+        self.cache_manager.stop()
 
-    @pytest.mark.asyncio
-    async def test_cache_invalidation_nonexistent_key(self) -> None:
+    def test_cache_invalidation_nonexistent_key(self) -> None:
         """Test cache invalidation of nonexistent key."""
-        await self.cache_manager.start()
+        self.cache_manager.start()
 
-        await self.cache_manager.invalidate_key("nonexistent")
+        self.cache_manager.invalidate_key("nonexistent")
         # Method now returns a FlextResult
 
-        await self.cache_manager.stop()
+        self.cache_manager.stop()
 
-    @pytest.mark.asyncio
-    async def test_clear_all_caches(self) -> None:
+    def test_clear_all_caches(self) -> None:
         """Test clearing all caches."""
-        await self.cache_manager.start()
+        self.cache_manager.start()
 
         # Populate caches
-        await self.cache_manager.set_entity("entity_key", "entity_value")
-        await self.cache_manager.set_schema("schema_key", "schema_value")
-        await self.cache_manager.set_metadata("metadata_key", "metadata_value")
+        self.cache_manager.set_entity("entity_key", "entity_value")
+        self.cache_manager.set_schema("schema_key", "schema_value")
+        self.cache_manager.set_metadata("metadata_key", "metadata_value")
 
         # Clear all
         self.cache_manager.clear()
@@ -919,26 +904,25 @@ class TestFlextOracleWmsCacheManager:
         assert len(self.cache_manager._schema_cache) == 0
         assert len(self.cache_manager._metadata_cache) == 0
 
-        await self.cache_manager.stop()
+        self.cache_manager.stop()
 
-    @pytest.mark.asyncio
-    async def test_cache_statistics(self) -> None:
+    def test_cache_statistics(self) -> None:
         """Test cache statistics tracking."""
-        await self.cache_manager.start()
+        self.cache_manager.start()
 
         # Perform some cache operations
-        await self.cache_manager.set_entity("key1", "value1")
-        await self.cache_manager.set_schema("key2", "value2")
+        self.cache_manager.set_entity("key1", "value1")
+        self.cache_manager.set_schema("key2", "value2")
 
         # Cache hits
-        await self.cache_manager.get_entity("key1")
-        await self.cache_manager.get_schema("key2")
+        self.cache_manager.get_entity("key1")
+        self.cache_manager.get_schema("key2")
 
         # Cache miss
-        await self.cache_manager.get_metadata("nonexistent")
+        self.cache_manager.get_metadata("nonexistent")
 
         # Get statistics
-        stats_result = await self.cache_manager.get_statistics()
+        stats_result = self.cache_manager.get_statistics()
         assert stats_result.success
 
         stats = stats_result.data
@@ -947,69 +931,65 @@ class TestFlextOracleWmsCacheManager:
         assert stats.total_entries == 2
         assert stats.get_hit_ratio() == 2 / 3
 
-        await self.cache_manager.stop()
+        self.cache_manager.stop()
 
-    @pytest.mark.asyncio
-    async def test_cache_access_statistics_update(self) -> None:
+    def test_cache_access_statistics_update(self) -> None:
         """Test that cache entries track access statistics."""
-        await self.cache_manager.start()
+        self.cache_manager.start()
 
-        await self.cache_manager.set_entity("access_test", "value")
+        self.cache_manager.set_entity("access_test", "value")
 
         # First access
-        await self.cache_manager.get_entity("access_test")
+        self.cache_manager.get_entity("access_test")
         entry1 = self.cache_manager._entity_cache["access_test"]
         assert entry1.access_count == 1
 
         # Second access
-        await self.cache_manager.get_entity("access_test")
+        self.cache_manager.get_entity("access_test")
         entry2 = self.cache_manager._entity_cache["access_test"]
         assert entry2.access_count == 2
         assert entry2.last_accessed > entry1.last_accessed
 
-        await self.cache_manager.stop()
+        self.cache_manager.stop()
 
-    @pytest.mark.asyncio
-    async def test_background_cleanup_loop(self) -> None:
+    def test_background_cleanup_loop(self) -> None:
         """Test background cleanup loop functionality."""
         config = FlextOracleWmsCacheConfig(
             default_ttl_seconds=1,  # Short TTL for quick expiration
             max_cache_entries=10,
             cleanup_interval_seconds=1,  # Quick cleanup interval
             enable_statistics=True,
-            enable_async_cleanup=True,
+            enable_cleanup=True,
         )
         cache_manager = FlextOracleWmsCacheManager(config)
-        await cache_manager.start()
+        cache_manager.start()
 
         # Add entries that will expire quickly
-        await cache_manager.set_entity("expire1", "value1")
-        await cache_manager.set_entity("expire2", "value2")
+        cache_manager.set_entity("expire1", "value1")
+        cache_manager.set_entity("expire2", "value2")
 
         # Wait for expiration and cleanup
-        await asyncio.sleep(2.5)
+        sleep(2.5)
 
         # Check statistics for expired entries
-        stats_result = await cache_manager.get_statistics()
+        stats_result = cache_manager.get_statistics()
         assert stats_result.success
         assert stats_result.data.expired_entries >= 0
 
-        await cache_manager.stop()
+        cache_manager.stop()
 
-    @pytest.mark.asyncio
-    async def test_evict_oldest_entry_empty_cache(self) -> None:
+    def test_evict_oldest_entry_empty_cache(self) -> None:
         """Test evicting from empty cache."""
-        await self.cache_manager.start()
+        self.cache_manager.start()
 
         # Should not raise error on empty cache
-        await self.cache_manager._evict_oldest_entry(self.cache_manager._entity_cache)
+        self.cache_manager._evict_oldest_entry(self.cache_manager._entity_cache)
 
-        await self.cache_manager.stop()
+        self.cache_manager.stop()
 
-    @pytest.mark.asyncio
-    async def test_evict_oldest_entry_functionality(self) -> None:
+    def test_evict_oldest_entry_functionality(self) -> None:
         """Test evict oldest entry functionality."""
-        await self.cache_manager.start()
+        self.cache_manager.start()
 
         # Add entries with different timestamps
         timestamp1 = time.time() - 100
@@ -1046,19 +1026,18 @@ class TestFlextOracleWmsCacheManager:
         self.cache_manager._entity_cache["newest_key"] = entry3
 
         # Evict oldest
-        await self.cache_manager._evict_oldest_entry(self.cache_manager._entity_cache)
+        self.cache_manager._evict_oldest_entry(self.cache_manager._entity_cache)
 
         # old_key should be removed
         assert "old_key" not in self.cache_manager._entity_cache
         assert "newer_key" in self.cache_manager._entity_cache
         assert "newest_key" in self.cache_manager._entity_cache
 
-        await self.cache_manager.stop()
+        self.cache_manager.stop()
 
-    @pytest.mark.asyncio
-    async def test_cleanup_expired_entries(self) -> None:
+    def test_cleanup_expired_entries(self) -> None:
         """Test cleanup of expired entries."""
-        await self.cache_manager.start()
+        self.cache_manager.start()
 
         # Add expired entries
         expired_time = time.time() - 7200  # 2 hours ago
@@ -1085,57 +1064,56 @@ class TestFlextOracleWmsCacheManager:
         self.cache_manager._entity_cache["valid_key"] = valid_entry
 
         # Run cleanup
-        await self.cache_manager._cleanup_expired_entries()
+        self.cache_manager._cleanup_expired_entries()
 
         # Expired entry should be removed
         assert "expired_key" not in self.cache_manager._entity_cache
         assert "valid_key" in self.cache_manager._entity_cache
 
-        await self.cache_manager.stop()
+        self.cache_manager.stop()
 
-    @pytest.mark.asyncio
-    async def test_cache_value_types(self) -> None:
+    def test_cache_value_types(self) -> None:
         """Test caching different value types."""
-        await self.cache_manager.start()
+        self.cache_manager.start()
 
         # Test string
-        await self.cache_manager.set_entity("string_key", "string_value")
-        result = await self.cache_manager.get_entity("string_key")
+        self.cache_manager.set_entity("string_key", "string_value")
+        result = self.cache_manager.get_entity("string_key")
         assert result.data == "string_value"
 
         # Test integer
-        await self.cache_manager.set_entity("int_key", 42)
-        result = await self.cache_manager.get_entity("int_key")
+        self.cache_manager.set_entity("int_key", 42)
+        result = self.cache_manager.get_entity("int_key")
         assert result.data == 42
 
         # Test float
-        await self.cache_manager.set_entity("float_key", math.pi)
-        result = await self.cache_manager.get_entity("float_key")
+        self.cache_manager.set_entity("float_key", math.pi)
+        result = self.cache_manager.get_entity("float_key")
         assert result.data == math.pi
 
         # Test boolean
-        await self.cache_manager.set_entity("bool_key", True)
-        result = await self.cache_manager.get_entity("bool_key")
+        self.cache_manager.set_entity("bool_key", True)
+        result = self.cache_manager.get_entity("bool_key")
         assert result.data is True
 
         # Test None
-        await self.cache_manager.set_entity("none_key", None)
-        result = await self.cache_manager.get_entity("none_key")
+        self.cache_manager.set_entity("none_key", None)
+        result = self.cache_manager.get_entity("none_key")
         assert result.data is None
 
         # Test dict
         dict_value = {"key": "value", "number": 123}
-        await self.cache_manager.set_entity("dict_key", dict_value)
-        result = await self.cache_manager.get_entity("dict_key")
+        self.cache_manager.set_entity("dict_key", dict_value)
+        result = self.cache_manager.get_entity("dict_key")
         assert result.data == dict_value
 
         # Test list
         list_value = ["item1", "item2", 123]
-        await self.cache_manager.set_entity("list_key", list_value)
-        result = await self.cache_manager.get_entity("list_key")
+        self.cache_manager.set_entity("list_key", list_value)
+        result = self.cache_manager.get_entity("list_key")
         assert result.data == list_value
 
-        await self.cache_manager.stop()
+        self.cache_manager.stop()
 
 
 class TestFactoryFunction:
@@ -1203,75 +1181,70 @@ class TestErrorHandling:
             max_cache_entries=1000,
             cleanup_interval_seconds=300,
             enable_statistics=True,
-            enable_async_cleanup=True,
+            enable_cleanup=True,
         )
         self.cache_manager = FlextOracleWmsCacheManager(self.config)
 
     def teardown_method(self) -> None:
         """Clean up after tests."""
         with contextlib.suppress(Exception):
-            asyncio.run(self.cache_manager.stop())
+            self.cache_manager.stop()
 
-    @pytest.mark.asyncio
-    async def test_start_exception_handling(self) -> None:
+    def test_start_exception_handling(self) -> None:
         """Test cache manager start exception handling."""
-        with patch("asyncio.get_event_loop") as mock_get_loop:
+        with patch("get_event_loop") as mock_get_loop:
             mock_loop = Mock()
             mock_loop.create_task.side_effect = Exception("Task creation failed")
             mock_get_loop.return_value = mock_loop
 
             # Should return failure result, not raise exception
-            result = await self.cache_manager.start()
+            result = self.cache_manager.start()
             assert result.is_failure
             assert "Task creation failed" in result.error
 
-    @pytest.mark.asyncio
-    async def test_stop_exception_handling(self) -> None:
+    def test_stop_exception_handling(self) -> None:
         """Test cache manager stop exception handling."""
-        await self.cache_manager.start()
+        self.cache_manager.start()
 
         with patch.object(self.cache_manager, "clear") as mock_clear:
             mock_clear.side_effect = Exception("Clear failed")
 
             # Should return failure result, not raise exception
-            result = await self.cache_manager.stop()
+            result = self.cache_manager.stop()
             assert result.is_failure
             assert "Clear failed" in result.error
 
-    @pytest.mark.asyncio
-    async def test_get_from_cache_exception(self) -> None:
+    def test_get_from_cache_exception(self) -> None:
         """Test exception handling in _get_from_cache."""
-        await self.cache_manager.start()
+        self.cache_manager.start()
 
         # Mock the get_entity method directly to simulate an exception
         with patch.object(self.cache_manager, "get_entity") as mock_get_entity:
             mock_get_entity.return_value = FlextResult[None].fail("Cache access error")
 
-            result = await self.cache_manager.get_entity("test_key")
+            result = self.cache_manager.get_entity("test_key")
             assert result.is_failure
             assert "Cache access error" in result.error
 
-        await self.cache_manager.stop()
+        self.cache_manager.stop()
 
-    @pytest.mark.asyncio
-    async def test_set_in_cache_exception(self) -> None:
+    def test_set_in_cache_exception(self) -> None:
         """Test exception handling in _set_in_cache."""
-        await self.cache_manager.start()
+        self.cache_manager.start()
 
         # Mock time.time specifically in the wms_discovery module to raise an exception
         with patch("flext_oracle_wms.wms_discovery.time.time") as mock_time:
             mock_time.side_effect = Exception("Time error")
 
-            result = await self.cache_manager.set_entity("test_key", "test_value")
+            result = self.cache_manager.set_entity("test_key", "test_value")
             assert result.is_failure
             assert "Cache set failed" in result.error
 
-        await self.cache_manager.stop()
+        self.cache_manager.stop()
 
-    @pytest.mark.asyncio
-    async def test_invalidate_key_exception(self) -> None:
+    def test_invalidate_key_exception(self) -> None:
         """Test exception handling in invalidate_key."""
-        await self.cache_manager.start()
+        self.cache_manager.start()
 
         # Mock the invalidate method to raise an exception
         with patch.object(
@@ -1279,16 +1252,15 @@ class TestErrorHandling:
             "invalidate",
             side_effect=Exception("Cache error"),
         ):
-            result = await self.cache_manager.invalidate_key("test_key")
+            result = self.cache_manager.invalidate_key("test_key")
             assert result.is_failure
             assert "Cache invalidation failed" in result.error
 
-        await self.cache_manager.stop()
+        self.cache_manager.stop()
 
-    @pytest.mark.asyncio
-    async def test_clear_all_exception(self) -> None:
+    def test_clear_all_exception(self) -> None:
         """Test exception handling in clear."""
-        await self.cache_manager.start()
+        self.cache_manager.start()
 
         # Patch the clear method directly to simulate an exception
         with patch.object(self.cache_manager, "clear") as mock_clear:
@@ -1299,18 +1271,17 @@ class TestErrorHandling:
                 self.cache_manager.clear()
             assert "Clear error" in str(exc_info.value)
 
-        await self.cache_manager.stop()
+        self.cache_manager.stop()
 
-    @pytest.mark.asyncio
-    async def test_get_statistics_exception(self) -> None:
+    def test_get_statistics_exception(self) -> None:
         """Test exception handling in get_statistics."""
-        await self.cache_manager.start()
+        self.cache_manager.start()
 
         # Mock the get_statistics method to raise an exception
         error_msg = "Stats access error"
 
-        async def mock_get_statistics() -> None:
-            await asyncio.sleep(0)  # Make it truly async
+        def mock_get_statistics() -> None:
+            time.sleep(0)
             raise RuntimeError(error_msg)
 
         with (
@@ -1321,12 +1292,11 @@ class TestErrorHandling:
             ),
             pytest.raises(RuntimeError, match=error_msg),
         ):
-            await self.cache_manager.get_statistics()
+            self.cache_manager.get_statistics()
 
-        await self.cache_manager.stop()
+        self.cache_manager.stop()
 
-    @pytest.mark.asyncio
-    async def test_cleanup_loop_exception_handling(self) -> None:
+    def test_cleanup_loop_exception_handling(self) -> None:
         """Test exception handling in cleanup loop."""
         config = create_test_cache_config(cleanup_interval_seconds=1)
         cache_manager = FlextOracleWmsCacheManager(config)
@@ -1334,15 +1304,15 @@ class TestErrorHandling:
         with patch.object(cache_manager, "_cleanup_expired_entries") as mock_cleanup:
             mock_cleanup.side_effect = Exception("Cleanup error")
 
-            await cache_manager.start()
+            cache_manager.start()
 
             # Wait a bit for cleanup loop to run and handle exception
-            await asyncio.sleep(0.2)
+            sleep(0.2)
 
             # Should not crash, just log error and continue
             assert cache_manager._cleanup_task is not None
 
-        await cache_manager.stop()
+        cache_manager.stop()
 
 
 class TestThreadSafety:
@@ -1355,66 +1325,64 @@ class TestThreadSafety:
             max_cache_entries=1000,
             cleanup_interval_seconds=300,
             enable_statistics=True,
-            enable_async_cleanup=True,
+            enable_cleanup=True,
         )
         self.cache_manager = FlextOracleWmsCacheManager(self.config)
 
     def teardown_method(self) -> None:
         """Clean up after tests."""
         with contextlib.suppress(Exception):
-            asyncio.run(self.cache_manager.stop())
+            self.cache_manager.stop()
 
-    @pytest.mark.asyncio
-    async def test_concurrent_cache_operations(self) -> None:
+    def test_concurrent_cache_operations(self) -> None:
         """Test concurrent cache operations for thread safety."""
-        await self.cache_manager.start()
+        self.cache_manager.start()
 
         # Define concurrent operations
-        async def set_operation(key: str, value: str) -> None:
-            await self.cache_manager.set_entity(f"key_{key}", f"value_{value}")
+        def set_operation(key: str, value: str) -> None:
+            self.cache_manager.set_entity(f"key_{key}", f"value_{value}")
 
-        async def get_operation(key: str) -> None:
-            await self.cache_manager.get_entity(f"key_{key}")
+        def get_operation(key: str) -> None:
+            self.cache_manager.get_entity(f"key_{key}")
 
         # Run concurrent operations
         tasks = []
         for i in range(10):
             tasks.extend((set_operation(str(i), str(i)), get_operation(str(i))))
 
-        await asyncio.gather(*tasks, return_exceptions=True)
+        gather(*tasks, return_exceptions=True)
 
         # Verify final state
-        stats_result = await self.cache_manager.get_statistics()
+        stats_result = self.cache_manager.get_statistics()
         assert stats_result.success
         assert stats_result.data.total_entries >= 0
 
-        await self.cache_manager.stop()
+        self.cache_manager.stop()
 
-    async def _invalidate_key_async(self, key: str) -> FlextResult[None]:
-        """Helper method to make invalidate_key async for testing."""
+    def _invalidate_key(self, key: str) -> FlextResult[None]:
+        """Helper method to make invalidate_key for testing."""
         self.cache_manager.invalidate_key(key)
         return FlextResult[None].ok(None)
 
-    @pytest.mark.asyncio
-    async def test_concurrent_invalidation(self) -> None:
+    def test_concurrent_invalidation(self) -> None:
         """Test concurrent cache invalidation."""
-        await self.cache_manager.start()
+        self.cache_manager.start()
 
         # Set up some entries
         for i in range(5):
-            await self.cache_manager.set_entity(f"concurrent_{i}", f"value_{i}")
+            self.cache_manager.set_entity(f"concurrent_{i}", f"value_{i}")
 
         # Concurrent invalidation operations
-        tasks = [self._invalidate_key_async(f"concurrent_{i}") for i in range(5)]
+        tasks = [self._invalidate_key(f"concurrent_{i}") for i in range(5)]
 
-        results = await asyncio.gather(*tasks, return_exceptions=True)
+        results = gather(*tasks, return_exceptions=True)
 
         # All should succeed
         for result in results:
             assert isinstance(result, FlextResult)
             assert result.success
 
-        await self.cache_manager.stop()
+        self.cache_manager.stop()
 
 
 class TestPerformanceAndEdgeCases:
@@ -1428,29 +1396,27 @@ class TestPerformanceAndEdgeCases:
             max_cache_entries=1000,
             cleanup_interval_seconds=300,
             enable_statistics=True,
-            enable_async_cleanup=True,
+            enable_cleanup=True,
         )
         self.cache_manager = FlextOracleWmsCacheManager(self.config)
 
-    @pytest.mark.asyncio
-    async def test_large_cache_entries(self) -> None:
+    def test_large_cache_entries(self) -> None:
         """Test caching large data structures."""
         # Create large data structure
         large_data = {f"field_{i}": f"value_{i}" * 100 for i in range(100)}
 
-        set_result = await self.cache_manager.set_entity("large_data", large_data)
+        set_result = self.cache_manager.set_entity("large_data", large_data)
         assert set_result.success
 
-        get_result = await self.cache_manager.get_entity("large_data")
+        get_result = self.cache_manager.get_entity("large_data")
         assert get_result.success
         assert get_result.data == large_data
 
-        await self.cache_manager.stop()
+        self.cache_manager.stop()
 
-    @pytest.mark.asyncio
-    async def test_cache_with_special_characters_in_keys(self) -> None:
+    def test_cache_with_special_characters_in_keys(self) -> None:
         """Test cache operations with special characters in keys."""
-        await self.cache_manager.start()
+        self.cache_manager.start()
 
         special_keys = [
             "key with spaces",
@@ -1463,46 +1429,45 @@ class TestPerformanceAndEdgeCases:
         ]
 
         for key in special_keys:
-            set_result = await self.cache_manager.set_entity(key, f"value_for_{key}")
+            set_result = self.cache_manager.set_entity(key, f"value_for_{key}")
             assert set_result.success
 
-            get_result = await self.cache_manager.get_entity(key)
+            get_result = self.cache_manager.get_entity(key)
             assert get_result.success
             assert get_result.data == f"value_for_{key}"
 
-        await self.cache_manager.stop()
+        self.cache_manager.stop()
 
-    @pytest.mark.asyncio
-    async def test_cache_statistics_accuracy(self) -> None:
+    def test_cache_statistics_accuracy(self) -> None:
         """Test cache statistics accuracy under various operations."""
-        await self.cache_manager.start()
+        self.cache_manager.start()
 
-        initial_stats = await self.cache_manager.get_statistics()
+        initial_stats = self.cache_manager.get_statistics()
         assert initial_stats.data.hits == 0
         assert initial_stats.data.misses == 0
 
         # 5 sets
         for i in range(5):
-            await self.cache_manager.set_entity(f"stats_key_{i}", f"value_{i}")
+            self.cache_manager.set_entity(f"stats_key_{i}", f"value_{i}")
 
         # 3 hits
         for i in range(3):
-            await self.cache_manager.get_entity(f"stats_key_{i}")
+            self.cache_manager.get_entity(f"stats_key_{i}")
 
         # 2 misses
-        await self.cache_manager.get_entity("nonexistent_1")
-        await self.cache_manager.get_entity("nonexistent_2")
+        self.cache_manager.get_entity("nonexistent_1")
+        self.cache_manager.get_entity("nonexistent_2")
 
         # 1 invalidation
-        await self.cache_manager.invalidate_key("stats_key_0")
+        self.cache_manager.invalidate_key("stats_key_0")
 
-        final_stats = await self.cache_manager.get_statistics()
+        final_stats = self.cache_manager.get_statistics()
         assert final_stats.data.hits == 3
         assert final_stats.data.misses == 2
         assert final_stats.data.evictions == 1  # From invalidation
         assert final_stats.data.total_entries == 4  # 5 - 1 invalidated
 
-        await self.cache_manager.stop()
+        self.cache_manager.stop()
 
     def test_cache_entry_immutability(self) -> None:
         """Test that cache entries are properly immutable."""
