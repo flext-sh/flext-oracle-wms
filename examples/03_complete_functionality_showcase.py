@@ -26,6 +26,7 @@ Requirements:
     - All FLEXT dependencies installed
 """
 
+import asyncio
 import os
 import time
 import traceback
@@ -35,6 +36,7 @@ from dotenv import load_dotenv
 
 from flext_core import FlextLogger, FlextTypes
 from flext_oracle_wms import (
+    FLEXT_ORACLE_WMS_APIS,
     FlextOracleWmsApiCategory,
     FlextOracleWmsApiVersion,
     FlextOracleWmsAuthConfig,
@@ -217,9 +219,6 @@ def showcase_4_authentication(config: FlextOracleWmsClientConfig) -> None:
         pass
 
 
-from flext_oracle_wms import FLEXT_ORACLE_WMS_APIS
-
-
 def showcase_5_api_catalog(client: FlextOracleWmsClient) -> None:
     """Feature 5: API Catalog Management."""
     # Group by category
@@ -300,7 +299,7 @@ def showcase_7_health_monitoring(
     return {}
 
 
-def showcase_8_performance_tracking(
+async def showcase_8_performance_tracking(
     client: FlextOracleWmsClient,
     entities: FlextTypes.Core.StringList,
 ) -> None:
@@ -320,7 +319,7 @@ def showcase_8_performance_tracking(
         tasks = [client.get_entity_data(entity, limit=2) for entity in test_entities]
 
         # Execute concurrently
-        results = gather(*tasks, return_exceptions=True)
+        results = await asyncio.gather(*tasks, return_exceptions=True)
 
         end_time = time.time()
         end_time - start_time
@@ -394,7 +393,7 @@ def showcase_10_enterprise_features(
     # Enterprise Compliance Features
 
 
-def main() -> int:
+async def main() -> int:
     """Main showcase execution."""
     try:
         # Load configuration
@@ -422,7 +421,7 @@ def main() -> int:
         showcase_7_health_monitoring(client)
 
         # Feature 8: Performance Tracking
-        showcase_8_performance_tracking(client, entities)
+        await showcase_8_performance_tracking(client, entities)
 
         # Feature 9: Cache Management
         showcase_9_cache_management(client)
@@ -443,4 +442,4 @@ def main() -> int:
 
 
 if __name__ == "__main__":
-    run(main())
+    asyncio.run(main())

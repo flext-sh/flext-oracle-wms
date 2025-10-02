@@ -10,7 +10,6 @@ import os
 from dataclasses import dataclass
 from enum import StrEnum
 from pathlib import Path
-from typing import Any
 
 from dotenv import load_dotenv
 
@@ -144,7 +143,7 @@ def create_demo_config() -> FlextOracleWmsClientConfig:
     )
 
 
-def validate_configuration(config: FlextOracleWmsClientConfig) -> dict[str, Any]:
+def validate_configuration(config: FlextOracleWmsClientConfig) -> dict[str, object]:
     """Validate Oracle WMS client configuration.
 
     Args:
@@ -156,7 +155,7 @@ def validate_configuration(config: FlextOracleWmsClientConfig) -> dict[str, Any]
     """
     errors: list[str] = []
     warnings: list[str] = []
-    config_summary: dict[str, Any] = {}
+    config_summary: dict[str, object] = {}
 
     # Validate base URL
     if not config.oracle_wms_base_url:
@@ -200,7 +199,7 @@ def validate_configuration(config: FlextOracleWmsClientConfig) -> dict[str, Any]
         "enable_logging": config.oracle_wms_enable_logging,
     }
 
-    validation_results: dict[str, Any] = {
+    validation_results: dict[str, object] = {
         "valid": len(errors) == 0,
         "warnings": warnings,
         "errors": errors,
@@ -212,7 +211,7 @@ def validate_configuration(config: FlextOracleWmsClientConfig) -> dict[str, Any]
 
 def test_configuration(
     config: FlextOracleWmsClientConfig,
-) -> dict[str, Any]:
+) -> dict[str, object]:
     """Test Oracle WMS configuration by attempting connection.
 
     Args:
@@ -222,7 +221,7 @@ def test_configuration(
       Dictionary with test results
 
     """
-    test_results: dict[str, Any] = {
+    test_results: dict[str, object] = {
         "connection_success": False,
         "health_check_success": False,
         "error": None,

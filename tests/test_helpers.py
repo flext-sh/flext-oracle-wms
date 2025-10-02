@@ -138,7 +138,7 @@ class TestDataProcessingHelpers:
         result = flext_oracle_wms_validate_api_response(response)
         assert result.is_failure
         assert result.error is not None
-        assert "not a dictionary" in result.error
+        assert result.error is not None and "not a dictionary" in result.error
 
     def test_validate_api_response_valid_dict(self) -> None:
         """Test API response validation with valid dict."""
@@ -156,7 +156,7 @@ class TestDataProcessingHelpers:
             result = flext_oracle_wms_validate_api_response(response)
             assert result.is_failure
             assert result.error is not None
-            assert "not a dictionary" in result.error
+            assert result.error is not None and "not a dictionary" in result.error
 
     def test_extract_pagination_info_complete(self) -> None:
         """Test extracting pagination info with complete data."""

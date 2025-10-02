@@ -44,7 +44,7 @@ def analyze_data_types(data: object, path: str = "") -> dict[str, set[str]]:
     return type_analysis
 
 
-def analyze_complex_structures(record: FlextTypes.Core.Dict) -> dict[str, object]:
+def analyze_complex_structures(record: dict[str, object]) -> dict[str, object]:
     """Analisa estruturas complexas em um registro."""
     analysis: dict[str, object] = {
         "complex_fields": {},

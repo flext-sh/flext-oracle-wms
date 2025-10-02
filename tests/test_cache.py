@@ -21,8 +21,8 @@ import time
 from unittest.mock import Mock, patch
 
 import pytest
-
 from flext_core import FlextResult, FlextTypes
+
 from flext_oracle_wms import (
     FlextOracleWmsCacheConfig,
     FlextOracleWmsCacheEntry,
@@ -121,7 +121,9 @@ class TestFlextOracleWmsCacheConfig:
 
         result = config.validate_business_rules()
         assert result.is_failure
-        assert "Default TTL must be positive" in result.error
+        assert (
+            result.error is not None and "Default TTL must be positive" in result.error
+        )
 
     def test_cache_config_validation_zero_ttl(self) -> None:
         """Test cache config validation with zero TTL."""
@@ -129,7 +131,9 @@ class TestFlextOracleWmsCacheConfig:
 
         result = config.validate_business_rules()
         assert result.is_failure
-        assert "Default TTL must be positive" in result.error
+        assert (
+            result.error is not None and "Default TTL must be positive" in result.error
+        )
 
     def test_cache_config_validation_negative_max_entries(self) -> None:
         """Test cache config validation with negative max entries."""
@@ -137,7 +141,10 @@ class TestFlextOracleWmsCacheConfig:
 
         result = config.validate_business_rules()
         assert result.is_failure
-        assert "Max cache entries must be positive" in result.error
+        assert (
+            result.error is not None
+            and "Max cache entries must be positive" in result.error
+        )
 
     def test_cache_config_validation_zero_max_entries(self) -> None:
         """Test cache config validation with zero max entries."""
@@ -145,7 +152,10 @@ class TestFlextOracleWmsCacheConfig:
 
         result = config.validate_business_rules()
         assert result.is_failure
-        assert "Max cache entries must be positive" in result.error
+        assert (
+            result.error is not None
+            and "Max cache entries must be positive" in result.error
+        )
 
     def test_cache_config_validation_negative_cleanup_interval(self) -> None:
         """Test cache config validation with negative cleanup interval."""
@@ -153,7 +163,10 @@ class TestFlextOracleWmsCacheConfig:
 
         result = config.validate_business_rules()
         assert result.is_failure
-        assert "Cleanup interval must be positive" in result.error
+        assert (
+            result.error is not None
+            and "Cleanup interval must be positive" in result.error
+        )
 
     def test_cache_config_validation_zero_cleanup_interval(self) -> None:
         """Test cache config validation with zero cleanup interval."""
@@ -161,7 +174,10 @@ class TestFlextOracleWmsCacheConfig:
 
         result = config.validate_business_rules()
         assert result.is_failure
-        assert "Cleanup interval must be positive" in result.error
+        assert (
+            result.error is not None
+            and "Cleanup interval must be positive" in result.error
+        )
 
 
 class TestFlextOracleWmsCacheEntry:
@@ -247,7 +263,7 @@ class TestFlextOracleWmsCacheEntry:
 
         result = entry.validate_business_rules()
         assert result.is_failure
-        assert "Cache key cannot be empty" in result.error
+        assert result.error is not None and "Cache key cannot be empty" in result.error
 
     def test_cache_entry_validation_negative_ttl(self) -> None:
         """Test cache entry validation with negative TTL."""
@@ -260,7 +276,7 @@ class TestFlextOracleWmsCacheEntry:
 
         result = entry.validate_business_rules()
         assert result.is_failure
-        assert "TTL must be positive" in result.error
+        assert result.error is not None and "TTL must be positive" in result.error
 
     def test_cache_entry_validation_zero_ttl(self) -> None:
         """Test cache entry validation with zero TTL."""
@@ -275,7 +291,7 @@ class TestFlextOracleWmsCacheEntry:
 
         result = entry.validate_business_rules()
         assert result.is_failure
-        assert "TTL must be positive" in result.error
+        assert result.error is not None and "TTL must be positive" in result.error
 
     def test_cache_entry_validation_negative_timestamp(self) -> None:
         """Test cache entry validation with negative timestamp."""
@@ -290,7 +306,7 @@ class TestFlextOracleWmsCacheEntry:
 
         result = entry.validate_business_rules()
         assert result.is_failure
-        assert "Timestamp must be positive" in result.error
+        assert result.error is not None and "Timestamp must be positive" in result.error
 
     def test_cache_entry_validation_zero_timestamp(self) -> None:
         """Test cache entry validation with zero timestamp."""
@@ -305,7 +321,7 @@ class TestFlextOracleWmsCacheEntry:
 
         result = entry.validate_business_rules()
         assert result.is_failure
-        assert "Timestamp must be positive" in result.error
+        assert result.error is not None and "Timestamp must be positive" in result.error
 
     def test_cache_entry_validation_negative_access_count(self) -> None:
         """Test cache entry validation with negative access count."""
@@ -464,7 +480,10 @@ class TestFlextOracleWmsCacheStats:
 
         result = stats.validate_business_rules()
         assert result.is_failure
-        assert "Statistics counters cannot be negative" in result.error
+        assert (
+            result.error is not None
+            and "Statistics counters cannot be negative" in result.error
+        )
 
     def test_cache_stats_validation_negative_misses(self) -> None:
         """Test cache statistics validation with negative misses."""
@@ -480,7 +499,10 @@ class TestFlextOracleWmsCacheStats:
 
         result = stats.validate_business_rules()
         assert result.is_failure
-        assert "Statistics counters cannot be negative" in result.error
+        assert (
+            result.error is not None
+            and "Statistics counters cannot be negative" in result.error
+        )
 
     def test_cache_stats_validation_negative_evictions(self) -> None:
         """Test cache statistics validation with negative evictions."""
@@ -496,7 +518,10 @@ class TestFlextOracleWmsCacheStats:
 
         result = stats.validate_business_rules()
         assert result.is_failure
-        assert "Statistics counters cannot be negative" in result.error
+        assert (
+            result.error is not None
+            and "Statistics counters cannot be negative" in result.error
+        )
 
     def test_cache_stats_validation_negative_expired_entries(self) -> None:
         """Test cache statistics validation with negative expired entries."""
@@ -512,7 +537,10 @@ class TestFlextOracleWmsCacheStats:
 
         result = stats.validate_business_rules()
         assert result.is_failure
-        assert "Entry counts cannot be negative" in result.error
+        assert (
+            result.error is not None
+            and "Entry counts cannot be negative" in result.error
+        )
 
     def test_cache_stats_validation_negative_total_entries(self) -> None:
         """Test cache statistics validation with negative total entries."""
@@ -528,7 +556,10 @@ class TestFlextOracleWmsCacheStats:
 
         result = stats.validate_business_rules()
         assert result.is_failure
-        assert "Entry counts cannot be negative" in result.error
+        assert (
+            result.error is not None
+            and "Entry counts cannot be negative" in result.error
+        )
 
     def test_cache_stats_validation_negative_memory_usage(self) -> None:
         """Test cache statistics validation with negative memory usage."""
@@ -544,7 +575,10 @@ class TestFlextOracleWmsCacheStats:
 
         result = stats.validate_business_rules()
         assert result.is_failure
-        assert "Memory usage cannot be negative" in result.error
+        assert (
+            result.error is not None
+            and "Memory usage cannot be negative" in result.error
+        )
 
     def test_cache_stats_get_hit_ratio_no_requests(self) -> None:
         """Test hit ratio calculation with no requests."""
@@ -1200,7 +1234,7 @@ class TestErrorHandling:
             # Should return failure result, not raise exception
             result = self.cache_manager.start()
             assert result.is_failure
-            assert "Task creation failed" in result.error
+            assert result.error is not None and "Task creation failed" in result.error
 
     def test_stop_exception_handling(self) -> None:
         """Test cache manager stop exception handling."""
@@ -1212,7 +1246,7 @@ class TestErrorHandling:
             # Should return failure result, not raise exception
             result = self.cache_manager.stop()
             assert result.is_failure
-            assert "Clear failed" in result.error
+            assert result.error is not None and "Clear failed" in result.error
 
     def test_get_from_cache_exception(self) -> None:
         """Test exception handling in _get_from_cache."""
@@ -1224,7 +1258,7 @@ class TestErrorHandling:
 
             result = self.cache_manager.get_entity("test_key")
             assert result.is_failure
-            assert "Cache access error" in result.error
+            assert result.error is not None and "Cache access error" in result.error
 
         self.cache_manager.stop()
 
@@ -1238,7 +1272,7 @@ class TestErrorHandling:
 
             result = self.cache_manager.set_entity("test_key", "test_value")
             assert result.is_failure
-            assert "Cache set failed" in result.error
+            assert result.error is not None and "Cache set failed" in result.error
 
         self.cache_manager.stop()
 
@@ -1254,7 +1288,9 @@ class TestErrorHandling:
         ):
             result = self.cache_manager.invalidate_key("test_key")
             assert result.is_failure
-            assert "Cache invalidation failed" in result.error
+            assert (
+                result.error is not None and "Cache invalidation failed" in result.error
+            )
 
         self.cache_manager.stop()
 

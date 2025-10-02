@@ -195,7 +195,10 @@ class TestValidationHelpers:
         result = flext_oracle_wms_validate_api_response(response)
         assert result.is_failure
         assert result.error is not None
-        assert "API error: Database connection failed" in result.error
+        assert (
+            result.error is not None
+            and "API error: Database connection failed" in result.error
+        )
 
     def test_validate_api_response_error_status(self) -> None:
         """Test API response validation with error status."""
@@ -204,7 +207,10 @@ class TestValidationHelpers:
         result = flext_oracle_wms_validate_api_response(response)
         assert result.is_failure
         assert result.error is not None
-        assert "API error: Invalid authentication" in result.error
+        assert (
+            result.error is not None
+            and "API error: Invalid authentication" in result.error
+        )
 
 
 @pytest.mark.unit

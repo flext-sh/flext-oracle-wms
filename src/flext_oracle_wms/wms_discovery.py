@@ -18,14 +18,14 @@ from dataclasses import dataclass
 from datetime import UTC, datetime
 from typing import ClassVar, cast, override
 
-from pydantic import Field
-
 from flext_core import (
     FlextConfig,
     FlextLogger,
     FlextModels,
     FlextResult,
 )
+from pydantic import Field
+
 from flext_oracle_wms.http_client import FlextHttpClient
 from flext_oracle_wms.typings import FlextOracleWmsTypes
 from flext_oracle_wms.wms_constants import FlextOracleWmsConstants, OracleWMSEntityType

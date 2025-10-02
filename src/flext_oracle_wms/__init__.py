@@ -6,21 +6,20 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
+from typing import Final
+
 from flext_auth.providers import (
     ApiKeyAuthProvider,
     BasicAuthProvider,
     JwtAuthProvider,
 )
 
-# Authentication through flext-auth (use these for Oracle WMS authentication)
 from flext_auth import HttpAuthMiddleware
 from flext_oracle_wms.config import (
     FlextOracleWmsClientConfig,
     FlextOracleWmsConfig,
     FlextOracleWmsModuleConfig,
 )
-
-# from flext_oracle_wms.dynamic import flext_oracle_wms_create_dynamic_schema_processor
 from flext_oracle_wms.filtering import (
     FlextOracleWmsFilter,
     flext_oracle_wms_create_filter,
@@ -34,6 +33,7 @@ from flext_oracle_wms.flattening import (
 from flext_oracle_wms.protocols import FlextOracleWmsProtocols
 from flext_oracle_wms.typings import FlextOracleWmsTypes
 from flext_oracle_wms.utilities import FlextOracleWmsUtilities
+from flext_oracle_wms.version import VERSION, FlextOracleWmsVersion
 from flext_oracle_wms.wms_api import (
     FLEXT_ORACLE_WMS_APIS,
     FlextOracleWmsApiCategory,
@@ -124,41 +124,17 @@ from flext_oracle_wms.wms_operations import (
     flext_oracle_wms_validate_entity_name,
 )
 
-# WMS Filtering - Filter operations
+PROJECT_VERSION: Final[FlextOracleWmsVersion] = VERSION
 
-# WMS Flattening - Data flattening operations
+__version__: str = VERSION.version
+__version_info__: tuple[int | str, ...] = VERSION.version_info
 
-# WMS Constants - Core constants and enums
-# WMS API - API catalog and mock server
-
-# WMS Client - Client and authentication
-
-# WMS Configuration - Single source of truth
-
-# WMS Discovery - Entity discovery and schema processing
-
-# WMS Exceptions - Exception hierarchy
-
-# WMS Models - Data models and types
-
-# WMS Operations - Unified operations consolidating filtering, flattening, and utilities
-# WMS Operations - Data operations and utilities
-
-# Version information
-__version__ = "0.9.0"
-__version_info__ = tuple(int(x) for x in __version__.split(".") if x.isdigit())
-__author__ = "FLEXT Contributors"
-__description__ = (
-    "Oracle WMS integration library using flext-core and flext-api patterns"
-)
-
-
-__all__: FlextOracleWmsTypes.Core.StringList = [
-    # Oracle WMS
+__all__ = [
     "DISCOVERY_FAILURE",
     "DISCOVERY_SUCCESS",
     "FLEXT_ORACLE_WMS_APIS",
-    # flext-auth providers (for Oracle WMS authentication)
+    "PROJECT_VERSION",
+    "VERSION",
     "ApiKeyAuthProvider",
     "BasicAuthProvider",
     "DiscoveryContext",
@@ -205,9 +181,11 @@ __all__: FlextOracleWmsTypes.Core.StringList = [
     "FlextOracleWmsSchemaFlatteningError",
     "FlextOracleWmsShipmentError",
     "FlextOracleWmsTimeoutError",
+    "FlextOracleWmsTypes",
     "FlextOracleWmsUnifiedOperations",
     "FlextOracleWmsUtilities",
     "FlextOracleWmsValidationError",
+    "FlextOracleWmsVersion",
     "HttpAuthMiddleware",
     "JwtAuthProvider",
     "OracleWMSAuthMethod",
@@ -230,8 +208,6 @@ __all__: FlextOracleWmsTypes.Core.StringList = [
     "TOracleWmsRecordBatch",
     "TOracleWmsSchema",
     "TOracleWmsTimeout",
-    "__author__",
-    "__description__",
     "__version__",
     "__version_info__",
     "create_oracle_wms_client",
@@ -240,7 +216,6 @@ __all__: FlextOracleWmsTypes.Core.StringList = [
     "flext_oracle_wms_build_entity_url",
     "flext_oracle_wms_chunk_records",
     "flext_oracle_wms_create_data_flattener",
-    # "flext_oracle_wms_create_dynamic_schema_processor",
     "flext_oracle_wms_create_filter",
     "flext_oracle_wms_extract_environment_from_url",
     "flext_oracle_wms_extract_pagination_info",

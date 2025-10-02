@@ -79,7 +79,7 @@ def test_entity_validation_empty_name() -> None:
     result = entity.validate_business_rules()
     assert result.is_failure
     assert result.error is not None
-    assert "name" in result.error.lower()
+    assert result.error is not None and "name" in result.error.lower()
 
 
 def test_entity_validation_empty_endpoint() -> None:
@@ -88,7 +88,7 @@ def test_entity_validation_empty_endpoint() -> None:
     result = entity.validate_business_rules()
     assert result.is_failure
     assert result.error is not None
-    assert "endpoint" in result.error.lower()
+    assert result.error is not None and "endpoint" in result.error.lower()
 
 
 def test_discovery_result_creation() -> None:
@@ -276,7 +276,7 @@ def test_discovery_result_with_errors() -> None:
     )
     assert result.has_errors is True
     assert len(result.errors) == 2
-    assert "Connection failed" in result.errors
+    assert result.error is not None and "Connection failed" in result.errors
 
 
 def test_entity_validation() -> None:

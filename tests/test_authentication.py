@@ -149,7 +149,7 @@ class TestAuthenticationConfig:
         result = config.validate_business_rules()
         assert result.is_failure
         assert result.error is not None
-        assert "token" in result.error.lower()
+        assert result.error is not None and "token" in result.error.lower()
 
     def test_config_validation_failure_api_key_missing_key(self) -> None:
         """Test config validation fails for API key auth missing key."""

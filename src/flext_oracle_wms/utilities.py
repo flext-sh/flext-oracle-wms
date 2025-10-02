@@ -14,7 +14,7 @@ from __future__ import annotations
 import base64
 import re
 from datetime import UTC, datetime
-from typing import Any, ClassVar
+from typing import ClassVar
 from urllib.parse import urlparse
 
 from pydantic import SecretStr
@@ -396,8 +396,8 @@ class FlextOracleWmsUtilities(FlextUtilities):
 
         @staticmethod
         def chunk_records(
-            records: list[dict[str, Any]], chunk_size: int
-        ) -> FlextResult[list[list[dict[str, Any]]]]:
+            records: list[dict[str, object]], chunk_size: int
+        ) -> FlextResult[list[list[dict[str, object]]]]:
             """Chunk Oracle WMS records into batches for processing.
 
             Args:
@@ -409,22 +409,22 @@ class FlextOracleWmsUtilities(FlextUtilities):
 
             """
             if not records:
-                return FlextResult[list[list[dict[str, Any]]]].ok([])
+                return FlextResult[list[list[dict[str, object]]]].ok([])
 
             chunk_validation = (
                 FlextOracleWmsUtilities.DataProcessing.validate_batch_size(chunk_size)
             )
             if chunk_validation.is_failure:
-                return FlextResult[list[list[dict[str, Any]]]].fail(
+                return FlextResult[list[list[dict[str, object]]]].fail(
                     chunk_validation.error
                 )
 
-            chunks: list[list[dict[str, Any]]] = []
+            chunks: list[list[dict[str, object]]] = []
             for i in range(0, len(records), chunk_size):
                 chunk = records[i : i + chunk_size]
                 chunks.append(chunk)
 
-            return FlextResult[list[list[dict[str, Any]]]].ok(chunks)
+            return FlextResult[list[list[dict[str, object]]]].ok(chunks)
 
         @staticmethod
         def validate_pagination_info(
@@ -558,7 +558,7 @@ class FlextOracleWmsUtilities(FlextUtilities):
 
         @staticmethod
         def build_query_parameters(
-            filters: dict[str, Any],
+            filters: dict[str, object],
         ) -> FlextResult[dict[str, str]]:
             """Build Oracle WMS API query parameters from filters.
 
@@ -737,7 +737,7 @@ class FlextOracleWmsUtilities(FlextUtilities):
 
         @staticmethod
         def calculate_total_quantity(
-            items: list[dict[str, Any]], quantity_field: str = "quantity"
+            items: list[dict[str, object]], quantity_field: str = "quantity"
         ) -> FlextResult[float]:
             """Calculate total quantity from Oracle WMS inventory items.
 
@@ -786,8 +786,8 @@ class FlextOracleWmsUtilities(FlextUtilities):
 
         @staticmethod
         def validate_health_status(
-            status_data: dict[str, Any],
-        ) -> FlextResult[dict[str, Any]]:
+            status_data: dict[str, object],
+        ) -> FlextResult[dict[str, object]]:
             """Validate Oracle WMS health check status data.
 
             Args:
@@ -798,7 +798,7 @@ class FlextOracleWmsUtilities(FlextUtilities):
 
             """
             if not status_data:
-                return FlextResult[dict[str, Any]].fail(
+                return FlextResult[dict[str, object]].fail(
                     "Health status data cannot be empty"
                 )
 
@@ -806,7 +806,7 @@ class FlextOracleWmsUtilities(FlextUtilities):
             missing_fields = required_fields - set(status_data.keys())
 
             if missing_fields:
-                return FlextResult[dict[str, Any]].fail(
+                return FlextResult[dict[str, object]].fail(
                     f"Missing required health status fields: {', '.join(missing_fields)}"
                 )
 
@@ -814,14 +814,16 @@ class FlextOracleWmsUtilities(FlextUtilities):
             valid_statuses = {"healthy", "degraded", "unhealthy"}
             status = status_data["status"]
             if status not in valid_statuses:
-                return FlextResult[dict[str, Any]].fail(
+                return FlextResult[dict[str, object]].fail(
                     f"Invalid health status '{status}'. Must be one of: {', '.join(valid_statuses)}"
                 )
 
             # Validate service name
             service = status_data["service"]
             if not service or not str(service).strip():
-                return FlextResult[dict[str, Any]].fail("Service name cannot be empty")
+                return FlextResult[dict[str, object]].fail(
+                    "Service name cannot be empty"
+                )
 
             validated_data = {
                 "status": status,
@@ -831,12 +833,12 @@ class FlextOracleWmsUtilities(FlextUtilities):
                 "metrics": status_data.get("metrics", {}),
             }
 
-            return FlextResult[dict[str, Any]].ok(validated_data)
+            return FlextResult[dict[str, object]].ok(validated_data)
 
         @staticmethod
         def analyze_performance_metrics(
-            metrics: dict[str, Any], thresholds: dict[str, float] | None = None
-        ) -> FlextResult[dict[str, Any]]:
+            metrics: dict[str, object], thresholds: dict[str, float] | None = None
+        ) -> FlextResult[dict[str, object]]:
             """Analyze Oracle WMS performance metrics against thresholds.
 
             Args:
@@ -848,7 +850,7 @@ class FlextOracleWmsUtilities(FlextUtilities):
 
             """
             if not metrics:
-                return FlextResult[dict[str, Any]].fail(
+                return FlextResult[dict[str, object]].fail(
                     "Performance metrics cannot be empty"
                 )
 
@@ -862,7 +864,7 @@ class FlextOracleWmsUtilities(FlextUtilities):
             }
 
             analysis_thresholds = thresholds or default_thresholds
-            analysis_result: dict[str, Any] = {
+            analysis_result: dict[str, object] = {
                 "overall_status": "healthy",
                 "alerts": [],
                 "warnings": [],
@@ -908,4 +910,4 @@ class FlextOracleWmsUtilities(FlextUtilities):
                     else "degraded"
                 )
 
-            return FlextResult[dict[str, Any]].ok(analysis_result)
+            return FlextResult[dict[str, object]].ok(analysis_result)

@@ -301,7 +301,7 @@ class TestFlextOracleWmsClientCore:
 
         assert result.is_failure
         assert result.error is not None
-        assert "not initialized" in result.error.lower()
+        assert result.error is not None and "not initialized" in result.error.lower()
 
     def test_get_entity_data_success(
         self,
@@ -358,7 +358,7 @@ class TestFlextOracleWmsClientCore:
             result = client.call_api("unknown_api_xyz")
             assert result.is_failure
             assert result.error is not None
-            assert "Unknown API" in result.error
+            assert result.error is not None and "Unknown API" in result.error
 
     def test_call_api_without_client(
         self,
@@ -373,7 +373,7 @@ class TestFlextOracleWmsClientCore:
 
         assert result.is_failure
         assert result.error is not None
-        assert "not initialized" in result.error.lower()
+        assert result.error is not None and "not initialized" in result.error.lower()
 
     def test_client_error_handling_invalid_config(self) -> None:
         """Test client creation with invalid config."""

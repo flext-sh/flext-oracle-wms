@@ -250,4 +250,4 @@ if __name__ == "__main__":
     # Set debug logging for example
     os.environ.setdefault("FLEXT_LOG_LEVEL", "info")
 
-    run(main())
+    main()

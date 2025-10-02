@@ -95,7 +95,7 @@ def test_config_validation_empty_username() -> None:
     result = config.validate_business_rules()
     assert result.is_failure
     assert result.error is not None
-    assert "username" in result.error.lower()
+    assert result.error is not None and "username" in result.error.lower()
 
 
 @pytest.mark.unit
@@ -115,7 +115,7 @@ def test_config_validation_empty_password() -> None:
     result = config.validate_business_rules()
     assert result.is_failure
     assert result.error is not None
-    assert "password" in result.error.lower()
+    assert result.error is not None and "password" in result.error.lower()
 
 
 @pytest.mark.unit

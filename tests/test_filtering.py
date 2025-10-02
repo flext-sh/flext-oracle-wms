@@ -233,7 +233,7 @@ class TestRecordFiltering:
 
         assert result.is_failure
         assert result.error is not None
-        assert "Too many filter conditions" in result.error
+        assert result.error is not None and "Too many filter conditions" in result.error
 
 
 class TestRecordSorting:
@@ -678,7 +678,7 @@ class TestErrorHandling:
         result = filter_engine.sort_records("invalid_records", "field")
         assert result.is_failure
         assert result.error is not None
-        assert "Type mismatch" in result.error
+        assert result.error is not None and "Type mismatch" in result.error
 
     def test_matches_condition_unknown_operator(self) -> None:
         """Test _matches_condition with unknown operator."""

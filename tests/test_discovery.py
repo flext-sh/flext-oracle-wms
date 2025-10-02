@@ -19,8 +19,8 @@ import math
 from unittest.mock import Mock, patch
 
 import pytest
-
 from flext_core import FlextResult, FlextTypes
+
 from flext_oracle_wms import (
     DISCOVERY_FAILURE,
     DISCOVERY_SUCCESS,
@@ -220,7 +220,7 @@ class TestEndpointDiscoveryStrategy:
         assert result.is_failure
         assert result.data is None
         assert result.error is not None
-        assert "Network error" in result.error
+        assert result.error is not None and "Network error" in result.error
 
     def test_make_api_request_success(self) -> None:
         """Test successful API request."""
@@ -255,7 +255,10 @@ class TestEndpointDiscoveryStrategy:
 
         assert result.is_failure
         assert result.error is not None
-        assert "No response data from /api/test" in result.error
+        assert (
+            result.error is not None
+            and "No response data from /api/test" in result.error
+        )
 
     def test_validate_response_success(self) -> None:
         """Test successful response validation."""
@@ -274,7 +277,10 @@ class TestEndpointDiscoveryStrategy:
 
         assert result.is_failure
         assert result.error is not None
-        assert "No response data from /api/test" in result.error
+        assert (
+            result.error is not None
+            and "No response data from /api/test" in result.error
+        )
 
     def test_validate_response_missing_attributes(self) -> None:
         """Test response validation with missing attributes."""
@@ -285,7 +291,7 @@ class TestEndpointDiscoveryStrategy:
 
         assert result.is_failure
         assert result.error is not None
-        assert "Invalid response structure" in result.error
+        assert result.error is not None and "Invalid response structure" in result.error
 
     def test_validate_response_bad_status(self) -> None:
         """Test response validation with bad HTTP status."""
@@ -297,7 +303,7 @@ class TestEndpointDiscoveryStrategy:
 
         assert result.is_failure
         assert result.error is not None
-        assert "HTTP 500" in result.error
+        assert result.error is not None and "HTTP 500" in result.error
 
 
 class TestEntityResponseParser:
@@ -495,7 +501,7 @@ class TestFlextOracleWmsEntityDiscovery:
 
             assert result.is_failure
             assert result.error is not None
-            assert "Discovery failed" in result.error
+            assert result.error is not None and "Discovery failed" in result.error
 
     def test_discover_entities_no_data(self) -> None:
         """Test entity discovery with no data returned."""
@@ -772,7 +778,7 @@ class TestFlextOracleWmsEntityDiscovery:
 
         assert result.is_failure
         assert result.error is not None
-        assert "Unexpected response format" in result.error
+        assert result.error is not None and "Unexpected response format" in result.error
 
     def test_create_entity_from_string_name(self) -> None:
         """Test entity creation from string name."""
@@ -946,7 +952,7 @@ class TestFlextOracleWmsEntityDiscovery:
 
             assert result.is_failure
             assert result.error is not None
-            assert "Extraction failed" in result.error
+            assert result.error is not None and "Extraction failed" in result.error
 
     def test_discover_single_entity_success(self) -> None:
         """Test successful single entity discovery."""
@@ -976,7 +982,7 @@ class TestFlextOracleWmsEntityDiscovery:
 
         assert result.is_failure
         assert result.error is not None
-        assert "Connection failed" in result.error
+        assert result.error is not None and "Connection failed" in result.error
 
     def test_discover_single_entity_http_error(self) -> None:
         """Test single entity discovery with HTTP error."""
@@ -1269,7 +1275,7 @@ class TestFlextOracleWmsEntityDiscovery:
         result = self.discovery._get_cached_discovery("test_key")
 
         assert result.is_failure
-        assert "Cache not implemented" in result.error
+        assert result.error is not None and "Cache not implemented" in result.error
 
     def test_cache_discovery_result_no_op(self) -> None:
         """Test cache discovery result is no-op."""
@@ -1290,7 +1296,7 @@ class TestFlextOracleWmsEntityDiscovery:
 
         assert result.is_failure
         assert result.error is not None
-        assert "Cache not implemented" in result.error
+        assert result.error is not None and "Cache not implemented" in result.error
 
     def test_cache_entity_result_no_op(self) -> None:
         """Test cache entity result is no-op."""
@@ -1371,7 +1377,10 @@ class TestErrorHandling:
                 result = self.discovery.discover_entities()
                 assert not result.success
                 assert result.error is not None
-                assert "Discover entities failed" in result.error
+                assert (
+                    result.error is not None
+                    and "Discover entities failed" in result.error
+                )
 
     def test_discover_entity_schema_exception(self) -> None:
         """Test discover_entity_schema handles exceptions."""

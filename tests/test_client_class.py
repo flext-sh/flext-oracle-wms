@@ -39,7 +39,7 @@ def test_entity_name_validation() -> None:
     result = flext_oracle_wms_validate_entity_name("")
     assert result.is_failure
     assert result.error is not None
-    assert "cannot be empty" in result.error
+    assert result.error is not None and "cannot be empty" in result.error
 
 
 def test_api_url_building() -> None:

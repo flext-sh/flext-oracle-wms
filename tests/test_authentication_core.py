@@ -124,7 +124,7 @@ class TestAuthenticationConfig:
 
         result = config.validate_business_rules()
         assert result.is_failure
-        assert "username" in result.error.lower()
+        assert result.error is not None and "username" in result.error.lower()
 
     def test_config_validation_failure_basic_missing_password(self) -> None:
         """Test config validation fails for basic auth missing password."""
@@ -136,7 +136,7 @@ class TestAuthenticationConfig:
 
         result = config.validate_business_rules()
         assert result.is_failure
-        assert "password" in result.error.lower()
+        assert result.error is not None and "password" in result.error.lower()
 
     def test_config_validation_failure_bearer_missing_token(self) -> None:
         """Test config validation fails for bearer auth missing token."""
@@ -147,7 +147,7 @@ class TestAuthenticationConfig:
 
         result = config.validate_business_rules()
         assert result.is_failure
-        assert "token" in result.error.lower()
+        assert result.error is not None and "token" in result.error.lower()
 
     def test_config_validation_failure_api_key_missing_key(self) -> None:
         """Test config validation fails for API key auth missing key."""
@@ -158,7 +158,7 @@ class TestAuthenticationConfig:
 
         result = config.validate_business_rules()
         assert result.is_failure
-        assert "api key" in result.error.lower()
+        assert result.error is not None and "api key" in result.error.lower()
 
     def test_config_validation_api_key_empty(self) -> None:
         """Test config validation fails for API key auth missing key."""
@@ -169,7 +169,7 @@ class TestAuthenticationConfig:
 
         result = config.validate_business_rules()
         assert result.is_failure
-        assert "header" in result.error.lower()
+        assert result.error is not None and "header" in result.error.lower()
 
     def test_config_string_representation(self) -> None:
         """Test config string representation."""
@@ -387,7 +387,7 @@ class TestAuthPlugin:
 
             result = plugin.authenticator.validate_credentials()
             assert result.is_failure
-            assert "Auth failed" in result.error
+            assert result.error is not None and "Auth failed" in result.error
 
     def test_plugin_authenticator_access(self) -> None:
         """Test plugin authenticator access."""
@@ -465,7 +465,7 @@ class TestAuthPlugin:
 
             result = plugin.authenticator.get_auth_headers()
             assert result.is_failure
-            assert "Auth failed" in result.error
+            assert result.error is not None and "Auth failed" in result.error
 
     def test_plugin_string_representation(self) -> None:
         """Test plugin string representation."""

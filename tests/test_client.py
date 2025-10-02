@@ -57,7 +57,7 @@ class TestClientSimpleNew:
         result = flext_oracle_wms_validate_entity_name("")
         assert result.is_failure
         assert result.error is not None
-        assert "cannot be empty" in result.error
+        assert result.error is not None and "cannot be empty" in result.error
 
     def test_build_api_url_basic(self) -> None:
         """Test basic URL building using helper function."""
@@ -227,7 +227,7 @@ class TestClientSimpleNew:
         result = flext_oracle_wms_validate_entity_name("order@hdr")
         assert result.is_failure
         assert result.error is not None
-        assert "Invalid entity name format" in result.error
+        assert result.error is not None and "Invalid entity name format" in result.error
 
     def test_client_initialization_edge_cases(self) -> None:
         """Test client initialization with edge cases."""

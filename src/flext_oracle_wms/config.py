@@ -67,6 +67,12 @@ class FlextOracleWmsConfig(FlextConfig):
         description="Oracle WMS password (sensitive)",
     )
 
+    # Backward compatibility properties for old attribute names
+    @property
+    def base_url(self) -> str:
+        """Backward compatibility property for oracle_wms_base_url."""
+        return self.oracle_wms_base_url
+
     api_version: str = Field(
         default="LGF_V10",
         description="Oracle WMS API version",
