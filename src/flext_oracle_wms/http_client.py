@@ -46,12 +46,12 @@ class FlextHttpClient:
         self.verify_ssl = verify_ssl
         self._client: FlextApiClient | None = None
 
-    def __aenter__(self) -> Self:
+    def __enter__(self) -> Self:
         """Context manager entry."""
         self._ensure_client()
         return self
 
-    def __aexit__(
+    def __exit__(
         self,
         exc_type: object,
         exc_val: object,
