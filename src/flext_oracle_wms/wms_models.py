@@ -16,7 +16,7 @@ from typing import Annotated, Literal, TypedDict
 
 from pydantic import Field, StringConstraints
 
-from flext_core import FlextModels, FlextResult
+from flext_core import FlextModels, FlextResult, FlextTypes
 from flext_oracle_wms.typings import FlextOracleWmsTypes
 from flext_oracle_wms.wms_constants import (
     FlextOracleWmsApiVersion,
@@ -109,7 +109,7 @@ class FlextOracleWmsEntity(FlextModels):
 
     def validate_business_rules(self) -> FlextResult[None]:
         """Validate entity business rules."""
-        validation_errors: list[str] = []
+        validation_errors: FlextTypes.StringList = []
 
         # Business rule: entity name cannot be empty
         if not self.name.strip():
@@ -159,7 +159,7 @@ class FlextOracleWmsDiscoveryResult(FlextModels):
 
     def validate_business_rules(self) -> FlextResult[None]:
         """Validate discovery result."""
-        validation_errors: list[str] = []
+        validation_errors: FlextTypes.StringList = []
 
         # Entities list is already typed as list[TOracleWmsEntityInfo]
 
@@ -195,7 +195,7 @@ class FlextOracleWmsApiResponse(FlextModels):
 
     def validate_business_rules(self) -> FlextResult[None]:
         """Validate API response."""
-        validation_errors: list[str] = []
+        validation_errors: FlextTypes.StringList = []
 
         # Data is already typed as FlextOracleWmsTypes.Core.Dict
 
@@ -234,7 +234,7 @@ class FlextOracleWmsApiEndpoint(FlextModels):
 
     def validate_business_rules(self) -> FlextResult[None]:
         """Validate Oracle WMS API endpoint business rules."""
-        validation_errors: list[str] = []
+        validation_errors: FlextTypes.StringList = []
 
         if not self.name:
             validation_errors.append("API name cannot be empty")

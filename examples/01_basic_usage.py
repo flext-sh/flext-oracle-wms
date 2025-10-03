@@ -66,7 +66,7 @@ def create_client_config() -> FlextOracleWmsClientConfig:
 
 def discover_wms_entities(
     client: FlextOracleWmsClient,
-) -> FlextResult[list[FlextTypes.Core.Dict]]:
+) -> FlextResult[list[FlextTypes.Dict]]:
     """Discover available Oracle WMS entities.
 
     Args:
@@ -108,7 +108,7 @@ def discover_wms_entities(
 def query_entity_data(
     client: FlextOracleWmsClient,
     entity_name: str,
-) -> FlextResult[FlextTypes.Core.Dict | list[FlextTypes.Core.Dict]]:
+) -> FlextResult[FlextTypes.Dict | list[FlextTypes.Dict]]:
     """Query data from a specific Oracle WMS entity.
 
     Args:

@@ -39,6 +39,7 @@ SPDX-License-Identifier: MIT
 
 import pytest
 
+from flext_core import FlextTypes
 from flext_oracle_wms import (
     FlextOracleWmsApiError,
     FlextOracleWmsAuthenticationError,
@@ -64,7 +65,7 @@ def test_base_error() -> None:
 
 def test_base_error_with_details() -> None:
     """Test base error with error details."""
-    details: dict[str, object] = {"code": "E001", "field": "username"}
+    details: FlextTypes.Dict = {"code": "E001", "field": "username"}
     error = FlextOracleWmsError("Test error", context=details)
     assert str(error) == "[E001] Test error"
     assert error.code == "E001"
@@ -227,7 +228,7 @@ def test_error_inheritance() -> None:
 
 def test_error_with_multiple_details() -> None:
     """Test error with multiple detail fields."""
-    context: dict[str, object] = {
+    context: FlextTypes.Dict = {
         "field_name": "order_id",
         "invalid_value": "invalid",
         "entity_name": "order_hdr",

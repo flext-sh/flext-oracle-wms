@@ -16,9 +16,9 @@ import operator
 from datetime import UTC, datetime
 from pathlib import Path
 
-from flext_core import FlextLogger, FlextResult, FlextTypes
 from pydantic import ConfigDict
 
+from flext_core import FlextLogger, FlextResult, FlextTypes
 from flext_oracle_wms import (
     FLEXT_ORACLE_WMS_APIS,
     FlextOracleWmsApiCategory,
@@ -53,9 +53,9 @@ class OracleWmsCompleteDiscovery:
             self.config,
             mock_mode=False,
         )
-        self.discovered_entities: FlextTypes.Core.StringList = []
-        self.entity_metadata: FlextTypes.Core.Dict = {}
-        self.complete_schemas: FlextTypes.Core.Dict = {}
+        self.discovered_entities: FlextTypes.StringList = []
+        self.entity_metadata: FlextTypes.Dict = {}
+        self.complete_schemas: FlextTypes.Dict = {}
 
     def start_discovery(self) -> FlextResult[None]:
         """Start complete discovery process."""
@@ -340,7 +340,7 @@ class OracleWmsCompleteDiscovery:
 
     def discover_complete_entity_metadata(
         self,
-    ) -> FlextResult[FlextTypes.Core.Dict]:
+    ) -> FlextResult[FlextTypes.Dict]:
         """Discover complete metadata for all entities using Oracle WMS APIs."""
         if not self.discovered_entities:
             entities_result = self.client.discover_entities()
@@ -464,7 +464,7 @@ class OracleWmsCompleteDiscovery:
 
     def generate_singer_schemas_with_flattening(
         self,
-    ) -> FlextResult[FlextTypes.Core.Dict]:
+    ) -> FlextResult[FlextTypes.Dict]:
         """Generate Singer schemas with real data flattening based on Oracle metadata."""
         if not self.entity_metadata:
             return FlextResult[None].fail(
@@ -499,8 +499,8 @@ class OracleWmsCompleteDiscovery:
     def _generate_singer_schema_from_metadata(
         self,
         entity_name: str,
-        metadata: FlextTypes.Core.Dict,
-    ) -> FlextTypes.Core.Dict | None:
+        metadata: FlextTypes.Dict,
+    ) -> FlextTypes.Dict | None:
         """Generate Singer schema from Oracle WMS metadata with flattening."""
         try:
             fields = metadata.get("fields", [])
@@ -537,7 +537,7 @@ class OracleWmsCompleteDiscovery:
         python_type: str,
         sample_value: object,
         field_name: str,
-    ) -> FlextTypes.Core.Dict:
+    ) -> FlextTypes.Dict:
         """Map Oracle/Python types to Singer types based on real data."""
         # Analyze sample value for more accurate typing
         if sample_value is not None:

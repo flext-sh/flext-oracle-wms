@@ -9,7 +9,8 @@ import json
 from typing import Self, override
 
 from flext_api import FlextApiClient
-from flext_core import FlextLogger, FlextResult
+
+from flext_core import FlextLogger, FlextResult, FlextTypes
 from flext_oracle_wms.typings import FlextOracleWmsTypes
 
 # HTTP Status Code Constants
@@ -27,7 +28,7 @@ class FlextHttpClient:
         self,
         base_url: str,
         timeout: float = 30.0,
-        headers: dict[str, str] | None = None,
+        headers: FlextTypes.StringDict | None = None,
         *,
         verify_ssl: bool = True,
     ) -> None:
@@ -82,7 +83,7 @@ class FlextHttpClient:
         self,
         path: str,
         params: dict[str, str | int | float] | None = None,
-        headers: dict[str, str] | None = None,
+        headers: FlextTypes.StringDict | None = None,
     ) -> FlextResult[FlextOracleWmsTypes.Core.Dict]:
         """Make GET request.
 
@@ -132,13 +133,13 @@ class FlextHttpClient:
                 if isinstance(response.body, dict):
                     data = response.body
                 elif isinstance(response.body, str):
-                    data: dict[str, object] = (
+                    data: FlextTypes.Dict = (
                         json.loads(response.body) if response.body else {}
                     )
                 else:
                     data = {}
             except (ValueError, AttributeError):
-                data: dict[str, object] = {
+                data: FlextTypes.Dict = {
                     "text": str(response.body) if response.body else ""
                 }
 
@@ -153,9 +154,9 @@ class FlextHttpClient:
     def post(
         self,
         path: str,
-        data: dict[str, object] | None = None,
-        json_data: dict[str, object] | None = None,
-        headers: dict[str, str] | None = None,
+        data: FlextTypes.Dict | None = None,
+        json_data: FlextTypes.Dict | None = None,
+        headers: FlextTypes.StringDict | None = None,
     ) -> FlextResult[FlextOracleWmsTypes.Core.Dict]:
         """Make POST request.
 
@@ -213,13 +214,13 @@ class FlextHttpClient:
                 if isinstance(response.body, dict):
                     response_data = response.body
                 elif isinstance(response.body, str):
-                    response_data: dict[str, object] = (
+                    response_data: FlextTypes.Dict = (
                         json.loads(response.body) if response.body else {}
                     )
                 else:
                     response_data = {}
             except (ValueError, AttributeError):
-                response_data: dict[str, object] = {
+                response_data: FlextTypes.Dict = {
                     "text": str(response.body) if response.body else ""
                 }
 
@@ -234,9 +235,9 @@ class FlextHttpClient:
     def put(
         self,
         path: str,
-        data: dict[str, object] | None = None,
-        json_data: dict[str, object] | None = None,
-        headers: dict[str, str] | None = None,
+        data: FlextTypes.Dict | None = None,
+        json_data: FlextTypes.Dict | None = None,
+        headers: FlextTypes.StringDict | None = None,
     ) -> FlextResult[FlextOracleWmsTypes.Core.Dict]:
         """Make PUT request.
 
@@ -294,13 +295,13 @@ class FlextHttpClient:
                 if isinstance(response.body, dict):
                     response_data = response.body
                 elif isinstance(response.body, str):
-                    response_data: dict[str, object] = (
+                    response_data: FlextTypes.Dict = (
                         json.loads(response.body) if response.body else {}
                     )
                 else:
                     response_data = {}
             except (ValueError, AttributeError):
-                response_data: dict[str, object] = {
+                response_data: FlextTypes.Dict = {
                     "text": str(response.body) if response.body else ""
                 }
 
@@ -315,7 +316,7 @@ class FlextHttpClient:
     def delete(
         self,
         path: str,
-        headers: dict[str, str] | None = None,
+        headers: FlextTypes.StringDict | None = None,
     ) -> FlextResult[FlextOracleWmsTypes.Core.Dict]:
         """Make DELETE request.
 
@@ -359,13 +360,13 @@ class FlextHttpClient:
                 if isinstance(response.body, dict):
                     data = response.body
                 elif isinstance(response.body, str):
-                    data: dict[str, object] = (
+                    data: FlextTypes.Dict = (
                         json.loads(response.body) if response.body else {}
                     )
                 else:
                     data = {}
             except (ValueError, AttributeError):
-                data: dict[str, object] = {
+                data: FlextTypes.Dict = {
                     "text": str(response.body) if response.body else ""
                 }
 
@@ -382,7 +383,7 @@ class FlextHttpClient:
 def create_flext_http_client(
     base_url: str,
     timeout: float = 30.0,
-    headers: dict[str, str] | None = None,
+    headers: FlextTypes.StringDict | None = None,
     *,
     verify_ssl: bool = True,
 ) -> FlextHttpClient:

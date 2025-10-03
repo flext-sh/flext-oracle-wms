@@ -10,7 +10,7 @@ from datetime import UTC, datetime
 from typing import override
 from uuid import uuid4
 
-from flext_core import FlextLogger, FlextResult
+from flext_core import FlextLogger, FlextResult, FlextTypes
 from flext_oracle_wms.typings import FlextOracleWmsTypes
 from flext_oracle_wms.wms_models import (
     FlextOracleWmsApiCategory,
@@ -220,7 +220,7 @@ class OracleWmsMockServer:
     def __init__(self, mock_environment: str = "mock_test") -> None:
         """Initialize Oracle WMS mock server."""
         self.environment = mock_environment
-        self.mock_data: dict[str, object] = self._initialize_mock_data()
+        self.mock_data: FlextTypes.Dict = self._initialize_mock_data()
 
     def _initialize_mock_data(self: object) -> FlextOracleWmsTypes.Core.Dict:
         """Initialize realistic real data based on Oracle WMS documentation."""
@@ -372,7 +372,7 @@ class OracleWmsMockServer:
     ) -> FlextResult[FlextOracleWmsTypes.Core.Dict]:
         """Mock entity data response."""
         data_key = f"{entity_name}_data"
-        mock_records: list[object] = self.mock_data.get(data_key, [])
+        mock_records: FlextTypes.List = self.mock_data.get(data_key, [])
 
         entities_list = (
             self.mock_data["entities"]

@@ -2,7 +2,7 @@
 
 from typing import Protocol, runtime_checkable
 
-from flext_core import FlextProtocols, FlextResult
+from flext_core import FlextProtocols, FlextResult, FlextTypes
 
 
 class FlextOracleWmsProtocols(FlextProtocols):
@@ -19,23 +19,23 @@ class FlextOracleWmsProtocols(FlextProtocols):
 
         def authenticate_with_wms(
             self,
-            auth_config: dict[str, object],
-        ) -> FlextResult[dict[str, object]]:
+            auth_config: FlextTypes.Dict,
+        ) -> FlextResult[FlextTypes.Dict]:
             """Authenticate with Oracle WMS system.
 
             Args:
                 auth_config: WMS authentication configuration
 
             Returns:
-                FlextResult[dict[str, object]]: Authentication result or error
+                FlextResult[FlextTypes.Dict]: Authentication result or error
 
             """
 
         def get_wms_entities(
             self,
             entity_type: str,
-            filters: dict[str, object],
-        ) -> FlextResult[list[dict[str, object]]]:
+            filters: FlextTypes.Dict,
+        ) -> FlextResult[list[FlextTypes.Dict]]:
             """Get WMS entities with filtering.
 
             Args:
@@ -43,15 +43,15 @@ class FlextOracleWmsProtocols(FlextProtocols):
                 filters: WMS entity filters
 
             Returns:
-                FlextResult[list[dict[str, object]]]: WMS entities or error
+                FlextResult[list[FlextTypes.Dict]]: WMS entities or error
 
             """
 
         def execute_wms_operation(
             self,
             operation: str,
-            parameters: dict[str, object],
-        ) -> FlextResult[dict[str, object]]:
+            parameters: FlextTypes.Dict,
+        ) -> FlextResult[FlextTypes.Dict]:
             """Execute WMS operation.
 
             Args:
@@ -59,21 +59,21 @@ class FlextOracleWmsProtocols(FlextProtocols):
                 parameters: Operation parameters
 
             Returns:
-                FlextResult[dict[str, object]]: Operation result or error
+                FlextResult[FlextTypes.Dict]: Operation result or error
 
             """
 
         def validate_wms_connectivity(
             self,
-            connection_config: dict[str, object],
-        ) -> FlextResult[dict[str, object]]:
+            connection_config: FlextTypes.Dict,
+        ) -> FlextResult[FlextTypes.Dict]:
             """Validate WMS connectivity.
 
             Args:
                 connection_config: WMS connection configuration
 
             Returns:
-                FlextResult[dict[str, object]]: Connectivity status or error
+                FlextResult[FlextTypes.Dict]: Connectivity status or error
 
             """
 
@@ -83,23 +83,23 @@ class FlextOracleWmsProtocols(FlextProtocols):
 
         def discover_wms_entities(
             self,
-            discovery_config: dict[str, object],
-        ) -> FlextResult[list[dict[str, object]]]:
+            discovery_config: FlextTypes.Dict,
+        ) -> FlextResult[list[FlextTypes.Dict]]:
             """Discover WMS entities with schema information.
 
             Args:
                 discovery_config: Entity discovery configuration
 
             Returns:
-                FlextResult[list[dict[str, object]]]: Discovered entities or error
+                FlextResult[list[FlextTypes.Dict]]: Discovered entities or error
 
             """
 
         def process_dynamic_schema(
             self,
             entity_name: str,
-            schema_config: dict[str, object],
-        ) -> FlextResult[dict[str, object]]:
+            schema_config: FlextTypes.Dict,
+        ) -> FlextResult[FlextTypes.Dict]:
             """Process dynamic WMS entity schema.
 
             Args:
@@ -107,15 +107,15 @@ class FlextOracleWmsProtocols(FlextProtocols):
                 schema_config: Schema processing configuration
 
             Returns:
-                FlextResult[dict[str, object]]: Processed schema or error
+                FlextResult[FlextTypes.Dict]: Processed schema or error
 
             """
 
         def cache_entity_metadata(
             self,
-            entity_metadata: dict[str, object],
-            cache_config: dict[str, object],
-        ) -> FlextResult[dict[str, object]]:
+            entity_metadata: FlextTypes.Dict,
+            cache_config: FlextTypes.Dict,
+        ) -> FlextResult[FlextTypes.Dict]:
             """Cache WMS entity metadata.
 
             Args:
@@ -123,15 +123,15 @@ class FlextOracleWmsProtocols(FlextProtocols):
                 cache_config: Cache configuration
 
             Returns:
-                FlextResult[dict[str, object]]: Cache operation result or error
+                FlextResult[FlextTypes.Dict]: Cache operation result or error
 
             """
 
         def validate_entity_schema(
             self,
-            entity_schema: dict[str, object],
-            validation_rules: dict[str, object],
-        ) -> FlextResult[dict[str, object]]:
+            entity_schema: FlextTypes.Dict,
+            validation_rules: FlextTypes.Dict,
+        ) -> FlextResult[FlextTypes.Dict]:
             """Validate WMS entity schema.
 
             Args:
@@ -139,7 +139,7 @@ class FlextOracleWmsProtocols(FlextProtocols):
                 validation_rules: Schema validation rules
 
             Returns:
-                FlextResult[dict[str, object]]: Validation result or error
+                FlextResult[FlextTypes.Dict]: Validation result or error
 
             """
 
@@ -149,9 +149,9 @@ class FlextOracleWmsProtocols(FlextProtocols):
 
         def process_inventory_transaction(
             self,
-            transaction_data: dict[str, object],
-            processing_config: dict[str, object],
-        ) -> FlextResult[dict[str, object]]:
+            transaction_data: FlextTypes.Dict,
+            processing_config: FlextTypes.Dict,
+        ) -> FlextResult[FlextTypes.Dict]:
             """Process inventory transaction in WMS.
 
             Args:
@@ -159,7 +159,7 @@ class FlextOracleWmsProtocols(FlextProtocols):
                 processing_config: Transaction processing configuration
 
             Returns:
-                FlextResult[dict[str, object]]: Transaction result or error
+                FlextResult[FlextTypes.Dict]: Transaction result or error
 
             """
 
@@ -168,7 +168,7 @@ class FlextOracleWmsProtocols(FlextProtocols):
             item_id: str,
             location_id: str,
             quantity_required: int,
-        ) -> FlextResult[dict[str, object]]:
+        ) -> FlextResult[FlextTypes.Dict]:
             """Check inventory availability in WMS.
 
             Args:
@@ -177,15 +177,15 @@ class FlextOracleWmsProtocols(FlextProtocols):
                 quantity_required: Required quantity
 
             Returns:
-                FlextResult[dict[str, object]]: Availability status or error
+                FlextResult[FlextTypes.Dict]: Availability status or error
 
             """
 
         def update_inventory_levels(
             self,
-            inventory_updates: list[dict[str, object]],
-            update_config: dict[str, object],
-        ) -> FlextResult[dict[str, object]]:
+            inventory_updates: list[FlextTypes.Dict],
+            update_config: FlextTypes.Dict,
+        ) -> FlextResult[FlextTypes.Dict]:
             """Update inventory levels in WMS.
 
             Args:
@@ -193,15 +193,15 @@ class FlextOracleWmsProtocols(FlextProtocols):
                 update_config: Update configuration
 
             Returns:
-                FlextResult[dict[str, object]]: Update result or error
+                FlextResult[FlextTypes.Dict]: Update result or error
 
             """
 
         def execute_cycle_count(
             self,
-            count_parameters: dict[str, object],
-            execution_config: dict[str, object],
-        ) -> FlextResult[dict[str, object]]:
+            count_parameters: FlextTypes.Dict,
+            execution_config: FlextTypes.Dict,
+        ) -> FlextResult[FlextTypes.Dict]:
             """Execute cycle count in WMS.
 
             Args:
@@ -209,7 +209,7 @@ class FlextOracleWmsProtocols(FlextProtocols):
                 execution_config: Execution configuration
 
             Returns:
-                FlextResult[dict[str, object]]: Cycle count result or error
+                FlextResult[FlextTypes.Dict]: Cycle count result or error
 
             """
 
@@ -219,9 +219,9 @@ class FlextOracleWmsProtocols(FlextProtocols):
 
         def process_outbound_shipment(
             self,
-            shipment_data: dict[str, object],
-            processing_config: dict[str, object],
-        ) -> FlextResult[dict[str, object]]:
+            shipment_data: FlextTypes.Dict,
+            processing_config: FlextTypes.Dict,
+        ) -> FlextResult[FlextTypes.Dict]:
             """Process outbound shipment in WMS.
 
             Args:
@@ -229,15 +229,15 @@ class FlextOracleWmsProtocols(FlextProtocols):
                 processing_config: Shipment processing configuration
 
             Returns:
-                FlextResult[dict[str, object]]: Shipment processing result or error
+                FlextResult[FlextTypes.Dict]: Shipment processing result or error
 
             """
 
         def create_picking_wave(
             self,
-            wave_parameters: dict[str, object],
-            creation_config: dict[str, object],
-        ) -> FlextResult[dict[str, object]]:
+            wave_parameters: FlextTypes.Dict,
+            creation_config: FlextTypes.Dict,
+        ) -> FlextResult[FlextTypes.Dict]:
             """Create picking wave in WMS.
 
             Args:
@@ -245,15 +245,15 @@ class FlextOracleWmsProtocols(FlextProtocols):
                 creation_config: Wave creation configuration
 
             Returns:
-                FlextResult[dict[str, object]]: Wave creation result or error
+                FlextResult[FlextTypes.Dict]: Wave creation result or error
 
             """
 
         def execute_picking_operations(
             self,
-            picking_instructions: list[dict[str, object]],
-            execution_config: dict[str, object],
-        ) -> FlextResult[dict[str, object]]:
+            picking_instructions: list[FlextTypes.Dict],
+            execution_config: FlextTypes.Dict,
+        ) -> FlextResult[FlextTypes.Dict]:
             """Execute picking operations in WMS.
 
             Args:
@@ -261,15 +261,15 @@ class FlextOracleWmsProtocols(FlextProtocols):
                 execution_config: Picking execution configuration
 
             Returns:
-                FlextResult[dict[str, object]]: Picking result or error
+                FlextResult[FlextTypes.Dict]: Picking result or error
 
             """
 
         def confirm_shipment_dispatch(
             self,
             shipment_id: str,
-            dispatch_details: dict[str, object],
-        ) -> FlextResult[dict[str, object]]:
+            dispatch_details: FlextTypes.Dict,
+        ) -> FlextResult[FlextTypes.Dict]:
             """Confirm shipment dispatch in WMS.
 
             Args:
@@ -277,7 +277,7 @@ class FlextOracleWmsProtocols(FlextProtocols):
                 dispatch_details: Dispatch confirmation details
 
             Returns:
-                FlextResult[dict[str, object]]: Dispatch confirmation or error
+                FlextResult[FlextTypes.Dict]: Dispatch confirmation or error
 
             """
 
@@ -287,9 +287,9 @@ class FlextOracleWmsProtocols(FlextProtocols):
 
         def process_inbound_receipt(
             self,
-            receipt_data: dict[str, object],
-            processing_config: dict[str, object],
-        ) -> FlextResult[dict[str, object]]:
+            receipt_data: FlextTypes.Dict,
+            processing_config: FlextTypes.Dict,
+        ) -> FlextResult[FlextTypes.Dict]:
             """Process inbound receipt in WMS.
 
             Args:
@@ -297,15 +297,15 @@ class FlextOracleWmsProtocols(FlextProtocols):
                 processing_config: Receipt processing configuration
 
             Returns:
-                FlextResult[dict[str, object]]: Receipt processing result or error
+                FlextResult[FlextTypes.Dict]: Receipt processing result or error
 
             """
 
         def execute_putaway_operations(
             self,
-            putaway_instructions: list[dict[str, object]],
-            execution_config: dict[str, object],
-        ) -> FlextResult[dict[str, object]]:
+            putaway_instructions: list[FlextTypes.Dict],
+            execution_config: FlextTypes.Dict,
+        ) -> FlextResult[FlextTypes.Dict]:
             """Execute putaway operations in WMS.
 
             Args:
@@ -313,15 +313,15 @@ class FlextOracleWmsProtocols(FlextProtocols):
                 execution_config: Putaway execution configuration
 
             Returns:
-                FlextResult[dict[str, object]]: Putaway result or error
+                FlextResult[FlextTypes.Dict]: Putaway result or error
 
             """
 
         def manage_warehouse_tasks(
             self,
-            task_parameters: dict[str, object],
-            management_config: dict[str, object],
-        ) -> FlextResult[dict[str, object]]:
+            task_parameters: FlextTypes.Dict,
+            management_config: FlextTypes.Dict,
+        ) -> FlextResult[FlextTypes.Dict]:
             """Manage warehouse tasks in WMS.
 
             Args:
@@ -329,15 +329,15 @@ class FlextOracleWmsProtocols(FlextProtocols):
                 management_config: Task management configuration
 
             Returns:
-                FlextResult[dict[str, object]]: Task management result or error
+                FlextResult[FlextTypes.Dict]: Task management result or error
 
             """
 
         def optimize_warehouse_layout(
             self,
-            optimization_parameters: dict[str, object],
-            layout_config: dict[str, object],
-        ) -> FlextResult[dict[str, object]]:
+            optimization_parameters: FlextTypes.Dict,
+            layout_config: FlextTypes.Dict,
+        ) -> FlextResult[FlextTypes.Dict]:
             """Optimize warehouse layout in WMS.
 
             Args:
@@ -345,7 +345,7 @@ class FlextOracleWmsProtocols(FlextProtocols):
                 layout_config: Layout configuration
 
             Returns:
-                FlextResult[dict[str, object]]: Optimization result or error
+                FlextResult[FlextTypes.Dict]: Optimization result or error
 
             """
 
@@ -355,9 +355,9 @@ class FlextOracleWmsProtocols(FlextProtocols):
 
         def filter_wms_data(
             self,
-            data: list[dict[str, object]],
-            filter_config: dict[str, object],
-        ) -> FlextResult[list[dict[str, object]]]:
+            data: list[FlextTypes.Dict],
+            filter_config: FlextTypes.Dict,
+        ) -> FlextResult[list[FlextTypes.Dict]]:
             """Filter WMS data based on criteria.
 
             Args:
@@ -365,15 +365,15 @@ class FlextOracleWmsProtocols(FlextProtocols):
                 filter_config: Filter configuration
 
             Returns:
-                FlextResult[list[dict[str, object]]]: Filtered data or error
+                FlextResult[list[FlextTypes.Dict]]: Filtered data or error
 
             """
 
         def flatten_wms_data(
             self,
-            hierarchical_data: dict[str, object],
-            flattening_config: dict[str, object],
-        ) -> FlextResult[dict[str, object]]:
+            hierarchical_data: FlextTypes.Dict,
+            flattening_config: FlextTypes.Dict,
+        ) -> FlextResult[FlextTypes.Dict]:
             """Flatten hierarchical WMS data.
 
             Args:
@@ -381,15 +381,15 @@ class FlextOracleWmsProtocols(FlextProtocols):
                 flattening_config: Flattening configuration
 
             Returns:
-                FlextResult[dict[str, object]]: Flattened data or error
+                FlextResult[FlextTypes.Dict]: Flattened data or error
 
             """
 
         def transform_wms_data(
             self,
-            source_data: dict[str, object],
-            transformation_config: dict[str, object],
-        ) -> FlextResult[dict[str, object]]:
+            source_data: FlextTypes.Dict,
+            transformation_config: FlextTypes.Dict,
+        ) -> FlextResult[FlextTypes.Dict]:
             """Transform WMS data format.
 
             Args:
@@ -397,15 +397,15 @@ class FlextOracleWmsProtocols(FlextProtocols):
                 transformation_config: Transformation configuration
 
             Returns:
-                FlextResult[dict[str, object]]: Transformed data or error
+                FlextResult[FlextTypes.Dict]: Transformed data or error
 
             """
 
         def validate_wms_data_quality(
             self,
-            data: dict[str, object],
-            quality_rules: dict[str, object],
-        ) -> FlextResult[dict[str, object]]:
+            data: FlextTypes.Dict,
+            quality_rules: FlextTypes.Dict,
+        ) -> FlextResult[FlextTypes.Dict]:
             """Validate WMS data quality.
 
             Args:
@@ -413,7 +413,7 @@ class FlextOracleWmsProtocols(FlextProtocols):
                 quality_rules: Data quality rules
 
             Returns:
-                FlextResult[dict[str, object]]: Quality validation result or error
+                FlextResult[FlextTypes.Dict]: Quality validation result or error
 
             """
 
@@ -423,57 +423,57 @@ class FlextOracleWmsProtocols(FlextProtocols):
 
         def authenticate_oauth2(
             self,
-            oauth2_config: dict[str, object],
-        ) -> FlextResult[dict[str, object]]:
+            oauth2_config: FlextTypes.Dict,
+        ) -> FlextResult[FlextTypes.Dict]:
             """Authenticate using OAuth2 with WMS.
 
             Args:
                 oauth2_config: OAuth2 authentication configuration
 
             Returns:
-                FlextResult[dict[str, object]]: Authentication tokens or error
+                FlextResult[FlextTypes.Dict]: Authentication tokens or error
 
             """
 
         def refresh_authentication_token(
             self,
-            token_config: dict[str, object],
-        ) -> FlextResult[dict[str, object]]:
+            token_config: FlextTypes.Dict,
+        ) -> FlextResult[FlextTypes.Dict]:
             """Refresh WMS authentication token.
 
             Args:
                 token_config: Token refresh configuration
 
             Returns:
-                FlextResult[dict[str, object]]: Refreshed token or error
+                FlextResult[FlextTypes.Dict]: Refreshed token or error
 
             """
 
         def validate_session_status(
             self,
-            session_config: dict[str, object],
-        ) -> FlextResult[dict[str, object]]:
+            session_config: FlextTypes.Dict,
+        ) -> FlextResult[FlextTypes.Dict]:
             """Validate WMS session status.
 
             Args:
                 session_config: Session validation configuration
 
             Returns:
-                FlextResult[dict[str, object]]: Session status or error
+                FlextResult[FlextTypes.Dict]: Session status or error
 
             """
 
         def manage_authentication_plugins(
             self,
-            plugin_config: dict[str, object],
-        ) -> FlextResult[dict[str, object]]:
+            plugin_config: FlextTypes.Dict,
+        ) -> FlextResult[FlextTypes.Dict]:
             """Manage WMS authentication plugins.
 
             Args:
                 plugin_config: Plugin management configuration
 
             Returns:
-                FlextResult[dict[str, object]]: Plugin management result or error
+                FlextResult[FlextTypes.Dict]: Plugin management result or error
 
             """
 
@@ -482,54 +482,54 @@ class FlextOracleWmsProtocols(FlextProtocols):
         """Protocol for Oracle WMS performance optimization operations."""
 
         def optimize_wms_operations(
-            self, performance_config: dict[str, object]
-        ) -> FlextResult[dict[str, object]]:
+            self, performance_config: FlextTypes.Dict
+        ) -> FlextResult[FlextTypes.Dict]:
             """Optimize WMS operations performance.
 
             Args:
                 performance_config: Performance optimization configuration
 
             Returns:
-                FlextResult[dict[str, object]]: Optimization results or error
+                FlextResult[FlextTypes.Dict]: Optimization results or error
 
             """
 
         def configure_connection_pooling(
-            self, pool_config: dict[str, object]
-        ) -> FlextResult[dict[str, object]]:
+            self, pool_config: FlextTypes.Dict
+        ) -> FlextResult[FlextTypes.Dict]:
             """Configure connection pooling for WMS operations.
 
             Args:
                 pool_config: Connection pooling configuration
 
             Returns:
-                FlextResult[dict[str, object]]: Pool configuration result or error
+                FlextResult[FlextTypes.Dict]: Pool configuration result or error
 
             """
 
         def monitor_wms_performance(
-            self, performance_metrics: dict[str, object]
-        ) -> FlextResult[dict[str, object]]:
+            self, performance_metrics: FlextTypes.Dict
+        ) -> FlextResult[FlextTypes.Dict]:
             """Monitor WMS performance metrics.
 
             Args:
                 performance_metrics: Performance monitoring data
 
             Returns:
-                FlextResult[dict[str, object]]: Performance analysis or error
+                FlextResult[FlextTypes.Dict]: Performance analysis or error
 
             """
 
         def optimize_data_caching(
-            self, cache_config: dict[str, object]
-        ) -> FlextResult[dict[str, object]]:
+            self, cache_config: FlextTypes.Dict
+        ) -> FlextResult[FlextTypes.Dict]:
             """Optimize WMS data caching.
 
             Args:
                 cache_config: Cache optimization configuration
 
             Returns:
-                FlextResult[dict[str, object]]: Cache optimization results or error
+                FlextResult[FlextTypes.Dict]: Cache optimization results or error
 
             """
 
@@ -538,7 +538,7 @@ class FlextOracleWmsProtocols(FlextProtocols):
         """Protocol for Oracle WMS monitoring operations."""
 
         def track_wms_metrics(
-            self, wms_id: str, metrics: dict[str, object]
+            self, wms_id: str, metrics: FlextTypes.Dict
         ) -> FlextResult[bool]:
             """Track WMS operation metrics.
 
@@ -552,41 +552,41 @@ class FlextOracleWmsProtocols(FlextProtocols):
             """
 
         def monitor_wms_health(
-            self, health_config: dict[str, object]
-        ) -> FlextResult[dict[str, object]]:
+            self, health_config: FlextTypes.Dict
+        ) -> FlextResult[FlextTypes.Dict]:
             """Monitor WMS system health status.
 
             Args:
                 health_config: Health monitoring configuration
 
             Returns:
-                FlextResult[dict[str, object]]: Health status or error
+                FlextResult[FlextTypes.Dict]: Health status or error
 
             """
 
         def get_operation_status(
             self, operation_id: str
-        ) -> FlextResult[dict[str, object]]:
+        ) -> FlextResult[FlextTypes.Dict]:
             """Get WMS operation status.
 
             Args:
                 operation_id: Operation identifier
 
             Returns:
-                FlextResult[dict[str, object]]: Operation status or error
+                FlextResult[FlextTypes.Dict]: Operation status or error
 
             """
 
         def create_monitoring_dashboard(
-            self, dashboard_config: dict[str, object]
-        ) -> FlextResult[dict[str, object]]:
+            self, dashboard_config: FlextTypes.Dict
+        ) -> FlextResult[FlextTypes.Dict]:
             """Create monitoring dashboard for WMS operations.
 
             Args:
                 dashboard_config: Dashboard configuration
 
             Returns:
-                FlextResult[dict[str, object]]: Dashboard creation result or error
+                FlextResult[FlextTypes.Dict]: Dashboard creation result or error
 
             """
 

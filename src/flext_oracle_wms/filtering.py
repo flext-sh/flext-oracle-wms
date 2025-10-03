@@ -14,7 +14,7 @@ from __future__ import annotations
 import re
 from typing import override
 
-from flext_core import FlextLogger, FlextResult
+from flext_core import FlextLogger, FlextResult, FlextTypes
 from flext_oracle_wms.typings import FlextOracleWmsTypes
 
 # Import base classes from flext-core instead of creating circular dependency
@@ -434,7 +434,7 @@ def flext_oracle_wms_filter_by_id_range(
         return FlextResult[list[FlextOracleWmsTypes.Core.Dict]].ok([])
 
     # Apply manual range filtering since we need both min and max on same field
-    filtered_records: list[dict[str, object]] = []
+    filtered_records: list[FlextTypes.Dict] = []
     for record in records:
         field_value = record.get(id_field)
         if field_value is None:

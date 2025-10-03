@@ -8,7 +8,7 @@ from __future__ import annotations
 
 from typing import ClassVar
 
-from flext_core import FlextConstants
+from flext_core import FlextConstants, FlextTypes
 
 
 class FlextOracleWmsConstants(FlextConstants):
@@ -26,7 +26,7 @@ class FlextOracleWmsConstants(FlextConstants):
     class Entities:
         """Oracle WMS entity types and definitions."""
 
-        TYPES: ClassVar[list[str]] = [
+        TYPES: ClassVar[FlextTypes.StringList] = [
             "INVENTORY",
             "SHIPMENT",
             "PICKING",

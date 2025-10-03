@@ -70,7 +70,7 @@ def real_config(_load_test_env: bool) -> FlextOracleWmsConfig:
 
 
 @pytest.fixture
-def sample_entities() -> FlextTypes.Core.StringList:
+def sample_entities() -> FlextTypes.StringList:
     """Sample entity names based on REAL discovery results."""
     return [
         "action_code",  # Real entity discovered
@@ -83,7 +83,7 @@ def sample_entities() -> FlextTypes.Core.StringList:
 
 
 @pytest.fixture
-def sample_entity_data() -> FlextTypes.Core.Dict:
+def sample_entity_data() -> FlextTypes.Dict:
     """Sample entity response data based on REAL query results."""
     return {
         "result_count": 4,

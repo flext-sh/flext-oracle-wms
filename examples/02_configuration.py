@@ -13,7 +13,7 @@ from pathlib import Path
 
 from dotenv import load_dotenv
 
-from flext_core import FlextLogger
+from flext_core import FlextLogger, FlextTypes
 from flext_oracle_wms import (
     FlextOracleWmsClient,
     FlextOracleWmsClientConfig,
@@ -143,7 +143,7 @@ def create_demo_config() -> FlextOracleWmsClientConfig:
     )
 
 
-def validate_configuration(config: FlextOracleWmsClientConfig) -> dict[str, object]:
+def validate_configuration(config: FlextOracleWmsClientConfig) -> FlextTypes.Dict:
     """Validate Oracle WMS client configuration.
 
     Args:
@@ -153,9 +153,9 @@ def validate_configuration(config: FlextOracleWmsClientConfig) -> dict[str, obje
       Dictionary containing validation results
 
     """
-    errors: list[str] = []
-    warnings: list[str] = []
-    config_summary: dict[str, object] = {}
+    errors: FlextTypes.StringList = []
+    warnings: FlextTypes.StringList = []
+    config_summary: FlextTypes.Dict = {}
 
     # Validate base URL
     if not config.oracle_wms_base_url:
@@ -199,7 +199,7 @@ def validate_configuration(config: FlextOracleWmsClientConfig) -> dict[str, obje
         "enable_logging": config.oracle_wms_enable_logging,
     }
 
-    validation_results: dict[str, object] = {
+    validation_results: FlextTypes.Dict = {
         "valid": len(errors) == 0,
         "warnings": warnings,
         "errors": errors,
@@ -211,7 +211,7 @@ def validate_configuration(config: FlextOracleWmsClientConfig) -> dict[str, obje
 
 def test_configuration(
     config: FlextOracleWmsClientConfig,
-) -> dict[str, object]:
+) -> FlextTypes.Dict:
     """Test Oracle WMS configuration by attempting connection.
 
     Args:
@@ -221,7 +221,7 @@ def test_configuration(
       Dictionary with test results
 
     """
-    test_results: dict[str, object] = {
+    test_results: FlextTypes.Dict = {
         "connection_success": False,
         "health_check_success": False,
         "error": None,

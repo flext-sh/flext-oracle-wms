@@ -104,7 +104,7 @@ def showcase_1_client_initialization(
 
 def showcase_2_entity_discovery(
     client: FlextOracleWmsClient,
-) -> FlextTypes.Core.StringList:
+) -> FlextTypes.StringList:
     """Feature 2: Entity Discovery (320+ entities)."""
     # Discover all entities
     entities_result = client.discover_entities()
@@ -115,7 +115,7 @@ def showcase_2_entity_discovery(
     entity_dicts = entities_result.value or []
 
     # Extract entity names from dictionaries
-    entities: list[str] = [
+    entities: FlextTypes.StringList = [
         str(entity.get("name", "Unknown")) if isinstance(entity, dict) else str(entity)
         for entity in entity_dicts
     ]
@@ -149,10 +149,10 @@ def showcase_2_entity_discovery(
 
 def showcase_3_data_retrieval(
     client: FlextOracleWmsClient,
-    entities: FlextTypes.Core.StringList,
-) -> FlextTypes.Core.Dict:
+    entities: FlextTypes.StringList,
+) -> FlextTypes.Dict:
     """Feature 3: Data Retrieval and Querying."""
-    sample_data: dict[str, object] = {}
+    sample_data: FlextTypes.Dict = {}
 
     # Test data retrieval from key entities
     test_entities = ["company", "facility", "item"]
@@ -301,7 +301,7 @@ def showcase_7_health_monitoring(
 
 async def showcase_8_performance_tracking(
     client: FlextOracleWmsClient,
-    entities: FlextTypes.Core.StringList,
+    entities: FlextTypes.StringList,
 ) -> None:
     """Feature 8: Performance Tracking."""
     # Constants for performance testing

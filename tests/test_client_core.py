@@ -258,7 +258,7 @@ class TestFlextOracleWmsClientCore:
     def test_discover_entities_success(
         self,
         mock_config: FlextOracleWmsClientConfig,
-        sample_entities: FlextTypes.Core.StringList,
+        sample_entities: FlextTypes.StringList,
     ) -> None:
         """Test successful entity discovery."""
         with patch(
@@ -282,7 +282,7 @@ class TestFlextOracleWmsClientCore:
 
             # Mock the discover_entities method directly since it has complex logic
             with patch.object(client, "discover_entities") as mock_discover:
-                mock_discover.return_value = FlextResult[list[FlextTypes.Core.Dict]].ok(
+                mock_discover.return_value = FlextResult[list[FlextTypes.Dict]].ok(
                     sample_entities,
                 )
 
@@ -306,7 +306,7 @@ class TestFlextOracleWmsClientCore:
     def test_get_entity_data_success(
         self,
         mock_config: FlextOracleWmsClientConfig,
-        sample_entity_data: FlextTypes.Core.Dict,
+        sample_entity_data: FlextTypes.Dict,
     ) -> None:
         """Test successful entity data retrieval."""
         with patch(
@@ -318,7 +318,7 @@ class TestFlextOracleWmsClientCore:
             # Create mock data with required status field for WMS client logic
             mock_data = sample_entity_data.copy()
             mock_data["status"] = "success"  # Required by wms_client logic
-            success_result = FlextResult[FlextTypes.Core.Dict].ok(mock_data)
+            success_result = FlextResult[FlextTypes.Dict].ok(mock_data)
             logger.info(
                 f"Mock result success: {success_result.success}, data keys: {list(mock_data.keys())}",
             )
@@ -430,7 +430,7 @@ class TestClientHelperMethods:
         """Test parsing empty dictionary response."""
         client = FlextOracleWmsClient(mock_config)
 
-        response: dict[str, object] = {}
+        response: FlextTypes.Dict = {}
         result = client._parse_entity_discovery_response(response)
 
         # Empty response should return fallback entities

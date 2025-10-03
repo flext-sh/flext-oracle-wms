@@ -44,9 +44,9 @@ def analyze_data_types(data: object, path: str = "") -> dict[str, set[str]]:
     return type_analysis
 
 
-def analyze_complex_structures(record: dict[str, object]) -> dict[str, object]:
+def analyze_complex_structures(record: FlextTypes.Dict) -> FlextTypes.Dict:
     """Analisa estruturas complexas em um registro."""
-    analysis: dict[str, object] = {
+    analysis: FlextTypes.Dict = {
         "complex_fields": {},
         "array_fields": {},
         "object_fields": {},
@@ -118,7 +118,7 @@ def main() -> None:
 
     client = FlextOracleWmsClient(config)
 
-    entities_to_analyze: FlextTypes.Core.StringList = [
+    entities_to_analyze: FlextTypes.StringList = [
         "allocation",
         "order_hdr",
         "order_dtl",

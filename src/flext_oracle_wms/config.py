@@ -17,7 +17,7 @@ from urllib.parse import urlparse
 from pydantic import Field, SecretStr, field_validator, model_validator
 from pydantic_settings import SettingsConfigDict
 
-from flext_core import FlextConfig, FlextResult
+from flext_core import FlextConfig, FlextResult, FlextTypes
 
 # Constants for validation limits
 MAX_TIMEOUT_SECONDS = 300
@@ -276,7 +276,7 @@ class FlextOracleWmsConfig(FlextConfig):
         except Exception as e:
             return FlextResult[None].fail(f"Business rules validation failed: {e}")
 
-    def get_connection_config(self) -> dict[str, object]:
+    def get_connection_config(self) -> FlextTypes.Dict:
         """Get Oracle WMS connection configuration context."""
         return {
             "base_url": self.oracle_wms_base_url,
@@ -287,7 +287,7 @@ class FlextOracleWmsConfig(FlextConfig):
             "pool_size": self.oracle_wms_connection_pool_size,
         }
 
-    def get_auth_config(self) -> dict[str, object]:
+    def get_auth_config(self) -> FlextTypes.Dict:
         """Get Oracle WMS authentication configuration context."""
         return {
             "auth_method": self.auth_method,
@@ -295,7 +295,7 @@ class FlextOracleWmsConfig(FlextConfig):
             "api_version": self.api_version,
         }
 
-    def get_performance_config(self) -> dict[str, object]:
+    def get_performance_config(self) -> FlextTypes.Dict:
         """Get Oracle WMS performance configuration context."""
         return {
             "timeout": self.oracle_wms_timeout,
@@ -304,7 +304,7 @@ class FlextOracleWmsConfig(FlextConfig):
             "cache_duration": self.oracle_wms_cache_duration,
         }
 
-    def get_feature_config(self) -> dict[str, object]:
+    def get_feature_config(self) -> FlextTypes.Dict:
         """Get Oracle WMS feature configuration context."""
         return {
             "enable_logging": self.oracle_wms_enable_logging,
@@ -312,7 +312,7 @@ class FlextOracleWmsConfig(FlextConfig):
             "verify_ssl": self.oracle_wms_verify_ssl,
         }
 
-    def get_auth_headers(self) -> dict[str, str]:
+    def get_auth_headers(self) -> FlextTypes.StringDict:
         """DEPRECATED: Use flext-auth providers instead.
 
         This method is deprecated and will be removed in a future version.
@@ -334,7 +334,7 @@ class FlextOracleWmsConfig(FlextConfig):
             stacklevel=2,
         )
 
-        headers: dict[str, str] = {}
+        headers: FlextTypes.StringDict = {}
         if self.auth_method == "BASIC":
             credentials = f"{self.oracle_wms_username}:{self.oracle_wms_password.get_secret_value()}"
             encoded_credentials = base64.b64encode(credentials.encode()).decode()

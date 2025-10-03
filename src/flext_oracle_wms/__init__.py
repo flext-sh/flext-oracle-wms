@@ -8,13 +8,13 @@ from __future__ import annotations
 
 from typing import Final
 
+from flext_auth import HttpAuthMiddleware
 from flext_auth.providers import (
     ApiKeyAuthProvider,
     BasicAuthProvider,
     JwtAuthProvider,
 )
 
-from flext_auth import HttpAuthMiddleware
 from flext_oracle_wms.config import (
     FlextOracleWmsClientConfig,
     FlextOracleWmsConfig,

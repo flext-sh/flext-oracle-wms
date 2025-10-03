@@ -21,6 +21,7 @@ from urllib.parse import urljoin, urlparse
 from flext_core import (
     FlextLogger,
     FlextResult,
+    FlextTypes,
     FlextUtilities,
 )
 from flext_oracle_wms.filtering import FlextOracleWmsFilter
@@ -511,7 +512,7 @@ class FlextOracleWmsUnifiedOperations:
             records: list[FlextOracleWmsTypes.Core.Dict],
         ) -> list[FlextOracleWmsTypes.Core.Dict]:
             """Flatten nested records."""
-            flattened_records: list[dict[str, object]] = []
+            flattened_records: list[FlextTypes.Dict] = []
             for record in records:
                 flattened_record = self._flatten_dict(record)
                 flattened_records.append(flattened_record)
@@ -675,7 +676,7 @@ class FlextOracleWmsPluginContext:
         logger_instance: object | None = None,
     ) -> None:
         """Initialize Oracle WMS plugin context."""
-        self.config: dict[str, object] = config or {}
+        self.config: FlextTypes.Dict = config or {}
         self.logger = logger_instance
 
 

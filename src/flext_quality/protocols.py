@@ -2,7 +2,7 @@
 
 from typing import Protocol, runtime_checkable
 
-from flext_core import FlextProtocols, FlextResult
+from flext_core import FlextProtocols, FlextResult, FlextTypes
 
 
 class FlextQualityProtocols(FlextProtocols):
@@ -19,8 +19,8 @@ class FlextQualityProtocols(FlextProtocols):
         def analyze_project(
             self,
             project_path: str,
-            analysis_config: dict[str, object],
-        ) -> FlextResult[dict[str, object]]:
+            analysis_config: FlextTypes.Dict,
+        ) -> FlextResult[FlextTypes.Dict]:
             """Analyze project code quality.
 
             Args:
@@ -28,15 +28,15 @@ class FlextQualityProtocols(FlextProtocols):
                 analysis_config: Quality analysis configuration
 
             Returns:
-                FlextResult[dict[str, object]]: Analysis results or error
+                FlextResult[FlextTypes.Dict]: Analysis results or error
 
             """
 
         def analyze_file(
             self,
             file_path: str,
-            analysis_rules: dict[str, object],
-        ) -> FlextResult[dict[str, object]]:
+            analysis_rules: FlextTypes.Dict,
+        ) -> FlextResult[FlextTypes.Dict]:
             """Analyze individual file quality.
 
             Args:
@@ -44,15 +44,15 @@ class FlextQualityProtocols(FlextProtocols):
                 analysis_rules: File analysis rules
 
             Returns:
-                FlextResult[dict[str, object]]: File analysis results or error
+                FlextResult[FlextTypes.Dict]: File analysis results or error
 
             """
 
         def detect_code_issues(
             self,
             source_code: str,
-            detection_config: dict[str, object],
-        ) -> FlextResult[list[dict[str, object]]]:
+            detection_config: FlextTypes.Dict,
+        ) -> FlextResult[list[FlextTypes.Dict]]:
             """Detect code quality issues.
 
             Args:
@@ -60,15 +60,15 @@ class FlextQualityProtocols(FlextProtocols):
                 detection_config: Issue detection configuration
 
             Returns:
-                FlextResult[list[dict[str, object]]]: Detected issues or error
+                FlextResult[list[FlextTypes.Dict]]: Detected issues or error
 
             """
 
         def validate_quality_thresholds(
             self,
-            analysis_results: dict[str, object],
-            thresholds: dict[str, object],
-        ) -> FlextResult[dict[str, object]]:
+            analysis_results: FlextTypes.Dict,
+            thresholds: FlextTypes.Dict,
+        ) -> FlextResult[FlextTypes.Dict]:
             """Validate quality analysis against thresholds.
 
             Args:
@@ -76,7 +76,7 @@ class FlextQualityProtocols(FlextProtocols):
                 thresholds: Quality threshold configuration
 
             Returns:
-                FlextResult[dict[str, object]]: Threshold validation results or error
+                FlextResult[FlextTypes.Dict]: Threshold validation results or error
 
             """
 
@@ -86,9 +86,9 @@ class FlextQualityProtocols(FlextProtocols):
 
         def calculate_coverage_metrics(
             self,
-            coverage_data: dict[str, object],
-            calculation_config: dict[str, object],
-        ) -> FlextResult[dict[str, object]]:
+            coverage_data: FlextTypes.Dict,
+            calculation_config: FlextTypes.Dict,
+        ) -> FlextResult[FlextTypes.Dict]:
             """Calculate test coverage metrics.
 
             Args:
@@ -96,15 +96,15 @@ class FlextQualityProtocols(FlextProtocols):
                 calculation_config: Coverage calculation configuration
 
             Returns:
-                FlextResult[dict[str, object]]: Coverage metrics or error
+                FlextResult[FlextTypes.Dict]: Coverage metrics or error
 
             """
 
         def calculate_complexity_metrics(
             self,
             source_code: str,
-            complexity_config: dict[str, object],
-        ) -> FlextResult[dict[str, object]]:
+            complexity_config: FlextTypes.Dict,
+        ) -> FlextResult[FlextTypes.Dict]:
             """Calculate code complexity metrics.
 
             Args:
@@ -112,15 +112,15 @@ class FlextQualityProtocols(FlextProtocols):
                 complexity_config: Complexity calculation configuration
 
             Returns:
-                FlextResult[dict[str, object]]: Complexity metrics or error
+                FlextResult[FlextTypes.Dict]: Complexity metrics or error
 
             """
 
         def calculate_duplication_metrics(
             self,
-            project_files: list[str],
-            duplication_config: dict[str, object],
-        ) -> FlextResult[dict[str, object]]:
+            project_files: FlextTypes.StringList,
+            duplication_config: FlextTypes.Dict,
+        ) -> FlextResult[FlextTypes.Dict]:
             """Calculate code duplication metrics.
 
             Args:
@@ -128,15 +128,15 @@ class FlextQualityProtocols(FlextProtocols):
                 duplication_config: Duplication calculation configuration
 
             Returns:
-                FlextResult[dict[str, object]]: Duplication metrics or error
+                FlextResult[FlextTypes.Dict]: Duplication metrics or error
 
             """
 
         def calculate_maintainability_score(
             self,
-            quality_metrics: dict[str, object],
-            scoring_config: dict[str, object],
-        ) -> FlextResult[dict[str, object]]:
+            quality_metrics: FlextTypes.Dict,
+            scoring_config: FlextTypes.Dict,
+        ) -> FlextResult[FlextTypes.Dict]:
             """Calculate maintainability score.
 
             Args:
@@ -144,7 +144,7 @@ class FlextQualityProtocols(FlextProtocols):
                 scoring_config: Maintainability scoring configuration
 
             Returns:
-                FlextResult[dict[str, object]]: Maintainability score or error
+                FlextResult[FlextTypes.Dict]: Maintainability score or error
 
             """
 
@@ -154,9 +154,9 @@ class FlextQualityProtocols(FlextProtocols):
 
         def calculate_overall_grade(
             self,
-            quality_metrics: dict[str, object],
-            grading_config: dict[str, object],
-        ) -> FlextResult[dict[str, object]]:
+            quality_metrics: FlextTypes.Dict,
+            grading_config: FlextTypes.Dict,
+        ) -> FlextResult[FlextTypes.Dict]:
             """Calculate overall quality grade.
 
             Args:
@@ -164,15 +164,15 @@ class FlextQualityProtocols(FlextProtocols):
                 grading_config: Grading configuration
 
             Returns:
-                FlextResult[dict[str, object]]: Quality grade or error
+                FlextResult[FlextTypes.Dict]: Quality grade or error
 
             """
 
         def grade_coverage_score(
             self,
             coverage_percentage: float,
-            grade_thresholds: dict[str, object],
-        ) -> FlextResult[dict[str, object]]:
+            grade_thresholds: FlextTypes.Dict,
+        ) -> FlextResult[FlextTypes.Dict]:
             """Grade test coverage score.
 
             Args:
@@ -180,15 +180,15 @@ class FlextQualityProtocols(FlextProtocols):
                 grade_thresholds: Coverage grading thresholds
 
             Returns:
-                FlextResult[dict[str, object]]: Coverage grade or error
+                FlextResult[FlextTypes.Dict]: Coverage grade or error
 
             """
 
         def grade_security_score(
             self,
-            security_analysis: dict[str, object],
-            security_thresholds: dict[str, object],
-        ) -> FlextResult[dict[str, object]]:
+            security_analysis: FlextTypes.Dict,
+            security_thresholds: FlextTypes.Dict,
+        ) -> FlextResult[FlextTypes.Dict]:
             """Grade security analysis score.
 
             Args:
@@ -196,15 +196,15 @@ class FlextQualityProtocols(FlextProtocols):
                 security_thresholds: Security grading thresholds
 
             Returns:
-                FlextResult[dict[str, object]]: Security grade or error
+                FlextResult[FlextTypes.Dict]: Security grade or error
 
             """
 
         def calculate_trend_analysis(
             self,
-            historical_grades: list[dict[str, object]],
-            trend_config: dict[str, object],
-        ) -> FlextResult[dict[str, object]]:
+            historical_grades: list[FlextTypes.Dict],
+            trend_config: FlextTypes.Dict,
+        ) -> FlextResult[FlextTypes.Dict]:
             """Calculate quality trend analysis.
 
             Args:
@@ -212,7 +212,7 @@ class FlextQualityProtocols(FlextProtocols):
                 trend_config: Trend analysis configuration
 
             Returns:
-                FlextResult[dict[str, object]]: Trend analysis results or error
+                FlextResult[FlextTypes.Dict]: Trend analysis results or error
 
             """
 
@@ -222,9 +222,9 @@ class FlextQualityProtocols(FlextProtocols):
 
         def generate_html_report(
             self,
-            analysis_results: dict[str, object],
-            report_config: dict[str, object],
-        ) -> FlextResult[dict[str, object]]:
+            analysis_results: FlextTypes.Dict,
+            report_config: FlextTypes.Dict,
+        ) -> FlextResult[FlextTypes.Dict]:
             """Generate HTML quality report.
 
             Args:
@@ -232,15 +232,15 @@ class FlextQualityProtocols(FlextProtocols):
                 report_config: HTML report configuration
 
             Returns:
-                FlextResult[dict[str, object]]: HTML report or error
+                FlextResult[FlextTypes.Dict]: HTML report or error
 
             """
 
         def generate_json_report(
             self,
-            analysis_results: dict[str, object],
-            report_config: dict[str, object],
-        ) -> FlextResult[dict[str, object]]:
+            analysis_results: FlextTypes.Dict,
+            report_config: FlextTypes.Dict,
+        ) -> FlextResult[FlextTypes.Dict]:
             """Generate JSON quality report.
 
             Args:
@@ -248,15 +248,15 @@ class FlextQualityProtocols(FlextProtocols):
                 report_config: JSON report configuration
 
             Returns:
-                FlextResult[dict[str, object]]: JSON report or error
+                FlextResult[FlextTypes.Dict]: JSON report or error
 
             """
 
         def generate_executive_summary(
             self,
-            quality_analysis: dict[str, object],
-            summary_config: dict[str, object],
-        ) -> FlextResult[dict[str, object]]:
+            quality_analysis: FlextTypes.Dict,
+            summary_config: FlextTypes.Dict,
+        ) -> FlextResult[FlextTypes.Dict]:
             """Generate executive summary report.
 
             Args:
@@ -264,15 +264,15 @@ class FlextQualityProtocols(FlextProtocols):
                 summary_config: Executive summary configuration
 
             Returns:
-                FlextResult[dict[str, object]]: Executive summary or error
+                FlextResult[FlextTypes.Dict]: Executive summary or error
 
             """
 
         def export_report_data(
             self,
-            report_data: dict[str, object],
-            export_config: dict[str, object],
-        ) -> FlextResult[dict[str, object]]:
+            report_data: FlextTypes.Dict,
+            export_config: FlextTypes.Dict,
+        ) -> FlextResult[FlextTypes.Dict]:
             """Export quality report data.
 
             Args:
@@ -280,7 +280,7 @@ class FlextQualityProtocols(FlextProtocols):
                 export_config: Report export configuration
 
             Returns:
-                FlextResult[dict[str, object]]: Export result or error
+                FlextResult[FlextTypes.Dict]: Export result or error
 
             """
 
@@ -291,8 +291,8 @@ class FlextQualityProtocols(FlextProtocols):
         def detect_security_issues(
             self,
             source_code: str,
-            security_config: dict[str, object],
-        ) -> FlextResult[list[dict[str, object]]]:
+            security_config: FlextTypes.Dict,
+        ) -> FlextResult[list[FlextTypes.Dict]]:
             """Detect security issues in code.
 
             Args:
@@ -300,15 +300,15 @@ class FlextQualityProtocols(FlextProtocols):
                 security_config: Security detection configuration
 
             Returns:
-                FlextResult[list[dict[str, object]]]: Security issues or error
+                FlextResult[list[FlextTypes.Dict]]: Security issues or error
 
             """
 
         def detect_complexity_issues(
             self,
             source_code: str,
-            complexity_thresholds: dict[str, object],
-        ) -> FlextResult[list[dict[str, object]]]:
+            complexity_thresholds: FlextTypes.Dict,
+        ) -> FlextResult[list[FlextTypes.Dict]]:
             """Detect complexity issues in code.
 
             Args:
@@ -316,15 +316,15 @@ class FlextQualityProtocols(FlextProtocols):
                 complexity_thresholds: Complexity thresholds
 
             Returns:
-                FlextResult[list[dict[str, object]]]: Complexity issues or error
+                FlextResult[list[FlextTypes.Dict]]: Complexity issues or error
 
             """
 
         def detect_dead_code(
             self,
-            project_files: list[str],
-            dead_code_config: dict[str, object],
-        ) -> FlextResult[list[dict[str, object]]]:
+            project_files: FlextTypes.StringList,
+            dead_code_config: FlextTypes.Dict,
+        ) -> FlextResult[list[FlextTypes.Dict]]:
             """Detect dead code in project.
 
             Args:
@@ -332,15 +332,15 @@ class FlextQualityProtocols(FlextProtocols):
                 dead_code_config: Dead code detection configuration
 
             Returns:
-                FlextResult[list[dict[str, object]]]: Dead code issues or error
+                FlextResult[list[FlextTypes.Dict]]: Dead code issues or error
 
             """
 
         def classify_issue_severity(
             self,
-            issue_data: dict[str, object],
-            severity_rules: dict[str, object],
-        ) -> FlextResult[dict[str, object]]:
+            issue_data: FlextTypes.Dict,
+            severity_rules: FlextTypes.Dict,
+        ) -> FlextResult[FlextTypes.Dict]:
             """Classify issue severity.
 
             Args:
@@ -348,7 +348,7 @@ class FlextQualityProtocols(FlextProtocols):
                 severity_rules: Severity classification rules
 
             Returns:
-                FlextResult[dict[str, object]]: Issue severity classification or error
+                FlextResult[FlextTypes.Dict]: Issue severity classification or error
 
             """
 
@@ -359,8 +359,8 @@ class FlextQualityProtocols(FlextProtocols):
         def execute_ast_analysis(
             self,
             source_code: str,
-            ast_config: dict[str, object],
-        ) -> FlextResult[dict[str, object]]:
+            ast_config: FlextTypes.Dict,
+        ) -> FlextResult[FlextTypes.Dict]:
             """Execute AST-based code analysis.
 
             Args:
@@ -368,15 +368,15 @@ class FlextQualityProtocols(FlextProtocols):
                 ast_config: AST analysis configuration
 
             Returns:
-                FlextResult[dict[str, object]]: AST analysis results or error
+                FlextResult[FlextTypes.Dict]: AST analysis results or error
 
             """
 
         def execute_external_tool_analysis(
             self,
             project_path: str,
-            tool_config: dict[str, object],
-        ) -> FlextResult[dict[str, object]]:
+            tool_config: FlextTypes.Dict,
+        ) -> FlextResult[FlextTypes.Dict]:
             """Execute external tool analysis.
 
             Args:
@@ -384,15 +384,15 @@ class FlextQualityProtocols(FlextProtocols):
                 tool_config: External tool configuration
 
             Returns:
-                FlextResult[dict[str, object]]: Tool analysis results or error
+                FlextResult[FlextTypes.Dict]: Tool analysis results or error
 
             """
 
         def aggregate_analysis_results(
             self,
-            backend_results: list[dict[str, object]],
-            aggregation_config: dict[str, object],
-        ) -> FlextResult[dict[str, object]]:
+            backend_results: list[FlextTypes.Dict],
+            aggregation_config: FlextTypes.Dict,
+        ) -> FlextResult[FlextTypes.Dict]:
             """Aggregate results from multiple analysis backends.
 
             Args:
@@ -400,21 +400,21 @@ class FlextQualityProtocols(FlextProtocols):
                 aggregation_config: Result aggregation configuration
 
             Returns:
-                FlextResult[dict[str, object]]: Aggregated results or error
+                FlextResult[FlextTypes.Dict]: Aggregated results or error
 
             """
 
         def validate_backend_configuration(
             self,
-            backend_config: dict[str, object],
-        ) -> FlextResult[dict[str, object]]:
+            backend_config: FlextTypes.Dict,
+        ) -> FlextResult[FlextTypes.Dict]:
             """Validate analysis backend configuration.
 
             Args:
                 backend_config: Backend configuration to validate
 
             Returns:
-                FlextResult[dict[str, object]]: Configuration validation results or error
+                FlextResult[FlextTypes.Dict]: Configuration validation results or error
 
             """
 
@@ -425,7 +425,7 @@ class FlextQualityProtocols(FlextProtocols):
         def track_quality_metrics(
             self,
             project_id: str,
-            metrics: dict[str, object],
+            metrics: FlextTypes.Dict,
         ) -> FlextResult[bool]:
             """Track quality metrics over time.
 
@@ -441,8 +441,8 @@ class FlextQualityProtocols(FlextProtocols):
         def monitor_quality_trends(
             self,
             project_id: str,
-            monitoring_config: dict[str, object],
-        ) -> FlextResult[dict[str, object]]:
+            monitoring_config: FlextTypes.Dict,
+        ) -> FlextResult[FlextTypes.Dict]:
             """Monitor quality trends for project.
 
             Args:
@@ -450,15 +450,15 @@ class FlextQualityProtocols(FlextProtocols):
                 monitoring_config: Quality monitoring configuration
 
             Returns:
-                FlextResult[dict[str, object]]: Quality trends or error
+                FlextResult[FlextTypes.Dict]: Quality trends or error
 
             """
 
         def alert_quality_threshold_violations(
             self,
-            threshold_violations: list[dict[str, object]],
-            alert_config: dict[str, object],
-        ) -> FlextResult[dict[str, object]]:
+            threshold_violations: list[FlextTypes.Dict],
+            alert_config: FlextTypes.Dict,
+        ) -> FlextResult[FlextTypes.Dict]:
             """Alert on quality threshold violations.
 
             Args:
@@ -466,15 +466,15 @@ class FlextQualityProtocols(FlextProtocols):
                 alert_config: Alert configuration
 
             Returns:
-                FlextResult[dict[str, object]]: Alert result or error
+                FlextResult[FlextTypes.Dict]: Alert result or error
 
             """
 
         def generate_quality_dashboard(
             self,
-            project_metrics: dict[str, object],
-            dashboard_config: dict[str, object],
-        ) -> FlextResult[dict[str, object]]:
+            project_metrics: FlextTypes.Dict,
+            dashboard_config: FlextTypes.Dict,
+        ) -> FlextResult[FlextTypes.Dict]:
             """Generate quality monitoring dashboard.
 
             Args:
@@ -482,7 +482,7 @@ class FlextQualityProtocols(FlextProtocols):
                 dashboard_config: Dashboard configuration
 
             Returns:
-                FlextResult[dict[str, object]]: Dashboard data or error
+                FlextResult[FlextTypes.Dict]: Dashboard data or error
 
             """
 
@@ -492,9 +492,9 @@ class FlextQualityProtocols(FlextProtocols):
 
         def validate_quality_configuration(
             self,
-            config: dict[str, object],
-            validation_rules: dict[str, object],
-        ) -> FlextResult[dict[str, object]]:
+            config: FlextTypes.Dict,
+            validation_rules: FlextTypes.Dict,
+        ) -> FlextResult[FlextTypes.Dict]:
             """Validate quality configuration.
 
             Args:
@@ -502,15 +502,15 @@ class FlextQualityProtocols(FlextProtocols):
                 validation_rules: Configuration validation rules
 
             Returns:
-                FlextResult[dict[str, object]]: Validation results or error
+                FlextResult[FlextTypes.Dict]: Validation results or error
 
             """
 
         def merge_quality_configurations(
             self,
-            base_config: dict[str, object],
-            override_config: dict[str, object],
-        ) -> FlextResult[dict[str, object]]:
+            base_config: FlextTypes.Dict,
+            override_config: FlextTypes.Dict,
+        ) -> FlextResult[FlextTypes.Dict]:
             """Merge quality configurations.
 
             Args:
@@ -518,29 +518,29 @@ class FlextQualityProtocols(FlextProtocols):
                 override_config: Override configuration
 
             Returns:
-                FlextResult[dict[str, object]]: Merged configuration or error
+                FlextResult[FlextTypes.Dict]: Merged configuration or error
 
             """
 
         def load_quality_rules(
             self,
-            rules_config: dict[str, object],
-        ) -> FlextResult[dict[str, object]]:
+            rules_config: FlextTypes.Dict,
+        ) -> FlextResult[FlextTypes.Dict]:
             """Load quality analysis rules.
 
             Args:
                 rules_config: Rules configuration
 
             Returns:
-                FlextResult[dict[str, object]]: Loaded rules or error
+                FlextResult[FlextTypes.Dict]: Loaded rules or error
 
             """
 
         def export_quality_configuration(
             self,
-            config: dict[str, object],
+            config: FlextTypes.Dict,
             export_format: str,
-        ) -> FlextResult[dict[str, object]]:
+        ) -> FlextResult[FlextTypes.Dict]:
             """Export quality configuration.
 
             Args:
@@ -548,7 +548,7 @@ class FlextQualityProtocols(FlextProtocols):
                 export_format: Export format specification
 
             Returns:
-                FlextResult[dict[str, object]]: Exported configuration or error
+                FlextResult[FlextTypes.Dict]: Exported configuration or error
 
             """
 

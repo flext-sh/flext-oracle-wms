@@ -40,47 +40,50 @@ class FlextOracleWmsError(FlextExceptions.BaseError):
         self,
         message: str,
         *,
-        code: str | None = None,
-        context: FlextOracleWmsTypes.Core.Dict | None = None,
         field: str | None = None,
         entity_name: str | None = None,
         field_name: str | None = None,
         invalid_value: object = None,
         **kwargs: object,
     ) -> None:
-        """Initialize Oracle WMS error with context.
+        """Initialize Oracle WMS error with context using helpers.
 
         Args:
             message: Error message
-            code: Optional error code
-            context: Optional context dictionary
             field: Field name for validation errors
             entity_name: Entity name for entity-related errors
             field_name: Alternative field name parameter
             invalid_value: Invalid value that caused the error
-            **kwargs: Additional context parameters
+            **kwargs: Additional context (context, correlation_id, error_code)
 
         """
-        full_context: dict[str, object] = dict(context or {})
-        full_context.update(kwargs)
+        # Store WMS-specific attributes before extracting common kwargs
+        self.field = field
+        self.entity_name = entity_name
+        self.field_name = field_name
+        self.invalid_value = invalid_value
 
-        # Add specific attributes to context
-        if field is not None:
-            full_context["field"] = field
-        if entity_name is not None:
-            full_context["entity_name"] = entity_name
-        if field_name is not None:
-            full_context["field_name"] = field_name
-        if invalid_value is not None:
-            full_context["invalid_value"] = invalid_value
+        # Extract common parameters using helper
+        base_context, correlation_id, error_code = self._extract_common_kwargs(kwargs)
 
-        super().__init__(message, code=code, context=full_context)
+        # Build context with WMS-specific fields
+        context = self._build_context(
+            base_context,
+            field=field,
+            entity_name=entity_name,
+            field_name=field_name,
+            invalid_value=invalid_value,
+        )
+
+        # Call parent with complete error information
+        super().__init__(
+            message,
+            code=error_code or "WMS_ERROR",
+            context=context,
+            correlation_id=correlation_id,
+        )
 
         # Initialize declared attributes to None
-        self.field = None
-        self.entity_name = None
-        self.field_name = None
-        self.invalid_value = None
         self.retry_count = None
         self.auth_method = None
         self.retry_after_seconds = None
@@ -88,7 +91,7 @@ class FlextOracleWmsError(FlextExceptions.BaseError):
         self.response_body = None
 
         # Attach context keys as attributes for convenient access in tests
-        for key, value in full_context.items():
+        for key, value in context.items():
             with contextlib.suppress(Exception):
                 setattr(self, key, value)
 
@@ -107,29 +110,33 @@ class FlextOracleWmsValidationError(FlextOracleWmsError):
         message: str = "Validation failed",
         *,
         field_name: str | None = None,
-        context: FlextOracleWmsTypes.Core.Dict | None = None,
         **kwargs: object,
     ) -> None:
-        """Initialize validation error with context.
+        """Initialize validation error with context using helpers.
 
         Args:
             message: Error message
             field_name: Name of the field that failed validation
-            context: Additional context dictionary
-            **kwargs: Additional context parameters
+            **kwargs: Additional context (context, correlation_id, error_code)
 
         """
-        # Start with provided context or empty dict
-        full_context: dict[str, object] = dict(context) if context else {}
+        # Extract common parameters using helper
+        base_context, correlation_id, error_code = self._extract_common_kwargs(kwargs)
 
-        # Add kwargs to context
-        full_context.update(kwargs)
+        # Build context with validation-specific fields
+        context = self._build_context(
+            base_context,
+            field_name=field_name,
+        )
 
-        # Add field_name if provided
-        if field_name is not None:
-            full_context["field_name"] = field_name
-
-        super().__init__(message, context=full_context)
+        # Call parent with complete error information
+        super().__init__(
+            message,
+            field_name=field_name,
+            code=error_code or "WMS_VALIDATION_ERROR",
+            context=context,
+            correlation_id=correlation_id,
+        )
 
 
 class FlextOracleWmsConfigurationError(FlextOracleWmsError):
@@ -140,21 +147,40 @@ class FlextOracleWmsConfigurationError(FlextOracleWmsError):
     """
 
     @override
-    def __init__(self, message: str = "Config error", **kwargs: object) -> None:
-        """Initialize configuration error.
+    def __init__(
+        self,
+        message: str = "Config error",
+        *,
+        config_key: str | None = None,
+        **kwargs: object,
+    ) -> None:
+        """Initialize configuration error using helpers.
 
         Args:
             message: Error message
-            **kwargs: Additional context parameters
+            config_key: Configuration key that failed
+            **kwargs: Additional context (context, correlation_id, error_code)
 
         """
-        super().__init__(message, context=kwargs or {})
-        # Extract config_key from context for backward compatibility
-        context = kwargs.get("context", {})
-        if isinstance(context, dict):
-            self.config_key: str = str(context.get("config_key", ""))
-        else:
-            self.config_key: str = str(kwargs.get("config_key", ""))
+        # Extract common parameters using helper
+        base_context, correlation_id, error_code = self._extract_common_kwargs(kwargs)
+
+        # Build context with configuration-specific fields
+        context = self._build_context(
+            base_context,
+            config_key=config_key,
+        )
+
+        # Call parent with complete error information
+        super().__init__(
+            message,
+            code=error_code or "WMS_CONFIG_ERROR",
+            context=context,
+            correlation_id=correlation_id,
+        )
+
+        # Store config_key for backward compatibility
+        self.config_key: str = str(config_key or "")
 
 
 class FlextOracleWmsConnectionError(FlextOracleWmsError):
@@ -177,20 +203,33 @@ class FlextOracleWmsConnectionError(FlextOracleWmsError):
         retry_count: int | None = None,
         **kwargs: object,
     ) -> None:
-        """Initialize connection error.
+        """Initialize connection error using helpers.
 
         Args:
             message: Error message
             retry_count: Number of retry attempts made
-            **kwargs: Additional context parameters
+            **kwargs: Additional context (context, correlation_id, error_code)
 
         """
-        context = dict(kwargs)
-        if retry_count is not None:
-            context["retry_count"] = retry_count
+        # Store retry_count before extracting common kwargs
+        self.retry_count = retry_count
 
-        # Ensure string representation uses [CONNECTION_ERROR] as tests expect
-        super().__init__(message, context=context)
+        # Extract common parameters using helper
+        base_context, correlation_id, error_code = self._extract_common_kwargs(kwargs)
+
+        # Build context with connection-specific fields
+        context = self._build_context(
+            base_context,
+            retry_count=retry_count,
+        )
+
+        # Call parent with complete error information
+        super().__init__(
+            message,
+            code=error_code or "WMS_CONNECTION_ERROR",
+            context=context,
+            correlation_id=correlation_id,
+        )
 
 
 class FlextOracleWmsProcessingError(FlextOracleWmsError):
@@ -211,29 +250,35 @@ class FlextOracleWmsProcessingError(FlextOracleWmsError):
         message: str = "Processing failed",
         *,
         retry_after_seconds: float | None = None,
-        context: FlextOracleWmsTypes.Core.Dict | None = None,
         **kwargs: object,
     ) -> None:
-        """Initialize processing error with context.
+        """Initialize processing error with context using helpers.
 
         Args:
             message: Error message
             retry_after_seconds: Suggested retry delay in seconds
-            context: Additional context dictionary
-            **kwargs: Additional context parameters
+            **kwargs: Additional context (context, correlation_id, error_code)
 
         """
-        # Start with provided context or empty dict
-        full_context: dict[str, object] = dict(context) if context else {}
+        # Store retry_after_seconds before extracting common kwargs
+        self.retry_after_seconds = retry_after_seconds
 
-        # Add retry_after_seconds if provided
-        if retry_after_seconds is not None:
-            full_context["retry_after_seconds"] = retry_after_seconds
+        # Extract common parameters using helper
+        base_context, correlation_id, error_code = self._extract_common_kwargs(kwargs)
 
-        # Add kwargs to context
-        full_context.update(kwargs)
+        # Build context with processing-specific fields
+        context = self._build_context(
+            base_context,
+            retry_after_seconds=retry_after_seconds,
+        )
 
-        super().__init__(message, context=full_context)
+        # Call parent with complete error information
+        super().__init__(
+            message,
+            code=error_code or "WMS_PROCESSING_ERROR",
+            context=context,
+            correlation_id=correlation_id,
+        )
 
 
 class FlextOracleWmsAuthenticationError(FlextOracleWmsError):
@@ -251,19 +296,33 @@ class FlextOracleWmsAuthenticationError(FlextOracleWmsError):
         auth_method: str | None = None,
         **kwargs: object,
     ) -> None:
-        """Initialize authentication error with context.
+        """Initialize authentication error with context using helpers.
 
         Args:
             message: Error message
             auth_method: Authentication method that failed
-            **kwargs: Additional context parameters
+            **kwargs: Additional context (context, correlation_id, error_code)
 
         """
-        context = dict(kwargs)
-        if auth_method is not None:
-            context["auth_method"] = auth_method
+        # Store auth_method before extracting common kwargs
+        self.auth_method = auth_method
 
-        super().__init__(message, context=context)
+        # Extract common parameters using helper
+        base_context, correlation_id, error_code = self._extract_common_kwargs(kwargs)
+
+        # Build context with authentication-specific fields
+        context = self._build_context(
+            base_context,
+            auth_method=auth_method,
+        )
+
+        # Call parent with complete error information
+        super().__init__(
+            message,
+            code=error_code or "WMS_AUTH_ERROR",
+            context=context,
+            correlation_id=correlation_id,
+        )
 
 
 class FlextOracleWmsTimeoutError(FlextOracleWmsError):
@@ -278,9 +337,31 @@ class FlextOracleWmsDataValidationError(FlextOracleWmsValidationError):
     """Data validation error for Oracle WMS operations."""
 
     @override
-    def __init__(self, message: str = "Oracle WMS data validation failed") -> None:
-        """Initialize data validation error."""
-        super().__init__(message)
+    def __init__(
+        self,
+        message: str = "Oracle WMS data validation failed",
+        **kwargs: object,
+    ) -> None:
+        """Initialize data validation error using helpers.
+
+        Args:
+            message: Error message
+            **kwargs: Additional context (context, correlation_id, error_code)
+
+        """
+        # Extract common parameters using helper
+        base_context, correlation_id, error_code = self._extract_common_kwargs(kwargs)
+
+        # Build context
+        context = self._build_context(base_context)
+
+        # Call parent with complete error information
+        super().__init__(
+            message,
+            code=error_code or "WMS_DATA_VALIDATION_ERROR",
+            context=context,
+            correlation_id=correlation_id,
+        )
 
 
 class FlextOracleWmsApiError(FlextOracleWmsError):
@@ -296,17 +377,40 @@ class FlextOracleWmsApiError(FlextOracleWmsError):
         entity_name: str | None = None,
         **kwargs: object,
     ) -> None:
-        """Initialize API error with HTTP context."""
-        context = dict(kwargs)
-        if status_code is not None:
-            context["status_code"] = status_code
-        if response_body is not None:
-            context["response_body"] = response_body[:500]  # Truncate for safety
-        if entity_name is not None:
-            context["entity_name"] = entity_name
+        """Initialize API error with HTTP context using helpers.
 
-        # Preserve expected string representation code and message
-        super().__init__(message, context=context)
+        Args:
+            message: Error message
+            status_code: HTTP status code
+            response_body: HTTP response body (truncated)
+            entity_name: WMS entity name
+            **kwargs: Additional context (context, correlation_id, error_code)
+
+        """
+        # Store HTTP-specific attributes before extracting common kwargs
+        self.status_code = status_code
+        self.response_body = response_body[:500] if response_body else None
+        self.entity_name = entity_name
+
+        # Extract common parameters using helper
+        base_context, correlation_id, error_code = self._extract_common_kwargs(kwargs)
+
+        # Build context with API-specific fields
+        context = self._build_context(
+            base_context,
+            status_code=status_code,
+            response_body=self.response_body,
+            entity_name=entity_name,
+        )
+
+        # Call parent with complete error information
+        super().__init__(
+            message,
+            entity_name=entity_name,
+            code=error_code or "WMS_API_ERROR",
+            context=context,
+            correlation_id=correlation_id,
+        )
 
 
 class FlextOracleWmsInventoryError(FlextOracleWmsProcessingError):
@@ -322,16 +426,34 @@ class FlextOracleWmsInventoryError(FlextOracleWmsProcessingError):
         item_id: str | None = None,
         **kwargs: object,
     ) -> None:
-        """Initialize inventory error with WMS context."""
-        context = dict(kwargs)
-        if inventory_id is not None:
-            context["inventory_id"] = inventory_id
-        if location_id is not None:
-            context["location_id"] = location_id
-        if item_id is not None:
-            context["item_id"] = item_id
+        """Initialize inventory error with WMS context using helpers.
 
-        super().__init__(f"Inventory: {message}", context=context)
+        Args:
+            message: Error message
+            inventory_id: Inventory identifier
+            location_id: Location identifier
+            item_id: Item identifier
+            **kwargs: Additional context (context, correlation_id, error_code)
+
+        """
+        # Extract common parameters using helper
+        base_context, correlation_id, error_code = self._extract_common_kwargs(kwargs)
+
+        # Build context with inventory-specific fields
+        context = self._build_context(
+            base_context,
+            inventory_id=inventory_id,
+            location_id=location_id,
+            item_id=item_id,
+        )
+
+        # Call parent with complete error information
+        super().__init__(
+            f"Inventory: {message}",
+            code=error_code or "WMS_INVENTORY_ERROR",
+            context=context,
+            correlation_id=correlation_id,
+        )
 
 
 class FlextOracleWmsShipmentError(FlextOracleWmsProcessingError):
@@ -347,16 +469,34 @@ class FlextOracleWmsShipmentError(FlextOracleWmsProcessingError):
         carrier_id: str | None = None,
         **kwargs: object,
     ) -> None:
-        """Initialize shipment error with WMS context."""
-        context = dict(kwargs)
-        if shipment_id is not None:
-            context["shipment_id"] = shipment_id
-        if order_id is not None:
-            context["order_id"] = order_id
-        if carrier_id is not None:
-            context["carrier_id"] = carrier_id
+        """Initialize shipment error with WMS context using helpers.
 
-        super().__init__(f"Shipment: {message}", context=context)
+        Args:
+            message: Error message
+            shipment_id: Shipment identifier
+            order_id: Order identifier
+            carrier_id: Carrier identifier
+            **kwargs: Additional context (context, correlation_id, error_code)
+
+        """
+        # Extract common parameters using helper
+        base_context, correlation_id, error_code = self._extract_common_kwargs(kwargs)
+
+        # Build context with shipment-specific fields
+        context = self._build_context(
+            base_context,
+            shipment_id=shipment_id,
+            order_id=order_id,
+            carrier_id=carrier_id,
+        )
+
+        # Call parent with complete error information
+        super().__init__(
+            f"Shipment: {message}",
+            code=error_code or "WMS_SHIPMENT_ERROR",
+            context=context,
+            correlation_id=correlation_id,
+        )
 
 
 class FlextOracleWmsPickingError(FlextOracleWmsProcessingError):
@@ -372,16 +512,34 @@ class FlextOracleWmsPickingError(FlextOracleWmsProcessingError):
         task_id: str | None = None,
         **kwargs: object,
     ) -> None:
-        """Initialize picking error with WMS context."""
-        context = dict(kwargs)
-        if pick_id is not None:
-            context["pick_id"] = pick_id
-        if wave_id is not None:
-            context["wave_id"] = wave_id
-        if task_id is not None:
-            context["task_id"] = task_id
+        """Initialize picking error with WMS context using helpers.
 
-        super().__init__(f"Picking: {message}", context=context)
+        Args:
+            message: Error message
+            pick_id: Picking identifier
+            wave_id: Wave identifier
+            task_id: Task identifier
+            **kwargs: Additional context (context, correlation_id, error_code)
+
+        """
+        # Extract common parameters using helper
+        base_context, correlation_id, error_code = self._extract_common_kwargs(kwargs)
+
+        # Build context with picking-specific fields
+        context = self._build_context(
+            base_context,
+            pick_id=pick_id,
+            wave_id=wave_id,
+            task_id=task_id,
+        )
+
+        # Call parent with complete error information
+        super().__init__(
+            f"Picking: {message}",
+            code=error_code or "WMS_PICKING_ERROR",
+            context=context,
+            correlation_id=correlation_id,
+        )
 
 
 class FlextOracleWmsEntityNotFoundError(FlextOracleWmsValidationError):
@@ -396,14 +554,32 @@ class FlextOracleWmsEntityNotFoundError(FlextOracleWmsValidationError):
         entity_id: str | None = None,
         **kwargs: object,
     ) -> None:
-        """Initialize entity not found error with context."""
-        context = dict(kwargs)
-        if entity_name is not None:
-            context["entity_name"] = entity_name
-        if entity_id is not None:
-            context["entity_id"] = entity_id
+        """Initialize entity not found error with context using helpers.
 
-        super().__init__(f"Entity Not Found: {message}", context=context)
+        Args:
+            message: Error message
+            entity_name: Entity name
+            entity_id: Entity identifier
+            **kwargs: Additional context (context, correlation_id, error_code)
+
+        """
+        # Extract common parameters using helper
+        base_context, correlation_id, error_code = self._extract_common_kwargs(kwargs)
+
+        # Build context with entity-specific fields
+        context = self._build_context(
+            base_context,
+            entity_name=entity_name,
+            entity_id=entity_id,
+        )
+
+        # Call parent with complete error information
+        super().__init__(
+            f"Entity Not Found: {message}",
+            code=error_code or "WMS_ENTITY_NOT_FOUND",
+            context=context,
+            correlation_id=correlation_id,
+        )
 
 
 class FlextOracleWmsSchemaError(FlextOracleWmsValidationError):
@@ -418,24 +594,65 @@ class FlextOracleWmsSchemaError(FlextOracleWmsValidationError):
         field_name: str | None = None,
         **kwargs: object,
     ) -> None:
-        """Initialize schema error with context."""
-        context = dict(kwargs)
-        if schema_name is not None:
-            context["schema_name"] = schema_name
-        if field_name is not None:
-            context["field_name"] = field_name
+        """Initialize schema error with context using helpers.
 
-        # Tests expect "[SCHEMA_ERROR] Schema error" (no "Schema:  prefix)
-        super().__init__(message, context=context)
+        Args:
+            message: Error message
+            schema_name: Schema name
+            field_name: Field name
+            **kwargs: Additional context (context, correlation_id, error_code)
+
+        """
+        # Extract common parameters using helper
+        base_context, correlation_id, error_code = self._extract_common_kwargs(kwargs)
+
+        # Build context with schema-specific fields
+        context = self._build_context(
+            base_context,
+            schema_name=schema_name,
+            field_name=field_name,
+        )
+
+        # Call parent with complete error information
+        # Tests expect "[SCHEMA_ERROR] Schema error" (no "Schema:" prefix)
+        super().__init__(
+            message,
+            field_name=field_name,
+            code=error_code or "WMS_SCHEMA_ERROR",
+            context=context,
+            correlation_id=correlation_id,
+        )
 
 
 class FlextOracleWmsSchemaFlatteningError(FlextOracleWmsSchemaError):
     """Schema flattening error for Oracle WMS nested data processing."""
 
     @override
-    def __init__(self, message: str = "Oracle WMS schema flattening failed") -> None:
-        """Initialize schema flattening error."""
-        super().__init__(message)
+    def __init__(
+        self,
+        message: str = "Oracle WMS schema flattening failed",
+        **kwargs: object,
+    ) -> None:
+        """Initialize schema flattening error using helpers.
+
+        Args:
+            message: Error message
+            **kwargs: Additional context (context, correlation_id, error_code)
+
+        """
+        # Extract common parameters using helper
+        base_context, correlation_id, error_code = self._extract_common_kwargs(kwargs)
+
+        # Build context
+        context = self._build_context(base_context)
+
+        # Call parent with complete error information
+        super().__init__(
+            message,
+            code=error_code or "WMS_SCHEMA_FLATTENING_ERROR",
+            context=context,
+            correlation_id=correlation_id,
+        )
 
 
 __all__: FlextOracleWmsTypes.Core.StringList = [

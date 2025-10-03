@@ -15,10 +15,10 @@ from typing import override
 from urllib.parse import urlencode
 
 from flext_api.models import FlextApiModels
+from flext_auth import HttpAuthMiddleware
 from flext_auth.providers import BaseAuthProvider
 
-from flext_auth import HttpAuthMiddleware
-from flext_core import FlextConstants, FlextLogger, FlextResult
+from flext_core import FlextConstants, FlextLogger, FlextResult, FlextTypes
 from flext_oracle_wms.config import FlextOracleWmsConfig
 from flext_oracle_wms.http_client import FlextHttpClient, create_flext_http_client
 from flext_oracle_wms.typings import FlextOracleWmsTypes
@@ -288,7 +288,7 @@ class FlextOracleWmsClient:
                     "entity_discovery"
                 )
                 if mock_result.success and mock_result.value:
-                    entities: list[object] = mock_result.value.get("results", [])
+                    entities: FlextTypes.List = mock_result.value.get("results", [])
                     if isinstance(entities, list):
                         return FlextResult[
                             list[FlextOracleWmsTypes.Core.RecordDict]
@@ -315,7 +315,7 @@ class FlextOracleWmsClient:
                 )
 
             body = response.value
-            entities: list[object] = body.get("results", [])
+            entities: FlextTypes.List = body.get("results", [])
             if isinstance(entities, list):
                 return FlextResult[list[FlextOracleWmsTypes.Core.RecordDict]].ok(
                     entities
@@ -414,7 +414,7 @@ class FlextOracleWmsClient:
             )
             full_path = full_path.replace("{entity_name}", entity_name)
 
-            query_params: dict[str, object] = dict(params or {})
+            query_params: FlextTypes.Dict = dict(params or {})
             # Accept optional limit/page_size in kwargs for tests
             if "limit" in kwargs and "limit" not in query_params:
                 query_params["limit"] = kwargs["limit"]
@@ -542,7 +542,7 @@ class FlextOracleWmsClient:
                 )
 
             body = api_resp
-            data_dict: dict[str, object] = body if isinstance(body, dict) else {}
+            data_dict: FlextTypes.Dict = body if isinstance(body, dict) else {}
             return FlextResult[FlextOracleWmsTypes.Core.Dict].ok(data_dict)
 
         except (
@@ -698,7 +698,7 @@ class FlextOracleWmsClientMock:
     @override
     def __init__(self, config: FlextOracleWmsConfig) -> None:
         """Initialize mock client."""
-        self.config: dict[str, object] = config
+        self.config: FlextTypes.Dict = config
         self.mock_server = get_mock_server(config.extract_environment_from_url())
 
     def discover_entities(
@@ -709,7 +709,7 @@ class FlextOracleWmsClientMock:
             "entity_discovery"
         )
         if mock_result.success and mock_result.value:
-            entities_data: dict[str, object] = mock_result.value.get("entities", [])
+            entities_data: FlextTypes.Dict = mock_result.value.get("entities", [])
             return FlextResult[list[FlextOracleWmsTypes.Core.Dict]].ok(
                 entities_data if isinstance(entities_data, list) else [],
             )

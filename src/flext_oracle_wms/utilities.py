@@ -19,7 +19,7 @@ from urllib.parse import urlparse
 
 from pydantic import SecretStr
 
-from flext_core import FlextResult, FlextUtilities
+from flext_core import FlextResult, FlextTypes, FlextUtilities
 from flext_oracle_wms.wms_constants import FlextOracleWmsConstants
 
 
@@ -396,8 +396,8 @@ class FlextOracleWmsUtilities(FlextUtilities):
 
         @staticmethod
         def chunk_records(
-            records: list[dict[str, object]], chunk_size: int
-        ) -> FlextResult[list[list[dict[str, object]]]]:
+            records: list[FlextTypes.Dict], chunk_size: int
+        ) -> FlextResult[list[list[FlextTypes.Dict]]]:
             """Chunk Oracle WMS records into batches for processing.
 
             Args:
@@ -409,22 +409,22 @@ class FlextOracleWmsUtilities(FlextUtilities):
 
             """
             if not records:
-                return FlextResult[list[list[dict[str, object]]]].ok([])
+                return FlextResult[list[list[FlextTypes.Dict]]].ok([])
 
             chunk_validation = (
                 FlextOracleWmsUtilities.DataProcessing.validate_batch_size(chunk_size)
             )
             if chunk_validation.is_failure:
-                return FlextResult[list[list[dict[str, object]]]].fail(
+                return FlextResult[list[list[FlextTypes.Dict]]].fail(
                     chunk_validation.error
                 )
 
-            chunks: list[list[dict[str, object]]] = []
+            chunks: list[list[FlextTypes.Dict]] = []
             for i in range(0, len(records), chunk_size):
                 chunk = records[i : i + chunk_size]
                 chunks.append(chunk)
 
-            return FlextResult[list[list[dict[str, object]]]].ok(chunks)
+            return FlextResult[list[list[FlextTypes.Dict]]].ok(chunks)
 
         @staticmethod
         def validate_pagination_info(
@@ -558,8 +558,8 @@ class FlextOracleWmsUtilities(FlextUtilities):
 
         @staticmethod
         def build_query_parameters(
-            filters: dict[str, object],
-        ) -> FlextResult[dict[str, str]]:
+            filters: FlextTypes.Dict,
+        ) -> FlextResult[FlextTypes.StringDict]:
             """Build Oracle WMS API query parameters from filters.
 
             Args:
@@ -570,13 +570,13 @@ class FlextOracleWmsUtilities(FlextUtilities):
 
             """
             if not filters:
-                return FlextResult[dict[str, str]].ok({})
+                return FlextResult[FlextTypes.StringDict].ok({})
 
-            normalized_params: dict[str, str] = {}
+            normalized_params: FlextTypes.StringDict = {}
 
             for key, value in filters.items():
                 if not key or not key.strip():
-                    return FlextResult[dict[str, str]].fail(
+                    return FlextResult[FlextTypes.StringDict].fail(
                         "Filter key cannot be empty"
                     )
 
@@ -587,13 +587,13 @@ class FlextOracleWmsUtilities(FlextUtilities):
                     FlextOracleWmsUtilities.DataProcessing.normalize_filter_value(value)
                 )
                 if value_validation.is_failure:
-                    return FlextResult[dict[str, str]].fail(
+                    return FlextResult[FlextTypes.StringDict].fail(
                         f"Invalid filter value for '{key}': {value_validation.error}"
                     )
 
                 normalized_params[normalized_key] = value_validation.unwrap()
 
-            return FlextResult[dict[str, str]].ok(normalized_params)
+            return FlextResult[FlextTypes.StringDict].ok(normalized_params)
 
         @staticmethod
         def build_request_headers(
@@ -602,7 +602,7 @@ class FlextOracleWmsUtilities(FlextUtilities):
             password: str | SecretStr | None = None,
             api_key: str | None = None,
             bearer_token: str | None = None,
-        ) -> FlextResult[dict[str, str]]:
+        ) -> FlextResult[FlextTypes.StringDict]:
             """Build Oracle WMS API request headers with authentication.
 
             Args:
@@ -623,7 +623,7 @@ class FlextOracleWmsUtilities(FlextUtilities):
                 )
             )
             if method_validation.is_failure:
-                return FlextResult[dict[str, str]].fail(method_validation.error)
+                return FlextResult[FlextTypes.StringDict].fail(method_validation.error)
 
             headers = {
                 "Content-Type": "application/json",
@@ -635,7 +635,7 @@ class FlextOracleWmsUtilities(FlextUtilities):
 
             if validated_method == "BASIC":
                 if not username or not password:
-                    return FlextResult[dict[str, str]].fail(
+                    return FlextResult[FlextTypes.StringDict].fail(
                         "Username and password required for basic auth"
                     )
 
@@ -646,7 +646,9 @@ class FlextOracleWmsUtilities(FlextUtilities):
                     )
                 )
                 if username_validation.is_failure:
-                    return FlextResult[dict[str, str]].fail(username_validation.error)
+                    return FlextResult[FlextTypes.StringDict].fail(
+                        username_validation.error
+                    )
 
                 password_validation = (
                     FlextOracleWmsUtilities.AuthenticationValidation.validate_password(
@@ -654,7 +656,9 @@ class FlextOracleWmsUtilities(FlextUtilities):
                     )
                 )
                 if password_validation.is_failure:
-                    return FlextResult[dict[str, str]].fail(password_validation.error)
+                    return FlextResult[FlextTypes.StringDict].fail(
+                        password_validation.error
+                    )
 
                 # Build basic auth header
                 credentials = f"{username_validation.unwrap()}:{password_validation.unwrap().get_secret_value()}"
@@ -663,19 +667,19 @@ class FlextOracleWmsUtilities(FlextUtilities):
 
             elif validated_method == "BEARER":
                 if not bearer_token:
-                    return FlextResult[dict[str, str]].fail(
+                    return FlextResult[FlextTypes.StringDict].fail(
                         "Bearer token required for bearer auth"
                     )
                 headers["Authorization"] = f"Bearer {bearer_token}"
 
             elif validated_method == "API_KEY":
                 if not api_key:
-                    return FlextResult[dict[str, str]].fail(
+                    return FlextResult[FlextTypes.StringDict].fail(
                         "API key required for API key auth"
                     )
                 headers["X-API-Key"] = api_key
 
-            return FlextResult[dict[str, str]].ok(headers)
+            return FlextResult[FlextTypes.StringDict].ok(headers)
 
     class InventoryOperations:
         """Oracle WMS Inventory Operations Utilities.
@@ -737,7 +741,7 @@ class FlextOracleWmsUtilities(FlextUtilities):
 
         @staticmethod
         def calculate_total_quantity(
-            items: list[dict[str, object]], quantity_field: str = "quantity"
+            items: list[FlextTypes.Dict], quantity_field: str = "quantity"
         ) -> FlextResult[float]:
             """Calculate total quantity from Oracle WMS inventory items.
 
@@ -786,8 +790,8 @@ class FlextOracleWmsUtilities(FlextUtilities):
 
         @staticmethod
         def validate_health_status(
-            status_data: dict[str, object],
-        ) -> FlextResult[dict[str, object]]:
+            status_data: FlextTypes.Dict,
+        ) -> FlextResult[FlextTypes.Dict]:
             """Validate Oracle WMS health check status data.
 
             Args:
@@ -798,7 +802,7 @@ class FlextOracleWmsUtilities(FlextUtilities):
 
             """
             if not status_data:
-                return FlextResult[dict[str, object]].fail(
+                return FlextResult[FlextTypes.Dict].fail(
                     "Health status data cannot be empty"
                 )
 
@@ -806,7 +810,7 @@ class FlextOracleWmsUtilities(FlextUtilities):
             missing_fields = required_fields - set(status_data.keys())
 
             if missing_fields:
-                return FlextResult[dict[str, object]].fail(
+                return FlextResult[FlextTypes.Dict].fail(
                     f"Missing required health status fields: {', '.join(missing_fields)}"
                 )
 
@@ -814,16 +818,14 @@ class FlextOracleWmsUtilities(FlextUtilities):
             valid_statuses = {"healthy", "degraded", "unhealthy"}
             status = status_data["status"]
             if status not in valid_statuses:
-                return FlextResult[dict[str, object]].fail(
+                return FlextResult[FlextTypes.Dict].fail(
                     f"Invalid health status '{status}'. Must be one of: {', '.join(valid_statuses)}"
                 )
 
             # Validate service name
             service = status_data["service"]
             if not service or not str(service).strip():
-                return FlextResult[dict[str, object]].fail(
-                    "Service name cannot be empty"
-                )
+                return FlextResult[FlextTypes.Dict].fail("Service name cannot be empty")
 
             validated_data = {
                 "status": status,
@@ -833,12 +835,12 @@ class FlextOracleWmsUtilities(FlextUtilities):
                 "metrics": status_data.get("metrics", {}),
             }
 
-            return FlextResult[dict[str, object]].ok(validated_data)
+            return FlextResult[FlextTypes.Dict].ok(validated_data)
 
         @staticmethod
         def analyze_performance_metrics(
-            metrics: dict[str, object], thresholds: dict[str, float] | None = None
-        ) -> FlextResult[dict[str, object]]:
+            metrics: FlextTypes.Dict, thresholds: FlextTypes.FloatDict | None = None
+        ) -> FlextResult[FlextTypes.Dict]:
             """Analyze Oracle WMS performance metrics against thresholds.
 
             Args:
@@ -850,7 +852,7 @@ class FlextOracleWmsUtilities(FlextUtilities):
 
             """
             if not metrics:
-                return FlextResult[dict[str, object]].fail(
+                return FlextResult[FlextTypes.Dict].fail(
                     "Performance metrics cannot be empty"
                 )
 
@@ -864,7 +866,7 @@ class FlextOracleWmsUtilities(FlextUtilities):
             }
 
             analysis_thresholds = thresholds or default_thresholds
-            analysis_result: dict[str, object] = {
+            analysis_result: FlextTypes.Dict = {
                 "overall_status": "healthy",
                 "alerts": [],
                 "warnings": [],
@@ -910,4 +912,4 @@ class FlextOracleWmsUtilities(FlextUtilities):
                     else "degraded"
                 )
 
-            return FlextResult[dict[str, object]].ok(analysis_result)
+            return FlextResult[FlextTypes.Dict].ok(analysis_result)

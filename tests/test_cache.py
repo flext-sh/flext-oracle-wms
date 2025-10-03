@@ -21,8 +21,8 @@ import time
 from unittest.mock import Mock, patch
 
 import pytest
-from flext_core import FlextResult, FlextTypes
 
+from flext_core import FlextResult, FlextTypes
 from flext_oracle_wms import (
     FlextOracleWmsCacheConfig,
     FlextOracleWmsCacheEntry,
@@ -207,7 +207,7 @@ class TestFlextOracleWmsCacheEntry:
         timestamp = time.time()
         last_accessed = timestamp - 100
 
-        entry = FlextOracleWmsCacheEntry[FlextTypes.Core.Headers](
+        entry = FlextOracleWmsCacheEntry[FlextTypes.StringDict](
             key="test_key",
             value={"data": "value"},
             timestamp=timestamp,

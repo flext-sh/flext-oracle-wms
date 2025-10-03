@@ -9,7 +9,7 @@ from __future__ import annotations
 from enum import StrEnum
 from typing import Final
 
-from flext_core import FlextConstants
+from flext_core import FlextConstants, FlextTypes
 
 # Python 3.13+ Type Aliases - ONLY Oracle WMS-specific
 # Note: Using enum classes instead of type aliases for better runtime behavior
@@ -184,7 +184,7 @@ class FlextOracleWmsConstants(FlextConstants):
     class Entities:
         """Oracle WMS entity types and definitions."""
 
-        TYPES: Final[list[str]] = [
+        TYPES: Final[FlextTypes.StringList] = [
             "INVENTORY",
             "SHIPMENT",
             "PICKING",
