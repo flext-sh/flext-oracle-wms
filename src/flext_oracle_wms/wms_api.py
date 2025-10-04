@@ -11,6 +11,7 @@ from typing import override
 from uuid import uuid4
 
 from flext_core import FlextLogger, FlextResult, FlextTypes
+
 from flext_oracle_wms.typings import FlextOracleWmsTypes
 from flext_oracle_wms.wms_models import (
     FlextOracleWmsApiCategory,
@@ -331,7 +332,7 @@ class OracleWmsMockServer:
             return FlextResult[FlextOracleWmsTypes.Core.Dict].fail(
                 f"Unknown mock endpoint: {endpoint}",
             )
-        except Exception as e:
+        except (TypeError, ValueError, AttributeError, KeyError) as e:
             OracleWmsMockServer._logger.exception("Mock server error")
             return FlextResult[FlextOracleWmsTypes.Core.Dict].fail(
                 f"Mock server error: {e}"

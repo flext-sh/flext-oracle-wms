@@ -4,11 +4,13 @@ Copyright (c) 2025 FLEXT Team. All rights reserved.
 SPDX-License-Identifier: MIT
 """
 
+import asyncio
 import json
 from datetime import UTC, datetime
 from pathlib import Path
 
 from flext_core import FlextLogger, FlextResult, FlextTypes
+
 from flext_oracle_wms import (
     FlextOracleWmsApiVersion,
     FlextOracleWmsClientConfig,
@@ -462,7 +464,7 @@ class FocusedOracleWmsDiscovery:
     def _save_focused_results(self) -> FlextResult[str]:
         """Save focused discovery results."""
         results_dir = Path("oracle_wms_focused_results")
-        to_thread(results_dir.mkdir, exist_ok=True)
+        asyncio.to_thread(results_dir.mkdir, exist_ok=True)
 
         timestamp = datetime.now(UTC).strftime("%Y%m%d_%H%M%S")
 

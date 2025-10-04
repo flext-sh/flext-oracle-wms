@@ -38,8 +38,8 @@ SPDX-License-Identifier: MIT
 """
 
 import pytest
-
 from flext_core import FlextTypes
+
 from flext_oracle_wms import (
     FlextOracleWmsApiError,
     FlextOracleWmsAuthenticationError,

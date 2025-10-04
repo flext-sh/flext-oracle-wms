@@ -11,12 +11,14 @@ OPTIMIZED approach:
 5. No fallbacks, no estimations - 100% Oracle discovery
 """
 
+import asyncio
 import json
 import operator
 from datetime import UTC, datetime
 from pathlib import Path
 
 from flext_core import FlextLogger, FlextResult, FlextTypes
+
 from flext_oracle_wms import (
     FlextOracleWmsApiVersion,
     FlextOracleWmsClientConfig,
@@ -182,7 +184,14 @@ class OptimizedOracleWmsDiscovery:
                 self._analyze_single_entity(entity_name) for entity_name in batch
             ]
 
-            batch_results = gather(*batch_tasks, return_exceptions=True)
+            # Run tasks sequentially for synchronous compatibility
+            batch_results = []
+            for task in batch_tasks:
+                try:
+                    result = task
+                    batch_results.append(result)
+                except Exception as e:
+                    batch_results.append(e)
 
             # Process results
             for entity_name, result in zip(batch, batch_results, strict=False):
@@ -205,7 +214,7 @@ class OptimizedOracleWmsDiscovery:
             sum(1 for r in results.values() if r.get("has_data", False))
 
             # Small delay to be respectful to the API
-            sleep(0.1)
+            time.sleep(0.1)
 
         return results
 
@@ -578,7 +587,7 @@ class OptimizedOracleWmsDiscovery:
     def save_optimized_results(self) -> FlextResult[str]:
         """Save optimized discovery results."""
         results_dir = Path("oracle_wms_optimized_results")
-        to_thread(results_dir.mkdir, exist_ok=True)
+        asyncio.to_thread(results_dir.mkdir, exist_ok=True)
 
         timestamp = datetime.now(UTC).strftime("%Y%m%d_%H%M%S")
 

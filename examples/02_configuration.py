@@ -12,8 +12,8 @@ from enum import StrEnum
 from pathlib import Path
 
 from dotenv import load_dotenv
-
 from flext_core import FlextLogger, FlextTypes
+
 from flext_oracle_wms import (
     FlextOracleWmsClient,
     FlextOracleWmsClientConfig,

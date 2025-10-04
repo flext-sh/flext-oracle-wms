@@ -11,14 +11,15 @@ Using ADMINISTRATOR credentials for complete API exploration:
 NO FALLBACKS, NO ESTIMATIONS, NO BASIC LIMITS - FULL EXPLORATION
 """
 
+import asyncio
 import json
 import operator
 from datetime import UTC, datetime
 from pathlib import Path
 
+from flext_core import FlextLogger, FlextResult, FlextTypes
 from pydantic import ConfigDict
 
-from flext_core import FlextLogger, FlextResult, FlextTypes
 from flext_oracle_wms import (
     FLEXT_ORACLE_WMS_APIS,
     FlextOracleWmsApiCategory,
@@ -610,7 +611,7 @@ class OracleWmsCompleteDiscovery:
     def save_complete_discovery_results(self) -> FlextResult[str]:
         """Save complete discovery results to files."""
         results_dir = Path("oracle_wms_complete_results")
-        to_thread(results_dir.mkdir, exist_ok=True)
+        asyncio.to_thread(results_dir.mkdir, exist_ok=True)
 
         timestamp = datetime.now(UTC).strftime("%Y%m%d_%H%M%S")
 

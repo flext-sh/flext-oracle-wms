@@ -5,6 +5,7 @@ SPDX-License-Identifier: MIT
 """
 
 from flext_core import FlextTypes
+
 from flext_oracle_wms import (
     FlextOracleWmsDataFlattener,
     flext_oracle_wms_create_data_flattener,

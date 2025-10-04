@@ -15,14 +15,15 @@ Copyright (c) 2025 FLEXT Team. All rights reserved.
 SPDX-License-Identifier: MIT
 """
 
+import asyncio
 import contextlib
 import math
 import time
 from unittest.mock import Mock, patch
 
 import pytest
-
 from flext_core import FlextResult, FlextTypes
+
 from flext_oracle_wms import (
     FlextOracleWmsCacheConfig,
     FlextOracleWmsCacheEntry,
@@ -855,7 +856,7 @@ class TestFlextOracleWmsCacheManager:
         assert result.data == "expiring_value"
 
         # Wait for expiration
-        sleep(1.1)
+        time.sleep(1.1)
 
         # Should be expired and return None
         result = cache_manager.get_entity("expiring_key")
@@ -1003,7 +1004,7 @@ class TestFlextOracleWmsCacheManager:
         cache_manager.set_entity("expire2", "value2")
 
         # Wait for expiration and cleanup
-        sleep(2.5)
+        await asyncio.sleep(2.5)
 
         # Check statistics for expired entries
         stats_result = cache_manager.get_statistics()
@@ -1343,7 +1344,7 @@ class TestErrorHandling:
             cache_manager.start()
 
             # Wait a bit for cleanup loop to run and handle exception
-            sleep(0.2)
+            await asyncio.sleep(0.2)
 
             # Should not crash, just log error and continue
             assert cache_manager._cleanup_task is not None
@@ -1386,7 +1387,7 @@ class TestThreadSafety:
         for i in range(10):
             tasks.extend((set_operation(str(i), str(i)), get_operation(str(i))))
 
-        gather(*tasks, return_exceptions=True)
+        await asyncio.gather(*tasks, return_exceptions=True)
 
         # Verify final state
         stats_result = self.cache_manager.get_statistics()
@@ -1411,7 +1412,7 @@ class TestThreadSafety:
         # Concurrent invalidation operations
         tasks = [self._invalidate_key(f"concurrent_{i}") for i in range(5)]
 
-        results = gather(*tasks, return_exceptions=True)
+        results = await asyncio.gather(*tasks, return_exceptions=True)
 
         # All should succeed
         for result in results:

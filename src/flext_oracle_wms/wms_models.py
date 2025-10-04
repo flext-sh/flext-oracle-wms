@@ -14,9 +14,9 @@ from dataclasses import dataclass, field
 from enum import StrEnum
 from typing import Annotated, Literal, TypedDict
 
+from flext_core import FlextModels, FlextResult, FlextTypes
 from pydantic import Field, StringConstraints
 
-from flext_core import FlextModels, FlextResult, FlextTypes
 from flext_oracle_wms.typings import FlextOracleWmsTypes
 from flext_oracle_wms.wms_constants import (
     FlextOracleWmsApiVersion,

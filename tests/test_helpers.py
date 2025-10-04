@@ -8,8 +8,8 @@ SPDX-License-Identifier: MIT
 """
 
 import pytest
-
 from flext_core import FlextTypes
+
 from flext_oracle_wms import (
     flext_oracle_wms_build_entity_url,
     flext_oracle_wms_chunk_records,

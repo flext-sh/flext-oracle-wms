@@ -17,9 +17,9 @@ from datetime import UTC, datetime
 from typing import ClassVar
 from urllib.parse import urlparse
 
+from flext_core import FlextResult, FlextTypes, FlextUtilities
 from pydantic import SecretStr
 
-from flext_core import FlextResult, FlextTypes, FlextUtilities
 from flext_oracle_wms.wms_constants import FlextOracleWmsConstants
 
 

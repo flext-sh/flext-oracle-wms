@@ -24,6 +24,7 @@ from flext_core import (
     FlextTypes,
     FlextUtilities,
 )
+
 from flext_oracle_wms.filtering import FlextOracleWmsFilter
 from flext_oracle_wms.typings import FlextOracleWmsTypes
 from flext_oracle_wms.utilities import FlextOracleWmsUtilities

@@ -8,6 +8,7 @@ from __future__ import annotations
 from typing import override
 
 from flext_core import FlextResult
+
 from flext_oracle_wms.typings import FlextOracleWmsTypes
 from flext_oracle_wms.wms_operations import FlextOracleWmsFlattener as _OpsFlattener
 
@@ -74,7 +75,11 @@ class FlextOracleWmsDataFlattener(_OpsFlattener):
                 return out
 
             return [remap(r) for r in flattened]
-        except Exception:  # pragma: no cover - delegate errors
+        except (
+            TypeError,
+            ValueError,
+            AttributeError,
+        ):  # pragma: no cover - delegate errors
             return []
 
     def flatten_records_with_result(

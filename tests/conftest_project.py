@@ -9,8 +9,8 @@ from pathlib import Path
 
 import pytest
 from dotenv import load_dotenv
-
 from flext_core import FlextTypes
+
 from flext_oracle_wms import (
     FlextOracleWmsApiVersion,
     FlextOracleWmsConfig,

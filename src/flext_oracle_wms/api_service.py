@@ -12,6 +12,7 @@ from __future__ import annotations
 from typing import override
 
 from flext_core import FlextLogger, FlextResult, FlextTypes
+
 from flext_oracle_wms.http_client import FlextHttpClient
 from flext_oracle_wms.typings import FlextOracleWmsTypes
 

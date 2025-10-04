@@ -14,10 +14,9 @@ import warnings
 from typing import Self, cast
 from urllib.parse import urlparse
 
+from flext_core import FlextConfig, FlextResult, FlextTypes
 from pydantic import Field, SecretStr, field_validator, model_validator
 from pydantic_settings import SettingsConfigDict
-
-from flext_core import FlextConfig, FlextResult, FlextTypes
 
 # Constants for validation limits
 MAX_TIMEOUT_SECONDS = 300
@@ -471,22 +470,6 @@ class FlextOracleWmsConfig(FlextConfig):
         cls.reset_shared_instance()
 
 
-class FlextOracleWmsModuleConfig:
-    """Module-level configuration for flext-oracle-wms.
-
-    This class holds configuration that is specific to the module
-    and not necessarily tied to environment variables.
-    """
-
-    def __init__(self) -> None:
-        """Initialize module-level configuration with default values."""
-        self.enable_caching: bool = True
-        self.cache_ttl_seconds: int = 3600
-        self.max_concurrent_requests: int = 10
-        self.enable_metrics: bool = True
-        self.enable_tracing: bool = False
-
-
 # Backward compatibility aliases
 FlextOracleWmsClientConfig = FlextOracleWmsConfig
 
@@ -498,5 +481,4 @@ __all__ = [
     "MIN_TIMEOUT_SECONDS",
     "FlextOracleWmsClientConfig",
     "FlextOracleWmsConfig",
-    "FlextOracleWmsModuleConfig",
 ]

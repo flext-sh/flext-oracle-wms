@@ -15,6 +15,7 @@ import re
 from typing import override
 
 from flext_core import FlextLogger, FlextResult, FlextTypes
+
 from flext_oracle_wms.typings import FlextOracleWmsTypes
 
 # Import base classes from flext-core instead of creating circular dependency
@@ -90,7 +91,8 @@ class FlextOracleWmsFilter:
         try:
             flags = 0 if self.case_sensitive else re.IGNORECASE
             return bool(re.match(pattern, field_value, flags))
-        except Exception:
+        except re.error:
+            # Invalid regex pattern - return False for LIKE operation
             return False
 
     def _op_not_like(self, field_value: object, filter_value: object) -> bool:

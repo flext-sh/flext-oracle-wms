@@ -9,6 +9,7 @@ This module provides comprehensive entity discovery, schema processing, and cach
 
 from __future__ import annotations
 
+import asyncio
 import contextlib
 import re
 import threading
@@ -18,8 +19,6 @@ from dataclasses import dataclass
 from datetime import UTC, datetime
 from typing import ClassVar, cast, override
 
-from pydantic import Field
-
 from flext_core import (
     FlextConfig,
     FlextLogger,
@@ -27,6 +26,8 @@ from flext_core import (
     FlextResult,
     FlextTypes,
 )
+from pydantic import Field
+
 from flext_oracle_wms.http_client import FlextHttpClient
 from flext_oracle_wms.typings import FlextOracleWmsTypes
 from flext_oracle_wms.wms_constants import FlextOracleWmsConstants, OracleWMSEntityType
@@ -251,7 +252,7 @@ class FlextOracleWmsCacheManager:
         self._schema_cache: dict[str, FlextOracleWmsCacheEntry] = self._cache
         self._metadata_cache: dict[str, FlextOracleWmsCacheEntry] = self._cache
         self._lock = threading.RLock()
-        self._cleanup_task: Task[None] | None = None
+        self._cleanup_task: asyncio.Task[None] | None = None
         self._stats = FlextOracleWmsCacheStats(
             hits=0,
             misses=0,
@@ -289,7 +290,7 @@ class FlextOracleWmsCacheManager:
             if self._cleanup_task is not None:
                 self._cleanup_task.cancel()
                 with contextlib.suppress(Exception):
-                    sleep(0)
+                    asyncio.sleep(0)
             self.clear()
             return FlextResult[None].ok(None)
         except Exception as e:  # pragma: no cover - defensive
@@ -298,17 +299,17 @@ class FlextOracleWmsCacheManager:
     def _start_cleanup_task(self: FlextOracleWmsCacheManager) -> None:
         """Start background cleanup task."""
         try:
-            loop = get_event_loop()
+            loop = asyncio.get_event_loop()
             self._cleanup_task = loop.create_task(self._cleanup_expired_entries())
         except RuntimeError:
             # No event loop running, cleanup will be manual
             self._logger.debug("No event loop available, using manual cleanup")
 
-    def _cleanup_expired_entries(self) -> None:
+    async def _cleanup_expired_entries(self) -> None:
         """Background task to clean up expired cache entries."""
         try:
             while True:
-                sleep(self.config.cleanup_interval_seconds)
+                await asyncio.sleep(self.config.cleanup_interval_seconds)
                 with self._lock:
                     expired_keys = [
                         key for key, entry in self._cache.items() if entry.is_expired()
@@ -333,9 +334,9 @@ class FlextOracleWmsCacheManager:
                         self._logger.debug(
                             f"Cleaned up {len(expired_keys)} expired cache entries",
                         )
-        except CancelledError:
+        except asyncio.CancelledError:
             return
-        except Exception:
+        except (OSError, RuntimeError, ValueError):
             self._logger.exception("Cache cleanup error")
 
     def get(self, key: str) -> FlextResult[object]:

@@ -10,6 +10,7 @@ import logging
 import sys
 
 from flext_core import FlextLogger
+
 from flext_oracle_wms import FlextOracleWmsClient, FlextOracleWmsConfig
 
 # Setup logging

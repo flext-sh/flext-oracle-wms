@@ -2,33 +2,26 @@
 
 from __future__ import annotations
 
-from typing import Final, cast
+from typing import Final
 
-from flext_core.metadata import (
-    FlextProjectVersion,
-    build_metadata_exports,
-)
-
-_metadata = build_metadata_exports(__file__)
-globals().update(_metadata)
-_metadata_obj = cast("FlextProjectMetadata", _metadata["__flext_metadata__"])
+# Simple version management without flext_core.metadata dependency
+__version__: Final[str] = "0.9.9"
+__version_info__: Final[tuple[int, int, int]] = (0, 9, 9)
 
 
-class FlextOracleWmsVersion(FlextProjectVersion):
+# Backward compatibility - simple version class
+class FlextOracleWmsVersion:
     """Structured metadata for the flext oracle wms distribution."""
+
+    version: str = __version__
+    version_info: tuple[int, int, int] = __version_info__
 
     @classmethod
     def current(cls) -> FlextOracleWmsVersion:
-        """Return canonical metadata loaded from pyproject.toml."""
-        return cls.from_metadata(_metadata_obj)
+        """Return canonical metadata."""
+        return cls()
 
 
 VERSION: Final[FlextOracleWmsVersion] = FlextOracleWmsVersion.current()
-__version__: Final[str] = VERSION.version
-__version_info__: Final[tuple[int | str, ...]] = VERSION.version_info
-
-for _name in tuple(_metadata):
-    if _name not in {"__version__", "__version_info__"}:
-        globals().pop(_name, None)
 
 __all__ = ["VERSION", "FlextOracleWmsVersion", "__version__", "__version_info__"]

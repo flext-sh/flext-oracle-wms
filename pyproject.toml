@@ -17,7 +17,6 @@
     ]
     dependencies = [
         "flext-core @ file:///home/marlonsc/flext/flext-core",
-        "httpx (>=0.28.1)",
         "pydantic (>=2.11.7)",
         "pydantic-settings (>=2.10.1)",
         "python-dotenv (>=1.1.1)",
@@ -74,6 +73,14 @@
     [[tool.poetry.packages]]
         from    = "src"
         include = "flext_oracle_wms"
+
+[tool.pyrefly]
+    python-version = "3.13"
+    search-path = [
+        "../flext-core/src",
+        "src",
+        "tests",
+    ]
 
 [tool.deptry]
     known_first_party = [
