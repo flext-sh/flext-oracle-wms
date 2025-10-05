@@ -14,6 +14,7 @@ OPTIMIZED approach:
 import asyncio
 import json
 import operator
+import time
 from datetime import UTC, datetime
 from pathlib import Path
 

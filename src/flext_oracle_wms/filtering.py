@@ -395,104 +395,115 @@ class FlextOracleWmsFilter:
             return filter_value in field_value
         return False
 
+    # Nested helper class for factory and utility functions
+    class FilterFactory:
+        """Factory and utility functions for Oracle WMS filters."""
 
-def flext_oracle_wms_create_filter(
-    *,
-    case_sensitive: bool = False,
-    max_conditions: int = 50,
-) -> FlextOracleWmsFilter:
-    """Create a new filter with case sensitivity and maximum conditions."""
-    return FlextOracleWmsFilter(
-        case_sensitive=case_sensitive,
-        max_conditions=max_conditions,
-    )
+        @staticmethod
+        def create_filter(
+            *,
+            case_sensitive: bool = False,
+            max_conditions: int = 50,
+        ) -> FlextOracleWmsFilter:
+            """Create a new filter with case sensitivity and maximum conditions."""
+            return FlextOracleWmsFilter(
+                case_sensitive=case_sensitive,
+                max_conditions=max_conditions,
+            )
 
+        @staticmethod
+        def filter_by_field(
+            records: list[FlextOracleWmsTypes.Core.Dict],
+            field: str,
+            _value: object,
+            operator: OracleWMSFilterOperator | None = None,
+        ) -> FlextResult[list[FlextOracleWmsTypes.Core.Dict]]:
+            """Filter records by field value and operator."""
+            engine = FlextOracleWmsFilter()
+            if operator == OracleWMSFilterOperator.NE:
+                pass
+            # Set filters before calling filter_records
+            filters = {field: "op_value"}
+            return engine.filter_records(records, filters)
 
-def flext_oracle_wms_filter_by_field(
-    records: list[FlextOracleWmsTypes.Core.Dict],
-    field: str,
-    _value: object,
-    operator: OracleWMSFilterOperator | None = None,
-) -> FlextResult[list[FlextOracleWmsTypes.Core.Dict]]:
-    """Filter records by field value and operator."""
-    engine = FlextOracleWmsFilter()
-    if operator == OracleWMSFilterOperator.NE:
-        pass
-    # Set filters before calling filter_records
-    filters = {field: "op_value"}
-    return engine.filter_records(records, filters)
+        @staticmethod
+        def filter_by_id_range(
+            records: list[FlextOracleWmsTypes.Core.Dict],
+            id_field: str,
+            min_id: object | None = None,
+            max_id: object | None = None,
+        ) -> FlextResult[list[FlextOracleWmsTypes.Core.Dict]]:
+            """Filter records by ID range."""
+            # Records parameter is already properly typed
 
+            if not records:
+                return FlextResult[list[FlextOracleWmsTypes.Core.Dict]].ok([])
 
-def flext_oracle_wms_filter_by_id_range(
-    records: list[FlextOracleWmsTypes.Core.Dict],
-    id_field: str,
-    min_id: object | None = None,
-    max_id: object | None = None,
-) -> FlextResult[list[FlextOracleWmsTypes.Core.Dict]]:
-    """Filter records by ID range."""
-    # Records parameter is already properly typed
-
-    if not records:
-        return FlextResult[list[FlextOracleWmsTypes.Core.Dict]].ok([])
-
-    # Apply manual range filtering since we need both min and max on same field
-    filtered_records: list[FlextTypes.Dict] = []
-    for record in records:
-        field_value = record.get(id_field)
-        if field_value is None:
-            continue
-
-        # Apply min filter
-        if min_id is not None:
-            try:
-                if isinstance(field_value, (int, float)) and isinstance(
-                    min_id,
-                    (int, float),
-                ):
-                    # Type narrowing: both are numeric
-                    numeric_field: float = float(field_value)
-                    numeric_min: float = float(min_id)
-                    if numeric_field < numeric_min:
-                        continue
-                elif isinstance(field_value, str) and isinstance(min_id, str):
-                    # Type narrowing: both are strings
-                    str_field: str = field_value
-                    str_min: str = min_id
-                    if str_field < str_min:
-                        continue
-                else:
+            # Apply manual range filtering since we need both min and max on same field
+            filtered_records: list[FlextTypes.Dict] = []
+            for record in records:
+                field_value = record.get(id_field)
+                if field_value is None:
                     continue
-            except (TypeError, ValueError):
-                continue
 
-        # Apply max filter
-        if max_id is not None:
-            try:
-                if isinstance(field_value, (int, float)) and isinstance(
-                    max_id,
-                    (int, float),
-                ):
-                    # Type narrowing: both are numeric
-                    numeric_field_max: float = float(field_value)
-                    numeric_max: float = float(max_id)
-                    if numeric_field_max > numeric_max:
+                # Apply min filter
+                if min_id is not None:
+                    try:
+                        if isinstance(field_value, (int, float)) and isinstance(
+                            min_id,
+                            (int, float),
+                        ):
+                            # Type narrowing: both are numeric
+                            numeric_field: float = float(field_value)
+                            numeric_min: float = float(min_id)
+                            if numeric_field < numeric_min:
+                                continue
+                        elif isinstance(field_value, str) and isinstance(min_id, str):
+                            # Type narrowing: both are strings
+                            str_field: str = field_value
+                            str_min: str = min_id
+                            if str_field < str_min:
+                                continue
+                        else:
+                            continue
+                    except (TypeError, ValueError):
                         continue
-                elif isinstance(field_value, str) and isinstance(max_id, str):
-                    # Type narrowing: both are strings
-                    str_field_max: str = field_value
-                    str_max: str = max_id
-                    if str_field_max > str_max:
+
+                # Apply max filter
+                if max_id is not None:
+                    try:
+                        if isinstance(field_value, (int, float)) and isinstance(
+                            max_id,
+                            (int, float),
+                        ):
+                            # Type narrowing: both are numeric
+                            numeric_field_max: float = float(field_value)
+                            numeric_max: float = float(max_id)
+                            if numeric_field_max > numeric_max:
+                                continue
+                        elif isinstance(field_value, str) and isinstance(max_id, str):
+                            # Type narrowing: both are strings
+                            str_field_max: str = field_value
+                            str_max: str = max_id
+                            if str_field_max > str_max:
+                                continue
+                        else:
+                            continue
+                    except (TypeError, ValueError):
                         continue
-                else:
-                    continue
-            except (TypeError, ValueError):
-                continue
 
-        # If we get here, record passes both filters
-        filtered_records.append(record)
+                # If we get here, record passes both filters
+                filtered_records.append(record)
 
-    return FlextResult[list[FlextOracleWmsTypes.Core.Dict]].ok(filtered_records)
+            return FlextResult[list[FlextOracleWmsTypes.Core.Dict]].ok(filtered_records)
 
+
+# Backward compatibility aliases
+flext_oracle_wms_create_filter = FlextOracleWmsFilter.FilterFactory.create_filter
+flext_oracle_wms_filter_by_field = FlextOracleWmsFilter.FilterFactory.filter_by_field
+flext_oracle_wms_filter_by_id_range = (
+    FlextOracleWmsFilter.FilterFactory.filter_by_id_range
+)
 
 __all__: FlextOracleWmsTypes.Core.StringList = [
     "FlextOracleWmsFilter",

@@ -987,7 +987,7 @@ class TestFlextOracleWmsCacheManager:
 
         self.cache_manager.stop()
 
-    def test_background_cleanup_loop(self) -> None:
+    async def test_background_cleanup_loop(self) -> None:
         """Test background cleanup loop functionality."""
         config = FlextOracleWmsCacheConfig(
             default_ttl_seconds=1,  # Short TTL for quick expiration
@@ -1333,7 +1333,7 @@ class TestErrorHandling:
 
         self.cache_manager.stop()
 
-    def test_cleanup_loop_exception_handling(self) -> None:
+    async def test_cleanup_loop_exception_handling(self) -> None:
         """Test exception handling in cleanup loop."""
         config = create_test_cache_config(cleanup_interval_seconds=1)
         cache_manager = FlextOracleWmsCacheManager(config)
@@ -1371,7 +1371,7 @@ class TestThreadSafety:
         with contextlib.suppress(Exception):
             self.cache_manager.stop()
 
-    def test_concurrent_cache_operations(self) -> None:
+    async def test_concurrent_cache_operations(self) -> None:
         """Test concurrent cache operations for thread safety."""
         self.cache_manager.start()
 
@@ -1401,7 +1401,7 @@ class TestThreadSafety:
         self.cache_manager.invalidate_key(key)
         return FlextResult[None].ok(None)
 
-    def test_concurrent_invalidation(self) -> None:
+    async def test_concurrent_invalidation(self) -> None:
         """Test concurrent cache invalidation."""
         self.cache_manager.start()
 

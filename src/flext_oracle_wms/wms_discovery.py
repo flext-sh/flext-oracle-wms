@@ -1,10 +1,10 @@
-"""Oracle WMS Discovery - Consolidated Entity Discovery and Dynamic Processing.
+"""Oracle WMS Discovery - Unified Entity Discovery and Processing.
 
 Copyright (c) 2025 FLEXT Team. All rights reserved.
 SPDX-License-Identifier: MIT.
 
-Consolidated Oracle WMS discovery system combining discovery.py + dynamic.py + cache.py.
-This module provides comprehensive entity discovery, schema processing, and caching.
+Single unified class for Oracle WMS entity discovery, schema processing, and caching.
+Follows FLEXT module-only-one-class pattern with nested helper classes.
 """
 
 from __future__ import annotations
