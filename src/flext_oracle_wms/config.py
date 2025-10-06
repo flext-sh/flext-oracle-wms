@@ -77,7 +77,7 @@ class FlextOracleWmsConfig(FlextConfig):
     api_version: str = Field(default="v2", description="Oracle WMS API version")
 
     @classmethod
-    def create_default(cls) -> FlextOracleWmsClientConfig:
+    def create_default(cls) -> FlextOracleWmsConfig:
         """Create default Oracle WMS client configuration.
 
         Returns:

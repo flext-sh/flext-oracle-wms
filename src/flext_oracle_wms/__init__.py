@@ -62,6 +62,7 @@ class FlextOracleWmsAuthConfig:
     def __init__(
         self, auth_type: str = "basic", username: str = "", password: str = ""
     ) -> None:
+        """Initialize authentication configuration."""
         self.auth_type = auth_type
         self.username = username
         self.password = password
@@ -77,6 +78,7 @@ class FlextOracleWmsAuthenticator:
     """Placeholder for Oracle WMS authenticator."""
 
     def __init__(self, config: FlextOracleWmsAuthConfig) -> None:
+        """Initialize authenticator with configuration."""
         self.config = config
 
     def get_auth_headers(self) -> FlextResult[dict[str, str]]:
@@ -86,6 +88,7 @@ class FlextOracleWmsAuthenticator:
         return FlextResult.ok({"Authorization": "Basic placeholder"})
 
 
+# Import models at module level
 from flext_oracle_wms.wms_models import (
     TOracleWmsApiResponse,
     TOracleWmsEntityId,
