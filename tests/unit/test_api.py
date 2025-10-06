@@ -39,7 +39,7 @@ class TestFlextOracleWmsApi:
         assert isinstance(api._dispatcher, FlextDispatcher)
 
         # Should initialize logger
-        assert hasattr(api, "_logger")
+        assert hasattr(api, "logger")
 
     def test_initialization_with_config(self) -> None:
         """Test initialization with explicit configuration."""
@@ -60,7 +60,7 @@ class TestFlextOracleWmsApi:
         assert api._handlers is not None
         assert api._processors is not None
         assert api._registry is not None
-        assert api._logger is not None
+        assert api.logger is not None
 
     def test_client_initialization(self) -> None:
         """Test that WMS client is properly initialized."""

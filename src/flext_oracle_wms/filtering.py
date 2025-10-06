@@ -36,7 +36,7 @@ class FlextOracleWmsFilter:
     """
 
     # Shared logger for all filter operations
-    _logger = FlextLogger(__name__)
+    logger = FlextLogger(__name__)
 
     @override
     def __init__(
@@ -203,7 +203,7 @@ class FlextOracleWmsFilter:
             return FlextResult[list[FlextOracleWmsTypes.Core.Dict]].ok(sorted_records)
         except Exception as e:
             error_msg = f"sort_records failed: {e}"
-            FlextOracleWmsFilter._logger.exception(error_msg)
+            FlextOracleWmsFilter.logger.exception(error_msg)
             return FlextResult[list[FlextOracleWmsTypes.Core.Dict]].fail(error_msg)
 
     def _validate_filter_conditions_total(

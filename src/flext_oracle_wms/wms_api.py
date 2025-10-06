@@ -231,7 +231,7 @@ class FlextOracleWmsApi:
         """Mock server simulating Oracle WMS Cloud API v10 responses."""
 
         # Shared logger for all mock server operations
-        _logger = FlextLogger(__name__)
+        logger = FlextLogger(__name__)
 
         def __init__(self, mock_environment: str = "mock_test") -> None:
             """Initialize Oracle WMS mock server."""
@@ -349,7 +349,7 @@ class FlextOracleWmsApi:
                     f"Unknown mock endpoint: {endpoint}",
                 )
             except (TypeError, ValueError, AttributeError, KeyError) as e:
-                self._logger.exception("Mock server error")
+                self.logger.exception("Mock server error")
                 return FlextResult[FlextOracleWmsTypes.Core.Dict].fail(
                     f"Mock server error: {e}"
                 )

@@ -74,7 +74,7 @@ class FlextOracleWmsApi(FlextService[FlextOracleWmsConfig]):
         self._handlers = FlextHandlers(config=handler_config)
         self._processors = FlextProcessors()
         self._registry = FlextRegistry(dispatcher=self._dispatcher)
-        self._logger = FlextLogger(__name__)
+        self.logger = FlextLogger(__name__)
 
         # Domain services (delegate all business logic here)
         self._client = FlextOracleWmsClient(self._config)

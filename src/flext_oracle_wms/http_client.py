@@ -21,7 +21,7 @@ class FlextHttpClient:
     """HTTP client using flext-api foundation with flext-core patterns."""
 
     # Shared logger for all HTTP client operations
-    _logger = FlextLogger(__name__)
+    logger = FlextLogger(__name__)
 
     @override
     def __init__(
@@ -146,7 +146,7 @@ class FlextHttpClient:
             return FlextResult[FlextOracleWmsTypes.Core.Dict].ok(data)
 
         except Exception as e:
-            FlextHttpClient._logger.exception("HTTP request error")
+            FlextHttpClient.logger.exception("HTTP request error")
             return FlextResult[FlextOracleWmsTypes.Core.Dict].fail(
                 f"Request error: {e}"
             )
@@ -227,7 +227,7 @@ class FlextHttpClient:
             return FlextResult[FlextOracleWmsTypes.Core.Dict].ok(response_data)
 
         except Exception as e:
-            FlextHttpClient._logger.exception("HTTP POST request error")
+            FlextHttpClient.logger.exception("HTTP POST request error")
             return FlextResult[FlextOracleWmsTypes.Core.Dict].fail(
                 f"Request error: {e}"
             )
@@ -308,7 +308,7 @@ class FlextHttpClient:
             return FlextResult[FlextOracleWmsTypes.Core.Dict].ok(response_data)
 
         except Exception as e:
-            FlextHttpClient._logger.exception("Unexpected error")
+            FlextHttpClient.logger.exception("Unexpected error")
             return FlextResult[FlextOracleWmsTypes.Core.Dict].fail(
                 f"Unexpected error: {e}"
             )
@@ -373,7 +373,7 @@ class FlextHttpClient:
             return FlextResult[FlextOracleWmsTypes.Core.Dict].ok(data)
 
         except Exception as e:
-            FlextHttpClient._logger.exception("Unexpected error")
+            FlextHttpClient.logger.exception("Unexpected error")
             return FlextResult[FlextOracleWmsTypes.Core.Dict].fail(
                 f"Unexpected error: {e}"
             )
