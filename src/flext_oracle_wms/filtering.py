@@ -16,13 +16,11 @@ from typing import override
 
 from flext_core import FlextLogger, FlextResult, FlextTypes
 
-from flext_oracle_wms.typings import FlextOracleWmsTypes
-
-# Import base classes from flext-core instead of creating circular dependency
-from flext_oracle_wms.wms_constants import (
+from flext_oracle_wms.constants import (
     FlextOracleWmsConstants,
     OracleWMSFilterOperator,
 )
+from flext_oracle_wms.typings import FlextOracleWmsTypes
 from flext_oracle_wms.wms_exceptions import (
     FlextOracleWmsDataValidationError,
     FlextOracleWmsError,
@@ -33,7 +31,7 @@ class FlextOracleWmsFilter:
     """Oracle WMS filter with case sensitivity and validation.
 
     This class provides a unified interface for Oracle WMS filtering operations,
-    consolidating functionality from FlextOracleWmsFilterConfig with additional
+    consolidating functionality from FlextOracleWmsFilter with additional
     case sensitivity support.
     """
 

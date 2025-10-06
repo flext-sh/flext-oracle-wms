@@ -109,7 +109,7 @@ def discover_wms_entities(
 def query_entity_data(
     client: FlextOracleWmsClient,
     entity_name: str,
-) -> FlextResult[FlextTypes.Dict | list[FlextTypes.Dict]]:
+) -> FlextResult[list[FlextTypes.Dict]]:
     """Query data from a specific Oracle WMS entity.
 
     Args:

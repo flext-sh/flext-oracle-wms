@@ -32,6 +32,7 @@ class FlextOracleWmsProtocols(FlextProtocols):
                 FlextResult[FlextTypes.Dict]: Authentication result or error
 
             """
+            ...
 
         def get_wms_entities(
             self,

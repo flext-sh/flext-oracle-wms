@@ -73,16 +73,16 @@ def load_config_from_environment() -> FlextOracleWmsClientConfig:
         msg = "Required environment variables cannot be None"
         raise ValueError(msg)
 
-    return FlextOracleWmsClientConfig(
-        oracle_wms_base_url=base_url,
-        oracle_wms_username=username,
-        oracle_wms_password=password,
-        api_version=FlextOracleWmsApiVersion.LGF_V10,
-        oracle_wms_timeout=FlextOracleWmsConstants.Connection.DEFAULT_TIMEOUT,
-        oracle_wms_max_retries=FlextOracleWmsConstants.Connection.DEFAULT_MAX_RETRIES,
-        oracle_wms_verify_ssl=True,
-        oracle_wms_enable_logging=True,
-    )
+    return FlextOracleWmsClientConfig.model_validate({
+        "base_url": base_url,
+        "username": username,
+        "password": password,
+        "api_version": FlextOracleWmsApiVersion.LGF_V10,
+        "timeout": FlextOracleWmsConstants.Connection.DEFAULT_TIMEOUT,
+        "retry_attempts": FlextOracleWmsConstants.Connection.DEFAULT_MAX_RETRIES,
+        "enable_ssl_verification": True,
+        "enable_audit_logging": True,
+    })
 
 
 def showcase_1_client_initialization(
@@ -182,7 +182,6 @@ def showcase_3_data_retrieval(
         filtered_result = client.get_entity_data(
             entity_name="company",
             limit=3,
-            fields="company_code,company_name",
             filters={"active": "Y"},
         )
 
@@ -263,17 +262,16 @@ def showcase_6_error_handling(client: FlextOracleWmsClient) -> None:
 
     # Test 3: Configuration validation
     try:
-        invalid_config = FlextOracleWmsClientConfig(
-            base_url="invalid-url",  # Invalid URL format
-            username="",  # Empty username
-            password="",
-            environment="test",
-            api_version=FlextOracleWmsApiVersion.LGF_V10,
-            timeout=30.0,
-            max_retries=3,
-            verify_ssl=True,
-            enable_logging=True,
-        )
+        invalid_config = FlextOracleWmsClientConfig.model_validate({
+            "base_url": "invalid-url",  # Invalid URL format
+            "username": "",  # Empty username
+            "password": "",
+            "api_version": FlextOracleWmsApiVersion.LGF_V10,
+            "timeout": 30,
+            "retry_attempts": 3,
+            "enable_ssl_verification": True,
+            "enable_audit_logging": True,
+        })
         validation = invalid_config.validate_business_rules()
         if not validation.is_success:
             logger.info(f"Expected validation failure: {validation.error}")
@@ -299,7 +297,7 @@ def showcase_7_health_monitoring(
     return {}
 
 
-async def showcase_8_performance_tracking(
+def showcase_8_performance_tracking(
     client: FlextOracleWmsClient,
     entities: FlextTypes.StringList,
 ) -> None:
@@ -315,11 +313,11 @@ async def showcase_8_performance_tracking(
 
         start_time = time.time()
 
-        # Create concurrent requests
-        tasks = [client.get_entity_data(entity, limit=2) for entity in test_entities]
-
-        # Execute concurrently
-        results = await asyncio.gather(*tasks, return_exceptions=True)
+        # Create sequential requests (since get_entity_data is not async)
+        results = []
+        for entity in test_entities:
+            result = client.get_entity_data(entity, limit=2)
+            results.append(result)
 
         end_time = time.time()
         end_time - start_time
@@ -393,7 +391,7 @@ def showcase_10_enterprise_features(
     # Enterprise Compliance Features
 
 
-async def main() -> int:
+def main() -> int:
     """Main showcase execution."""
     try:
         # Load configuration
@@ -421,7 +419,7 @@ async def main() -> int:
         showcase_7_health_monitoring(client)
 
         # Feature 8: Performance Tracking
-        await showcase_8_performance_tracking(client, entities)
+        showcase_8_performance_tracking(client, entities)
 
         # Feature 9: Cache Management
         showcase_9_cache_management(client)

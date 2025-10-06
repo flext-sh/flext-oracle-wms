@@ -10,8 +10,8 @@ from collections import defaultdict
 from flext_core import FlextLogger, FlextTypes
 
 from flext_oracle_wms import FlextOracleWmsClient
-from flext_oracle_wms.config import FlextOracleWmsConfig
-from flext_oracle_wms.wms_constants import FlextOracleWmsConstants
+from flext_oracle_wms.config import FlextOracleWmsClientConfig
+from flext_oracle_wms.constants import FlextOracleWmsConstants
 
 logger = FlextLogger(__name__)
 
@@ -111,11 +111,11 @@ def main() -> None:
         "jmCyS7BK94YvhS@",
     )  # Fallback para desenvolvimento
 
-    config = FlextOracleWmsConfig(
-        oracle_wms_base_url="https://a29.wms.ocs.oraclecloud.com/raizen",
-        oracle_wms_username="USER_WMS_INTEGRA",
-        oracle_wms_password=password,
-    )
+    config = FlextOracleWmsClientConfig.model_validate({
+        "base_url": "https://a29.wms.ocs.oraclecloud.com/raizen",
+        "username": "USER_WMS_INTEGRA",
+        "password": password,
+    })
 
     client = FlextOracleWmsClient(config)
 
@@ -140,7 +140,7 @@ def main() -> None:
             first_record = records[0]
 
             complex_analysis = analyze_complex_structures(
-                first_record if isinstance(first_record, dict) else {}
+                dict(first_record) if isinstance(first_record, dict) else {}
             )
 
             # Mostrar campos objeto detalhadamente

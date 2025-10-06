@@ -17,11 +17,11 @@ from typing import Annotated, Literal, TypedDict
 from flext_core import FlextModels, FlextResult, FlextTypes
 from pydantic import Field, StringConstraints
 
-from flext_oracle_wms.typings import FlextOracleWmsTypes
-from flext_oracle_wms.wms_constants import (
+from flext_oracle_wms.constants import (
     FlextOracleWmsApiVersion,
     FlextOracleWmsConstants,
 )
+from flext_oracle_wms.typings import FlextOracleWmsTypes
 
 # Core record types - USED EVERYWHERE
 TOracleWmsRecord = FlextOracleWmsTypes.Core.Dict
@@ -45,7 +45,7 @@ TOracleWmsFilterValue = (
     | (bool | list[str | int | float])
     | FlextOracleWmsTypes.Core.Dict
 )
-TOracleWmsFilters = dict["str", "TOracleWmsFilterValue"]
+TOracleWmsFilters = dict[str, TOracleWmsFilterValue]
 
 # Configuration essentials - USED BY CONFIG
 TOracleWmsEnvironment = Annotated[str, StringConstraints(min_length=1, max_length=50)]

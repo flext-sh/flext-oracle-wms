@@ -8,20 +8,20 @@ from __future__ import annotations
 
 from typing import Final
 
+from flext_core import FlextResult
+
 from flext_oracle_wms.api import FlextOracleWms
 from flext_oracle_wms.config import (
     FlextOracleWmsClientConfig,
     FlextOracleWmsConfig,
 )
-from flext_oracle_wms.filtering import (
-    FlextOracleWmsFilter,
-)
-from flext_oracle_wms.flattening import (
-    FlextOracleWmsDataFlattener,
+from flext_oracle_wms.constants import (
+    FlextOracleWmsApiVersion,
+    FlextOracleWmsConstants,
+    OracleWMSAuthMethod,
 )
 from flext_oracle_wms.protocols import FlextOracleWmsProtocols
 from flext_oracle_wms.typings import FlextOracleWmsTypes
-from flext_oracle_wms.utilities import FlextOracleWmsUtilities
 from flext_oracle_wms.version import VERSION, FlextOracleWmsVersion
 from flext_oracle_wms.wms_api import (
     FLEXT_ORACLE_WMS_APIS,
@@ -33,50 +33,61 @@ from flext_oracle_wms.wms_api import (
 from flext_oracle_wms.wms_client import (
     FlextOracleWmsClient,
 )
-from flext_oracle_wms.wms_constants import (
-    FlextOracleWmsApiVersion,
-    FlextOracleWmsConstants,
-    FlextOracleWmsDefaults,
-    OracleWMSAuthMethod,
-    OracleWMSEntityType,
-    OracleWMSFilterOperator,
-    OracleWMSPageMode,
-    OracleWMSWriteMode,
-)
-from flext_oracle_wms.wms_discovery import (
-    DISCOVERY_FAILURE,
-    DISCOVERY_SUCCESS,
-    DiscoveryContext,
-    EndpointDiscoveryStrategy,
-    EntityResponseParser,
-    FlextOracleWmsCacheConfig,
-    FlextOracleWmsCacheEntry,
-    FlextOracleWmsCacheManager,
-    FlextOracleWmsCacheStats,
-    FlextOracleWmsDynamicSchemaProcessor,
-    FlextOracleWmsEntityDiscovery,
-)
 from flext_oracle_wms.wms_exceptions import (
     FlextOracleWmsApiError,
-    FlextOracleWmsAuthenticationError,
-    FlextOracleWmsConfigurationError,
-    FlextOracleWmsConnectionError,
-    FlextOracleWmsDataValidationError,
     FlextOracleWmsEntityNotFoundError,
-    FlextOracleWmsError,
+    FlextOracleWmsExceptions,
     FlextOracleWmsInventoryError,
     FlextOracleWmsPickingError,
-    FlextOracleWmsProcessingError,
     FlextOracleWmsSchemaError,
     FlextOracleWmsSchemaFlatteningError,
     FlextOracleWmsShipmentError,
-    FlextOracleWmsTimeoutError,
-    FlextOracleWmsValidationError,
 )
+
+# Create aliases for commonly used exceptions
+FlextOracleWmsError = FlextOracleWmsExceptions.BaseError
+FlextOracleWmsAuthenticationError = FlextOracleWmsExceptions.AuthenticationError
+FlextOracleWmsConnectionError = FlextOracleWmsExceptions.WmsConnectionError
+FlextOracleWmsConfigurationError = FlextOracleWmsExceptions.ConfigurationError
+FlextOracleWmsDataValidationError = FlextOracleWmsExceptions.DataValidationError
+FlextOracleWmsProcessingError = FlextOracleWmsExceptions.ProcessingError
+FlextOracleWmsTimeoutError = FlextOracleWmsExceptions.WmsTimeoutError
+FlextOracleWmsValidationError = FlextOracleWmsExceptions.ValidationError
+
+
+# Placeholder classes for missing auth components (to be implemented)
+class FlextOracleWmsAuthConfig:
+    """Placeholder for Oracle WMS authentication configuration."""
+
+    def __init__(
+        self, auth_type: str = "basic", username: str = "", password: str = ""
+    ) -> None:
+        self.auth_type = auth_type
+        self.username = username
+        self.password = password
+
+    def validate_business_rules(self) -> FlextResult[bool]:
+        """Validate authentication configuration business rules."""
+        from flext_core import FlextResult
+
+        return FlextResult.ok(True)
+
+
+class FlextOracleWmsAuthenticator:
+    """Placeholder for Oracle WMS authenticator."""
+
+    def __init__(self, config: FlextOracleWmsAuthConfig) -> None:
+        self.config = config
+
+    def get_auth_headers(self) -> FlextResult[dict[str, str]]:
+        """Get authentication headers."""
+        from flext_core import FlextResult
+
+        return FlextResult.ok({"Authorization": "Basic placeholder"})
+
+
 from flext_oracle_wms.wms_models import (
     TOracleWmsApiResponse,
-    TOracleWmsApiVersion,
-    TOracleWmsDiscoveryResult,
     TOracleWmsEntityId,
     TOracleWmsEntityInfo,
     TOracleWmsEntityName,
@@ -89,9 +100,11 @@ from flext_oracle_wms.wms_models import (
     TOracleWmsSchema,
     TOracleWmsTimeout,
 )
-from flext_oracle_wms.wms_operations import (
-    FlextOracleWmsUnifiedOperations,
-)
+
+# wms_operations module temporarily removed
+# from flext_oracle_wms.wms_operations import (
+#     FlextOracleWmsUnifiedOperations,
+# )
 
 PROJECT_VERSION: Final[FlextOracleWmsVersion] = VERSION
 
@@ -99,38 +112,27 @@ __version__: str = VERSION.version
 __version_info__: tuple[int | str, ...] = VERSION.version_info
 
 __all__ = [
-    "DISCOVERY_FAILURE",
-    "DISCOVERY_SUCCESS",
     "FLEXT_ORACLE_WMS_APIS",
     "PROJECT_VERSION",
     "VERSION",
-    "DiscoveryContext",
-    "EndpointDiscoveryStrategy",
-    "EntityResponseParser",
     "FlextOracleWms",
     "FlextOracleWmsApiCategory",
     "FlextOracleWmsApiEndpoint",
     "FlextOracleWmsApiError",
     "FlextOracleWmsApiVersion",
+    "FlextOracleWmsAuthConfig",
     "FlextOracleWmsAuthenticationError",
-    "FlextOracleWmsCacheConfig",
-    "FlextOracleWmsCacheEntry",
-    "FlextOracleWmsCacheManager",
-    "FlextOracleWmsCacheStats",
+    "FlextOracleWmsAuthenticator",
     "FlextOracleWmsClient",
     "FlextOracleWmsClientConfig",
     "FlextOracleWmsConfig",
     "FlextOracleWmsConfigurationError",
     "FlextOracleWmsConnectionError",
     "FlextOracleWmsConstants",
-    "FlextOracleWmsDataFlattener",
     "FlextOracleWmsDataValidationError",
-    "FlextOracleWmsDefaults",
-    "FlextOracleWmsDynamicSchemaProcessor",
-    "FlextOracleWmsEntityDiscovery",
     "FlextOracleWmsEntityNotFoundError",
     "FlextOracleWmsError",
-    "FlextOracleWmsFilter",
+    "FlextOracleWmsExceptions",
     "FlextOracleWmsInventoryError",
     "FlextOracleWmsPickingError",
     "FlextOracleWmsProcessingError",
@@ -140,19 +142,11 @@ __all__ = [
     "FlextOracleWmsShipmentError",
     "FlextOracleWmsTimeoutError",
     "FlextOracleWmsTypes",
-    "FlextOracleWmsUnifiedOperations",
-    "FlextOracleWmsUtilities",
     "FlextOracleWmsValidationError",
     "FlextOracleWmsVersion",
     "OracleWMSAuthMethod",
-    "OracleWMSEntityType",
-    "OracleWMSFilterOperator",
-    "OracleWMSPageMode",
-    "OracleWMSWriteMode",
     "OracleWmsMockServer",
     "TOracleWmsApiResponse",
-    "TOracleWmsApiVersion",
-    "TOracleWmsDiscoveryResult",
     "TOracleWmsEntityId",
     "TOracleWmsEntityInfo",
     "TOracleWmsEntityName",

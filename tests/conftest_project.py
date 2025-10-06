@@ -12,7 +12,6 @@ from dotenv import load_dotenv
 from flext_core import FlextTypes
 
 from flext_oracle_wms import (
-    FlextOracleWmsApiVersion,
     FlextOracleWmsConfig,
 )
 
@@ -34,7 +33,7 @@ def load_test_env() -> bool:
 @pytest.fixture
 def mock_config() -> FlextOracleWmsConfig:
     """Mock configuration for unit testing."""
-    return FlextOracleWmsConfig.create_for_testing()
+    return FlextOracleWmsConfig.for_testing()
 
 
 @pytest.fixture
@@ -61,7 +60,6 @@ def real_config(_load_test_env: bool) -> FlextOracleWmsConfig:
         oracle_wms_base_url=base_url,
         oracle_wms_username=username,
         oracle_wms_password=password,
-        api_version=FlextOracleWmsApiVersion.LGF_V10,
         oracle_wms_timeout=int(os.getenv("ORACLE_WMS_TIMEOUT", "30")),
         oracle_wms_max_retries=int(os.getenv("ORACLE_WMS_MAX_RETRIES", "3")),
         oracle_wms_verify_ssl=True,

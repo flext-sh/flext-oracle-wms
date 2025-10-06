@@ -39,12 +39,10 @@ def demonstrate_singleton_config() -> None:
 
     # Method 3: Create from environment variables with overrides
     logger.info("3. Creating from environment with overrides...")
-    env_config = FlextOracleWmsConfig.create_for_environment(
-        "test_env",
-        oracle_wms_timeout=FlextOracleWmsConstants.Connection.DEFAULT_TIMEOUT
-        * 3,  # Override environment variable
-        oracle_wms_verify_ssl=False,  # Override for testing
-    )
+    env_config = FlextOracleWmsConfig.model_validate({
+        "oracle_wms_timeout": FlextOracleWmsConstants.Connection.DEFAULT_TIMEOUT * 3,
+        "oracle_wms_verify_ssl": False,
+    })
     logger.info(f"   Oracle WMS URL: {env_config.oracle_wms_base_url}")
     logger.info(f"   Username: {env_config.oracle_wms_username}")
     logger.info(f"   Timeout: {env_config.oracle_wms_timeout}")
@@ -52,13 +50,12 @@ def demonstrate_singleton_config() -> None:
 
     # Method 4: Create new configuration for different environment
     logger.info("4. Creating configuration for different environment...")
-    new_config = FlextOracleWmsConfig.create_for_environment(
-        "prod",
-        oracle_wms_base_url="https://new-environment.wms.oraclecloud.com/test",
-        oracle_wms_username="NEW_USER",
-        oracle_wms_password="NEW_PASSWORD",
-        oracle_wms_timeout=FlextOracleWmsConstants.Connection.DEFAULT_TIMEOUT * 4,
-    )
+    new_config = FlextOracleWmsConfig.model_validate({
+        "oracle_wms_base_url": "https://new-environment.wms.oraclecloud.com/test",
+        "oracle_wms_username": "NEW_USER",
+        "oracle_wms_password": "NEW_PASSWORD",
+        "oracle_wms_timeout": FlextOracleWmsConstants.Connection.DEFAULT_TIMEOUT * 4,
+    })
     if new_config:
         logger.info(f"   New Base URL: {new_config.oracle_wms_base_url}")
         logger.info(f"   New Username: {new_config.oracle_wms_username}")
@@ -69,12 +66,11 @@ def demonstrate_singleton_config() -> None:
     # Method 5: Reset and create fresh instance
     logger.info("5. Resetting global instance...")
     FlextOracleWmsConfig.reset_global_instance()
-    fresh_config = FlextOracleWmsConfig.create_for_environment(
-        "fresh",
-        oracle_wms_base_url="https://fresh.wms.oraclecloud.com/fresh",
-        oracle_wms_username="FRESH_USER",
-        oracle_wms_password="FRESH_PASSWORD",
-    )
+    fresh_config = FlextOracleWmsConfig.model_validate({
+        "oracle_wms_base_url": "https://fresh.wms.oraclecloud.com/fresh",
+        "oracle_wms_username": "FRESH_USER",
+        "oracle_wms_password": "FRESH_PASSWORD",
+    })
     logger.info(f"   Fresh Base URL: {fresh_config.oracle_wms_base_url}")
     logger.info(f"   Fresh Username: {fresh_config.oracle_wms_username}")
 

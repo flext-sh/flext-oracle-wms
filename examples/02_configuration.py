@@ -108,10 +108,7 @@ def create_config_from_environment() -> FlextOracleWmsClientConfig:
     env_config = FlextOracleWmsClientConfig.get_global_instance()
 
     # Validate that required fields are set from environment
-    if (
-        env_config.oracle_wms_username
-        and env_config.oracle_wms_password.get_secret_value()
-    ):
+    if env_config.oracle_wms_username and env_config.oracle_wms_password:
         return env_config
 
     # Method 2: Fallback to default configuration
@@ -129,18 +126,17 @@ def create_demo_config() -> FlextOracleWmsClientConfig:
       This demonstrates how to use the global singleton with parameter overrides.
 
     """
-    # Use global singleton with demo parameters
-    return FlextOracleWmsClientConfig.create_for_environment(
-        "demo",
-        oracle_wms_base_url="https://demo-wms.oraclecloud.com/demo",
-        oracle_wms_username="demo_user",
-        oracle_wms_password="demo_password",
-        api_version="LGF_V10",
-        oracle_wms_timeout=FlextOracleWmsConstants.Connection.DEFAULT_TIMEOUT,
-        oracle_wms_max_retries=FlextOracleWmsConstants.Connection.DEFAULT_MAX_RETRIES,
-        oracle_wms_verify_ssl=True,
-        oracle_wms_enable_logging=True,
-    )
+    # Use Pydantic model validation for proper configuration creation
+    return FlextOracleWmsClientConfig.model_validate({
+        "base_url": "https://demo-wms.oraclecloud.com/demo",
+        "username": "demo_user",
+        "password": "demo_password",
+        "api_version": "LGF_V10",
+        "timeout": FlextOracleWmsConstants.Connection.DEFAULT_TIMEOUT,
+        "retry_attempts": FlextOracleWmsConstants.Connection.DEFAULT_MAX_RETRIES,
+        "enable_ssl_verification": True,
+        "enable_audit_logging": True,
+    })
 
 
 def validate_configuration(config: FlextOracleWmsClientConfig) -> FlextTypes.Dict:
@@ -281,8 +277,9 @@ def demonstrate_configuration_patterns() -> None:
         demo_config = create_demo_config()
         validation = validate_configuration(demo_config)
 
-        if validation["warnings"]:
-            for _warning in validation["warnings"]:
+        warnings = validation.get("warnings", [])
+        if warnings and isinstance(warnings, (list, tuple)):
+            for _warning in warnings:
                 pass
 
     except Exception as e:

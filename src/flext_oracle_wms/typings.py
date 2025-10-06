@@ -179,7 +179,7 @@ class FlextOracleWmsTypes(FlextTypes):
     # CORE TYPES - Essential Oracle WMS types extending FlextOracleWmsTypes.Core
     # =========================================================================
 
-    class Core(FlextTypes):
+    class Core(FlextTypes.Core):
         """Core Oracle WMS types extending FlextOracleWmsTypes.Core.
 
         Essential domain-specific types for Oracle WMS operations.

@@ -15,5 +15,5 @@ class FlextOracleWmsModels(FlextModels):
     All Oracle WMS models benefit from FlextModels patterns.
     """
 
-    WmsRecord = dict["str", "object"]
+    WmsRecord = dict[str, object]
     WmsRecords = list[WmsRecord]

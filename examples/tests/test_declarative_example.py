@@ -82,16 +82,16 @@ def main() -> None:
         return
 
     # Create client configuration
-    config = FlextOracleWmsClientConfig(
-        oracle_wms_base_url=str(env_config["oracle_wms_base_url"]),
-        oracle_wms_username=str(env_config["oracle_wms_username"]),
-        oracle_wms_password=str(env_config["oracle_wms_password"]),
-        api_version=env_config["api_version"],
-        oracle_wms_timeout=int(str(env_config["oracle_wms_timeout"])),
-        oracle_wms_max_retries=int(str(env_config["oracle_wms_max_retries"])),
-        oracle_wms_verify_ssl=bool(env_config["oracle_wms_verify_ssl"]),
-        oracle_wms_enable_logging=bool(env_config["oracle_wms_enable_logging"]),
-    )
+    config = FlextOracleWmsClientConfig.model_validate({
+        "base_url": str(env_config["oracle_wms_base_url"]),
+        "username": str(env_config["oracle_wms_username"]),
+        "password": str(env_config["oracle_wms_password"]),
+        "api_version": env_config["api_version"],
+        "timeout": int(str(env_config["oracle_wms_timeout"])),
+        "retry_attempts": int(str(env_config["oracle_wms_max_retries"])),
+        "enable_ssl_verification": bool(env_config["oracle_wms_verify_ssl"]),
+        "enable_audit_logging": bool(env_config["oracle_wms_enable_logging"]),
+    })
     client = FlextOracleWmsClient(config)
 
     try:
@@ -144,10 +144,8 @@ def main() -> None:
 
         # Test OBLPN tracking (will fail, but tests structure)
         client.update_oblpn_tracking_number(
-            company_code="TEST",
-            facility_code="TEST",
-            oblpn_nbr="TEST123",
-            tracking_nbr="TRACK123",
+            oblpn_id="TEST123",
+            tracking_number="TRACK123",
         )
 
         # Test LPN creation (will fail, but tests structure)

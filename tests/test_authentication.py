@@ -9,17 +9,12 @@ SPDX-License-Identifier: MIT
 
 import pytest
 
-# Authentication functionality not yet implemented - skip for now
-# from flext_oracle_wms import (
-#     FlextOracleWmsAuthConfig,
-#     FlextOracleWmsAuthenticationError,
-#     FlextOracleWmsAuthenticator,
-#     FlextOracleWmsAuthPlugin,
-#     OracleWMSAuthMethod,
-# )
-# Use existing imports for now
+# Authentication functionality now implemented
 from flext_oracle_wms import (
+    FlextOracleWmsAuthConfig,
     FlextOracleWmsAuthenticationError,
+    FlextOracleWmsAuthenticator,
+    FlextOracleWmsAuthPlugin,
     OracleWMSAuthMethod,
 )
 
