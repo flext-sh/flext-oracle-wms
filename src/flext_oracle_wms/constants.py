@@ -82,7 +82,7 @@ class FlextOracleWmsConstants(FlextConstants):
     # Environment constants
     DEFAULT_ENVIRONMENT: Final[str] = "default"
     TEST_ENVIRONMENT: Final[str] = "test"
-    PRODUCTION_ENVIRONMENT: Final[str] = "production"
+    ENVIRONMENT: Final[str] = "production"
 
     # =========================================================================
     # NESTED CLASS CONSTANTS

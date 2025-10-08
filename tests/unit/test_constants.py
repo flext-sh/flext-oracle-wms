@@ -84,7 +84,7 @@ class TestFlextOracleWmsConstants:
         """Test environment constants."""
         assert FlextOracleWmsConstants.DEFAULT_ENVIRONMENT == "default"
         assert FlextOracleWmsConstants.TEST_ENVIRONMENT == "test"
-        assert FlextOracleWmsConstants.PRODUCTION_ENVIRONMENT == "production"
+        assert FlextOracleWmsConstants.ENVIRONMENT == "production"
 
     def test_nested_connection_constants(self) -> None:
         """Test nested Connection class constants."""

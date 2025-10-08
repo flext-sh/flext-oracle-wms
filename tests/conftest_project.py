@@ -19,14 +19,11 @@ from flext_oracle_wms import (
 @pytest.fixture(scope="session")
 def load_test_env() -> bool:
     """Load test environment - EXACTLY like working basic_usage.py example."""
-    try:
-        project_root = Path(__file__).parent.parent
-        env_file = project_root / ".env"
-        if env_file.exists():
-            load_dotenv(env_file)
-            return True
-    except ImportError:
-        pass
+    project_root = Path(__file__).parent.parent
+    env_file = project_root / ".env"
+    if env_file.exists():
+        load_dotenv(env_file)
+        return True
     return False
 
 

@@ -10,10 +10,9 @@ FlextOracleWmsExceptions for unified access and type safety.
 
 from __future__ import annotations
 
-import contextlib
 from typing import override
 
-from flext_core import FlextExceptions
+from flext_core import FlextExceptions, FlextLogger
 
 from flext_oracle_wms.typings import FlextOracleWmsTypes
 
@@ -24,6 +23,9 @@ class FlextOracleWmsExceptions(FlextExceptions):
     All Oracle WMS exception types are nested within this single unified class.
     This follows the FLEXT namespace class pattern for clean imports and organization.
     """
+
+    # Logger for the exceptions module
+    logger = FlextLogger(__name__)
 
     class BaseError(FlextExceptions.BaseError):
         """Base exception for all Oracle WMS operations.
@@ -147,8 +149,13 @@ class FlextOracleWmsExceptions(FlextExceptions):
 
         # Attach context keys as attributes for convenient access in tests
         for key, value in context.items():
-            with contextlib.suppress(Exception):
+            try:
                 setattr(self, key, value)
+            except (AttributeError, TypeError, ValueError) as e:
+                # Log that we couldn't set an attribute but don't fail the exception
+                FlextOracleWmsExceptions.logger.debug(
+                    f"Could not set attribute {key}: {e}"
+                )
 
     class ValidationError(BaseError):
         """Oracle WMS validation error with comprehensive field context.
