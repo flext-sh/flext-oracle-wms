@@ -28,10 +28,6 @@ from flext_oracle_wms.wms_api import (
     FlextOracleWmsApiCategory,
     FlextOracleWmsApiEndpoint,
     OracleWmsMockServer,
-    get_mock_server,
-)
-from flext_oracle_wms.wms_client import (
-    FlextOracleWmsClient,
 )
 from flext_oracle_wms.wms_exceptions import (
     FlextOracleWmsApiError,
@@ -42,6 +38,21 @@ from flext_oracle_wms.wms_exceptions import (
     FlextOracleWmsSchemaError,
     FlextOracleWmsSchemaFlatteningError,
     FlextOracleWmsShipmentError,
+)
+from flext_oracle_wms.wms_models import (
+    TOracleWmsApiResponse,
+    TOracleWmsEntityId,
+    TOracleWmsEntityInfo,
+    TOracleWmsEntityName,
+    TOracleWmsEnvironment,
+    TOracleWmsFilters,
+    TOracleWmsFilterValue,
+    TOracleWmsPaginationInfo,
+    TOracleWmsRecord,
+    TOracleWmsRecordBatch,
+    TOracleWmsSchema,
+    TOracleWmsTimeout,
+    get_mock_server,
 )
 
 # Create aliases for commonly used exceptions
@@ -89,20 +100,6 @@ class FlextOracleWmsAuthenticator:
 
 
 # Import models at module level
-from flext_oracle_wms.wms_models import (
-    TOracleWmsApiResponse,
-    TOracleWmsEntityId,
-    TOracleWmsEntityInfo,
-    TOracleWmsEntityName,
-    TOracleWmsEnvironment,
-    TOracleWmsFilters,
-    TOracleWmsFilterValue,
-    TOracleWmsPaginationInfo,
-    TOracleWmsRecord,
-    TOracleWmsRecordBatch,
-    TOracleWmsSchema,
-    TOracleWmsTimeout,
-)
 
 # wms_operations module temporarily removed
 # from flext_oracle_wms.wms_operations import (

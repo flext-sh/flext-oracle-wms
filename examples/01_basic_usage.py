@@ -38,15 +38,12 @@ MAX_VALUE_DISPLAY_LENGTH = 50
 logger = FlextLogger(__name__)
 
 # Load .env file from project root
-try:
-    from dotenv import load_dotenv
+from dotenv import load_dotenv
 
-    project_root = Path(__file__).parent.parent
-    env_file = project_root / ".env"
-    if env_file.exists():
-        load_dotenv(env_file)
-except ImportError:
-    pass
+project_root = Path(__file__).parent.parent
+env_file = project_root / ".env"
+if env_file.exists():
+    load_dotenv(env_file)
 
 
 def create_client_config() -> FlextOracleWmsClientConfig:
