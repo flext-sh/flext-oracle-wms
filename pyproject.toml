@@ -16,14 +16,13 @@
         "Typing :: Typed",
     ]
     dependencies = [
-        "flext-core @ file:///home/marlonsc/flext/flext-core",
+        "flext-core @ file:../flext-core",
         "pydantic (>=2.11.7)",
         "pydantic-settings (>=2.10.1)",
         "python-dotenv (>=1.1.1)",
     ]
     description = "Enterprise Oracle WMS client library for FLEXT data integration platform"
     keywords = [
-        "",
         "adapter",
         "enterprise",
         "flext",

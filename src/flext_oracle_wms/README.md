@@ -161,7 +161,7 @@ from flext_core import FlextLogger
 
 ```bash
 # Run comprehensive test suite for this module
-cd /home/marlonsc/flext/flext-oracle-wms
+cd ..flext-oracle-wms
 make test                    # 90%+ coverage requirement
 make test-unit              # Unit tests only
 make test-integration       # Integration tests with Oracle WMS

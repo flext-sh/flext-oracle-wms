@@ -50,17 +50,17 @@ class TestUrlHelpers:
 
     def test_extract_environment_from_url_basic(self) -> None:
         """Test environment extraction from URL."""
-        url = "https://ta29.wms.ocs.oraclecloud.com/raizen_test"
+        url = "https://invalid.wms.ocs.oraclecloud.com/company_unknow"
         result = flext_oracle_wms_extract_environment_from_url(url)
 
-        assert result == "raizen_test"
+        assert result == "company_unknow"
 
     def test_extract_environment_from_url_with_path(self) -> None:
         """Test environment extraction from URL with additional path."""
-        url = "https://ta29.wms.ocs.oraclecloud.com/raizen_test/scmRestApi/resources"
+        url = "https://invalid.wms.ocs.oraclecloud.com/company_unknow/scmRestApi/resources"
         result = flext_oracle_wms_extract_environment_from_url(url)
 
-        assert result == "raizen_test"
+        assert result == "company_unknow"
 
     def test_extract_environment_from_url_invalid(self) -> None:
         """Test environment extraction from invalid URL."""

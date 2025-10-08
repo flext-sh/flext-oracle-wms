@@ -26,7 +26,7 @@ class FocusedOracleWmsDiscovery:
     def __init__(self) -> None:
         """Initialize with ADMINISTRATOR credentials."""
         self.config = FlextOracleWmsClientConfig(
-            base_url="https://ta29.wms.ocs.oraclecloud.com",
+            base_url="https://invalid.wms.ocs.oraclecloud.com",
             username="USER_WMS_INTEGRA",  # ADMINISTRATOR TOTAL
             password="jmCyS7BK94YvhS@",
             environment="test",

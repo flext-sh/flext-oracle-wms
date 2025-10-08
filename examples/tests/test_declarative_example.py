@@ -41,7 +41,7 @@ def load_env_config() -> FlextTypes.Dict | None:
     if base_url:
         try:
             # Extract the last path component as environment
-            # URL format: https://ta29.wms.ocs.oraclecloud.com/raizen_test
+            # URL format: https://invalid.wms.ocs.oraclecloud.com/company_unknow
             parsed = urlparse(base_url)
             path_parts = parsed.path.strip("/").split("/")
             if path_parts and path_parts[-1]:

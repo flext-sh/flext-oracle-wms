@@ -14,7 +14,7 @@ from flext_oracle_wms import FlextOracleWmsApiVersion, FlextOracleWmsClientConfi
 def test_config_creation_valid() -> None:
     """Test config creation with valid parameters - EXACTLY like working example."""
     config = FlextOracleWmsClientConfig(
-        oracle_wms_base_url="https://ta29.wms.ocs.oraclecloud.com/raizen_test",
+        oracle_wms_base_url="https://invalid.wms.ocs.oraclecloud.com/company_unknow",
         oracle_wms_username="USER_WMS_INTEGRA",
         oracle_wms_password="test_password",
         environment="development",
@@ -26,7 +26,8 @@ def test_config_creation_valid() -> None:
     )
 
     assert (
-        config.oracle_wms_base_url == "https://ta29.wms.ocs.oraclecloud.com/raizen_test"
+        config.oracle_wms_base_url
+        == "https://invalid.wms.ocs.oraclecloud.com/company_unknow"
     )
     assert config.oracle_wms_username == "USER_WMS_INTEGRA"
     assert config.oracle_wms_password == "test_password"

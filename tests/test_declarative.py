@@ -69,7 +69,7 @@ def load_env_config() -> FlextTypes.Dict | None:
         base_url = config.get("ORACLE_WMS_BASE_URL", "")
 
         # Extract environment from URL dynamically
-        # URL format: https://ta29.wms.ocs.oraclecloud.com/raizen_test
+        # URL format: https://invalid.wms.ocs.oraclecloud.com/company_unknow
         environment = "development"  # fallback
         if base_url:
             try:
@@ -83,7 +83,7 @@ def load_env_config() -> FlextTypes.Dict | None:
                         environment = "production"
                     elif env_name in {"stage", "staging"}:
                         environment = "staging"
-                    elif env_name in {"test", "testing", "raizen_test"}:
+                    elif env_name in {"test", "testing", "company_unknow"}:
                         environment = "test"
                     elif env_name == "local":
                         environment = "local"
