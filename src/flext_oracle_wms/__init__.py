@@ -6,12 +6,9 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from flext_oracle_wms.__version__ import __version__, __version_info__
-
-from typing import Final
-
 from flext_core import FlextResult
 
+from flext_oracle_wms.__version__ import __version__, __version_info__
 from flext_oracle_wms.api import FlextOracleWms
 from flext_oracle_wms.config import (
     FlextOracleWmsClientConfig,
@@ -24,7 +21,6 @@ from flext_oracle_wms.constants import (
 )
 from flext_oracle_wms.protocols import FlextOracleWmsProtocols
 from flext_oracle_wms.typings import FlextOracleWmsTypes
-
 from flext_oracle_wms.wms_api import (
     FLEXT_ORACLE_WMS_APIS,
     FlextOracleWmsApiCategory,
@@ -67,6 +63,7 @@ FlextOracleWmsProcessingError = FlextOracleWmsExceptions.ProcessingError
 FlextOracleWmsTimeoutError = FlextOracleWmsExceptions.WmsTimeoutError
 FlextOracleWmsValidationError = FlextOracleWmsExceptions.ValidationError
 
+
 # Placeholder classes for missing auth components (to be implemented)
 class FlextOracleWmsAuthConfig:
     """Placeholder for Oracle WMS authentication configuration."""
@@ -85,6 +82,7 @@ class FlextOracleWmsAuthConfig:
 
         return FlextResult.ok(True)
 
+
 class FlextOracleWmsAuthenticator:
     """Placeholder for Oracle WMS authenticator."""
 
@@ -98,12 +96,14 @@ class FlextOracleWmsAuthenticator:
 
         return FlextResult.ok({"Authorization": "Basic placeholder"})
 
+
 # Import models at module level
 
 # wms_operations module temporarily removed
 # from flext_oracle_wms.wms_operations import (
 #     FlextOracleWmsUnifiedOperations,
 # )
+
 
 __all__ = [
     "FLEXT_ORACLE_WMS_APIS",

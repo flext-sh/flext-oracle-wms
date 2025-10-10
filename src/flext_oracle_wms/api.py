@@ -66,7 +66,7 @@ class FlextOracleWmsApi(FlextService[FlextOracleWmsConfig]):
         self._bus = FlextBus()
         self._dispatcher = FlextDispatcher()
         # Create handler config
-        handler_config = FlextModels.CqrsConfig.Handler(
+        handler_config = FlextModels.Cqrs.Handler(
             handler_id="flext_oracle_wms_handler",
             handler_name="FlextOracleWmsHandler",
             handler_type="command",
