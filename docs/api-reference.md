@@ -22,7 +22,7 @@ client = FlextOracleWmsClient(config)
 
 #### Methods
 
-##### `test_connection() -> FlextResult[bool]`
+##### `test_connection() -> FlextCore.Result[bool]`
 
 Tests connection to Oracle WMS (currently uses fake URLs).
 
@@ -34,7 +34,7 @@ else:
     print(f"Connection failed: {result.error}")
 ```
 
-##### `discover_entities() -> FlextResult[List[Dict]]`
+##### `discover_entities() -> FlextCore.Result[List[Dict]]`
 
 Discovers available Oracle WMS entities.
 
@@ -109,9 +109,9 @@ from flext_oracle_wms.wms_exceptions import (
 )
 ```
 
-### FlextResult Pattern
+### FlextCore.Result Pattern
 
-All operations return `FlextResult[T]` for type-safe error handling:
+All operations return `FlextCore.Result[T]` for type-safe error handling:
 
 ```python
 result = client.some_operation()
@@ -143,7 +143,7 @@ entity = FlextOracleWmsEntity(
 
 - ✅ **Client interface** - Basic structure implemented
 - ✅ **Configuration** - Test configuration available
-- ✅ **Error handling** - FlextResult patterns throughout
+- ✅ **Error handling** - FlextCore.Result patterns throughout
 - ✅ **Type safety** - MyPy strict compliance
 
 ### Implementation Gaps

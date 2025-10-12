@@ -9,7 +9,7 @@ import json
 from typing import Self, override
 
 from flext_api import FlextApiClient
-from flext_core import FlextLogger, FlextResult, FlextTypes
+from flext_core import FlextCore
 
 from flext_oracle_wms.typings import FlextOracleWmsTypes
 
@@ -21,14 +21,14 @@ class FlextHttpClient:
     """HTTP client using flext-api foundation with flext-core patterns."""
 
     # Shared logger for all HTTP client operations
-    logger = FlextLogger(__name__)
+    logger = FlextCore.Logger(__name__)
 
     @override
     def __init__(
         self,
         base_url: str,
         timeout: float = 30.0,
-        headers: FlextTypes.StringDict | None = None,
+        headers: FlextCore.Types.StringDict | None = None,
         *,
         verify_ssl: bool = True,
     ) -> None:
@@ -83,8 +83,8 @@ class FlextHttpClient:
         self,
         path: str,
         params: dict[str, str | int | float] | None = None,
-        headers: FlextTypes.StringDict | None = None,
-    ) -> FlextResult[FlextOracleWmsTypes.Core.Dict]:
+        headers: FlextCore.Types.StringDict | None = None,
+    ) -> FlextCore.Result[FlextOracleWmsTypes.Core.Dict]:
         """Make GET request.
 
         Args:
@@ -93,13 +93,13 @@ class FlextHttpClient:
             headers: Additional headers
 
         Returns:
-            FlextResult containing response data
+            FlextCore.Result containing response data
 
         """
         try:
             self._ensure_client()
             if self._client is None:
-                return FlextResult[FlextOracleWmsTypes.Core.Dict].fail(
+                return FlextCore.Result[FlextOracleWmsTypes.Core.Dict].fail(
                     "Client not initialized"
                 )
 
@@ -117,14 +117,14 @@ class FlextHttpClient:
             )
 
             if response_result.is_failure:
-                return FlextResult[FlextOracleWmsTypes.Core.Dict].fail(
+                return FlextCore.Result[FlextOracleWmsTypes.Core.Dict].fail(
                     f"HTTP request failed: {response_result.error}",
                 )
 
             response = response_result.unwrap()
 
             if response.status_code >= HTTP_BAD_REQUEST:
-                return FlextResult[FlextOracleWmsTypes.Core.Dict].fail(
+                return FlextCore.Result[FlextOracleWmsTypes.Core.Dict].fail(
                     f"HTTP {response.status_code}: {response.body}",
                 )
 
@@ -133,31 +133,31 @@ class FlextHttpClient:
                 if isinstance(response.body, dict):
                     data = response.body
                 elif isinstance(response.body, str):
-                    data: FlextTypes.Dict = (
+                    data: FlextCore.Types.Dict = (
                         json.loads(response.body) if response.body else {}
                     )
                 else:
                     data = {}
             except (ValueError, AttributeError):
-                data: FlextTypes.Dict = {
+                data: FlextCore.Types.Dict = {
                     "text": str(response.body) if response.body else ""
                 }
 
-            return FlextResult[FlextOracleWmsTypes.Core.Dict].ok(data)
+            return FlextCore.Result[FlextOracleWmsTypes.Core.Dict].ok(data)
 
         except Exception as e:
             FlextHttpClient.logger.exception("HTTP request error")
-            return FlextResult[FlextOracleWmsTypes.Core.Dict].fail(
+            return FlextCore.Result[FlextOracleWmsTypes.Core.Dict].fail(
                 f"Request error: {e}"
             )
 
     def post(
         self,
         path: str,
-        data: FlextTypes.Dict | None = None,
-        json_data: FlextTypes.Dict | None = None,
-        headers: FlextTypes.StringDict | None = None,
-    ) -> FlextResult[FlextOracleWmsTypes.Core.Dict]:
+        data: FlextCore.Types.Dict | None = None,
+        json_data: FlextCore.Types.Dict | None = None,
+        headers: FlextCore.Types.StringDict | None = None,
+    ) -> FlextCore.Result[FlextOracleWmsTypes.Core.Dict]:
         """Make POST request.
 
         Args:
@@ -167,13 +167,13 @@ class FlextHttpClient:
             headers: Additional headers
 
         Returns:
-            FlextResult containing response data
+            FlextCore.Result containing response data
 
         """
         try:
             self._ensure_client()
             if self._client is None:
-                return FlextResult[FlextOracleWmsTypes.Core.Dict].fail(
+                return FlextCore.Result[FlextOracleWmsTypes.Core.Dict].fail(
                     "Client not initialized"
                 )
 
@@ -198,14 +198,14 @@ class FlextHttpClient:
             )
 
             if response_result.is_failure:
-                return FlextResult[FlextOracleWmsTypes.Core.Dict].fail(
+                return FlextCore.Result[FlextOracleWmsTypes.Core.Dict].fail(
                     f"HTTP request failed: {response_result.error}",
                 )
 
             response = response_result.unwrap()
 
             if response.status_code >= HTTP_BAD_REQUEST:
-                return FlextResult[FlextOracleWmsTypes.Core.Dict].fail(
+                return FlextCore.Result[FlextOracleWmsTypes.Core.Dict].fail(
                     f"HTTP {response.status_code}: {response.body}",
                 )
 
@@ -214,31 +214,31 @@ class FlextHttpClient:
                 if isinstance(response.body, dict):
                     response_data = response.body
                 elif isinstance(response.body, str):
-                    response_data: FlextTypes.Dict = (
+                    response_data: FlextCore.Types.Dict = (
                         json.loads(response.body) if response.body else {}
                     )
                 else:
                     response_data = {}
             except (ValueError, AttributeError):
-                response_data: FlextTypes.Dict = {
+                response_data: FlextCore.Types.Dict = {
                     "text": str(response.body) if response.body else ""
                 }
 
-            return FlextResult[FlextOracleWmsTypes.Core.Dict].ok(response_data)
+            return FlextCore.Result[FlextOracleWmsTypes.Core.Dict].ok(response_data)
 
         except Exception as e:
             FlextHttpClient.logger.exception("HTTP POST request error")
-            return FlextResult[FlextOracleWmsTypes.Core.Dict].fail(
+            return FlextCore.Result[FlextOracleWmsTypes.Core.Dict].fail(
                 f"Request error: {e}"
             )
 
     def put(
         self,
         path: str,
-        data: FlextTypes.Dict | None = None,
-        json_data: FlextTypes.Dict | None = None,
-        headers: FlextTypes.StringDict | None = None,
-    ) -> FlextResult[FlextOracleWmsTypes.Core.Dict]:
+        data: FlextCore.Types.Dict | None = None,
+        json_data: FlextCore.Types.Dict | None = None,
+        headers: FlextCore.Types.StringDict | None = None,
+    ) -> FlextCore.Result[FlextOracleWmsTypes.Core.Dict]:
         """Make PUT request.
 
         Args:
@@ -248,13 +248,13 @@ class FlextHttpClient:
             headers: Additional headers
 
         Returns:
-            FlextResult containing response data
+            FlextCore.Result containing response data
 
         """
         try:
             self._ensure_client()
             if self._client is None:
-                return FlextResult[FlextOracleWmsTypes.Core.Dict].fail(
+                return FlextCore.Result[FlextOracleWmsTypes.Core.Dict].fail(
                     "Client not initialized"
                 )
 
@@ -279,14 +279,14 @@ class FlextHttpClient:
             )
 
             if response_result.is_failure:
-                return FlextResult[FlextOracleWmsTypes.Core.Dict].fail(
+                return FlextCore.Result[FlextOracleWmsTypes.Core.Dict].fail(
                     f"HTTP request failed: {response_result.error}",
                 )
 
             response = response_result.unwrap()
 
             if response.status_code >= HTTP_BAD_REQUEST:
-                return FlextResult[FlextOracleWmsTypes.Core.Dict].fail(
+                return FlextCore.Result[FlextOracleWmsTypes.Core.Dict].fail(
                     f"HTTP {response.status_code}: {response.body}",
                 )
 
@@ -295,29 +295,29 @@ class FlextHttpClient:
                 if isinstance(response.body, dict):
                     response_data = response.body
                 elif isinstance(response.body, str):
-                    response_data: FlextTypes.Dict = (
+                    response_data: FlextCore.Types.Dict = (
                         json.loads(response.body) if response.body else {}
                     )
                 else:
                     response_data = {}
             except (ValueError, AttributeError):
-                response_data: FlextTypes.Dict = {
+                response_data: FlextCore.Types.Dict = {
                     "text": str(response.body) if response.body else ""
                 }
 
-            return FlextResult[FlextOracleWmsTypes.Core.Dict].ok(response_data)
+            return FlextCore.Result[FlextOracleWmsTypes.Core.Dict].ok(response_data)
 
         except Exception as e:
             FlextHttpClient.logger.exception("Unexpected error")
-            return FlextResult[FlextOracleWmsTypes.Core.Dict].fail(
+            return FlextCore.Result[FlextOracleWmsTypes.Core.Dict].fail(
                 f"Unexpected error: {e}"
             )
 
     def delete(
         self,
         path: str,
-        headers: FlextTypes.StringDict | None = None,
-    ) -> FlextResult[FlextOracleWmsTypes.Core.Dict]:
+        headers: FlextCore.Types.StringDict | None = None,
+    ) -> FlextCore.Result[FlextOracleWmsTypes.Core.Dict]:
         """Make DELETE request.
 
         Args:
@@ -325,13 +325,13 @@ class FlextHttpClient:
             headers: Additional headers
 
         Returns:
-            FlextResult containing response data
+            FlextCore.Result containing response data
 
         """
         try:
             self._ensure_client()
             if self._client is None:
-                return FlextResult[FlextOracleWmsTypes.Core.Dict].fail(
+                return FlextCore.Result[FlextOracleWmsTypes.Core.Dict].fail(
                     "Client not initialized"
                 )
 
@@ -339,19 +339,19 @@ class FlextHttpClient:
             if headers:
                 request_headers.update(headers)
 
-            response_result: FlextResult[object] = self._client.delete(
+            response_result: FlextCore.Result[object] = self._client.delete(
                 path, headers=request_headers
             )
 
             if response_result.is_failure:
-                return FlextResult[FlextOracleWmsTypes.Core.Dict].fail(
+                return FlextCore.Result[FlextOracleWmsTypes.Core.Dict].fail(
                     f"HTTP request failed: {response_result.error}",
                 )
 
             response = response_result.unwrap()
 
             if response.status_code >= HTTP_BAD_REQUEST:
-                return FlextResult[FlextOracleWmsTypes.Core.Dict].fail(
+                return FlextCore.Result[FlextOracleWmsTypes.Core.Dict].fail(
                     f"HTTP {response.status_code}: {response.body}",
                 )
 
@@ -360,21 +360,21 @@ class FlextHttpClient:
                 if isinstance(response.body, dict):
                     data = response.body
                 elif isinstance(response.body, str):
-                    data: FlextTypes.Dict = (
+                    data: FlextCore.Types.Dict = (
                         json.loads(response.body) if response.body else {}
                     )
                 else:
                     data = {}
             except (ValueError, AttributeError):
-                data: FlextTypes.Dict = {
+                data: FlextCore.Types.Dict = {
                     "text": str(response.body) if response.body else ""
                 }
 
-            return FlextResult[FlextOracleWmsTypes.Core.Dict].ok(data)
+            return FlextCore.Result[FlextOracleWmsTypes.Core.Dict].ok(data)
 
         except Exception as e:
             FlextHttpClient.logger.exception("Unexpected error")
-            return FlextResult[FlextOracleWmsTypes.Core.Dict].fail(
+            return FlextCore.Result[FlextOracleWmsTypes.Core.Dict].fail(
                 f"Unexpected error: {e}"
             )
 
@@ -383,7 +383,7 @@ class FlextHttpClient:
 def create_flext_http_client(
     base_url: str,
     timeout: float = 30.0,
-    headers: FlextTypes.StringDict | None = None,
+    headers: FlextCore.Types.StringDict | None = None,
     *,
     verify_ssl: bool = True,
 ) -> FlextHttpClient:

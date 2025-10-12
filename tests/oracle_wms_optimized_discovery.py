@@ -18,7 +18,7 @@ import time
 from datetime import UTC, datetime
 from pathlib import Path
 
-from flext_core import FlextLogger, FlextResult, FlextTypes
+from flext_core import FlextCore
 
 from flext_oracle_wms import (
     FlextOracleWmsApiVersion,
@@ -26,7 +26,7 @@ from flext_oracle_wms import (
     create_oracle_wms_client,
 )
 
-logger = FlextLogger(__name__)
+logger = FlextCore.Logger(__name__)
 
 
 class OptimizedOracleWmsDiscovery:
@@ -89,22 +89,24 @@ class OptimizedOracleWmsDiscovery:
         self.high_value_entities = {}  # Entities with data
         self.complete_schemas = {}
 
-    def start_discovery(self) -> FlextResult[None]:
+    def start_discovery(self) -> FlextCore.Result[None]:
         """Start optimized discovery."""
         start_result = self.client.start()
         if not start_result.success:
-            return FlextResult[None].fail(f"Client start failed: {start_result.error}")
+            return FlextCore.Result[None].fail(
+                f"Client start failed: {start_result.error}"
+            )
 
-        return FlextResult[None].ok(None)
+        return FlextCore.Result[None].ok(None)
 
     def discover_priority_entities_fast(
         self,
-    ) -> FlextResult[FlextTypes.Dict]:
+    ) -> FlextCore.Result[FlextCore.Types.Dict]:
         """Fast discovery of priority entities with data."""
         # Get all entities first
         entities_result = self.client.discover_entities()
         if not entities_result.success:
-            return FlextResult[None].fail(
+            return FlextCore.Result[None].fail(
                 f"Entity discovery failed: {entities_result.error}",
             )
 
@@ -157,7 +159,7 @@ class OptimizedOracleWmsDiscovery:
             if result.get("has_data", False)
         }
 
-        return FlextResult[None].ok(
+        return FlextCore.Result[None].ok(
             {
                 "total_processed": len(all_results),
                 "entities_with_data": len(self.high_value_entities),
@@ -168,9 +170,9 @@ class OptimizedOracleWmsDiscovery:
 
     def _process_entity_batch(
         self,
-        entities: FlextTypes.StringList,
+        entities: FlextCore.Types.StringList,
         batch_size: int = 10,
-    ) -> FlextTypes.Dict:
+    ) -> FlextCore.Types.Dict:
         """Process entity batch with parallel requests."""
         results = {}
 
@@ -219,7 +221,7 @@ class OptimizedOracleWmsDiscovery:
 
         return results
 
-    def _analyze_single_entity(self, entity_name: str) -> FlextTypes.Dict:
+    def _analyze_single_entity(self, entity_name: str) -> FlextCore.Types.Dict:
         """Analyze single entity for data and structure."""
         try:
             # Get entity data with small sample
@@ -286,7 +288,7 @@ class OptimizedOracleWmsDiscovery:
                 "processed_at": datetime.now(UTC).isoformat(),
             }
 
-    def _safe_sample_record(self, record: FlextTypes.Dict) -> FlextTypes.Dict:
+    def _safe_sample_record(self, record: FlextCore.Types.Dict) -> FlextCore.Types.Dict:
         """Create safe sample record for storage."""
         safe_record = {}
         for k, v in record.items():
@@ -301,10 +303,10 @@ class OptimizedOracleWmsDiscovery:
 
     def generate_complete_singer_schemas(
         self,
-    ) -> FlextResult[FlextTypes.Dict]:
+    ) -> FlextCore.Result[FlextCore.Types.Dict]:
         """Generate complete Singer schemas for high-value entities."""
         if not self.high_value_entities:
-            return FlextResult[None].fail(
+            return FlextCore.Result[None].fail(
                 "No high-value entities available for schema generation",
             )
 
@@ -339,7 +341,7 @@ class OptimizedOracleWmsDiscovery:
         # Generate Singer catalog
         catalog = self._generate_singer_catalog(singer_schemas)
 
-        return FlextResult[None].ok(
+        return FlextCore.Result[None].ok(
             {
                 "schemas_generated": len(singer_schemas),
                 "schemas": singer_schemas,
@@ -350,8 +352,8 @@ class OptimizedOracleWmsDiscovery:
     def _generate_singer_schema_from_entity_data(
         self,
         entity_name: str,
-        entity_data: FlextTypes.Dict,
-    ) -> FlextTypes.Dict | None:
+        entity_data: FlextCore.Types.Dict,
+    ) -> FlextCore.Types.Dict | None:
         """Generate Singer schema from entity data with proper typing."""
         try:
             fields = entity_data.get("fields", [])
@@ -410,7 +412,7 @@ class OptimizedOracleWmsDiscovery:
         field_name: str,
         python_type: str,
         sample_value: object,
-    ) -> FlextTypes.Dict:
+    ) -> FlextCore.Types.Dict:
         """Convert Oracle field to Singer type with real data analysis."""
         # Analyze sample value for precise typing
         if sample_value is not None:
@@ -514,11 +516,11 @@ class OptimizedOracleWmsDiscovery:
     def _determine_key_properties(
         self,
         entity_name: str,
-        fields: FlextTypes.StringList,
-    ) -> FlextTypes.StringList:
+        fields: FlextCore.Types.StringList,
+    ) -> FlextCore.Types.StringList:
         """Determine key properties for Oracle WMS entity."""
         # Oracle WMS key patterns
-        potential_keys: FlextTypes.StringList = []
+        potential_keys: FlextCore.Types.StringList = []
 
         # Always include id if present
         if "id" in fields:
@@ -555,8 +557,8 @@ class OptimizedOracleWmsDiscovery:
 
     def _generate_singer_catalog(
         self,
-        schemas: FlextTypes.Dict,
-    ) -> FlextTypes.Dict:
+        schemas: FlextCore.Types.Dict,
+    ) -> FlextCore.Types.Dict:
         """Generate Singer catalog from schemas."""
         streams = []
 
@@ -585,7 +587,7 @@ class OptimizedOracleWmsDiscovery:
 
         return {"version": 1, "streams": streams}
 
-    def save_optimized_results(self) -> FlextResult[str]:
+    def save_optimized_results(self) -> FlextCore.Result[str]:
         """Save optimized discovery results."""
         results_dir = Path("oracle_wms_optimized_results")
         asyncio.to_thread(results_dir.mkdir, exist_ok=True)
@@ -636,15 +638,15 @@ class OptimizedOracleWmsDiscovery:
         if self.complete_schemas:
             pass
 
-        return FlextResult[None].ok(str(results_dir))
+        return FlextCore.Result[None].ok(str(results_dir))
 
-    def cleanup(self) -> FlextResult[None]:
+    def cleanup(self) -> FlextCore.Result[None]:
         """Clean up resources."""
         try:
             self.client.stop()
-            return FlextResult[None].ok(None)
+            return FlextCore.Result[None].ok(None)
         except Exception as e:
-            return FlextResult[None].fail(f"Cleanup failed: {e}")
+            return FlextCore.Result[None].fail(f"Cleanup failed: {e}")
 
 
 def run_optimized_discovery() -> None:

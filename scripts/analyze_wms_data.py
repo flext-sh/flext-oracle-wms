@@ -7,13 +7,13 @@ import os
 import traceback
 from collections import defaultdict
 
-from flext_core import FlextLogger, FlextTypes
+from flext_core import FlextCore
 
 from flext_oracle_wms import FlextOracleWmsClient
 from flext_oracle_wms.config import FlextOracleWmsClientConfig
 from flext_oracle_wms.constants import FlextOracleWmsConstants
 
-logger = FlextLogger(__name__)
+logger = FlextCore.Logger(__name__)
 
 
 def analyze_data_types(data: object, path: str = "") -> dict[str, set[str]]:
@@ -45,9 +45,9 @@ def analyze_data_types(data: object, path: str = "") -> dict[str, set[str]]:
     return type_analysis
 
 
-def analyze_complex_structures(record: FlextTypes.Dict) -> FlextTypes.Dict:
+def analyze_complex_structures(record: FlextCore.Types.Dict) -> FlextCore.Types.Dict:
     """Analisa estruturas complexas em um registro."""
-    analysis: FlextTypes.Dict = {
+    analysis: FlextCore.Types.Dict = {
         "complex_fields": {},
         "array_fields": {},
         "object_fields": {},
@@ -119,7 +119,7 @@ def main() -> None:
 
     client = FlextOracleWmsClient(config)
 
-    entities_to_analyze: FlextTypes.StringList = [
+    entities_to_analyze: FlextCore.Types.StringList = [
         "allocation",
         "order_hdr",
         "order_dtl",

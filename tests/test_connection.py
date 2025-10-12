@@ -9,7 +9,7 @@ from __future__ import annotations
 import logging
 import sys
 
-from flext_core import FlextLogger
+from flext_core import FlextCore
 
 from flext_oracle_wms import FlextOracleWmsClient, FlextOracleWmsConfig
 
@@ -18,7 +18,7 @@ logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
 )
-logger = FlextLogger(__name__)
+logger = FlextCore.Logger(__name__)
 
 
 def test_real_connection() -> bool:

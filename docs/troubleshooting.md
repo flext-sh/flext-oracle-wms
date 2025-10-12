@@ -42,8 +42,8 @@ from flext_core import get_logger  # ImportError
 **Solution**: Use correct flext_core imports:
 
 ```python
-from flext_core import FlextLogger  # Correct import
-logger = FlextLogger(__name__)
+from flext_core import FlextCore  # Correct import
+logger = FlextCore.Logger(__name__)
 ```
 
 ### Type Safety Issues
@@ -240,8 +240,8 @@ assert error.entity_name == "test"  # Properly handled
 ```python
 logging.basicConfig(level=logging.DEBUG)
 
-from flext_core import FlextLogger
-logger = FlextLogger(__name__)
+from flext_core import FlextCore
+logger = FlextCore.Logger(__name__)
 logger.debug("Debug message")
 ```
 

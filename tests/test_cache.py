@@ -21,7 +21,7 @@ import time
 from unittest.mock import Mock, patch
 
 import pytest
-from flext_core import FlextResult, FlextTypes
+from flext_core import FlextCore
 
 from flext_oracle_wms import (
     FlextOracleWmsCacheConfig,
@@ -207,7 +207,7 @@ class TestFlextOracleWmsCacheEntry:
         timestamp = time.time()
         last_accessed = timestamp - 100
 
-        entry = FlextOracleWmsCacheEntry[FlextTypes.StringDict](
+        entry = FlextOracleWmsCacheEntry[FlextCore.Types.StringDict](
             key="test_key",
             value={"data": "value"},
             timestamp=timestamp,
@@ -917,7 +917,7 @@ class TestFlextOracleWmsCacheManager:
         self.cache_manager.start()
 
         self.cache_manager.invalidate_key("nonexistent")
-        # Method now returns a FlextResult
+        # Method now returns a FlextCore.Result
 
         self.cache_manager.stop()
 
@@ -1254,7 +1254,9 @@ class TestErrorHandling:
 
         # Mock the get_entity method directly to simulate an exception
         with patch.object(self.cache_manager, "get_entity") as mock_get_entity:
-            mock_get_entity.return_value = FlextResult[None].fail("Cache access error")
+            mock_get_entity.return_value = FlextCore.Result[None].fail(
+                "Cache access error"
+            )
 
             result = self.cache_manager.get_entity("test_key")
             assert result.is_failure
@@ -1302,7 +1304,7 @@ class TestErrorHandling:
         with patch.object(self.cache_manager, "clear") as mock_clear:
             mock_clear.side_effect = Exception("Clear error")
 
-            # clear() is a synchronous method that doesn't return FlextResult
+            # clear() is a synchronous method that doesn't return FlextCore.Result
             with pytest.raises(Exception) as exc_info:
                 self.cache_manager.clear()
             assert "Clear error" in str(exc_info.value)
@@ -1391,6 +1393,7 @@ class TestThreadSafety:
             try:
                 task()
             except Exception:
+                # Ignore exceptions during cleanup in tests
                 pass
 
         # Verify final state
@@ -1400,10 +1403,10 @@ class TestThreadSafety:
 
         self.cache_manager.stop()
 
-    def _invalidate_key(self, key: str) -> FlextResult[None]:
+    def _invalidate_key(self, key: str) -> FlextCore.Result[None]:
         """Helper method to make invalidate_key for testing."""
         self.cache_manager.invalidate_key(key)
-        return FlextResult[None].ok(None)
+        return FlextCore.Result[None].ok(None)
 
     def test_concurrent_invalidation(self) -> None:
         """Test concurrent cache invalidation."""
@@ -1421,6 +1424,7 @@ class TestThreadSafety:
             try:
                 task()
             except Exception:
+                # Ignore exceptions during cleanup in tests
                 pass
 
         # All operations should succeed

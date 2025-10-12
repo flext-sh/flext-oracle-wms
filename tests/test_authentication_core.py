@@ -11,7 +11,7 @@ import base64
 from unittest.mock import patch
 
 import pytest
-from flext_core import FlextResult
+from flext_core import FlextCore
 
 from flext_oracle_wms import (
     FlextOracleWmsAuthConfig,
@@ -292,7 +292,7 @@ class TestAuthenticator:
 
         # Mock the validation call
         with patch.object(authenticator, "_make_validation_request") as mock_request:
-            mock_request.return_value = FlextResult[None].ok(
+            mock_request.return_value = FlextCore.Result[None].ok(
                 {"status": "authenticated"},
             )
 
@@ -359,7 +359,7 @@ class TestAuthPlugin:
 
         # Mock authenticator validation
         with patch.object(plugin.authenticator, "get_auth_headers") as mock_headers:
-            mock_headers.return_value = FlextResult[None].ok(
+            mock_headers.return_value = FlextCore.Result[None].ok(
                 {"Authorization": "Basic dGVzdA=="},
             )
 
@@ -383,7 +383,7 @@ class TestAuthPlugin:
             plugin.authenticator,
             "validate_credentials",
         ) as mock_validate:
-            mock_validate.return_value = FlextResult[None].fail("Auth failed")
+            mock_validate.return_value = FlextCore.Result[None].fail("Auth failed")
 
             result = plugin.authenticator.validate_credentials()
             assert result.is_failure
@@ -417,7 +417,7 @@ class TestAuthPlugin:
 
         # Mock the authenticator's get_auth_headers method
         with patch.object(plugin.authenticator, "get_auth_headers") as mock_headers:
-            mock_headers.return_value = FlextResult[None].ok(
+            mock_headers.return_value = FlextCore.Result[None].ok(
                 {"Authorization": "Basic dGVzdA=="},
             )
 
@@ -441,7 +441,7 @@ class TestAuthPlugin:
             plugin.authenticator,
             "validate_credentials",
         ) as mock_validate:
-            mock_validate.return_value = FlextResult[None].ok(data=True)
+            mock_validate.return_value = FlextCore.Result[None].ok(data=True)
 
             result = plugin.authenticator.validate_credentials()
 
@@ -461,7 +461,7 @@ class TestAuthPlugin:
 
         # Mock failure in get_auth_headers
         with patch.object(plugin.authenticator, "get_auth_headers") as mock_headers:
-            mock_headers.return_value = FlextResult[None].fail("Auth failed")
+            mock_headers.return_value = FlextCore.Result[None].fail("Auth failed")
 
             result = plugin.authenticator.get_auth_headers()
             assert result.is_failure

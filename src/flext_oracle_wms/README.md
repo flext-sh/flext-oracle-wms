@@ -48,7 +48,7 @@ This directory contains the core implementation of the **flext-oracle-wms** libr
 
 ### FLEXT Ecosystem Integration
 
-- **FlextResult Pattern** - Railway-oriented programming for consistent error handling
+- **FlextCore.Result Pattern** - Railway-oriented programming for consistent error handling
 - **FLEXT Configuration Standards** - Environment-driven settings with comprehensive validation
 - **Structured Logging** - Integration with FLEXT observability for monitoring and diagnostics
 - **Dependency Injection** - Support for FLEXT container patterns and enterprise architecture
@@ -83,9 +83,9 @@ client.start()
 
 # Discover entities
 result = client.discover_entities()
-from flext_core import FlextLogger
+from flext_core import FlextCore
 if result.success:
-    logger = FlextLogger(__name__)
+    logger = FlextCore.Logger(__name__)
     logger.info("Discovered WMS entities", count=len(result.data))
     for entity in result.data:
         logger.info("Entity", name=str(entity))
@@ -104,11 +104,11 @@ result = client.get_entity_data(
 
 if result.success:
     data = result.data
-from flext_core import FlextLogger
-    FlextLogger(__name__).info("Records retrieved", count=len(data.get('results', [])))
+from flext_core import FlextCore
+    FlextCore.Logger(__name__).info("Records retrieved", count=len(data.get('results', [])))
 ```
 
-### Error Handling with FlextResult
+### Error Handling with FlextCore.Result
 
 ```python
 from flext_oracle_wms.exceptions import FlextOracleWmsConnectionError
@@ -116,19 +116,19 @@ from flext_oracle_wms.exceptions import FlextOracleWmsConnectionError
 try:
     result = client.get_entity_data("inventory")
     if result.is_failure:
-        # Handle business logic errors via FlextResult
-        from flext_core import FlextLogger
-        FlextLogger(__name__).error("Query failed", error=result.error)
+        # Handle business logic errors via FlextCore.Result
+        from flext_core import FlextCore
+        FlextCore.Logger(__name__).error("Query failed", error=result.error)
     else:
         # Process successful result
         inventory_data = result.data
-        from flext_core import FlextLogger
-        FlextLogger(__name__).info("Retrieved inventory data", count=len(inventory_data))
+        from flext_core import FlextCore
+        FlextCore.Logger(__name__).info("Retrieved inventory data", count=len(inventory_data))
 
 except FlextOracleWmsConnectionError as e:
     # Handle connection-specific errors
-from flext_core import FlextLogger
-    FlextLogger(__name__).error("Connection failed", error=str(e))
+from flext_core import FlextCore
+    FlextCore.Logger(__name__).error("Connection failed", error=str(e))
 ```
 
 ## 🔧 **Development Guidelines**
@@ -136,7 +136,7 @@ from flext_core import FlextLogger
 ### Code Quality Standards
 
 - **Type Safety**: MyPy strict mode adoption; aiming for 95%+ coverage
-- **Error Handling**: All operations return FlextResult for consistent error management
+- **Error Handling**: All operations return FlextCore.Result for consistent error management
 - **Documentation**: Comprehensive docstrings following enterprise standards
 - **Testing**: 90%+ test coverage requirement with unit and integration tests
 - **Linting**: Comprehensive Ruff rules (ALL categories enabled) with zero tolerance
@@ -145,7 +145,7 @@ from flext_core import FlextLogger
 
 - **Clean Architecture**: Clear separation of domain, application, and infrastructure concerns
 - **FLEXT Integration**: Full compliance with FLEXT ecosystem patterns and standards
-- **Railway-Oriented Programming**: Consistent use of FlextResult for error handling
+- **Railway-Oriented Programming**: Consistent use of FlextCore.Result for error handling
 - **Enterprise Patterns**: Connection pooling, caching, retry logic, and observability
 
 ### Performance Requirements
@@ -185,7 +185,7 @@ make security               # Bandit + pip-audit security scanning
 
 ### FLEXT Ecosystem Dependencies
 
-- **[flext-core](../../flext-core)** - Foundation patterns, FlextResult, logging, DI container
+- **[flext-core](../../flext-core)** - Foundation patterns, FlextCore.Result, logging, DI container
 - **[flext-api](../../flext-api)** - Enterprise API client patterns and authentication
 - **[flext-observability](../../flext-observability)** - Monitoring, metrics, health checks
 

@@ -2,7 +2,7 @@
 """Oracle WMS Configuration Singleton Example.
 
 This example demonstrates how to use FlextOracleWmsConfig as a singleton
-that extends flext-core's FlextConfig singleton pattern.
+that extends flext-core's FlextCore.Config singleton pattern.
 
 Copyright (c) 2025 FLEXT Team. All rights reserved.
 SPDX-License-Identifier: MIT
@@ -10,12 +10,12 @@ SPDX-License-Identifier: MIT
 
 import os
 
-from flext_core import FlextLogger
+from flext_core import FlextCore
 
 from flext_oracle_wms import FlextOracleWmsClient, FlextOracleWmsConfig
 from flext_oracle_wms.constants import FlextOracleWmsConstants
 
-logger = FlextLogger(__name__)
+logger = FlextCore.Logger(__name__)
 
 
 def demonstrate_singleton_config() -> None:

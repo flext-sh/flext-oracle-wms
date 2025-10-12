@@ -12,12 +12,12 @@ from __future__ import annotations
 
 from typing import override
 
-from flext_core import FlextExceptions, FlextLogger
+from flext_core import FlextCore
 
 from flext_oracle_wms.typings import FlextOracleWmsTypes
 
 
-class FlextOracleWmsExceptions(FlextExceptions):
+class FlextOracleWmsExceptions(FlextCore.Exceptions):
     """Namespace class for all Oracle WMS exceptions following FLEXT patterns.
 
     All Oracle WMS exception types are nested within this single unified class.
@@ -25,9 +25,9 @@ class FlextOracleWmsExceptions(FlextExceptions):
     """
 
     # Logger for the exceptions module
-    logger = FlextLogger(__name__)
+    logger = FlextCore.Logger(__name__)
 
-    class BaseError(FlextExceptions.BaseError):
+    class BaseError(FlextCore.Exceptions.BaseError):
         """Base exception for all Oracle WMS operations.
 
         Propagates context attributes (like entity_name) to support tests that
@@ -35,8 +35,8 @@ class FlextOracleWmsExceptions(FlextExceptions):
         """
 
         def _extract_common_kwargs(
-            self, kwargs: dict[str, object]
-        ) -> tuple[dict[str, object], str | None, str | None]:
+            self, kwargs: FlextCore.Types.Dict
+        ) -> tuple[FlextCore.Types.Dict, str | None, str | None]:
             """Extract common kwargs used by all exception types.
 
             Args:
@@ -62,8 +62,8 @@ class FlextOracleWmsExceptions(FlextExceptions):
             return base_context, correlation_id, error_code
 
         def _build_context(
-            self, base_context: dict[str, object], **kwargs: object
-        ) -> dict[str, object]:
+            self, base_context: FlextCore.Types.Dict, **kwargs: object
+        ) -> FlextCore.Types.Dict:
             """Build complete context dictionary from base context and additional fields.
 
             Args:

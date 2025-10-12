@@ -22,12 +22,13 @@ Usage:
 import os
 from pathlib import Path
 
-from flext_core import FlextLogger, FlextResult, FlextTypes
+from dotenv import load_dotenv
+from flext_core import FlextCore
 
 from flext_oracle_wms import (
     FlextOracleWmsClient,
     FlextOracleWmsClientConfig,
-    FlextOracleWmsError,
+    FlextOracleWmsExceptions,
 )
 
 # Constants for example display
@@ -35,43 +36,47 @@ MAX_ENTITIES_TO_SHOW = 5
 MAX_VALUE_DISPLAY_LENGTH = 50
 
 # Initialize logger
-logger = FlextLogger(__name__)
+logger = FlextCore.Logger(__name__)
 
 # Load .env file from project root
-from dotenv import load_dotenv
-
 project_root = Path(__file__).parent.parent
 env_file = project_root / ".env"
 if env_file.exists():
     load_dotenv(env_file)
 
 
-def create_client_config() -> FlextOracleWmsClientConfig:
-    """Create Oracle WMS client configuration using singleton pattern.
+def setup_client_config() -> None:
+    """Set up Oracle WMS client configuration in global container.
 
-    This function demonstrates how to use the global singleton configuration
+    This function demonstrates how to configure the global singleton
     with environment variables and parameter overrides.
     """
-    # Method 1: Use global singleton with environment variables
-    # The new config automatically loads from environment variables
-    try:
-        return FlextOracleWmsClientConfig.create_default()
-    except Exception:
-        # Method 2: Fallback to global singleton with default values
-        # if environment variables are not set
-        return FlextOracleWmsClientConfig.get_global_instance()
+    from flext_core import FlextCore
+
+    # Get global container
+    container = FlextCore.Container.get_global()
+
+    # Create config with environment variables
+    config = FlextOracleWmsClientConfig(
+        base_url=os.getenv("FLEXT_ORACLE_WMS_BASE_URL", "https://wms.oraclecloud.com"),
+        username=os.getenv("FLEXT_ORACLE_WMS_USERNAME"),
+        password=os.getenv("FLEXT_ORACLE_WMS_PASSWORD"),
+    )
+
+    # Register in global container
+    container.register("FlextOracleWmsConfig", config)
 
 
 def discover_wms_entities(
     client: FlextOracleWmsClient,
-) -> FlextResult[list[FlextTypes.Dict]]:
+) -> FlextCore.Result[list[FlextCore.Types.Dict]]:
     """Discover available Oracle WMS entities.
 
     Args:
       client: Configured Oracle WMS client
 
     Returns:
-      FlextResult containing list of discovered entities or error details
+      FlextCore.Result containing list of discovered entities or error details
 
     """
     result = client.discover_entities()
@@ -106,7 +111,7 @@ def discover_wms_entities(
 def query_entity_data(
     client: FlextOracleWmsClient,
     entity_name: str,
-) -> FlextResult[list[FlextTypes.Dict]]:
+) -> FlextCore.Result[list[FlextCore.Types.Dict]]:
     """Query data from a specific Oracle WMS entity.
 
     Args:
@@ -114,7 +119,7 @@ def query_entity_data(
       entity_name: Name of the entity to query
 
     Returns:
-      FlextResult containing entity data or error details
+      FlextCore.Result containing entity data or error details
 
     """
     # Query with basic parameters
@@ -165,7 +170,7 @@ def query_entity_data(
 
 
 def demonstrate_error_handling(client: FlextOracleWmsClient) -> None:
-    """Demonstrate proper error handling patterns with FlextResult."""
+    """Demonstrate proper error handling patterns with FlextCore.Result."""
     # Attempt to query a non-existent entity
     result = client.get_entity_data("NON_EXISTENT_ENTITY")
 
@@ -192,15 +197,11 @@ def main() -> None:
     5. Error handling patterns
     """
     try:
-        # Step 1: Create configuration using singleton pattern
-        config = create_client_config()
+        # Step 1: Set up configuration in global container
+        setup_client_config()
 
-        # Step 2: Initialize client (can use global singleton automatically)
-        # Option A: Use explicit config
-        client = FlextOracleWmsClient(config)
-
-        # Option B: Use global singleton (no config parameter needed)
-        # client = FlextOracleWmsClient()  # Uses global singleton automatically
+        # Step 2: Initialize client (automatically uses global singleton)
+        client = FlextOracleWmsClient()
 
         # Start the client (required for API operations)
         start_result = client.start()
@@ -232,11 +233,11 @@ def main() -> None:
         # Step 5: Demonstrate error handling
         demonstrate_error_handling(client)
 
-    except ValueError:
-        pass
+    except FlextOracleWmsExceptions.BaseError as e:
+        logger.exception(f"Oracle WMS error: {e}")
 
-    except FlextOracleWmsError:
-        pass
+    except ValueError as e:
+        logger.exception(f"Configuration error: {e}")
 
     except Exception:
         # Re-raise for debugging in development

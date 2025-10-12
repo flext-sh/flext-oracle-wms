@@ -70,7 +70,7 @@ run(test_client_structure())
 
 - **Pydantic-based settings** with type validation
 - **Test configuration** using `for_testing()` method (fake URLs)
-- **FlextResult error handling** patterns throughout codebase
+- **FlextCore.Result error handling** patterns throughout codebase
 - **MyPy strict compliance** for type safety
 
 ### ❌ **What Doesn't Work (Implementation Gaps)**
@@ -142,7 +142,7 @@ flext-oracle-wms is positioned as an Oracle WMS integration framework within the
 ├─────────────────────────────────────────────────────────────────┤
 │ Singer Ecosystem: Taps(5) | Targets(5) | DBT(4) | Extensions(1) │
 ├─────────────────────────────────────────────────────────────────┤
-│ Foundation: FLEXT-CORE (FlextResult | DI | Domain Patterns)     │
+│ Foundation: FLEXT-CORE (FlextCore.Result | DI | Domain Patterns)     │
 └─────────────────────────────────────────────────────────────────┘
 ```
 
@@ -154,7 +154,7 @@ flext-oracle-wms is positioned as an Oracle WMS integration framework within the
 
 - **22 API endpoint definitions** with proper structure
 - **Configuration framework** with Pydantic validation
-- **FlextResult patterns** implemented for error handling
+- **FlextCore.Result patterns** implemented for error handling
 - **Test infrastructure** using fake URLs for development
 
 #### 2. **FLEXT Integration Gaps**
@@ -228,7 +228,7 @@ def discover_oracle_wms_entities():
 
 ### **Enterprise-Grade FLEXT Integration**
 
-#### **FlextResult Pattern Implementation**
+#### **FlextCore.Result Pattern Implementation**
 
 ```python
 # Type-safe operations with comprehensive error handling
@@ -237,7 +237,7 @@ from flext_oracle_wms import FlextOracleWmsClient
 def safe_oracle_wms_operations():
     client = FlextOracleWmsClient()
 
-    # All operations return FlextResult for consistent error handling
+    # All operations return FlextCore.Result for consistent error handling
     discovery_result = client.discover_entities()
     if discovery_result.success:
         entities = discovery_result.data  # Type-safe access
@@ -463,7 +463,7 @@ make docker-validate     # Complete Docker validation pipeline
 make flext-compliance     # FLEXT pattern compliance validation
 make flext-imports        # Check for forbidden imports (httpx, requests)
 make flext-classes        # Validate unified class architecture
-make flext-results        # Ensure FlextResult pattern usage
+make flext-results        # Ensure FlextCore.Result pattern usage
 
 # Architectural validation
 rg -n "import httpx|import requests" src/  # Must return 0 results (forbidden)
@@ -579,7 +579,7 @@ make test-wms-apis         # All API endpoints validation
 
 ### **Foundation Libraries**
 
-- **[flext-core](../flext-core)**: FlextResult patterns, logging, dependency injection
+- **[flext-core](../flext-core)**: FlextCore.Result patterns, logging, dependency injection
 - **[flext-api](../flext-api)**: Enterprise HTTP client patterns (in progress)
 - **[flext-auth](../flext-auth)**: Authentication and authorization (planned)
 - **[flext-cli](../flext-cli)**: CLI operations and file management (planned)

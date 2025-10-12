@@ -13,7 +13,7 @@ Based on source code analysis:
 - **6,854 lines of code** across 17 Python modules
 - **71 classes** with 248 methods/functions
 - **22 API endpoint definitions** (mostly legacy interfaces)
-- **FlextResult integration** for error handling
+- **FlextCore.Result integration** for error handling
 - **MyPy strict compliance** with type safety
 
 ### Module Structure

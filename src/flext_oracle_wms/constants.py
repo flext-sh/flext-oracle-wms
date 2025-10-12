@@ -11,15 +11,15 @@ from __future__ import annotations
 from enum import StrEnum
 from typing import ClassVar, Final
 
-from flext_core import FlextConstants, FlextTypes
+from flext_core import FlextCore
 
 
-class FlextOracleWmsConstants(FlextConstants):
+class FlextOracleWmsConstants(FlextCore.Constants):
     """Single unified Oracle WMS constants class following FLEXT standards.
 
     Contains all constants for Oracle WMS domain operations.
     Follows FLEXT pattern: one class per module with nested subclasses.
-    All constants are flat class attributes inheriting from FlextConstants.
+    All constants are flat class attributes inheriting from FlextCore.Constants.
     """
 
     # =========================================================================
@@ -41,7 +41,9 @@ class FlextOracleWmsConstants(FlextConstants):
     # Oracle WMS API constants
     API_VERSION_DEFAULT: Final[str] = "v2"
     API_BASE_URL_DEFAULT: Final[str] = "https://wms.oraclecloud.com"
-    API_TIMEOUT_DEFAULT: Final[int] = FlextConstants.Defaults.TIMEOUT * 2  # 60 seconds
+    API_TIMEOUT_DEFAULT: Final[int] = (
+        FlextCore.Constants.Defaults.TIMEOUT * 2
+    )  # 60 seconds
     API_MAX_RETRIES: Final[int] = 3
     API_RATE_LIMIT_PER_MINUTE: Final[int] = 1000
 
@@ -61,9 +63,9 @@ class FlextOracleWmsConstants(FlextConstants):
     ENTITY_TYPE_ITEM: Final[str] = "item"
 
     # Batch processing constants
-    DEFAULT_BATCH_SIZE: Final[int] = FlextConstants.Defaults.PAGE_SIZE * 10  # 1000
-    MAX_BATCH_SIZE: Final[int] = FlextConstants.Defaults.PAGE_SIZE * 100  # 10000
-    DEFAULT_PAGE_SIZE: Final[int] = FlextConstants.Defaults.PAGE_SIZE  # 100
+    DEFAULT_BATCH_SIZE: Final[int] = FlextCore.Constants.Defaults.PAGE_SIZE * 10  # 1000
+    MAX_BATCH_SIZE: Final[int] = FlextCore.Constants.Defaults.PAGE_SIZE * 100  # 10000
+    DEFAULT_PAGE_SIZE: Final[int] = FlextCore.Constants.Defaults.PAGE_SIZE  # 100
 
     # Cache constants
     CACHE_TTL_DEFAULT: Final[int] = 3600  # 1 hour
@@ -91,16 +93,18 @@ class FlextOracleWmsConstants(FlextConstants):
     class Connection:
         """Oracle WMS connection and API configuration constants."""
 
-        DEFAULT_TIMEOUT = FlextConstants.Network.DEFAULT_TIMEOUT
-        DEFAULT_MAX_RETRIES = FlextConstants.Reliability.MAX_RETRY_ATTEMPTS
-        DEFAULT_RETRY_DELAY = FlextConstants.Reliability.DEFAULT_RETRY_DELAY_SECONDS
-        DEFAULT_POOL_SIZE = FlextConstants.Network.DEFAULT_CONNECTION_POOL_SIZE
-        MAX_POOL_SIZE = FlextConstants.Network.MAX_CONNECTION_POOL_SIZE
+        DEFAULT_TIMEOUT = FlextCore.Constants.Network.DEFAULT_TIMEOUT
+        DEFAULT_MAX_RETRIES = FlextCore.Constants.Reliability.MAX_RETRY_ATTEMPTS
+        DEFAULT_RETRY_DELAY = (
+            FlextCore.Constants.Reliability.DEFAULT_RETRY_DELAY_SECONDS
+        )
+        DEFAULT_POOL_SIZE = FlextCore.Constants.Network.DEFAULT_CONNECTION_POOL_SIZE
+        MAX_POOL_SIZE = FlextCore.Constants.Network.MAX_CONNECTION_POOL_SIZE
 
     class WmsEntities:
         """Oracle WMS entity types and definitions."""
 
-        TYPES: ClassVar[FlextTypes.StringList] = [
+        TYPES: ClassVar[FlextCore.Types.StringList] = [
             "INVENTORY",
             "SHIPMENT",
             "PICKING",
@@ -114,9 +118,11 @@ class FlextOracleWmsConstants(FlextConstants):
     class Processing:
         """Oracle WMS data processing configuration constants."""
 
-        DEFAULT_BATCH_SIZE = FlextConstants.Performance.BatchProcessing.DEFAULT_SIZE
-        MAX_BATCH_SIZE = FlextConstants.Performance.BatchProcessing.MAX_ITEMS
-        DEFAULT_PAGE_SIZE = FlextConstants.Performance.DEFAULT_PAGE_SIZE
+        DEFAULT_BATCH_SIZE = (
+            FlextCore.Constants.Performance.BatchProcessing.DEFAULT_SIZE
+        )
+        MAX_BATCH_SIZE = FlextCore.Constants.Performance.BatchProcessing.MAX_ITEMS
+        DEFAULT_PAGE_SIZE = FlextCore.Constants.Performance.DEFAULT_PAGE_SIZE
         MAX_SCHEMA_DEPTH: ClassVar[int] = 10
 
     class Filtering:
@@ -161,7 +167,7 @@ class FlextOracleWmsConstants(FlextConstants):
         MAX_HTTP_STATUS_CODE: Final[int] = 599
 
     # =========================================================================
-    # DOMAIN-SPECIFIC ENUMS - NOT available in FlextConstants
+    # DOMAIN-SPECIFIC ENUMS - NOT available in FlextCore.Constants
     # =========================================================================
 
     class OracleWMSEntityType(StrEnum):

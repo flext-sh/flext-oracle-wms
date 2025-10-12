@@ -90,7 +90,7 @@ class WmsClient: pass
 class WmsHelper: pass     # ❌ VIOLATION
 
 # Required: Single unified class per module
-class FlextOracleWmsClient(FlextService):
+class FlextOracleWmsClient(FlextCore.Service):
     class _ClientHelper:  # ✅ NESTED HELPER
         pass
 ```
@@ -107,17 +107,17 @@ from flext_auth import FlextAuthenticator  # ✅ REQUIRED
 
 ### Error Handling Standards
 
-All operations must use FlextResult pattern:
+All operations must use FlextCore.Result pattern:
 
 ```python
-from flext_core import FlextResult
+from flext_core import FlextCore
 
-def operation() -> FlextResult[ReturnType]:
+def operation() -> FlextCore.Result[ReturnType]:
     try:
         # Operation logic
-        return FlextResult.ok(result)
+        return FlextCore.Result.ok(result)
     except Exception as e:
-        return FlextResult.fail(f"Operation failed: {e}")
+        return FlextCore.Result.fail(f"Operation failed: {e}")
 ```
 
 ### Type Safety Requirements
@@ -145,7 +145,7 @@ tests/
 
 - **90%+ coverage** - Minimum coverage target
 - **Real integration preferred** - Minimize mocking
-- **FlextResult validation** - Test error handling
+- **FlextCore.Result validation** - Test error handling
 - **Type safety testing** - Validate type annotations
 
 ### Current Test Limitations
@@ -210,7 +210,7 @@ make test                  # All tests must pass
 
 - [ ] **FLEXT compliance** - No httpx usage, unified classes
 - [ ] **Type safety** - Zero MyPy errors
-- [ ] **Error handling** - FlextResult patterns used
+- [ ] **Error handling** - FlextCore.Result patterns used
 - [ ] **Test coverage** - New code has tests
 - [ ] **Documentation** - API changes documented
 

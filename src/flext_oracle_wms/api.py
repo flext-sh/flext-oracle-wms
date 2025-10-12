@@ -8,18 +8,7 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from flext_core import (
-    FlextBus,
-    FlextContainer,
-    FlextContext,
-    FlextDispatcher,
-    FlextHandlers,
-    FlextLogger,
-    FlextModels,
-    FlextProcessors,
-    FlextRegistry,
-    FlextService,
-)
+from flext_core import FlextCore
 
 from flext_oracle_wms.config import FlextOracleWmsConfig
 from flext_oracle_wms.wms_client import FlextOracleWmsClient
@@ -28,18 +17,18 @@ from flext_oracle_wms.wms_client import FlextOracleWmsClient
 # from flext_oracle_wms.wms_operations import FlextOracleWmsUnifiedOperations
 
 
-class FlextOracleWmsApi(FlextService[FlextOracleWmsConfig]):
+class FlextOracleWmsApi(FlextCore.Service[FlextOracleWmsConfig]):
     """Thin facade for Oracle WMS operations with complete FLEXT integration.
 
     Integrates:
-    - FlextBus: Event emission for WMS operations
-    - FlextContainer: Dependency injection for WMS services
-    - FlextContext: Operation context management
+    - FlextCore.Bus: Event emission for WMS operations
+    - FlextCore.Container: Dependency injection for WMS services
+    - FlextCore.Context: Operation context management
     - FlextCqrs: CQRS pattern for WMS commands/queries
-    - FlextDispatcher: Message routing for WMS operations
-    - FlextProcessors: Processing utilities for WMS data
-    - FlextRegistry: Component registration for WMS plugins
-    - FlextLogger: Structured logging for WMS operations
+    - FlextCore.Dispatcher: Message routing for WMS operations
+    - FlextCore.Processors: Processing utilities for WMS data
+    - FlextCore.Registry: Component registration for WMS plugins
+    - FlextCore.Logger: Structured logging for WMS operations
 
     This facade provides easy access to all Oracle WMS functionality
     while maintaining clean separation between business logic and infrastructure.
@@ -61,20 +50,20 @@ class FlextOracleWmsApi(FlextService[FlextOracleWmsConfig]):
         self._config = config or FlextOracleWmsConfig()
 
         # Complete FLEXT ecosystem integration
-        self._container = FlextContainer.get_global()
-        self._context = FlextContext()
-        self._bus = FlextBus()
-        self._dispatcher = FlextDispatcher()
+        self._container = FlextCore.Container.get_global()
+        self._context = FlextCore.Context()
+        self._bus = FlextCore.Bus()
+        self._dispatcher = FlextCore.Dispatcher()
         # Create handler config
-        handler_config = FlextModels.Cqrs.Handler(
+        handler_config = FlextCore.Models.Cqrs.Handler(
             handler_id="flext_oracle_wms_handler",
             handler_name="FlextOracleWmsHandler",
             handler_type="command",
         )
-        self._handlers = FlextHandlers(config=handler_config)
-        self._processors = FlextProcessors()
-        self._registry = FlextRegistry(dispatcher=self._dispatcher)
-        self.logger = FlextLogger(__name__)
+        self._handlers = FlextCore.Handlers(config=handler_config)
+        self._processors = FlextCore.Processors()
+        self._registry = FlextCore.Registry(dispatcher=self._dispatcher)
+        self.logger = FlextCore.Logger(__name__)
 
         # Domain services (delegate all business logic here)
         self._client = FlextOracleWmsClient(self._config)
@@ -85,7 +74,7 @@ class FlextOracleWmsApi(FlextService[FlextOracleWmsConfig]):
 
     # async def discover_entities(
     #     self, entity_type: str, **kwargs: object
-    # ) -> FlextResult[list[FlextOracleWmsEntity]]:
+    # ) -> FlextCore.Result[list[FlextOracleWmsEntity]]:
     #     """Discover Oracle WMS entities.
 
     #     Args:
@@ -100,7 +89,7 @@ class FlextOracleWmsApi(FlextService[FlextOracleWmsConfig]):
 
     # async def get_inventory_data(
     #     self, entity_name: str, **kwargs: object
-    # ) -> FlextResult[list[FlextOracleWmsEntity]]:
+    # ) -> FlextCore.Result[list[FlextOracleWmsEntity]]:
     #     """Get inventory data from Oracle WMS.
 
     #     Args:
@@ -115,7 +104,7 @@ class FlextOracleWmsApi(FlextService[FlextOracleWmsConfig]):
 
     # async def process_shipment(
     #     self, shipment_id: str, **kwargs: object
-    # ) -> FlextResult[FlextTypes.Dict]:
+    # ) -> FlextCore.Result[FlextCore.Types.Dict]:
     #     """Process shipment in Oracle WMS.
 
     #     Args:
@@ -130,7 +119,7 @@ class FlextOracleWmsApi(FlextService[FlextOracleWmsConfig]):
 
     # async def execute_picking_wave(
     #     self, wave_id: str, **kwargs: object
-    # ) -> FlextResult[FlextTypes.Dict]:
+    # ) -> FlextCore.Result[FlextCore.Types.Dict]:
     #     """Execute picking wave in Oracle WMS.
 
     #     Args:

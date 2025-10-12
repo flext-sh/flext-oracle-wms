@@ -33,7 +33,7 @@ import traceback
 from pathlib import Path
 
 from dotenv import load_dotenv
-from flext_core import FlextLogger, FlextTypes
+from flext_core import FlextCore
 
 from flext_oracle_wms import (
     FLEXT_ORACLE_WMS_APIS,
@@ -49,7 +49,7 @@ from flext_oracle_wms import (
 from flext_oracle_wms.constants import FlextOracleWmsConstants
 
 # Initialize logger
-logger = FlextLogger(__name__)
+logger = FlextCore.Logger(__name__)
 
 
 def load_config_from_environment() -> FlextOracleWmsClientConfig:
@@ -104,7 +104,7 @@ def showcase_1_client_initialization(
 
 def showcase_2_entity_discovery(
     client: FlextOracleWmsClient,
-) -> FlextTypes.StringList:
+) -> FlextCore.Types.StringList:
     """Feature 2: Entity Discovery (320+ entities)."""
     # Discover all entities
     entities_result = client.discover_entities()
@@ -115,7 +115,7 @@ def showcase_2_entity_discovery(
     entity_dicts = entities_result.value or []
 
     # Extract entity names from dictionaries
-    entities: FlextTypes.StringList = [
+    entities: FlextCore.Types.StringList = [
         str(entity.get("name", "Unknown")) if isinstance(entity, dict) else str(entity)
         for entity in entity_dicts
     ]
@@ -149,10 +149,10 @@ def showcase_2_entity_discovery(
 
 def showcase_3_data_retrieval(
     client: FlextOracleWmsClient,
-    entities: FlextTypes.StringList,
-) -> FlextTypes.Dict:
+    entities: FlextCore.Types.StringList,
+) -> FlextCore.Types.Dict:
     """Feature 3: Data Retrieval and Querying."""
-    sample_data: FlextTypes.Dict = {}
+    sample_data: FlextCore.Types.Dict = {}
 
     # Test data retrieval from key entities
     test_entities = ["company", "facility", "item"]
@@ -299,7 +299,7 @@ def showcase_7_health_monitoring(
 
 def showcase_8_performance_tracking(
     client: FlextOracleWmsClient,
-    entities: FlextTypes.StringList,
+    entities: FlextCore.Types.StringList,
 ) -> None:
     """Feature 8: Performance Tracking."""
     # Constants for performance testing

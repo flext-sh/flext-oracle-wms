@@ -12,7 +12,7 @@ from enum import StrEnum
 from pathlib import Path
 
 from dotenv import load_dotenv
-from flext_core import FlextLogger, FlextTypes
+from flext_core import FlextCore
 
 from flext_oracle_wms import (
     FlextOracleWmsClient,
@@ -21,7 +21,7 @@ from flext_oracle_wms import (
 from flext_oracle_wms.constants import FlextOracleWmsConstants
 
 # Initialize logger
-logger = FlextLogger(__name__)
+logger = FlextCore.Logger(__name__)
 
 
 class Environment(StrEnum):
@@ -139,7 +139,7 @@ def create_demo_config() -> FlextOracleWmsClientConfig:
     })
 
 
-def validate_configuration(config: FlextOracleWmsClientConfig) -> FlextTypes.Dict:
+def validate_configuration(config: FlextOracleWmsClientConfig) -> FlextCore.Types.Dict:
     """Validate Oracle WMS client configuration.
 
     Args:
@@ -149,9 +149,9 @@ def validate_configuration(config: FlextOracleWmsClientConfig) -> FlextTypes.Dic
       Dictionary containing validation results
 
     """
-    errors: FlextTypes.StringList = []
-    warnings: FlextTypes.StringList = []
-    config_summary: FlextTypes.Dict = {}
+    errors: FlextCore.Types.StringList = []
+    warnings: FlextCore.Types.StringList = []
+    config_summary: FlextCore.Types.Dict = {}
 
     # Validate base URL
     if not config.oracle_wms_base_url:
@@ -195,7 +195,7 @@ def validate_configuration(config: FlextOracleWmsClientConfig) -> FlextTypes.Dic
         "enable_logging": config.oracle_wms_enable_logging,
     }
 
-    validation_results: FlextTypes.Dict = {
+    validation_results: FlextCore.Types.Dict = {
         "valid": len(errors) == 0,
         "warnings": warnings,
         "errors": errors,
@@ -207,7 +207,7 @@ def validate_configuration(config: FlextOracleWmsClientConfig) -> FlextTypes.Dic
 
 def test_configuration(
     config: FlextOracleWmsClientConfig,
-) -> FlextTypes.Dict:
+) -> FlextCore.Types.Dict:
     """Test Oracle WMS configuration by attempting connection.
 
     Args:
@@ -217,7 +217,7 @@ def test_configuration(
       Dictionary with test results
 
     """
-    test_results: FlextTypes.Dict = {
+    test_results: FlextCore.Types.Dict = {
         "connection_success": False,
         "health_check_success": False,
         "error": None,

@@ -8,7 +8,7 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from flext_core import FlextConstants
+from flext_core import FlextCore
 
 from flext_oracle_wms.constants import FlextOracleWmsConstants
 
@@ -18,8 +18,8 @@ class TestFlextOracleWmsConstants:
 
     def test_class_inheritance(self) -> None:
         """Test that FlextOracleWmsConstants follows proper inheritance patterns."""
-        # FlextOracleWmsConstants should inherit from FlextConstants
-        assert issubclass(FlextOracleWmsConstants, FlextConstants)
+        # FlextOracleWmsConstants should inherit from FlextCore.Constants
+        assert issubclass(FlextOracleWmsConstants, FlextCore.Constants)
 
     def test_application_constants(self) -> None:
         """Test application metadata constants."""

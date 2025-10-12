@@ -10,7 +10,7 @@ SPDX-License-Identifier: MIT
 from unittest.mock import Mock, patch
 
 import pytest
-from flext_core import FlextLogger, FlextResult, FlextTypes
+from flext_core import FlextCore
 
 from flext_oracle_wms import (
     FlextOracleWmsClient,
@@ -20,7 +20,7 @@ from flext_oracle_wms import (
 )
 
 # Initialize logger
-logger = FlextLogger(__name__)
+logger = FlextCore.Logger(__name__)
 
 
 @pytest.mark.unit
@@ -77,7 +77,7 @@ class TestFlextOracleWmsClientCore:
             "flext_oracle_wms.wms_client.create_flext_http_client",
         ) as mock_create_client:
             mock_api_client = Mock()
-            mock_api_client.start.return_value = FlextResult[None].ok(None)
+            mock_api_client.start.return_value = FlextCore.Result[None].ok(None)
             mock_create_client.return_value = mock_api_client
 
             client = FlextOracleWmsClient(mock_config)
@@ -98,7 +98,7 @@ class TestFlextOracleWmsClientCore:
             # Make create_flext_http_client raise an exception to simulate connection failure
             mock_create_client.side_effect = ConnectionError("Connection failed")
 
-            # Client raises exception on start failure instead of returning FlextResult
+            # Client raises exception on start failure instead of returning FlextCore.Result
             client = FlextOracleWmsClient(mock_config)
             with pytest.raises(FlextOracleWmsConnectionError) as exc_info:
                 client.start()
@@ -131,9 +131,9 @@ class TestFlextOracleWmsClientCore:
         """Test successful client stop."""
         with patch("flext_api.FlextApiClient") as mock_api_client_class:
             mock_api_client = Mock()
-            mock_api_client.start.return_value = FlextResult[None].ok(None)
+            mock_api_client.start.return_value = FlextCore.Result[None].ok(None)
             mock_api_client.close.return_value = (
-                None  # close() returns None, not FlextResult
+                None  # close() returns None, not FlextCore.Result
             )
             mock_api_client_class.return_value = mock_api_client
 
@@ -223,7 +223,7 @@ class TestFlextOracleWmsClientCore:
             "flext_oracle_wms.wms_client.create_flext_http_client",
         ) as mock_create_client:
             mock_api_client = Mock()
-            mock_api_client.start.return_value = FlextResult[None].ok(None)
+            mock_api_client.start.return_value = FlextCore.Result[None].ok(None)
             # Add health_check method that returns a healthy status dict
             mock_api_client.health_check.return_value = {
                 "status": "healthy",
@@ -258,7 +258,7 @@ class TestFlextOracleWmsClientCore:
     def test_discover_entities_success(
         self,
         mock_config: FlextOracleWmsClientConfig,
-        sample_entities: FlextTypes.StringList,
+        sample_entities: FlextCore.Types.StringList,
     ) -> None:
         """Test successful entity discovery."""
         with patch(
@@ -274,7 +274,7 @@ class TestFlextOracleWmsClientCore:
             }
 
             mock_http_client = Mock()
-            mock_http_client.get.return_value = FlextResult[None].ok(mock_response)
+            mock_http_client.get.return_value = FlextCore.Result[None].ok(mock_response)
             mock_create_http.return_value = mock_http_client
 
             client = FlextOracleWmsClient(mock_config)
@@ -282,7 +282,9 @@ class TestFlextOracleWmsClientCore:
 
             # Mock the discover_entities method directly since it has complex logic
             with patch.object(client, "discover_entities") as mock_discover:
-                mock_discover.return_value = FlextResult[list[FlextTypes.Dict]].ok(
+                mock_discover.return_value = FlextCore.Result[
+                    list[FlextCore.Types.Dict]
+                ].ok(
                     sample_entities,
                 )
 
@@ -306,19 +308,19 @@ class TestFlextOracleWmsClientCore:
     def test_get_entity_data_success(
         self,
         mock_config: FlextOracleWmsClientConfig,
-        sample_entity_data: FlextTypes.Dict,
+        sample_entity_data: FlextCore.Types.Dict,
     ) -> None:
         """Test successful entity data retrieval."""
         with patch(
             "flext_oracle_wms.wms_client.create_flext_http_client",
         ) as mock_create_client:
             mock_api_client = Mock()
-            mock_api_client.start.return_value = FlextResult[None].ok(None)
-            # The get method should return a FlextResult with the sample data directly
+            mock_api_client.start.return_value = FlextCore.Result[None].ok(None)
+            # The get method should return a FlextCore.Result with the sample data directly
             # Create mock data with required status field for WMS client logic
             mock_data = sample_entity_data.copy()
             mock_data["status"] = "success"  # Required by wms_client logic
-            success_result = FlextResult[FlextTypes.Dict].ok(mock_data)
+            success_result = FlextCore.Result[FlextCore.Types.Dict].ok(mock_data)
             logger.info(
                 f"Mock result success: {success_result.success}, data keys: {list(mock_data.keys())}",
             )
@@ -349,7 +351,7 @@ class TestFlextOracleWmsClientCore:
         """Test calling unknown API."""
         with patch("flext_api.FlextApiClient") as mock_api_client_class:
             mock_api_client = Mock()
-            mock_api_client.start.return_value = FlextResult[None].ok(None)
+            mock_api_client.start.return_value = FlextCore.Result[None].ok(None)
             mock_api_client_class.return_value = mock_api_client
 
             client = FlextOracleWmsClient(mock_config)
@@ -430,7 +432,7 @@ class TestClientHelperMethods:
         """Test parsing empty dictionary response."""
         client = FlextOracleWmsClient(mock_config)
 
-        response: FlextTypes.Dict = {}
+        response: FlextCore.Types.Dict = {}
         result = client._parse_entity_discovery_response(response)
 
         # Empty response should return fallback entities
@@ -461,10 +463,10 @@ class TestGetLogger:
 
     def test_get_logger_module_name(self) -> None:
         """Test logger creation with module name."""
-        logger = FlextLogger("test_module")
+        logger = FlextCore.Logger("test_module")
         assert hasattr(logger, "info")  # Check it's a logger
         assert hasattr(logger, "error")  # Check it has expected methods
 
         # Test with empty string
-        logger_empty = FlextLogger("")
+        logger_empty = FlextCore.Logger("")
         assert callable(logger_empty.info)  # Check it's functional

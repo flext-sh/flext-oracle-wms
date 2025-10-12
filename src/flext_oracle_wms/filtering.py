@@ -14,7 +14,7 @@ from __future__ import annotations
 import re
 from typing import override
 
-from flext_core import FlextLogger, FlextResult, FlextTypes
+from flext_core import FlextCore
 
 from flext_oracle_wms.constants import (
     FlextOracleWmsConstants,
@@ -36,7 +36,7 @@ class FlextOracleWmsFilter:
     """
 
     # Shared logger for all filter operations
-    logger = FlextLogger(__name__)
+    logger = FlextCore.Logger(__name__)
 
     @override
     def __init__(
@@ -68,7 +68,7 @@ class FlextOracleWmsFilter:
 
         # Validate filters if provided
         if self.filters:
-            validation_result: FlextResult[None] = (
+            validation_result: FlextCore.Result[None] = (
                 self._validate_filter_conditions_total(self.filters)
             )
             if validation_result.is_failure:
@@ -112,7 +112,7 @@ class FlextOracleWmsFilter:
         self,
         records: list[FlextOracleWmsTypes.Core.Dict],
         filters: FlextOracleWmsTypes.Core.Dict,
-    ) -> FlextResult[list[FlextOracleWmsTypes.Core.Dict]]:
+    ) -> FlextCore.Result[list[FlextOracleWmsTypes.Core.Dict]]:
         """Filter records with given filters.
 
         Args:
@@ -120,31 +120,33 @@ class FlextOracleWmsFilter:
             filters: Filter conditions to apply
 
         Returns:
-            FlextResult containing filtered records
+            FlextCore.Result containing filtered records
 
         """
         # Parameters are already properly typed
 
         # Validate filter conditions
-        count_result: FlextResult[None] = self._validate_filter_conditions_total(
+        count_result: FlextCore.Result[None] = self._validate_filter_conditions_total(
             filters
         )
         if count_result.is_failure:
-            return FlextResult[list[FlextOracleWmsTypes.Core.Dict]].fail(
+            return FlextCore.Result[list[FlextOracleWmsTypes.Core.Dict]].fail(
                 count_result.error or "Filter validation failed",
             )
 
         # Store filters for validation
         self.filters = filters
         filtered_records = self._apply_record_filters(records)
-        return FlextResult[list[FlextOracleWmsTypes.Core.Dict]].ok(filtered_records)
+        return FlextCore.Result[list[FlextOracleWmsTypes.Core.Dict]].ok(
+            filtered_records
+        )
 
     def filter_records_with_options(
         self,
         records: list[FlextOracleWmsTypes.Core.Dict],
         filters: FlextOracleWmsTypes.Core.Dict,
         limit: int | None = None,
-    ) -> FlextResult[list[FlextOracleWmsTypes.Core.Dict]]:
+    ) -> FlextCore.Result[list[FlextOracleWmsTypes.Core.Dict]]:
         """Filter records with additional options like limit.
 
         Args:
@@ -153,14 +155,14 @@ class FlextOracleWmsFilter:
             limit: Optional limit on number of results
 
         Returns:
-            FlextResult containing filtered records
+            FlextCore.Result containing filtered records
 
         """
-        count_result: FlextResult[None] = self._validate_filter_conditions_total(
+        count_result: FlextCore.Result[None] = self._validate_filter_conditions_total(
             filters
         )
         if count_result.is_failure:
-            return FlextResult[list[FlextOracleWmsTypes.Core.Dict]].fail(
+            return FlextCore.Result[list[FlextOracleWmsTypes.Core.Dict]].fail(
                 count_result.error or "Filter validation failed",
             )
 
@@ -169,7 +171,9 @@ class FlextOracleWmsFilter:
         filtered_records = self._apply_record_filters(records)
         if limit is not None:
             filtered_records = filtered_records[:limit]
-        return FlextResult[list[FlextOracleWmsTypes.Core.Dict]].ok(filtered_records)
+        return FlextCore.Result[list[FlextOracleWmsTypes.Core.Dict]].ok(
+            filtered_records
+        )
 
     def sort_records(
         self,
@@ -177,7 +181,7 @@ class FlextOracleWmsFilter:
         sort_field: str,
         *,
         ascending: bool = True,
-    ) -> FlextResult[list[FlextOracleWmsTypes.Core.Dict]]:
+    ) -> FlextCore.Result[list[FlextOracleWmsTypes.Core.Dict]]:
         """Sort records by specified field.
 
         Args:
@@ -186,7 +190,7 @@ class FlextOracleWmsFilter:
             ascending: Whether to sort in ascending order
 
         Returns:
-            FlextResult containing sorted records
+            FlextCore.Result containing sorted records
 
         """
         # Parameters are already properly typed
@@ -200,16 +204,18 @@ class FlextOracleWmsFilter:
                 return str(value)
 
             sorted_records = sorted(records, key=key_func, reverse=not ascending)
-            return FlextResult[list[FlextOracleWmsTypes.Core.Dict]].ok(sorted_records)
+            return FlextCore.Result[list[FlextOracleWmsTypes.Core.Dict]].ok(
+                sorted_records
+            )
         except Exception as e:
             error_msg = f"sort_records failed: {e}"
             FlextOracleWmsFilter.logger.exception(error_msg)
-            return FlextResult[list[FlextOracleWmsTypes.Core.Dict]].fail(error_msg)
+            return FlextCore.Result[list[FlextOracleWmsTypes.Core.Dict]].fail(error_msg)
 
     def _validate_filter_conditions_total(
         self,
         filters: FlextOracleWmsTypes.Core.Dict,
-    ) -> FlextResult[None]:
+    ) -> FlextCore.Result[None]:
         try:
             total_conditions = 0
             for value in filters.values():
@@ -218,12 +224,12 @@ class FlextOracleWmsFilter:
                 else:
                     total_conditions += 1
             if total_conditions > self.max_conditions:
-                return FlextResult[None].fail(
+                return FlextCore.Result[None].fail(
                     f"Too many filter conditions. Max: {self.max_conditions}, Got: {total_conditions}",
                 )
-            return FlextResult[None].ok(None)
+            return FlextCore.Result[None].ok(None)
         except Exception as e:  # pragma: no cover
-            return FlextResult[None].fail(str(e))
+            return FlextCore.Result[None].fail(str(e))
 
     def _validate_filter_conditions_count(self: object) -> None:
         """Validate that filter conditions don't exceed maximum."""
@@ -415,7 +421,7 @@ class FlextOracleWmsFilter:
             field: str,
             _value: object,
             operator: OracleWMSFilterOperator | None = None,
-        ) -> FlextResult[list[FlextOracleWmsTypes.Core.Dict]]:
+        ) -> FlextCore.Result[list[FlextOracleWmsTypes.Core.Dict]]:
             """Filter records by field value and operator."""
             engine = FlextOracleWmsFilter()
             if operator == OracleWMSFilterOperator.NE:
@@ -430,15 +436,15 @@ class FlextOracleWmsFilter:
             id_field: str,
             min_id: object | None = None,
             max_id: object | None = None,
-        ) -> FlextResult[list[FlextOracleWmsTypes.Core.Dict]]:
+        ) -> FlextCore.Result[list[FlextOracleWmsTypes.Core.Dict]]:
             """Filter records by ID range."""
             # Records parameter is already properly typed
 
             if not records:
-                return FlextResult[list[FlextOracleWmsTypes.Core.Dict]].ok([])
+                return FlextCore.Result[list[FlextOracleWmsTypes.Core.Dict]].ok([])
 
             # Apply manual range filtering since we need both min and max on same field
-            filtered_records: list[FlextTypes.Dict] = []
+            filtered_records: list[FlextCore.Types.Dict] = []
             for record in records:
                 field_value = record.get(id_field)
                 if field_value is None:
@@ -493,7 +499,9 @@ class FlextOracleWmsFilter:
                 # If we get here, record passes both filters
                 filtered_records.append(record)
 
-            return FlextResult[list[FlextOracleWmsTypes.Core.Dict]].ok(filtered_records)
+            return FlextCore.Result[list[FlextOracleWmsTypes.Core.Dict]].ok(
+                filtered_records
+            )
 
 
 # Backward compatibility aliases
