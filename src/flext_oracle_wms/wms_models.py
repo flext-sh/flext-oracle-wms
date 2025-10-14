@@ -134,7 +134,7 @@ class FlextOracleWmsEntity(FlextCore.Models):
         return FlextCore.Result[None].ok(None)
 
     def to_dict_basic(self) -> FlextOracleWmsTypes.Core.Dict:
-        """Convert entity to basic dict format (used by discovery)."""
+        """Convert entity to basic dict[str, object] format (used by discovery)."""
         return {
             "name": self.name,
             "endpoint": self.endpoint,

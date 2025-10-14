@@ -545,7 +545,7 @@ class CompleteMockPipeline:
 
                 record["_sdc_sequence"] = i + 1
                 # Ensure all values are objects
-                record_obj: FlextCore.Types.Dict = dict(record.items())
+                record_obj: FlextCore.Types.Dict = dict[str, object](record.items())
                 tap_records.append({"entity": entity_name, "record": record_obj})
 
         return tap_records

@@ -739,7 +739,7 @@ class TestFlextOracleWmsEntityDiscovery:
         assert len(result.data.errors) == 1
 
     def test_extract_entity_list_from_dict_entities(self) -> None:
-        """Test entity list extraction from dict with 'entities' key."""
+        """Test entity list extraction from dict[str, object] with 'entities' key."""
         response_data = {"entities": ["company", "facility", "item"]}
         parser = EntityResponseParser(self.discovery)
 
@@ -749,7 +749,7 @@ class TestFlextOracleWmsEntityDiscovery:
         assert result.data == ["company", "facility", "item"]
 
     def test_extract_entity_list_from_dict_results(self) -> None:
-        """Test entity list extraction from dict with 'results' key."""
+        """Test entity list extraction from dict[str, object] with 'results' key."""
         response_data = {"results": ["order", "shipment"]}
         parser = EntityResponseParser(self.discovery)
 
@@ -759,7 +759,7 @@ class TestFlextOracleWmsEntityDiscovery:
         assert result.data == ["order", "shipment"]
 
     def test_extract_entity_list_from_dict_data(self) -> None:
-        """Test entity list extraction from dict with 'data' key."""
+        """Test entity list extraction from dict[str, object] with 'data' key."""
         response_data = {"data": ["location", "inventory"]}
         parser = EntityResponseParser(self.discovery)
 
@@ -769,7 +769,7 @@ class TestFlextOracleWmsEntityDiscovery:
         assert result.data == ["location", "inventory"]
 
     def test_extract_entity_list_from_dict_keys(self) -> None:
-        """Test entity list extraction from dict keys."""
+        """Test entity list extraction from dict[str, object] keys."""
         response_data = {"company": {}, "facility": {}, "item": {}}
         parser = EntityResponseParser(self.discovery)
 

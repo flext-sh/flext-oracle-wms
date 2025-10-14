@@ -191,7 +191,7 @@ class TestFlextOracleWmsClientCore:
         """Test getting APIs filtered by category."""
         client = FlextOracleWmsClient(mock_config)
 
-        # Test method exists and returns dict for any category (even if empty/invalid)
+        # Test method exists and returns dict[str, object] for any category (even if empty/invalid)
         result = client.get_apis_by_category("inventory")
         assert isinstance(result, dict)
 

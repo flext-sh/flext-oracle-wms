@@ -74,7 +74,7 @@ class FlextOracleWmsExceptions(FlextCore.Exceptions):
                 Complete context dictionary
 
             """
-            context = dict(base_context)  # Copy base context
+            context = dict[str, object](base_context)  # Copy base context
             # Add non-None kwargs to context
             context.update({
                 key: value for key, value in kwargs.items() if value is not None

@@ -18,19 +18,19 @@ class FlextApiClient:
         self.base_url = base_url
         self.timeout = timeout
 
-    def get(self, path: str, **kwargs) -> dict:
+    def get(self, path: str, **kwargs) -> dict[str, object]:
         """Mock GET request."""
         return {"mock": "response", "path": path}
 
-    def post(self, path: str, **kwargs) -> dict:
+    def post(self, path: str, **kwargs) -> dict[str, object]:
         """Mock POST request."""
         return {"mock": "response", "path": path}
 
-    def put(self, path: str, **kwargs) -> dict:
+    def put(self, path: str, **kwargs) -> dict[str, object]:
         """Mock PUT request."""
         return {"mock": "response", "path": path}
 
-    def delete(self, path: str, **kwargs) -> dict:
+    def delete(self, path: str, **kwargs) -> dict[str, object]:
         """Mock DELETE request."""
         return {"mock": "response", "path": path}
 

@@ -140,7 +140,9 @@ def main() -> None:
             first_record = records[0]
 
             complex_analysis = analyze_complex_structures(
-                dict(first_record) if isinstance(first_record, dict) else {}
+                dict[str, object](first_record)
+                if isinstance(first_record, dict)
+                else {}
             )
 
             # Mostrar campos objeto detalhadamente
