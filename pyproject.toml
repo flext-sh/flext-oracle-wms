@@ -81,6 +81,13 @@
         "tests",
     ]
 
+
+        # SubConfig: Disable unknown-name error for models.py
+        # This handles forward references to classes defined later in the same file
+        [[tool.pyrefly.sub-config]]
+            matches = "**/models.py"
+            [tool.pyrefly.sub-config.errors]
+                unknown-name = false
 [tool.deptry]
     known_first_party = [
         "flext_oracle_wms",
