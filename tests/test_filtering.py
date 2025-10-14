@@ -13,6 +13,7 @@ Target: Increase filtering.py coverage from 11% to 85%+
 
 Copyright (c) 2025 FLEXT Team. All rights reserved.
 SPDX-License-Identifier: MIT
+
 """
 
 import pytest

@@ -5,6 +5,7 @@ Based on working code patterns from basic_usage.py and real Oracle WMS connectiv
 
 Copyright (c) 2025 FLEXT Team. All rights reserved.
 SPDX-License-Identifier: MIT
+
 """
 
 from unittest.mock import Mock, patch

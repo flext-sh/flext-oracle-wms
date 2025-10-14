@@ -6,6 +6,7 @@ Skips tests if .env is not available.
 
 Copyright (c) 2025 FLEXT Team. All rights reserved.
 SPDX-License-Identifier: MIT
+
 """
 
 from collections.abc import Generator
