@@ -76,9 +76,9 @@ class FlextOracleWmsExceptions(FlextExceptions):
             """
             context = dict[str, object](base_context)  # Copy base context
             # Add non-None kwargs to context
-            context.update(
-                {key: value for key, value in kwargs.items() if value is not None}
-            )
+            context.update({
+                key: value for key, value in kwargs.items() if value is not None
+            })
             return context
 
     # Declare attributes that may be dynamically set for MyPy

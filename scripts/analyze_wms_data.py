@@ -111,13 +111,11 @@ def main() -> None:
         "jmCyS7BK94YvhS@",
     )  # Fallback para desenvolvimento
 
-    config = FlextOracleWmsClientConfig.model_validate(
-        {
-            "base_url": "https://a29.wms.ocs.oraclecloud.com/raizen",
-            "username": "USER_WMS_INTEGRA",
-            "password": password,
-        }
-    )
+    config = FlextOracleWmsClientConfig.model_validate({
+        "base_url": "https://a29.wms.ocs.oraclecloud.com/raizen",
+        "username": "USER_WMS_INTEGRA",
+        "password": password,
+    })
 
     client = FlextOracleWmsClient(config)
 

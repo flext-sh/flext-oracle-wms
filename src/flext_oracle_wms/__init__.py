@@ -44,7 +44,7 @@ from flext_oracle_wms.wms_models import (
 # Import mock server function
 def get_mock_server(environment: str = "mock_test") -> object:
     """Get Oracle WMS mock server instance."""
-    from flext_oracle_wms.wms_api import FlextOracleWmsApi  # noqa: PLC0415
+    from flext_oracle_wms.wms_api import FlextOracleWmsApi
 
     return FlextOracleWmsApi.get_mock_server(environment)
 
