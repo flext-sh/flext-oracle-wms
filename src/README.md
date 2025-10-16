@@ -43,7 +43,7 @@ src/flext_oracle_wms/
 
 ### FLEXT Ecosystem Integration
 
-- **FlextCore.Result pattern** for railway-oriented programming and consistent error handling
+- **FlextResult pattern** for railway-oriented programming and consistent error handling
 - **FLEXT configuration standards** with environment-driven settings and validation
 - **Structured logging** with correlation IDs and enterprise observability
 - **Dependency injection** support with FLEXT container integration
@@ -75,7 +75,7 @@ config = FlextOracleWmsClientConfig(
 client = FlextOracleWmsClient(config)
 result = client.discover_entities()
 
-# Railway-oriented programming with FlextCore.Result
+# Railway-oriented programming with FlextResult
 if result.success:
     entities = result.data
     print(f"Discovered {len(entities)} WMS entities")
@@ -112,7 +112,7 @@ from flext_oracle_wms.exceptions import (
 try:
     result = client.query_entity_data("INVENTORY")
     if result.is_failure:
-        # Handle business logic errors via FlextCore.Result
+        # Handle business logic errors via FlextResult
         logger.error(f"Query failed: {result.error}")
 except FlextOracleWmsConnectionError:
     # Handle connection issues
@@ -127,7 +127,7 @@ except FlextOracleWmsAuthenticationError:
 ### Code Quality Standards
 
 - **Type Safety**: MyPy strict mode adoption; aiming for 95%+ coverage
-- **Error Handling**: All operations return FlextCore.Result for consistent error management
+- **Error Handling**: All operations return FlextResult for consistent error management
 - **Documentation**: Comprehensive docstrings following enterprise standards
 - **Testing**: 90%+ test coverage requirement with unit and integration tests
 - **Linting**: Comprehensive Ruff rules (ALL categories enabled) with zero tolerance
@@ -136,7 +136,7 @@ except FlextOracleWmsAuthenticationError:
 
 - **Clean Architecture**: Proper separation of domain, application, and infrastructure concerns
 - **FLEXT Integration**: Full compliance with FLEXT ecosystem patterns and standards
-- **Railway-Oriented Programming**: Consistent use of FlextCore.Result for error handling
+- **Railway-Oriented Programming**: Consistent use of FlextResult for error handling
 - **Enterprise Patterns**: Connection pooling, caching, retry logic, and observability
 
 ### Performance Requirements
@@ -172,7 +172,7 @@ make security               # Bandit + pip-audit security scanning
 
 ### FLEXT Ecosystem Dependencies
 
-- **[flext-core](../../flext-core)** - Foundation patterns, FlextCore.Result, logging, DI container
+- **[flext-core](../../flext-core)** - Foundation patterns, FlextResult, logging, DI container
 - **[flext-api](../../flext-api)** - Enterprise API client patterns and authentication
 - **[flext-observability](../../flext-observability)** - Monitoring, metrics, health checks
 

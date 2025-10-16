@@ -5,15 +5,15 @@ This module provides data models for Oracle WMS operations.
 
 from __future__ import annotations
 
-from flext_core import FlextCore
+from flext_core import FlextModels, FlextTypes
 
 
-class FlextOracleWmsModels(FlextCore.Models):
+class FlextOracleWmsModels(FlextModels):
     """Models for Oracle WMS operations.
 
-    Extends FlextCore.Models to avoid duplication and ensure consistency.
-    All Oracle WMS models benefit from FlextCore.Models patterns.
+    Extends FlextModels to avoid duplication and ensure consistency.
+    All Oracle WMS models benefit from FlextModels patterns.
     """
 
-    WmsRecord = FlextCore.Types.Dict
+    WmsRecord = FlextTypes.Dict
     WmsRecords = list[WmsRecord]

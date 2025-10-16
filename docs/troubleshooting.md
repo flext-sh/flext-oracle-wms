@@ -42,8 +42,27 @@ from flext_core import get_logger  # ImportError
 **Solution**: Use correct flext_core imports:
 
 ```python
-from flext_core import FlextCore  # Correct import
-logger = FlextCore.Logger(__name__)
+from flext_core import FlextBus
+from flext_core import FlextConfig
+from flext_core import FlextConstants
+from flext_core import FlextContainer
+from flext_core import FlextContext
+from flext_core import FlextDecorators
+from flext_core import FlextDispatcher
+from flext_core import FlextExceptions
+from flext_core import FlextHandlers
+from flext_core import FlextLogger
+from flext_core import FlextMixins
+from flext_core import FlextModels
+from flext_core import FlextProcessors
+from flext_core import FlextProtocols
+from flext_core import FlextRegistry
+from flext_core import FlextResult
+from flext_core import FlextRuntime
+from flext_core import FlextService
+from flext_core import FlextTypes
+from flext_core import
+logger = FlextLogger(__name__)
 ```
 
 ### Type Safety Issues
@@ -240,8 +259,27 @@ assert error.entity_name == "test"  # Properly handled
 ```python
 logging.basicConfig(level=logging.DEBUG)
 
-from flext_core import FlextCore
-logger = FlextCore.Logger(__name__)
+from flext_core import FlextBus
+from flext_core import FlextConfig
+from flext_core import FlextConstants
+from flext_core import FlextContainer
+from flext_core import FlextContext
+from flext_core import FlextDecorators
+from flext_core import FlextDispatcher
+from flext_core import FlextExceptions
+from flext_core import FlextHandlers
+from flext_core import FlextLogger
+from flext_core import FlextMixins
+from flext_core import FlextModels
+from flext_core import FlextProcessors
+from flext_core import FlextProtocols
+from flext_core import FlextRegistry
+from flext_core import FlextResult
+from flext_core import FlextRuntime
+from flext_core import FlextService
+from flext_core import FlextTypes
+from flext_core import FlextUtilities
+logger = FlextLogger(__name__)
 logger.debug("Debug message")
 ```
 

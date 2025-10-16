@@ -9,9 +9,11 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
+from flext_core import FlextContainer, FlextResult, FlextTypes
+
 
 # Temporary workaround for FlextApiClient import issues
-# TODO: Fix flext_api package imports
+# TODO(flext-oracle-wms): Fix flext_api package imports (#1)  # noqa: FIX002
 class FlextApiClient:
     """Temporary mock of FlextApiClient for refactoring."""
 
@@ -19,32 +21,30 @@ class FlextApiClient:
         self.base_url = base_url
         self.timeout = timeout
 
-    def get(self, path: str, **kwargs) -> dict[str, object]:
+    def get(self, path: str, **kwargs: object) -> dict[str, object]:  # noqa: ARG002
         """Mock GET request."""
         return {"mock": "response", "path": path}
 
-    def post(self, path: str, **kwargs) -> dict[str, object]:
+    def post(self, path: str, **kwargs: object) -> dict[str, object]:  # noqa: ARG002
         """Mock POST request."""
         return {"mock": "response", "path": path}
 
-    def put(self, path: str, **kwargs) -> dict[str, object]:
+    def put(self, path: str, **kwargs: object) -> dict[str, object]:  # noqa: ARG002
         """Mock PUT request."""
         return {"mock": "response", "path": path}
 
-    def delete(self, path: str, **kwargs) -> dict[str, object]:
+    def delete(self, path: str, **kwargs: object) -> dict[str, object]:  # noqa: ARG002
         """Mock DELETE request."""
         return {"mock": "response", "path": path}
 
 
-from flext_core import FlextCore
-
-from flext_oracle_wms.config import FlextOracleWmsConfig
+from flext_oracle_wms.config import FlextOracleWmsConfig  # noqa: E402
 
 
 class FlextOracleWmsClient:
     """Minimal Oracle WMS client using flext-api for HTTP operations.
 
-    Provides basic Oracle WMS API access with FlextCore.Result error handling.
+    Provides basic Oracle WMS API access with FlextResult error handling.
     Uses singleton pattern for configuration management.
     """
 
@@ -53,7 +53,7 @@ class FlextOracleWmsClient:
 
         Configuration is automatically retrieved from the global container.
         """
-        container = FlextCore.Container.get_global()
+        container = FlextContainer.get_global()
         self.config = container.get("FlextOracleWmsConfig").unwrap_or(
             FlextOracleWmsConfig()
         )
@@ -66,9 +66,7 @@ class FlextOracleWmsClient:
         # Initialize discovered entities cache
         self._discovered_entities = []
 
-    def get(
-        self, path: str, **kwargs: object
-    ) -> FlextCore.Result[FlextCore.Types.Dict]:
+    def get(self, path: str, **kwargs: object) -> FlextResult[FlextTypes.Dict]:
         """Make GET request to Oracle WMS API.
 
         Args:
@@ -76,18 +74,16 @@ class FlextOracleWmsClient:
             **kwargs: Additional request parameters
 
         Returns:
-            FlextCore.Result containing response data
+            FlextResult containing response data
 
         """
         try:
             result = self._client.get(path, **kwargs)
-            return FlextCore.Result.ok(result)
+            return FlextResult.ok(result)
         except Exception as e:
-            return FlextCore.Result.fail(f"GET {path} failed: {e}")
+            return FlextResult.fail(f"GET {path} failed: {e}")
 
-    def post(
-        self, path: str, **kwargs: object
-    ) -> FlextCore.Result[FlextCore.Types.Dict]:
+    def post(self, path: str, **kwargs: object) -> FlextResult[FlextTypes.Dict]:
         """Make POST request to Oracle WMS API.
 
         Args:
@@ -95,18 +91,16 @@ class FlextOracleWmsClient:
             **kwargs: Additional request parameters
 
         Returns:
-            FlextCore.Result containing response data
+            FlextResult containing response data
 
         """
         try:
             result = self._client.post(path, **kwargs)
-            return FlextCore.Result.ok(result)
+            return FlextResult.ok(result)
         except Exception as e:
-            return FlextCore.Result.fail(f"POST {path} failed: {e}")
+            return FlextResult.fail(f"POST {path} failed: {e}")
 
-    def put(
-        self, path: str, **kwargs: object
-    ) -> FlextCore.Result[FlextCore.Types.Dict]:
+    def put(self, path: str, **kwargs: object) -> FlextResult[FlextTypes.Dict]:
         """Make PUT request to Oracle WMS API.
 
         Args:
@@ -114,18 +108,16 @@ class FlextOracleWmsClient:
             **kwargs: Additional request parameters
 
         Returns:
-            FlextCore.Result containing response data
+            FlextResult containing response data
 
         """
         try:
             result = self._client.put(path, **kwargs)
-            return FlextCore.Result.ok(result)
+            return FlextResult.ok(result)
         except Exception as e:
-            return FlextCore.Result.fail(f"PUT {path} failed: {e}")
+            return FlextResult.fail(f"PUT {path} failed: {e}")
 
-    def delete(
-        self, path: str, **kwargs: object
-    ) -> FlextCore.Result[FlextCore.Types.Dict]:
+    def delete(self, path: str, **kwargs: object) -> FlextResult[FlextTypes.Dict]:
         """Make DELETE request to Oracle WMS API.
 
         Args:
@@ -133,72 +125,72 @@ class FlextOracleWmsClient:
             **kwargs: Additional request parameters
 
         Returns:
-            FlextCore.Result containing response data
+            FlextResult containing response data
 
         """
         try:
             result = self._client.delete(path, **kwargs)
-            return FlextCore.Result.ok(result)
+            return FlextResult.ok(result)
         except Exception as e:
-            return FlextCore.Result.fail(f"DELETE {path} failed: {e}")
+            return FlextResult.fail(f"DELETE {path} failed: {e}")
 
-    def health_check(self) -> FlextCore.Result[FlextCore.Types.Dict]:
+    def health_check(self) -> FlextResult[FlextTypes.Dict]:
         """Check Oracle WMS API health.
 
         Returns:
-            FlextCore.Result containing health status
+            FlextResult containing health status
 
         """
         return self.get("/health")
 
-    def start(self) -> FlextCore.Result[bool]:
+    def start(self) -> FlextResult[bool]:
         """Start the Oracle WMS client.
 
         Returns:
-            FlextCore.Result indicating success
+            FlextResult indicating success
 
         """
         try:
             # Initialize client if needed
-            return FlextCore.Result.ok(True)
+            return FlextResult.ok(True)
         except Exception as e:
-            return FlextCore.Result.fail(f"Failed to start client: {e}")
+            return FlextResult.fail(f"Failed to start client: {e}")
 
-    def stop(self) -> FlextCore.Result[bool]:
+    def stop(self) -> FlextResult[bool]:
         """Stop the Oracle WMS client.
 
         Returns:
-            FlextCore.Result indicating success
+            FlextResult indicating success
 
         """
         try:
             # Cleanup client resources
-            return FlextCore.Result.ok(True)
+            return FlextResult.ok(True)
         except Exception as e:
-            return FlextCore.Result.fail(f"Failed to stop client: {e}")
+            return FlextResult.fail(f"Failed to stop client: {e}")
 
-    def discover_entities(self) -> FlextCore.Result[list[FlextCore.Types.Dict]]:
+    def discover_entities(self) -> FlextResult[list[FlextTypes.Dict]]:
         """Discover available Oracle WMS entities.
 
         Returns:
-            FlextCore.Result containing list of entities
+            FlextResult containing list of entities
 
         """
         try:
             result = self.get("/entities")
             if result.success:
                 entities = result.value.get("entities", [])
-                return FlextCore.Result.ok(entities)
+                return FlextResult.ok(entities)
             return result
         except Exception as e:
-            return FlextCore.Result.fail(f"Entity discovery failed: {e}")
+            return FlextResult.fail(f"Entity discovery failed: {e}")
 
     def get_entity_data(
         self,
         entity_name: str,
         limit: int | None = None,
-        filters: FlextCore.Types.Dict | None = None,
-    ) -> FlextCore.Result[list[FlextCore.Types.Dict]]:
+        filters: FlextTypes.Dict | None = None,
+    ) -> FlextResult[list[FlextTypes.Dict]]:
         """Get data for a specific Oracle WMS entity.
 
         Args:
@@ -207,7 +199,7 @@ class FlextOracleWmsClient:
             filters: Optional filters to apply
 
         Returns:
-            FlextCore.Result containing entity data
+            FlextResult containing entity data
 
         """
         try:
@@ -220,39 +212,31 @@ class FlextOracleWmsClient:
             result = self.get(f"/entities/{entity_name}", **params)
             if result.success:
                 data = result.value.get("data", [])
-                return FlextCore.Result.ok(data)
+                return FlextResult.ok(data)
             return result
         except Exception as e:
-            return FlextCore.Result.fail(
-                f"Failed to get entity data for {entity_name}: {e}"
-            )
+            return FlextResult.fail(f"Failed to get entity data for {entity_name}: {e}")
 
-    def get_apis_by_category(
-        self, category: str
-    ) -> FlextCore.Result[list[FlextCore.Types.Dict]]:
+    def get_apis_by_category(self, category: str) -> FlextResult[list[FlextTypes.Dict]]:
         """Get Oracle WMS APIs by category.
 
         Args:
             category: API category name
 
         Returns:
-            FlextCore.Result containing APIs in the category
+            FlextResult containing APIs in the category
 
         """
         try:
             result = self.get(f"/apis/category/{category}")
             if result.success:
                 apis = result.value.get("apis", [])
-                return FlextCore.Result.ok(apis)
+                return FlextResult.ok(apis)
             return result
         except Exception as e:
-            return FlextCore.Result.fail(
-                f"Failed to get APIs for category {category}: {e}"
-            )
+            return FlextResult.fail(f"Failed to get APIs for category {category}: {e}")
 
-    def call_api(
-        self, api_name: str, **kwargs: object
-    ) -> FlextCore.Result[FlextCore.Types.Dict]:
+    def call_api(self, api_name: str, **kwargs: object) -> FlextResult[FlextTypes.Dict]:
         """Call a specific Oracle WMS API.
 
         Args:
@@ -260,17 +244,17 @@ class FlextOracleWmsClient:
             **kwargs: Additional parameters
 
         Returns:
-            FlextCore.Result containing API response
+            FlextResult containing API response
 
         """
         try:
             return self.get(f"/api/{api_name}", **kwargs)
         except Exception as e:
-            return FlextCore.Result.fail(f"API call failed for {api_name}: {e}")
+            return FlextResult.fail(f"API call failed for {api_name}: {e}")
 
     def update_oblpn_tracking_number(
         self, oblpn_id: str, tracking_number: str
-    ) -> FlextCore.Result[FlextCore.Types.Dict]:
+    ) -> FlextResult[FlextTypes.Dict]:
         """Update OBLPN tracking number.
 
         Args:
@@ -278,7 +262,7 @@ class FlextOracleWmsClient:
             tracking_number: New tracking number
 
         Returns:
-            FlextCore.Result containing update response
+            FlextResult containing update response
 
         """
         try:
@@ -286,11 +270,9 @@ class FlextOracleWmsClient:
                 f"/oblpn/{oblpn_id}/tracking", json={"tracking_number": tracking_number}
             )
         except Exception as e:
-            return FlextCore.Result.fail(f"Failed to update OBLPN tracking: {e}")
+            return FlextResult.fail(f"Failed to update OBLPN tracking: {e}")
 
-    def create_lpn(
-        self, lpn_nbr: str, qty: int
-    ) -> FlextCore.Result[FlextCore.Types.Dict]:
+    def create_lpn(self, lpn_nbr: str, qty: int) -> FlextResult[FlextTypes.Dict]:
         """Create LPN (License Plate Number).
 
         Args:
@@ -298,13 +280,13 @@ class FlextOracleWmsClient:
             qty: Quantity
 
         Returns:
-            FlextCore.Result containing LPN creation response
+            FlextResult containing LPN creation response
 
         """
         try:
             return self.post("/lpn", json={"lpn_nbr": lpn_nbr, "qty": qty})
         except Exception as e:
-            return FlextCore.Result.fail(f"Failed to create LPN: {e}")
+            return FlextResult.fail(f"Failed to create LPN: {e}")
 
 
 __all__ = ["FlextOracleWmsClient"]

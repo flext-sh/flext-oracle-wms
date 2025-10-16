@@ -10,10 +10,10 @@ flext-oracle-wms has partial FLEXT ecosystem integration with significant compli
 
 #### flext-core Integration (Partial)
 
-- ✅ **FlextCore.Result usage** - implemented throughout library
-- ✅ **FlextCore.Logger support** - structured logging patterns
-- ❌ **FlextCore.Container** - dependency injection not integrated
-- ❌ **FlextCore.Service** - unified service patterns missing
+- ✅ **FlextResult usage** - implemented throughout library
+- ✅ **FlextLogger support** - structured logging patterns
+- ❌ **FlextContainer** - dependency injection not integrated
+- ❌ **FlextService** - unified service patterns missing
 
 #### Missing FLEXT Dependencies
 
@@ -60,7 +60,7 @@ client = FlextApiClient()
 
 3. **Dependency Integration**
    - Add flext-auth for authentication
-   - Integrate FlextCore.Container for dependency injection
+   - Integrate FlextContainer for dependency injection
 
 #### Phase 2: Enhanced Integration
 
@@ -79,7 +79,7 @@ For complete FLEXT ecosystem compliance:
 - ✅ Zero httpx/requests imports in source code
 - ✅ Single unified class per module
 - ✅ Complete flext-auth integration
-- ✅ FlextCore.Container dependency injection
+- ✅ FlextContainer dependency injection
 - ✅ Full Singer protocol implementation
 
 ---

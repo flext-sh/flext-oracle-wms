@@ -12,12 +12,12 @@ from __future__ import annotations
 
 from typing import override
 
-from flext_core import FlextCore
+from flext_core import FlextExceptions, FlextLogger, FlextTypes
 
 from flext_oracle_wms.typings import FlextOracleWmsTypes
 
 
-class FlextOracleWmsExceptions(FlextCore.Exceptions):
+class FlextOracleWmsExceptions(FlextExceptions):
     """Namespace class for all Oracle WMS exceptions following FLEXT patterns.
 
     All Oracle WMS exception types are nested within this single unified class.
@@ -25,9 +25,9 @@ class FlextOracleWmsExceptions(FlextCore.Exceptions):
     """
 
     # Logger for the exceptions module
-    logger = FlextCore.Logger(__name__)
+    logger = FlextLogger(__name__)
 
-    class BaseError(FlextCore.Exceptions.BaseError):
+    class BaseError(FlextExceptions.BaseError):
         """Base exception for all Oracle WMS operations.
 
         Propagates context attributes (like entity_name) to support tests that
@@ -35,8 +35,8 @@ class FlextOracleWmsExceptions(FlextCore.Exceptions):
         """
 
         def _extract_common_kwargs(
-            self, kwargs: FlextCore.Types.Dict
-        ) -> tuple[FlextCore.Types.Dict, str | None, str | None]:
+            self, kwargs: FlextTypes.Dict
+        ) -> tuple[FlextTypes.Dict, str | None, str | None]:
             """Extract common kwargs used by all exception types.
 
             Args:
@@ -62,8 +62,8 @@ class FlextOracleWmsExceptions(FlextCore.Exceptions):
             return base_context, correlation_id, error_code
 
         def _build_context(
-            self, base_context: FlextCore.Types.Dict, **kwargs: object
-        ) -> FlextCore.Types.Dict:
+            self, base_context: FlextTypes.Dict, **kwargs: object
+        ) -> FlextTypes.Dict:
             """Build complete context dictionary from base context and additional fields.
 
             Args:
@@ -76,9 +76,9 @@ class FlextOracleWmsExceptions(FlextCore.Exceptions):
             """
             context = dict[str, object](base_context)  # Copy base context
             # Add non-None kwargs to context
-            context.update({
-                key: value for key, value in kwargs.items() if value is not None
-            })
+            context.update(
+                {key: value for key, value in kwargs.items() if value is not None}
+            )
             return context
 
     # Declare attributes that may be dynamically set for MyPy

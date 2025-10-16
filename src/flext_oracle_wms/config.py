@@ -9,13 +9,13 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from flext_core import FlextCore
+from flext_core import FlextConfig
 from pydantic import Field
 
 from flext_oracle_wms.constants import FlextOracleWmsConstants
 
 
-class FlextOracleWmsConfig(FlextCore.Config):
+class FlextOracleWmsConfig(FlextConfig):
     """Oracle WMS client configuration for enterprise integration.
 
     Provides comprehensive configuration for Oracle WMS Cloud client connections,

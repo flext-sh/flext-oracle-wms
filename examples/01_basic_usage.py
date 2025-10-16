@@ -23,7 +23,7 @@ import os
 from pathlib import Path
 
 from dotenv import load_dotenv
-from flext_core import FlextCore
+from flext_core import FlextContainer, FlextLogger, FlextResult, FlextTypes
 
 from flext_oracle_wms import (
     FlextOracleWmsClient,
@@ -36,7 +36,7 @@ MAX_ENTITIES_TO_SHOW = 5
 MAX_VALUE_DISPLAY_LENGTH = 50
 
 # Initialize logger
-logger = FlextCore.Logger(__name__)
+logger = FlextLogger(__name__)
 
 # Load .env file from project root
 project_root = Path(__file__).parent.parent
@@ -51,10 +51,8 @@ def setup_client_config() -> None:
     This function demonstrates how to configure the global singleton
     with environment variables and parameter overrides.
     """
-    from flext_core import FlextCore
-
     # Get global container
-    container = FlextCore.Container.get_global()
+    container = FlextContainer.get_global()
 
     # Create config with environment variables
     config = FlextOracleWmsClientConfig(
@@ -69,14 +67,14 @@ def setup_client_config() -> None:
 
 def discover_wms_entities(
     client: FlextOracleWmsClient,
-) -> FlextCore.Result[list[FlextCore.Types.Dict]]:
+) -> FlextResult[list[FlextTypes.Dict]]:
     """Discover available Oracle WMS entities.
 
     Args:
       client: Configured Oracle WMS client
 
     Returns:
-      FlextCore.Result containing list of discovered entities or error details
+      FlextResult containing list of discovered entities or error details
 
     """
     result = client.discover_entities()
@@ -111,7 +109,7 @@ def discover_wms_entities(
 def query_entity_data(
     client: FlextOracleWmsClient,
     entity_name: str,
-) -> FlextCore.Result[list[FlextCore.Types.Dict]]:
+) -> FlextResult[list[FlextTypes.Dict]]:
     """Query data from a specific Oracle WMS entity.
 
     Args:
@@ -119,7 +117,7 @@ def query_entity_data(
       entity_name: Name of the entity to query
 
     Returns:
-      FlextCore.Result containing entity data or error details
+      FlextResult containing entity data or error details
 
     """
     # Query with basic parameters
@@ -170,7 +168,7 @@ def query_entity_data(
 
 
 def demonstrate_error_handling(client: FlextOracleWmsClient) -> None:
-    """Demonstrate proper error handling patterns with FlextCore.Result."""
+    """Demonstrate proper error handling patterns with FlextResult."""
     # Attempt to query a non-existent entity
     result = client.get_entity_data("NON_EXISTENT_ENTITY")
 

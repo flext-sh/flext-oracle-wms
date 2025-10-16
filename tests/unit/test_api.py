@@ -9,7 +9,13 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from flext_core import FlextCore
+from flext_core import (
+    FlextBus,
+    FlextContainer,
+    FlextContext,
+    FlextDispatcher,
+    FlextService,
+)
 
 from flext_oracle_wms.api import FlextOracleWmsApi
 from flext_oracle_wms.config import FlextOracleWmsConfig
@@ -20,10 +26,9 @@ class TestFlextOracleWmsApi:
 
     def test_class_inheritance(self) -> None:
         """Test that FlextOracleWmsApi follows proper inheritance patterns."""
-        # FlextOracleWmsApi should inherit from FlextCore.Service
-        from flext_core import FlextCore
+        # FlextOracleWmsApi should inherit from FlextService
 
-        assert issubclass(FlextOracleWmsApi, FlextCore.Service)
+        assert issubclass(FlextOracleWmsApi, FlextService)
 
     def test_initialization_without_config(self) -> None:
         """Test initialization without explicit configuration."""
@@ -34,10 +39,10 @@ class TestFlextOracleWmsApi:
         assert isinstance(api._config, FlextOracleWmsConfig)
 
         # Should initialize all FLEXT components
-        assert isinstance(api._container, type(FlextCore.Container.get_global()))
-        assert isinstance(api._context, FlextCore.Context)
-        assert isinstance(api._bus, FlextCore.Bus)
-        assert isinstance(api._dispatcher, FlextCore.Dispatcher)
+        assert isinstance(api._container, type(FlextContainer.get_global()))
+        assert isinstance(api._context, FlextContext)
+        assert isinstance(api._bus, FlextBus)
+        assert isinstance(api._dispatcher, FlextDispatcher)
 
         # Should initialize logger
         assert hasattr(api, "logger")

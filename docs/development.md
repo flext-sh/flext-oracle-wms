@@ -90,7 +90,7 @@ class WmsClient: pass
 class WmsHelper: pass     # ❌ VIOLATION
 
 # Required: Single unified class per module
-class FlextOracleWmsClient(FlextCore.Service):
+class FlextOracleWmsClient(FlextService):
     class _ClientHelper:  # ✅ NESTED HELPER
         pass
 ```
@@ -107,17 +107,36 @@ from flext_auth import FlextAuthenticator  # ✅ REQUIRED
 
 ### Error Handling Standards
 
-All operations must use FlextCore.Result pattern:
+All operations must use FlextResult pattern:
 
 ```python
-from flext_core import FlextCore
+from flext_core import FlextBus
+from flext_core import FlextConfig
+from flext_core import FlextConstants
+from flext_core import FlextContainer
+from flext_core import FlextContext
+from flext_core import FlextDecorators
+from flext_core import FlextDispatcher
+from flext_core import FlextExceptions
+from flext_core import FlextHandlers
+from flext_core import FlextLogger
+from flext_core import FlextMixins
+from flext_core import FlextModels
+from flext_core import FlextProcessors
+from flext_core import FlextProtocols
+from flext_core import FlextRegistry
+from flext_core import FlextResult
+from flext_core import FlextRuntime
+from flext_core import FlextService
+from flext_core import FlextTypes
+from flext_core import FlextUtilities
 
-def operation() -> FlextCore.Result[ReturnType]:
+def operation() -> FlextResult[ReturnType]:
     try:
         # Operation logic
-        return FlextCore.Result.ok(result)
+        return FlextResult.ok(result)
     except Exception as e:
-        return FlextCore.Result.fail(f"Operation failed: {e}")
+        return FlextResult.fail(f"Operation failed: {e}")
 ```
 
 ### Type Safety Requirements
@@ -145,7 +164,7 @@ tests/
 
 - **90%+ coverage** - Minimum coverage target
 - **Real integration preferred** - Minimize mocking
-- **FlextCore.Result validation** - Test error handling
+- **FlextResult validation** - Test error handling
 - **Type safety testing** - Validate type annotations
 
 ### Current Test Limitations
@@ -210,7 +229,7 @@ make test                  # All tests must pass
 
 - [ ] **FLEXT compliance** - No httpx usage, unified classes
 - [ ] **Type safety** - Zero MyPy errors
-- [ ] **Error handling** - FlextCore.Result patterns used
+- [ ] **Error handling** - FlextResult patterns used
 - [ ] **Test coverage** - New code has tests
 - [ ] **Documentation** - API changes documented
 

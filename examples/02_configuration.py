@@ -12,7 +12,7 @@ from enum import StrEnum
 from pathlib import Path
 
 from dotenv import load_dotenv
-from flext_core import FlextCore
+from flext_core import FlextLogger, FlextTypes
 
 from flext_oracle_wms import (
     FlextOracleWmsClient,
@@ -21,7 +21,7 @@ from flext_oracle_wms import (
 from flext_oracle_wms.constants import FlextOracleWmsConstants
 
 # Initialize logger
-logger = FlextCore.Logger(__name__)
+logger = FlextLogger(__name__)
 
 
 class Environment(StrEnum):
@@ -127,19 +127,21 @@ def create_demo_config() -> FlextOracleWmsClientConfig:
 
     """
     # Use Pydantic model validation for proper configuration creation
-    return FlextOracleWmsClientConfig.model_validate({
-        "base_url": "https://demo-wms.oraclecloud.com/demo",
-        "username": "demo_user",
-        "password": "demo_password",
-        "api_version": "LGF_V10",
-        "timeout": FlextOracleWmsConstants.Connection.DEFAULT_TIMEOUT,
-        "retry_attempts": FlextOracleWmsConstants.Connection.DEFAULT_MAX_RETRIES,
-        "enable_ssl_verification": True,
-        "enable_audit_logging": True,
-    })
+    return FlextOracleWmsClientConfig.model_validate(
+        {
+            "base_url": "https://demo-wms.oraclecloud.com/demo",
+            "username": "demo_user",
+            "password": "demo_password",
+            "api_version": "LGF_V10",
+            "timeout": FlextOracleWmsConstants.Connection.DEFAULT_TIMEOUT,
+            "retry_attempts": FlextOracleWmsConstants.Connection.DEFAULT_MAX_RETRIES,
+            "enable_ssl_verification": True,
+            "enable_audit_logging": True,
+        }
+    )
 
 
-def validate_configuration(config: FlextOracleWmsClientConfig) -> FlextCore.Types.Dict:
+def validate_configuration(config: FlextOracleWmsClientConfig) -> FlextTypes.Dict:
     """Validate Oracle WMS client configuration.
 
     Args:
@@ -149,9 +151,9 @@ def validate_configuration(config: FlextOracleWmsClientConfig) -> FlextCore.Type
       Dictionary containing validation results
 
     """
-    errors: FlextCore.Types.StringList = []
-    warnings: FlextCore.Types.StringList = []
-    config_summary: FlextCore.Types.Dict = {}
+    errors: FlextTypes.StringList = []
+    warnings: FlextTypes.StringList = []
+    config_summary: FlextTypes.Dict = {}
 
     # Validate base URL
     if not config.oracle_wms_base_url:
@@ -195,7 +197,7 @@ def validate_configuration(config: FlextOracleWmsClientConfig) -> FlextCore.Type
         "enable_logging": config.oracle_wms_enable_logging,
     }
 
-    validation_results: FlextCore.Types.Dict = {
+    validation_results: FlextTypes.Dict = {
         "valid": len(errors) == 0,
         "warnings": warnings,
         "errors": errors,
@@ -207,7 +209,7 @@ def validate_configuration(config: FlextOracleWmsClientConfig) -> FlextCore.Type
 
 def test_configuration(
     config: FlextOracleWmsClientConfig,
-) -> FlextCore.Types.Dict:
+) -> FlextTypes.Dict:
     """Test Oracle WMS configuration by attempting connection.
 
     Args:
@@ -217,7 +219,7 @@ def test_configuration(
       Dictionary with test results
 
     """
-    test_results: FlextCore.Types.Dict = {
+    test_results: FlextTypes.Dict = {
         "connection_success": False,
         "health_check_success": False,
         "error": None,

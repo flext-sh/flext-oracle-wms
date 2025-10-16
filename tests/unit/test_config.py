@@ -9,7 +9,7 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from flext_core import FlextCore
+from flext_core import FlextConfig
 
 from flext_oracle_wms.config import FlextOracleWmsConfig
 
@@ -19,8 +19,8 @@ class TestFlextOracleWmsConfig:
 
     def test_class_inheritance(self) -> None:
         """Test that FlextOracleWmsConfig follows proper inheritance patterns."""
-        # FlextOracleWmsConfig should inherit from FlextCore.Config
-        assert issubclass(FlextOracleWmsConfig, FlextCore.Config)
+        # FlextOracleWmsConfig should inherit from FlextConfig
+        assert issubclass(FlextOracleWmsConfig, FlextConfig)
 
     def test_default_initialization(self) -> None:
         """Test default configuration initialization."""

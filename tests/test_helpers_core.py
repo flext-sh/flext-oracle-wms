@@ -9,7 +9,7 @@ SPDX-License-Identifier: MIT
 """
 
 import pytest
-from flext_core import FlextCore
+from flext_core import FlextTypes
 
 from flext_oracle_wms import (
     flext_oracle_wms_build_entity_url,
@@ -221,7 +221,7 @@ class TestDataProcessingHelpers:
 
     def test_chunk_records_basic(self) -> None:
         """Test basic record chunking."""
-        records: list[FlextCore.Types.Dict] = [
+        records: list[FlextTypes.Dict] = [
             {"id": i, "value": f"item_{i}"} for i in range(10)
         ]
         chunk_size = 3
@@ -236,7 +236,7 @@ class TestDataProcessingHelpers:
 
     def test_chunk_records_exact_division(self) -> None:
         """Test chunking when records divide evenly."""
-        records: list[FlextCore.Types.Dict] = [
+        records: list[FlextTypes.Dict] = [
             {"id": i, "value": f"item_{i}"} for i in range(9)
         ]
         chunk_size = 3
@@ -250,7 +250,7 @@ class TestDataProcessingHelpers:
 
     def test_chunk_records_empty_list(self) -> None:
         """Test chunking empty list."""
-        records: list[FlextCore.Types.Dict] = []
+        records: list[FlextTypes.Dict] = []
         chunk_size = 3
 
         chunks = list(flext_oracle_wms_chunk_records(records, chunk_size))
@@ -259,7 +259,7 @@ class TestDataProcessingHelpers:
 
     def test_chunk_records_single_chunk(self) -> None:
         """Test chunking when all records fit in one chunk."""
-        records: list[FlextCore.Types.Dict] = [
+        records: list[FlextTypes.Dict] = [
             {"id": i, "value": f"item_{i}"} for i in [1, 2, 3]
         ]
         chunk_size = 5
@@ -271,7 +271,7 @@ class TestDataProcessingHelpers:
 
     def test_chunk_records_invalid_chunk_size(self) -> None:
         """Test chunking with invalid chunk size."""
-        records: list[FlextCore.Types.Dict] = [
+        records: list[FlextTypes.Dict] = [
             {"id": i, "value": f"item_{i}"} for i in [1, 2, 3]
         ]
 
@@ -308,7 +308,7 @@ class TestDataProcessingHelpers:
 
     def test_extract_pagination_info_minimal(self) -> None:
         """Test extracting pagination info with minimal fields."""
-        response: FlextCore.Types.Dict = {"results": [{"id": 1}, {"id": 2}]}
+        response: FlextTypes.Dict = {"results": [{"id": 1}, {"id": 2}]}
 
         result = flext_oracle_wms_extract_pagination_info(response)
 
@@ -326,7 +326,7 @@ class TestDataProcessingHelpers:
 
     def test_extract_pagination_info_no_data(self) -> None:
         """Test extracting pagination info from response with no data."""
-        response: FlextCore.Types.Dict = {}
+        response: FlextTypes.Dict = {}
 
         result = flext_oracle_wms_extract_pagination_info(response)
 

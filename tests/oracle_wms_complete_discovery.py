@@ -17,7 +17,7 @@ import operator
 from datetime import UTC, datetime
 from pathlib import Path
 
-from flext_core import FlextCore
+from flext_core import FlextLogger, FlextResult, FlextTypes
 from pydantic import ConfigDict
 
 from flext_oracle_wms import (
@@ -30,7 +30,7 @@ from flext_oracle_wms import (
     create_oracle_wms_client,
 )
 
-logger = FlextCore.Logger(__name__)
+logger = FlextLogger(__name__)
 
 
 class OracleWmsCompleteDiscovery:
@@ -54,39 +54,37 @@ class OracleWmsCompleteDiscovery:
             self.config,
             mock_mode=False,
         )
-        self.discovered_entities: FlextCore.Types.StringList = []
-        self.entity_metadata: FlextCore.Types.Dict = {}
-        self.complete_schemas: FlextCore.Types.Dict = {}
+        self.discovered_entities: FlextTypes.StringList = []
+        self.entity_metadata: FlextTypes.Dict = {}
+        self.complete_schemas: FlextTypes.Dict = {}
 
-    def start_discovery(self) -> FlextCore.Result[None]:
+    def start_discovery(self) -> FlextResult[None]:
         """Start complete discovery process."""
         start_result = self.client.start()
         if not start_result.success:
-            return FlextCore.Result[None].fail(
-                f"Client start failed: {start_result.error}"
-            )
+            return FlextResult[None].fail(f"Client start failed: {start_result.error}")
 
-        return FlextCore.Result[None].ok(None)
+        return FlextResult[None].ok(None)
 
     def discover_all_apis(
         self,
-    ) -> FlextCore.Result[dict[str, dict[str, object | FlextCore.Result[object]]]]:
+    ) -> FlextResult[dict[str, dict[str, object | FlextResult[object]]]]:
         """Discover and test ALL 22+ Oracle WMS APIs."""
-        api_results: dict[str, dict[str, object | FlextCore.Result[object]]] = {}
+        api_results: dict[str, dict[str, object | FlextResult[object]]] = {}
         all_apis: dict[str, FlextOracleWmsApiEndpoint] = FLEXT_ORACLE_WMS_APIS
 
         for api_name, api_endpoint in all_apis.items():
             try:
                 # Test API based on its type and requirements
                 if api_endpoint.category == FlextOracleWmsApiCategory.DATA_EXTRACT:
-                    result: FlextCore.Result[object] = self._test_data_extract_api(
+                    result: FlextResult[object] = self._test_data_extract_api(
                         api_name,
                         api_endpoint,
                     )
                 elif (
                     api_endpoint.category == FlextOracleWmsApiCategory.ENTITY_OPERATIONS
                 ):
-                    result: FlextCore.Result[object] = self._test_entity_operations_api(
+                    result: FlextResult[object] = self._test_entity_operations_api(
                         api_name,
                         api_endpoint,
                     )
@@ -94,7 +92,7 @@ class OracleWmsCompleteDiscovery:
                     api_endpoint.category
                     == FlextOracleWmsApiCategory.SETUP_TRANSACTIONAL
                 ):
-                    result: FlextCore.Result[object] = self._test_setup_api(
+                    result: FlextResult[object] = self._test_setup_api(
                         api_name,
                         api_endpoint,
                     )
@@ -102,12 +100,12 @@ class OracleWmsCompleteDiscovery:
                     api_endpoint.category
                     == FlextOracleWmsApiCategory.AUTOMATION_OPERATIONS
                 ):
-                    result: FlextCore.Result[object] = self._test_automation_api(
+                    result: FlextResult[object] = self._test_automation_api(
                         api_name,
                         api_endpoint,
                     )
                 else:
-                    result: FlextCore.Result[object] = FlextCore.Result[None].fail(
+                    result: FlextResult[object] = FlextResult[None].fail(
                         "Unknown API category",
                     )
 
@@ -123,18 +121,18 @@ class OracleWmsCompleteDiscovery:
             except Exception as e:
                 api_results[api_name] = {
                     "endpoint": api_endpoint,
-                    "result": FlextCore.Result[None].fail(f"Exception: {e}"),
+                    "result": FlextResult[None].fail(f"Exception: {e}"),
                     "tested_at": datetime.now(UTC).isoformat(),
                 }
 
         _ = sum(1 for r in api_results.values() if r["result"].success)
 
-        return FlextCore.Result[None].ok(api_results)
+        return FlextResult[None].ok(api_results)
 
     def _test_data_extract_api(
         self,
         api_name: str,
-    ) -> FlextCore.Result[object]:
+    ) -> FlextResult[object]:
         """Test data extraction APIs."""
         try:
             if api_name == "lgf_entity_discovery":
@@ -154,7 +152,7 @@ class OracleWmsCompleteDiscovery:
                         api_name,
                         path_params={"entity_name": entity_name},
                     )
-                return FlextCore.Result[None].fail("No entities available for testing")
+                return FlextResult[None].fail("No entities available for testing")
 
             if api_name == "lgf_entity_get":
                 # Need entity name and ID - requires more complex discovery
@@ -171,13 +169,13 @@ class OracleWmsCompleteDiscovery:
             return self.client.call_api(api_name)
 
         except Exception as e:
-            return FlextCore.Result[None].fail(f"Data extract API test failed: {e}")
+            return FlextResult[None].fail(f"Data extract API test failed: {e}")
 
     def _test_entity_operations_api(
         self,
         api_name: str,
         endpoint: FlextOracleWmsApiEndpoint,
-    ) -> FlextCore.Result[object]:
+    ) -> FlextResult[object]:
         """Test entity operations APIs."""
         try:
             if "entity" in endpoint.path and "{entity_name}" in endpoint.path:
@@ -196,21 +194,17 @@ class OracleWmsCompleteDiscovery:
                         api_name,
                         path_params={"entity_name": entity_name},
                     )
-                return FlextCore.Result[None].fail(
-                    "No entities for entity operations test"
-                )
+                return FlextResult[None].fail("No entities for entity operations test")
             return self.client.call_api(api_name)
 
         except Exception as e:
-            return FlextCore.Result[None].fail(
-                f"Entity operations API test failed: {e}"
-            )
+            return FlextResult[None].fail(f"Entity operations API test failed: {e}")
 
     def _test_setup_api(
         self,
         api_name: str,
         endpoint: FlextOracleWmsApiEndpoint,
-    ) -> FlextCore.Result[object]:
+    ) -> FlextResult[object]:
         """Test setup and transactional APIs."""
         # These typically require POST data - test with minimal payload
         try:
@@ -219,13 +213,13 @@ class OracleWmsCompleteDiscovery:
                 return self.client.call_api(api_name, data=test_data)
             return self.client.call_api(api_name)
         except Exception as e:
-            return FlextCore.Result[None].fail(f"Setup API test failed: {e}")
+            return FlextResult[None].fail(f"Setup API test failed: {e}")
 
     def _test_automation_api(
         self,
         api_name: str,
         endpoint: FlextOracleWmsApiEndpoint,
-    ) -> FlextCore.Result[object]:
+    ) -> FlextResult[object]:
         """Test automation and operations APIs."""
         try:
             if endpoint.method == "POST":
@@ -234,9 +228,9 @@ class OracleWmsCompleteDiscovery:
                 return self.client.call_api(api_name, data=test_data)
             return self.client.call_api(api_name)
         except Exception as e:
-            return FlextCore.Result[None].fail(f"Automation API test failed: {e}")
+            return FlextResult[None].fail(f"Automation API test failed: {e}")
 
-    def _test_entity_get_with_discovery(self) -> FlextCore.Result[object]:
+    def _test_entity_get_with_discovery(self) -> FlextResult[object]:
         """Test entity get by discovering entity with data first."""
         try:
             # First find entities with data
@@ -264,14 +258,14 @@ class OracleWmsCompleteDiscovery:
                                     },
                                 )
 
-            return FlextCore.Result[None].fail(
+            return FlextResult[None].fail(
                 "No entity with ID found for testing lgf_entity_get",
             )
 
         except Exception as e:
-            return FlextCore.Result[None].fail(f"Entity get discovery failed: {e}")
+            return FlextResult[None].fail(f"Entity get discovery failed: {e}")
 
-    def _test_data_extract_to_object_store(self) -> FlextCore.Result[object]:
+    def _test_data_extract_to_object_store(self) -> FlextResult[object]:
         """Test data extract to object store API."""
         try:
             # Oracle 25A data extract API
@@ -283,11 +277,9 @@ class OracleWmsCompleteDiscovery:
             }
             return self.client.call_api("lgf_data_extract", data=extract_request)
         except Exception as e:
-            return FlextCore.Result[None].fail(
-                f"Data extract to object store failed: {e}"
-            )
+            return FlextResult[None].fail(f"Data extract to object store failed: {e}")
 
-    def _test_task_status(self) -> FlextCore.Result[object]:
+    def _test_task_status(self) -> FlextResult[object]:
         """Test task status API."""
         try:
             # Test getting task status
@@ -296,13 +288,13 @@ class OracleWmsCompleteDiscovery:
                 params={"status": "COMPLETED", "limit": 5},
             )
         except Exception as e:
-            return FlextCore.Result[None].fail(f"task status test failed: {e}")
+            return FlextResult[None].fail(f"task status test failed: {e}")
 
     def _test_entity_with_id(
         self,
         api_name: str,
         entity_name: str,
-    ) -> FlextCore.Result[object]:
+    ) -> FlextResult[object]:
         """Test entity API that requires ID parameter."""
         try:
             # Get entity data to find valid ID
@@ -323,12 +315,10 @@ class OracleWmsCompleteDiscovery:
                                 },
                             )
 
-            return FlextCore.Result[None].fail(
-                f"No valid ID found for entity {entity_name}"
-            )
+            return FlextResult[None].fail(f"No valid ID found for entity {entity_name}")
 
         except Exception as e:
-            return FlextCore.Result[None].fail(f"Entity with ID test failed: {e}")
+            return FlextResult[None].fail(f"Entity with ID test failed: {e}")
 
     def _summarize_api_response(self, data: object) -> str:
         """Summarize API response data."""
@@ -351,14 +341,14 @@ class OracleWmsCompleteDiscovery:
 
     def discover_complete_entity_metadata(
         self,
-    ) -> FlextCore.Result[FlextCore.Types.Dict]:
+    ) -> FlextResult[FlextTypes.Dict]:
         """Discover complete metadata for all entities using Oracle WMS APIs."""
         if not self.discovered_entities:
             entities_result = self.client.discover_entities()
             if entities_result.success:
                 self.discovered_entities = entities_result.data
             else:
-                return FlextCore.Result[None].fail("Entity discovery failed")
+                return FlextResult[None].fail("Entity discovery failed")
 
         metadata_results = {}
 
@@ -463,7 +453,7 @@ class OracleWmsCompleteDiscovery:
             for name, _count in sorted_entities[:10]:
                 len(metadata_results[name]["fields"])
 
-        return FlextCore.Result[None].ok(
+        return FlextResult[None].ok(
             {
                 "total_entities": len(self.discovered_entities),
                 "entities_with_data": entities_with_data,
@@ -475,10 +465,10 @@ class OracleWmsCompleteDiscovery:
 
     def generate_singer_schemas_with_flattening(
         self,
-    ) -> FlextCore.Result[FlextCore.Types.Dict]:
+    ) -> FlextResult[FlextTypes.Dict]:
         """Generate Singer schemas with real data flattening based on Oracle metadata."""
         if not self.entity_metadata:
-            return FlextCore.Result[None].fail(
+            return FlextResult[None].fail(
                 "No entity metadata available for schema generation",
             )
 
@@ -505,13 +495,13 @@ class OracleWmsCompleteDiscovery:
 
         self.complete_schemas = singer_schemas
 
-        return FlextCore.Result[None].ok(singer_schemas)
+        return FlextResult[None].ok(singer_schemas)
 
     def _generate_singer_schema_from_metadata(
         self,
         entity_name: str,
-        metadata: FlextCore.Types.Dict,
-    ) -> FlextCore.Types.Dict | None:
+        metadata: FlextTypes.Dict,
+    ) -> FlextTypes.Dict | None:
         """Generate Singer schema from Oracle WMS metadata with flattening."""
         try:
             fields = metadata.get("fields", [])
@@ -548,7 +538,7 @@ class OracleWmsCompleteDiscovery:
         python_type: str,
         sample_value: object,
         field_name: str,
-    ) -> FlextCore.Types.Dict:
+    ) -> FlextTypes.Dict:
         """Map Oracle/Python types to Singer types based on real data."""
         # Analyze sample value for more accurate typing
         if sample_value is not None:
@@ -618,7 +608,7 @@ class OracleWmsCompleteDiscovery:
 
         return name_check
 
-    def save_complete_discovery_results(self) -> FlextCore.Result[str]:
+    def save_complete_discovery_results(self) -> FlextResult[str]:
         """Save complete discovery results to files."""
         results_dir = Path("oracle_wms_complete_results")
         asyncio.to_thread(results_dir.mkdir, exist_ok=True)
@@ -657,15 +647,15 @@ class OracleWmsCompleteDiscovery:
         with summary_file.open("w", encoding="utf-8") as f:
             json.dump(summary, f, indent=2, default=str)
 
-        return FlextCore.Result[None].ok(str(results_dir))
+        return FlextResult[None].ok(str(results_dir))
 
-    def cleanup(self) -> FlextCore.Result[None]:
+    def cleanup(self) -> FlextResult[None]:
         """Clean up resources."""
         try:
             self.client.stop()
-            return FlextCore.Result[None].ok(None)
+            return FlextResult[None].ok(None)
         except Exception as e:
-            return FlextCore.Result[None].fail(f"Cleanup failed: {e}")
+            return FlextResult[None].fail(f"Cleanup failed: {e}")
 
 
 def run_complete_discovery() -> None:

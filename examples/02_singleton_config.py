@@ -2,7 +2,7 @@
 """Oracle WMS Configuration Singleton Example.
 
 This example demonstrates how to use FlextOracleWmsConfig as a singleton
-that extends flext-core's FlextCore.Config singleton pattern.
+that extends flext-core's FlextConfig singleton pattern.
 
 Copyright (c) 2025 FLEXT Team. All rights reserved.
 SPDX-License-Identifier: MIT
@@ -11,12 +11,12 @@ SPDX-License-Identifier: MIT
 
 import os
 
-from flext_core import FlextCore
+from flext_core import FlextLogger
 
 from flext_oracle_wms import FlextOracleWmsClient, FlextOracleWmsConfig
 from flext_oracle_wms.constants import FlextOracleWmsConstants
 
-logger = FlextCore.Logger(__name__)
+logger = FlextLogger(__name__)
 
 
 def demonstrate_singleton_config() -> None:
@@ -40,10 +40,13 @@ def demonstrate_singleton_config() -> None:
 
     # Method 3: Create from environment variables with overrides
     logger.info("3. Creating from environment with overrides...")
-    env_config = FlextOracleWmsConfig.model_validate({
-        "oracle_wms_timeout": FlextOracleWmsConstants.Connection.DEFAULT_TIMEOUT * 3,
-        "oracle_wms_verify_ssl": False,
-    })
+    env_config = FlextOracleWmsConfig.model_validate(
+        {
+            "oracle_wms_timeout": FlextOracleWmsConstants.Connection.DEFAULT_TIMEOUT
+            * 3,
+            "oracle_wms_verify_ssl": False,
+        }
+    )
     logger.info(f"   Oracle WMS URL: {env_config.oracle_wms_base_url}")
     logger.info(f"   Username: {env_config.oracle_wms_username}")
     logger.info(f"   Timeout: {env_config.oracle_wms_timeout}")
@@ -51,12 +54,15 @@ def demonstrate_singleton_config() -> None:
 
     # Method 4: Create new configuration for different environment
     logger.info("4. Creating configuration for different environment...")
-    new_config = FlextOracleWmsConfig.model_validate({
-        "oracle_wms_base_url": "https://new-environment.wms.oraclecloud.com/test",
-        "oracle_wms_username": "NEW_USER",
-        "oracle_wms_password": "NEW_PASSWORD",
-        "oracle_wms_timeout": FlextOracleWmsConstants.Connection.DEFAULT_TIMEOUT * 4,
-    })
+    new_config = FlextOracleWmsConfig.model_validate(
+        {
+            "oracle_wms_base_url": "https://new-environment.wms.oraclecloud.com/test",
+            "oracle_wms_username": "NEW_USER",
+            "oracle_wms_password": "NEW_PASSWORD",
+            "oracle_wms_timeout": FlextOracleWmsConstants.Connection.DEFAULT_TIMEOUT
+            * 4,
+        }
+    )
     if new_config:
         logger.info(f"   New Base URL: {new_config.oracle_wms_base_url}")
         logger.info(f"   New Username: {new_config.oracle_wms_username}")
@@ -67,11 +73,13 @@ def demonstrate_singleton_config() -> None:
     # Method 5: Reset and create fresh instance
     logger.info("5. Resetting global instance...")
     FlextOracleWmsConfig.reset_global_instance()
-    fresh_config = FlextOracleWmsConfig.model_validate({
-        "oracle_wms_base_url": "https://fresh.wms.oraclecloud.com/fresh",
-        "oracle_wms_username": "FRESH_USER",
-        "oracle_wms_password": "FRESH_PASSWORD",
-    })
+    fresh_config = FlextOracleWmsConfig.model_validate(
+        {
+            "oracle_wms_base_url": "https://fresh.wms.oraclecloud.com/fresh",
+            "oracle_wms_username": "FRESH_USER",
+            "oracle_wms_password": "FRESH_PASSWORD",
+        }
+    )
     logger.info(f"   Fresh Base URL: {fresh_config.oracle_wms_base_url}")
     logger.info(f"   Fresh Username: {fresh_config.oracle_wms_username}")
 

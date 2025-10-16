@@ -10,7 +10,7 @@ import json
 from datetime import UTC, datetime
 from pathlib import Path
 
-from flext_core import FlextCore
+from flext_core import FlextLogger, FlextResult, FlextTypes
 
 from flext_oracle_wms import (
     FlextOracleWmsApiVersion,
@@ -18,7 +18,7 @@ from flext_oracle_wms import (
     create_oracle_wms_client,
 )
 
-logger = FlextCore.Logger(__name__)
+logger = FlextLogger(__name__)
 
 
 class FocusedOracleWmsDiscovery:
@@ -66,7 +66,7 @@ class FocusedOracleWmsDiscovery:
         self.entities_with_data = {}
         self.complete_schemas = {}
 
-    def execute_focused_discovery(self) -> FlextCore.Result[FlextCore.Types.Dict]:
+    def execute_focused_discovery(self) -> FlextResult[FlextTypes.Dict]:
         """Execute complete focused discovery."""
         try:
             # Start client
@@ -76,7 +76,7 @@ class FocusedOracleWmsDiscovery:
 
             entities_result = self.client.discover_entities()
             if not entities_result.success:
-                return FlextCore.Result[None].fail(
+                return FlextResult[None].fail(
                     f"Entity discovery failed: {entities_result.error}",
                 )
 
@@ -141,7 +141,7 @@ class FocusedOracleWmsDiscovery:
                     schema.get("properties", {})
                     schema.get("key_properties", [])
 
-            return FlextCore.Result[None].ok(
+            return FlextResult[None].ok(
                 {
                     "total_entities": len(all_entities),
                     "entities_with_data": len(data_entities),
@@ -154,14 +154,14 @@ class FocusedOracleWmsDiscovery:
 
         except Exception as e:
             logger.exception("Focused discovery failed")
-            return FlextCore.Result[None].fail(f"Discovery failed: {e}")
+            return FlextResult[None].fail(f"Discovery failed: {e}")
         finally:
             self.client.stop()
 
     def _quick_data_scan(
         self,
-        entities: FlextCore.Types.StringList,
-    ) -> FlextCore.Types.Dict:
+        entities: FlextTypes.StringList,
+    ) -> FlextTypes.Dict:
         """Quick scan to find entities with actual data."""
         data_entities = {}
 
@@ -228,8 +228,8 @@ class FocusedOracleWmsDiscovery:
 
     def _get_entity_structures(
         self,
-        entities: FlextCore.Types.StringList,
-    ) -> FlextCore.Types.Dict:
+        entities: FlextTypes.StringList,
+    ) -> FlextTypes.Dict:
         """Get entity structures even without data."""
         structures = {}
 
@@ -257,7 +257,7 @@ class FocusedOracleWmsDiscovery:
 
         return structures
 
-    def _safe_sample(self, record: FlextCore.Types.Dict) -> FlextCore.Types.Dict:
+    def _safe_sample(self, record: FlextTypes.Dict) -> FlextTypes.Dict:
         """Create safe sample record."""
         safe = {}
         for k, v in list(record.items())[:10]:  # First 10 fields only
@@ -272,8 +272,8 @@ class FocusedOracleWmsDiscovery:
 
     def _generate_schemas_from_data(
         self,
-        data_entities: FlextCore.Types.Dict,
-    ) -> FlextCore.Types.Dict:
+        data_entities: FlextTypes.Dict,
+    ) -> FlextTypes.Dict:
         """Generate Singer schemas from entities with data."""
         schemas = {}
 
@@ -286,8 +286,8 @@ class FocusedOracleWmsDiscovery:
 
     def _generate_schemas_from_structures(
         self,
-        structure_entities: FlextCore.Types.Dict,
-    ) -> FlextCore.Types.Dict:
+        structure_entities: FlextTypes.Dict,
+    ) -> FlextTypes.Dict:
         """Generate Singer schemas from structures."""
         schemas = {}
 
@@ -301,8 +301,8 @@ class FocusedOracleWmsDiscovery:
     def _create_singer_schema(
         self,
         entity_name: str,
-        entity_data: FlextCore.Types.Dict,
-    ) -> FlextCore.Types.Dict | None:
+        entity_data: FlextTypes.Dict,
+    ) -> FlextTypes.Dict | None:
         """Create Singer schema with proper Oracle WMS typing."""
         try:
             fields = entity_data.get("sample_fields", entity_data.get("fields", []))
@@ -354,7 +354,7 @@ class FocusedOracleWmsDiscovery:
         field_name: str,
         sample_value: object,
         entity_name: str,
-    ) -> FlextCore.Types.Dict:
+    ) -> FlextTypes.Dict:
         """Convert Oracle WMS field to Singer type with context."""
         # Oracle WMS specific field analysis
         if sample_value is not None:
@@ -429,10 +429,10 @@ class FocusedOracleWmsDiscovery:
     def _get_oracle_key_properties(
         self,
         entity_name: str,
-        fields: FlextCore.Types.StringList,
-    ) -> FlextCore.Types.StringList:
+        fields: FlextTypes.StringList,
+    ) -> FlextTypes.StringList:
         """Get Oracle WMS key properties for entity."""
-        keys: FlextCore.Types.StringList = []
+        keys: FlextTypes.StringList = []
 
         # Always include id if present
         if "id" in fields:
@@ -462,7 +462,7 @@ class FocusedOracleWmsDiscovery:
 
         return keys or (["id"] if "id" in fields else [])
 
-    def _save_focused_results(self) -> FlextCore.Result[str]:
+    def _save_focused_results(self) -> FlextResult[str]:
         """Save focused discovery results."""
         results_dir = Path("oracle_wms_focused_results")
         asyncio.to_thread(results_dir.mkdir, exist_ok=True)
@@ -502,9 +502,9 @@ class FocusedOracleWmsDiscovery:
         with summary_file.open("w", encoding="utf-8") as f:
             json.dump(summary, f, indent=2, default=str)
 
-        return FlextCore.Result[None].ok(str(results_dir))
+        return FlextResult[None].ok(str(results_dir))
 
-    def _create_singer_catalog(self) -> FlextCore.Types.Dict:
+    def _create_singer_catalog(self) -> FlextTypes.Dict:
         """Create Singer catalog."""
         streams = []
 

@@ -6,7 +6,7 @@ This demonstrates the declarative approach with massive code reduction.
 from pathlib import Path
 from urllib.parse import urlparse
 
-from flext_core import FlextCore
+from flext_core import FlextLogger, FlextTypes
 
 from flext_oracle_wms import (
     FLEXT_ORACLE_WMS_APIS,
@@ -15,10 +15,10 @@ from flext_oracle_wms import (
     FlextOracleWmsClientConfig,
 )
 
-logger = FlextCore.Logger(__name__)
+logger = FlextLogger(__name__)
 
 
-def load_env_config() -> FlextCore.Types.Dict | None:
+def load_env_config() -> FlextTypes.Dict | None:
     """Load configuration from .env file."""
     env_path = Path("flext-tap-oracle-wms/.env")
     if not env_path.exists():
@@ -82,16 +82,18 @@ def main() -> None:
         return
 
     # Create client configuration
-    config = FlextOracleWmsClientConfig.model_validate({
-        "base_url": str(env_config["oracle_wms_base_url"]),
-        "username": str(env_config["oracle_wms_username"]),
-        "password": str(env_config["oracle_wms_password"]),
-        "api_version": env_config["api_version"],
-        "timeout": int(str(env_config["oracle_wms_timeout"])),
-        "retry_attempts": int(str(env_config["oracle_wms_max_retries"])),
-        "enable_ssl_verification": bool(env_config["oracle_wms_verify_ssl"]),
-        "enable_audit_logging": bool(env_config["oracle_wms_enable_logging"]),
-    })
+    config = FlextOracleWmsClientConfig.model_validate(
+        {
+            "base_url": str(env_config["oracle_wms_base_url"]),
+            "username": str(env_config["oracle_wms_username"]),
+            "password": str(env_config["oracle_wms_password"]),
+            "api_version": env_config["api_version"],
+            "timeout": int(str(env_config["oracle_wms_timeout"])),
+            "retry_attempts": int(str(env_config["oracle_wms_max_retries"])),
+            "enable_ssl_verification": bool(env_config["oracle_wms_verify_ssl"]),
+            "enable_audit_logging": bool(env_config["oracle_wms_enable_logging"]),
+        }
+    )
     client = FlextOracleWmsClient(config)
 
     try:
@@ -103,7 +105,7 @@ def main() -> None:
         # Show API catalog
 
         # Categorize APIs
-        categories: dict[str, FlextCore.Types.StringList] = {}
+        categories: dict[str, FlextTypes.StringList] = {}
         for api in FLEXT_ORACLE_WMS_APIS.values():
             if api.category not in categories:
                 categories[api.category] = []

@@ -5,7 +5,7 @@ SPDX-License-Identifier: MIT
 
 """
 
-from flext_core import FlextCore
+from flext_core import FlextTypes
 
 from flext_oracle_wms import (
     FlextOracleWmsDefaults,
@@ -77,12 +77,12 @@ class TestFlextOracleWmsDynamicSchemaProcessor:
     def test_process_entity_records(self) -> None:
         """Test entity record processing."""
         processor = FlextOracleWmsDynamicSchemaProcessor()
-        records: list[FlextCore.Types.Dict] = [
+        records: list[FlextTypes.Dict] = [
             {"id": "1", "name": "test", "count": "10"},
             {"id": "2", "name": "test2", "count": "20"},
         ]
 
-        schema: FlextCore.Types.NestedDict = {
+        schema: FlextTypes.NestedDict = {
             "id": {"type": "string"},
             "name": {"type": "string"},
             "count": {"type": "integer"},
@@ -125,11 +125,11 @@ class TestFlextOracleWmsDynamicSchemaProcessor:
         """Test private methods for schema confidence calculation."""
         processor = FlextOracleWmsDynamicSchemaProcessor()
 
-        records: list[FlextCore.Types.Dict] = [
+        records: list[FlextTypes.Dict] = [
             {"id": "1", "count": 10},
             {"id": "2", "count": 20},
         ]
-        schema: FlextCore.Types.NestedDict = {
+        schema: FlextTypes.NestedDict = {
             "id": {"type": "string"},
             "count": {"type": "integer"},
         }
@@ -143,7 +143,7 @@ class TestFlextOracleWmsDynamicSchemaProcessor:
         """Test private methods for field consistency checking."""
         processor = FlextOracleWmsDynamicSchemaProcessor()
 
-        records: list[FlextCore.Types.Dict] = [
+        records: list[FlextTypes.Dict] = [
             {"id": "1", "name": "test1"},
             {"id": "2", "name": "test2"},
             {"id": "3", "name": "test3"},
@@ -251,6 +251,6 @@ class TestEdgeCases:
         assert confidence == 0.0
 
         # Empty records with schema
-        schema: FlextCore.Types.NestedDict = {"id": {"type": "string"}}
+        schema: FlextTypes.NestedDict = {"id": {"type": "string"}}
         confidence = processor._calculate_schema_confidence([], schema)
         assert confidence == 0.0

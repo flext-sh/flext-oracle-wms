@@ -14,7 +14,7 @@ flext-oracle-wms has partial FLEXT ecosystem integration requiring completion wo
 
 ### Required FLEXT Compliance
 
-- **flext-core foundation** - FlextCore.Result patterns (implemented)
+- **flext-core foundation** - FlextResult patterns (implemented)
 - **flext-api HTTP client** - Replace httpx usage (required)
 - **flext-auth integration** - Replace custom authentication (required)
 - **Unified class architecture** - Consolidate 71 classes (required)
