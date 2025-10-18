@@ -5,8 +5,6 @@ SPDX-License-Identifier: MIT
 
 """
 
-from flext_core import FlextTypes
-
 from flext_oracle_wms import (
     FlextOracleWmsDataFlattener,
     flext_oracle_wms_create_data_flattener,
@@ -37,7 +35,7 @@ class TestFlextOracleWmsDataFlattener:
     def test_flatten_simple_record(self) -> None:
         """Test flattening a simple record."""
         flattener = FlextOracleWmsDataFlattener()
-        record: FlextTypes.Dict = {
+        record: dict[str, object] = {
             "id": "123",
             "name": "Test Item",
             "status": "active",
@@ -52,7 +50,7 @@ class TestFlextOracleWmsDataFlattener:
     def test_flatten_nested_record(self) -> None:
         """Test flattening a nested record."""
         flattener = FlextOracleWmsDataFlattener()
-        record: FlextTypes.Dict = {
+        record: dict[str, object] = {
             "id": "123",
             "details": {
                 "name": "Test Item",
@@ -73,7 +71,7 @@ class TestFlextOracleWmsDataFlattener:
     def test_unflatten_record(self) -> None:
         """Test unflattening a flattened record."""
         flattener = FlextOracleWmsDataFlattener()
-        flattened_record: FlextTypes.Dict = {
+        flattened_record: dict[str, object] = {
             "id": "123",
             "details_name": "Test Item",
             "details_category_id": "cat1",
@@ -91,7 +89,7 @@ class TestFlextOracleWmsDataFlattener:
     def test_get_flattening_stats(self) -> None:
         """Test getting flattening statistics."""
         flattener = FlextOracleWmsDataFlattener()
-        records: list[FlextTypes.Dict] = [
+        records: list[dict[str, object]] = [
             {"id": "1", "name": "Item 1"},
             {"id": "2", "details": {"name": "Item 2", "type": "special"}},
             {"id": "3", "info": {"nested": {"deep": "value"}}},

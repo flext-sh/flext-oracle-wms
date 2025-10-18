@@ -17,7 +17,7 @@ import operator
 from datetime import UTC, datetime
 from pathlib import Path
 
-from flext_core import FlextLogger, FlextResult, FlextTypes
+from flext_core import FlextLogger, FlextResult
 from pydantic import ConfigDict
 
 from flext_oracle_wms import (
@@ -54,9 +54,9 @@ class OracleWmsCompleteDiscovery:
             self.config,
             mock_mode=False,
         )
-        self.discovered_entities: FlextTypes.StringList = []
-        self.entity_metadata: FlextTypes.Dict = {}
-        self.complete_schemas: FlextTypes.Dict = {}
+        self.discovered_entities: list[str] = []
+        self.entity_metadata: dict[str, object] = {}
+        self.complete_schemas: dict[str, object] = {}
 
     def start_discovery(self) -> FlextResult[None]:
         """Start complete discovery process."""
@@ -341,7 +341,7 @@ class OracleWmsCompleteDiscovery:
 
     def discover_complete_entity_metadata(
         self,
-    ) -> FlextResult[FlextTypes.Dict]:
+    ) -> FlextResult[dict[str, object]]:
         """Discover complete metadata for all entities using Oracle WMS APIs."""
         if not self.discovered_entities:
             entities_result = self.client.discover_entities()
@@ -465,7 +465,7 @@ class OracleWmsCompleteDiscovery:
 
     def generate_singer_schemas_with_flattening(
         self,
-    ) -> FlextResult[FlextTypes.Dict]:
+    ) -> FlextResult[dict[str, object]]:
         """Generate Singer schemas with real data flattening based on Oracle metadata."""
         if not self.entity_metadata:
             return FlextResult[None].fail(
@@ -500,8 +500,8 @@ class OracleWmsCompleteDiscovery:
     def _generate_singer_schema_from_metadata(
         self,
         entity_name: str,
-        metadata: FlextTypes.Dict,
-    ) -> FlextTypes.Dict | None:
+        metadata: dict[str, object],
+    ) -> dict[str, object] | None:
         """Generate Singer schema from Oracle WMS metadata with flattening."""
         try:
             fields = metadata.get("fields", [])
@@ -538,7 +538,7 @@ class OracleWmsCompleteDiscovery:
         python_type: str,
         sample_value: object,
         field_name: str,
-    ) -> FlextTypes.Dict:
+    ) -> dict[str, object]:
         """Map Oracle/Python types to Singer types based on real data."""
         # Analyze sample value for more accurate typing
         if sample_value is not None:

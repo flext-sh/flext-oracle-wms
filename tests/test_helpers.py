@@ -9,7 +9,6 @@ SPDX-License-Identifier: MIT
 """
 
 import pytest
-from flext_core import FlextTypes
 
 from flext_oracle_wms import (
     flext_oracle_wms_build_entity_url,
@@ -179,7 +178,7 @@ class TestDataProcessingHelpers:
 
     def test_extract_pagination_info_minimal(self) -> None:
         """Test extracting pagination info with minimal data."""
-        response: FlextTypes.Dict = {"results": [{"id": 1}, {"id": 2}]}
+        response: dict[str, object] = {"results": [{"id": 1}, {"id": 2}]}
 
         result = flext_oracle_wms_extract_pagination_info(response)
 
@@ -187,7 +186,7 @@ class TestDataProcessingHelpers:
 
     def test_extract_pagination_info_empty(self) -> None:
         """Test extracting pagination info from empty response."""
-        response: FlextTypes.Dict = {}
+        response: dict[str, object] = {}
 
         result = flext_oracle_wms_extract_pagination_info(response)
 
@@ -195,7 +194,7 @@ class TestDataProcessingHelpers:
 
     def test_chunk_records_basic(self) -> None:
         """Test basic record chunking."""
-        records: list[FlextTypes.Dict] = [
+        records: list[dict[str, object]] = [
             {"id": i} for i in range(10)
         ]  # [{"id": 0}, {"id": 1}, ...]
         chunk_size = 3
@@ -209,7 +208,7 @@ class TestDataProcessingHelpers:
 
     def test_chunk_records_exact_division(self) -> None:
         """Test chunking when records divide evenly."""
-        records: list[FlextTypes.Dict] = [
+        records: list[dict[str, object]] = [
             {"id": i} for i in range(9)
         ]  # [{"id": 0}, {"id": 1}, ...]
         chunk_size = 3
@@ -223,7 +222,7 @@ class TestDataProcessingHelpers:
 
     def test_chunk_records_empty_list(self) -> None:
         """Test chunking empty list."""
-        records: list[FlextTypes.Dict] = []
+        records: list[dict[str, object]] = []
         chunk_size = 3
 
         chunks = list(flext_oracle_wms_chunk_records(records, chunk_size))
@@ -232,7 +231,7 @@ class TestDataProcessingHelpers:
 
     def test_chunk_records_single_chunk(self) -> None:
         """Test chunking when all records fit in one chunk."""
-        records: list[FlextTypes.Dict] = [{"id": 1}, {"id": 2}, {"id": 3}]
+        records: list[dict[str, object]] = [{"id": 1}, {"id": 2}, {"id": 3}]
         chunk_size = 5
 
         chunks = list(flext_oracle_wms_chunk_records(records, chunk_size))

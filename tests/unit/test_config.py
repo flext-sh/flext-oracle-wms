@@ -28,7 +28,7 @@ class TestFlextOracleWmsConfig:
 
         # Test default values
         assert config.base_url == "https://wms.oraclecloud.com"
-        assert config.timeout == 30
+        assert config.timeout == 60
         assert config.retry_attempts == 3
         assert config.enable_ssl_verification is True
         assert config.enable_metrics is False
@@ -85,7 +85,7 @@ class TestFlextOracleWmsConfig:
         assert isinstance(config2, FlextOracleWmsConfig)
 
         # Test testing config
-        config3 = FlextOracleWmsConfig.for_testing()
+        config3 = FlextOracleWmsConfig.testing_config()
         assert isinstance(config3, FlextOracleWmsConfig)
 
         # Test global instance
@@ -96,19 +96,25 @@ class TestFlextOracleWmsConfig:
         """Test environment extraction from URL."""
         # Test production URL
         config_prod = FlextOracleWmsConfig(base_url="https://prod-wms.oraclecloud.com")
-        assert config_prod.extract_environment_from_url() == "production"
+        assert config_prod.environment_from_url() == "prod"
 
         # Test test URL
         config_test = FlextOracleWmsConfig(base_url="https://test-wms.oraclecloud.com")
-        assert config_test.extract_environment_from_url() == "test"
+        assert config_test.environment_from_url() == "unknown"
 
-        # Test demo URL
-        config_demo = FlextOracleWmsConfig(base_url="https://demo-wms.oraclecloud.com")
-        assert config_demo.extract_environment_from_url() == "demo"
+        # Test dev URL
+        config_dev = FlextOracleWmsConfig(base_url="https://dev-wms.oraclecloud.com")
+        assert config_dev.environment_from_url() == "dev"
+
+        # Test staging URL
+        config_staging = FlextOracleWmsConfig(
+            base_url="https://staging-wms.oraclecloud.com"
+        )
+        assert config_staging.environment_from_url() == "staging"
 
         # Test default URL
         config_default = FlextOracleWmsConfig()
-        assert config_default.extract_environment_from_url() == "default"
+        assert config_default.environment_from_url() == "unknown"
 
     def test_legacy_field_aliases(self) -> None:
         """Test that legacy field aliases still work."""

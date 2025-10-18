@@ -27,7 +27,7 @@ def test_real_connection() -> bool:
     try:
         # Use test configuration instead of loading from environment
         logger.info("Loading Oracle WMS test configuration...")
-        config = FlextOracleWmsConfig.create_for_testing()
+        config = FlextOracleWmsConfig.create_testing_config()
 
         logger.info("Configuration loaded:")
         logger.info("  Base URL: %s", config.oracle_wms_base_url)

@@ -23,7 +23,7 @@ import os
 from pathlib import Path
 
 from dotenv import load_dotenv
-from flext_core import FlextContainer, FlextLogger, FlextResult, FlextTypes
+from flext_core import FlextContainer, FlextLogger, FlextResult
 
 from flext_oracle_wms import (
     FlextOracleWmsClient,
@@ -67,7 +67,7 @@ def setup_client_config() -> None:
 
 def discover_wms_entities(
     client: FlextOracleWmsClient,
-) -> FlextResult[list[FlextTypes.Dict]]:
+) -> FlextResult[list[dict[str, object]]]:
     """Discover available Oracle WMS entities.
 
     Args:
@@ -109,7 +109,7 @@ def discover_wms_entities(
 def query_entity_data(
     client: FlextOracleWmsClient,
     entity_name: str,
-) -> FlextResult[list[FlextTypes.Dict]]:
+) -> FlextResult[list[dict[str, object]]]:
     """Query data from a specific Oracle WMS entity.
 
     Args:
@@ -231,11 +231,11 @@ def main() -> None:
         # Step 5: Demonstrate error handling
         demonstrate_error_handling(client)
 
-    except FlextOracleWmsExceptions.BaseError as e:
-        logger.exception(f"Oracle WMS error: {e}")
+    except FlextOracleWmsExceptions.BaseError:
+        logger.exception("Oracle WMS error")
 
-    except ValueError as e:
-        logger.exception(f"Configuration error: {e}")
+    except ValueError:
+        logger.exception("Configuration error")
 
     except Exception:
         # Re-raise for debugging in development

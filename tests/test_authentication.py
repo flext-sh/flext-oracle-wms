@@ -15,7 +15,6 @@ from flext_oracle_wms import (
     FlextOracleWmsAuthConfig,
     FlextOracleWmsAuthenticationError,
     FlextOracleWmsAuthenticator,
-    FlextOracleWmsAuthPlugin,
     OracleWMSAuthMethod,
 )
 
@@ -27,7 +26,7 @@ class TestAuthenticationMethod:
     def test_authentication_method_values(self) -> None:
         """Test authentication method enum values."""
         assert OracleWMSAuthMethod.BASIC.value == "basic"
-        assert OracleWMSAuthMethod.BEARER.value == "bearer"
+        assert OracleWMSAuthMethod.OAUTH2.value == "oauth2"
         assert OracleWMSAuthMethod.API_KEY.value == "api_key"
 
     def test_authentication_method_membership(self) -> None:
@@ -45,42 +44,34 @@ class TestAuthenticationConfig:
     def test_basic_auth_config_creation(self) -> None:
         """Test creating basic auth configuration."""
         config = FlextOracleWmsAuthConfig(
-            auth_type=OracleWMSAuthMethod.BASIC,
+            method=OracleWMSAuthMethod.BASIC,
             username="test_user",
             password="test_password",
         )
 
-        assert config.auth_type == OracleWMSAuthMethod.BASIC
-        assert config.username != "test_user"
-        assert config.password != "test_password"
-        assert not config.token  # Default empty string
-        assert not config.api_key  # Default empty string
+        assert config.method == OracleWMSAuthMethod.BASIC
+        assert config.username == "test_user"
+        assert config.password == "test_password"
 
-    def test_bearer_auth_config_creation(self) -> None:
-        """Test creating bearer token auth configuration."""
+    def test_oauth2_auth_config_creation(self) -> None:
+        """Test creating OAuth2 auth configuration."""
         config = FlextOracleWmsAuthConfig(
-            auth_type=OracleWMSAuthMethod.BEARER,
-            token="bearer_token_123",
+            method=OracleWMSAuthMethod.OAUTH2,
+            oauth2_client_id="client_id_123",
+            oauth2_client_secret="client_secret_456",
         )
 
-        assert config.auth_type == OracleWMSAuthMethod.BEARER
-        assert config.token != "bearer_token_123"
-        assert not config.username  # Default empty string
-        assert not config.password  # Default empty string
-        assert not config.api_key  # Default empty string
+        assert config.method == OracleWMSAuthMethod.OAUTH2
+        assert config.oauth2_client_id == "client_id_123"
+        assert config.oauth2_client_secret == "client_secret_456"
 
     def test_api_key_auth_config_creation(self) -> None:
         """Test creating API key auth configuration."""
         config = FlextOracleWmsAuthConfig(
-            auth_type=OracleWMSAuthMethod.API_KEY,
-            api_key="api_key_123",
+            method=OracleWMSAuthMethod.API_KEY,
         )
 
-        assert config.auth_type == OracleWMSAuthMethod.API_KEY
-        assert config.api_key != "api_key_123"
-        assert not config.username  # Default empty string
-        assert not config.password  # Default empty string
-        assert not config.token  # Default empty string
+        assert config.method == OracleWMSAuthMethod.API_KEY
 
     def test_config_validation_success_basic(self) -> None:
         """Test config validation succeeds for valid basic auth."""

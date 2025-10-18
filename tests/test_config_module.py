@@ -55,7 +55,7 @@ def test_config_validation() -> None:
 def test_config_factory_methods() -> None:
     """Test configuration factory methods."""
     # Test for_testing factory method
-    config = FlextOracleWmsConfig.create_for_testing()
+    config = FlextOracleWmsConfig.create_testing_config()
     assert isinstance(config, FlextOracleWmsConfig)
     assert config.oracle_wms_base_url == "https://test.example.com"
 

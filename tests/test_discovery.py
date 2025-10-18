@@ -21,7 +21,7 @@ import time
 from unittest.mock import Mock, patch
 
 import pytest
-from flext_core import FlextResult, FlextTypes
+from flext_core import FlextResult
 
 from flext_oracle_wms import (
     DISCOVERY_FAILURE,
@@ -119,7 +119,7 @@ class TestEndpointDiscoveryStrategy:
             ],
         }
 
-        self.mock_api_client.get.return_value = FlextResult[FlextTypes.Dict].ok(
+        self.mock_api_client.get.return_value = FlextResult[dict[str, object]].ok(
             mock_response.data,
         )
 
@@ -156,7 +156,7 @@ class TestEndpointDiscoveryStrategy:
 
     def test_execute_discovery_step_api_failure(self) -> None:
         """Test discovery step with API failure."""
-        self.mock_api_client.get.return_value = FlextResult[FlextTypes.Dict].fail(
+        self.mock_api_client.get.return_value = FlextResult[dict[str, object]].fail(
             "API connection failed",
         )
 
@@ -176,7 +176,7 @@ class TestEndpointDiscoveryStrategy:
         mock_response = Mock()
         del mock_response.status_code  # Remove required attribute
 
-        self.mock_api_client.get.return_value = FlextResult[FlextTypes.Dict].ok(
+        self.mock_api_client.get.return_value = FlextResult[dict[str, object]].ok(
             mock_response,
         )
 
@@ -195,7 +195,7 @@ class TestEndpointDiscoveryStrategy:
         mock_response.status_code = 404
         mock_response.data = {"error": "Not found"}
 
-        self.mock_api_client.get.return_value = FlextResult[FlextTypes.Dict].ok(
+        self.mock_api_client.get.return_value = FlextResult[dict[str, object]].ok(
             mock_response,
         )
 
@@ -229,7 +229,7 @@ class TestEndpointDiscoveryStrategy:
         mock_response = Mock()
         mock_response.status_code = 200
 
-        self.mock_api_client.get.return_value = FlextResult[FlextTypes.Dict].ok(
+        self.mock_api_client.get.return_value = FlextResult[dict[str, object]].ok(
             mock_response,
         )
 
@@ -318,7 +318,7 @@ class TestEntityResponseParser:
 
     def test_parse_entities_response_delegation(self) -> None:
         """Test that parser delegates to discovery instance."""
-        response_data: FlextTypes.Dict = {"entities": ["test"]}
+        response_data: dict[str, object] = {"entities": ["test"]}
         result = self.parser.parse_entities_response(response_data)
 
         # The parser should handle the response data directly
@@ -422,7 +422,7 @@ class TestFlextOracleWmsEntityDiscovery:
             mock_response = Mock()
             mock_response.status_code = 200
             mock_response.data = {"results": ["entity1", "entity2"]}
-            mock_get.return_value = FlextResult[FlextTypes.Dict].ok(mock_response)
+            mock_get.return_value = FlextResult[dict[str, object]].ok(mock_response)
 
             result = self.discovery.discover_entities(
                 include_patterns=include_patterns,
@@ -1368,7 +1368,7 @@ class TestErrorHandling:
         """Test discover_entities handles exceptions."""
         # Mock the cache manager to simulate an error
         with patch.object(self.discovery, "cache_manager") as mock_cache:
-            mock_cache.get.return_value = FlextResult[FlextTypes.Dict].fail(
+            mock_cache.get.return_value = FlextResult[dict[str, object]].fail(
                 "Cache error",
             )
 

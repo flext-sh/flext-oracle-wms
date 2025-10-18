@@ -11,7 +11,7 @@ SPDX-License-Identifier: MIT
 from unittest.mock import Mock, patch
 
 import pytest
-from flext_core import FlextLogger, FlextResult, FlextTypes
+from flext_core import FlextLogger, FlextResult
 
 from flext_oracle_wms import (
     FlextOracleWmsClient,
@@ -259,7 +259,7 @@ class TestFlextOracleWmsClientCore:
     def test_discover_entities_success(
         self,
         mock_config: FlextOracleWmsClientConfig,
-        sample_entities: FlextTypes.StringList,
+        sample_entities: list[str],
     ) -> None:
         """Test successful entity discovery."""
         with patch(
@@ -283,7 +283,7 @@ class TestFlextOracleWmsClientCore:
 
             # Mock the discover_entities method directly since it has complex logic
             with patch.object(client, "discover_entities") as mock_discover:
-                mock_discover.return_value = FlextResult[list[FlextTypes.Dict]].ok(
+                mock_discover.return_value = FlextResult[list[dict[str, object]]].ok(
                     sample_entities,
                 )
 
@@ -307,7 +307,7 @@ class TestFlextOracleWmsClientCore:
     def test_get_entity_data_success(
         self,
         mock_config: FlextOracleWmsClientConfig,
-        sample_entity_data: FlextTypes.Dict,
+        sample_entity_data: dict[str, object],
     ) -> None:
         """Test successful entity data retrieval."""
         with patch(
@@ -319,7 +319,7 @@ class TestFlextOracleWmsClientCore:
             # Create mock data with required status field for WMS client logic
             mock_data = sample_entity_data.copy()
             mock_data["status"] = "success"  # Required by wms_client logic
-            success_result = FlextResult[FlextTypes.Dict].ok(mock_data)
+            success_result = FlextResult[dict[str, object]].ok(mock_data)
             logger.info(
                 f"Mock result success: {success_result.success}, data keys: {list(mock_data.keys())}",
             )
@@ -431,7 +431,7 @@ class TestClientHelperMethods:
         """Test parsing empty dictionary response."""
         client = FlextOracleWmsClient(mock_config)
 
-        response: FlextTypes.Dict = {}
+        response: dict[str, object] = {}
         result = client._parse_entity_discovery_response(response)
 
         # Empty response should return fallback entities

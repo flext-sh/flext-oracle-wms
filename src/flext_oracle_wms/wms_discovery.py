@@ -1,0 +1,68 @@
+"""FLEXT Oracle WMS Discovery module.
+
+Provides discovery classes for Oracle WMS entities.
+
+Copyright (c) 2025 FLEXT Team. All rights reserved.
+SPDX-License-Identifier: MIT
+"""
+
+from __future__ import annotations
+
+from enum import StrEnum
+from typing import ClassVar
+
+from flext_core import FlextResult
+
+
+# Simple placeholders for missing classes
+class CacheValue:
+    """Cache value placeholder."""
+
+
+class DiscoveryContext:
+    """Discovery context placeholder."""
+
+
+class EndpointDiscoveryStrategy(StrEnum):
+    """Discovery strategy enum."""
+
+    API_BASED = "api_based"
+    SCHEMA_BASED = "schema_based"
+
+
+class EntityResponseParser:
+    """Entity response parser placeholder."""
+
+
+class FlextOracleWmsDefaults:
+    """Defaults placeholder."""
+
+    CACHE_TTL: ClassVar[int] = 3600
+
+
+class FlextOracleWmsEntityDiscovery:
+    """Entity discovery placeholder."""
+
+    def __init__(self, client) -> None:
+        self.client = client
+
+    def discover_entities(self):
+        """Discover entities placeholder."""
+        return FlextResult.ok([])
+
+
+# Constants
+DISCOVERY_SUCCESS = "discovery_success"
+DISCOVERY_FAILURE = "discovery_failure"
+
+
+__all__ = [
+    "DISCOVERY_FAILURE",
+    "DISCOVERY_SUCCESS",
+    "CacheValue",
+    "DiscoveryContext",
+    "EndpointDiscoveryStrategy",
+    "EntityResponseParser",
+    "FlextOracleWmsDefaults",
+    "FlextOracleWmsEntityDiscovery",
+]

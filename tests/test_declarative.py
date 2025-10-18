@@ -14,7 +14,7 @@ from pathlib import Path
 from urllib.parse import urlparse
 
 import pytest
-from flext_core import FlextLogger, FlextResult, FlextTypes
+from flext_core import FlextLogger, FlextResult
 
 from flext_oracle_wms import (
     FLEXT_ORACLE_WMS_APIS,
@@ -51,7 +51,7 @@ def find_env_file() -> Path | None:
     return None
 
 
-def load_env_config() -> FlextTypes.Dict | None:
+def load_env_config() -> dict[str, object] | None:
     """Load Oracle WMS configuration from .env file."""
     env_path = find_env_file()
     if not env_path:
@@ -114,7 +114,7 @@ def load_env_config() -> FlextTypes.Dict | None:
 
 
 @pytest.fixture
-def env_config() -> FlextTypes.Dict:
+def env_config() -> dict[str, object]:
     """Fixture that provides .env configuration or skips test."""
     config = load_env_config()
     if not config or not all(
@@ -130,7 +130,7 @@ def env_config() -> FlextTypes.Dict:
 
 @pytest.fixture
 def oracle_wms_client(
-    env_config: FlextTypes.Dict,
+    env_config: dict[str, object],
 ) -> Generator[FlextOracleWmsClient]:
     """Fixture that provides configured Oracle WMS client."""
     # Properly cast env_config values to expected types for FlextOracleWmsClientConfig
@@ -220,7 +220,7 @@ class TestOracleWmsDeclarativeIntegration:
         assert len(lgf_apis) >= 5, "Should have multiple LGF v10 APIs"
 
     def test_client_configuration_and_lifecycle(
-        self, env_config: FlextTypes.Dict
+        self, env_config: dict[str, object]
     ) -> None:
         """Test client configuration and initialization."""
         # Properly cast env_config values to expected types for FlextOracleWmsClientConfig
