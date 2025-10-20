@@ -1,4 +1,4 @@
-"""FLEXT Oracle WMS Constants - Single unified class with advanced patterns.
+"""FLEXT WMS Constants - Generic WMS constants with advanced patterns.
 
 Copyright (c) 2025 FLEXT Team. All rights reserved.
 SPDX-License-Identifier: MIT
@@ -13,27 +13,27 @@ from flext_core import FlextConstants
 
 
 class FlextOracleWmsConstants(FlextConstants):
-    """Single unified Oracle WMS constants class with advanced composition patterns.
+    """Generic WMS constants class with advanced composition patterns.
 
     Uses Python 3.13+ syntax, reduces declarations through advanced patterns.
-    One class per module following SOLID principles.
+    One class per module following SOLID principles. Generic for any WMS system.
     """
 
     # Core domain constants using advanced patterns
-    FLEXT_ORACLE_WMS_VERSION: Final[str] = "0.9.0"
+    FLEXT_WMS_VERSION: Final[str] = "0.9.0"
 
     # Application metadata - composed into single dict
     APP_METADATA: Final[dict[str, str]] = {
-        "name": "flext-oracle-wms",
-        "description": "FLEXT Oracle WMS Cloud Integration",
+        "name": "flext-wms",
+        "description": "FLEXT Generic WMS Integration",
         "author": "FLEXT Team",
         "license": "MIT",
     }
 
     # API configuration - composed patterns
     API_CONFIG: Final[dict[str, str | int]] = {
-        "version_default": "v2",
-        "base_url_default": "https://wms.oraclecloud.com",
+        "version_default": "v1",
+        "base_url_default": "https://api.wms.example.com",
         "timeout_default": FlextConstants.Defaults.TIMEOUT * 2,
         "max_retries": 3,
         "rate_limit_per_minute": 1000,
@@ -44,18 +44,21 @@ class FlextOracleWmsConstants(FlextConstants):
         "basic": "basic",
         "oauth2": "oauth2",
         "api_key": "api_key",
+        "bearer": "bearer",
         "oauth2_token_endpoint": "/oauth2/token",
-        "oauth2_scope_default": "wms.read wms.write",
+        "oauth2_scope_default": "read write",
     }
 
     # Entity types - composed list with advanced patterns
     ENTITY_TYPES: Final[list[str]] = [
         "inventory",
-        "order",
-        "shipment",
+        "orders",
+        "shipments",
         "picking",
-        "location",
-        "item",
+        "locations",
+        "items",
+        "products",
+        "warehouses",
     ]
 
     # Batch and performance - advanced dict composition
@@ -82,7 +85,7 @@ class FlextOracleWmsConstants(FlextConstants):
 
     # Nested classes with advanced composition
     class Connection:
-        """Oracle WMS connection constants - composed from base."""
+        """WMS connection constants - composed from base."""
 
         DEFAULT_TIMEOUT: Final[int] = FlextConstants.Network.DEFAULT_TIMEOUT
         DEFAULT_MAX_RETRIES: Final[int] = FlextConstants.Reliability.MAX_RETRY_ATTEMPTS
@@ -95,14 +98,17 @@ class FlextOracleWmsConstants(FlextConstants):
         MAX_POOL_SIZE: Final[int] = FlextConstants.Network.MAX_CONNECTION_POOL_SIZE
 
     class WmsEntities:
-        """Oracle WMS entity configuration - advanced patterns."""
+        """WMS entity configuration - advanced patterns."""
 
         TYPES: ClassVar[list[str]] = [
             "INVENTORY",
-            "SHIPMENT",
+            "ORDERS",
+            "SHIPMENTS",
             "PICKING",
-            "RECEIVING",
-            "WAREHOUSE",
+            "LOCATIONS",
+            "ITEMS",
+            "PRODUCTS",
+            "WAREHOUSES",
         ]
         MAX_ENTITY_NAME_LENGTH: ClassVar[int] = 100
         ENTITY_NAME_PATTERN: ClassVar[str] = r"^[a-zA-Z][a-zA-Z0-9_]*$"
@@ -131,6 +137,8 @@ class FlextOracleWmsConstants(FlextConstants):
             "entity_validation_failed": "Entity validation failed",
             "discovery_failed": "Entity discovery failed",
             "invalid_response": "Invalid API response",
+            "connection_failed": "Connection to WMS failed",
+            "authentication_failed": "Authentication failed",
         }
 
     class ResponseFields:
@@ -139,6 +147,7 @@ class FlextOracleWmsConstants(FlextConstants):
         FIELDS: ClassVar[dict[str, str]] = {
             "result_count": "result_count",
             "results": "results",
+            "data": "data",
             "total_count": "total_count",
             "page_number": "page_number",
             "page_count": "page_count",
@@ -167,33 +176,36 @@ class FlextOracleWmsConstants(FlextConstants):
         }
 
     # Enums - advanced StrEnum composition
-    class OracleWMSEntityType(StrEnum):
+    class WmsEntityType(StrEnum):
         """Entity types - composed from list."""
 
         INVENTORY = "inventory"
-        ORDER = "order"
-        SHIPMENT = "shipment"
+        ORDERS = "orders"
+        SHIPMENTS = "shipments"
         PICKING = "picking"
-        LOCATION = "location"
-        ITEM = "item"
+        LOCATIONS = "locations"
+        ITEMS = "items"
+        PRODUCTS = "products"
+        WAREHOUSES = "warehouses"
 
-    class OracleWMSApiVersion(StrEnum):
+    class WmsApiVersion(StrEnum):
         """API versions."""
 
         V1 = "v1"
         V2 = "v2"
-        LGF_V10 = "v10"
+        V3 = "v3"
         LEGACY = "legacy"
 
-    class OracleWMSApiCategory(StrEnum):
+    class WmsApiCategory(StrEnum):
         """API categories."""
 
-        SETUP_TRANSACTIONAL = "setup_transactional"
-        AUTOMATION_OPERATIONS = "automation_operations"
-        DATA_EXTRACT = "data_extract"
-        ENTITY_OPERATIONS = "entity_operations"
+        INVENTORY = "inventory"
+        ORDERS = "orders"
+        SHIPPING = "shipping"
+        RECEIVING = "receiving"
+        REPORTING = "reporting"
 
-    class OracleWMSOperationStatus(StrEnum):
+    class WmsOperationStatus(StrEnum):
         """Operation status - advanced patterns."""
 
         PENDING = "pending"
@@ -203,7 +215,7 @@ class FlextOracleWmsConstants(FlextConstants):
         TIMEOUT = "timeout"
         CANCELLED = "cancelled"
 
-    class OracleWMSDataQuality(StrEnum):
+    class WmsDataQuality(StrEnum):
         """Data quality levels."""
 
         HIGH = "high"
@@ -211,7 +223,7 @@ class FlextOracleWmsConstants(FlextConstants):
         LOW = "low"
         UNKNOWN = "unknown"
 
-    class OracleWMSFilterOperator(StrEnum):
+    class WmsFilterOperator(StrEnum):
         """Filter operators - composed."""
 
         EQ = "eq"
@@ -226,14 +238,14 @@ class FlextOracleWmsConstants(FlextConstants):
         STARTS_WITH = "starts_with"
         ENDS_WITH = "ends_with"
 
-    class OracleWMSPageMode(StrEnum):
+    class WmsPageMode(StrEnum):
         """Page modes."""
 
         APPEND = "append"
         REPLACE = "replace"
         MERGE = "merge"
 
-    class OracleWMSWriteMode(StrEnum):
+    class WmsWriteMode(StrEnum):
         """Write modes."""
 
         INSERT = "insert"
@@ -252,7 +264,7 @@ class OracleWMSAuthMethod(StrEnum):
     BEARER = "bearer"
 
 
-class OracleWMSFilterOperator(StrEnum):
+class WmsFilterOperator(StrEnum):
     """Filter operators - alias to nested."""
 
     EQ = "eq"
@@ -268,14 +280,14 @@ class OracleWMSFilterOperator(StrEnum):
     ENDS_WITH = "ends_with"
 
 
-# Backward compatibility aliases - advanced pattern
-FlextOracleWmsApiVersion = FlextOracleWmsConstants.OracleWMSApiVersion
-FlextOracleWmsApiCategory = FlextOracleWmsConstants.OracleWMSApiCategory
+# Type aliases for backward compatibility - advanced pattern
+WmsApiVersion = FlextOracleWmsConstants.WmsApiVersion
+WmsApiCategory = FlextOracleWmsConstants.WmsApiCategory
 
 __all__ = [
-    "FlextOracleWmsApiCategory",
-    "FlextOracleWmsApiVersion",
     "FlextOracleWmsConstants",
     "OracleWMSAuthMethod",
-    "OracleWMSFilterOperator",
+    "WmsApiCategory",
+    "WmsApiVersion",
+    "WmsFilterOperator",
 ]

@@ -9,7 +9,7 @@ from __future__ import annotations
 import json
 from typing import Self
 
-from flext_api import FlextApiClient
+from flext_api import FlextApiClient, FlextApiModels
 from flext_core import FlextLogger, FlextResult
 from pydantic import BaseModel, Field
 
@@ -72,12 +72,16 @@ class FlextHttpClient:
     def _ensure_client(self) -> None:
         """Ensure Oracle WMS HTTP client is initialized using FLEXT delegation."""
         if self._client is None:
-            self._client = FlextApiClient(
+            # Create a basic config for the API client
+            from flext_api import FlextApiConfig
+
+            config = FlextApiConfig(
                 base_url=self.base_url,
-                timeout=int(self.timeout),
-                default_headers=self.default_headers,
+                timeout=self.timeout,
+                headers=self.default_headers,
                 verify_ssl=self.verify_ssl,
             )
+            self._client = FlextApiClient(config=config)
 
     def close(self) -> None:
         """Close HTTP client with FLEXT cleanup."""
@@ -111,10 +115,22 @@ class FlextHttpClient:
             # Merge headers using dict union
             request_headers = self.default_headers | (headers or {})
 
-            # Execute via FLEXT API delegation
-            response_result = self._client.request(
-                method, path, headers=request_headers, params=params, body=body
+            # Build full URL
+            url = f"{self.base_url}/{path.lstrip('/')}" if path else self.base_url
+            if params:
+                query = "&".join(f"{k}={v}" for k, v in params.items())
+                url = f"{url}?{query}"
+
+            # Create HttpRequest
+            request = FlextApiModels.HttpRequest(
+                method=method,
+                url=url,
+                headers=request_headers,
+                body=body,
             )
+
+            # Execute via FLEXT API delegation
+            response_result = self._client.request(request)
 
             if response_result.is_failure:
                 return FlextResult.fail(
@@ -180,9 +196,7 @@ class FlextHttpClient:
         try:
             self._ensure_client()
             if self._client is None:
-                return FlextResult[dict[str, object]].fail(
-                    "Client not initialized"
-                )
+                return FlextResult[dict[str, object]].fail("Client not initialized")
 
             # Prepare headers using flext-api patterns
             request_headers = self.default_headers.copy()
@@ -197,12 +211,14 @@ class FlextHttpClient:
             elif data:
                 request_body = data
 
-            response_result = self._client.request(
-                "PUT",
-                path,
+            url = f"{self.base_url}/{path.lstrip('/')}"
+            request = FlextApiModels.HttpRequest(
+                method="PUT",
+                url=url,
                 headers=request_headers,
                 body=request_body,
             )
+            response_result = self._client.request(request)
 
             if response_result.is_failure:
                 return FlextResult[dict[str, object]].fail(
@@ -235,9 +251,7 @@ class FlextHttpClient:
 
         except Exception as e:
             FlextHttpClient.logger.exception("Unexpected error")
-            return FlextResult[dict[str, object]].fail(
-                f"Unexpected error: {e}"
-            )
+            return FlextResult[dict[str, object]].fail(f"Unexpected error: {e}")
 
     def delete(
         self,
@@ -257,17 +271,19 @@ class FlextHttpClient:
         try:
             self._ensure_client()
             if self._client is None:
-                return FlextResult[dict[str, object]].fail(
-                    "Client not initialized"
-                )
+                return FlextResult[dict[str, object]].fail("Client not initialized")
 
             request_headers = self.default_headers.copy()
             if headers:
                 request_headers.update(headers)
 
-            response_result: FlextResult[object] = self._client.delete(
-                path, headers=request_headers
+            url = f"{self.base_url}/{path.lstrip('/')}"
+            request = FlextApiModels.HttpRequest(
+                method="DELETE",
+                url=url,
+                headers=request_headers,
             )
+            response_result = self._client.request(request)
 
             if response_result.is_failure:
                 return FlextResult[dict[str, object]].fail(
@@ -300,9 +316,7 @@ class FlextHttpClient:
 
         except Exception as e:
             FlextHttpClient.logger.exception("Unexpected error")
-            return FlextResult[dict[str, object]].fail(
-                f"Unexpected error: {e}"
-            )
+            return FlextResult[dict[str, object]].fail(f"Unexpected error: {e}")
 
 
 # Factory function following flext-core patterns

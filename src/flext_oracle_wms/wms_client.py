@@ -9,6 +9,9 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
+from typing import cast
+
+from flext_api import FlextApiClient, FlextApiModels
 from flext_core import FlextContainer, FlextResult
 
 from flext_oracle_wms.config import FlextOracleWmsConfig
@@ -31,14 +34,19 @@ class FlextOracleWmsClient:
         if config is None:
             container = FlextContainer.get_global()
             config_result = container.get("FlextOracleWmsConfig")
-            config = config_result.unwrap_or(FlextOracleWmsConfig())
+            config = cast(
+                "FlextOracleWmsConfig", config_result.unwrap_or(FlextOracleWmsConfig())
+            )
 
         self.config: FlextOracleWmsConfig = config
 
-        self._client = FlextApiClient(
+        from flext_api import FlextApiConfig
+
+        api_config = FlextApiConfig(
             base_url=self.config.base_url,
             timeout=int(self.config.timeout),
         )
+        self._client = FlextApiClient(config=api_config)
 
         # Initialize discovered entities cache
         self._discovered_entities = []

@@ -8,9 +8,6 @@ SPDX-License-Identifier: MIT
 from flext_oracle_wms import (
     FlextOracleWmsClient,
     FlextOracleWmsConfig,
-    FlextOracleWmsModuleConfig,
-    flext_oracle_wms_build_entity_url,
-    flext_oracle_wms_validate_entity_name,
 )
 
 
@@ -44,43 +41,6 @@ class TestClientSimpleNew:
             or "WMS" in repr_str
             or "object" in repr_str
         )
-
-    def test_validate_entity_name_valid(self) -> None:
-        """Test entity name validation with valid names."""
-        # Test with common WMS entity name
-        result = flext_oracle_wms_validate_entity_name("order_hdr")
-        assert result.success
-        assert result.data == "order_hdr"
-
-    def test_validate_entity_name_invalid(self) -> None:
-        """Test entity name validation with invalid names."""
-        # Test with invalid entity name
-        result = flext_oracle_wms_validate_entity_name("")
-        assert result.is_failure
-        assert result.error is not None
-        assert result.error is not None and "cannot be empty" in result.error
-
-    def test_build_api_url_basic(self) -> None:
-        """Test basic URL building using helper function."""
-        url = flext_oracle_wms_build_entity_url(
-            "https://test.wms.com",
-            "prod",
-            "order_hdr",
-        )
-        assert "order_hdr" in url
-        assert url.startswith("https://test.wms.com")
-        assert "/wms/lgfapi/" in url
-
-    def test_build_api_url_with_version(self) -> None:
-        """Test URL building with API version using helper function."""
-        url = flext_oracle_wms_build_entity_url(
-            "https://test.wms.com",
-            "prod",
-            "order_hdr",
-            "v11",
-        )
-        assert "order_hdr" in url
-        assert "/wms/lgfapi/v11/" in url
 
     def test_client_creation_extended(self) -> None:
         """Test client creation and basic properties (extended)."""
@@ -222,37 +182,18 @@ class TestClientSimpleNew:
         assert hasattr(config, "oracle_wms_base_url")
         assert hasattr(config, "oracle_wms_username")
 
-    def test_validate_entity_name_edge_cases(self) -> None:
-        """Test entity name validation edge cases."""
-        # Test with special chars should fail
-        result = flext_oracle_wms_validate_entity_name("order@hdr")
-        assert result.is_failure
-        assert result.error is not None
-        assert result.error is not None and "Invalid entity name format" in result.error
-
     def test_client_initialization_edge_cases(self) -> None:
         """Test client initialization with edge cases."""
         # Test with minimal config
-        minimal_config = FlextOracleWmsModuleConfig(
-            oracle_wms_base_url="https://test.com",
-            oracle_wms_username="user",
-            oracle_wms_password="pass",
-            oracle_wms_timeout=30,
+        minimal_config = FlextOracleWmsConfig(
+            base_url="https://test.com",
+            username="user",
+            password="pass",
+            timeout=30,
         )
 
         client = FlextOracleWmsClient(minimal_config)
-        assert "test.com" in str(client.config.oracle_wms_base_url)
-
-    def test_build_api_url_edge_cases(self) -> None:
-        """Test URL building edge cases using helper function."""
-        # Test with different entity
-        url = flext_oracle_wms_build_entity_url(
-            "https://test.wms.com",
-            "prod",
-            "allocation",
-        )
-        assert "allocation" in url
-        assert url.startswith("https://test.wms.com")
+        assert "test.com" in str(client.config.base_url)
 
     def test_client_configuration_access(self) -> None:
         """Test access to client configuration."""

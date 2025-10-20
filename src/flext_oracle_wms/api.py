@@ -15,7 +15,6 @@ from flext_core import (
     FlextContext,
     FlextDispatcher,
     FlextHandlers,
-    FlextLogger,
     FlextModels,
     FlextProcessors,
     FlextRegistry,
@@ -75,7 +74,6 @@ class FlextOracleWmsApi(FlextService[FlextOracleWmsConfig]):
         self._handlers = FlextHandlers(config=handler_config)
         self._processors = FlextProcessors()
         self._registry = FlextRegistry(dispatcher=self._dispatcher)
-        self.logger = FlextLogger(__name__)
 
         # Domain services (delegate all business logic here)
         self._client = FlextOracleWmsClient(self._config)

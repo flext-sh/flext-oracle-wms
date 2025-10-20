@@ -1,7 +1,7 @@
-"""FLEXT Oracle WMS Models - Single Unified Domain Model.
+"""FLEXT WMS Models - Generic WMS Domain Model.
 
 Advanced domain-driven design with minimal declarations using composition.
-Python 3.13+ syntax, one class per module, SOLID principles.
+Python 3.13+ syntax, one class per module, SOLID principles. Generic for any WMS.
 
 Copyright (c) 2025 FLEXT Team. All rights reserved.
 SPDX-License-Identifier: MIT
@@ -11,17 +11,18 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 from enum import StrEnum
-from typing import Annotated, Literal
+from typing import Annotated
 
 from flext_core import FlextModels, FlextResult
 from pydantic import Field, StringConstraints
 
 
-class FlextOracleWmsModels(FlextModels):
-    """Unified Oracle WMS domain models with advanced composition patterns.
+class FlextWmsModels(FlextModels):
+    """Generic WMS domain models with advanced composition patterns.
 
     Single class per module following DDD, SOLID, and flext-core patterns.
     Uses Python 3.13+ syntax and AST-optimized declarations for minimal line count.
+    Generic for any WMS system.
     """
 
     # =========================================================================
@@ -32,7 +33,7 @@ class FlextOracleWmsModels(FlextModels):
     type TRecordBatch = list[TRecord]
     type TSchema = dict[str, dict[str, object]]
     type TApiResponse = dict[str, object]
-    type TApiVersion = Literal["v2", "v1", "legacy"]
+    type TApiVersion = Literal[v2, v1, legacy]
     type TEntityId = Annotated[str, StringConstraints(min_length=1, max_length=100)]
     type TEntityName = Annotated[
         str, StringConstraints(min_length=1, max_length=50, pattern=r"^[a-z0-9_]+$")
@@ -61,8 +62,17 @@ class FlextOracleWmsModels(FlextModels):
 
         sku: str = ""
         quantity: int = 0
-        location: str = ""
+        location_id: str = ""
         status: str = "active"
+
+    @dataclass
+    class Order(WmsEntity):
+        """Order domain entity."""
+
+        customer_id: str = ""
+        status: str = "pending"
+        total_amount: float = 0.0
+        items: list[dict[str, object]] = field(default_factory=list)
 
     @dataclass
     class Shipment(WmsEntity):
@@ -81,22 +91,32 @@ class FlextOracleWmsModels(FlextModels):
         status: str = "pending"
         items: list[dict[str, object]] = field(default_factory=list)
 
+    @dataclass
+    class Location(WmsEntity):
+        """Location domain entity."""
+
+        aisle: str = ""
+        shelf: str = ""
+        bin_: str = ""
+        zone: str = ""
+
     # =========================================================================
     # VALUE OBJECTS - Immutable domain values
     # =========================================================================
 
     @dataclass(frozen=True)
-    class WmsLocation:
+    class WarehouseLocation:
         """Warehouse location value object."""
 
         aisle: str
         shelf: str
         bin_: str
+        zone: str = ""
 
         @property
         def full_location(self) -> str:
             """Get full location string."""
-            return f"{self.aisle}-{self.shelf}-{self.bin_}"
+            return f"{self.zone}-{self.aisle}-{self.shelf}-{self.bin_}"
 
     @dataclass(frozen=True)
     class ApiCredentials:
@@ -114,10 +134,13 @@ class FlextOracleWmsModels(FlextModels):
         """WMS entity types."""
 
         INVENTORY = "inventory"
-        SHIPMENT = "shipment"
+        ORDERS = "orders"
+        SHIPMENTS = "shipments"
         PICKING = "picking"
-        LOCATION = "location"
-        ITEM = "item"
+        LOCATIONS = "locations"
+        ITEMS = "items"
+        PRODUCTS = "products"
+        WAREHOUSES = "warehouses"
 
     class OperationStatus(StrEnum):
         """Operation status values."""
@@ -138,7 +161,7 @@ class FlextOracleWmsModels(FlextModels):
     @staticmethod
     def validate_entity_name(name: str) -> FlextResult[str]:
         """Validate entity name using domain rules."""
-        if not name or len(name) > FlextOracleWmsModels.MAX_ENTITY_NAME_LENGTH:
+        if not name or len(name) > FlextWmsModels.MAX_ENTITY_NAME_LENGTH:
             return FlextResult.fail("Invalid entity name")
         return FlextResult.ok(name)
 
@@ -157,7 +180,7 @@ class FlextOracleWmsModels(FlextModels):
 
         id: str
         name: str
-        locations: list[WmsLocation] = field(default_factory=list)
+        locations: list[WarehouseLocation] = field(default_factory=list)
         inventory: list[InventoryItem] = field(default_factory=list)
 
         def add_inventory(self, item: InventoryItem) -> FlextResult[None]:

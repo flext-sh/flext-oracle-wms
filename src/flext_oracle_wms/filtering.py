@@ -6,12 +6,14 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from functools import partial
-from typing import Callable
+from typing import cast
 
 from flext_core import FlextExceptions, FlextLogger, FlextResult
 
 from flext_oracle_wms.constants import FlextOracleWmsConstants
+
+# Define the exception
+FlextOracleWmsDataValidationError = FlextExceptions.BaseError
 
 
 class FlextOracleWmsFilter:
@@ -27,8 +29,12 @@ class FlextOracleWmsFilter:
         max_conditions: int = 50,
     ) -> None:
         """Initialize with functional defaults."""
-        if max_conditions <= 0 or max_conditions > FlextOracleWmsConstants.Filtering.MAX_FILTER_CONDITIONS:
-            raise FlextExceptions.BaseError("Invalid max_conditions")
+        if (
+            max_conditions <= 0
+            or max_conditions > FlextOracleWmsConstants.Filtering.MAX_FILTER_CONDITIONS
+        ):
+            msg = "Invalid max_conditions"
+            raise FlextExceptions.BaseError(msg)
 
         self.max_conditions = max_conditions
         self.case_sensitive = case_sensitive
@@ -43,6 +49,43 @@ class FlextOracleWmsFilter:
         ):
             msg = "Filter validation failed"
             raise FlextOracleWmsDataValidationError(msg)
+
+    def _init_operators(self) -> None:
+        """Initialize operator dispatch table."""
+        # This method can be extended for custom operators
+
+    def _validate_filter_conditions_total(
+        self, filters: dict[str, object]
+    ) -> FlextResult[None]:
+        """Validate total filter conditions."""
+        total = sum(len(v) if isinstance(v, list) else 1 for v in filters.values())
+        if total > self.max_conditions:
+            return FlextResult.fail(
+                f"Too many filter conditions: {total} > {self.max_conditions}"
+            )
+        return FlextResult.ok(None)
+
+    def _get_nested_value(self, record: dict[str, object], field: str) -> object:
+        """Get nested value from record using dot notation."""
+        keys = field.split(".")
+        value: object = record
+        try:
+            for key in keys:
+                if isinstance(value, dict):
+                    value = value.get(key)
+                else:
+                    return None
+            return value
+        except (KeyError, TypeError):
+            return None
+
+    def _normalize(self, value: object) -> object:
+        """Normalize value for comparison."""
+        if value is None:
+            return ""
+        if not self.case_sensitive and isinstance(value, str):
+            return value.lower()
+        return value
 
     def filter_records(
         self,
@@ -69,7 +112,13 @@ class FlextOracleWmsFilter:
     ) -> FlextResult[list[dict[str, object]]]:
         """Sort records with functional key extraction."""
         try:
-            key_func = lambda r: str(self._get_nested_value(r, sort_field) or ("" if ascending else "zzz"))
+
+            def key_func(r: dict[str, object]) -> str:
+                return str(
+                    self._get_nested_value(r, sort_field)
+                    or ("" if ascending else "zzz")
+                )
+
             return FlextResult.ok(sorted(records, key=key_func, reverse=not ascending))
         except Exception as e:
             self.logger.exception("Sort failed")
@@ -79,14 +128,23 @@ class FlextOracleWmsFilter:
         """Validate filter conditions."""
         total = sum(len(v) if isinstance(v, list) else 1 for v in filters.values())
         if total > self.max_conditions:
-            return FlextResult.fail(f"Too many conditions. Max: {self.max_conditions}, Got: {total}")
+            return FlextResult.fail(
+                f"Too many conditions. Max: {self.max_conditions}, Got: {total}"
+            )
         return FlextResult.ok(None)
 
-    def _matches_all_filters(self, record: dict[str, object], filters: dict[str, object]) -> bool:
+    def _matches_all_filters(
+        self, record: dict[str, object], filters: dict[str, object]
+    ) -> bool:
         """Check if record matches all filters with functional composition."""
-        return all(self._matches_condition(record, field, filter_value) for field, filter_value in filters.items())
+        return all(
+            self._matches_condition(record, field, filter_value)
+            for field, filter_value in filters.items()
+        )
 
-    def _matches_condition(self, record: dict[str, object], field: str, filter_value: object) -> bool:
+    def _matches_condition(
+        self, record: dict[str, object], field: str, filter_value: object
+    ) -> bool:
         """Match condition with advanced pattern matching."""
         field_value = self._get_nested_value(record, field)
 
@@ -103,91 +161,31 @@ class FlextOracleWmsFilter:
                 # Simple equality
                 return self._normalize(field_value) == self._normalize(filter_value)
 
-    def _apply_operator(self, field_value: object, operator: str, filter_value: object) -> bool:
+    def _apply_operator(
+        self, field_value: object, operator: str, filter_value: object
+    ) -> bool:
         """Apply operator with functional dispatch."""
         operators = {
             "eq": lambda fv, f: self._normalize(fv) == self._normalize(f),
             "ne": lambda fv, f: self._normalize(fv) != self._normalize(f),
-            "gt": lambda fv, f: (isinstance(fv, (int, float)) and isinstance(f, (int, float)) and fv > f) or (isinstance(fv, str) and isinstance(f, str) and fv > f),
-            "lt": lambda fv, f: (isinstance(fv, (int, float)) and isinstance(f, (int, float)) and fv < f) or (isinstance(fv, str) and isinstance(f, str) and fv < f),
-            "gte": lambda fv, f: self._apply_operator(fv, "gt", f) or self._apply_operator(fv, "eq", f),
-            "lte": lambda fv, f: self._apply_operator(fv, "lt", f) or self._apply_operator(fv, "eq", f),
+            "gt": lambda fv, f: (
+                isinstance(fv, (int, float)) and isinstance(f, (int, float)) and fv > f
+            )
+            or (isinstance(fv, str) and isinstance(f, str) and fv > f),
+            "lt": lambda fv, f: (
+                isinstance(fv, (int, float)) and isinstance(f, (int, float)) and fv < f
+            )
+            or (isinstance(fv, str) and isinstance(f, str) and fv < f),
+            "gte": lambda fv, f: self._apply_operator(fv, "gt", f)
+            or self._apply_operator(fv, "eq", f),
+            "lte": lambda fv, f: self._apply_operator(fv, "lt", f)
+            or self._apply_operator(fv, "eq", f),
             "in": lambda fv, f: isinstance(f, (list, tuple)) and fv in f,
-            "contains": lambda fv, f: isinstance(fv, str) and isinstance(f, str) and f in fv,
+            "contains": lambda fv, f: isinstance(fv, str)
+            and isinstance(f, str)
+            and f in fv,
         }
         return operators.get(operator, lambda *_: False)(field_value, filter_value)
-
-    def _normalize(self, value: object) -> object:
-        """Normalize value for comparison."""
-        match value:
-            case str() if not self.case_sensitive:
-                return value.lower().strip()
-            case _:
-                return value
-
-        self,
-        record: FlextOracleWmsTypes.Core.Dict,
-        field_path: str,
-    ) -> object:
-        """Get nested field value from record using dot notation."""
-        try:
-            value: object = record
-            for field_part in field_path.split("."):
-                if isinstance(value, dict):
-                    value = value.get(field_part)
-                else:
-                    return None
-            return value
-        except (AttributeError, KeyError, TypeError):
-            return None
-
-    def _apply_operator(
-        self, field_value: object, operator: str, filter_value: object
-    ) -> bool:
-        """Apply operator using dispatch table."""
-        return self._operators.get(operator, lambda *_: False)(
-            field_value, filter_value
-        )
-
-    def _op_equals(self, field_value: object, filter_value: object) -> bool:
-        """Equality with normalization."""
-        nf, ff = self._normalize(field_value), self._normalize(filter_value)
-        return nf in ff if isinstance(ff, list) else nf == ff
-
-    def _op_greater_than(self, fv: object, f: object) -> bool:
-        """Greater than for numeric/string types."""
-        try:
-            return (
-                isinstance(fv, (int, float)) and isinstance(f, (int, float)) and fv > f
-            ) or (isinstance(fv, str) and isinstance(f, str) and fv > f)
-        except (TypeError, ValueError):
-            return False
-
-    def _op_less_than(self, fv: object, f: object) -> bool:
-        """Less than for numeric/string types."""
-        try:
-            return (
-                isinstance(fv, (int, float)) and isinstance(f, (int, float)) and fv < f
-            ) or (isinstance(fv, str) and isinstance(f, str) and fv < f)
-        except (TypeError, ValueError):
-            return False
-
-    def _op_contains(self, fv: object, f: object) -> bool:
-        """Contains for strings."""
-        if isinstance(fv, str) and isinstance(f, str):
-            return f.lower() in fv.lower() if not self.case_sensitive else f in fv
-        return False
-
-    def _op_in(self, field_value: object, filter_value: object) -> bool:
-        """In operator with case sensitivity."""
-        if isinstance(filter_value, (list, tuple)):
-            if isinstance(field_value, str) and not self.case_sensitive:
-                return any(
-                    isinstance(item, str) and field_value.lower() == item.lower()
-                    for item in filter_value
-                )
-            return field_value in filter_value
-        return False
 
     @classmethod
     def create_filter(
@@ -199,28 +197,28 @@ class FlextOracleWmsFilter:
     @classmethod
     def filter_by_field(
         cls,
-        records: list[FlextOracleWmsTypes.Core.Dict],
+        records: list[dict[str, object]],
         field: str,
         value: object,
-        operator: OracleWMSFilterOperator | None = None,
-    ) -> FlextResult[list[FlextOracleWmsTypes.Core.Dict]]:
+        operator: str | None = None,
+    ) -> FlextResult[list[dict[str, object]]]:
         """Filter records by field value."""
         engine = cls()
-        filters = {
-            field: {"operator": operator.value if operator else "eq", "value": value}
+        filters = (
+            {field: {"operator": operator or "eq", "value": value}}
             if operator
-            else value
-        }
-        return engine.filter_records(records, filters)
+            else {field: value}
+        )
+        return engine.filter_records(records, cast("dict[str, object]", filters))
 
     @classmethod
     def filter_by_id_range(
         cls,
-        records: list[FlextOracleWmsTypes.Core.Dict],
+        records: list[dict[str, object]],
         id_field: str,
         min_id: object | None = None,
         max_id: object | None = None,
-    ) -> FlextResult[list[FlextOracleWmsTypes.Core.Dict]]:
+    ) -> FlextResult[list[dict[str, object]]]:
         """Filter records by ID range."""
         if not records:
             return FlextResult.ok([])
