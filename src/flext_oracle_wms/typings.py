@@ -1,4 +1,4 @@
-"""FLEXT Oracle WMS Types - Advanced composition patterns.
+"""FLEXT Oracle WMS Types - composition patterns.
 
 Copyright (c) 2025 FLEXT Team. All rights reserved.
 SPDX-License-Identifier: MIT
@@ -12,9 +12,9 @@ from flext_core import FlextTypes
 
 
 class FlextOracleWmsTypes(FlextTypes):
-    """Oracle WMS types with advanced composition.
+    """Oracle WMS types with composition.
 
-    Uses Python 3.13+ syntax, reduces declarations through advanced patterns.
+    Uses Python 3.13+ syntax, reduces declarations through patterns.
     One class per module following SOLID principles.
     """
 

@@ -1,6 +1,6 @@
-"""FLEXT WMS Configuration - Generic WMS integration with advanced composition.
+"""FLEXT WMS Configuration - Generic WMS integration with composition.
 
-Uses Python 3.13+ syntax, reduces declarations through advanced patterns.
+Uses Python 3.13+ syntax, reduces declarations through patterns.
 One class per module following SOLID principles. Generic WMS configuration.
 
 Copyright (c) 2025 FLEXT Team. All rights reserved.
@@ -16,9 +16,9 @@ from flext_oracle_wms.constants import FlextOracleWmsConstants
 
 
 class FlextOracleWmsConfig(FlextConfig):
-    """Generic WMS configuration with advanced composition patterns.
+    """Generic WMS configuration with composition patterns.
 
-    Uses Python 3.13+ syntax, reduces declarations through advanced patterns.
+    Uses Python 3.13+ syntax, reduces declarations through patterns.
     One class per module following SOLID principles. Generic for any WMS system.
     """
 
@@ -62,7 +62,7 @@ class FlextOracleWmsConfig(FlextConfig):
 
     @property
     def environment_from_url(self) -> str:
-        """Extract environment using advanced pattern matching."""
+        """Extract environment using pattern matching."""
         if not self.base_url:
             return "unknown"
         # Advanced dict comprehension with next() for efficiency

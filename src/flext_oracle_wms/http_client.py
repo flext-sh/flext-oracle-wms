@@ -48,10 +48,10 @@ class FlextHttpClient:
         """Initialize Oracle WMS HTTP client with FLEXT patterns.
 
         Args:
-            base_url: Base URL for all requests
-            timeout: Request timeout in seconds
-            headers: Default headers for all requests
-            verify_ssl: Whether to verify SSL certificates
+        base_url: Base URL for all requests
+        timeout: Request timeout in seconds
+        headers: Default headers for all requests
+        verify_ssl: Whether to verify SSL certificates
 
         """
         self.base_url = base_url.rstrip("/")
@@ -184,13 +184,13 @@ class FlextHttpClient:
         """Make PUT request.
 
         Args:
-            path: Request path
-            data: Form data
-            json_data: JSON data
-            headers: Additional headers
+        path: Request path
+        data: Form data
+        json_data: JSON data
+        headers: Additional headers
 
         Returns:
-            FlextResult containing response data
+        FlextResult containing response data
 
         """
         try:
@@ -261,11 +261,11 @@ class FlextHttpClient:
         """Make DELETE request.
 
         Args:
-            path: Request path
-            headers: Additional headers
+        path: Request path
+        headers: Additional headers
 
         Returns:
-            FlextResult containing response data
+        FlextResult containing response data
 
         """
         try:
@@ -330,13 +330,13 @@ def create_flext_http_client(
     """Create FlextHttpClient instance.
 
     Args:
-        base_url: Base URL for all requests
-        timeout: Request timeout in seconds
-        headers: Default headers for all requests
-        verify_ssl: Whether to verify SSL certificates
+    base_url: Base URL for all requests
+    timeout: Request timeout in seconds
+    headers: Default headers for all requests
+    verify_ssl: Whether to verify SSL certificates
 
     Returns:
-        FlextHttpClient instance
+    FlextHttpClient instance
 
     """
     return FlextHttpClient(

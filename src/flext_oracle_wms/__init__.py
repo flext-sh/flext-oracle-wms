@@ -1,6 +1,6 @@
 """FLEXT Oracle WMS - Enterprise Oracle Warehouse Management System Integration.
 
-Enterprise-grade Oracle WMS integration with Clean Architecture, railway-oriented error handling,
+ Oracle WMS integration with Clean Architecture, railway-oriented error handling,
 and domain-driven design. Provides inventory, shipment, and picking operations with OAuth2 auth.
 
 Usage: from flext_oracle_wms import FlextOracleWmsClient, FlextOracleWmsConfig

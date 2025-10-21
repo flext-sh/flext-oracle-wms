@@ -527,10 +527,10 @@ class FlextOracleWmsApi:
             """Get Oracle WMS mock server instance.
 
             Args:
-                environment: Mock environment name
+            environment: Mock environment name
 
             Returns:
-                Mock server instance
+            Mock server instance
 
             """
             return FlextOracleWmsApi.OracleWmsMockServer(environment)

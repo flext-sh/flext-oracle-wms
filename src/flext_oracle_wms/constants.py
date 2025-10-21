@@ -1,4 +1,4 @@
-"""FLEXT WMS Constants - Generic WMS constants with advanced patterns.
+"""FLEXT WMS Constants - Generic WMS constants with patterns.
 
 Copyright (c) 2025 FLEXT Team. All rights reserved.
 SPDX-License-Identifier: MIT
@@ -13,9 +13,9 @@ from flext_core import FlextConstants
 
 
 class FlextOracleWmsConstants(FlextConstants):
-    """Generic WMS constants class with advanced composition patterns.
+    """Generic WMS constants class with composition patterns.
 
-    Uses Python 3.13+ syntax, reduces declarations through advanced patterns.
+    Uses Python 3.13+ syntax, reduces declarations through patterns.
     One class per module following SOLID principles. Generic for any WMS system.
     """
 
@@ -98,7 +98,7 @@ class FlextOracleWmsConstants(FlextConstants):
         MAX_POOL_SIZE: Final[int] = FlextConstants.Network.MAX_CONNECTION_POOL_SIZE
 
     class WmsEntities:
-        """WMS entity configuration - advanced patterns."""
+        """WMS entity configuration - patterns."""
 
         TYPES: ClassVar[list[str]] = [
             "INVENTORY",
@@ -206,7 +206,7 @@ class FlextOracleWmsConstants(FlextConstants):
         REPORTING = "reporting"
 
     class WmsOperationStatus(StrEnum):
-        """Operation status - advanced patterns."""
+        """Operation status - patterns."""
 
         PENDING = "pending"
         RUNNING = "running"

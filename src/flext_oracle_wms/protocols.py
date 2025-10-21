@@ -1,4 +1,4 @@
-"""FLEXT Oracle WMS Protocols - Advanced composition patterns.
+"""FLEXT Oracle WMS Protocols - composition patterns.
 
 Copyright (c) 2025 FLEXT Team. All rights reserved.
 SPDX-License-Identifier: MIT
@@ -12,9 +12,9 @@ from flext_core import FlextProtocols, FlextResult
 
 
 class FlextOracleWmsProtocols(FlextProtocols):
-    """Oracle WMS protocols with advanced composition.
+    """Oracle WMS protocols with composition.
 
-    Uses Python 3.13+ syntax, reduces declarations through advanced patterns.
+    Uses Python 3.13+ syntax, reduces declarations through patterns.
     One class per module following SOLID principles.
     """
 
@@ -32,12 +32,12 @@ class FlextOracleWmsProtocols(FlextProtocols):
             """Execute WMS operation with unified interface.
 
             Args:
-                operation: Operation type (auth, discovery, inventory, etc.)
-                config: Operation configuration
-                **params: Operation parameters
+            operation: Operation type (auth, discovery, inventory, etc.)
+            config: Operation configuration
+            **params: Operation parameters
 
             Returns:
-                FlextResult[dict[str, object]]: Operation result or error
+            FlextResult[dict[str, object]]: Operation result or error
 
             """
             ...

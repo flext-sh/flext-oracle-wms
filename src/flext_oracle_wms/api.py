@@ -52,7 +52,7 @@ class FlextOracleWmsApi(FlextService[FlextOracleWmsConfig]):
         """Initialize Oracle WMS facade with FLEXT integration.
 
         Args:
-            config: Oracle WMS configuration. Uses default if None.
+        config: Oracle WMS configuration. Uses default if None.
 
         """
         super().__init__()
@@ -87,63 +87,64 @@ class FlextOracleWmsApi(FlextService[FlextOracleWmsConfig]):
     # ) -> FlextResult[list[FlextOracleWmsEntity]]:
     #     """Discover Oracle WMS entities.
 
-    #     Args:
-    #         entity_type: Type of entities to discover
-    #         **kwargs: Additional discovery parameters
 
-    #     Returns:
-    #         Result containing discovered entities
+# Args:
+# entity_type: Type of entities to discover
+# **kwargs: Additional discovery parameters
 
-    #     """
-    #     return await self._discovery.discover_entities(entity_type, **kwargs)
+# Returns:
+# Result containing discovered entities
 
-    # async def get_inventory_data(
-    #     self, entity_name: str, **kwargs: object
-    # ) -> FlextResult[list[FlextOracleWmsEntity]]:
-    #     """Get inventory data from Oracle WMS.
+# """
+#     return await self._discovery.discover_entities(entity_type, **kwargs)
 
-    #     Args:
-    #         entity_name: Name of inventory entity
-    #         **kwargs: Additional query parameters
+# async def get_inventory_data(
+#     self, entity_name: str, **kwargs: object
+# ) -> FlextResult[list[FlextOracleWmsEntity]]:
+#     """Get inventory data from Oracle WMS.
 
-    #     Returns:
-    #         Result containing inventory data
+# Args:
+# entity_name: Name of inventory entity
+# **kwargs: Additional query parameters
 
-    #     """
-    #     return await self._operations.get_inventory_data(entity_name, **kwargs)
+# Returns:
+# Result containing inventory data
 
-    # async def process_shipment(
-    #     self, shipment_id: str, **kwargs: object
-    # ) -> FlextResult[dict[str, object]]:
-    #     """Process shipment in Oracle WMS.
+# """
+#     return await self._operations.get_inventory_data(entity_name, **kwargs)
 
-    #     Args:
-    #         shipment_id: Shipment identifier
-    #         **kwargs: Additional processing parameters
+# async def process_shipment(
+#     self, shipment_id: str, **kwargs: object
+# ) -> FlextResult[dict[str, object]]:
+#     """Process shipment in Oracle WMS.
 
-    #     Returns:
-    #         Result containing processing outcome
+# Args:
+# shipment_id: Shipment identifier
+# **kwargs: Additional processing parameters
 
-    #     """
-    #     return await self._operations.process_shipment(shipment_id, **kwargs)
+# Returns:
+# Result containing processing outcome
 
-    # async def execute_picking_wave(
-    #     self, wave_id: str, **kwargs: object
-    # ) -> FlextResult[dict[str, object]]:
-    #     """Execute picking wave in Oracle WMS.
+# """
+#     return await self._operations.process_shipment(shipment_id, **kwargs)
 
-    #     Args:
-    #         wave_id: Picking wave identifier
-    #         **kwargs: Additional execution parameters
+# async def execute_picking_wave(
+#     self, wave_id: str, **kwargs: object
+# ) -> FlextResult[dict[str, object]]:
+#     """Execute picking wave in Oracle WMS.
 
-    #     Returns:
-    #         Result containing execution outcome
+# Args:
+# wave_id: Picking wave identifier
+# **kwargs: Additional execution parameters
 
-    #     """
-    #     return await self._operations.execute_picking_wave(wave_id, **kwargs)
+# Returns:
+# Result containing execution outcome
 
-    # Additional facade methods can be added as the domain services expand
-    # All business logic stays in the specialized service classes
+# """
+#     return await self._operations.execute_picking_wave(wave_id, **kwargs)
+
+# Additional facade methods can be added as the domain services expand
+# All business logic stays in the specialized service classes
 
 
 __all__ = ["FlextOracleWmsApi"]

@@ -28,7 +28,7 @@ class FlextOracleWmsClient:
         """Initialize Oracle WMS client.
 
         Args:
-            config: Optional configuration. If None, retrieved from global container.
+        config: Optional configuration. If None, retrieved from global container.
 
         """
         if config is None:
@@ -55,11 +55,11 @@ class FlextOracleWmsClient:
         """Make GET request to Oracle WMS API.
 
         Args:
-            path: API endpoint path
-            **kwargs: Additional request parameters
+        path: API endpoint path
+        **kwargs: Additional request parameters
 
         Returns:
-            FlextResult containing response data
+        FlextResult containing response data
 
         """
         request = FlextApiModels.HttpRequest(
@@ -80,11 +80,11 @@ class FlextOracleWmsClient:
         """Make POST request to Oracle WMS API.
 
         Args:
-            path: API endpoint path
-            **kwargs: Additional request parameters
+        path: API endpoint path
+        **kwargs: Additional request parameters
 
         Returns:
-            FlextResult containing response data
+        FlextResult containing response data
 
         """
         request = FlextApiModels.HttpRequest(
@@ -105,11 +105,11 @@ class FlextOracleWmsClient:
         """Make PUT request to Oracle WMS API.
 
         Args:
-            path: API endpoint path
-            **kwargs: Additional request parameters
+        path: API endpoint path
+        **kwargs: Additional request parameters
 
         Returns:
-            FlextResult containing response data
+        FlextResult containing response data
 
         """
         request = FlextApiModels.HttpRequest(
@@ -130,11 +130,11 @@ class FlextOracleWmsClient:
         """Make DELETE request to Oracle WMS API.
 
         Args:
-            path: API endpoint path
-            **kwargs: Additional request parameters
+        path: API endpoint path
+        **kwargs: Additional request parameters
 
         Returns:
-            FlextResult containing response data
+        FlextResult containing response data
 
         """
         request = FlextApiModels.HttpRequest(
@@ -154,7 +154,7 @@ class FlextOracleWmsClient:
         """Check Oracle WMS API health.
 
         Returns:
-            FlextResult containing health status
+        FlextResult containing health status
 
         """
         return self.get("/health")
@@ -163,7 +163,7 @@ class FlextOracleWmsClient:
         """Start the Oracle WMS client.
 
         Returns:
-            FlextResult indicating success
+        FlextResult indicating success
 
         """
         try:
@@ -176,7 +176,7 @@ class FlextOracleWmsClient:
         """Stop the Oracle WMS client.
 
         Returns:
-            FlextResult indicating success
+        FlextResult indicating success
 
         """
         try:
@@ -189,7 +189,7 @@ class FlextOracleWmsClient:
         """Discover available Oracle WMS entities.
 
         Returns:
-            FlextResult containing list of entities
+        FlextResult containing list of entities
 
         """
         result = self.get("/entities")
@@ -208,12 +208,12 @@ class FlextOracleWmsClient:
         """Get data for a specific Oracle WMS entity.
 
         Args:
-            entity_name: Name of the entity
-            limit: Maximum number of records to return
-            filters: Optional filters to apply
+        entity_name: Name of the entity
+        limit: Maximum number of records to return
+        filters: Optional filters to apply
 
         Returns:
-            FlextResult containing entity data
+        FlextResult containing entity data
 
         """
         params: dict[str, object] = {}
@@ -237,10 +237,10 @@ class FlextOracleWmsClient:
         """Get Oracle WMS APIs by category.
 
         Args:
-            category: API category name
+        category: API category name
 
         Returns:
-            FlextResult containing APIs in the category
+        FlextResult containing APIs in the category
 
         """
         result = self.get(f"/apis/category/{category}")
@@ -256,11 +256,11 @@ class FlextOracleWmsClient:
         """Call a specific Oracle WMS API.
 
         Args:
-            api_name: Name of the API to call
-            **kwargs: Additional parameters
+        api_name: Name of the API to call
+        **kwargs: Additional parameters
 
         Returns:
-            FlextResult containing API response
+        FlextResult containing API response
 
         """
         return self.get(f"/api/{api_name}", **kwargs)
@@ -271,11 +271,11 @@ class FlextOracleWmsClient:
         """Update OBLPN tracking number.
 
         Args:
-            oblpn_id: OBLPN identifier
-            tracking_number: New tracking number
+        oblpn_id: OBLPN identifier
+        tracking_number: New tracking number
 
         Returns:
-            FlextResult containing update response
+        FlextResult containing update response
 
         """
         return self.put(
@@ -286,11 +286,11 @@ class FlextOracleWmsClient:
         """Create LPN (License Plate Number).
 
         Args:
-            lpn_nbr: LPN number
-            qty: Quantity
+        lpn_nbr: LPN number
+        qty: Quantity
 
         Returns:
-            FlextResult containing LPN creation response
+        FlextResult containing LPN creation response
 
         """
         return self.post("/lpn", body={"lpn_nbr": lpn_nbr, "qty": qty})

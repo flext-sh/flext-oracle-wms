@@ -145,7 +145,7 @@ class FlextOracleWmsFilter:
     def _matches_condition(
         self, record: dict[str, object], field: str, filter_value: object
     ) -> bool:
-        """Match condition with advanced pattern matching."""
+        """Match condition with pattern matching."""
         field_value = self._get_nested_value(record, field)
 
         match filter_value:

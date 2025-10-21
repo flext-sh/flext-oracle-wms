@@ -1,6 +1,6 @@
 """FLEXT WMS Models - Generic WMS Domain Model.
 
-Advanced domain-driven design with minimal declarations using composition.
+ domain-driven design with minimal declarations using composition.
 Python 3.13+ syntax, one class per module, SOLID principles. Generic for any WMS.
 
 Copyright (c) 2025 FLEXT Team. All rights reserved.
@@ -18,7 +18,7 @@ from pydantic import Field, StringConstraints
 
 
 class FlextWmsModels(FlextModels):
-    """Generic WMS domain models with advanced composition patterns.
+    """Generic WMS domain models with composition patterns.
 
     Single class per module following DDD, SOLID, and flext-core patterns.
     Uses Python 3.13+ syntax and AST-optimized declarations for minimal line count.
