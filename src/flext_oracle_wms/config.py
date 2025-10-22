@@ -10,7 +10,7 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 from flext_core import FlextConfig, FlextResult
-from pydantic import Field, field_validator
+from pydantic import AnyUrl, Field
 
 from flext_oracle_wms.constants import FlextOracleWmsConstants
 
@@ -23,7 +23,7 @@ class FlextOracleWmsConfig(FlextConfig):
     """
 
     # Connection & Auth (composed fields using advanced patterns)
-    base_url: str = Field(
+    base_url: AnyUrl = Field(
         default=str(FlextOracleWmsConstants.API_CONFIG["base_url_default"])
     )
     username: str | None = Field(default=None)
@@ -50,15 +50,6 @@ class FlextOracleWmsConfig(FlextConfig):
     )
     environment: str = Field(default=FlextOracleWmsConstants.ENVIRONMENTS["production"])
     use_mock: bool = Field(default=False)
-
-    @field_validator("base_url")
-    @classmethod
-    def validate_base_url(cls, v: str) -> str:
-        """Validate base URL format."""
-        if not v.startswith(("http://", "https://")):
-            msg = "Base URL must be HTTP/HTTPS"
-            raise ValueError(msg)
-        return v
 
     @property
     def environment_from_url(self) -> str:
