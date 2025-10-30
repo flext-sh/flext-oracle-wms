@@ -10,7 +10,6 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 from flext_core import (
-    FlextBus,
     FlextContainer,
     FlextContext,
     FlextDispatcher,
@@ -63,7 +62,6 @@ class FlextOracleWmsApi(FlextService[FlextOracleWmsConfig]):
         # Complete FLEXT ecosystem integration
         self._container = FlextContainer.get_global()
         self._context = FlextContext()
-        self._bus = FlextBus()
         self._dispatcher = FlextDispatcher()
         # Create handler config
         handler_config = FlextModels.Cqrs.Handler(
