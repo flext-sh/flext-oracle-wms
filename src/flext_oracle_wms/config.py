@@ -11,16 +11,41 @@ from __future__ import annotations
 
 from flext_core import FlextConfig, FlextResult
 from pydantic import AnyUrl, Field
+from pydantic_settings import SettingsConfigDict
 
 from flext_oracle_wms.constants import FlextOracleWmsConstants
 
 
-class FlextOracleWmsConfig(FlextConfig):
+@FlextConfig.auto_register("oracle_wms")
+class FlextOracleWmsConfig(FlextConfig.AutoConfig):
     """Generic WMS configuration with composition patterns.
+
+    **ARCHITECTURAL PATTERN**: Zero-Boilerplate Auto-Registration
+
+    This class uses FlextConfig.AutoConfig for automatic:
+    - Singleton pattern (thread-safe)
+    - Namespace registration (accessible via config.oracle_wms)
+    - Environment variable loading from FLEXT_ORACLE_WMS_* variables
+    - .env file loading (production/development)
+    - Automatic type conversion and validation via Pydantic v2
 
     Uses Python 3.13+ syntax, reduces declarations through patterns.
     One class per module following SOLID principles. Generic for any WMS system.
     """
+
+    model_config = SettingsConfigDict(
+        env_prefix="FLEXT_ORACLE_WMS_",
+        env_file=".env",
+        env_file_encoding="utf-8",
+        case_sensitive=False,
+        extra="ignore",
+        validate_assignment=True,
+        str_strip_whitespace=True,
+        validate_default=True,
+        frozen=False,
+        arbitrary_types_allowed=True,
+        strict=False,
+    )
 
     # Connection & Auth (composed fields using advanced patterns)
     base_url: AnyUrl = Field(
