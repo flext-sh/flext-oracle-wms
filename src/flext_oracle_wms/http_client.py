@@ -9,7 +9,7 @@ from __future__ import annotations
 import json
 from typing import Self
 
-from flext_api import FlextApiClient, FlextApiModels
+from flext_api import FlextApiClient, FlextApiConfig, FlextApiModels
 from flext_core import FlextLogger, FlextResult
 from pydantic import BaseModel, Field
 
@@ -73,8 +73,6 @@ class FlextHttpClient:
         """Ensure Oracle WMS HTTP client is initialized using FLEXT delegation."""
         if self._client is None:
             # Create a basic config for the API client
-            from flext_api import FlextApiConfig
-
             config = FlextApiConfig(
                 base_url=self.base_url,
                 timeout=self.timeout,

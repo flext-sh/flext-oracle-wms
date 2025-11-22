@@ -11,7 +11,7 @@ from __future__ import annotations
 
 from typing import cast
 
-from flext_api import FlextApiClient, FlextApiModels
+from flext_api import FlextApiClient, FlextApiConfig, FlextApiModels
 from flext_core import FlextContainer, FlextResult
 
 from flext_oracle_wms.config import FlextOracleWmsConfig
@@ -39,8 +39,6 @@ class FlextOracleWmsClient:
             )
 
         self.config: FlextOracleWmsConfig = config
-
-        from flext_api import FlextApiConfig
 
         api_config = FlextApiConfig(
             base_url=self.config.base_url,

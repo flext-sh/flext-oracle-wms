@@ -16,11 +16,11 @@ class TestClientSimpleNew:
 
     def setup_method(self) -> None:
         """Set up test fixtures."""
-        self.config = FlextOracleWmsModuleConfig(
-            oracle_wms_base_url="https://test.wms.com",
-            oracle_wms_username="test_user",
-            oracle_wms_password="test_pass",
-            oracle_wms_timeout=30,
+        self.config = FlextOracleWmsConfig(
+            base_url="https://test.wms.com",
+            username="test_user",
+            password="test_pass",
+            timeout=30,
         )
 
     def test_client_creation(self) -> None:
