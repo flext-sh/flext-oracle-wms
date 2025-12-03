@@ -16,7 +16,7 @@ import uuid
 from datetime import UTC, datetime
 from pathlib import Path
 
-from flext_core import FlextLogger, FlextResult, FlextTypes
+from flext_core import FlextLogger, FlextResult, t
 
 logger = FlextLogger(__name__)
 
@@ -553,7 +553,7 @@ class CompleteMockPipeline:
     def _simulate_target_loading(
         self,
         tap_records: list[dict[str, object]],
-    ) -> FlextTypes.NestedDict:
+    ) -> t.NestedDict:
         """Simulate TARGET loading process."""
         target_results = {}
 
@@ -580,8 +580,8 @@ class CompleteMockPipeline:
 
     def _simulate_dbt_transformations(
         self,
-        target_results: FlextTypes.NestedDict,
-    ) -> FlextTypes.NestedDict:
+        target_results: t.NestedDict,
+    ) -> t.NestedDict:
         """Simulate DBT transformation process."""
         dbt_results = {}
 
@@ -676,8 +676,8 @@ class CompleteMockPipeline:
         schemas: dict[str, object],
         catalog: dict[str, object],
         tap_records: list[dict[str, object]],
-        target_results: FlextTypes.NestedDict,
-        dbt_results: FlextTypes.NestedDict,
+        target_results: t.NestedDict,
+        dbt_results: t.NestedDict,
     ) -> FlextResult[str]:
         """Save complete pipeline results."""
         results_dir = Path("complete_pipeline_results")

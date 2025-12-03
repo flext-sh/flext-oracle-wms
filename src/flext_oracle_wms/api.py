@@ -13,11 +13,11 @@ from flext_core import (
     FlextContainer,
     FlextContext,
     FlextDispatcher,
-    FlextHandlers,
     FlextModels,
     FlextProcessors,
     FlextRegistry,
     FlextService,
+    h,
 )
 
 from flext_oracle_wms.config import FlextOracleWmsConfig
@@ -69,7 +69,7 @@ class FlextOracleWmsApi(FlextService[FlextOracleWmsConfig]):
             handler_name="FlextOracleWmsHandler",
             handler_type="command",
         )
-        self._handlers = FlextHandlers(config=handler_config)
+        self._handlers = h(config=handler_config)
         self._processors = FlextProcessors()
         self._registry = FlextRegistry(dispatcher=self._dispatcher)
 

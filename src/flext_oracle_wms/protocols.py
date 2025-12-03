@@ -8,10 +8,10 @@ from __future__ import annotations
 
 from typing import Protocol, runtime_checkable
 
-from flext_core import FlextProtocols, FlextResult
+from flext_core import FlextResult, p
 
 
-class FlextOracleWmsProtocols(FlextProtocols):
+class FlextOracleWmsProtocols(p):
     """Oracle WMS protocols with composition.
 
     Uses Python 3.13+ syntax, reduces declarations through patterns.
@@ -20,7 +20,7 @@ class FlextOracleWmsProtocols(FlextProtocols):
 
     # Consolidated protocol using generic operation pattern
     @runtime_checkable
-    class WmsServiceProtocol(FlextProtocols.Service, Protocol):
+    class WmsServiceProtocol(p.Service, Protocol):
         """Unified WMS service protocol with operation dispatch."""
 
         def execute_wms_operation(
