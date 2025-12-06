@@ -29,6 +29,7 @@ class FlextOracleWmsExceptions:
             code: str = "WMS_ERROR",
             **context: object,
         ) -> None:
+            """Initialize base WMS error with message and error code."""
             super().__init__(message)
             self.message = message
             self.code = code
@@ -39,30 +40,35 @@ class FlextOracleWmsExceptions:
         """Validation error."""
 
         def __init__(self, message: str, **context: object) -> None:
+            """Initialize validation error."""
             super().__init__(message, "WMS_VALIDATION_ERROR", **context)
 
     class ConfigurationError(BaseError):
         """Configuration error."""
 
         def __init__(self, message: str, **context: object) -> None:
+            """Initialize configuration error."""
             super().__init__(message, "WMS_CONFIG_ERROR", **context)
 
     class WmsConnectionError(BaseError):
         """Connection error."""
 
         def __init__(self, message: str, **context: object) -> None:
+            """Initialize WMS connection error."""
             super().__init__(message, "WMS_CONNECTION_ERROR", **context)
 
     class AuthenticationError(BaseError):
         """Authentication error."""
 
         def __init__(self, message: str, **context: object) -> None:
+            """Initialize authentication error."""
             super().__init__(message, "WMS_AUTH_ERROR", **context)
 
     class ProcessingError(BaseError):
         """Processing error."""
 
         def __init__(self, message: str, **context: object) -> None:
+            """Initialize processing error."""
             super().__init__(message, "WMS_PROCESSING_ERROR", **context)
 
     # Specific domain exceptions following FLEXT inheritance
@@ -70,6 +76,7 @@ class FlextOracleWmsExceptions:
         """API error."""
 
         def __init__(self, message: str, **context: object) -> None:
+            """Initialize API error."""
             super().__init__(message, "WMS_API_ERROR", **context)
 
     class InventoryError(ProcessingError):

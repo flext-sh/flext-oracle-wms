@@ -13,6 +13,9 @@ from flext_api import FlextApiClient, FlextApiConfig, FlextApiModels
 from flext_core import FlextLogger, FlextResult
 from pydantic import BaseModel, Field
 
+# HTTP status codes
+HTTP_BAD_REQUEST_THRESHOLD = 400
+
 
 class HttpRequest(BaseModel):
     """Generic Pydantic model for HTTP requests."""
@@ -138,7 +141,6 @@ class FlextHttpClient:
             response = response_result.unwrap()
 
             # Check HTTP status
-            HTTP_BAD_REQUEST_THRESHOLD = 400
             if response.status_code >= HTTP_BAD_REQUEST_THRESHOLD:
                 return FlextResult.fail(f"HTTP {response.status_code}: {response.body}")
 
@@ -173,6 +175,25 @@ class FlextHttpClient:
         body = json_data or data
         return self._execute_request("POST", path, headers=headers, body=body)
 
+    def _parse_response_body(self, body: object) -> dict[str, object]:
+        """Parse response body safely to dictionary.
+
+        Args:
+        body: Response body (dict, string, or other)
+
+        Returns:
+        Parsed response data as dictionary
+
+        """
+        try:
+            if isinstance(body, dict):
+                return body
+            if isinstance(body, str):
+                return json.loads(body) if body else {}
+            return {}
+        except (ValueError, AttributeError):
+            return {"text": str(body) if body else ""}
+
     def put(
         self,
         path: str,
@@ -202,13 +223,8 @@ class FlextHttpClient:
             if headers:
                 request_headers.update(headers)
 
-            # Use flext-api client for HTTP requests
             # Prepare request body
-            request_body = None
-            if json_data:
-                request_body = json_data
-            elif data:
-                request_body = data
+            request_body = json_data or data
 
             url = f"{self.base_url}/{path.lstrip('/')}"
             request = FlextApiModels.HttpRequest(
@@ -226,26 +242,12 @@ class FlextHttpClient:
 
             response = response_result.unwrap()
 
-            if response.status_code >= 400:
+            if response.status_code >= HTTP_BAD_REQUEST_THRESHOLD:
                 return FlextResult[dict[str, object]].fail(
                     f"HTTP {response.status_code}: {response.body}",
                 )
 
-            # Parse JSON response safely
-            try:
-                if isinstance(response.body, dict):
-                    response_data = response.body
-                elif isinstance(response.body, str):
-                    response_data: dict[str, object] = (
-                        json.loads(response.body) if response.body else {}
-                    )
-                else:
-                    response_data = {}
-            except (ValueError, AttributeError):
-                response_data: dict[str, object] = {
-                    "text": str(response.body) if response.body else "",
-                }
-
+            response_data = self._parse_response_body(response.body)
             return FlextResult[dict[str, object]].ok(response_data)
 
         except Exception as e:
@@ -291,7 +293,7 @@ class FlextHttpClient:
 
             response = response_result.unwrap()
 
-            if response.status_code >= 400:
+            if response.status_code >= HTTP_BAD_REQUEST_THRESHOLD:
                 return FlextResult[dict[str, object]].fail(
                     f"HTTP {response.status_code}: {response.body}",
                 )

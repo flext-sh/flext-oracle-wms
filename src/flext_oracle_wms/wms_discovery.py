@@ -13,6 +13,8 @@ from typing import ClassVar
 
 from flext_core import FlextResult
 
+from flext_oracle_wms.http_client import FlextHttpClient
+
 
 # Simple placeholders for missing classes
 class CacheValue:
@@ -43,10 +45,11 @@ class FlextOracleWmsDefaults:
 class FlextOracleWmsEntityDiscovery:
     """Entity discovery placeholder."""
 
-    def __init__(self, client) -> None:
+    def __init__(self, client: FlextHttpClient) -> None:
+        """Initialize entity discovery with HTTP client."""
         self.client = client
 
-    def discover_entities(self):
+    def discover_entities(self) -> FlextResult[list[dict[str, object]]]:
         """Discover entities placeholder."""
         return FlextResult.ok([])
 

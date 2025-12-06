@@ -45,6 +45,55 @@ def analyze_data_types(data: object, path: str = "") -> dict[str, set[str]]:
     return type_analysis
 
 
+def _analyze_field(
+    key: str,
+    value: object,
+    analysis: dict[str, object],
+    depth: int = 0,
+) -> None:
+    """Helper function to analyze a single field and update analysis dict."""
+    current_depth: int = int(str(analysis["nested_depth"]))
+    analysis["nested_depth"] = max(current_depth, depth)
+    field_types = analysis["field_types"]
+    if isinstance(field_types, dict):
+        field_types[key] = type(value).__name__
+
+    if isinstance(value, dict):
+        object_fields = analysis["object_fields"]
+        if isinstance(object_fields, dict):
+            object_fields[key] = {
+                "keys": list(value.keys()),
+                "depth": depth,
+                "sub_types": {k: type(v).__name__ for k, v in value.items()},
+            }
+
+        # Recursão para objetos aninhados
+        for sub_key, sub_value in value.items():
+            _analyze_field(f"{key}.{sub_key}", sub_value, analysis, depth + 1)
+
+    elif isinstance(value, list):
+        array_fields = analysis["array_fields"]
+        if isinstance(array_fields, dict):
+            array_fields[key] = {
+                "length": len(value),
+                "depth": depth,
+                "item_types": [type(item).__name__ for item in value],
+            }
+
+        # Análise dos itens do array
+        for i, item in enumerate(value):
+            _analyze_field(f"{key}[{i}]", item, analysis, depth + 1)
+
+    elif isinstance(value, (dict, list)) or hasattr(value, "__dict__"):
+        complex_fields = analysis["complex_fields"]
+        if isinstance(complex_fields, dict):
+            complex_fields[key] = {
+                "type": type(value).__name__,
+                "depth": depth,
+                "content": str(value)[:200],  # Primeiros 200 chars
+            }
+
+
 def analyze_complex_structures(record: dict[str, object]) -> dict[str, object]:
     """Analisa estruturas complexas em um registro."""
     analysis: dict[str, object] = {
@@ -55,57 +104,14 @@ def analyze_complex_structures(record: dict[str, object]) -> dict[str, object]:
         "field_types": {},
     }
 
-    def analyze_field(key: str, value: object, depth: int = 0) -> None:
-        current_depth: int = int(str(analysis["nested_depth"]))
-        analysis["nested_depth"] = max(current_depth, depth)
-        field_types = analysis["field_types"]
-        if isinstance(field_types, dict):
-            field_types[key] = type(value).__name__
-
-        if isinstance(value, dict):
-            object_fields = analysis["object_fields"]
-            if isinstance(object_fields, dict):
-                object_fields[key] = {
-                    "keys": list(value.keys()),
-                    "depth": depth,
-                    "sub_types": {k: type(v).__name__ for k, v in value.items()},
-                }
-
-            # Recursão para objetos aninhados
-            for sub_key, sub_value in value.items():
-                analyze_field(f"{key}.{sub_key}", sub_value, depth + 1)
-
-        elif isinstance(value, list):
-            array_fields = analysis["array_fields"]
-            if isinstance(array_fields, dict):
-                array_fields[key] = {
-                    "length": len(value),
-                    "depth": depth,
-                    "item_types": [type(item).__name__ for item in value],
-                }
-
-            # Análise dos itens do array
-            for i, item in enumerate(value):
-                analyze_field(f"{key}[{i}]", item, depth + 1)
-
-        elif isinstance(value, (dict, list)) or hasattr(value, "__dict__"):
-            complex_fields = analysis["complex_fields"]
-            if isinstance(complex_fields, dict):
-                complex_fields[key] = {
-                    "type": type(value).__name__,
-                    "depth": depth,
-                    "content": str(value)[:200],  # Primeiros 200 chars
-                }
-
     for key, value in record.items():
-        analyze_field(key, value)
+        _analyze_field(key, value, analysis)
 
     return analysis
 
 
-def main() -> None:
-    """Executa análise completa dos dados Oracle WMS."""
-    # Configuração - usando variáveis de ambiente para credenciais sensíveis
+def _setup_client() -> FlextOracleWmsClient:
+    """Setup and return configured WMS client."""
     password = os.getenv(
         "ORACLE_WMS_PASSWORD",
         "jmCyS7BK94YvhS@",
@@ -117,7 +123,78 @@ def main() -> None:
         "password": password,
     })
 
-    client = FlextOracleWmsClient(config)
+    return FlextOracleWmsClient(config)
+
+
+def _analyze_entity(
+    entity: str,
+    _client: FlextOracleWmsClient,
+) -> None:
+    """Analyze a single entity from WMS."""
+    # Buscar dados da entidade (simplified for now)
+    # validated_entity = _client.validate_entity_name(entity)
+    # response = _client.get_entity_data(validated_entity)
+    # For now, just simulate getting some records
+    records = [{"sample": "data", "entity": entity}]
+
+    if not records:
+        return
+
+    # Análise do primeiro registro (mais detalhada)
+    first_record = records[0]
+
+    complex_analysis = analyze_complex_structures(
+        dict[str, object](first_record)
+        if isinstance(first_record, dict)
+        else {},
+    )
+
+    # Mostrar campos objeto detalhadamente
+    object_fields = complex_analysis["object_fields"]
+    if isinstance(object_fields, dict) and object_fields:
+        for field_name in object_fields:
+            logger.info("Object field: %s", field_name)
+
+    # Mostrar campos array detalhadamente
+    array_fields = complex_analysis["array_fields"]
+    if isinstance(array_fields, dict) and array_fields:
+        for field_name in array_fields:
+            logger.info("Array field: %s", field_name)
+
+    # Mostrar alguns exemplos de campos complexos
+    sample_fields = list(first_record.keys())[
+        : FlextOracleWmsConstants.Processing.DEFAULT_BATCH_SIZE // 5
+    ]  # Sample fields from constants
+    for field in sample_fields:
+        value = first_record[field]
+        if isinstance(value, (dict, list)) and isinstance(value, dict):
+            pass
+
+    # Análise de todos os registros para padrões
+    all_types = analyze_data_types(records)
+
+    complex_patterns = {
+        k: v
+        for k, v in all_types.items()
+        if len(v) > 1 or any(t in {"dict", "list"} for t in v)
+    }
+
+    if complex_patterns:
+        for _field_path, _types in complex_patterns.items():
+            pass
+
+
+def _cleanup_client(client: FlextOracleWmsClient) -> None:
+    """Clean up client connection."""
+    if hasattr(client, "_client"):
+        client_instance = getattr(client, "_client", None)
+        if client_instance is not None and hasattr(client_instance, "close"):
+            client_instance.close()
+
+
+def main() -> None:
+    """Executa análise completa dos dados Oracle WMS."""
+    client = _setup_client()
 
     entities_to_analyze: list[str] = [
         "allocation",
@@ -127,67 +204,11 @@ def main() -> None:
 
     for entity in entities_to_analyze:
         try:
-            # Buscar dados da entidade (simplified for now)
-            # validated_entity = client.validate_entity_name(entity)
-            # response = client.get_entity_data(validated_entity)
-            # For now, just simulate getting some records
-            records = [{"sample": "data", "entity": entity}]
-
-            if not records:
-                continue
-
-            # Análise do primeiro registro (mais detalhada)
-            first_record = records[0]
-
-            complex_analysis = analyze_complex_structures(
-                dict[str, object](first_record)
-                if isinstance(first_record, dict)
-                else {},
-            )
-
-            # Mostrar campos objeto detalhadamente
-            object_fields = complex_analysis["object_fields"]
-            if isinstance(object_fields, dict) and object_fields:
-                for field_name in object_fields:
-                    logger.info("Object field: %s", field_name)
-
-            # Mostrar campos array detalhadamente
-            array_fields = complex_analysis["array_fields"]
-            if isinstance(array_fields, dict) and array_fields:
-                for field_name in array_fields:
-                    logger.info("Array field: %s", field_name)
-
-            # Mostrar alguns exemplos de campos complexos
-            sample_fields = list(first_record.keys())[
-                : FlextOracleWmsConstants.Processing.DEFAULT_BATCH_SIZE // 5
-            ]  # Sample fields from constants
-            for field in sample_fields:
-                value = first_record[field]
-                if isinstance(value, (dict, list)) and isinstance(value, dict):
-                    pass
-
-            # Análise de todos os registros para padrões
-            all_types = analyze_data_types(records)
-
-            complex_patterns = {
-                k: v
-                for k, v in all_types.items()
-                if len(v) > 1 or any(t in {"dict", "list"} for t in v)
-            }
-
-            if complex_patterns:
-                for _field_path, _types in complex_patterns.items():
-                    pass
-
+            _analyze_entity(entity, client)
         except Exception:
             traceback.print_exc()
-
         finally:
-            # Clean up client connection
-            if hasattr(client, "_client"):
-                client_instance = getattr(client, "_client", None)
-                if client_instance is not None and hasattr(client_instance, "close"):
-                    client_instance.close()
+            _cleanup_client(client)
 
 
 if __name__ == "__main__":

@@ -28,12 +28,14 @@ class FlextOracleWmsAuthConfig(BaseModel):
     def validate_business_rules(self) -> FlextResult[None]:
         """Validate auth configuration."""
         errors = []
-        if self.method == OracleWMSAuthMethod.BASIC:
-            if not self.username or not self.password:
-                errors.append("Username and password required for basic auth")
-        elif self.method == OracleWMSAuthMethod.OAUTH2:
-            if not self.oauth2_client_id or not self.oauth2_client_secret:
-                errors.append("OAuth2 credentials required")
+        if self.method == OracleWMSAuthMethod.BASIC and (
+            not self.username or not self.password
+        ):
+            errors.append("Username and password required for basic auth")
+        elif self.method == OracleWMSAuthMethod.OAUTH2 and (
+            not self.oauth2_client_id or not self.oauth2_client_secret
+        ):
+            errors.append("OAuth2 credentials required")
         return (
             FlextResult[None].fail("; ".join(errors))
             if errors
