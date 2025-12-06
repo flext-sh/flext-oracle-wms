@@ -12,8 +12,10 @@ from flext_core import FlextExceptions, FlextLogger, FlextResult
 
 from flext_oracle_wms.constants import FlextOracleWmsConstants
 
-# Define the exception
-FlextOracleWmsDataValidationError = FlextExceptions.BaseError
+
+# Exception class with real inheritance
+class FlextOracleWmsDataValidationError(FlextExceptions.BaseError):
+    """FlextOracleWmsDataValidationError - real inheritance from BaseError."""
 
 
 class FlextOracleWmsFilter:
@@ -55,13 +57,14 @@ class FlextOracleWmsFilter:
         # This method can be extended for custom operators
 
     def _validate_filter_conditions_total(
-        self, filters: dict[str, object]
+        self,
+        filters: dict[str, object],
     ) -> FlextResult[None]:
         """Validate total filter conditions."""
         total = sum(len(v) if isinstance(v, list) else 1 for v in filters.values())
         if total > self.max_conditions:
             return FlextResult.fail(
-                f"Too many filter conditions: {total} > {self.max_conditions}"
+                f"Too many filter conditions: {total} > {self.max_conditions}",
             )
         return FlextResult.ok(None)
 
@@ -116,7 +119,7 @@ class FlextOracleWmsFilter:
             def key_func(r: dict[str, object]) -> str:
                 return str(
                     self._get_nested_value(r, sort_field)
-                    or ("" if ascending else "zzz")
+                    or ("" if ascending else "zzz"),
                 )
 
             return FlextResult.ok(sorted(records, key=key_func, reverse=not ascending))
@@ -129,12 +132,14 @@ class FlextOracleWmsFilter:
         total = sum(len(v) if isinstance(v, list) else 1 for v in filters.values())
         if total > self.max_conditions:
             return FlextResult.fail(
-                f"Too many conditions. Max: {self.max_conditions}, Got: {total}"
+                f"Too many conditions. Max: {self.max_conditions}, Got: {total}",
             )
         return FlextResult.ok(None)
 
     def _matches_all_filters(
-        self, record: dict[str, object], filters: dict[str, object]
+        self,
+        record: dict[str, object],
+        filters: dict[str, object],
     ) -> bool:
         """Check if record matches all filters with functional composition."""
         return all(
@@ -143,7 +148,10 @@ class FlextOracleWmsFilter:
         )
 
     def _matches_condition(
-        self, record: dict[str, object], field: str, filter_value: object
+        self,
+        record: dict[str, object],
+        field: str,
+        filter_value: object,
     ) -> bool:
         """Match condition with pattern matching."""
         field_value = self._get_nested_value(record, field)
@@ -162,7 +170,10 @@ class FlextOracleWmsFilter:
                 return self._normalize(field_value) == self._normalize(filter_value)
 
     def _apply_operator(
-        self, field_value: object, operator: str, filter_value: object
+        self,
+        field_value: object,
+        operator: str,
+        filter_value: object,
     ) -> bool:
         """Apply operator with functional dispatch."""
         operators = {
@@ -189,7 +200,10 @@ class FlextOracleWmsFilter:
 
     @classmethod
     def create_filter(
-        cls, *, case_sensitive: bool = False, max_conditions: int = 50
+        cls,
+        *,
+        case_sensitive: bool = False,
+        max_conditions: int = 50,
     ) -> FlextOracleWmsFilter:
         """Create a new filter instance."""
         return cls(case_sensitive=case_sensitive, max_conditions=max_conditions)
@@ -242,7 +256,8 @@ class FlextOracleWmsFilter:
         """Check minimum value constraint."""
         try:
             if isinstance(field_value, (int, float)) and isinstance(
-                min_val, (int, float)
+                min_val,
+                (int, float),
             ):
                 return float(field_value) >= float(min_val)
             if isinstance(field_value, str) and isinstance(min_val, str):
@@ -256,7 +271,8 @@ class FlextOracleWmsFilter:
         """Check maximum value constraint."""
         try:
             if isinstance(field_value, (int, float)) and isinstance(
-                max_val, (int, float)
+                max_val,
+                (int, float),
             ):
                 return float(field_value) <= float(max_val)
             if isinstance(field_value, str) and isinstance(max_val, str):

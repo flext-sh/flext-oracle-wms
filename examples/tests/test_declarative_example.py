@@ -49,7 +49,7 @@ def load_env_config() -> dict[str, object] | None:
                 logger.debug(f"Environment detected in URL: {path_parts[-1]}")
         except (ValueError, AttributeError) as e:
             # URL parsing failed, continue with default config
-            logger.debug(f"Failed to parse environment from URL: {e}")
+            logger.debug("Failed to parse environment from URL: %s", e)
 
     return {
         "oracle_wms_base_url": base_url,
@@ -155,7 +155,7 @@ def main() -> None:
 
     except Exception as e:
         # Log the exception for debugging purposes
-        logger.warning(f"Test execution encountered error: {e}")
+        logger.warning("Test execution encountered error: %s", e)
         # Re-raise to ensure test failures are visible
         raise
 

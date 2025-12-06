@@ -108,7 +108,7 @@ class TestFlextOracleWmsConfig:
 
         # Test staging URL
         config_staging = FlextOracleWmsConfig(
-            base_url="https://staging-wms.oraclecloud.com"
+            base_url="https://staging-wms.oraclecloud.com",
         )
         assert config_staging.environment_from_url() == "staging"
 

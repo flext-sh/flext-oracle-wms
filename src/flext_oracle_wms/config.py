@@ -49,7 +49,7 @@ class FlextOracleWmsConfig(FlextConfig.AutoConfig):
 
     # Connection & Auth (composed fields using advanced patterns)
     base_url: AnyUrl = Field(
-        default=str(FlextOracleWmsConstants.API_CONFIG["base_url_default"])
+        default=str(FlextOracleWmsConstants.API_CONFIG["base_url_default"]),
     )
     username: str | None = Field(default=None)
     password: str | None = Field(default=None)
@@ -57,10 +57,14 @@ class FlextOracleWmsConfig(FlextConfig.AutoConfig):
 
     # Operational settings (composed with validation)
     timeout: int = Field(
-        default=int(FlextOracleWmsConstants.API_CONFIG["timeout_default"]), ge=1, le=300
+        default=int(FlextOracleWmsConstants.API_CONFIG["timeout_default"]),
+        ge=1,
+        le=300,
     )
     retry_attempts: int = Field(
-        default=int(FlextOracleWmsConstants.API_CONFIG["max_retries"]), ge=0, le=10
+        default=int(FlextOracleWmsConstants.API_CONFIG["max_retries"]),
+        ge=0,
+        le=10,
     )
     enable_ssl_verification: bool = Field(default=True)
 
@@ -71,7 +75,7 @@ class FlextOracleWmsConfig(FlextConfig.AutoConfig):
 
     # Version & environment (composed with defaults)
     api_version: str = Field(
-        default=str(FlextOracleWmsConstants.API_CONFIG["version_default"])
+        default=str(FlextOracleWmsConstants.API_CONFIG["version_default"]),
     )
     environment: str = Field(default=FlextOracleWmsConstants.ENVIRONMENTS["production"])
     use_mock: bool = Field(default=False)
@@ -89,7 +93,8 @@ class FlextOracleWmsConfig(FlextConfig.AutoConfig):
             if k in env_keys
         }
         return next(
-            (env for key, env in env_map.items() if key in self.base_url), "unknown"
+            (env for key, env in env_map.items() if key in self.base_url),
+            "unknown",
         )
 
     @classmethod

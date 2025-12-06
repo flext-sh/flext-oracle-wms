@@ -360,7 +360,7 @@ class FlextOracleWmsApi:
             except (TypeError, ValueError, AttributeError, KeyError) as e:
                 self.logger.exception("Mock server error")
                 return FlextResult[FlextOracleWmsTypes.Core.Dict].fail(
-                    f"Mock server error: {e}"
+                    f"Mock server error: {e}",
                 )
 
         def _mock_entity_discovery(
@@ -395,7 +395,8 @@ class FlextOracleWmsApi:
             )
 
         def _mock_entity_data(
-            self, entity_name: str
+            self,
+            entity_name: str,
         ) -> FlextResult[FlextOracleWmsTypes.Core.Dict]:
             """Mock entity data response."""
             data_key = f"{entity_name}_data"
@@ -522,7 +523,8 @@ class FlextOracleWmsApi:
 
         @classmethod
         def get_mock_server(
-            cls, environment: str = "mock_test"
+            cls,
+            environment: str = "mock_test",
         ) -> FlextOracleWmsApi.OracleWmsMockServer:
             """Get Oracle WMS mock server instance.
 

@@ -276,7 +276,7 @@ def showcase_6_error_handling(client: FlextOracleWmsClient) -> None:
         if not validation.is_success:
             logger.info(f"Expected validation failure: {validation.error}")
     except Exception as e:
-        logger.warning(f"Error handling demonstration: {e}")
+        logger.warning("Error handling demonstration: %s", e)
 
 
 def showcase_7_health_monitoring(

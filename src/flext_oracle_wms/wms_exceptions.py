@@ -24,7 +24,10 @@ class FlextOracleWmsExceptions:
         """Base WMS exception with FLEXT context handling."""
 
         def __init__(
-            self, message: str, code: str = "WMS_ERROR", **context: object
+            self,
+            message: str,
+            code: str = "WMS_ERROR",
+            **context: object,
         ) -> None:
             super().__init__(message)
             self.message = message
@@ -88,21 +91,64 @@ class FlextOracleWmsExceptions:
         """Schema flattening error."""
 
 
-# Direct FLEXT pattern exports - no aliases, direct usage
-FlextOracleWmsError = FlextOracleWmsExceptions.BaseError
-FlextOracleWmsApiError = FlextOracleWmsExceptions.ApiError
-FlextOracleWmsAuthenticationError = FlextOracleWmsExceptions.AuthenticationError
-FlextOracleWmsConfigurationError = FlextOracleWmsExceptions.ConfigurationError
-FlextOracleWmsConnectionError = FlextOracleWmsExceptions.WmsConnectionError
-FlextOracleWmsDataValidationError = FlextOracleWmsExceptions.ValidationError
-FlextOracleWmsEntityNotFoundError = FlextOracleWmsExceptions.EntityNotFoundError
-FlextOracleWmsInventoryError = FlextOracleWmsExceptions.InventoryError
-FlextOracleWmsPickingError = FlextOracleWmsExceptions.PickingError
-FlextOracleWmsProcessingError = FlextOracleWmsExceptions.ProcessingError
-FlextOracleWmsSchemaError = FlextOracleWmsExceptions.SchemaError
-FlextOracleWmsSchemaFlatteningError = FlextOracleWmsExceptions.SchemaFlatteningError
-FlextOracleWmsShipmentError = FlextOracleWmsExceptions.ShipmentError
-FlextOracleWmsValidationError = FlextOracleWmsExceptions.ValidationError
+# Direct FLEXT pattern exports with real inheritance
+class FlextOracleWmsError(FlextOracleWmsExceptions.BaseError):
+    """FlextOracleWmsError - real inheritance from BaseError."""
+
+
+class FlextOracleWmsApiError(FlextOracleWmsExceptions.ApiError):
+    """FlextOracleWmsApiError - real inheritance from ApiError."""
+
+
+class FlextOracleWmsAuthenticationError(FlextOracleWmsExceptions.AuthenticationError):
+    """FlextOracleWmsAuthenticationError - real inheritance from AuthenticationError."""
+
+
+class FlextOracleWmsConfigurationError(FlextOracleWmsExceptions.ConfigurationError):
+    """FlextOracleWmsConfigurationError - real inheritance from ConfigurationError."""
+
+
+class FlextOracleWmsConnectionError(FlextOracleWmsExceptions.WmsConnectionError):
+    """FlextOracleWmsConnectionError - real inheritance from WmsConnectionError."""
+
+
+class FlextOracleWmsDataValidationError(FlextOracleWmsExceptions.ValidationError):
+    """FlextOracleWmsDataValidationError - real inheritance from ValidationError."""
+
+
+class FlextOracleWmsEntityNotFoundError(FlextOracleWmsExceptions.EntityNotFoundError):
+    """FlextOracleWmsEntityNotFoundError - real inheritance from EntityNotFoundError."""
+
+
+class FlextOracleWmsInventoryError(FlextOracleWmsExceptions.InventoryError):
+    """FlextOracleWmsInventoryError - real inheritance from InventoryError."""
+
+
+class FlextOracleWmsPickingError(FlextOracleWmsExceptions.PickingError):
+    """FlextOracleWmsPickingError - real inheritance from PickingError."""
+
+
+class FlextOracleWmsProcessingError(FlextOracleWmsExceptions.ProcessingError):
+    """FlextOracleWmsProcessingError - real inheritance from ProcessingError."""
+
+
+class FlextOracleWmsSchemaError(FlextOracleWmsExceptions.SchemaError):
+    """FlextOracleWmsSchemaError - real inheritance from SchemaError."""
+
+
+class FlextOracleWmsSchemaFlatteningError(
+    FlextOracleWmsExceptions.SchemaFlatteningError,
+):
+    """FlextOracleWmsSchemaFlatteningError - real inheritance from SchemaFlatteningError."""
+
+
+class FlextOracleWmsShipmentError(FlextOracleWmsExceptions.ShipmentError):
+    """FlextOracleWmsShipmentError - real inheritance from ShipmentError."""
+
+
+class FlextOracleWmsValidationError(FlextOracleWmsExceptions.ValidationError):
+    """FlextOracleWmsValidationError - real inheritance from ValidationError."""
+
 
 __all__ = [
     "FlextOracleWmsApiError",

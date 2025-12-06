@@ -36,7 +36,8 @@ class FlextWmsModels(FlextModels):
     type TApiVersion = Literal[v2, v1, legacy]
     type TEntityId = Annotated[str, StringConstraints(min_length=1, max_length=100)]
     type TEntityName = Annotated[
-        str, StringConstraints(min_length=1, max_length=50, pattern=r"^[a-z0-9_]+$")
+        str,
+        StringConstraints(min_length=1, max_length=50, pattern=r"^[a-z0-9_]+$"),
     ]
     type TFilterValue = str | int | float | bool | None
     type TFilters = dict[str, TFilterValue]

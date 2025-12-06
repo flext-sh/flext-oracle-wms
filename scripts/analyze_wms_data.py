@@ -142,20 +142,20 @@ def main() -> None:
             complex_analysis = analyze_complex_structures(
                 dict[str, object](first_record)
                 if isinstance(first_record, dict)
-                else {}
+                else {},
             )
 
             # Mostrar campos objeto detalhadamente
             object_fields = complex_analysis["object_fields"]
             if isinstance(object_fields, dict) and object_fields:
                 for field_name in object_fields:
-                    logger.info(f"Object field: {field_name}")
+                    logger.info("Object field: %s", field_name)
 
             # Mostrar campos array detalhadamente
             array_fields = complex_analysis["array_fields"]
             if isinstance(array_fields, dict) and array_fields:
                 for field_name in array_fields:
-                    logger.info(f"Array field: {field_name}")
+                    logger.info("Array field: %s", field_name)
 
             # Mostrar alguns exemplos de campos complexos
             sample_fields = list(first_record.keys())[

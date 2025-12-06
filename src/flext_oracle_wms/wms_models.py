@@ -7,12 +7,13 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 from flext_core import FlextResult
+from flext_core.models import FlextModels
 from pydantic import BaseModel, Field
 
 from flext_oracle_wms.constants import FlextOracleWmsConstants
 
 
-class FlextOracleWmsModels:
+class FlextOracleWmsModels(FlextModels):
     """Oracle WMS models using direct Pydantic and FLEXT patterns.
 
     One class per module following SOLID principles.
@@ -54,9 +55,14 @@ class FlextOracleWmsModels:
             return FlextResult.ok(None)
 
 
-# Backward compatibility aliases
-FlextOracleWmsEntity = FlextOracleWmsModels.Entity
-FlextOracleWmsApiResponse = FlextOracleWmsModels.ApiResponse
+# Backward compatibility classes with real inheritance
+class FlextOracleWmsEntity(FlextOracleWmsModels.Entity):
+    """FlextOracleWmsEntity - real inheritance from FlextOracleWmsModels.Entity."""
+
+
+class FlextOracleWmsApiResponse(FlextOracleWmsModels.ApiResponse):
+    """FlextOracleWmsApiResponse - real inheritance from FlextOracleWmsModels.ApiResponse."""
+
 
 # Type aliases
 TOracleWmsRecord = dict[str, object]

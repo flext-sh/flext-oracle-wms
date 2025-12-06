@@ -92,7 +92,7 @@ def discover_wms_entities(
                 if isinstance(entity, dict)
                 else str(entity)
             )
-            logger.debug(f"Processing entity: {entity_display}")
+            logger.debug("Processing entity: %s", entity_display)
             # Additional info only available if entity is an object
             if hasattr(entity, "description") and getattr(entity, "description", None):
                 pass
@@ -159,7 +159,7 @@ def query_entity_data(
                             else str(value)
                         )
                     except (KeyError, ValueError, TypeError) as e:
-                        logger.debug(f"Display formatting failed: {e}")
+                        logger.debug("Display formatting failed: %s", e)
         elif data is not None:
             pass
 

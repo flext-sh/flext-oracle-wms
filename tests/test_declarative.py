@@ -146,10 +146,10 @@ def oracle_wms_client(
         "oracle_wms_enable_logging": bool(env_config.get("enable_logging", True)),
         "oracle_wms_use_mock": bool(env_config.get("oracle_wms_use_mock")),
         "oracle_wms_connection_pool_size": int(
-            env_config.get("oracle_wms_connection_pool_size", 20)
+            env_config.get("oracle_wms_connection_pool_size", 20),
         ),
         "oracle_wms_cache_duration": int(
-            env_config.get("oracle_wms_cache_duration", 3600)
+            env_config.get("oracle_wms_cache_duration", 3600),
         ),
         "project_name": str(env_config.get("project_name", "flext-oracle-wms")),
         "project_version": str(env_config.get("project_version", "0.9.0")),
@@ -220,7 +220,8 @@ class TestOracleWmsDeclarativeIntegration:
         assert len(lgf_apis) >= 5, "Should have multiple LGF v10 APIs"
 
     def test_client_configuration_and_lifecycle(
-        self, env_config: dict[str, object]
+        self,
+        env_config: dict[str, object],
     ) -> None:
         """Test client configuration and initialization."""
         # Properly cast env_config values to expected types for FlextOracleWmsClientConfig
@@ -229,7 +230,8 @@ class TestOracleWmsDeclarativeIntegration:
             "oracle_wms_username": str(env_config.get("oracle_wms_username", "")),
             "oracle_wms_password": env_config.get("oracle_wms_password", ""),
             "api_version": env_config.get(
-                "api_version", FlextOracleWmsApiVersion.LGF_V10
+                "api_version",
+                FlextOracleWmsApiVersion.LGF_V10,
             ),
             "auth_method": env_config.get("auth_method", "BASIC"),
             "oracle_wms_timeout": int(env_config.get("timeout", 30)),
@@ -238,10 +240,10 @@ class TestOracleWmsDeclarativeIntegration:
             "oracle_wms_enable_logging": bool(env_config.get("enable_logging", True)),
             "oracle_wms_use_mock": bool(env_config.get("oracle_wms_use_mock")),
             "oracle_wms_connection_pool_size": int(
-                env_config.get("oracle_wms_connection_pool_size", 20)
+                env_config.get("oracle_wms_connection_pool_size", 20),
             ),
             "oracle_wms_cache_duration": int(
-                env_config.get("oracle_wms_cache_duration", 3600)
+                env_config.get("oracle_wms_cache_duration", 3600),
             ),
             "project_name": str(env_config.get("project_name", "flext-oracle-wms")),
             "project_version": str(env_config.get("project_version", "0.9.0")),
@@ -267,7 +269,8 @@ class TestOracleWmsDeclarativeIntegration:
         assert stop_result.success, f"Client stop failed: {stop_result.error}"
 
     def test_oracle_wms_health_check(
-        self, oracle_wms_client: FlextOracleWmsClient
+        self,
+        oracle_wms_client: FlextOracleWmsClient,
     ) -> None:
         """Test Oracle WMS API health check."""
         health_result = oracle_wms_client.health_check()
@@ -436,7 +439,7 @@ class TestAutomationApisIntegration:
             logger.info("⚠️ Entity status call failed (expected): %s", result.error)
             # Verify it's a proper API call failure, not a client error
             assert result.error is None or "Client not initialized" not in str(
-                result.error
+                result.error,
             )
 
     def test_update_oblpn_tracking_number(

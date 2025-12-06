@@ -35,7 +35,8 @@ class FlextOracleWmsClient:
             container = FlextContainer.get_global()
             config_result = container.get("FlextOracleWmsConfig")
             config = cast(
-                "FlextOracleWmsConfig", config_result.unwrap_or(FlextOracleWmsConfig())
+                "FlextOracleWmsConfig",
+                config_result.unwrap_or(FlextOracleWmsConfig()),
             )
 
         self.config: FlextOracleWmsConfig = config
@@ -226,11 +227,12 @@ class FlextOracleWmsClient:
         data = result.unwrap()
         entity_data = data.get("data", []) if isinstance(data, dict) else []
         return FlextResult.ok(
-            list(entity_data) if isinstance(entity_data, list) else []
+            list(entity_data) if isinstance(entity_data, list) else [],
         )
 
     def get_apis_by_category(
-        self, category: str
+        self,
+        category: str,
     ) -> FlextResult[list[dict[str, object]]]:
         """Get Oracle WMS APIs by category.
 
@@ -249,7 +251,9 @@ class FlextOracleWmsClient:
         return FlextResult.ok(list(apis) if isinstance(apis, list) else [])
 
     def call_api(
-        self, api_name: str, **kwargs: object
+        self,
+        api_name: str,
+        **kwargs: object,
     ) -> FlextResult[dict[str, object]]:
         """Call a specific Oracle WMS API.
 
@@ -264,7 +268,9 @@ class FlextOracleWmsClient:
         return self.get(f"/api/{api_name}", **kwargs)
 
     def update_oblpn_tracking_number(
-        self, oblpn_id: str, tracking_number: str
+        self,
+        oblpn_id: str,
+        tracking_number: str,
     ) -> FlextResult[dict[str, object]]:
         """Update OBLPN tracking number.
 
@@ -277,7 +283,8 @@ class FlextOracleWmsClient:
 
         """
         return self.put(
-            f"/oblpn/{oblpn_id}/tracking", body={"tracking_number": tracking_number}
+            f"/oblpn/{oblpn_id}/tracking",
+            body={"tracking_number": tracking_number},
         )
 
     def create_lpn(self, lpn_nbr: str, qty: int) -> FlextResult[dict[str, object]]:

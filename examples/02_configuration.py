@@ -284,7 +284,7 @@ def demonstrate_configuration_patterns() -> None:
                 pass
 
     except Exception as e:
-        logger.warning(f"Configuration validation failed: {e}")
+        logger.warning("Configuration validation failed: %s", e)
 
     # Pattern 3: Environment-specific configurations
     env_configs = get_environment_configs()

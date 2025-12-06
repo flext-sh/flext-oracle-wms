@@ -281,8 +281,13 @@ class WmsFilterOperator(StrEnum):
 
 
 # Type aliases for backward compatibility - advanced pattern
-WmsApiVersion = FlextOracleWmsConstants.WmsApiVersion
-WmsApiCategory = FlextOracleWmsConstants.WmsApiCategory
+class WmsApiVersion(FlextOracleWmsConstants.WmsApiVersion):
+    """WmsApiVersion - real inheritance."""
+
+
+class WmsApiCategory(FlextOracleWmsConstants.WmsApiCategory):
+    """WmsApiCategory - real inheritance."""
+
 
 __all__ = [
     "FlextOracleWmsConstants",

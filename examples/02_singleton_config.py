@@ -95,7 +95,7 @@ def demonstrate_singleton_config() -> None:
     # Demonstrate environment extraction
     logger.info("8. Extracting environment from URL...")
     env_from_url = test_config.extract_environment_from_url()
-    logger.info(f"   Extracted environment: {env_from_url}")
+    logger.info("   Extracted environment: %s", env_from_url)
 
     # Demonstrate client creation with singleton config (no config parameter)
     logger.info("9. Creating client with global singleton configuration...")
@@ -137,7 +137,7 @@ def demonstrate_environment_variables() -> None:
             display_value = value
             if "PASSWORD" in key or "SECRET" in key or "KEY" in key:
                 display_value = "***"
-            logger.info(f"   {key}: {display_value}")
+            logger.info("   %s: %s", key, display_value)
     else:
         logger.info("   No Oracle WMS environment variables found")
 

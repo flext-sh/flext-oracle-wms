@@ -196,7 +196,8 @@ class TestFlextOracleWmsClient:
 
     @patch("flext_oracle_wms.wms_client.FlextApiClient")
     def test_get_apis_by_category_success(
-        self, mock_api_client_class: MagicMock
+        self,
+        mock_api_client_class: MagicMock,
     ) -> None:
         """Test successful API discovery by category."""
         mock_api_client = MagicMock()
@@ -228,7 +229,8 @@ class TestFlextOracleWmsClient:
 
     @patch("flext_oracle_wms.wms_client.FlextApiClient")
     def test_update_oblpn_tracking_number(
-        self, mock_api_client_class: MagicMock
+        self,
+        mock_api_client_class: MagicMock,
     ) -> None:
         """Test OBLPN tracking number update."""
         mock_api_client = MagicMock()

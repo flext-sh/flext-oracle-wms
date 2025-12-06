@@ -132,13 +132,14 @@ class FlextHttpClient:
 
             if response_result.is_failure:
                 return FlextResult.fail(
-                    f"HTTP {method} failed: {response_result.error}"
+                    f"HTTP {method} failed: {response_result.error}",
                 )
 
             response = response_result.unwrap()
 
             # Check HTTP status
-            if response.status_code >= 400:
+            HTTP_BAD_REQUEST_THRESHOLD = 400
+            if response.status_code >= HTTP_BAD_REQUEST_THRESHOLD:
                 return FlextResult.fail(f"HTTP {response.status_code}: {response.body}")
 
             # Parse response body
@@ -242,7 +243,7 @@ class FlextHttpClient:
                     response_data = {}
             except (ValueError, AttributeError):
                 response_data: dict[str, object] = {
-                    "text": str(response.body) if response.body else ""
+                    "text": str(response.body) if response.body else "",
                 }
 
             return FlextResult[dict[str, object]].ok(response_data)
@@ -307,7 +308,7 @@ class FlextHttpClient:
                     data = {}
             except (ValueError, AttributeError):
                 data: dict[str, object] = {
-                    "text": str(response.body) if response.body else ""
+                    "text": str(response.body) if response.body else "",
                 }
 
             return FlextResult[dict[str, object]].ok(data)
