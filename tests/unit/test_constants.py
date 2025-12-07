@@ -11,7 +11,7 @@ from __future__ import annotations
 
 from flext_core import FlextConstants
 
-from flext_oracle_wms.constants import FlextOracleWmsConstants
+from flext_oracle_wms.constants import FlextOracleWmsConstants, OracleWMSAuthMethod
 
 
 class TestFlextOracleWmsConstants:
@@ -218,8 +218,6 @@ class TestFlextOracleWmsConstants:
 
     def test_module_level_auth_method_enum(self) -> None:
         """Test module-level OracleWMSAuthMethod enum."""
-        from flext_oracle_wms.constants import OracleWMSAuthMethod
-
         assert OracleWMSAuthMethod.BASIC == "basic"
         assert OracleWMSAuthMethod.OAUTH2 == "oauth2"
         assert OracleWMSAuthMethod.API_KEY == "api_key"

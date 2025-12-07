@@ -21,7 +21,7 @@ class FlextOracleWmsModels(FlextModels):
     """
 
     # Core models using Pydantic directly
-    class Entity(BaseModel):
+    class Entity(FlextModels.Entity):
         """WMS entity with validation."""
 
         name: str = Field(min_length=1)

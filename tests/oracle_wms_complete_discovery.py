@@ -233,37 +233,55 @@ class OracleWmsCompleteDiscovery:
     def _test_entity_get_with_discovery(self) -> FlextResult[object]:
         """Test entity get by discovering entity with data first."""
         try:
-            # First find entities with data
-            if not self.discovered_entities:
-                entities_result = self.client.discover_entities()
-                if entities_result.success:
-                    self.discovered_entities = entities_result.data
-
-            # Try to find an entity with actual records
-            for entity_name in self.discovered_entities[:10]:  # Test first 10
-                list_result = self.client.get_entity_data(entity_name, limit=1)
-                if list_result.success:
-                    data = list_result.data
-                    if isinstance(data, dict) and data.get("results"):
-                        results = data["results"]
-                        if results and isinstance(results, list) and len(results) > 0:
-                            record = results[0]
-                            if isinstance(record, dict) and "id" in record:
-                                entity_id = record["id"]
-                                return self.client.call_api(
-                                    "lgf_entity_get",
-                                    path_params={
-                                        "entity_name": entity_name,
-                                        "id": str(entity_id),
-                                    },
-                                )
-
-            return FlextResult[None].fail(
-                "No entity with ID found for testing lgf_entity_get",
-            )
-
+            self._ensure_discovered_entities()
+            return self._find_and_get_entity_with_id()
         except Exception as e:
             return FlextResult[None].fail(f"Entity get discovery failed: {e}")
+
+    def _ensure_discovered_entities(self) -> None:
+        """Ensure discovered_entities list is populated."""
+        if not self.discovered_entities:
+            entities_result = self.client.discover_entities()
+            if entities_result.success:
+                self.discovered_entities = entities_result.data
+
+    def _find_and_get_entity_with_id(self) -> FlextResult[object]:
+        """Find an entity with records and get it by ID."""
+        for entity_name in self.discovered_entities[:10]:  # Test first 10
+            entity_result = self._get_entity_with_id(entity_name)
+            if entity_result is not None:
+                return entity_result
+
+        return FlextResult[None].fail(
+            "No entity with ID found for testing lgf_entity_get",
+        )
+
+    def _get_entity_with_id(self, entity_name: str) -> FlextResult[object] | None:
+        """Get entity by ID if it has records."""
+        list_result = self.client.get_entity_data(entity_name, limit=1)
+        if not list_result.success:
+            return None
+
+        data = list_result.data
+        if not isinstance(data, dict) or not data.get("results"):
+            return None
+
+        results = data["results"]
+        if not results or not isinstance(results, list) or len(results) == 0:
+            return None
+
+        record = results[0]
+        if not isinstance(record, dict) or "id" not in record:
+            return None
+
+        entity_id = record["id"]
+        return self.client.call_api(
+            "lgf_entity_get",
+            path_params={
+                "entity_name": entity_name,
+                "id": str(entity_id),
+            },
+        )
 
     def _test_data_extract_to_object_store(self) -> FlextResult[object]:
         """Test data extract to object store API."""

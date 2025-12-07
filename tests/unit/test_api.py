@@ -19,6 +19,7 @@ from flext_core import (
 
 from flext_oracle_wms.api import FlextOracleWmsApi
 from flext_oracle_wms.config import FlextOracleWmsConfig
+from flext_oracle_wms.wms_client import FlextOracleWmsClient
 
 
 class TestFlextOracleWmsApi:
@@ -74,8 +75,6 @@ class TestFlextOracleWmsApi:
 
         # Should have WMS client initialized
         assert hasattr(api, "_client")
-        from flext_oracle_wms.wms_client import FlextOracleWmsClient
-
         assert isinstance(api._client, FlextOracleWmsClient)
 
     def test_no_business_logic_in_facade(self) -> None:

@@ -1393,7 +1393,7 @@ class TestErrorHandling:
             mock_process.side_effect = Exception("Schema error")
 
             # Should raise exception via handle_operation_exception
-            with pytest.raises(Exception):
+            with pytest.raises(RuntimeError):
                 self.discovery.discover_entity_schema("test", [])
 
     def test_parse_entities_response_exception(self) -> None:
@@ -1412,7 +1412,7 @@ class TestErrorHandling:
             response_data = {"results": [{"id": 1, "name": "test"}]}
 
             # Should raise exception via handle_operation_exception
-            with pytest.raises(Exception):
+            with pytest.raises(RuntimeError):
                 self.discovery._extract_entity_schema(
                     response_data,
                     "test",

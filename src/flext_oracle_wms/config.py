@@ -10,7 +10,7 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 from flext_core import FlextConfig, FlextResult
-from pydantic import AnyUrl, Field
+from pydantic import Field
 from pydantic_settings import SettingsConfigDict
 
 from flext_oracle_wms.constants import FlextOracleWmsConstants
@@ -48,7 +48,7 @@ class FlextOracleWmsConfig(FlextConfig.AutoConfig):
     )
 
     # Connection & Auth (composed fields using advanced patterns)
-    base_url: AnyUrl = Field(
+    base_url: str = Field(
         default=str(FlextOracleWmsConstants.API_CONFIG["base_url_default"]),
     )
     username: str | None = Field(default=None)

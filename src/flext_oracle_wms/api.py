@@ -10,24 +10,16 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 from flext_core import (
-    FlextContainer,
-    FlextContext,
-    FlextDispatcher,
-    FlextModels,
-    FlextProcessors,
-    FlextRegistry,
     FlextService,
-    h,
 )
 
-from flext_oracle_wms.config import FlextOracleWmsConfig
 from flext_oracle_wms.wms_client import FlextOracleWmsClient
 
 # from flext_oracle_wms.wms_discovery import FlextOracleWmsEntityDiscovery
 # from flext_oracle_wms.wms_operations import FlextOracleWmsUnifiedOperations
 
 
-class FlextOracleWmsApi(FlextService[FlextOracleWmsConfig]):
+class FlextOracleWmsApi(FlextService[None]):
     """Thin facade for Oracle WMS operations with complete FLEXT integration.
 
     Integrates:
@@ -36,7 +28,6 @@ class FlextOracleWmsApi(FlextService[FlextOracleWmsConfig]):
     - FlextContext: Operation context management
     - FlextCqrs: CQRS pattern for WMS commands/queries
     - FlextDispatcher: Message routing for WMS operations
-    - FlextProcessors: Processing utilities for WMS data
     - FlextRegistry: Component registration for WMS plugins
     - FlextLogger: Structured logging for WMS operations
 
@@ -44,37 +35,13 @@ class FlextOracleWmsApi(FlextService[FlextOracleWmsConfig]):
     while maintaining clean separation between business logic and infrastructure.
     """
 
-    def __init__(
-        self,
-        config: FlextOracleWmsConfig | None = None,
-    ) -> None:
-        """Initialize Oracle WMS facade with FLEXT integration.
-
-        Args:
-        config: Oracle WMS configuration. Uses default if None.
-
-        """
+    def __init__(self) -> None:
+        """Initialize Oracle WMS facade with FLEXT integration."""
         super().__init__()
 
-        # Configuration
-        self._config = config or FlextOracleWmsConfig()
-
-        # Complete FLEXT ecosystem integration
-        self._container = FlextContainer.get_global()
-        self._context = FlextContext()
-        self._dispatcher = FlextDispatcher()
-        # Create handler config
-        handler_config = FlextModels.Cqrs.Handler(
-            handler_id="flext_oracle_wms_handler",
-            handler_name="FlextOracleWmsHandler",
-            handler_type="command",
-        )
-        self._handlers = h(config=handler_config)
-        self._processors = FlextProcessors()
-        self._registry = FlextRegistry(dispatcher=self._dispatcher)
-
         # Domain services (delegate all business logic here)
-        self._client = FlextOracleWmsClient(self._config)
+        # Client retrieves domain config from global container
+        self._client = FlextOracleWmsClient()
         # self._discovery = FlextOracleWmsEntityDiscovery(self._client)
         # self._operations = FlextOracleWmsUnifiedOperations(self._client)
 
