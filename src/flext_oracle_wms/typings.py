@@ -8,10 +8,10 @@ from __future__ import annotations
 
 from typing import Literal
 
-from flext_core import FlextTypes, t
+from flext_core import FlextTypes
 
 
-class FlextOracleWmsTypes(t):
+class FlextOracleWmsTypes(FlextTypes):
     """Oracle WMS types with composition.
 
     Uses Python 3.13+ syntax, reduces declarations through patterns.
@@ -51,6 +51,22 @@ class FlextOracleWmsTypes(t):
     type WmsEntity = dict[str, FlextTypes.Json.JsonValue | dict[str, object]]
     type WmsRecord = dict[str, object]
     type WmsRecords = list[WmsRecord]
+
+    # =========================================================================
+    # CORE COMMONLY USED TYPES - Convenience aliases for common patterns
+    # =========================================================================
+
+    class Core:
+        """Core convenience type aliases for common patterns.
+
+        Provides commonly used type aliases for consistency across the codebase.
+        These are simple aliases but are used extensively, so provided for convenience.
+        Access parent core types via inheritance from FlextOracleWmsTypes.
+        """
+
+        # Common dictionary types
+        type Dict = dict[str, object]
+        """Type alias for generic dictionary (attribute name to value mapping)."""
 
     class OracleWms:
         """OracleWms types namespace for cross-project access.

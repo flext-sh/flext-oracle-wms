@@ -579,21 +579,21 @@ make test-wms-apis         # All API endpoints validation
 
 ### **Foundation Libraries**
 
-- **[flext-core](../flext-core)**: FlextResult patterns, logging, dependency injection
-- **[flext-api](../flext-api)**: Enterprise HTTP client patterns (in progress)
-- **[flext-auth](../flext-auth)**: Authentication and authorization (planned)
-- **[flext-cli](../flext-cli)**: CLI operations and file management (planned)
+- **[flext-core](https://github.com/organization/flext/tree/main/flext-core/)**: FlextResult patterns, logging, dependency injection
+- **[flext-api](https://github.com/organization/flext/tree/main/flext-api/)**: Enterprise HTTP client patterns (in progress)
+- **[flext-auth](https://github.com/organization/flext/tree/main/flext-auth/)**: Authentication and authorization (planned)
+- **[flext-cli](https://github.com/organization/flext/tree/main/flext-cli/)**: CLI operations and file management (planned)
 
 ### **Singer Ecosystem Projects**
 
-- **[flext-tap-oracle-wms](../flext-tap-oracle-wms)**: Oracle WMS data extraction tap
-- **[flext-target-oracle-wms](../flext-target-oracle-wms)**: Oracle WMS data loading target
-- **[flext-dbt-oracle-wms](../flext-dbt-oracle-wms)**: Oracle WMS dbt transformations
+- **[flext-tap-oracle-wms](https://github.com/organization/flext/tree/main/flext-tap-oracle-wms/)**: Oracle WMS data extraction tap
+- **[flext-target-oracle-wms](https://github.com/organization/flext/tree/main/flext-target-oracle-wms/)**: Oracle WMS data loading target
+- **[flext-dbt-oracle-wms](https://github.com/organization/flext/tree/main/flext-dbt-oracle-wms/)**: Oracle WMS dbt transformations
 
 ### **Observability & Monitoring**
 
-- **[flext-observability](../flext-observability)**: Metrics, tracing, alerting
-- **[flext-quality](../flext-quality)**: Quality gates and validation
+- **[flext-observability](https://github.com/organization/flext/tree/main/flext-observability/)**: Metrics, tracing, alerting
+- **[flext-quality](https://github.com/organization/flext/tree/main/flext-quality/)**: Quality gates and validation
 
 ## 📖 Documentation & Resources
 

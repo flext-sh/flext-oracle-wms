@@ -172,9 +172,9 @@ make security               # Bandit + pip-audit security scanning
 
 ### FLEXT Ecosystem Dependencies
 
-- **[flext-core](../../flext-core)** - Foundation patterns, FlextResult, logging, DI container
-- **[flext-api](../../flext-api)** - Enterprise API client patterns and authentication
-- **[flext-observability](../../flext-observability)** - Monitoring, metrics, health checks
+- **[flext-core](https://github.com/organization/flext/tree/main/flext-core/)** - Foundation patterns, FlextResult, logging, DI container
+- **[flext-api](https://github.com/organization/flext/tree/main/flext-api/)** - Enterprise API client patterns and authentication
+- **[flext-observability](https://github.com/organization/flext/tree/main/flext-observability/)** - Monitoring, metrics, health checks
 
 ### External Dependencies
 

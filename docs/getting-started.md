@@ -74,7 +74,7 @@ with FlextOracleWmsClient(config) as client:
 ## Next Steps
 
 1. **Review Architecture** - [Architecture documentation](architecture.md)
-2. **Check Integration Status** - [Integration guide](integration.md)
+2. **Check Integration Status** - [Integration guide](guides/integration.md)
 3. **Development Setup** - [Development guidelines](development.md)
 4. **Implementation Roadmap** - [TODO.md](../TODO.md)
 

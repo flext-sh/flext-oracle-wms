@@ -281,10 +281,13 @@ class WmsApiCategory(FlextOracleWmsConstants.WmsApiCategory):
     """WmsApiCategory - real inheritance."""
 
 
+c = FlextOracleWmsConstants
+
 __all__ = [
     "FlextOracleWmsConstants",
     "OracleWMSAuthMethod",
     "WmsApiCategory",
     "WmsApiVersion",
     "WmsFilterOperator",
+    "c",
 ]
