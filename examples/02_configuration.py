@@ -128,18 +128,16 @@ def create_demo_config() -> FlextOracleWmsClientConfig:
 
     """
     # Use Pydantic model validation for proper configuration creation
-    return FlextOracleWmsClientConfig.model_validate(
-        {
-            "base_url": "https://demo-wms.oraclecloud.com/demo",
-            "username": "demo_user",
-            "password": "demo_password",
-            "api_version": "LGF_V10",
-            "timeout": FlextOracleWmsConstants.Connection.DEFAULT_TIMEOUT,
-            "retry_attempts": FlextOracleWmsConstants.Connection.DEFAULT_MAX_RETRIES,
-            "enable_ssl_verification": True,
-            "enable_audit_logging": True,
-        }
-    )
+    return FlextOracleWmsClientConfig.model_validate({
+        "base_url": "https://demo-wms.oraclecloud.com/demo",
+        "username": "demo_user",
+        "password": "demo_password",
+        "api_version": "LGF_V10",
+        "timeout": FlextOracleWmsConstants.Connection.DEFAULT_TIMEOUT,
+        "retry_attempts": FlextOracleWmsConstants.Connection.DEFAULT_MAX_RETRIES,
+        "enable_ssl_verification": True,
+        "enable_audit_logging": True,
+    })
 
 
 def validate_configuration(config: FlextOracleWmsClientConfig) -> dict[str, object]:
