@@ -33,9 +33,10 @@ class FlextOracleWmsConfig(FlextConfig.AutoConfig):
     One class per module following SOLID principles. Generic for any WMS system.
     """
 
+    # Use FlextConfig.resolve_env_file() to ensure all FLEXT configs use same .env
     model_config = SettingsConfigDict(
         env_prefix="FLEXT_ORACLE_WMS_",
-        env_file=".env",
+        env_file=FlextConfig.resolve_env_file(),
         env_file_encoding="utf-8",
         case_sensitive=False,
         extra="ignore",

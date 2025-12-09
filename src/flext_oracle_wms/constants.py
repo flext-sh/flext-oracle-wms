@@ -7,7 +7,7 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 from enum import StrEnum
-from typing import ClassVar, Final
+from typing import ClassVar, Final, Literal
 
 from flext_core import c as c_core
 
@@ -40,26 +40,10 @@ class FlextOracleWmsConstants(c_core):
     }
 
     # Authentication constants - advanced composition
-    AUTH_CONFIG: Final[dict[str, str]] = {
-        "basic": "basic",
-        "oauth2": "oauth2",
-        "api_key": "api_key",
-        "bearer": "bearer",
-        "oauth2_token_endpoint": "/oauth2/token",
-        "oauth2_scope_default": "read write",
-    }
+    # AUTH_CONFIG is created after OracleWMSAuthMethod StrEnum definition (see below)
+    AUTH_CONFIG: ClassVar[dict[str, str | object]]
 
-    # Entity types - composed list with advanced patterns
-    ENTITY_TYPES: Final[list[str]] = [
-        "inventory",
-        "orders",
-        "shipments",
-        "picking",
-        "locations",
-        "items",
-        "products",
-        "warehouses",
-    ]
+    # Entity types - will be generated from WmsEntityType StrEnum after definition
 
     # Batch and performance - advanced dict composition
     PROCESSING_CONFIG: Final[dict[str, int]] = {
@@ -96,18 +80,10 @@ class FlextOracleWmsConstants(c_core):
     class WmsEntities:
         """WMS entity configuration - patterns."""
 
-        TYPES: ClassVar[list[str]] = [
-            "INVENTORY",
-            "ORDERS",
-            "SHIPMENTS",
-            "PICKING",
-            "LOCATIONS",
-            "ITEMS",
-            "PRODUCTS",
-            "WAREHOUSES",
-        ]
         MAX_ENTITY_NAME_LENGTH: ClassVar[int] = 100
         ENTITY_NAME_PATTERN: ClassVar[str] = r"^[a-zA-Z][a-zA-Z0-9_]*$"
+        # TYPES is generated from WmsEntityType StrEnum after definition (see below)
+        TYPES: ClassVar[tuple[str, ...]]
 
     class WmsProcessing:
         """WMS processing constants - domain-specific."""
@@ -169,7 +145,11 @@ class FlextOracleWmsConstants(c_core):
 
     # Enums - advanced StrEnum composition
     class WmsEntityType(StrEnum):
-        """Entity types - composed from list."""
+        """Entity types.
+
+        DRY Pattern: This StrEnum is the single source of truth for WMS entity types.
+        All entity type-related constants and Literal types MUST reference this enum.
+        """
 
         INVENTORY = "inventory"
         ORDERS = "orders"
@@ -180,16 +160,55 @@ class FlextOracleWmsConstants(c_core):
         PRODUCTS = "products"
         WAREHOUSES = "warehouses"
 
+    # Generate ENTITY_TYPES list from StrEnum for backward compatibility
+    ENTITY_TYPES: Final[tuple[str, ...]] = tuple(
+        member.value for member in WmsEntityType.__members__.values()
+    )
+
+    # Generate WmsEntities.TYPES from StrEnum (uppercase for backward compatibility)
+    # Set class attribute after enum definition
+    WmsEntities.TYPES = tuple(
+        member.name for member in WmsEntityType.__members__.values()
+    )
+
+    # PEP 695 Literal type referencing StrEnum members
+    type WmsEntityTypeLiteral = Literal[
+        WmsEntityType.INVENTORY,
+        WmsEntityType.ORDERS,
+        WmsEntityType.SHIPMENTS,
+        WmsEntityType.PICKING,
+        WmsEntityType.LOCATIONS,
+        WmsEntityType.ITEMS,
+        WmsEntityType.PRODUCTS,
+        WmsEntityType.WAREHOUSES,
+    ]
+
     class WmsApiVersion(StrEnum):
-        """API versions."""
+        """API versions.
+
+        DRY Pattern: This StrEnum is the single source of truth for WMS API versions.
+        All API version-related constants and Literal types MUST reference this enum.
+        """
 
         V1 = "v1"
         V2 = "v2"
         V3 = "v3"
         LEGACY = "legacy"
 
+    # PEP 695 Literal type referencing StrEnum members
+    type WmsApiVersionLiteral = Literal[
+        WmsApiVersion.V1,
+        WmsApiVersion.V2,
+        WmsApiVersion.V3,
+        WmsApiVersion.LEGACY,
+    ]
+
     class WmsApiCategory(StrEnum):
-        """API categories."""
+        """API categories.
+
+        DRY Pattern: This StrEnum is the single source of truth for WMS API categories.
+        All API category-related constants and Literal types MUST reference this enum.
+        """
 
         INVENTORY = "inventory"
         ORDERS = "orders"
@@ -197,8 +216,21 @@ class FlextOracleWmsConstants(c_core):
         RECEIVING = "receiving"
         REPORTING = "reporting"
 
+    # PEP 695 Literal type referencing StrEnum members
+    type WmsApiCategoryLiteral = Literal[
+        WmsApiCategory.INVENTORY,
+        WmsApiCategory.ORDERS,
+        WmsApiCategory.SHIPPING,
+        WmsApiCategory.RECEIVING,
+        WmsApiCategory.REPORTING,
+    ]
+
     class WmsOperationStatus(StrEnum):
-        """Operation status - patterns."""
+        """Operation status values.
+
+        DRY Pattern: This StrEnum is the single source of truth for WMS operation statuses.
+        All operation status-related constants and Literal types MUST reference this enum.
+        """
 
         PENDING = "pending"
         RUNNING = "running"
@@ -207,16 +239,42 @@ class FlextOracleWmsConstants(c_core):
         TIMEOUT = "timeout"
         CANCELLED = "cancelled"
 
+    # PEP 695 Literal type referencing StrEnum members
+    type WmsOperationStatusLiteral = Literal[
+        WmsOperationStatus.PENDING,
+        WmsOperationStatus.RUNNING,
+        WmsOperationStatus.SUCCESS,
+        WmsOperationStatus.ERROR,
+        WmsOperationStatus.TIMEOUT,
+        WmsOperationStatus.CANCELLED,
+    ]
+
     class WmsDataQuality(StrEnum):
-        """Data quality levels."""
+        """Data quality levels.
+
+        DRY Pattern: This StrEnum is the single source of truth for WMS data quality levels.
+        All data quality-related constants and Literal types MUST reference this enum.
+        """
 
         HIGH = "high"
         MEDIUM = "medium"
         LOW = "low"
         UNKNOWN = "unknown"
 
+    # PEP 695 Literal type referencing StrEnum members
+    type WmsDataQualityLiteral = Literal[
+        WmsDataQuality.HIGH,
+        WmsDataQuality.MEDIUM,
+        WmsDataQuality.LOW,
+        WmsDataQuality.UNKNOWN,
+    ]
+
     class WmsFilterOperator(StrEnum):
-        """Filter operators - composed."""
+        """Filter operators.
+
+        DRY Pattern: This StrEnum is the single source of truth for WMS filter operators.
+        All filter operator-related constants and Literal types MUST reference this enum.
+        """
 
         EQ = "eq"
         NE = "ne"
@@ -230,25 +288,67 @@ class FlextOracleWmsConstants(c_core):
         STARTS_WITH = "starts_with"
         ENDS_WITH = "ends_with"
 
+    # PEP 695 Literal type referencing StrEnum members
+    type WmsFilterOperatorLiteral = Literal[
+        WmsFilterOperator.EQ,
+        WmsFilterOperator.NE,
+        WmsFilterOperator.GT,
+        WmsFilterOperator.GTE,
+        WmsFilterOperator.LT,
+        WmsFilterOperator.LTE,
+        WmsFilterOperator.IN,
+        WmsFilterOperator.NOT_IN,
+        WmsFilterOperator.CONTAINS,
+        WmsFilterOperator.STARTS_WITH,
+        WmsFilterOperator.ENDS_WITH,
+    ]
+
     class WmsPageMode(StrEnum):
-        """Page modes."""
+        """Page modes.
+
+        DRY Pattern: This StrEnum is the single source of truth for WMS page modes.
+        All page mode-related constants and Literal types MUST reference this enum.
+        """
 
         APPEND = "append"
         REPLACE = "replace"
         MERGE = "merge"
 
+    # PEP 695 Literal type referencing StrEnum members
+    type WmsPageModeLiteral = Literal[
+        WmsPageMode.APPEND,
+        WmsPageMode.REPLACE,
+        WmsPageMode.MERGE,
+    ]
+
     class WmsWriteMode(StrEnum):
-        """Write modes."""
+        """Write modes.
+
+        DRY Pattern: This StrEnum is the single source of truth for WMS write modes.
+        All write mode-related constants and Literal types MUST reference this enum.
+        """
 
         INSERT = "insert"
         UPDATE = "update"
         UPSERT = "upsert"
         DELETE = "delete"
 
+    # PEP 695 Literal type referencing StrEnum members
+    type WmsWriteModeLiteral = Literal[
+        WmsWriteMode.INSERT,
+        WmsWriteMode.UPDATE,
+        WmsWriteMode.UPSERT,
+        WmsWriteMode.DELETE,
+    ]
+
 
 # Module-level enums for direct import - advanced composition
 class OracleWMSAuthMethod(StrEnum):
-    """Auth methods - composed from dict."""
+    """Auth methods.
+
+    DRY Pattern: This StrEnum is the single source of truth for Oracle WMS authentication methods.
+    All authentication method-related constants and Literal types MUST reference this enum.
+    """
 
     BASIC = "basic"
     OAUTH2 = "oauth2"
@@ -256,29 +356,31 @@ class OracleWMSAuthMethod(StrEnum):
     BEARER = "bearer"
 
 
-class WmsFilterOperator(StrEnum):
-    """Filter operators - alias to nested."""
+# Generate AUTH_CONFIG with auth method values from StrEnum
+# Set class attribute after enum definition
+FlextOracleWmsConstants.AUTH_CONFIG = {
+    "basic": OracleWMSAuthMethod.BASIC,
+    "oauth2": OracleWMSAuthMethod.OAUTH2,
+    "api_key": OracleWMSAuthMethod.API_KEY,
+    "bearer": OracleWMSAuthMethod.BEARER,
+    "oauth2_token_endpoint": "/oauth2/token",
+    "oauth2_scope_default": "read write",
+}
 
-    EQ = "eq"
-    NE = "ne"
-    GT = "gt"
-    GTE = "gte"
-    LT = "lt"
-    LTE = "lte"
-    IN = "in"
-    NOT_IN = "not_in"
-    CONTAINS = "contains"
-    STARTS_WITH = "starts_with"
-    ENDS_WITH = "ends_with"
+# PEP 695 Literal type referencing StrEnum members
+type OracleWMSAuthMethodLiteral = Literal[
+    OracleWMSAuthMethod.BASIC,
+    OracleWMSAuthMethod.OAUTH2,
+    OracleWMSAuthMethod.API_KEY,
+    OracleWMSAuthMethod.BEARER,
+]
 
 
-# Type aliases for backward compatibility - advanced pattern
-class WmsApiVersion(FlextOracleWmsConstants.WmsApiVersion):
-    """WmsApiVersion - real inheritance."""
-
-
-class WmsApiCategory(FlextOracleWmsConstants.WmsApiCategory):
-    """WmsApiCategory - real inheritance."""
+# Module-level aliases for backward compatibility
+# Note: Cannot inherit from nested StrEnum classes, use type aliases instead
+WmsFilterOperator = FlextOracleWmsConstants.WmsFilterOperator
+WmsApiVersion = FlextOracleWmsConstants.WmsApiVersion
+WmsApiCategory = FlextOracleWmsConstants.WmsApiCategory
 
 
 c = FlextOracleWmsConstants

@@ -14,6 +14,7 @@ from enum import StrEnum
 from typing import Annotated
 
 from flext_core import FlextModels, FlextResult
+from flext_core.utilities import u
 from pydantic import Field, StringConstraints
 
 
@@ -24,6 +25,14 @@ class FlextWmsModels(FlextModels):
     Uses Python 3.13+ syntax and AST-optimized declarations for minimal line count.
     Generic for any WMS system.
     """
+
+    def __init_subclass__(cls, **kwargs: object) -> None:
+        """Warn when FlextWmsModels is subclassed directly."""
+        super().__init_subclass__(**kwargs)
+        u.Deprecation.warn_once(
+            f"subclass:{cls.__name__}",
+            "Subclassing FlextWmsModels is deprecated. Use FlextModels.Wms instead.",
+        )
 
     # =========================================================================
     # TYPE ALIASES - Advanced composition for minimal declarations
@@ -190,3 +199,10 @@ class FlextWmsModels(FlextModels):
                 return FlextResult.fail("SKU already exists")
             self.inventory.append(item)
             return FlextResult.ok(None)
+
+
+# Short aliases
+m = FlextWmsModels
+m_wms = FlextWmsModels
+
+__all__ = ["FlextWmsModels", "m", "m_wms"]
