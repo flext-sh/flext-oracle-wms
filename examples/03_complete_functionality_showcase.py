@@ -73,16 +73,18 @@ def load_config_from_environment() -> FlextOracleWmsClientConfig:
         msg = "Required environment variables cannot be None"
         raise ValueError(msg)
 
-    return FlextOracleWmsClientConfig.model_validate({
-        "base_url": base_url,
-        "username": username,
-        "password": password,
-        "api_version": FlextOracleWmsApiVersion.LGF_V10,
-        "timeout": FlextOracleWmsConstants.Connection.DEFAULT_TIMEOUT,
-        "retry_attempts": FlextOracleWmsConstants.Connection.DEFAULT_MAX_RETRIES,
-        "enable_ssl_verification": True,
-        "enable_audit_logging": True,
-    })
+    return FlextOracleWmsClientConfig.model_validate(
+        {
+            "base_url": base_url,
+            "username": username,
+            "password": password,
+            "api_version": FlextOracleWmsApiVersion.LGF_V10,
+            "timeout": FlextOracleWmsConstants.Connection.DEFAULT_TIMEOUT,
+            "retry_attempts": FlextOracleWmsConstants.Connection.DEFAULT_MAX_RETRIES,
+            "enable_ssl_verification": True,
+            "enable_audit_logging": True,
+        }
+    )
 
 
 def showcase_1_client_initialization(
@@ -262,16 +264,18 @@ def showcase_6_error_handling(client: FlextOracleWmsClient) -> None:
 
     # Test 3: Configuration validation
     try:
-        invalid_config = FlextOracleWmsClientConfig.model_validate({
-            "base_url": "invalid-url",  # Invalid URL format
-            "username": "",  # Empty username
-            "password": "",
-            "api_version": FlextOracleWmsApiVersion.LGF_V10,
-            "timeout": 30,
-            "retry_attempts": 3,
-            "enable_ssl_verification": True,
-            "enable_audit_logging": True,
-        })
+        invalid_config = FlextOracleWmsClientConfig.model_validate(
+            {
+                "base_url": "invalid-url",  # Invalid URL format
+                "username": "",  # Empty username
+                "password": "",
+                "api_version": FlextOracleWmsApiVersion.LGF_V10,
+                "timeout": 30,
+                "retry_attempts": 3,
+                "enable_ssl_verification": True,
+                "enable_audit_logging": True,
+            }
+        )
         validation = invalid_config.validate_business_rules()
         if not validation.is_success:
             logger.info(f"Expected validation failure: {validation.error}")

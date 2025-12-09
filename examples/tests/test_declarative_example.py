@@ -82,16 +82,18 @@ def main() -> None:
         return
 
     # Create client configuration
-    config = FlextOracleWmsClientConfig.model_validate({
-        "base_url": str(env_config["oracle_wms_base_url"]),
-        "username": str(env_config["oracle_wms_username"]),
-        "password": str(env_config["oracle_wms_password"]),
-        "api_version": env_config["api_version"],
-        "timeout": int(str(env_config["oracle_wms_timeout"])),
-        "retry_attempts": int(str(env_config["oracle_wms_max_retries"])),
-        "enable_ssl_verification": bool(env_config["oracle_wms_verify_ssl"]),
-        "enable_audit_logging": bool(env_config["oracle_wms_enable_logging"]),
-    })
+    config = FlextOracleWmsClientConfig.model_validate(
+        {
+            "base_url": str(env_config["oracle_wms_base_url"]),
+            "username": str(env_config["oracle_wms_username"]),
+            "password": str(env_config["oracle_wms_password"]),
+            "api_version": env_config["api_version"],
+            "timeout": int(str(env_config["oracle_wms_timeout"])),
+            "retry_attempts": int(str(env_config["oracle_wms_max_retries"])),
+            "enable_ssl_verification": bool(env_config["oracle_wms_verify_ssl"]),
+            "enable_audit_logging": bool(env_config["oracle_wms_enable_logging"]),
+        }
+    )
     client = FlextOracleWmsClient(config)
 
     try:
