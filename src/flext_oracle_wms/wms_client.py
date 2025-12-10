@@ -70,7 +70,7 @@ class FlextOracleWmsClient:
         result = self._client.request(request)
         if result.is_failure:
             return FlextResult.fail(f"GET {path} failed: {result.error}")
-        response = result.unwrap()
+        response = result.value
         if hasattr(response, "body") and isinstance(response.body, dict):
             return FlextResult.ok(response.body)
         return FlextResult.ok(response if isinstance(response, dict) else {})
@@ -95,7 +95,7 @@ class FlextOracleWmsClient:
         result = self._client.request(request)
         if result.is_failure:
             return FlextResult.fail(f"POST {path} failed: {result.error}")
-        response = result.unwrap()
+        response = result.value
         if hasattr(response, "body") and isinstance(response.body, dict):
             return FlextResult.ok(response.body)
         return FlextResult.ok(response if isinstance(response, dict) else {})
@@ -120,7 +120,7 @@ class FlextOracleWmsClient:
         result = self._client.request(request)
         if result.is_failure:
             return FlextResult.fail(f"PUT {path} failed: {result.error}")
-        response = result.unwrap()
+        response = result.value
         if hasattr(response, "body") and isinstance(response.body, dict):
             return FlextResult.ok(response.body)
         return FlextResult.ok(response if isinstance(response, dict) else {})
@@ -144,7 +144,7 @@ class FlextOracleWmsClient:
         result = self._client.request(request)
         if result.is_failure:
             return FlextResult.fail(f"DELETE {path} failed: {result.error}")
-        response = result.unwrap()
+        response = result.value
         if hasattr(response, "body") and isinstance(response.body, dict):
             return FlextResult.ok(response.body)
         return FlextResult.ok(response if isinstance(response, dict) else {})
@@ -194,7 +194,7 @@ class FlextOracleWmsClient:
         result = self.get("/entities")
         if result.is_failure:
             return FlextResult.fail(result.error)
-        data = result.unwrap()
+        data = result.value
         entities = data.get("entities", []) if isinstance(data, dict) else []
         return FlextResult.ok(list(entities) if isinstance(entities, list) else [])
 
@@ -224,7 +224,7 @@ class FlextOracleWmsClient:
         result = self.get(f"/entities/{entity_name}", **params)
         if result.is_failure:
             return FlextResult.fail(result.error)
-        data = result.unwrap()
+        data = result.value
         entity_data = data.get("data", []) if isinstance(data, dict) else []
         return FlextResult.ok(
             list(entity_data) if isinstance(entity_data, list) else [],
@@ -246,7 +246,7 @@ class FlextOracleWmsClient:
         result = self.get(f"/apis/category/{category}")
         if result.is_failure:
             return FlextResult.fail(result.error)
-        data = result.unwrap()
+        data = result.value
         apis = data.get("apis", []) if isinstance(data, dict) else []
         return FlextResult.ok(list(apis) if isinstance(apis, list) else [])
 

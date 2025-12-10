@@ -138,7 +138,7 @@ class FlextHttpClient:
                     f"HTTP {method} failed: {response_result.error}",
                 )
 
-            response = response_result.unwrap()
+            response = response_result.value
 
             # Check HTTP status
             if response.status_code >= HTTP_BAD_REQUEST_THRESHOLD:
@@ -240,7 +240,7 @@ class FlextHttpClient:
                     f"HTTP request failed: {response_result.error}",
                 )
 
-            response = response_result.unwrap()
+            response = response_result.value
 
             if response.status_code >= HTTP_BAD_REQUEST_THRESHOLD:
                 return FlextResult[dict[str, object]].fail(
@@ -291,7 +291,7 @@ class FlextHttpClient:
                     f"HTTP request failed: {response_result.error}",
                 )
 
-            response = response_result.unwrap()
+            response = response_result.value
 
             if response.status_code >= HTTP_BAD_REQUEST_THRESHOLD:
                 return FlextResult[dict[str, object]].fail(

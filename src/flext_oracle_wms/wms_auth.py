@@ -73,7 +73,7 @@ class FlextOracleWmsAuthenticator:
         if auth_result.is_failure:
             return FlextResult.fail(f"Authentication failed: {auth_result.error}")
 
-        token = auth_result.unwrap()
+        token = auth_result.value
         return FlextResult.ok({"Authorization": f"Bearer {token}"})
 
 
