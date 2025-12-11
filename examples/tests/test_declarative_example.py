@@ -12,7 +12,7 @@ from flext_oracle_wms import (
     FLEXT_ORACLE_WMS_APIS,
     FlextOracleWmsApiVersion,
     FlextOracleWmsClient,
-    FlextOracleWmsClientConfig,
+    FlextOracleWmsClientSettings,
 )
 
 logger = FlextLogger(__name__)
@@ -82,7 +82,7 @@ def main() -> None:
         return
 
     # Create client configuration
-    config = FlextOracleWmsClientConfig.model_validate({
+    config = FlextOracleWmsClientSettings.model_validate({
         "base_url": str(env_config["oracle_wms_base_url"]),
         "username": str(env_config["oracle_wms_username"]),
         "password": str(env_config["oracle_wms_password"]),

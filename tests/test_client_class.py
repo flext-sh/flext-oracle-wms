@@ -7,13 +7,13 @@ SPDX-License-Identifier: MIT
 
 from flext_oracle_wms import (
     FlextOracleWmsClient,
-    FlextOracleWmsConfig,
+    FlextOracleWmsSettings,
 )
 
 
 def test_client_class_creation() -> None:
     """Test client class creation."""
-    config = FlextOracleWmsConfig.testing_config()
+    config = FlextOracleWmsSettings.testing_config()
     client = FlextOracleWmsClient(config)
     assert isinstance(client, FlextOracleWmsClient)
     assert client.config == config
@@ -21,7 +21,7 @@ def test_client_class_creation() -> None:
 
 def test_client_class_with_real_methods() -> None:
     """Test client class with real available methods."""
-    config = FlextOracleWmsConfig.testing_config()
+    config = FlextOracleWmsSettings.testing_config()
     client = FlextOracleWmsClient(config)
 
     # Test real methods that exist
@@ -32,7 +32,7 @@ def test_client_class_with_real_methods() -> None:
 
 def test_entity_name_validation() -> None:
     """Test entity name validation using real client methods."""
-    config = FlextOracleWmsConfig.testing_config()
+    config = FlextOracleWmsSettings.testing_config()
     client = FlextOracleWmsClient(config)
     # Test with real client - entity validation is done internally
     assert client is not None
@@ -40,7 +40,7 @@ def test_entity_name_validation() -> None:
 
 def test_api_url_building() -> None:
     """Test API URL building using real client methods."""
-    config = FlextOracleWmsConfig.testing_config()
+    config = FlextOracleWmsSettings.testing_config()
     client = FlextOracleWmsClient(config)
     # URL building is done internally by the client
     assert client is not None
@@ -49,7 +49,7 @@ def test_api_url_building() -> None:
 
 def test_client_creation_class() -> None:
     """Test client class creation without context manager."""
-    config = FlextOracleWmsConfig.testing_config()
+    config = FlextOracleWmsSettings.testing_config()
     client = FlextOracleWmsClient(config)
     assert isinstance(client, FlextOracleWmsClient)
     assert client.config is not None
@@ -57,7 +57,7 @@ def test_client_creation_class() -> None:
 
 def test_client_basic_properties() -> None:
     """Test client basic properties and methods exist."""
-    config = FlextOracleWmsConfig.testing_config()
+    config = FlextOracleWmsSettings.testing_config()
     client = FlextOracleWmsClient(config)
 
     # Test that real methods exist
@@ -73,7 +73,7 @@ def test_client_basic_properties() -> None:
 
 def test_discover_entities_class() -> None:
     """Test entity discovery method exists ()."""
-    config = FlextOracleWmsConfig.testing_config()
+    config = FlextOracleWmsSettings.testing_config()
     client = FlextOracleWmsClient(config)
 
     # Test that method exists and is callable (method)
@@ -83,7 +83,7 @@ def test_discover_entities_class() -> None:
 
 def test_specialized_wms_methods_class() -> None:
     """Test specialized WMS methods exist."""
-    config = FlextOracleWmsConfig.testing_config()
+    config = FlextOracleWmsSettings.testing_config()
     client = FlextOracleWmsClient(config)
 
     # Test real WMS-specific methods that exist
@@ -95,7 +95,7 @@ def test_specialized_wms_methods_class() -> None:
 
 def test_health_check_method_class() -> None:
     """Test health check method exists ()."""
-    config = FlextOracleWmsConfig.testing_config()
+    config = FlextOracleWmsSettings.testing_config()
     client = FlextOracleWmsClient(config)
 
     # Test that health_check method exists and is callable (method)
@@ -105,7 +105,7 @@ def test_health_check_method_class() -> None:
 
 def test_get_available_apis_method() -> None:
     """Test get available APIs method."""
-    config = FlextOracleWmsConfig.testing_config()
+    config = FlextOracleWmsSettings.testing_config()
     client = FlextOracleWmsClient(config)
 
     # Test actual method that exists
@@ -116,7 +116,7 @@ def test_get_available_apis_method() -> None:
 
 def test_bulk_post_records_class() -> None:
     """Test bulk record posting in class."""
-    config = FlextOracleWmsConfig.testing_config()
+    config = FlextOracleWmsSettings.testing_config()
     client = FlextOracleWmsClient(config)
 
     # Test that the client exists and has ship_oblpn method as alternative
@@ -126,7 +126,7 @@ def test_bulk_post_records_class() -> None:
 
 def test_bulk_update_records_class() -> None:
     """Test bulk record updating in class."""
-    config = FlextOracleWmsConfig.testing_config()
+    config = FlextOracleWmsSettings.testing_config()
     client = FlextOracleWmsClient(config)
 
     # Test that the client exists and has create_lpn method as alternative
@@ -136,7 +136,7 @@ def test_bulk_update_records_class() -> None:
 
 def test_client_internal_properties() -> None:
     """Test client internal properties exist."""
-    config = FlextOracleWmsConfig.testing_config()
+    config = FlextOracleWmsSettings.testing_config()
     client = FlextOracleWmsClient(config)
 
     # Test that internal properties exist as expected
@@ -147,7 +147,7 @@ def test_client_internal_properties() -> None:
 
 def test_client_lifecycle_methods() -> None:
     """Test client lifecycle methods exist."""
-    config = FlextOracleWmsConfig.testing_config()
+    config = FlextOracleWmsSettings.testing_config()
     client = FlextOracleWmsClient(config)
 
     # Test that lifecycle methods exist
@@ -159,7 +159,7 @@ def test_client_lifecycle_methods() -> None:
 
 def test_client_configuration_access() -> None:
     """Test client configuration is accessible."""
-    config = FlextOracleWmsConfig.testing_config()
+    config = FlextOracleWmsSettings.testing_config()
     client = FlextOracleWmsClient(config)
 
     # Test configuration access
@@ -172,7 +172,7 @@ def test_client_configuration_access() -> None:
 def test_real_helper_functions() -> None:
     """Test using real helper functions from helpers module."""
     # Test real client functionality
-    config = FlextOracleWmsConfig.testing_config()
+    config = FlextOracleWmsSettings.testing_config()
     client = FlextOracleWmsClient(config)
     # Entity validation and URL building are done internally by the client
     assert client is not None
@@ -181,7 +181,7 @@ def test_real_helper_functions() -> None:
 
 def test_client_repr_and_str() -> None:
     """Test client string representation."""
-    config = FlextOracleWmsConfig.testing_config()
+    config = FlextOracleWmsSettings.testing_config()
     client = FlextOracleWmsClient(config)
 
     # Test string representation doesn't raise errors
@@ -193,8 +193,8 @@ def test_client_repr_and_str() -> None:
 def test_imports_and_modules() -> None:
     """Test that all required imports work correctly."""
     # Test that classes can be imported and instantiated
-    config = FlextOracleWmsConfig.testing_config()
+    config = FlextOracleWmsSettings.testing_config()
     client = FlextOracleWmsClient(config)
 
     assert isinstance(client, FlextOracleWmsClient)
-    assert isinstance(config, FlextOracleWmsConfig)
+    assert isinstance(config, FlextOracleWmsSettings)

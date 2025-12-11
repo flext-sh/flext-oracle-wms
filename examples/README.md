@@ -41,10 +41,10 @@ This directory contains comprehensive examples demonstrating Oracle WMS Cloud in
 ### Basic Client Setup
 
 ```python
-from flext_oracle_wms import FlextOracleWmsClient, FlextOracleWmsClientConfig
+from flext_oracle_wms import FlextOracleWmsClient, FlextOracleWmsClientSettings
 
 # Configure Oracle WMS connection
-config = FlextOracleWmsClientConfig(
+config = FlextOracleWmsClientSettings(
     base_url="https://your-wms-instance.oraclecloud.com",
     username="your_username",
     password="your_password"
@@ -96,7 +96,7 @@ Usage:
     python [example_file.py]:
 """
 
-from flext_oracle_wms import FlextOracleWmsClient, FlextOracleWmsClientConfig
+from flext_oracle_wms import FlextOracleWmsClient, FlextOracleWmsClientSettings
 
 def main():
     """Main example function with comprehensive error handling."""

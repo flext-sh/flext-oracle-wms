@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """Oracle WMS Configuration Singleton Example.
 
-This example demonstrates how to use FlextOracleWmsConfig as a singleton
-that extends flext-core's FlextConfig singleton pattern.
+This example demonstrates how to use FlextOracleWmsSettings as a singleton
+that extends flext-core's FlextSettings singleton pattern.
 
 Copyright (c) 2025 FLEXT Team. All rights reserved.
 SPDX-License-Identifier: MIT
@@ -13,7 +13,7 @@ import os
 
 from flext_core import FlextLogger
 
-from flext_oracle_wms import FlextOracleWmsClient, FlextOracleWmsConfig
+from flext_oracle_wms import FlextOracleWmsClient, FlextOracleWmsSettings
 from flext_oracle_wms.constants import FlextOracleWmsConstants
 
 logger = FlextLogger(__name__)
@@ -25,7 +25,7 @@ def demonstrate_singleton_config() -> None:
 
     # Method 1: Use the global singleton instance with default values
     logger.info("1. Using global singleton instance with defaults...")
-    config = FlextOracleWmsConfig()
+    config = FlextOracleWmsSettings()
     logger.info(f"   Base URL: {config.base_url}")
     logger.info(f"   Environment: {config.environment}")
     logger.info(f"   App Name: {config.app_name}")
@@ -33,14 +33,14 @@ def demonstrate_singleton_config() -> None:
 
     # Method 2: Create new config instance with different parameters
     logger.info("2. Updating global singleton with new parameters...")
-    updated_config = FlextOracleWmsConfig(timeout=60, retry_attempts=5)
+    updated_config = FlextOracleWmsSettings(timeout=60, retry_attempts=5)
     logger.info(f"   Updated Timeout: {updated_config.timeout}")
     logger.info(f"   Updated Max Retries: {updated_config.retry_attempts}")
     logger.info(f"   Same instance? {config is updated_config}")
 
     # Method 3: Create from environment variables with overrides
     logger.info("3. Creating from environment with overrides...")
-    env_config = FlextOracleWmsConfig(
+    env_config = FlextOracleWmsSettings(
         timeout=FlextOracleWmsConstants.Connection.DEFAULT_TIMEOUT * 3,
         enable_ssl_verification=False,
     )
@@ -51,7 +51,7 @@ def demonstrate_singleton_config() -> None:
 
     # Method 4: Create new configuration for different environment
     logger.info("4. Creating configuration for different environment...")
-    new_config = FlextOracleWmsConfig(
+    new_config = FlextOracleWmsSettings(
         base_url="https://new-environment.wms.oraclecloud.com/test",
         username="NEW_USER",
         password="NEW_PASSWORD",
@@ -67,7 +67,7 @@ def demonstrate_singleton_config() -> None:
     # Method 5: Reset and create fresh instance
     logger.info("5. Resetting global instance...")
     # Note: reset_global_instance doesn't exist, using new instance
-    fresh_config = FlextOracleWmsConfig(
+    fresh_config = FlextOracleWmsSettings(
         base_url="https://fresh.wms.oraclecloud.com/fresh",
         username="FRESH_USER",
         password="FRESH_PASSWORD",
@@ -77,7 +77,7 @@ def demonstrate_singleton_config() -> None:
 
     # Method 6: Create testing configuration
     logger.info("6. Creating testing configuration...")
-    test_config = FlextOracleWmsConfig(use_mock=True)
+    test_config = FlextOracleWmsSettings(use_mock=True)
     logger.info(f"   Test URL: {test_config.base_url}")
     logger.info(f"   Test Username: {test_config.username}")
     logger.info(f"   Use Mock: {test_config.use_mock}")

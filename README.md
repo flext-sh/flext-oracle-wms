@@ -16,8 +16,8 @@ poetry install
 
 # Test Oracle WMS connectivity (requires Oracle WMS Cloud access)
 python -c "
-from flext_oracle_wms import FlextOracleWmsClient, FlextOracleWmsClientConfig
-config = FlextOracleWmsClientConfig(
+from flext_oracle_wms import FlextOracleWmsClient, FlextOracleWmsClientSettings
+config = FlextOracleWmsClientSettings(
     base_url='https://your-wms-instance.oraclecloud.com',
     username='your_username',
     password='your_password'
@@ -35,11 +35,11 @@ make validate  # Run comprehensive quality gates
 
 ```python
 # Note: Tests use fake URLs and expect network failures
-from flext_oracle_wms import FlextOracleWmsClient, FlextOracleWmsModuleConfig
+from flext_oracle_wms import FlextOracleWmsClient, FlextOracleWmsModuleSettings
 
 def test_client_structure():
     # Using test configuration (not real Oracle WMS)
-    config = FlextOracleWmsModuleConfig.for_testing()  # Uses test.example.com
+    config = FlextOracleWmsModuleSettings.for_testing()  # Uses test.example.com
     print(f"Test Base URL: {config.oracle_wms_base_url}")
 
     # Test client structure (not real connectivity)
@@ -305,12 +305,12 @@ export FLEXT_ENABLE_METRICS="true"            # Performance monitoring
 ```python
 from flext_oracle_wms import (
     FlextOracleWmsClient,
-    FlextOracleWmsClientConfig,
+    FlextOracleWmsClientSettings,
     OracleWMSAuthMethod
 )
 
 # Enterprise production configuration
-config = FlextOracleWmsClientConfig(
+config = FlextOracleWmsClientSettings(
     # Oracle WMS Cloud connection
     base_url="https://production-wms.oraclecloud.com",
 

@@ -12,14 +12,14 @@ flext-oracle-wms provides test configuration framework requiring implementation 
 
 ## Test Configuration
 
-### FlextOracleWmsModuleConfig.for_testing()
+### FlextOracleWmsModuleSettings.for_testing()
 
 Current implementation provides test configuration with fake URLs:
 
 ```python
-from flext_oracle_wms import FlextOracleWmsModuleConfig
+from flext_oracle_wms import FlextOracleWmsModuleSettings
 
-config = FlextOracleWmsModuleConfig.for_testing()
+config = FlextOracleWmsModuleSettings.for_testing()
 print(config.oracle_wms_base_url)  # "https://test.example.com"
 print(config.oracle_wms_username)  # "test_user"
 print(config.api_version)          # Current API version
@@ -62,15 +62,15 @@ export FLEXT_ENABLE_METRICS="true"
 
 ## Configuration Classes
 
-### FlextOracleWmsClientConfig
+### FlextOracleWmsClientSettings
 
 Configuration for Oracle WMS client (framework structure):
 
 ```python
-from flext_oracle_wms import FlextOracleWmsClientConfig
+from flext_oracle_wms import FlextOracleWmsClientSettings
 
 # Note: This is framework structure, not fully implemented
-config = FlextOracleWmsClientConfig(
+config = FlextOracleWmsClientSettings(
     base_url="https://test.example.com",  # Currently only test URLs
     username="test_user",
     password="test_password",
@@ -102,7 +102,7 @@ The framework includes Pydantic-based configuration validation:
 
 ```python
 # Configuration validation is implemented
-config = FlextOracleWmsModuleConfig.for_testing()
+config = FlextOracleWmsModuleSettings.for_testing()
 # Pydantic automatically validates configuration structure
 ```
 

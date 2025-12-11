@@ -18,7 +18,7 @@ from flext_core import (
 )
 
 from flext_oracle_wms.api import FlextOracleWmsApi
-from flext_oracle_wms.config import FlextOracleWmsConfig
+from flext_oracle_wms.config import FlextOracleWmsSettings
 from flext_oracle_wms.wms_client import FlextOracleWmsClient
 
 
@@ -37,7 +37,7 @@ class TestFlextOracleWmsApi:
 
         # Should create default config
         assert hasattr(api, "_config")
-        assert isinstance(api._config, FlextOracleWmsConfig)
+        assert isinstance(api._config, FlextOracleWmsSettings)
 
         # Should initialize all FLEXT components
         assert isinstance(api._container, type(FlextContainer.get_global()))
@@ -50,7 +50,7 @@ class TestFlextOracleWmsApi:
 
     def test_initialization_with_config(self) -> None:
         """Test initialization with explicit configuration."""
-        config = FlextOracleWmsConfig()
+        config = FlextOracleWmsSettings()
         api = FlextOracleWmsApi(config=config)
 
         assert api._config is config

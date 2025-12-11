@@ -12,7 +12,7 @@ import pytest
 from dotenv import load_dotenv
 
 from flext_oracle_wms import (
-    FlextOracleWmsConfig,
+    FlextOracleWmsSettings,
 )
 
 
@@ -28,13 +28,13 @@ def load_test_env() -> bool:
 
 
 @pytest.fixture
-def mock_config() -> FlextOracleWmsConfig:
+def mock_config() -> FlextOracleWmsSettings:
     """Mock configuration for unit testing."""
-    return FlextOracleWmsConfig.testing_config()
+    return FlextOracleWmsSettings.testing_config()
 
 
 @pytest.fixture
-def real_config(_load_test_env: bool) -> FlextOracleWmsConfig:
+def real_config(_load_test_env: bool) -> FlextOracleWmsSettings:
     """Real config from .env - EXACTLY like working basic_usage.py example."""
     base_url = os.getenv("ORACLE_WMS_BASE_URL") or os.getenv(
         "FLEXT_ORACLE_WMS_BASE_URL",
@@ -53,7 +53,7 @@ def real_config(_load_test_env: bool) -> FlextOracleWmsConfig:
     assert username is not None
     assert password is not None
 
-    return FlextOracleWmsConfig(
+    return FlextOracleWmsSettings(
         oracle_wms_base_url=base_url,
         oracle_wms_username=username,
         oracle_wms_password=password,

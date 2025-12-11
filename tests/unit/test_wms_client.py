@@ -13,7 +13,7 @@ from unittest.mock import MagicMock, patch
 
 from flext_core import FlextResult
 
-from flext_oracle_wms.config import FlextOracleWmsConfig
+from flext_oracle_wms.config import FlextOracleWmsSettings
 from flext_oracle_wms.wms_client import FlextOracleWmsClient
 
 
@@ -26,7 +26,7 @@ class TestFlextOracleWmsClient:
             client = FlextOracleWmsClient()
 
             # Should create default config
-            assert isinstance(client.config, FlextOracleWmsConfig)
+            assert isinstance(client.config, FlextOracleWmsSettings)
 
             # Should initialize API client with correct parameters
             mock_api_client.assert_called_once_with(
@@ -36,7 +36,7 @@ class TestFlextOracleWmsClient:
 
     def test_initialization_with_config(self) -> None:
         """Test initialization with explicit configuration."""
-        config = FlextOracleWmsConfig(
+        config = FlextOracleWmsSettings(
             base_url="https://custom-wms.example.com",
             timeout=60,
         )

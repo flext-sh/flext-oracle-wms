@@ -212,7 +212,7 @@ pytest --cov=src/flext_oracle_wms --cov-report=xml
 """Test module following enterprise standards."""
 
 import pytest
-from flext_oracle_wms import FlextOracleWmsClient, FlextOracleWmsClientConfig
+from flext_oracle_wms import FlextOracleWmsClient, FlextOracleWmsClientSettings
 
 class TestComponentName:
     """Test class for ComponentName with comprehensive scenarios."""
@@ -220,7 +220,7 @@ class TestComponentName:
     def test_basic_functionality(self):
         """Test basic functionality with clear assertions."""
         # Arrange
-        config = FlextOracleWmsClientConfig(...)
+        config = FlextOracleWmsClientSettings(...)
 
         # Act
         result = component.operation()

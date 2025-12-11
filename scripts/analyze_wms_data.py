@@ -10,7 +10,7 @@ from collections import defaultdict
 from flext_core import FlextLogger
 
 from flext_oracle_wms import FlextOracleWmsClient
-from flext_oracle_wms.config import FlextOracleWmsClientConfig
+from flext_oracle_wms.config import FlextOracleWmsClientSettings
 from flext_oracle_wms.constants import FlextOracleWmsConstants
 
 logger = FlextLogger(__name__)
@@ -117,7 +117,7 @@ def _setup_client() -> FlextOracleWmsClient:
         "jmCyS7BK94YvhS@",
     )  # Fallback para desenvolvimento
 
-    config = FlextOracleWmsClientConfig.model_validate({
+    config = FlextOracleWmsClientSettings.model_validate({
         "base_url": "https://a29.wms.ocs.oraclecloud.com/raizen",
         "username": "USER_WMS_INTEGRA",
         "password": password,

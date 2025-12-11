@@ -16,8 +16,8 @@ from flext_core import FlextLogger
 
 from flext_oracle_wms import (
     FlextOracleWmsClient,
-    FlextOracleWmsClientConfig,
-    FlextOracleWmsConfig,
+    FlextOracleWmsClientSettings,
+    FlextOracleWmsSettings,
 )
 from flext_oracle_wms.constants import FlextOracleWmsConstants
 
@@ -67,13 +67,13 @@ def get_environment_configs() -> dict[Environment, WmsEnvironmentConfig]:
     }
 
 
-def create_config_from_environment() -> FlextOracleWmsClientConfig:
+def create_config_from_environment() -> FlextOracleWmsClientSettings:
     """Create Oracle WMS client configuration from environment variables.
 
     This uses the REAL .env file with working Oracle WMS credentials.
 
     Returns:
-      FlextOracleWmsClientConfig configured from environment
+      FlextOracleWmsClientSettings configured from environment
 
     Raises:
       ValueError: If required environment variables are missing
@@ -106,7 +106,7 @@ def create_config_from_environment() -> FlextOracleWmsClientConfig:
 
     # Method 1: Use global singleton with environment variables
     # The config automatically loads from environment variables
-    env_config = FlextOracleWmsClientConfig.get_global_instance()
+    env_config = FlextOracleWmsClientSettings.get_global_instance()
 
     # Validate that required fields are set from environment
     if env_config.username and env_config.password:
@@ -114,21 +114,21 @@ def create_config_from_environment() -> FlextOracleWmsClientConfig:
 
     # Method 2: Fallback to default configuration
     # if environment variables are not set
-    return FlextOracleWmsConfig()
+    return FlextOracleWmsSettings()
 
 
-def create_demo_config() -> FlextOracleWmsClientConfig:
+def create_demo_config() -> FlextOracleWmsClientSettings:
     """Create a demo Oracle WMS configuration using singleton pattern.
 
     Returns:
-      FlextOracleWmsClientConfig with demo values
+      FlextOracleWmsClientSettings with demo values
 
     Note:
       This demonstrates how to use the global singleton with parameter overrides.
 
     """
     # Use Pydantic model validation for proper configuration creation
-    return FlextOracleWmsClientConfig.model_validate({
+    return FlextOracleWmsClientSettings.model_validate({
         "base_url": "https://demo-wms.oraclecloud.com/demo",
         "username": "demo_user",
         "password": "demo_password",
@@ -140,7 +140,7 @@ def create_demo_config() -> FlextOracleWmsClientConfig:
     })
 
 
-def validate_configuration(config: FlextOracleWmsClientConfig) -> dict[str, object]:
+def validate_configuration(config: FlextOracleWmsClientSettings) -> dict[str, object]:
     """Validate Oracle WMS client configuration.
 
     Args:
@@ -207,7 +207,7 @@ def validate_configuration(config: FlextOracleWmsClientConfig) -> dict[str, obje
 
 
 def test_configuration(
-    config: FlextOracleWmsClientConfig,
+    config: FlextOracleWmsClientSettings,
 ) -> dict[str, object]:
     """Test Oracle WMS configuration by attempting connection.
 

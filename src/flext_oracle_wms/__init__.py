@@ -3,7 +3,7 @@
  Oracle WMS integration with Clean Architecture, railway-oriented error handling,
 and domain-driven design. Provides inventory, shipment, and picking operations with OAuth2 auth.
 
-Usage: from flext_oracle_wms import FlextOracleWmsClient, FlextOracleWmsConfig
+Usage: from flext_oracle_wms import FlextOracleWmsClient, FlextOracleWmsSettings
 
 Copyright (c) 2025 FLEXT Team. All rights reserved.
 SPDX-License-Identifier: MIT
@@ -24,7 +24,7 @@ from flext_core import (
 from flext_oracle_wms.__version__ import __version__, __version_info__
 
 # Core configuration and constants
-from flext_oracle_wms.config import FlextOracleWmsConfig
+from flext_oracle_wms.config import FlextOracleWmsSettings
 from flext_oracle_wms.constants import (
     FlextOracleWmsConstants,
     OracleWMSAuthMethod,
@@ -42,8 +42,8 @@ from flext_oracle_wms.wms_api import FlextOracleWmsApi
 
 # Authentication and client
 from flext_oracle_wms.wms_auth import (
-    FlextOracleWmsAuthConfig,
     FlextOracleWmsAuthenticator,
+    FlextOracleWmsAuthSettings,
     create_oracle_wms_client,
 )
 from flext_oracle_wms.wms_client import FlextOracleWmsClient
@@ -128,11 +128,10 @@ __all__ = [
     "FlextOracleWmsApi",
     "FlextOracleWmsApiError",
     "FlextOracleWmsApiResponse",
-    "FlextOracleWmsAuthConfig",
+    "FlextOracleWmsAuthSettings",
     "FlextOracleWmsAuthenticationError",
     "FlextOracleWmsAuthenticator",
     "FlextOracleWmsClient",
-    "FlextOracleWmsConfig",
     "FlextOracleWmsConstants",
     "FlextOracleWmsEntity",
     "FlextOracleWmsEntityDiscovery",
@@ -145,6 +144,7 @@ __all__ = [
     "FlextOracleWmsProtocols",
     "FlextOracleWmsSchemaError",
     "FlextOracleWmsSchemaFlatteningError",
+    "FlextOracleWmsSettings",
     "FlextOracleWmsShipmentError",
     "FlextOracleWmsTypes",
     "FlextOracleWmsUtilities",

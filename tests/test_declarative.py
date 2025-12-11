@@ -21,7 +21,7 @@ from flext_oracle_wms import (
     FlextOracleWmsApiCategory,
     FlextOracleWmsApiVersion,
     FlextOracleWmsClient,
-    FlextOracleWmsClientConfig,
+    FlextOracleWmsClientSettings,
 )
 
 logger = FlextLogger(__name__)
@@ -133,7 +133,7 @@ def oracle_wms_client(
     env_config: dict[str, object],
 ) -> Generator[FlextOracleWmsClient]:
     """Fixture that provides configured Oracle WMS client."""
-    # Properly cast env_config values to expected types for FlextOracleWmsClientConfig
+    # Properly cast env_config values to expected types for FlextOracleWmsClientSettings
     config_kwargs = {
         "oracle_wms_base_url": str(env_config.get("oracle_wms_base_url", "")),
         "oracle_wms_username": str(env_config.get("oracle_wms_username", "")),
@@ -154,7 +154,7 @@ def oracle_wms_client(
         "project_name": str(env_config.get("project_name", "flext-oracle-wms")),
         "project_version": str(env_config.get("project_version", "0.9.0")),
     }
-    config = FlextOracleWmsClientConfig(**config_kwargs)
+    config = FlextOracleWmsClientSettings(**config_kwargs)
     client = FlextOracleWmsClient(config)
 
     # Start the client
@@ -224,7 +224,7 @@ class TestOracleWmsDeclarativeIntegration:
         env_config: dict[str, object],
     ) -> None:
         """Test client configuration and initialization."""
-        # Properly cast env_config values to expected types for FlextOracleWmsClientConfig
+        # Properly cast env_config values to expected types for FlextOracleWmsClientSettings
         config_kwargs = {
             "oracle_wms_base_url": str(env_config.get("oracle_wms_base_url", "")),
             "oracle_wms_username": str(env_config.get("oracle_wms_username", "")),
@@ -248,7 +248,7 @@ class TestOracleWmsDeclarativeIntegration:
             "project_name": str(env_config.get("project_name", "flext-oracle-wms")),
             "project_version": str(env_config.get("project_version", "0.9.0")),
         }
-        config = FlextOracleWmsClientConfig(**config_kwargs)
+        config = FlextOracleWmsClientSettings(**config_kwargs)
 
         # Test config validation
         assert config.oracle_wms_base_url.startswith("https://")

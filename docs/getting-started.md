@@ -40,10 +40,10 @@ export FLEXT_ORACLE_WMS_PASSWORD="test_password"
 ### Basic Usage Example
 
 ```python
-from flext_oracle_wms import FlextOracleWmsClient, FlextOracleWmsModuleConfig
+from flext_oracle_wms import FlextOracleWmsClient, FlextOracleWmsModuleSettings
 
 # Using test configuration (not real Oracle WMS)
-config = FlextOracleWmsModuleConfig.for_testing()
+config = FlextOracleWmsModuleSettings.for_testing()
 print(f"Test Base URL: {config.oracle_wms_base_url}")
 
 # Test client structure (not real connectivity)

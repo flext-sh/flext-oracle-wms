@@ -9,17 +9,17 @@ from pydantic import ValidationError
 
 from flext_oracle_wms import (
     FlextOracleWmsApiVersion,
-    FlextOracleWmsConfig,
+    FlextOracleWmsSettings,
     OracleWMSAuthMethod,
 )
 
 
-class TestFlextOracleWmsConfig:
+class TestFlextOracleWmsSettings:
     """Test unified Oracle WMS configuration."""
 
     def test_config_creation_valid(self) -> None:
         """Test config creation with valid parameters."""
-        config = FlextOracleWmsConfig(
+        config = FlextOracleWmsSettings(
             oracle_wms_base_url="https://test.wms.oraclecloud.com/test",
             oracle_wms_username="test_user",
             oracle_wms_password="test_password",
@@ -44,7 +44,7 @@ class TestFlextOracleWmsConfig:
     def test_config_validation_invalid_url(self) -> None:
         """Test config validation with invalid URL."""
         with pytest.raises(ValidationError) as exc_info:
-            FlextOracleWmsConfig(
+            FlextOracleWmsSettings(
                 oracle_wms_base_url="invalid-url-without-protocol",
                 oracle_wms_username="test_user",
                 oracle_wms_password="test_password",
@@ -57,7 +57,7 @@ class TestFlextOracleWmsConfig:
     def test_config_validation_invalid_timeout(self) -> None:
         """Test config validation with invalid timeout."""
         with pytest.raises(ValidationError) as exc_info:
-            FlextOracleWmsConfig(
+            FlextOracleWmsSettings(
                 oracle_wms_base_url="https://test.wms.oraclecloud.com/test",
                 oracle_wms_username="test_user",
                 oracle_wms_password="test_password",
@@ -69,7 +69,7 @@ class TestFlextOracleWmsConfig:
     def test_config_validation_invalid_retries(self) -> None:
         """Test config validation with invalid retries."""
         with pytest.raises(ValidationError) as exc_info:
-            FlextOracleWmsConfig(
+            FlextOracleWmsSettings(
                 oracle_wms_base_url="https://test.wms.oraclecloud.com/test",
                 oracle_wms_username="test_user",
                 oracle_wms_password="test_password",
@@ -80,7 +80,7 @@ class TestFlextOracleWmsConfig:
 
     def test_business_rules_validation_success(self) -> None:
         """Test business rules validation success."""
-        config = FlextOracleWmsConfig(
+        config = FlextOracleWmsSettings(
             oracle_wms_base_url="https://test.wms.oraclecloud.com/test",
             oracle_wms_username="test_user",
             oracle_wms_password="test_password",
@@ -91,7 +91,7 @@ class TestFlextOracleWmsConfig:
 
     def test_business_rules_validation_failure(self) -> None:
         """Test business rules validation failure."""
-        config = FlextOracleWmsConfig(
+        config = FlextOracleWmsSettings(
             oracle_wms_base_url="https://test.wms.oraclecloud.com/test",
             oracle_wms_username="",  # Empty username should fail
             oracle_wms_password="test_password",
@@ -107,7 +107,7 @@ class TestFlextOracleWmsConfig:
 
     def test_get_auth_headers_basic(self) -> None:
         """Test getting basic auth headers."""
-        config = FlextOracleWmsConfig(
+        config = FlextOracleWmsSettings(
             oracle_wms_base_url="https://test.wms.oraclecloud.com/test",
             oracle_wms_username="test_user",
             oracle_wms_password="test_password",
@@ -120,7 +120,7 @@ class TestFlextOracleWmsConfig:
 
     def test_build_endpoint_url(self) -> None:
         """Test building endpoint URL."""
-        config = FlextOracleWmsConfig(
+        config = FlextOracleWmsSettings(
             oracle_wms_base_url="https://test.wms.oraclecloud.com/test",
             oracle_wms_username="test_user",
             oracle_wms_password="test_password",
@@ -131,7 +131,7 @@ class TestFlextOracleWmsConfig:
 
     def test_build_endpoint_url_with_trailing_slash(self) -> None:
         """Test building endpoint URL with trailing slash in base URL."""
-        config = FlextOracleWmsConfig(
+        config = FlextOracleWmsSettings(
             oracle_wms_base_url="https://test.wms.oraclecloud.com/test/",
             oracle_wms_username="test_user",
             oracle_wms_password="test_password",

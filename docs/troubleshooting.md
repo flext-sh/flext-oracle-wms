@@ -16,7 +16,7 @@
 
 ```python
 # Expected behavior with current implementation
-config = FlextOracleWmsModuleConfig.for_testing()
+config = FlextOracleWmsModuleSettings.for_testing()
 client = FlextOracleWmsClient(config)
 result = client.test_connection()  # Expected to fail
 ```
@@ -43,7 +43,7 @@ from flext_core import get_logger  # ImportError
 
 ```python
 from flext_core import FlextBus
-from flext_core import FlextConfig
+from flext_core import FlextSettings
 from flext_core import FlextConstants
 from flext_core import FlextContainer
 from flext_core import FlextContext
@@ -91,9 +91,9 @@ assert error.field == "username"  # Now works with MyPy
 **Solution**: Use proper configuration types:
 
 ```python
-from flext_oracle_wms import FlextOracleWmsModuleConfig, FlextOracleWmsApiVersion
+from flext_oracle_wms import FlextOracleWmsModuleSettings, FlextOracleWmsApiVersion
 
-config = FlextOracleWmsModuleConfig(
+config = FlextOracleWmsModuleSettings(
     api_version=FlextOracleWmsApiVersion.V1,  # Use enum, not string
     oracle_wms_timeout=30,                    # Use int, not float
 )
@@ -260,7 +260,7 @@ assert error.entity_name == "test"  # Properly handled
 logging.basicConfig(level=logging.DEBUG)
 
 from flext_core import FlextBus
-from flext_core import FlextConfig
+from flext_core import FlextSettings
 from flext_core import FlextConstants
 from flext_core import FlextContainer
 from flext_core import FlextContext

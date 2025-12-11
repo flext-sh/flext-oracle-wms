@@ -27,7 +27,7 @@ from flext_core import FlextContainer, FlextLogger, FlextResult
 
 from flext_oracle_wms import (
     FlextOracleWmsClient,
-    FlextOracleWmsClientConfig,
+    FlextOracleWmsClientSettings,
     FlextOracleWmsExceptions,
 )
 
@@ -55,14 +55,14 @@ def setup_client_config() -> None:
     container = FlextContainer.get_global()
 
     # Create config with environment variables
-    config = FlextOracleWmsClientConfig(
+    config = FlextOracleWmsClientSettings(
         base_url=os.getenv("FLEXT_ORACLE_WMS_BASE_URL", "https://wms.oraclecloud.com"),
         username=os.getenv("FLEXT_ORACLE_WMS_USERNAME"),
         password=os.getenv("FLEXT_ORACLE_WMS_PASSWORD"),
     )
 
     # Register in global container
-    container.register("FlextOracleWmsConfig", config)
+    container.register("FlextOracleWmsSettings", config)
 
 
 def discover_wms_entities(

@@ -7,7 +7,7 @@ SPDX-License-Identifier: MIT
 
 from flext_oracle_wms import (
     FlextOracleWmsClient,
-    FlextOracleWmsConfig,
+    FlextOracleWmsSettings,
 )
 
 
@@ -16,7 +16,7 @@ class TestClientSimpleNew:
 
     def setup_method(self) -> None:
         """Set up test fixtures."""
-        self.config = FlextOracleWmsConfig(
+        self.config = FlextOracleWmsSettings(
             base_url="https://test.wms.com",
             username="test_user",
             password="test_pass",
@@ -115,7 +115,7 @@ class TestClientSimpleNew:
 
     def test_client_with_custom_config(self) -> None:
         """Test client with custom configuration."""
-        config = FlextOracleWmsConfig(
+        config = FlextOracleWmsSettings(
             oracle_wms_base_url="https://custom.wms.com",
             oracle_wms_username="custom_user",
             oracle_wms_password="custom_pass",
@@ -185,7 +185,7 @@ class TestClientSimpleNew:
     def test_client_initialization_edge_cases(self) -> None:
         """Test client initialization with edge cases."""
         # Test with minimal config
-        minimal_config = FlextOracleWmsConfig(
+        minimal_config = FlextOracleWmsSettings(
             base_url="https://test.com",
             username="user",
             password="pass",

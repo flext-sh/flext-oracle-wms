@@ -111,8 +111,8 @@ class FlextOracleWmsAuthenticationError(FlextOracleWmsExceptions.AuthenticationE
     """FlextOracleWmsAuthenticationError - real inheritance from AuthenticationError."""
 
 
-class FlextOracleWmsConfigurationError(FlextOracleWmsExceptions.ConfigurationError):
-    """FlextOracleWmsConfigurationError - real inheritance from ConfigurationError."""
+class FlextOracleWmsSettingsurationError(FlextOracleWmsExceptions.ConfigurationError):
+    """FlextOracleWmsSettingsurationError - real inheritance from ConfigurationError."""
 
 
 class FlextOracleWmsConnectionError(FlextOracleWmsExceptions.WmsConnectionError):
@@ -160,7 +160,6 @@ class FlextOracleWmsValidationError(FlextOracleWmsExceptions.ValidationError):
 __all__ = [
     "FlextOracleWmsApiError",
     "FlextOracleWmsAuthenticationError",
-    "FlextOracleWmsConfigurationError",
     "FlextOracleWmsConnectionError",
     "FlextOracleWmsDataValidationError",
     "FlextOracleWmsEntityNotFoundError",
@@ -171,6 +170,7 @@ __all__ = [
     "FlextOracleWmsProcessingError",
     "FlextOracleWmsSchemaError",
     "FlextOracleWmsSchemaFlatteningError",
+    "FlextOracleWmsSettingsurationError",
     "FlextOracleWmsShipmentError",
     "FlextOracleWmsValidationError",
 ]

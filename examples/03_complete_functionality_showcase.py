@@ -39,10 +39,10 @@ from flext_oracle_wms import (
     FLEXT_ORACLE_WMS_APIS,
     FlextOracleWmsApiCategory,
     FlextOracleWmsApiVersion,
-    FlextOracleWmsAuthConfig,
     FlextOracleWmsAuthenticator,
+    FlextOracleWmsAuthSettings,
     FlextOracleWmsClient,
-    FlextOracleWmsClientConfig,
+    FlextOracleWmsClientSettings,
     FlextOracleWmsError,
     OracleWMSAuthMethod,
 )
@@ -52,7 +52,7 @@ from flext_oracle_wms.constants import FlextOracleWmsConstants
 logger = FlextLogger(__name__)
 
 
-def load_config_from_environment() -> FlextOracleWmsClientConfig:
+def load_config_from_environment() -> FlextOracleWmsClientSettings:
     """Load configuration from .env file."""
     # Load environment variables
     env_file = Path(__file__).parent.parent / ".env"
@@ -73,7 +73,7 @@ def load_config_from_environment() -> FlextOracleWmsClientConfig:
         msg = "Required environment variables cannot be None"
         raise ValueError(msg)
 
-    return FlextOracleWmsClientConfig.model_validate({
+    return FlextOracleWmsClientSettings.model_validate({
         "base_url": base_url,
         "username": username,
         "password": password,
@@ -86,7 +86,7 @@ def load_config_from_environment() -> FlextOracleWmsClientConfig:
 
 
 def showcase_1_client_initialization(
-    config: FlextOracleWmsClientConfig,
+    config: FlextOracleWmsClientSettings,
 ) -> FlextOracleWmsClient:
     """Feature 1: Client Configuration and Initialization."""
     client = FlextOracleWmsClient(config)
@@ -191,10 +191,10 @@ def showcase_3_data_retrieval(
     return sample_data
 
 
-def showcase_4_authentication(config: FlextOracleWmsClientConfig) -> None:
+def showcase_4_authentication(config: FlextOracleWmsClientSettings) -> None:
     """Feature 4: Authentication Methods."""
     # Basic Authentication (current method)
-    auth_config = FlextOracleWmsAuthConfig(
+    auth_config = FlextOracleWmsAuthSettings(
         auth_type=OracleWMSAuthMethod.BASIC,
         username=getattr(config, "oracle_wms_username", "invalid"),
         password=getattr(config, "oracle_wms_password", "invalid"),
@@ -262,7 +262,7 @@ def showcase_6_error_handling(client: FlextOracleWmsClient) -> None:
 
     # Test 3: Configuration validation
     try:
-        invalid_config = FlextOracleWmsClientConfig.model_validate({
+        invalid_config = FlextOracleWmsClientSettings.model_validate({
             "base_url": "invalid-url",  # Invalid URL format
             "username": "",  # Empty username
             "password": "",
@@ -371,7 +371,7 @@ def showcase_9_cache_management(client: FlextOracleWmsClient) -> None:
 
 def showcase_10_enterprise_features(
     _client: FlextOracleWmsClient,
-    config: FlextOracleWmsClientConfig,
+    config: FlextOracleWmsClientSettings,
 ) -> None:
     """Feature 10: Enterprise Features."""
     # SSL Verification

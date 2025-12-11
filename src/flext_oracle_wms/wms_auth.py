@@ -14,7 +14,7 @@ from pydantic import BaseModel, Field
 from flext_oracle_wms.constants import OracleWMSAuthMethod
 
 
-class FlextOracleWmsAuthConfig(BaseModel):
+class FlextOracleWmsAuthSettings(BaseModel):
     """Oracle WMS authentication configuration."""
 
     method: OracleWMSAuthMethod = Field(default=OracleWMSAuthMethod.BASIC)
@@ -46,7 +46,7 @@ class FlextOracleWmsAuthConfig(BaseModel):
 class FlextOracleWmsAuthenticator:
     """Oracle WMS authenticator with enterprise patterns."""
 
-    def __init__(self, config: FlextOracleWmsAuthConfig) -> None:
+    def __init__(self, config: FlextOracleWmsAuthSettings) -> None:
         """Initialize authenticator."""
         self.config = config
         self._token: str | None = None
@@ -77,7 +77,7 @@ class FlextOracleWmsAuthenticator:
         return FlextResult.ok({"Authorization": f"Bearer {token}"})
 
 
-def create_oracle_wms_client(config: FlextOracleWmsAuthConfig) -> FlextResult[object]:
+def create_oracle_wms_client(config: FlextOracleWmsAuthSettings) -> FlextResult[object]:
     """Create authenticated Oracle WMS client."""
     authenticator = FlextOracleWmsAuthenticator(config)
     auth_result = authenticator.authenticate()
@@ -88,7 +88,7 @@ def create_oracle_wms_client(config: FlextOracleWmsAuthConfig) -> FlextResult[ob
 
 
 __all__ = [
-    "FlextOracleWmsAuthConfig",
+    "FlextOracleWmsAuthSettings",
     "FlextOracleWmsAuthenticator",
     "create_oracle_wms_client",
 ]

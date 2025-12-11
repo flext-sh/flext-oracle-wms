@@ -9,20 +9,20 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from flext_core import FlextConfig, FlextResult
+from flext_core import FlextResult, FlextSettings
 from pydantic import Field
 from pydantic_settings import SettingsConfigDict
 
 from flext_oracle_wms.constants import FlextOracleWmsConstants
 
 
-@FlextConfig.auto_register("oracle_wms")
-class FlextOracleWmsConfig(FlextConfig.AutoConfig):
+@FlextSettings.auto_register("oracle_wms")
+class FlextOracleWmsSettings(FlextSettings.AutoConfig):
     """Generic WMS configuration with composition patterns.
 
     **ARCHITECTURAL PATTERN**: Zero-Boilerplate Auto-Registration
 
-    This class uses FlextConfig.AutoConfig for automatic:
+    This class uses FlextSettings.AutoConfig for automatic:
     - Singleton pattern (thread-safe)
     - Namespace registration (accessible via config.oracle_wms)
     - Environment variable loading from FLEXT_ORACLE_WMS_* variables
@@ -33,10 +33,10 @@ class FlextOracleWmsConfig(FlextConfig.AutoConfig):
     One class per module following SOLID principles. Generic for any WMS system.
     """
 
-    # Use FlextConfig.resolve_env_file() to ensure all FLEXT configs use same .env
+    # Use FlextSettings.resolve_env_file() to ensure all FLEXT configs use same .env
     model_config = SettingsConfigDict(
         env_prefix="FLEXT_ORACLE_WMS_",
-        env_file=FlextConfig.resolve_env_file(),
+        env_file=FlextSettings.resolve_env_file(),
         env_file_encoding="utf-8",
         case_sensitive=False,
         extra="ignore",
@@ -99,7 +99,7 @@ class FlextOracleWmsConfig(FlextConfig.AutoConfig):
         )
 
     @classmethod
-    def testing_config(cls) -> FlextOracleWmsConfig:
+    def testing_config(cls) -> FlextOracleWmsSettings:
         """Create testing configuration with modern patterns."""
         return cls(use_mock=True, base_url="https://test-wms.example.com")
 
@@ -117,4 +117,4 @@ class FlextOracleWmsConfig(FlextConfig.AutoConfig):
         )
 
 
-__all__ = ["FlextOracleWmsConfig"]
+__all__ = ["FlextOracleWmsSettings"]

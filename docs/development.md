@@ -111,7 +111,7 @@ All operations must use FlextResult pattern:
 
 ```python
 from flext_core import FlextBus
-from flext_core import FlextConfig
+from flext_core import FlextSettings
 from flext_core import FlextConstants
 from flext_core import FlextContainer
 from flext_core import FlextContext
@@ -173,7 +173,7 @@ Tests currently use fake URLs and expect failures:
 
 ```python
 def test_real_connection():
-    config = FlextOracleWmsModuleConfig.for_testing()  # Uses test.example.com
+    config = FlextOracleWmsModuleSettings.for_testing()  # Uses test.example.com
     # Connection tests expect network failures with test config
 ```
 

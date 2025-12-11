@@ -48,7 +48,7 @@ class FlextOracleWmsTypes(FlextTypes):
 
     # Core types using advanced composition and unions
     type WmsConfig = dict[str, str | int | bool | dict[str, object]]
-    type WmsEntity = dict[str, FlextTypes.Json.JsonValue | dict[str, object]]
+    type WmsEntity = dict[str, FlextTypes.JsonValue | dict[str, object]]
     type WmsRecord = dict[str, object]
     type WmsRecords = list[WmsRecord]
 

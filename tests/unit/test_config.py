@@ -1,4 +1,4 @@
-"""Unit tests for FlextOracleWmsConfig class.
+"""Unit tests for FlextOracleWmsSettings class.
 
 Tests the configuration module following FLEXT standards.
 
@@ -9,22 +9,22 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from flext_core import FlextConfig
+from flext_core import FlextSettings
 
-from flext_oracle_wms.config import FlextOracleWmsConfig
+from flext_oracle_wms.config import FlextOracleWmsSettings
 
 
-class TestFlextOracleWmsConfig:
-    """Test cases for FlextOracleWmsConfig class."""
+class TestFlextOracleWmsSettings:
+    """Test cases for FlextOracleWmsSettings class."""
 
     def test_class_inheritance(self) -> None:
-        """Test that FlextOracleWmsConfig follows proper inheritance patterns."""
-        # FlextOracleWmsConfig should inherit from FlextConfig
-        assert issubclass(FlextOracleWmsConfig, FlextConfig)
+        """Test that FlextOracleWmsSettings follows proper inheritance patterns."""
+        # FlextOracleWmsSettings should inherit from FlextSettings
+        assert issubclass(FlextOracleWmsSettings, FlextSettings)
 
     def test_default_initialization(self) -> None:
         """Test default configuration initialization."""
-        config = FlextOracleWmsConfig()
+        config = FlextOracleWmsSettings()
 
         # Test default values
         assert config.base_url == "https://wms.oraclecloud.com"
@@ -38,7 +38,7 @@ class TestFlextOracleWmsConfig:
 
     def test_custom_initialization(self) -> None:
         """Test custom configuration initialization."""
-        config = FlextOracleWmsConfig(
+        config = FlextOracleWmsSettings(
             base_url="https://custom-wms.example.com",
             timeout=60,
             retry_attempts=5,
@@ -54,7 +54,7 @@ class TestFlextOracleWmsConfig:
 
     def test_authentication_fields(self) -> None:
         """Test authentication configuration fields."""
-        config = FlextOracleWmsConfig(
+        config = FlextOracleWmsSettings(
             username="test_user",
             password="test_pass",
         )
@@ -64,7 +64,7 @@ class TestFlextOracleWmsConfig:
 
     def test_enterprise_features(self) -> None:
         """Test enterprise feature configuration."""
-        config = FlextOracleWmsConfig(
+        config = FlextOracleWmsSettings(
             enable_metrics=True,
             enable_tracing=True,
             enable_audit_logging=True,
@@ -77,48 +77,52 @@ class TestFlextOracleWmsConfig:
     def test_class_methods(self) -> None:
         """Test class method factories."""
         # Test default creation
-        config1 = FlextOracleWmsConfig.create_default()
-        assert isinstance(config1, FlextOracleWmsConfig)
+        config1 = FlextOracleWmsSettings.create_default()
+        assert isinstance(config1, FlextOracleWmsSettings)
 
         # Test development config
-        config2 = FlextOracleWmsConfig.create_for_development()
-        assert isinstance(config2, FlextOracleWmsConfig)
+        config2 = FlextOracleWmsSettings.create_for_development()
+        assert isinstance(config2, FlextOracleWmsSettings)
 
         # Test testing config
-        config3 = FlextOracleWmsConfig.testing_config()
-        assert isinstance(config3, FlextOracleWmsConfig)
+        config3 = FlextOracleWmsSettings.testing_config()
+        assert isinstance(config3, FlextOracleWmsSettings)
 
         # Test global instance
-        config4 = FlextOracleWmsConfig.get_oracle_wms_global_instance()
-        assert isinstance(config4, FlextOracleWmsConfig)
+        config4 = FlextOracleWmsSettings.get_oracle_wms_global_instance()
+        assert isinstance(config4, FlextOracleWmsSettings)
 
     def test_environment_extraction(self) -> None:
         """Test environment extraction from URL."""
         # Test production URL
-        config_prod = FlextOracleWmsConfig(base_url="https://prod-wms.oraclecloud.com")
+        config_prod = FlextOracleWmsSettings(
+            base_url="https://prod-wms.oraclecloud.com"
+        )
         assert config_prod.environment_from_url() == "prod"
 
         # Test test URL
-        config_test = FlextOracleWmsConfig(base_url="https://test-wms.oraclecloud.com")
+        config_test = FlextOracleWmsSettings(
+            base_url="https://test-wms.oraclecloud.com"
+        )
         assert config_test.environment_from_url() == "unknown"
 
         # Test dev URL
-        config_dev = FlextOracleWmsConfig(base_url="https://dev-wms.oraclecloud.com")
+        config_dev = FlextOracleWmsSettings(base_url="https://dev-wms.oraclecloud.com")
         assert config_dev.environment_from_url() == "dev"
 
         # Test staging URL
-        config_staging = FlextOracleWmsConfig(
+        config_staging = FlextOracleWmsSettings(
             base_url="https://staging-wms.oraclecloud.com",
         )
         assert config_staging.environment_from_url() == "staging"
 
         # Test default URL
-        config_default = FlextOracleWmsConfig()
+        config_default = FlextOracleWmsSettings()
         assert config_default.environment_from_url() == "unknown"
 
     def test_legacy_field_aliases(self) -> None:
         """Test that legacy field aliases still work."""
-        config = FlextOracleWmsConfig()
+        config = FlextOracleWmsSettings()
 
         # Test that both new and legacy field names exist
         assert hasattr(config, "base_url")
@@ -131,4 +135,4 @@ class TestFlextOracleWmsConfig:
         assert hasattr(config, "oracle_wms_verify_ssl")
 
 
-__all__ = ["TestFlextOracleWmsConfig"]
+__all__ = ["TestFlextOracleWmsSettings"]

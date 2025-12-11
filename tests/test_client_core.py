@@ -15,9 +15,9 @@ from flext_core import FlextLogger, FlextResult
 
 from flext_oracle_wms import (
     FlextOracleWmsClient,
-    FlextOracleWmsClientConfig,
-    FlextOracleWmsConfig,
+    FlextOracleWmsClientSettings,
     FlextOracleWmsConnectionError,
+    FlextOracleWmsSettings,
 )
 
 # Initialize logger
@@ -30,7 +30,7 @@ class TestFlextOracleWmsClientCore:
 
     def test_client_initialization(
         self,
-        mock_config: FlextOracleWmsClientConfig,
+        mock_config: FlextOracleWmsClientSettings,
     ) -> None:
         """Test client initialization with valid config."""
         client = FlextOracleWmsClient(mock_config)
@@ -43,7 +43,7 @@ class TestFlextOracleWmsClientCore:
 
     def test_client_string_representation(
         self,
-        mock_config: FlextOracleWmsClientConfig,
+        mock_config: FlextOracleWmsClientSettings,
     ) -> None:
         """Test client string representation."""
         client = FlextOracleWmsClient(mock_config)
@@ -57,7 +57,7 @@ class TestFlextOracleWmsClientCore:
 
     def test_client_config_properties(
         self,
-        mock_config: FlextOracleWmsClientConfig,
+        mock_config: FlextOracleWmsClientSettings,
     ) -> None:
         """Test client properties access."""
         client = FlextOracleWmsClient(mock_config)
@@ -72,7 +72,7 @@ class TestFlextOracleWmsClientCore:
 
     def test_client_start_success(
         self,
-        mock_config: FlextOracleWmsClientConfig,
+        mock_config: FlextOracleWmsClientSettings,
     ) -> None:
         """Test successful client startup."""
         with patch(
@@ -91,7 +91,7 @@ class TestFlextOracleWmsClientCore:
 
     def test_client_start_failure(
         self,
-        mock_config: FlextOracleWmsClientConfig,
+        mock_config: FlextOracleWmsClientSettings,
     ) -> None:
         """Test client startup failure."""
         with patch(
@@ -109,7 +109,7 @@ class TestFlextOracleWmsClientCore:
 
     def test_client_start_multiple_times(
         self,
-        mock_config: FlextOracleWmsClientConfig,
+        mock_config: FlextOracleWmsClientSettings,
     ) -> None:
         """Test starting client multiple times."""
         client = FlextOracleWmsClient(mock_config)
@@ -128,7 +128,7 @@ class TestFlextOracleWmsClientCore:
 
     def test_client_stop_success(
         self,
-        mock_config: FlextOracleWmsClientConfig,
+        mock_config: FlextOracleWmsClientSettings,
     ) -> None:
         """Test successful client stop."""
         with patch("flext_api.FlextApiClient") as mock_api_client_class:
@@ -150,7 +150,7 @@ class TestFlextOracleWmsClientCore:
 
     def test_client_stop_not_started(
         self,
-        mock_config: FlextOracleWmsClientConfig,
+        mock_config: FlextOracleWmsClientSettings,
     ) -> None:
         """Test stopping client that wasn't started."""
         client = FlextOracleWmsClient(mock_config)
@@ -160,7 +160,7 @@ class TestFlextOracleWmsClientCore:
 
     def test_client_has_expected_methods(
         self,
-        mock_config: FlextOracleWmsClientConfig,
+        mock_config: FlextOracleWmsClientSettings,
     ) -> None:
         """Test client has expected methods."""
         client = FlextOracleWmsClient(mock_config)
@@ -174,7 +174,9 @@ class TestFlextOracleWmsClientCore:
         assert callable(client.start)
         assert callable(client.stop)
 
-    def test_get_available_apis(self, mock_config: FlextOracleWmsClientConfig) -> None:
+    def test_get_available_apis(
+        self, mock_config: FlextOracleWmsClientSettings
+    ) -> None:
         """Test getting available APIs."""
         client = FlextOracleWmsClient(mock_config)
         apis = client.get_available_apis()
@@ -188,7 +190,7 @@ class TestFlextOracleWmsClientCore:
 
     def test_get_apis_by_category(
         self,
-        mock_config: FlextOracleWmsClientConfig,
+        mock_config: FlextOracleWmsClientSettings,
     ) -> None:
         """Test getting APIs filtered by category."""
         client = FlextOracleWmsClient(mock_config)
@@ -203,7 +205,7 @@ class TestFlextOracleWmsClientCore:
 
     def test_health_check_not_started(
         self,
-        mock_config: FlextOracleWmsClientConfig,
+        mock_config: FlextOracleWmsClientSettings,
     ) -> None:
         """Test health check when client not started."""
         client = FlextOracleWmsClient(mock_config)
@@ -218,7 +220,7 @@ class TestFlextOracleWmsClientCore:
 
     def test_health_check_success(
         self,
-        mock_config: FlextOracleWmsClientConfig,
+        mock_config: FlextOracleWmsClientSettings,
     ) -> None:
         """Test successful health check."""
         with patch(
@@ -246,7 +248,7 @@ class TestFlextOracleWmsClientCore:
 
     def test_discover_entities_not_started(
         self,
-        mock_config: FlextOracleWmsClientConfig,
+        mock_config: FlextOracleWmsClientSettings,
     ) -> None:
         """Test entity discovery when client not started."""
         client = FlextOracleWmsClient(mock_config)
@@ -259,7 +261,7 @@ class TestFlextOracleWmsClientCore:
 
     def test_discover_entities_success(
         self,
-        mock_config: FlextOracleWmsClientConfig,
+        mock_config: FlextOracleWmsClientSettings,
         sample_entities: list[str],
     ) -> None:
         """Test successful entity discovery."""
@@ -295,7 +297,7 @@ class TestFlextOracleWmsClientCore:
 
     def test_get_entity_data_not_started(
         self,
-        mock_config: FlextOracleWmsClientConfig,
+        mock_config: FlextOracleWmsClientSettings,
     ) -> None:
         """Test getting entity data when client not started."""
         client = FlextOracleWmsClient(mock_config)
@@ -307,7 +309,7 @@ class TestFlextOracleWmsClientCore:
 
     def test_get_entity_data_success(
         self,
-        mock_config: FlextOracleWmsClientConfig,
+        mock_config: FlextOracleWmsClientSettings,
         sample_entity_data: dict[str, object],
     ) -> None:
         """Test successful entity data retrieval."""
@@ -346,7 +348,7 @@ class TestFlextOracleWmsClientCore:
 
     def test_call_api_unknown_api(
         self,
-        mock_config: FlextOracleWmsClientConfig,
+        mock_config: FlextOracleWmsClientSettings,
     ) -> None:
         """Test calling unknown API."""
         with patch("flext_api.FlextApiClient") as mock_api_client_class:
@@ -364,7 +366,7 @@ class TestFlextOracleWmsClientCore:
 
     def test_call_api_without_client(
         self,
-        mock_config: FlextOracleWmsClientConfig,
+        mock_config: FlextOracleWmsClientSettings,
     ) -> None:
         """Test calling API without initialized client."""
         client = FlextOracleWmsClient(mock_config)
@@ -382,7 +384,7 @@ class TestFlextOracleWmsClientCore:
         # Client uses global singleton when config is None
         client = FlextOracleWmsClient(None)
         assert client.config is not None
-        assert isinstance(client.config, FlextOracleWmsConfig)
+        assert isinstance(client.config, FlextOracleWmsSettings)
 
 
 @pytest.mark.unit
@@ -391,7 +393,7 @@ class TestClientHelperMethods:
 
     def test_parse_entity_discovery_response_list(
         self,
-        mock_config: FlextOracleWmsClientConfig,
+        mock_config: FlextOracleWmsClientSettings,
     ) -> None:
         """Test parsing entity discovery response when it's a list."""
         client = FlextOracleWmsClient(mock_config)
@@ -403,7 +405,7 @@ class TestClientHelperMethods:
 
     def test_parse_entity_discovery_response_with_entities(
         self,
-        mock_config: FlextOracleWmsClientConfig,
+        mock_config: FlextOracleWmsClientSettings,
     ) -> None:
         """Test parsing entity discovery response with entities field."""
         client = FlextOracleWmsClient(mock_config)
@@ -415,7 +417,7 @@ class TestClientHelperMethods:
 
     def test_parse_entity_discovery_response_with_results(
         self,
-        mock_config: FlextOracleWmsClientConfig,
+        mock_config: FlextOracleWmsClientSettings,
     ) -> None:
         """Test parsing entity discovery response with results field."""
         client = FlextOracleWmsClient(mock_config)
@@ -427,7 +429,7 @@ class TestClientHelperMethods:
 
     def test_parse_entity_discovery_response_empty_dict(
         self,
-        mock_config: FlextOracleWmsClientConfig,
+        mock_config: FlextOracleWmsClientSettings,
     ) -> None:
         """Test parsing empty dictionary response."""
         client = FlextOracleWmsClient(mock_config)
@@ -440,7 +442,7 @@ class TestClientHelperMethods:
 
     def test_filter_valid_entities(
         self,
-        mock_config: FlextOracleWmsClientConfig,
+        mock_config: FlextOracleWmsClientSettings,
     ) -> None:
         """Test filtering valid entities."""
         client = FlextOracleWmsClient(mock_config)

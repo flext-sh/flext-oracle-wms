@@ -67,10 +67,10 @@ This directory contains the core implementation of the **flext-oracle-wms** libr
 ### Basic Client Setup
 
 ```python
-from flext_oracle_wms import FlextOracleWmsClient, FlextOracleWmsClientConfig
+from flext_oracle_wms import FlextOracleWmsClient, FlextOracleWmsClientSettings
 
 # Create configuration
-config = FlextOracleWmsClientConfig(
+config = FlextOracleWmsClientSettings(
     base_url="https://your-wms.oraclecloud.com",
     username="your_username",
     password="your_password",
@@ -84,7 +84,7 @@ client.start()
 # Discover entities
 result = client.discover_entities()
 from flext_core import FlextBus
-from flext_core import FlextConfig
+from flext_core import FlextSettings
 from flext_core import FlextConstants
 from flext_core import FlextContainer
 from flext_core import FlextContext
@@ -124,7 +124,7 @@ result = client.get_entity_data(
 if result.success:
     data = result.data
 from flext_core import FlextBus
-from flext_core import FlextConfig
+from flext_core import FlextSettings
 from flext_core import FlextConstants
 from flext_core import FlextContainer
 from flext_core import FlextContext
@@ -166,7 +166,7 @@ try:
 except FlextOracleWmsConnectionError as e:
     # Handle connection-specific errors
 from flext_core import FlextBus
-from flext_core import FlextConfig
+from flext_core import FlextSettings
 from flext_core import FlextConstants
 from flext_core import FlextContainer
 from flext_core import FlextContext

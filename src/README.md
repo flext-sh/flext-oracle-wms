@@ -62,10 +62,10 @@ src/flext_oracle_wms/
 ### Core Client Interface
 
 ```python
-from flext_oracle_wms import FlextOracleWmsClient, FlextOracleWmsClientConfig
+from flext_oracle_wms import FlextOracleWmsClient, FlextOracleWmsClientSettings
 
 # Type-safe configuration
-config = FlextOracleWmsClientConfig(
+config = FlextOracleWmsClientSettings(
     base_url="https://your-wms.oraclecloud.com",
     username="your_username",
     password="your_password"
@@ -86,10 +86,10 @@ else:
 ### Configuration Management
 
 ```python
-from flext_oracle_wms import FlextOracleWmsClientConfig
+from flext_oracle_wms import FlextOracleWmsClientSettings
 
 # Environment-driven configuration with validation
-config = FlextOracleWmsClientConfig(
+config = FlextOracleWmsClientSettings(
     base_url=os.getenv("FLEXT_ORACLE_WMS_BASE_URL"),
     username=os.getenv("FLEXT_ORACLE_WMS_USERNAME"),
     password=os.getenv("FLEXT_ORACLE_WMS_PASSWORD"),

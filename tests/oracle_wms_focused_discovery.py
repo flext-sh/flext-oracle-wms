@@ -14,7 +14,7 @@ from flext_core import FlextLogger, FlextResult
 
 from flext_oracle_wms import (
     FlextOracleWmsApiVersion,
-    FlextOracleWmsClientConfig,
+    FlextOracleWmsClientSettings,
     create_oracle_wms_client,
 )
 
@@ -26,7 +26,7 @@ class FocusedOracleWmsDiscovery:
 
     def __init__(self) -> None:
         """Initialize with ADMINISTRATOR credentials."""
-        self.config = FlextOracleWmsClientConfig(
+        self.config = FlextOracleWmsClientSettings(
             base_url="https://invalid.wms.ocs.oraclecloud.com",
             username="USER_WMS_INTEGRA",  # ADMINISTRATOR TOTAL
             password="jmCyS7BK94YvhS@",

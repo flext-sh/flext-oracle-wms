@@ -11,10 +11,10 @@ from __future__ import annotations
 
 from typing import cast
 
-from flext_api import FlextApiClient, FlextApiConfig, FlextApiModels
+from flext_api import FlextApiClient, FlextApiModels, FlextApiSettings
 from flext_core import FlextContainer, FlextResult
 
-from flext_oracle_wms.config import FlextOracleWmsConfig
+from flext_oracle_wms.config import FlextOracleWmsSettings
 
 
 class FlextOracleWmsClient:
@@ -24,7 +24,7 @@ class FlextOracleWmsClient:
     Uses singleton pattern for configuration management.
     """
 
-    def __init__(self, config: FlextOracleWmsConfig | None = None) -> None:
+    def __init__(self, config: FlextOracleWmsSettings | None = None) -> None:
         """Initialize Oracle WMS client.
 
         Args:
@@ -33,15 +33,15 @@ class FlextOracleWmsClient:
         """
         if config is None:
             container = FlextContainer.get_global()
-            config_result = container.get("FlextOracleWmsConfig")
+            config_result = container.get("FlextOracleWmsSettings")
             config = cast(
-                "FlextOracleWmsConfig",
-                config_result.unwrap_or(FlextOracleWmsConfig()),
+                "FlextOracleWmsSettings",
+                config_result.unwrap_or(FlextOracleWmsSettings()),
             )
 
-        self.config: FlextOracleWmsConfig = config
+        self.config: FlextOracleWmsSettings = config
 
-        api_config = FlextApiConfig(
+        api_config = FlextApiSettings(
             base_url=self.config.base_url,
             timeout=int(self.config.timeout),
         )
