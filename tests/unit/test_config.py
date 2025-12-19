@@ -11,7 +11,7 @@ from __future__ import annotations
 
 from flext_core import FlextSettings
 
-from flext_oracle_wms.config import FlextOracleWmsSettings
+from flext_oracle_wms.settings import FlextOracleWmsSettings
 
 
 class TestFlextOracleWmsSettings:

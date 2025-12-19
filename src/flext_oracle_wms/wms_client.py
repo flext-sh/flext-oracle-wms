@@ -14,7 +14,7 @@ from typing import cast
 from flext_api import FlextApiClient, FlextApiModels, FlextApiSettings
 from flext_core import FlextContainer, FlextResult
 
-from flext_oracle_wms.config import FlextOracleWmsSettings
+from flext_oracle_wms.settings import FlextOracleWmsSettings
 
 
 class FlextOracleWmsClient:

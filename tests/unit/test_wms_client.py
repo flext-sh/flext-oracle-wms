@@ -13,7 +13,7 @@ from unittest.mock import MagicMock, patch
 
 from flext_core import FlextResult
 
-from flext_oracle_wms.config import FlextOracleWmsSettings
+from flext_oracle_wms.settings import FlextOracleWmsSettings
 from flext_oracle_wms.wms_client import FlextOracleWmsClient
 
 

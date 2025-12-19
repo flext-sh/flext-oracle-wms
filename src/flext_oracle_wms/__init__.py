@@ -22,9 +22,6 @@ from flext_core import (
 
 # Version information
 from flext_oracle_wms.__version__ import __version__, __version_info__
-
-# Core configuration and constants
-from flext_oracle_wms.config import FlextOracleWmsSettings
 from flext_oracle_wms.constants import (
     FlextOracleWmsConstants,
     OracleWMSAuthMethod,
@@ -32,6 +29,9 @@ from flext_oracle_wms.constants import (
 
 # Protocol definitions
 from flext_oracle_wms.protocols import FlextOracleWmsProtocols
+
+# Core configuration and constants
+from flext_oracle_wms.settings import FlextOracleWmsSettings
 from flext_oracle_wms.typings import FlextOracleWmsTypes
 
 # Type definitions and models - using direct imports
