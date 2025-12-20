@@ -357,6 +357,89 @@ class OracleWmsCompleteDiscovery:
             return f"{type(data).__name__}"
         return None
 
+    def _process_entity_metadata(
+        self,
+        entity_name: str,
+        entities_with_data: list[str],
+        entities_without_data: list[str],
+        entities_with_errors: list[tuple[str, str]],
+        metadata_results: dict[str, object],
+    ) -> None:
+        """Process metadata for a single entity."""
+        try:
+            entity_result = self.client.get_entity_data(
+                entity_name,
+                limit=5,
+                offset=0,
+            )
+
+            if not entity_result.success:
+                entities_with_errors.append((entity_name, str(entity_result.error)))
+                return
+
+            data = entity_result.data
+            if not isinstance(data, dict):
+                entities_with_errors.append((entity_name, "Invalid response format"))
+                return
+
+            count = data.get("count", 0)
+            results = data.get("results", [])
+
+            metadata_info = self._create_metadata_info(entity_name, count, results)
+            metadata_results[entity_name] = metadata_info
+
+            if count > 0:
+                entities_with_data.append(entity_name)
+            else:
+                entities_without_data.append(entity_name)
+
+        except Exception as e:
+            entities_with_errors.append((entity_name, f"Exception: {e}"))
+
+    def _create_metadata_info(
+        self,
+        entity_name: str,
+        count: int,
+        results: object,
+    ) -> dict[str, object]:
+        """Create metadata info dict for an entity."""
+        metadata_info = {
+            "entity_name": entity_name,
+            "total_count": count,
+            "sample_size": len(results) if isinstance(results, list) else 0,
+            "has_data": count > 0,
+            "structure_available": len(results) > 0 if isinstance(results, list) else False,
+            "fields": [],
+            "field_types": {},
+            "sample_data": None,
+        }
+
+        if not (results and isinstance(results, list) and len(results) > 0):
+            return metadata_info
+
+        sample_record = results[0]
+        if not isinstance(sample_record, dict):
+            return metadata_info
+
+        metadata_info["fields"] = list(sample_record.keys())
+        metadata_info["field_types"] = {
+            k: type(v).__name__ for k, v in sample_record.items()
+        }
+
+        safe_sample = {}
+        max_string_length = 200
+        for k, v in sample_record.items():
+            if isinstance(v, (str, int, float, bool, type(None))):
+                if isinstance(v, str) and len(v) >= max_string_length:
+                    safe_sample[k] = f"<string:{len(v)}chars>"
+                else:
+                    safe_sample[k] = v
+            else:
+                safe_sample[k] = f"<{type(v).__name__}>"
+
+        metadata_info["sample_data"] = safe_sample
+        return metadata_info
+
     def discover_complete_entity_metadata(
         self,
     ) -> FlextResult[dict[str, object]]:
@@ -380,80 +463,13 @@ class OracleWmsCompleteDiscovery:
             if i % 50 == 0:  # Progress indicator
                 pass
 
-            try:
-                # Get entity structure and data
-                entity_result = self.client.get_entity_data(
-                    entity_name,
-                    limit=5,  # Get a few records to understand structure
-                    offset=0,
-                )
-
-                if entity_result.success:
-                    data = entity_result.data
-                    if isinstance(data, dict):
-                        count = data.get("count", 0)
-                        results = data.get("results", [])
-
-                        metadata_info = {
-                            "entity_name": entity_name,
-                            "total_count": count,
-                            "sample_size": len(results)
-                            if isinstance(results, list)
-                            else 0,
-                            "has_data": count > 0,
-                            "structure_available": len(results) > 0
-                            if isinstance(results, list)
-                            else False,
-                            "fields": [],
-                            "field_types": {},
-                            "sample_data": None,
-                        }
-
-                        if results and isinstance(results, list) and len(results) > 0:
-                            sample_record = results[0]
-                            if isinstance(sample_record, dict):
-                                metadata_info["fields"] = list(sample_record.keys())
-                                metadata_info["field_types"] = {
-                                    k: type(v).__name__
-                                    for k, v in sample_record.items()
-                                }
-                                # Store first record as sample (safe data only)
-                                safe_sample = {}
-                                for k, v in sample_record.items():
-                                    # Constants for string truncation
-                                    max_string_length = 200
-
-                                    if isinstance(
-                                        v,
-                                        (str, int, float, bool, type(None)),
-                                    ):
-                                        if (
-                                            isinstance(v, str)
-                                            and len(v) < max_string_length
-                                        ) or not isinstance(v, str):
-                                            safe_sample[k] = v
-                                        else:
-                                            safe_sample[k] = f"<string:{len(v)}chars>"
-                                    else:
-                                        safe_sample[k] = f"<{type(v).__name__}>"
-                                metadata_info["sample_data"] = safe_sample
-
-                        metadata_results[entity_name] = metadata_info
-
-                        if count > 0:
-                            entities_with_data.append(entity_name)
-                        else:
-                            entities_without_data.append(entity_name)
-                    else:
-                        entities_with_errors.append(
-                            (entity_name, "Invalid response format"),
-                        )
-                else:
-                    error_msg = str(entity_result.error)
-                    entities_with_errors.append((entity_name, error_msg))
-
-            except Exception as e:
-                entities_with_errors.append((entity_name, f"Exception: {e}"))
+            self._process_entity_metadata(
+                entity_name,
+                entities_with_data,
+                entities_without_data,
+                entities_with_errors,
+                metadata_results,
+            )
 
         # Store complete metadata
         self.entity_metadata = metadata_results
