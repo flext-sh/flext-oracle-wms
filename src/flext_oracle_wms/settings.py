@@ -2,7 +2,6 @@
 
 Uses Python 3.13+ syntax, reduces declarations through patterns.
 One class per module following SOLID principles. Generic WMS configuration.
-
 Copyright (c) 2025 FLEXT Team. All rights reserved.
 SPDX-License-Identifier: MIT
 """
@@ -21,14 +20,12 @@ class FlextOracleWmsSettings(FlextSettings.AutoConfig):
     """Generic WMS configuration with composition patterns.
 
     **ARCHITECTURAL PATTERN**: Zero-Boilerplate Auto-Registration
-
     This class uses FlextSettings.AutoConfig for automatic:
     - Singleton pattern (thread-safe)
     - Namespace registration (accessible via config.oracle_wms)
     - Environment variable loading from FLEXT_ORACLE_WMS_* variables
     - .env file loading (production/development)
     - Automatic type conversion and validation via Pydantic v2
-
     Uses Python 3.13+ syntax, reduces declarations through patterns.
     One class per module following SOLID principles. Generic for any WMS system.
     """
@@ -47,7 +44,6 @@ class FlextOracleWmsSettings(FlextSettings.AutoConfig):
         arbitrary_types_allowed=True,
         strict=False,
     )
-
     # Connection & Auth (composed fields using advanced patterns)
     base_url: str = Field(
         default=str(FlextOracleWmsConstants.API_CONFIG["base_url_default"]),
@@ -55,7 +51,6 @@ class FlextOracleWmsSettings(FlextSettings.AutoConfig):
     username: str | None = Field(default=None)
     password: str | None = Field(default=None)
     api_key: str | None = Field(default=None)
-
     # Operational settings (composed with validation)
     timeout: int = Field(
         default=int(FlextOracleWmsConstants.API_CONFIG["timeout_default"]),
@@ -68,12 +63,10 @@ class FlextOracleWmsSettings(FlextSettings.AutoConfig):
         le=10,
     )
     enable_ssl_verification: bool = Field(default=True)
-
     # Enterprise features (flags with composition)
     enable_metrics: bool = Field(default=False)
     enable_tracing: bool = Field(default=False)
     enable_audit_logging: bool = Field(default=False)
-
     # Version & environment (composed with defaults)
     api_version: str = Field(
         default=str(FlextOracleWmsConstants.API_CONFIG["version_default"]),

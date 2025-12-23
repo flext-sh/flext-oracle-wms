@@ -31,7 +31,6 @@ class HttpResponse(BaseModel):
 
     status_code: int
     body: dict | str = Field(default_factory=dict)
-    headers: dict[str, str] = Field(default_factory=dict)
 
 
 class FlextHttpClient:
@@ -54,7 +53,7 @@ class FlextHttpClient:
         base_url: Base URL for all requests
         timeout: Request timeout in seconds
         headers: Default headers for all requests
-        verify_ssl: Whether to verify SSL certificates
+        verify_ssl: Whether to verify SSL certificates.
 
         """
         self.base_url = base_url.rstrip("/")
@@ -104,7 +103,7 @@ class FlextHttpClient:
         method: str,
         path: str,
         params: dict | None = None,
-        headers: dict[str, str] | None = None,
+        headers: dict | None = None,
         body: dict | None = None,
     ) -> FlextResult[dict[str, object]]:
         """Execute HTTP request with FLEXT delegation."""
@@ -112,16 +111,13 @@ class FlextHttpClient:
             self._ensure_client()
             if self._client is None:
                 return FlextResult.fail("Client not initialized")
-
             # Merge headers using dict union
             request_headers = self.default_headers | (headers or {})
-
             # Build full URL
             url = f"{self.base_url}/{path.lstrip('/')}" if path else self.base_url
             if params:
                 query = "&".join(f"{k}={v}" for k, v in params.items())
                 url = f"{url}?{query}"
-
             # Create HttpRequest
             request = FlextApiModels.HttpRequest(
                 method=method,
@@ -129,24 +125,18 @@ class FlextHttpClient:
                 headers=request_headers,
                 body=body,
             )
-
             # Execute via FLEXT API delegation
             response_result = self._client.request(request)
-
             if response_result.is_failure:
                 return FlextResult.fail(
                     f"HTTP {method} failed: {response_result.error}",
                 )
-
             response = response_result.value
-
             # Check HTTP status
             if response.status_code >= HTTP_BAD_REQUEST_THRESHOLD:
                 return FlextResult.fail(f"HTTP {response.status_code}: {response.body}")
-
             # Parse response body
             return FlextResult.ok(self._parse_response_body(response.body))
-
         except Exception as e:
             FlextHttpClient.logger.exception(f"HTTP {method} error")
             return FlextResult.fail(f"Request error: {e}")
@@ -175,25 +165,6 @@ class FlextHttpClient:
         body = json_data or data
         return self._execute_request("POST", path, headers=headers, body=body)
 
-    def _parse_response_body(self, body: object) -> dict[str, object]:
-        """Parse response body safely to dictionary.
-
-        Args:
-        body: Response body (dict, string, or other)
-
-        Returns:
-        Parsed response data as dictionary
-
-        """
-        try:
-            if isinstance(body, dict):
-                return body
-            if isinstance(body, str):
-                return json.loads(body) if body else {}
-            return {}
-        except (ValueError, AttributeError):
-            return {"text": str(body) if body else ""}
-
     def put(
         self,
         path: str,
@@ -204,29 +175,27 @@ class FlextHttpClient:
         """Make PUT request.
 
         Args:
-        path: Request path
-        data: Form data
-        json_data: JSON data
-        headers: Additional headers
+            path: Request path
+            data: Form data
+            json_data: JSON data
+            headers: Additional headers
 
         Returns:
-        FlextResult containing response data
+            FlextResult containing response data
 
         """
         try:
             self._ensure_client()
             if self._client is None:
                 return FlextResult[dict[str, object]].fail("Client not initialized")
-
             # Prepare headers using flext-api patterns
             request_headers = self.default_headers.copy()
             if headers:
                 request_headers.update(headers)
-
             # Prepare request body
             request_body = json_data or data
-
             url = f"{self.base_url}/{path.lstrip('/')}"
+            # Execute request
             request = FlextApiModels.HttpRequest(
                 method="PUT",
                 url=url,
@@ -234,22 +203,17 @@ class FlextHttpClient:
                 body=request_body,
             )
             response_result = self._client.request(request)
-
             if response_result.is_failure:
                 return FlextResult[dict[str, object]].fail(
                     f"HTTP request failed: {response_result.error}",
                 )
-
             response = response_result.value
-
             if response.status_code >= HTTP_BAD_REQUEST_THRESHOLD:
                 return FlextResult[dict[str, object]].fail(
                     f"HTTP {response.status_code}: {response.body}",
                 )
-
             response_data = self._parse_response_body(response.body)
             return FlextResult[dict[str, object]].ok(response_data)
-
         except Exception as e:
             FlextHttpClient.logger.exception("Unexpected error")
             return FlextResult[dict[str, object]].fail(f"Unexpected error: {e}")
@@ -262,42 +226,34 @@ class FlextHttpClient:
         """Make DELETE request.
 
         Args:
-        path: Request path
-        headers: Additional headers
+            path: Request path
+            headers: Additional headers
 
         Returns:
-        FlextResult containing response data
+            FlextResult containing response data
 
         """
         try:
             self._ensure_client()
             if self._client is None:
                 return FlextResult[dict[str, object]].fail("Client not initialized")
-
+            # Prepare headers using flext-api patterns
             request_headers = self.default_headers.copy()
             if headers:
                 request_headers.update(headers)
-
             url = f"{self.base_url}/{path.lstrip('/')}"
+            # Execute request
             request = FlextApiModels.HttpRequest(
                 method="DELETE",
                 url=url,
                 headers=request_headers,
             )
             response_result = self._client.request(request)
-
             if response_result.is_failure:
                 return FlextResult[dict[str, object]].fail(
                     f"HTTP request failed: {response_result.error}",
                 )
-
             response = response_result.value
-
-            if response.status_code >= HTTP_BAD_REQUEST_THRESHOLD:
-                return FlextResult[dict[str, object]].fail(
-                    f"HTTP {response.status_code}: {response.body}",
-                )
-
             # Parse JSON response safely
             try:
                 if isinstance(response.body, dict):
@@ -312,12 +268,10 @@ class FlextHttpClient:
                 data: dict[str, object] = {
                     "text": str(response.body) if response.body else "",
                 }
-
             return FlextResult[dict[str, object]].ok(data)
-
         except Exception as e:
-            FlextHttpClient.logger.exception("Unexpected error")
-            return FlextResult[dict[str, object]].fail(f"Unexpected error: {e}")
+            FlextHttpClient.logger.exception(f"DELETE {path} error")
+            return FlextResult[dict[str, object]].fail(f"Request error: {e}")
 
 
 # Factory function following flext-core patterns
@@ -331,13 +285,13 @@ def create_flext_http_client(
     """Create FlextHttpClient instance.
 
     Args:
-    base_url: Base URL for all requests
-    timeout: Request timeout in seconds
-    headers: Default headers for all requests
-    verify_ssl: Whether to verify SSL certificates
+        base_url: Base URL for all requests
+        timeout: Request timeout in seconds
+        headers: Default headers for all requests
+        verify_ssl: Whether to verify SSL certificates
 
     Returns:
-    FlextHttpClient instance
+        FlextHttpClient instance.
 
     """
     return FlextHttpClient(

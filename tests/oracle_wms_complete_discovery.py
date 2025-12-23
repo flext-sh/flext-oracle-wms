@@ -408,7 +408,9 @@ class OracleWmsCompleteDiscovery:
             "total_count": count,
             "sample_size": len(results) if isinstance(results, list) else 0,
             "has_data": count > 0,
-            "structure_available": len(results) > 0 if isinstance(results, list) else False,
+            "structure_available": len(results) > 0
+            if isinstance(results, list)
+            else False,
             "fields": [],
             "field_types": {},
             "sample_data": None,
