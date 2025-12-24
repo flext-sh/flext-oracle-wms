@@ -56,11 +56,13 @@ if result.is_success:
 ### ZERO TOLERANCE Policies
 
 **ABSOLUTELY FORBIDDEN**:
+
 - ❌ Exception-based error handling (use FlextResult)
 - ❌ Type ignores or `Any` types
 - ❌ Mockpatch in tests
 
 **MANDATORY**:
+
 - ✅ Use `FlextResult[T]` for all operations
 - ✅ Complete type annotations
 - ✅ Zero Ruff violations
@@ -68,6 +70,7 @@ if result.is_success:
 ---
 
 **See Also**:
+
 - [Workspace Standards](../CLAUDE.md)
 - [flext-core Patterns](../flext-core/CLAUDE.md)
 - [flext-db-oracle Patterns](../flext-db-oracle/CLAUDE.md)
