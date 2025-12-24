@@ -11,7 +11,8 @@ SPDX-License-Identifier: MIT
 
 import os
 
-from flext import FlextLogger
+from flext_core import FlextLogger
+
 from flext_oracle_wms import FlextOracleWmsClient, FlextOracleWmsSettings
 from flext_oracle_wms.constants import FlextOracleWmsConstants
 

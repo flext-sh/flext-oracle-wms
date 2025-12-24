@@ -17,9 +17,9 @@ import operator
 from datetime import UTC, datetime
 from pathlib import Path
 
+from flext_core import FlextLogger, FlextResult
 from pydantic import ConfigDict
 
-from flext import FlextLogger, FlextResult
 from flext_oracle_wms import (
     FLEXT_ORACLE_WMS_APIS,
     FlextOracleWmsApiCategory,

@@ -23,8 +23,8 @@ import os
 from pathlib import Path
 
 from dotenv import load_dotenv
+from flext_core import FlextContainer, FlextLogger, FlextResult
 
-from flext import FlextContainer, FlextLogger, FlextResult
 from flext_oracle_wms import (
     FlextOracleWmsClient,
     FlextOracleWmsClientSettings,

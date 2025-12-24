@@ -9,7 +9,7 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from flext import u as u_core
+from flext_core import u as u_core
 
 
 class FlextOracleWmsUtilities(u_core):

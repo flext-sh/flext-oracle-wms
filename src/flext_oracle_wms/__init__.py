@@ -11,7 +11,7 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from flext import FlextDecorators,
+from flext_core import  FlextDecorators,
     FlextExceptions,
     FlextHandlers,
     FlextMixins,

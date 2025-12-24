@@ -8,7 +8,8 @@ from __future__ import annotations
 
 from typing import cast
 
-from flext import FlextExceptions, FlextLogger, FlextResult
+from flext_core import FlextExceptions, FlextLogger, FlextResult
+
 from flext_oracle_wms.constants import FlextOracleWmsConstants
 
 
@@ -179,21 +180,31 @@ class FlextOracleWmsFilter:
             "eq": lambda fv, f: self._normalize(fv) == self._normalize(f),
             "ne": lambda fv, f: self._normalize(fv) != self._normalize(f),
             "gt": lambda fv, f: (
-                isinstance(fv, (int, float)) and isinstance(f, (int, float)) and fv > f
-            )
-            or (isinstance(fv, str) and isinstance(f, str) and fv > f),
+                (
+                    isinstance(fv, (int, float))
+                    and isinstance(f, (int, float))
+                    and fv > f
+                )
+                or (isinstance(fv, str) and isinstance(f, str) and fv > f)
+            ),
             "lt": lambda fv, f: (
-                isinstance(fv, (int, float)) and isinstance(f, (int, float)) and fv < f
-            )
-            or (isinstance(fv, str) and isinstance(f, str) and fv < f),
-            "gte": lambda fv, f: self._apply_operator(fv, "gt", f)
-            or self._apply_operator(fv, "eq", f),
-            "lte": lambda fv, f: self._apply_operator(fv, "lt", f)
-            or self._apply_operator(fv, "eq", f),
+                (
+                    isinstance(fv, (int, float))
+                    and isinstance(f, (int, float))
+                    and fv < f
+                )
+                or (isinstance(fv, str) and isinstance(f, str) and fv < f)
+            ),
+            "gte": lambda fv, f: (
+                self._apply_operator(fv, "gt", f) or self._apply_operator(fv, "eq", f)
+            ),
+            "lte": lambda fv, f: (
+                self._apply_operator(fv, "lt", f) or self._apply_operator(fv, "eq", f)
+            ),
             "in": lambda fv, f: isinstance(f, (list, tuple)) and fv in f,
-            "contains": lambda fv, f: isinstance(fv, str)
-            and isinstance(f, str)
-            and f in fv,
+            "contains": lambda fv, f: (
+                isinstance(fv, str) and isinstance(f, str) and f in fv
+            ),
         }
         return operators.get(operator, lambda *_: False)(field_value, filter_value)
 
