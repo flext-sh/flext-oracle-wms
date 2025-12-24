@@ -5,7 +5,7 @@ SPDX-License-Identifier: MIT
 
 """
 
-from flext_core import t
+from flext import t
 
 from flext_oracle_wms import (
     FlextOracleWmsDefaults,

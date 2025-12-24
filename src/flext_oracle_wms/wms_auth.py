@@ -8,9 +8,9 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from flext_core import FlextResult
 from pydantic import BaseModel, Field
 
+from flext import FlextResult
 from flext_oracle_wms.constants import OracleWMSAuthMethod
 
 

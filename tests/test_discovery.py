@@ -21,7 +21,7 @@ import time
 from unittest.mock import Mock, patch
 
 import pytest
-from flext_core import FlextResult
+from flext import FlextResult
 
 from flext_oracle_wms import (
     DISCOVERY_FAILURE,

@@ -8,8 +8,7 @@ from __future__ import annotations
 
 from typing import cast
 
-from flext_core import FlextExceptions, FlextLogger, FlextResult
-
+from flext import FlextExceptions, FlextLogger, FlextResult
 from flext_oracle_wms.constants import FlextOracleWmsConstants
 
 

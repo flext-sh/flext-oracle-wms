@@ -33,8 +33,8 @@ import traceback
 from pathlib import Path
 
 from dotenv import load_dotenv
-from flext_core import FlextLogger
 
+from flext import FlextLogger
 from flext_oracle_wms import (
     FLEXT_ORACLE_WMS_APIS,
     FlextOracleWmsApiCategory,

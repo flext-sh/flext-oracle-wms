@@ -9,7 +9,7 @@ from __future__ import annotations
 from enum import StrEnum
 from typing import ClassVar, Final, Literal
 
-from flext_core import c as c_core
+from flext import c as c_core
 
 
 class FlextOracleWmsConstants(c_core):
@@ -340,6 +340,16 @@ class FlextOracleWmsConstants(c_core):
         WmsWriteMode.UPSERT,
         WmsWriteMode.DELETE,
     ]
+
+    class EndpointDiscoveryStrategy(StrEnum):
+        """Discovery strategy enum.
+
+        DRY Pattern: This StrEnum is the single source of truth for discovery strategies.
+        All discovery strategy-related constants and Literal types MUST reference this enum.
+        """
+
+        API_BASED = "api_based"
+        SCHEMA_BASED = "schema_based"
 
 
 # Module-level enums for direct import - advanced composition

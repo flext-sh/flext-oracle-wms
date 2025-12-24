@@ -10,8 +10,9 @@ import json
 from typing import Self
 
 from flext_api import FlextApiClient, FlextApiModels, FlextApiSettings
-from flext_core import FlextLogger, FlextResult
 from pydantic import BaseModel, Field
+
+from flext import FlextLogger, FlextResult
 
 # HTTP status codes
 HTTP_BAD_REQUEST_THRESHOLD = 400

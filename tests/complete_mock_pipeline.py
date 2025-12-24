@@ -16,7 +16,7 @@ import uuid
 from datetime import UTC, datetime
 from pathlib import Path
 
-from flext_core import FlextLogger, FlextResult, t
+from flext import FlextLogger, FlextResult, t
 
 logger = FlextLogger(__name__)
 

@@ -8,12 +8,14 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from enum import StrEnum
 from typing import ClassVar
 
-from flext_core import FlextResult
-
+from flext import FlextResult
+from flext_oracle_wms.constants import c
 from flext_oracle_wms.http_client import FlextHttpClient
+
+# Alias for backward compatibility - EndpointDiscoveryStrategy is now in constants.py
+EndpointDiscoveryStrategy = c.EndpointDiscoveryStrategy
 
 
 # Simple placeholders for missing classes
@@ -23,13 +25,6 @@ class CacheValue:
 
 class DiscoveryContext:
     """Discovery context placeholder."""
-
-
-class EndpointDiscoveryStrategy(StrEnum):
-    """Discovery strategy enum."""
-
-    API_BASED = "api_based"
-    SCHEMA_BASED = "schema_based"
 
 
 class EntityResponseParser:

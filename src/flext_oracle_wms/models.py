@@ -10,12 +10,13 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from enum import StrEnum
 from typing import Annotated
 
-from flext_core import FlextModels, FlextResult
 from flext_core.utilities import u
 from pydantic import Field, StringConstraints
+
+from flext import FlextModels, FlextResult
+from flext_oracle_wms.constants import c
 
 
 class FlextWmsModels(FlextModels):
@@ -137,29 +138,11 @@ class FlextWmsModels(FlextModels):
         token: str | None = None
 
     # =========================================================================
-    # ENUMS - Composed domain enumerations
+    # ENUMS - Aliases from constants.py (single source of truth)
     # =========================================================================
 
-    class EntityType(StrEnum):
-        """WMS entity types."""
-
-        INVENTORY = "inventory"
-        ORDERS = "orders"
-        SHIPMENTS = "shipments"
-        PICKING = "picking"
-        LOCATIONS = "locations"
-        ITEMS = "items"
-        PRODUCTS = "products"
-        WAREHOUSES = "warehouses"
-
-    class OperationStatus(StrEnum):
-        """Operation status values."""
-
-        PENDING = "pending"
-        RUNNING = "running"
-        SUCCESS = "success"
-        ERROR = "error"
-        CANCELLED = "cancelled"
+    EntityType = c.WmsEntityType
+    OperationStatus = c.WmsOperationStatus
 
     # =========================================================================
     # DOMAIN SERVICES - Business logic composition
