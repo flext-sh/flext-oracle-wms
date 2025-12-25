@@ -11,12 +11,14 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from flext_core import  FlextDecorators,
+from flext_core import (
+    FlextDecorators,
     FlextExceptions,
     FlextHandlers,
     FlextMixins,
     FlextResult,
-    FlextService
+    FlextService,
+)
 
 # Version information
 from flext_oracle_wms.__version__ import __version__, __version_info__
