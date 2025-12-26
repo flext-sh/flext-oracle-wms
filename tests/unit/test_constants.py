@@ -9,7 +9,7 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from flext import FlextConstants
+from flext_core import FlextConstants
 
 from flext_oracle_wms.constants import FlextOracleWmsConstants, OracleWMSAuthMethod
 

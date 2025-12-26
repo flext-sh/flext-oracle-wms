@@ -14,7 +14,7 @@ from pathlib import Path
 from urllib.parse import urlparse
 
 import pytest
-from flext import FlextLogger, FlextResult
+from flext_core import FlextLogger, FlextResult
 
 
 

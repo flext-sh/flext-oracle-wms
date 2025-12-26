@@ -5,7 +5,7 @@ SPDX-License-Identifier: MIT
 
 """
 
-from flext import t
+from flext_core import t
 
 
 
