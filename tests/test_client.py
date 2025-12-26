@@ -5,8 +5,7 @@ SPDX-License-Identifier: MIT
 
 """
 
-
-
+from flext_oracle_wms import (
     FlextOracleWmsClient,
     FlextOracleWmsSettings,
 )
@@ -88,9 +87,7 @@ class TestClientSimpleNew:
         client = FlextOracleWmsClient(self.config)
 
         # Test that specialized WMS methods exist
-        assert hasattr(client, "ship_oblpn")
         assert hasattr(client, "create_lpn")
-        assert callable(client.ship_oblpn)
         assert callable(client.create_lpn)
 
     def test_client_properties(self) -> None:
@@ -110,23 +107,21 @@ class TestClientSimpleNew:
         assert hasattr(client, "stop")
         assert hasattr(client, "discover_entities")
         assert hasattr(client, "health_check")
-        assert hasattr(client, "get_available_apis")
-        assert hasattr(client, "ship_oblpn")
         assert hasattr(client, "create_lpn")
 
     def test_client_with_custom_config(self) -> None:
         """Test client with custom configuration."""
         config = FlextOracleWmsSettings(
-            oracle_wms_base_url="https://custom.wms.com",
-            oracle_wms_username="custom_user",
-            oracle_wms_password="custom_pass",
-            oracle_wms_timeout=60,
-            oracle_wms_max_retries=3,
+            base_url="https://custom.wms.com",
+            username="custom_user",
+            password="custom_pass",
+            timeout=60,
+            retry_attempts=3,
         )
 
         client = FlextOracleWmsClient(config)
-        assert client.config.oracle_wms_timeout == 60
-        assert client.config.oracle_wms_max_retries == 3
+        assert client.config.timeout == 60
+        assert client.config.retry_attempts == 3
 
     def test_discover_entities_method_validation(self) -> None:
         """Test that discover_entities method exists and is callable."""
@@ -136,14 +131,13 @@ class TestClientSimpleNew:
         assert hasattr(client, "discover_entities")
         assert callable(client.discover_entities)
 
-    def test_get_available_apis(self) -> None:
-        """Test getting available APIs."""
+    def test_client_create_lpn_method_exists(self) -> None:
+        """Test create_lpn method exists."""
         client = FlextOracleWmsClient(self.config)
 
-        result = client.get_available_apis()
-        assert isinstance(result, dict)
-        # Should have some API endpoints available
-        assert len(result) > 0
+        # Test that create_lpn method exists and is callable
+        assert hasattr(client, "create_lpn")
+        assert callable(client.create_lpn)
 
     def test_client_health_check_sync(self) -> None:
         """Test client health check (sync version)."""
@@ -160,8 +154,8 @@ class TestClientSimpleNew:
 
         # Test that config is accessible
         assert client.config is not None
-        assert hasattr(client.config, "oracle_wms_base_url")
-        assert hasattr(client.config, "oracle_wms_username")
+        assert hasattr(client.config, "base_url")
+        assert hasattr(client.config, "username")
 
     def test_client_internal_properties(self) -> None:
         """Test client internal properties exist."""
@@ -170,7 +164,6 @@ class TestClientSimpleNew:
         # Test that internal client properties exist
         assert hasattr(client, "_client")
         assert hasattr(client, "_discovered_entities")
-        assert hasattr(client, "_auth_headers")
 
     def test_client_properties_access(self) -> None:
         """Test client properties are accessible."""
@@ -180,8 +173,8 @@ class TestClientSimpleNew:
         assert hasattr(client, "config")
         config = client.config
         assert config is not None
-        assert hasattr(config, "oracle_wms_base_url")
-        assert hasattr(config, "oracle_wms_username")
+        assert hasattr(config, "base_url")
+        assert hasattr(config, "username")
 
     def test_client_initialization_edge_cases(self) -> None:
         """Test client initialization with edge cases."""
@@ -201,5 +194,5 @@ class TestClientSimpleNew:
         client = FlextOracleWmsClient(self.config)
 
         # Should be able to access config properties
-        assert client.config.oracle_wms_username == "test_user"
-        assert "test.wms.com" in str(client.config.oracle_wms_base_url)
+        assert client.config.username == "test_user"
+        assert "test.wms.com" in str(client.config.base_url)

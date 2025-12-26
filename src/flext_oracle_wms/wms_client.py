@@ -9,8 +9,6 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from typing import cast
-
 from flext_api import FlextApiClient, FlextApiModels, FlextApiSettings
 from flext_core import FlextContainer, FlextResult
 
@@ -34,10 +32,12 @@ class FlextOracleWmsClient:
         if config is None:
             container = FlextContainer.get_global()
             config_result = container.get("FlextOracleWmsSettings")
-            config = cast(
-                "FlextOracleWmsSettings",
-                config_result.unwrap_or(FlextOracleWmsSettings()),
-            )
+            config_value = config_result.unwrap_or(FlextOracleWmsSettings())
+            # Type narrowing - config should be FlextOracleWmsSettings
+            if isinstance(config_value, FlextOracleWmsSettings):
+                config = config_value
+            else:
+                config = FlextOracleWmsSettings()
 
         self.config: FlextOracleWmsSettings = config
 

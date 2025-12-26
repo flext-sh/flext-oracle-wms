@@ -6,8 +6,6 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from typing import cast
-
 from flext_core import FlextExceptions, FlextLogger, FlextResult
 
 from flext_oracle_wms.constants import FlextOracleWmsConstants
@@ -233,7 +231,8 @@ class FlextOracleWmsFilter:
             if operator
             else {field: value}
         )
-        return engine.filter_records(records, cast("dict[str, object]", filters))
+        # filters is already dict[str, object] compatible - no cast needed
+        return engine.filter_records(records, filters)
 
     @classmethod
     def filter_by_id_range(

@@ -16,11 +16,11 @@ from flext_oracle_wms.constants import FlextOracleWmsConstants
 
 
 @FlextSettings.auto_register("oracle_wms")
-class FlextOracleWmsSettings(FlextSettings.AutoConfig):
+class FlextOracleWmsSettings(FlextSettings):
     """Generic WMS configuration with composition patterns.
 
     **ARCHITECTURAL PATTERN**: Zero-Boilerplate Auto-Registration
-    This class uses FlextSettings.AutoConfig for automatic:
+    This class uses FlextSettings for automatic:
     - Singleton pattern (thread-safe)
     - Namespace registration (accessible via config.oracle_wms)
     - Environment variable loading from FLEXT_ORACLE_WMS_* variables
