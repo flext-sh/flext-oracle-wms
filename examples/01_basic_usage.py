@@ -23,12 +23,12 @@ import os
 from pathlib import Path
 
 from dotenv import load_dotenv
-from flext_core import FlextContainer, FlextLogger, FlextResult
+from flext_core import FlextContainer, FlextLogger, FlextResult, FlextTypes as t
 
 from flext_oracle_wms import (
     FlextOracleWmsClient,
-    FlextOracleWmsClientSettings,
     FlextOracleWmsExceptions,
+    FlextOracleWmsSettings,
 )
 
 # Constants for example display
@@ -55,7 +55,7 @@ def setup_client_config() -> None:
     container = FlextContainer.get_global()
 
     # Create config with environment variables
-    config = FlextOracleWmsClientSettings(
+    config = FlextOracleWmsSettings(
         base_url=os.getenv("FLEXT_ORACLE_WMS_BASE_URL", "https://wms.oraclecloud.com"),
         username=os.getenv("FLEXT_ORACLE_WMS_USERNAME"),
         password=os.getenv("FLEXT_ORACLE_WMS_PASSWORD"),
@@ -67,7 +67,7 @@ def setup_client_config() -> None:
 
 def discover_wms_entities(
     client: FlextOracleWmsClient,
-) -> FlextResult[list[dict[str, object]]]:
+) -> FlextResult[list[dict[str, t.GeneralValueType]]]:
     """Discover available Oracle WMS entities.
 
     Args:
@@ -109,7 +109,7 @@ def discover_wms_entities(
 def query_entity_data(
     client: FlextOracleWmsClient,
     entity_name: str,
-) -> FlextResult[list[dict[str, object]]]:
+) -> FlextResult[list[dict[str, t.GeneralValueType]]]:
     """Query data from a specific Oracle WMS entity.
 
     Args:

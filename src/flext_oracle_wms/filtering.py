@@ -6,7 +6,7 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from flext_core import FlextExceptions, FlextLogger, FlextResult
+from flext_core import FlextExceptions, FlextLogger, FlextResult, FlextTypes as t
 
 from flext_oracle_wms.constants import FlextOracleWmsConstants
 
@@ -24,7 +24,7 @@ class FlextOracleWmsFilter:
     def __init__(
         self,
         *,
-        filters: dict[str, object] | None = None,
+        filters: dict[str, t.GeneralValueType] | None = None,
         case_sensitive: bool = False,
         max_conditions: int = 50,
     ) -> None:
@@ -56,7 +56,7 @@ class FlextOracleWmsFilter:
 
     def _validate_filter_conditions_total(
         self,
-        filters: dict[str, object],
+        filters: dict[str, t.GeneralValueType],
     ) -> FlextResult[None]:
         """Validate total filter conditions."""
         total = sum(len(v) if isinstance(v, list) else 1 for v in filters.values())
@@ -66,7 +66,9 @@ class FlextOracleWmsFilter:
             )
         return FlextResult.ok(None)
 
-    def _get_nested_value(self, record: dict[str, object], field: str) -> object:
+    def _get_nested_value(
+        self, record: dict[str, t.GeneralValueType], field: str
+    ) -> t.GeneralValueType:
         """Get nested value from record using dot notation."""
         keys = field.split(".")
         value: object = record
@@ -90,10 +92,10 @@ class FlextOracleWmsFilter:
 
     def filter_records(
         self,
-        records: list[dict[str, object]],
-        filters: dict[str, object],
+        records: list[dict[str, t.GeneralValueType]],
+        filters: dict[str, t.GeneralValueType],
         limit: int | None = None,
-    ) -> FlextResult[list[dict[str, object]]]:
+    ) -> FlextResult[list[dict[str, t.GeneralValueType]]]:
         """Filter records with functional composition."""
         if (result := self._validate_filters(filters)).is_failure:
             return FlextResult.fail(result.error or "Validation failed")
@@ -106,15 +108,15 @@ class FlextOracleWmsFilter:
 
     def sort_records(
         self,
-        records: list[dict[str, object]],
+        records: list[dict[str, t.GeneralValueType]],
         sort_field: str,
         *,
         ascending: bool = True,
-    ) -> FlextResult[list[dict[str, object]]]:
+    ) -> FlextResult[list[dict[str, t.GeneralValueType]]]:
         """Sort records with functional key extraction."""
         try:
 
-            def key_func(r: dict[str, object]) -> str:
+            def key_func(r: dict[str, t.GeneralValueType]) -> str:
                 return str(
                     self._get_nested_value(r, sort_field)
                     or ("" if ascending else "zzz"),
@@ -125,7 +127,9 @@ class FlextOracleWmsFilter:
             self.logger.exception("Sort failed")
             return FlextResult.fail(f"Sort failed: {e}")
 
-    def _validate_filters(self, filters: dict[str, object]) -> FlextResult[None]:
+    def _validate_filters(
+        self, filters: dict[str, t.GeneralValueType]
+    ) -> FlextResult[None]:
         """Validate filter conditions."""
         total = sum(len(v) if isinstance(v, list) else 1 for v in filters.values())
         if total > self.max_conditions:
@@ -136,8 +140,8 @@ class FlextOracleWmsFilter:
 
     def _matches_all_filters(
         self,
-        record: dict[str, object],
-        filters: dict[str, object],
+        record: dict[str, t.GeneralValueType],
+        filters: dict[str, t.GeneralValueType],
     ) -> bool:
         """Check if record matches all filters with functional composition."""
         return all(
@@ -147,9 +151,9 @@ class FlextOracleWmsFilter:
 
     def _matches_condition(
         self,
-        record: dict[str, object],
+        record: dict[str, t.GeneralValueType],
         field: str,
-        filter_value: object,
+        filter_value: t.GeneralValueType,
     ) -> bool:
         """Match condition with pattern matching."""
         field_value = self._get_nested_value(record, field)
@@ -219,11 +223,11 @@ class FlextOracleWmsFilter:
     @classmethod
     def filter_by_field(
         cls,
-        records: list[dict[str, object]],
+        records: list[dict[str, t.GeneralValueType]],
         field: str,
-        value: object,
+        value: t.GeneralValueType,
         operator: str | None = None,
-    ) -> FlextResult[list[dict[str, object]]]:
+    ) -> FlextResult[list[dict[str, t.GeneralValueType]]]:
         """Filter records by field value."""
         engine = cls()
         filters = (
@@ -231,17 +235,17 @@ class FlextOracleWmsFilter:
             if operator
             else {field: value}
         )
-        # filters is already dict[str, object] compatible - no cast needed
+        # filters is already dict[str, t.GeneralValueType] compatible - no cast needed
         return engine.filter_records(records, filters)
 
     @classmethod
     def filter_by_id_range(
         cls,
-        records: list[dict[str, object]],
+        records: list[dict[str, t.GeneralValueType]],
         id_field: str,
-        min_id: object | None = None,
-        max_id: object | None = None,
-    ) -> FlextResult[list[dict[str, object]]]:
+        min_id: t.GeneralValueType | None = None,
+        max_id: t.GeneralValueType | None = None,
+    ) -> FlextResult[list[dict[str, t.GeneralValueType]]]:
         """Filter records by ID range."""
         if not records:
             return FlextResult.ok([])

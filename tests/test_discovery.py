@@ -21,7 +21,7 @@ import time
 from unittest.mock import Mock, patch
 
 import pytest
-from flext_core import FlextResult
+from flext_core import FlextTypes as t, FlextResult
 
 
 
@@ -120,7 +120,7 @@ class TestEndpointDiscoveryStrategy:
             ],
         }
 
-        self.mock_api_client.get.return_value = FlextResult[dict[str, object]].ok(
+        self.mock_api_client.get.return_value = FlextResult[dict[str, t.GeneralValueType]].ok(
             mock_response.data,
         )
 
@@ -157,7 +157,7 @@ class TestEndpointDiscoveryStrategy:
 
     def test_execute_discovery_step_api_failure(self) -> None:
         """Test discovery step with API failure."""
-        self.mock_api_client.get.return_value = FlextResult[dict[str, object]].fail(
+        self.mock_api_client.get.return_value = FlextResult[dict[str, t.GeneralValueType]].fail(
             "API connection failed",
         )
 
@@ -177,7 +177,7 @@ class TestEndpointDiscoveryStrategy:
         mock_response = Mock()
         del mock_response.status_code  # Remove required attribute
 
-        self.mock_api_client.get.return_value = FlextResult[dict[str, object]].ok(
+        self.mock_api_client.get.return_value = FlextResult[dict[str, t.GeneralValueType]].ok(
             mock_response,
         )
 
@@ -196,7 +196,7 @@ class TestEndpointDiscoveryStrategy:
         mock_response.status_code = 404
         mock_response.data = {"error": "Not found"}
 
-        self.mock_api_client.get.return_value = FlextResult[dict[str, object]].ok(
+        self.mock_api_client.get.return_value = FlextResult[dict[str, t.GeneralValueType]].ok(
             mock_response,
         )
 
@@ -230,7 +230,7 @@ class TestEndpointDiscoveryStrategy:
         mock_response = Mock()
         mock_response.status_code = 200
 
-        self.mock_api_client.get.return_value = FlextResult[dict[str, object]].ok(
+        self.mock_api_client.get.return_value = FlextResult[dict[str, t.GeneralValueType]].ok(
             mock_response,
         )
 
@@ -319,7 +319,7 @@ class TestEntityResponseParser:
 
     def test_parse_entities_response_delegation(self) -> None:
         """Test that parser delegates to discovery instance."""
-        response_data: dict[str, object] = {"entities": ["test"]}
+        response_data: dict[str, t.GeneralValueType] = {"entities": ["test"]}
         result = self.parser.parse_entities_response(response_data)
 
         # The parser should handle the response data directly
@@ -423,7 +423,7 @@ class TestFlextOracleWmsEntityDiscovery:
             mock_response = Mock()
             mock_response.status_code = 200
             mock_response.data = {"results": ["entity1", "entity2"]}
-            mock_get.return_value = FlextResult[dict[str, object]].ok(mock_response)
+            mock_get.return_value = FlextResult[dict[str, t.GeneralValueType]].ok(mock_response)
 
             result = self.discovery.discover_entities(
                 include_patterns=include_patterns,
@@ -723,7 +723,7 @@ class TestFlextOracleWmsEntityDiscovery:
         assert len(result.data.errors) == 1
 
     def test_extract_entity_list_from_dict_entities(self) -> None:
-        """Test entity list extraction from dict[str, object] with 'entities' key."""
+        """Test entity list extraction from dict[str, t.GeneralValueType] with 'entities' key."""
         response_data = {"entities": ["company", "facility", "item"]}
         parser = EntityResponseParser(self.discovery)
 
@@ -733,7 +733,7 @@ class TestFlextOracleWmsEntityDiscovery:
         assert result.data == ["company", "facility", "item"]
 
     def test_extract_entity_list_from_dict_results(self) -> None:
-        """Test entity list extraction from dict[str, object] with 'results' key."""
+        """Test entity list extraction from dict[str, t.GeneralValueType] with 'results' key."""
         response_data = {"results": ["order", "shipment"]}
         parser = EntityResponseParser(self.discovery)
 
@@ -743,7 +743,7 @@ class TestFlextOracleWmsEntityDiscovery:
         assert result.data == ["order", "shipment"]
 
     def test_extract_entity_list_from_dict_data(self) -> None:
-        """Test entity list extraction from dict[str, object] with 'data' key."""
+        """Test entity list extraction from dict[str, t.GeneralValueType] with 'data' key."""
         response_data = {"data": ["location", "inventory"]}
         parser = EntityResponseParser(self.discovery)
 
@@ -753,7 +753,7 @@ class TestFlextOracleWmsEntityDiscovery:
         assert result.data == ["location", "inventory"]
 
     def test_extract_entity_list_from_dict_keys(self) -> None:
-        """Test entity list extraction from dict[str, object] keys."""
+        """Test entity list extraction from dict[str, t.GeneralValueType] keys."""
         response_data = {"company": {}, "facility": {}, "item": {}}
         parser = EntityResponseParser(self.discovery)
 
@@ -1369,7 +1369,7 @@ class TestErrorHandling:
         """Test discover_entities handles exceptions."""
         # Mock the cache manager to simulate an error
         with patch.object(self.discovery, "cache_manager") as mock_cache:
-            mock_cache.get.return_value = FlextResult[dict[str, object]].fail(
+            mock_cache.get.return_value = FlextResult[dict[str, t.GeneralValueType]].fail(
                 "Cache error",
             )
 

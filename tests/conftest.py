@@ -10,6 +10,7 @@ from pathlib import Path
 
 import pytest
 from dotenv import load_dotenv
+from flext_core import FlextTypes as t
 
 from flext_oracle_wms import FlextOracleWmsSettings
 
@@ -76,7 +77,7 @@ def sample_entities() -> list[str]:
 
 
 @pytest.fixture
-def sample_entity_data() -> dict[str, object]:
+def sample_entity_data() -> dict[str, t.GeneralValueType]:
     """Sample entity response data based on REAL query results."""
     return {
         "result_count": 4,

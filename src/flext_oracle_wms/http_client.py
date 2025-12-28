@@ -10,7 +10,7 @@ import json
 from typing import Self
 
 from flext_api import FlextApiClient, FlextApiModels, FlextApiSettings
-from flext_core import FlextLogger, FlextResult
+from flext_core import FlextLogger, FlextResult, FlextTypes as t
 from pydantic import BaseModel, Field
 
 # HTTP status codes
@@ -23,14 +23,14 @@ class HttpRequest(BaseModel):
     method: str
     url: str
     headers: dict[str, str] = Field(default_factory=dict)
-    body: dict | None = None
+    body: dict[str, t.GeneralValueType] | None = None
 
 
 class HttpResponse(BaseModel):
     """Generic Pydantic model for HTTP responses."""
 
     status_code: int
-    body: dict | str = Field(default_factory=dict)
+    body: dict[str, t.GeneralValueType] | str = Field(default_factory=dict)
 
 
 class FlextHttpClient:
@@ -79,7 +79,6 @@ class FlextHttpClient:
                 base_url=self.base_url,
                 timeout=self.timeout,
                 headers=self.default_headers,
-                verify_ssl=self.verify_ssl,
             )
             self._client = FlextApiClient(config=config)
 
@@ -94,7 +93,7 @@ class FlextHttpClient:
         path: str,
         params: dict[str, str | int | float] | None = None,
         headers: dict[str, str] | None = None,
-    ) -> FlextResult[dict[str, object]]:
+    ) -> FlextResult[dict[str, t.GeneralValueType]]:
         """Make GET request with railway-oriented error handling."""
         return self._execute_request("GET", path, params=params, headers=headers)
 
@@ -102,10 +101,10 @@ class FlextHttpClient:
         self,
         method: str,
         path: str,
-        params: dict | None = None,
-        headers: dict | None = None,
-        body: dict | None = None,
-    ) -> FlextResult[dict[str, object]]:
+        params: dict[str, str] | None = None,
+        headers: dict[str, str] | None = None,
+        body: dict[str, t.GeneralValueType] | None = None,
+    ) -> FlextResult[dict[str, t.GeneralValueType]]:
         """Execute HTTP request with FLEXT delegation."""
         try:
             self._ensure_client()
@@ -141,7 +140,7 @@ class FlextHttpClient:
             FlextHttpClient.logger.exception(f"HTTP {method} error")
             return FlextResult.fail(f"Request error: {e}")
 
-    def _parse_response_body(self, body: object) -> dict[str, object]:
+    def _parse_response_body(self, body: object) -> dict[str, t.GeneralValueType]:
         """Parse response body with modern Python patterns."""
         match body:
             case dict():
@@ -157,10 +156,10 @@ class FlextHttpClient:
     def post(
         self,
         path: str,
-        data: dict[str, object] | None = None,
-        json_data: dict[str, object] | None = None,
+        data: dict[str, t.GeneralValueType] | None = None,
+        json_data: dict[str, t.GeneralValueType] | None = None,
         headers: dict[str, str] | None = None,
-    ) -> FlextResult[dict[str, object]]:
+    ) -> FlextResult[dict[str, t.GeneralValueType]]:
         """Make POST request with railway-oriented error handling."""
         body = json_data or data
         return self._execute_request("POST", path, headers=headers, body=body)
@@ -168,10 +167,10 @@ class FlextHttpClient:
     def put(
         self,
         path: str,
-        data: dict[str, object] | None = None,
-        json_data: dict[str, object] | None = None,
+        data: dict[str, t.GeneralValueType] | None = None,
+        json_data: dict[str, t.GeneralValueType] | None = None,
         headers: dict[str, str] | None = None,
-    ) -> FlextResult[dict[str, object]]:
+    ) -> FlextResult[dict[str, t.GeneralValueType]]:
         """Make PUT request.
 
         Args:
@@ -187,7 +186,9 @@ class FlextHttpClient:
         try:
             self._ensure_client()
             if self._client is None:
-                return FlextResult[dict[str, object]].fail("Client not initialized")
+                return FlextResult[dict[str, t.GeneralValueType]].fail(
+                    "Client not initialized"
+                )
             # Prepare headers using flext-api patterns
             request_headers = self.default_headers.copy()
             if headers:
@@ -204,25 +205,27 @@ class FlextHttpClient:
             )
             response_result = self._client.request(request)
             if response_result.is_failure:
-                return FlextResult[dict[str, object]].fail(
+                return FlextResult[dict[str, t.GeneralValueType]].fail(
                     f"HTTP request failed: {response_result.error}",
                 )
             response = response_result.value
             if response.status_code >= HTTP_BAD_REQUEST_THRESHOLD:
-                return FlextResult[dict[str, object]].fail(
+                return FlextResult[dict[str, t.GeneralValueType]].fail(
                     f"HTTP {response.status_code}: {response.body}",
                 )
             response_data = self._parse_response_body(response.body)
-            return FlextResult[dict[str, object]].ok(response_data)
+            return FlextResult[dict[str, t.GeneralValueType]].ok(response_data)
         except Exception as e:
             FlextHttpClient.logger.exception("Unexpected error")
-            return FlextResult[dict[str, object]].fail(f"Unexpected error: {e}")
+            return FlextResult[dict[str, t.GeneralValueType]].fail(
+                f"Unexpected error: {e}"
+            )
 
     def delete(
         self,
         path: str,
         headers: dict[str, str] | None = None,
-    ) -> FlextResult[dict[str, object]]:
+    ) -> FlextResult[dict[str, t.GeneralValueType]]:
         """Make DELETE request.
 
         Args:
@@ -236,7 +239,9 @@ class FlextHttpClient:
         try:
             self._ensure_client()
             if self._client is None:
-                return FlextResult[dict[str, object]].fail("Client not initialized")
+                return FlextResult[dict[str, t.GeneralValueType]].fail(
+                    "Client not initialized"
+                )
             # Prepare headers using flext-api patterns
             request_headers = self.default_headers.copy()
             if headers:
@@ -250,7 +255,7 @@ class FlextHttpClient:
             )
             response_result = self._client.request(request)
             if response_result.is_failure:
-                return FlextResult[dict[str, object]].fail(
+                return FlextResult[dict[str, t.GeneralValueType]].fail(
                     f"HTTP request failed: {response_result.error}",
                 )
             response = response_result.value
@@ -259,19 +264,19 @@ class FlextHttpClient:
                 if isinstance(response.body, dict):
                     data = response.body
                 elif isinstance(response.body, str):
-                    data: dict[str, object] = (
-                        json.loads(response.body) if response.body else {}
-                    )
+                    data = json.loads(response.body) if response.body else {}
                 else:
                     data = {}
             except (ValueError, AttributeError):
-                data: dict[str, object] = {
+                data = {
                     "text": str(response.body) if response.body else "",
                 }
-            return FlextResult[dict[str, object]].ok(data)
+            return FlextResult[dict[str, t.GeneralValueType]].ok(data)
         except Exception as e:
             FlextHttpClient.logger.exception(f"DELETE {path} error")
-            return FlextResult[dict[str, object]].fail(f"Request error: {e}")
+            return FlextResult[dict[str, t.GeneralValueType]].fail(
+                f"Request error: {e}"
+            )
 
 
 # Factory function following flext-core patterns

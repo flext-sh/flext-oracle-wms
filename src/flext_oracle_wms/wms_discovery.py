@@ -10,7 +10,7 @@ from __future__ import annotations
 
 from typing import ClassVar
 
-from flext_core import FlextResult
+from flext_core import FlextResult, FlextTypes as t
 
 from flext_oracle_wms.constants import c
 from flext_oracle_wms.http_client import FlextHttpClient
@@ -45,7 +45,7 @@ class FlextOracleWmsEntityDiscovery:
         """Initialize entity discovery with HTTP client."""
         self.client = client
 
-    def discover_entities(self) -> FlextResult[list[dict[str, object]]]:
+    def discover_entities(self) -> FlextResult[list[dict[str, t.GeneralValueType]]]:
         """Discover entities placeholder."""
         return FlextResult.ok([])
 

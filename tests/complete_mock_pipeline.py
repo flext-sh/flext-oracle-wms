@@ -36,7 +36,7 @@ class CompleteMockPipeline:
     def __init__(self) -> None:
         """Initialize with realistic Oracle WMS mock data."""
         # Realistic Oracle WMS entities with actual data structures
-        self.mock_entities: dict[str, object] = {
+        self.mock_entities: dict[str, t.GeneralValueType] = {
             "company": {
                 "count": 5,
                 "sample_data": {
@@ -265,9 +265,9 @@ class CompleteMockPipeline:
             },
         }
 
-        self.results: dict[str, object] = {}
+        self.results: dict[str, t.GeneralValueType] = {}
 
-    def run_complete_pipeline(self) -> FlextResult[dict[str, object]]:
+    def run_complete_pipeline(self) -> FlextResult[dict[str, t.GeneralValueType]]:
         """Run complete Oracle WMS pipeline with mock data."""
         start_time = datetime.now(UTC)
 
@@ -310,7 +310,7 @@ class CompleteMockPipeline:
 
             # Show pipeline flow
 
-            return FlextResult[dict[str, object]].ok(
+            return FlextResult[dict[str, t.GeneralValueType]].ok(
                 {
                     "duration": duration,
                     "schemas_count": len(schemas),
@@ -329,11 +329,13 @@ class CompleteMockPipeline:
 
         except Exception as e:
             logger.exception("Complete pipeline failed")
-            return FlextResult[dict[str, object]].fail(f"Pipeline failed: {e}")
+            return FlextResult[dict[str, t.GeneralValueType]].fail(
+                f"Pipeline failed: {e}"
+            )
 
-    def _generate_complete_singer_schemas(self) -> dict[str, object]:
+    def _generate_complete_singer_schemas(self) -> dict[str, t.GeneralValueType]:
         """Generate complete Singer schemas for all entities."""
-        schemas: dict[str, object] = {}
+        schemas: dict[str, t.GeneralValueType] = {}
 
         for entity_name, entity_info in self.mock_entities.items():
             if isinstance(entity_info, dict) and "sample_data" in entity_info:
@@ -350,10 +352,10 @@ class CompleteMockPipeline:
 
     def _create_entity_properties(
         self,
-        sample_data: dict[str, object],
-    ) -> tuple[dict[str, object], list[str]]:
+        sample_data: dict[str, t.GeneralValueType],
+    ) -> tuple[dict[str, t.GeneralValueType], list[str]]:
         """Create properties and key properties from sample data - SRP compliance."""
-        properties: dict[str, object] = {}
+        properties: dict[str, t.GeneralValueType] = {}
         key_properties: list[str] = []
 
         for field, value in sample_data.items():
@@ -432,7 +434,7 @@ class CompleteMockPipeline:
         """Determine if field should be a key property."""
         return field == "id" or (field.endswith("_code") and not existing_keys)
 
-    def _add_singer_metadata(self, properties: dict[str, object]) -> None:
+    def _add_singer_metadata(self, properties: dict[str, t.GeneralValueType]) -> None:
         """Add Singer metadata properties - SRP compliance."""
         properties.update(
             {
@@ -445,9 +447,9 @@ class CompleteMockPipeline:
 
     def _build_singer_schema(
         self,
-        properties: dict[str, object],
+        properties: dict[str, t.GeneralValueType],
         key_properties: list[str],
-    ) -> dict[str, object]:
+    ) -> dict[str, t.GeneralValueType]:
         """Build complete Singer schema - SRP compliance."""
         return {
             "type": "object",
@@ -458,8 +460,8 @@ class CompleteMockPipeline:
 
     def _create_complete_singer_catalog(
         self,
-        schemas: dict[str, object],
-    ) -> dict[str, object]:
+        schemas: dict[str, t.GeneralValueType],
+    ) -> dict[str, t.GeneralValueType]:
         """Create complete Singer catalog for Meltano integration."""
         streams = []
 
@@ -485,7 +487,7 @@ class CompleteMockPipeline:
                 "mod_ts" if "mod_ts" in schema.get("properties", {}) else None
             )
 
-            stream: dict[str, object] = {
+            stream: dict[str, t.GeneralValueType] = {
                 "tap_stream_id": entity_name,
                 "stream": entity_name,
                 "schema": schema_without_keys,
@@ -511,9 +513,9 @@ class CompleteMockPipeline:
 
         return {"version": 1, "streams": streams}
 
-    def _simulate_tap_extraction(self) -> list[dict[str, object]]:
+    def _simulate_tap_extraction(self) -> list[dict[str, t.GeneralValueType]]:
         """Simulate TAP extraction process."""
-        tap_records: list[dict[str, object]] = []
+        tap_records: list[dict[str, t.GeneralValueType]] = []
 
         for entity_name, entity_info in self.mock_entities.items():
             if not isinstance(entity_info, dict):
@@ -545,14 +547,16 @@ class CompleteMockPipeline:
 
                 record["_sdc_sequence"] = i + 1
                 # Ensure all values are objects
-                record_obj: dict[str, object] = dict[str, object](record.items())
+                record_obj: dict[str, t.GeneralValueType] = dict[
+                    str, t.GeneralValueType
+                ](record.items())
                 tap_records.append({"entity": entity_name, "record": record_obj})
 
         return tap_records
 
     def _simulate_target_loading(
         self,
-        tap_records: list[dict[str, object]],
+        tap_records: list[dict[str, t.GeneralValueType]],
     ) -> t.NestedDict:
         """Simulate TARGET loading process."""
         target_results = {}
@@ -673,9 +677,9 @@ class CompleteMockPipeline:
 
     def _save_complete_pipeline_results(
         self,
-        schemas: dict[str, object],
-        catalog: dict[str, object],
-        tap_records: list[dict[str, object]],
+        schemas: dict[str, t.GeneralValueType],
+        catalog: dict[str, t.GeneralValueType],
+        tap_records: list[dict[str, t.GeneralValueType]],
         target_results: t.NestedDict,
         dbt_results: t.NestedDict,
     ) -> FlextResult[str]:
@@ -789,7 +793,9 @@ class CompleteMockPipeline:
 def main() -> None:
     """Main execution."""
     pipeline = CompleteMockPipeline()
-    result: FlextResult[dict[str, object]] = pipeline.run_complete_pipeline()
+    result: FlextResult[dict[str, t.GeneralValueType]] = (
+        pipeline.run_complete_pipeline()
+    )
 
     if result.success:
         pass

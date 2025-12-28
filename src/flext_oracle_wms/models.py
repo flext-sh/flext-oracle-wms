@@ -12,7 +12,7 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import Annotated
 
-from flext_core import FlextModels, FlextResult
+from flext_core import FlextModels, FlextResult, FlextTypes as t
 from flext_core.utilities import u
 from pydantic import Field, StringConstraints
 
@@ -39,10 +39,10 @@ class FlextWmsModels(FlextModels):
     # TYPE ALIASES - Advanced composition for minimal declarations
     # =========================================================================
 
-    type TRecord = dict[str, object]
+    type TRecord = dict[str, t.GeneralValueType]
     type TRecordBatch = list[TRecord]
-    type TSchema = dict[str, dict[str, object]]
-    type TApiResponse = dict[str, object]
+    type TSchema = dict[str, dict[str, t.GeneralValueType]]
+    type TApiResponse = dict[str, t.GeneralValueType]
     type TApiVersion = Literal[v2, v1, legacy]
     type TEntityId = Annotated[str, StringConstraints(min_length=1, max_length=100)]
     type TEntityName = Annotated[
@@ -83,7 +83,7 @@ class FlextWmsModels(FlextModels):
         customer_id: str = ""
         status: str = "pending"
         total_amount: float = 0.0
-        items: list[dict[str, object]] = field(default_factory=list)
+        items: list[dict[str, t.GeneralValueType]] = field(default_factory=list)
 
     @dataclass
     class Shipment(WmsEntity):
@@ -100,7 +100,7 @@ class FlextWmsModels(FlextModels):
 
         wave_id: str = ""
         status: str = "pending"
-        items: list[dict[str, object]] = field(default_factory=list)
+        items: list[dict[str, t.GeneralValueType]] = field(default_factory=list)
 
     @dataclass
     class Location(WmsEntity):

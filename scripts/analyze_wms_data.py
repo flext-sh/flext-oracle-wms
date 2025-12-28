@@ -7,7 +7,7 @@ import os
 import traceback
 from collections import defaultdict
 
-from flext_core import FlextLogger
+from flext_core import FlextLogger, FlextTypes as t
 
 from flext_oracle_wms import FlextOracleWmsClient
 from flext_oracle_wms.constants import FlextOracleWmsConstants
@@ -48,7 +48,7 @@ def analyze_data_types(data: object, path: str = "") -> dict[str, set[str]]:
 def _analyze_field(
     key: str,
     value: object,
-    analysis: dict[str, object],
+    analysis: dict[str, t.GeneralValueType],
     depth: int = 0,
 ) -> None:
     """Helper function to analyze a single field and update analysis dict."""
@@ -94,9 +94,11 @@ def _analyze_field(
             }
 
 
-def analyze_complex_structures(record: dict[str, object]) -> dict[str, object]:
+def analyze_complex_structures(
+    record: dict[str, t.GeneralValueType],
+) -> dict[str, t.GeneralValueType]:
     """Analisa estruturas complexas em um registro."""
-    analysis: dict[str, object] = {
+    analysis: dict[str, t.GeneralValueType] = {
         "complex_fields": {},
         "array_fields": {},
         "object_fields": {},
@@ -144,7 +146,9 @@ def _analyze_entity(
     first_record = records[0]
 
     complex_analysis = analyze_complex_structures(
-        dict[str, object](first_record) if isinstance(first_record, dict) else {},
+        dict[str, t.GeneralValueType](first_record)
+        if isinstance(first_record, dict)
+        else {},
     )
 
     # Mostrar campos objeto detalhadamente

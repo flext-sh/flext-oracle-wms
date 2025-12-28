@@ -4,14 +4,13 @@ Copyright (c) 2025 FLEXT Team. All rights reserved.
 SPDX-License-Identifier: MIT
 
 """
-# ruff: noqa: PLR1702
 
 import asyncio
 import json
 from datetime import UTC, datetime
 from pathlib import Path
 
-from flext_core import FlextLogger, FlextResult
+from flext_core import FlextLogger, FlextResult, FlextTypes as t
 
 from flext_oracle_wms import (
     FlextOracleWmsApiVersion,
@@ -67,7 +66,7 @@ class FocusedOracleWmsDiscovery:
         self.entities_with_data = {}
         self.complete_schemas = {}
 
-    def execute_focused_discovery(self) -> FlextResult[dict[str, object]]:
+    def execute_focused_discovery(self) -> FlextResult[dict[str, t.GeneralValueType]]:
         """Execute complete focused discovery."""
         try:
             # Start client
@@ -162,7 +161,7 @@ class FocusedOracleWmsDiscovery:
     def _quick_data_scan(
         self,
         entities: list[str],
-    ) -> dict[str, object]:
+    ) -> dict[str, t.GeneralValueType]:
         """Quick scan to find entities with actual data."""
         data_entities = {}
 
@@ -230,7 +229,7 @@ class FocusedOracleWmsDiscovery:
     def _get_entity_structures(
         self,
         entities: list[str],
-    ) -> dict[str, object]:
+    ) -> dict[str, t.GeneralValueType]:
         """Get entity structures even without data."""
         structures = {}
 
@@ -258,7 +257,9 @@ class FocusedOracleWmsDiscovery:
 
         return structures
 
-    def _safe_sample(self, record: dict[str, object]) -> dict[str, object]:
+    def _safe_sample(
+        self, record: dict[str, t.GeneralValueType]
+    ) -> dict[str, t.GeneralValueType]:
         """Create safe sample record."""
         safe = {}
         for k, v in list(record.items())[:10]:  # First 10 fields only
@@ -273,8 +274,8 @@ class FocusedOracleWmsDiscovery:
 
     def _generate_schemas_from_data(
         self,
-        data_entities: dict[str, object],
-    ) -> dict[str, object]:
+        data_entities: dict[str, t.GeneralValueType],
+    ) -> dict[str, t.GeneralValueType]:
         """Generate Singer schemas from entities with data."""
         schemas = {}
 
@@ -287,8 +288,8 @@ class FocusedOracleWmsDiscovery:
 
     def _generate_schemas_from_structures(
         self,
-        structure_entities: dict[str, object],
-    ) -> dict[str, object]:
+        structure_entities: dict[str, t.GeneralValueType],
+    ) -> dict[str, t.GeneralValueType]:
         """Generate Singer schemas from structures."""
         schemas = {}
 
@@ -302,8 +303,8 @@ class FocusedOracleWmsDiscovery:
     def _create_singer_schema(
         self,
         entity_name: str,
-        entity_data: dict[str, object],
-    ) -> dict[str, object] | None:
+        entity_data: dict[str, t.GeneralValueType],
+    ) -> dict[str, t.GeneralValueType] | None:
         """Create Singer schema with proper Oracle WMS typing."""
         try:
             fields = entity_data.get("sample_fields", entity_data.get("fields", []))
@@ -355,7 +356,7 @@ class FocusedOracleWmsDiscovery:
         field_name: str,
         sample_value: object,
         entity_name: str,
-    ) -> dict[str, object]:
+    ) -> dict[str, t.GeneralValueType]:
         """Convert Oracle WMS field to Singer type with context."""
         # Oracle WMS specific field analysis
         if sample_value is not None:
@@ -505,7 +506,7 @@ class FocusedOracleWmsDiscovery:
 
         return FlextResult[None].ok(str(results_dir))
 
-    def _create_singer_catalog(self) -> dict[str, object]:
+    def _create_singer_catalog(self) -> dict[str, t.GeneralValueType]:
         """Create Singer catalog."""
         streams = []
 

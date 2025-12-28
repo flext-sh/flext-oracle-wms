@@ -11,10 +11,9 @@ SPDX-License-Identifier: MIT
 from unittest.mock import Mock, patch
 
 import pytest
-from flext_core import FlextLogger, FlextResult
+from flext_core import FlextTypes as t, FlextLogger, FlextResult
 
-
-
+from flext_oracle_wms import (
     FlextOracleWmsClient,
     FlextOracleWmsClientSettings,
     FlextOracleWmsConnectionError,
@@ -196,7 +195,7 @@ class TestFlextOracleWmsClientCore:
         """Test getting APIs filtered by category."""
         client = FlextOracleWmsClient(mock_config)
 
-        # Test method exists and returns dict[str, object] for any category (even if empty/invalid)
+        # Test method exists and returns dict[str, t.GeneralValueType] for any category (even if empty/invalid)
         result = client.get_apis_by_category("inventory")
         assert isinstance(result, dict)
 
@@ -287,7 +286,7 @@ class TestFlextOracleWmsClientCore:
 
             # Mock the discover_entities method directly since it has complex logic
             with patch.object(client, "discover_entities") as mock_discover:
-                mock_discover.return_value = FlextResult[list[dict[str, object]]].ok(
+                mock_discover.return_value = FlextResult[list[dict[str, t.GeneralValueType]]].ok(
                     sample_entities,
                 )
 
@@ -311,7 +310,7 @@ class TestFlextOracleWmsClientCore:
     def test_get_entity_data_success(
         self,
         mock_config: FlextOracleWmsClientSettings,
-        sample_entity_data: dict[str, object],
+        sample_entity_data: dict[str, t.GeneralValueType],
     ) -> None:
         """Test successful entity data retrieval."""
         with patch(
@@ -323,7 +322,7 @@ class TestFlextOracleWmsClientCore:
             # Create mock data with required status field for WMS client logic
             mock_data = sample_entity_data.copy()
             mock_data["status"] = "success"  # Required by wms_client logic
-            success_result = FlextResult[dict[str, object]].ok(mock_data)
+            success_result = FlextResult[dict[str, t.GeneralValueType]].ok(mock_data)
             logger.info(
                 f"Mock result success: {success_result.success}, data keys: {list(mock_data.keys())}",
             )
@@ -435,7 +434,7 @@ class TestClientHelperMethods:
         """Test parsing empty dictionary response."""
         client = FlextOracleWmsClient(mock_config)
 
-        response: dict[str, object] = {}
+        response: dict[str, t.GeneralValueType] = {}
         result = client._parse_entity_discovery_response(response)
 
         # Empty response should return fallback entities

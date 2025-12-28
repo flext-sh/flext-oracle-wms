@@ -6,7 +6,7 @@ This demonstrates the declarative approach with massive code reduction.
 from pathlib import Path
 from urllib.parse import urlparse
 
-from flext_core import FlextLogger
+from flext_core import FlextTypes as t, FlextLogger
 from flext_oracle_wms import (
     FLEXT_ORACLE_WMS_APIS,
     FlextOracleWmsApiVersion,
@@ -17,7 +17,7 @@ from flext_oracle_wms import (
 logger = FlextLogger(__name__)
 
 
-def load_env_config() -> dict[str, object] | None:
+def load_env_config() -> dict[str, t.GeneralValueType] | None:
     """Load configuration from .env file."""
     env_path = Path("flext-tap-oracle-wms/.env")
     if not env_path.exists():

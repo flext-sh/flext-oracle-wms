@@ -10,7 +10,7 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 from flext_api import FlextApiClient, FlextApiModels, FlextApiSettings
-from flext_core import FlextContainer, FlextResult
+from flext_core import FlextContainer, FlextResult, FlextTypes as t
 
 from flext_oracle_wms.settings import FlextOracleWmsSettings
 
@@ -50,7 +50,9 @@ class FlextOracleWmsClient:
         # Initialize discovered entities cache
         self._discovered_entities = []
 
-    def get(self, path: str, **kwargs: object) -> FlextResult[dict[str, object]]:
+    def get(
+        self, path: str, **kwargs: object
+    ) -> FlextResult[dict[str, t.GeneralValueType]]:
         """Make GET request to Oracle WMS API.
 
         Args:
@@ -75,7 +77,9 @@ class FlextOracleWmsClient:
             return FlextResult.ok(response.body)
         return FlextResult.ok(response if isinstance(response, dict) else {})
 
-    def post(self, path: str, **kwargs: object) -> FlextResult[dict[str, object]]:
+    def post(
+        self, path: str, **kwargs: object
+    ) -> FlextResult[dict[str, t.GeneralValueType]]:
         """Make POST request to Oracle WMS API.
 
         Args:
@@ -100,7 +104,9 @@ class FlextOracleWmsClient:
             return FlextResult.ok(response.body)
         return FlextResult.ok(response if isinstance(response, dict) else {})
 
-    def put(self, path: str, **kwargs: object) -> FlextResult[dict[str, object]]:
+    def put(
+        self, path: str, **kwargs: object
+    ) -> FlextResult[dict[str, t.GeneralValueType]]:
         """Make PUT request to Oracle WMS API.
 
         Args:
@@ -125,7 +131,9 @@ class FlextOracleWmsClient:
             return FlextResult.ok(response.body)
         return FlextResult.ok(response if isinstance(response, dict) else {})
 
-    def delete(self, path: str, **kwargs: object) -> FlextResult[dict[str, object]]:
+    def delete(
+        self, path: str, **kwargs: object
+    ) -> FlextResult[dict[str, t.GeneralValueType]]:
         """Make DELETE request to Oracle WMS API.
 
         Args:
@@ -149,7 +157,7 @@ class FlextOracleWmsClient:
             return FlextResult.ok(response.body)
         return FlextResult.ok(response if isinstance(response, dict) else {})
 
-    def health_check(self) -> FlextResult[dict[str, object]]:
+    def health_check(self) -> FlextResult[dict[str, t.GeneralValueType]]:
         """Check Oracle WMS API health.
 
         Returns:
@@ -184,7 +192,7 @@ class FlextOracleWmsClient:
         except Exception as e:
             return FlextResult.fail(f"Failed to stop client: {e}")
 
-    def discover_entities(self) -> FlextResult[list[object]]:
+    def discover_entities(self) -> FlextResult[list[t.GeneralValueType]]:
         """Discover available Oracle WMS entities.
 
         Returns:
@@ -202,8 +210,8 @@ class FlextOracleWmsClient:
         self,
         entity_name: str,
         limit: int | None = None,
-        filters: dict[str, object] | None = None,
-    ) -> FlextResult[list[dict[str, object]]]:
+        filters: dict[str, t.GeneralValueType] | None = None,
+    ) -> FlextResult[list[dict[str, t.GeneralValueType]]]:
         """Get data for a specific Oracle WMS entity.
 
         Args:
@@ -215,7 +223,7 @@ class FlextOracleWmsClient:
         FlextResult containing entity data
 
         """
-        params: dict[str, object] = {}
+        params: dict[str, t.GeneralValueType] = {}
         if limit:
             params["limit"] = limit
         if filters:
@@ -233,7 +241,7 @@ class FlextOracleWmsClient:
     def get_apis_by_category(
         self,
         category: str,
-    ) -> FlextResult[list[dict[str, object]]]:
+    ) -> FlextResult[list[dict[str, t.GeneralValueType]]]:
         """Get Oracle WMS APIs by category.
 
         Args:
@@ -254,7 +262,7 @@ class FlextOracleWmsClient:
         self,
         api_name: str,
         **kwargs: object,
-    ) -> FlextResult[dict[str, object]]:
+    ) -> FlextResult[dict[str, t.GeneralValueType]]:
         """Call a specific Oracle WMS API.
 
         Args:
@@ -271,7 +279,7 @@ class FlextOracleWmsClient:
         self,
         oblpn_id: str,
         tracking_number: str,
-    ) -> FlextResult[dict[str, object]]:
+    ) -> FlextResult[dict[str, t.GeneralValueType]]:
         """Update OBLPN tracking number.
 
         Args:
@@ -287,7 +295,9 @@ class FlextOracleWmsClient:
             body={"tracking_number": tracking_number},
         )
 
-    def create_lpn(self, lpn_nbr: str, qty: int) -> FlextResult[dict[str, object]]:
+    def create_lpn(
+        self, lpn_nbr: str, qty: int
+    ) -> FlextResult[dict[str, t.GeneralValueType]]:
         """Create LPN (License Plate Number).
 
         Args:

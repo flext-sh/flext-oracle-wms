@@ -8,6 +8,7 @@ from __future__ import annotations
 
 from typing import Protocol, runtime_checkable
 
+from flext_core import FlextTypes as t
 from flext_core.protocols import FlextProtocols
 
 p = FlextProtocols
@@ -28,9 +29,9 @@ class FlextOracleWmsProtocols(p):
         def execute_wms_operation(
             self,
             operation: str,
-            config: dict[str, object],
+            config: dict[str, t.GeneralValueType],
             **params: object,
-        ) -> FlextProtocols.Result[dict[str, object]]:
+        ) -> FlextProtocols.Result[dict[str, t.GeneralValueType]]:
             """Execute WMS operation with unified interface.
 
             Args:
@@ -39,7 +40,7 @@ class FlextOracleWmsProtocols(p):
             **params: Operation parameters
 
             Returns:
-            FlextResult[dict[str, object]]: Operation result or error
+            FlextResult[dict[str, t.GeneralValueType]]: Operation result or error
 
             """
             ...

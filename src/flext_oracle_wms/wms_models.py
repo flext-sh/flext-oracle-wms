@@ -6,7 +6,7 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from flext_core import FlextResult
+from flext_core import FlextResult, FlextTypes as t
 from flext_core.models import FlextModels
 from pydantic import BaseModel, Field
 
@@ -65,7 +65,7 @@ class FlextOracleWmsApiResponse(FlextOracleWmsModels.ApiResponse):
 
 
 # Type aliases
-TOracleWmsRecord = dict[str, object]
+TOracleWmsRecord = dict[str, t.GeneralValueType]
 TOracleWmsRecordBatch = list[TOracleWmsRecord]
 
 __all__ = [

@@ -5,7 +5,7 @@ SPDX-License-Identifier: MIT
 
 """
 
-from flext_core import t
+from flext_core import t, FlextTypes as t
 
 
 
@@ -78,7 +78,7 @@ class TestFlextOracleWmsDynamicSchemaProcessor:
     def test_process_entity_records(self) -> None:
         """Test entity record processing."""
         processor = FlextOracleWmsDynamicSchemaProcessor()
-        records: list[dict[str, object]] = [
+        records: list[dict[str, t.GeneralValueType]] = [
             {"id": "1", "name": "test", "count": "10"},
             {"id": "2", "name": "test2", "count": "20"},
         ]
@@ -126,7 +126,7 @@ class TestFlextOracleWmsDynamicSchemaProcessor:
         """Test private methods for schema confidence calculation."""
         processor = FlextOracleWmsDynamicSchemaProcessor()
 
-        records: list[dict[str, object]] = [
+        records: list[dict[str, t.GeneralValueType]] = [
             {"id": "1", "count": 10},
             {"id": "2", "count": 20},
         ]
@@ -144,7 +144,7 @@ class TestFlextOracleWmsDynamicSchemaProcessor:
         """Test private methods for field consistency checking."""
         processor = FlextOracleWmsDynamicSchemaProcessor()
 
-        records: list[dict[str, object]] = [
+        records: list[dict[str, t.GeneralValueType]] = [
             {"id": "1", "name": "test1"},
             {"id": "2", "name": "test2"},
             {"id": "3", "name": "test3"},

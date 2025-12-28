@@ -63,7 +63,7 @@ class TestFlextOracleWmsClient:
         result = client.get("/test-endpoint")
 
         assert isinstance(result, FlextResult)
-        assert result.success
+        assert result.is_success
         assert result.value == {"data": "test"}
         mock_api_client.get.assert_called_once_with("/test-endpoint")
 
@@ -78,7 +78,7 @@ class TestFlextOracleWmsClient:
         result = client.get("/test-endpoint")
 
         assert isinstance(result, FlextResult)
-        assert not result.success
+        assert not result.is_success
         assert "GET /test-endpoint failed: Network error" in result.error
 
     @patch("flext_oracle_wms.wms_client.FlextApiClient")
@@ -92,7 +92,7 @@ class TestFlextOracleWmsClient:
         result = client.post("/test-endpoint")
 
         assert isinstance(result, FlextResult)
-        assert result.success
+        assert result.is_success
         assert result.value == {"created": True}
         mock_api_client.post.assert_called_once_with("/test-endpoint")
 
@@ -107,7 +107,7 @@ class TestFlextOracleWmsClient:
         result = client.put("/test-endpoint")
 
         assert isinstance(result, FlextResult)
-        assert result.success
+        assert result.is_success
         assert result.value == {"updated": True}
         mock_api_client.put.assert_called_once_with("/test-endpoint")
 
@@ -122,7 +122,7 @@ class TestFlextOracleWmsClient:
         result = client.delete("/test-endpoint")
 
         assert isinstance(result, FlextResult)
-        assert result.success
+        assert result.is_success
         assert result.value == {"deleted": True}
         mock_api_client.delete.assert_called_once_with("/test-endpoint")
 
@@ -137,7 +137,7 @@ class TestFlextOracleWmsClient:
         result = client.health_check()
 
         assert isinstance(result, FlextResult)
-        assert result.success
+        assert result.is_success
         assert result.value == {"status": "healthy"}
         mock_api_client.get.assert_called_once_with("/health")
 
@@ -148,7 +148,7 @@ class TestFlextOracleWmsClient:
             result = client.start()
 
             assert isinstance(result, FlextResult)
-            assert result.success
+            assert result.is_success
             assert result.value is True
 
     def test_stop_method(self) -> None:
@@ -158,7 +158,7 @@ class TestFlextOracleWmsClient:
             result = client.stop()
 
             assert isinstance(result, FlextResult)
-            assert result.success
+            assert result.is_success
             assert result.value is True
 
     @patch("flext_oracle_wms.wms_client.FlextApiClient")
@@ -172,7 +172,7 @@ class TestFlextOracleWmsClient:
         result = client.discover_entities()
 
         assert isinstance(result, FlextResult)
-        assert result.success
+        assert result.is_success
         assert result.value == ["entity1", "entity2"]
         mock_api_client.get.assert_called_once_with("/entities")
 
@@ -187,7 +187,7 @@ class TestFlextOracleWmsClient:
         result = client.get_entity_data("test_entity", limit=10)
 
         assert isinstance(result, FlextResult)
-        assert result.success
+        assert result.is_success
         assert result.value == ["item1", "item2"]
         mock_api_client.get.assert_called_once_with(
             "/entities/test_entity",
@@ -208,7 +208,7 @@ class TestFlextOracleWmsClient:
         result = client.get_apis_by_category("inventory")
 
         assert isinstance(result, FlextResult)
-        assert result.success
+        assert result.is_success
         assert result.value == ["api1", "api2"]
         mock_api_client.get.assert_called_once_with("/apis/category/inventory")
 
@@ -223,7 +223,7 @@ class TestFlextOracleWmsClient:
         result = client.call_api("test_api", param="value")
 
         assert isinstance(result, FlextResult)
-        assert result.success
+        assert result.is_success
         assert result.value == {"result": "success"}
         mock_api_client.get.assert_called_once_with("/api/test_api", param="value")
 
@@ -241,7 +241,7 @@ class TestFlextOracleWmsClient:
         result = client.update_oblpn_tracking_number("oblpn123", "track456")
 
         assert isinstance(result, FlextResult)
-        assert result.success
+        assert result.is_success
         assert result.value == {"updated": True}
         mock_api_client.put.assert_called_once_with(
             "/oblpn/oblpn123/tracking",
@@ -259,7 +259,7 @@ class TestFlextOracleWmsClient:
         result = client.create_lpn("lpn123", 5)
 
         assert isinstance(result, FlextResult)
-        assert result.success
+        assert result.is_success
         assert result.value == {"created": True}
         mock_api_client.post.assert_called_once_with(
             "/lpn",

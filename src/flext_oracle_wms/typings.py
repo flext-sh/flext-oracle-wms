@@ -42,14 +42,20 @@ class FlextOracleWmsTypes(FlextTypes):
         ]
 
         # Configuration types using dict composition
-        type WmsProjectConfig = dict[str, FlextTypes.GeneralValueType | object]
+        type WmsProjectConfig = dict[str, FlextTypes.GeneralValueType]
         type WarehouseConfig = dict[str, str | int | bool | list[str]]
-        type InventoryConfig = dict[str, bool | str | dict[str, object]]
+        type InventoryConfig = dict[
+            str, bool | str | dict[str, FlextTypes.GeneralValueType]
+        ]
 
     # Core types using advanced composition and unions
-    type WmsConfig = dict[str, str | int | bool | dict[str, object]]
-    type WmsEntity = dict[str, FlextTypes.JsonValue | dict[str, object]]
-    type WmsRecord = dict[str, object]
+    type WmsConfig = dict[
+        str, str | int | bool | dict[str, FlextTypes.GeneralValueType]
+    ]
+    type WmsEntity = dict[
+        str, FlextTypes.JsonValue | dict[str, FlextTypes.GeneralValueType]
+    ]
+    type WmsRecord = dict[str, FlextTypes.GeneralValueType]
     type WmsRecords = list[WmsRecord]
 
     # =========================================================================
@@ -65,7 +71,7 @@ class FlextOracleWmsTypes(FlextTypes):
         """
 
         # Common dictionary types
-        type Dict = dict[str, object]
+        type Dict = dict[str, FlextTypes.GeneralValueType]
         """Type alias for generic dictionary (attribute name to value mapping)."""
 
     class OracleWms:

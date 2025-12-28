@@ -78,7 +78,7 @@ class FlextOracleWmsApi(FlextService[None]):
 
 # async def process_shipment(
 #     self, shipment_id: str, **kwargs: object
-# ) -> FlextResult[dict[str, object]]:
+# ) -> FlextResult[dict[str, t.GeneralValueType]]:
 #     """Process shipment in Oracle WMS.
 
 # Args:
@@ -93,7 +93,7 @@ class FlextOracleWmsApi(FlextService[None]):
 
 # async def execute_picking_wave(
 #     self, wave_id: str, **kwargs: object
-# ) -> FlextResult[dict[str, object]]:
+# ) -> FlextResult[dict[str, t.GeneralValueType]]:
 #     """Execute picking wave in Oracle WMS.
 
 # Args:
