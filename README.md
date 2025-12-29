@@ -533,6 +533,14 @@ rg -n "class [A-Z]" src/ | grep -v "_" | wc -l  # Count unified classes only
    - [ ] Real-time event-driven architecture
 
 ## 🤝 Contributing & Development
+### Quality Standards
+
+All contributions must:
+- Maintain architectural layering and dependency rules
+- Preserve complete type safety
+- Follow established testing patterns
+- Pass automated quality validation
+
 
 ### **Enterprise Development Standards**
 
