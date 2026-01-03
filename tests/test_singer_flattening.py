@@ -80,7 +80,7 @@ class TestFlextOracleWmsDataFlattener:
         }
 
         result = flattener.unflatten_records([flattened_record])
-        assert result.success
+        assert result.is_success
         assert result.data is not None
         assert len(result.data) == 1
         unflattened = result.data[0]
@@ -97,7 +97,7 @@ class TestFlextOracleWmsDataFlattener:
         ]
 
         result = flattener.get_flattening_stats(records)
-        assert result.success
+        assert result.is_success
         assert result.data is not None
         stats = result.data
         assert stats["total_records"] == 3
@@ -143,7 +143,7 @@ class TestFlattenerErrorHandling:
         flattener = FlextOracleWmsDataFlattener()
 
         result = flattener.unflatten_records([])
-        assert result.success
+        assert result.is_success
         assert result.data is not None
         assert len(result.data) == 0
 
@@ -152,7 +152,7 @@ class TestFlattenerErrorHandling:
         flattener = FlextOracleWmsDataFlattener()
 
         result = flattener.get_flattening_stats([])
-        assert result.success
+        assert result.is_success
         assert result.data is not None
         stats = result.data
         assert stats["total_records"] == 0

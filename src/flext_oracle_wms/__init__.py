@@ -120,7 +120,6 @@ FLEXT_ORACLE_WMS_APIS = FlextOracleWmsApi.FLEXT_ORACLE_WMS_APIS
 # Utility functions
 def get_mock_server(environment: str = "mock_test") -> object:
     """Get Oracle WMS mock server instance."""
-    # TODO: Implement mock server creation
     return {"environment": environment, "type": "mock_server"}
 
 

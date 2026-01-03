@@ -151,7 +151,7 @@ class TestEndpointDiscoveryStrategy:
                 self.mock_api_client,
             )
 
-            assert result.success
+            assert result.is_success
             assert result.data is None
             assert len(self.context.all_entities) == 2
 
@@ -166,7 +166,7 @@ class TestEndpointDiscoveryStrategy:
             self.mock_api_client,
         )
 
-        assert result.success
+        assert result.is_success
         assert result.data is None
         assert len(self.context.errors) > 0
         assert "API connection failed" in self.context.errors[0]
@@ -186,7 +186,7 @@ class TestEndpointDiscoveryStrategy:
             self.mock_api_client,
         )
 
-        assert result.success
+        assert result.is_success
         assert result.data is None
         assert len(self.context.errors) > 0
 
@@ -205,7 +205,7 @@ class TestEndpointDiscoveryStrategy:
             self.mock_api_client,
         )
 
-        assert result.success
+        assert result.is_success
         assert result.data is None
         assert any("HTTP 404" in error for error in self.context.errors)
 
@@ -239,7 +239,7 @@ class TestEndpointDiscoveryStrategy:
             "/api/test",
         )
 
-        assert result.success
+        assert result.is_success
         assert result.data == mock_response
 
     def test_make_api_request_failure(self) -> None:
@@ -271,7 +271,7 @@ class TestEndpointDiscoveryStrategy:
 
         result = self.strategy._validate_response(mock_response, "/api/test")
 
-        assert result.success
+        assert result.is_success
         assert result.data is None  # _validate_response returns FlextResult[None]
 
     def test_validate_response_none(self) -> None:
@@ -323,7 +323,7 @@ class TestEntityResponseParser:
         result = self.parser.parse_entities_response(response_data)
 
         # The parser should handle the response data directly
-        assert result.success or result.is_failure
+        assert result.is_success or result.is_failure
 
 
 class TestFlextOracleWmsEntityDiscovery:
@@ -407,7 +407,7 @@ class TestFlextOracleWmsEntityDiscovery:
 
             result = self.discovery.discover_entities()
 
-            assert result.success
+            assert result.is_success
             assert result.data is not None
             assert result.data.total_count == 2
             assert len(result.data.entities) == 2
@@ -430,7 +430,7 @@ class TestFlextOracleWmsEntityDiscovery:
                 exclude_patterns=exclude_patterns,
             )
 
-            assert result.success
+            assert result.is_success
 
     def test_discover_entities_with_cache_hit(self) -> None:
         """Test entity discovery with cache hit."""
@@ -462,7 +462,7 @@ class TestFlextOracleWmsEntityDiscovery:
 
         result = self.discovery.discover_entities(use_cache=True)
 
-        assert result.success
+        assert result.is_success
         assert result.data is not None
         assert len(result.data.entities) == 1
         assert result.data.entities[0].name == "company"
@@ -492,7 +492,7 @@ class TestFlextOracleWmsEntityDiscovery:
 
             result = self.discovery.discover_entities(use_cache=True)
 
-            assert result.success
+            assert result.is_success
             mock_cache_set.assert_called_once()
 
     def test_discover_entities_discovery_failure(self) -> None:
@@ -529,7 +529,7 @@ class TestFlextOracleWmsEntityDiscovery:
 
             result = self.discovery.discover_entity_schema("company")
 
-            assert result.success
+            assert result.is_success
             assert result.data == mock_entity
 
     def test_discover_entity_schema_with_cache(self) -> None:
@@ -550,7 +550,7 @@ class TestFlextOracleWmsEntityDiscovery:
                 "company",
             )
 
-            assert result.success
+            assert result.is_success
             assert result.data == mock_entity
 
     def test_discover_entity_schema_cache_and_store(self) -> None:
@@ -579,7 +579,7 @@ class TestFlextOracleWmsEntityDiscovery:
                 "company",
             )
 
-            assert result.success
+            assert result.is_success
             mock_cache_set.assert_called_once()
 
     def test_perform_discovery_success(self) -> None:
@@ -603,7 +603,7 @@ class TestFlextOracleWmsEntityDiscovery:
 
                 result = self.discovery.discover_entities()
 
-                assert result.success
+                assert result.is_success
                 assert result.data is not None
                 assert len(result.data) == 1
 
@@ -626,7 +626,7 @@ class TestFlextOracleWmsEntityDiscovery:
                     exclude_patterns,
                 )
 
-                assert result.success
+                assert result.is_success
                 # Verify context was created with patterns
                 mock_process.assert_called_once()
                 context_arg = mock_process.call_args[0][0]
@@ -717,7 +717,7 @@ class TestFlextOracleWmsEntityDiscovery:
 
         result = self.discovery._create_discovery_result(entities, context)
 
-        assert result.success
+        assert result.is_success
         assert result.data.total_count == 1
         assert result.data.has_errors is True
         assert len(result.data.errors) == 1
@@ -729,7 +729,7 @@ class TestFlextOracleWmsEntityDiscovery:
 
         result = parser.parse_entities_response(response_data)
 
-        assert result.success
+        assert result.is_success
         assert result.data == ["company", "facility", "item"]
 
     def test_extract_entity_list_from_dict_results(self) -> None:
@@ -739,7 +739,7 @@ class TestFlextOracleWmsEntityDiscovery:
 
         result = parser.parse_entities_response(response_data)
 
-        assert result.success
+        assert result.is_success
         assert result.data == ["order", "shipment"]
 
     def test_extract_entity_list_from_dict_data(self) -> None:
@@ -749,7 +749,7 @@ class TestFlextOracleWmsEntityDiscovery:
 
         result = parser.parse_entities_response(response_data)
 
-        assert result.success
+        assert result.is_success
         assert result.data == ["location", "inventory"]
 
     def test_extract_entity_list_from_dict_keys(self) -> None:
@@ -759,7 +759,7 @@ class TestFlextOracleWmsEntityDiscovery:
 
         result = parser.parse_entities_response(response_data)
 
-        assert result.success
+        assert result.is_success
         assert set(result.data) == {"company", "facility", "item"}
 
     def test_extract_entity_list_from_list(self) -> None:
@@ -769,7 +769,7 @@ class TestFlextOracleWmsEntityDiscovery:
 
         result = parser.parse_entities_response(response_data)
 
-        assert result.success
+        assert result.is_success
         assert result.data == response_data
 
     def test_extract_entity_list_unexpected_format(self) -> None:
@@ -889,7 +889,7 @@ class TestFlextOracleWmsEntityDiscovery:
             response_data,
         )
 
-        assert result.success
+        assert result.is_success
         assert len(result.data) == 2
         assert all(isinstance(entity, FlextOracleWmsEntity) for entity in result.data)
         assert result.data[0].name == "company"
@@ -908,7 +908,7 @@ class TestFlextOracleWmsEntityDiscovery:
             response_data,
         )
 
-        assert result.success
+        assert result.is_success
         assert len(result.data) == 2
         assert result.data[0].description == "Company entity"
         assert result.data[1].description == "Facility entity"
@@ -927,7 +927,7 @@ class TestFlextOracleWmsEntityDiscovery:
             response_data,
         )
 
-        assert result.success
+        assert result.is_success
         assert len(result.data) == 3
 
     def test_parse_entities_response_empty_list(self) -> None:
@@ -940,7 +940,7 @@ class TestFlextOracleWmsEntityDiscovery:
 
             result = self.discovery._parse_entities_response({})
 
-            assert result.success
+            assert result.is_success
             assert result.data == []
 
     def test_parse_entities_response_extraction_failure(self) -> None:
@@ -970,7 +970,7 @@ class TestFlextOracleWmsEntityDiscovery:
         # Use the actual discover_entities method with include_patterns
         result = self.discovery.discover_entities(include_patterns=["company"])
 
-        assert result.success
+        assert result.is_success
         assert result.value is not None
         assert len(result.value.entities) > 0
 
@@ -1021,7 +1021,7 @@ class TestFlextOracleWmsEntityDiscovery:
             "/api/company",
         )
 
-        assert result.success
+        assert result.is_success
         assert result.data.name == "company"
         assert result.data.fields is not None
         assert "id" in result.data.fields
@@ -1043,7 +1043,7 @@ class TestFlextOracleWmsEntityDiscovery:
             "/api/facility",
         )
 
-        assert result.success
+        assert result.is_success
         assert result.data.fields["facility_code"]["type"] == "string"
         assert result.data.fields["location"]["type"] == "object"
 
@@ -1057,7 +1057,7 @@ class TestFlextOracleWmsEntityDiscovery:
             "/api/empty",
         )
 
-        assert result.success
+        assert result.is_success
         assert result.data.fields == {}
 
     def test_infer_field_type_all_types(self) -> None:
@@ -1378,7 +1378,7 @@ class TestErrorHandling:
                 mock_api.get.side_effect = Exception("API error")
 
                 result = self.discovery.discover_entities()
-                assert not result.success
+                assert not result.is_success
                 assert result.error is not None
                 assert (
                     result.error is not None
@@ -1446,11 +1446,11 @@ class TestEdgeCases:
             EndpointDiscoveryStrategy,
             "execute_discovery_step",
         ) as mock_step:
-            mock_step.return_value = FlextResult[None].ok(data=False)
+            mock_step.return_value = FlextResult[None].ok(value=False)
 
             result = self.discovery.discover_entities()
 
-            assert result.success
+            assert result.is_success
             assert result.data.total_count == 0
             assert len(result.data.entities) == 0
 

@@ -44,7 +44,7 @@ class TestFlextOracleWmsDynamicSchemaProcessor:
         ]
 
         result = processor.process_records(records, None)
-        assert result.success
+        assert result.is_success
 
     def test_discover_entity_schema_complex(self) -> None:
         """Test schema discovery with complex nested records."""
@@ -67,7 +67,7 @@ class TestFlextOracleWmsDynamicSchemaProcessor:
 
         result = processor.process_records(records, None)
         # May succeed or fail depending on implementation complexity
-        assert result.success or result.is_failure
+        assert result.is_success or result.is_failure
 
     def test_discover_entity_schema_empty_records(self) -> None:
         """Test schema discovery with empty records."""
@@ -90,7 +90,7 @@ class TestFlextOracleWmsDynamicSchemaProcessor:
         }
 
         result = processor.process_entity_records("test_entity", records, schema)
-        assert result.success or result.is_failure  # Depends on implementation
+        assert result.is_success or result.is_failure  # Depends on implementation
 
     def test_private_methods_field_type_inference(self) -> None:
         """Test private methods for field type inference."""
@@ -207,7 +207,7 @@ class TestEdgeCases:
 
         result = processor.process_records(records, None)
         # Implementation allows empty entity name, so test that it succeeds
-        assert result.success
+        assert result.is_success
 
     def test_process_records_invalid_schema(self) -> None:
         """Test record processing with invalid schema."""
@@ -216,7 +216,7 @@ class TestEdgeCases:
 
         # Empty schema
         result = processor.process_entity_records("test", records, {})
-        assert result.is_failure or result.success  # Depends on implementation
+        assert result.is_failure or result.is_success  # Depends on implementation
 
     def test_type_inference_edge_cases(self) -> None:
         """Test type inference with edge cases."""

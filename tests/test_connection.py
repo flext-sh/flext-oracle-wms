@@ -52,7 +52,7 @@ def test_real_connection() -> bool:
         logger.info("Testing entity discovery...")
         discovery = client.discover_entities()
         logger.info("✅ DISCOVERY COMPLETED!")
-        if discovery.success:
+        if discovery.is_success:
             logger.info(
                 "  Found %d entities",
                 len(discovery.data) if discovery.data else 0,
@@ -65,7 +65,7 @@ def test_real_connection() -> bool:
         assert hasattr(discovery, "data"), "Discovery should have data attribute"
         logger.info("✅ DISCOVERY STRUCTURE VERIFIED!")
 
-        if discovery.success and discovery.data:
+        if discovery.is_success and discovery.data:
             for entity in discovery.data[:3]:  # Show first 3
                 logger.info(
                     "  - %s",

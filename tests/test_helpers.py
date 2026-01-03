@@ -108,7 +108,7 @@ class TestUrlHelpers:
 
         for name in valid_names:
             result = flext_oracle_wms_validate_entity_name(name)
-            assert result.success
+            assert result.is_success
 
     def test_validate_entity_name_invalid(self) -> None:
         """Test entity name validation with invalid names."""
@@ -117,7 +117,7 @@ class TestUrlHelpers:
         for name in invalid_names:
             result = flext_oracle_wms_validate_entity_name(name)
             # Should either fail validation or handle gracefully
-            assert result.is_failure or result.success
+            assert result.is_failure or result.is_success
 
         # Test empty string - should fail validation
         result = flext_oracle_wms_validate_entity_name("")
@@ -147,7 +147,7 @@ class TestDataProcessingHelpers:
         response = {"results": [{"id": 1, "name": "Test 1"}], "count": 1}
 
         result = flext_oracle_wms_validate_api_response(response)
-        assert result.success
+        assert result.is_success
 
     def test_validate_api_response_invalid(self) -> None:
         """Test API response validation with invalid data."""

@@ -56,7 +56,7 @@ def test_config_validation_success() -> None:
 
     # This should not raise an exception
     result = config.validate_business_rules()
-    assert result.success
+    assert result.is_success
 
 
 @pytest.mark.unit

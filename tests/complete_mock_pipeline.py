@@ -323,7 +323,9 @@ class CompleteMockPipeline:
                     "tap_records": len(tap_records),
                     "target_tables": len(target_results),
                     "dbt_models": len(dbt_results),
-                    "results_path": save_result.data if save_result.success else None,
+                    "results_path": save_result.data
+                    if save_result.is_success
+                    else None,
                 },
             )
 
@@ -797,7 +799,7 @@ def main() -> None:
         pipeline.run_complete_pipeline()
     )
 
-    if result.success:
+    if result.is_success:
         pass
 
 

@@ -152,7 +152,7 @@ class TestRecordFiltering:
         filter_engine = FlextOracleWmsFilter(case_sensitive=False, max_conditions=50)
         result = filter_engine.filter_records(self.sample_records, {})
 
-        assert result.success
+        assert result.is_success
         assert len(result.value) == 4
         assert result.value == self.sample_records
 
@@ -162,7 +162,7 @@ class TestRecordFiltering:
         filters: dict[str, t.GeneralValueType] = {"status": "active"}
         result = filter_engine.filter_records(self.sample_records, filters)
 
-        assert result.success
+        assert result.is_success
         assert len(result.value) == 2
         assert all(record["status"] == "active" for record in result.value)
 
@@ -172,7 +172,7 @@ class TestRecordFiltering:
         filters: dict[str, t.GeneralValueType] = {"status": ["active", "pending"]}
         result = filter_engine.filter_records(self.sample_records, filters)
 
-        assert result.success
+        assert result.is_success
         assert len(result.value) == 3
         assert all(record["status"] in {"active", "pending"} for record in result.value)
 
@@ -182,8 +182,8 @@ class TestRecordFiltering:
         filters: dict[str, t.GeneralValueType] = {"id": 2}
         result = filter_engine.filter_records(self.sample_records, filters)
 
-        assert result.success
-        assert result.success
+        assert result.is_success
+        assert result.is_success
         assert len(result.value) == 1
         assert result.value[0]["id"] == 2
 
@@ -197,8 +197,8 @@ class TestRecordFiltering:
             limit=1,
         )
 
-        assert result.success
-        assert result.success
+        assert result.is_success
+        assert result.is_success
         assert len(result.value) == 1
         assert result.value[0]["status"] == "active"
 
@@ -208,8 +208,8 @@ class TestRecordFiltering:
         filters: dict[str, t.GeneralValueType] = {"status": "nonexistent"}
         result = filter_engine.filter_records(self.sample_records, filters)
 
-        assert result.success
-        assert result.success
+        assert result.is_success
+        assert result.is_success
         assert len(result.value) == 0
 
     def test_filter_records_invalid_input_types(self) -> None:
@@ -254,7 +254,7 @@ class TestRecordSorting:
         filter_engine = FlextOracleWmsFilter(case_sensitive=False, max_conditions=50)
         result = filter_engine.sort_records(self.unsorted_records, "name")
 
-        assert result.success
+        assert result.is_success
         assert len(result.value) == 3
         assert [r["name"] for r in result.value] == ["Alice", "Bob", "Charlie"]
 
@@ -267,7 +267,7 @@ class TestRecordSorting:
             ascending=False,
         )
 
-        assert result.success
+        assert result.is_success
         assert [r["name"] for r in result.value] == ["Charlie", "Bob", "Alice"]
 
     def test_sort_records_ascending_numeric(self) -> None:
@@ -275,7 +275,7 @@ class TestRecordSorting:
         filter_engine = FlextOracleWmsFilter(case_sensitive=False, max_conditions=50)
         result = filter_engine.sort_records(self.unsorted_records, "id")
 
-        assert result.success
+        assert result.is_success
         assert [r["id"] for r in result.value] == [1, 2, 3]
 
     def test_sort_records_descending_numeric(self) -> None:
@@ -287,7 +287,7 @@ class TestRecordSorting:
             ascending=False,
         )
 
-        assert result.success
+        assert result.is_success
         assert [r["score"] for r in result.value] == [90.0, 85.0, 75.5]
 
     def test_sort_records_with_none_values(self) -> None:
@@ -301,7 +301,7 @@ class TestRecordSorting:
         filter_engine = FlextOracleWmsFilter(case_sensitive=False, max_conditions=50)
         result = filter_engine.sort_records(records_with_none, "name")
 
-        assert result.success
+        assert result.is_success
         assert len(result.value) == 3
         # None values should be handled (empty string in ascending, "zzz" in descending)
 
@@ -560,7 +560,7 @@ class TestConvenienceFunctions:
             "active",
         )
 
-        assert result.success
+        assert result.is_success
         assert len(result.value) == 2
         assert all(record["status"] == "active" for record in result.value)
 
@@ -568,7 +568,7 @@ class TestConvenienceFunctions:
         """Test filter by field with numeric value."""
         result = flext_oracle_wms_filter_by_field(self.sample_records, "id", 2)
 
-        assert result.success
+        assert result.is_success
         assert len(result.value) == 1
         assert result.value[0]["id"] == 2
 
@@ -580,7 +580,7 @@ class TestConvenienceFunctions:
             [1, 3],
         )
 
-        assert result.success
+        assert result.is_success
         assert len(result.value) == 2
         assert {record["id"] for record in result.value} == {1, 3}
 
@@ -593,7 +593,7 @@ class TestConvenienceFunctions:
             OracleWMSFilterOperator.NE,
         )
 
-        assert result.success
+        assert result.is_success
         # For NE operator with single value, it returns records where status != "inactive"
         assert len(result.value) == 2  # Company A and Company C (both "active")
         assert all(record["status"] != "inactive" for record in result.value)
@@ -612,7 +612,7 @@ class TestConvenienceFunctions:
             max_id=3,
         )
 
-        assert result.success
+        assert result.is_success
         assert len(result.value) >= 1  # Should include records with IDs in range
 
     def test_filter_by_id_range_min_only(self) -> None:
@@ -623,7 +623,7 @@ class TestConvenienceFunctions:
             min_id=2,
         )
 
-        assert result.success
+        assert result.is_success
         assert len(result.value) >= 1
 
     def test_filter_by_id_range_max_only(self) -> None:
@@ -634,14 +634,14 @@ class TestConvenienceFunctions:
             max_id=2,
         )
 
-        assert result.success
+        assert result.is_success
         assert len(result.value) >= 1
 
     def test_filter_by_id_range_no_bounds(self) -> None:
         """Test filter by ID range with no bounds returns all records."""
         result = flext_oracle_wms_filter_by_id_range(self.sample_records, "id")
 
-        assert result.success
+        assert result.is_success
         assert len(result.value) == 3  # All records
 
     def test_filter_by_id_range_custom_field(self) -> None:
@@ -652,7 +652,7 @@ class TestConvenienceFunctions:
             min_id="Company B",
         )
 
-        assert result.success
+        assert result.is_success
 
     def test_filter_by_id_range_invalid_records(self) -> None:
         """Test filter by ID range with invalid records raises error."""
@@ -735,7 +735,7 @@ class TestPerformanceAndEdgeCases:
             limit=100,
         )
 
-        assert result.success
+        assert result.is_success
         assert len(result.value) == 100
         assert all(record["status"] == "active" for record in result.value)
 
@@ -752,7 +752,7 @@ class TestPerformanceAndEdgeCases:
             {"data.level1.level2.level3.value": "target"},
         )
 
-        assert result.success
+        assert result.is_success
         assert len(result.value) == 1
         assert result.value[0]["id"] == 1
 

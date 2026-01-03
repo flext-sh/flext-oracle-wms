@@ -92,7 +92,7 @@ class TestAuthenticationConfig:
         )
 
         result = config.validate_business_rules()
-        assert result.success
+        assert result.is_success
 
     def test_config_validation_success_bearer(self) -> None:
         """Test config validation succeeds for valid bearer auth."""
@@ -102,7 +102,7 @@ class TestAuthenticationConfig:
         )
 
         result = config.validate_business_rules()
-        assert result.success
+        assert result.is_success
 
     def test_config_validation_success_api_key(self) -> None:
         """Test config validation succeeds for valid API key auth."""
@@ -112,7 +112,7 @@ class TestAuthenticationConfig:
         )
 
         result = config.validate_business_rules()
-        assert result.success
+        assert result.is_success
 
     def test_config_validation_failure_basic_missing_username(self) -> None:
         """Test config validation fails for basic auth missing username."""
@@ -297,7 +297,7 @@ class TestAuthenticator:
             )
 
             result = authenticator.validate_credentials()
-            assert result.success
+            assert result.is_success
 
     def test_validate_credentials_failure(self) -> None:
         """Test authentication validation failure."""

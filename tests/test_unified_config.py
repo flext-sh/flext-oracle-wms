@@ -88,7 +88,7 @@ class TestFlextOracleWmsSettings:
         )
 
         result = config.validate_business_rules()
-        assert result.success
+        assert result.is_success
 
     def test_business_rules_validation_failure(self) -> None:
         """Test business rules validation failure."""

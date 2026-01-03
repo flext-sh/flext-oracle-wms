@@ -160,7 +160,7 @@ def oracle_wms_client(
 
     # Start the client
     start_result = client.start()
-    if not start_result.success:
+    if not start_result.is_success:
         pytest.fail(f"Failed to start Oracle WMS client: {start_result.error}")
 
     yield client
@@ -264,10 +264,10 @@ class TestOracleWmsDeclarativeIntegration:
 
         # Test start/stop lifecycle
         start_result = client.start()
-        assert start_result.success, f"Client start failed: {start_result.error}"
+        assert start_result.is_success, f"Client start failed: {start_result.error}"
 
         stop_result = client.stop()
-        assert stop_result.success, f"Client stop failed: {stop_result.error}"
+        assert stop_result.is_success, f"Client stop failed: {stop_result.error}"
 
     def test_oracle_wms_health_check(
         self,
@@ -276,7 +276,7 @@ class TestOracleWmsDeclarativeIntegration:
         """Test Oracle WMS API health check."""
         health_result = oracle_wms_client.health_check()
 
-        assert health_result.success, f"Health check failed: {health_result.error}"
+        assert health_result.is_success, f"Health check failed: {health_result.error}"
 
         health_data = health_result.data
         assert health_data["service"] == "FlextOracleWmsClient"
@@ -293,7 +293,7 @@ class TestOracleWmsDeclarativeIntegration:
         """Test getting list of all Oracle WMS entities."""
         entities_result = oracle_wms_client.discover_entities()
 
-        assert entities_result.success, f"Get entities failed: {entities_result.error}"
+        assert entities_result.is_success, f"Get entities failed: {entities_result.error}"
 
         entities = entities_result.value
         assert isinstance(entities, list)
@@ -332,7 +332,7 @@ class TestLgfApiV10Integration:
             limit=5,
         )
 
-        if result.success:
+        if result.is_success:
             data = result.data
             assert isinstance(data, dict)
 
@@ -370,7 +370,7 @@ class TestLgfApiV10Integration:
             filters={"active": "Y"},
         )
 
-        if result.success:
+        if result.is_success:
             data = result.data
             logger.info("✅ Successfully retrieved filtered company data", data=data)
         else:
@@ -384,7 +384,7 @@ class TestLgfApiV10Integration:
         # First get some data to find an ID
         list_result = oracle_wms_client.get_entity_data("company", limit=1)
 
-        if not list_result.success:
+        if not list_result.is_success:
             pytest.skip(
                 f"Cannot test get_entity_by_id - list failed: {list_result.error}",
             )
@@ -409,7 +409,7 @@ class TestLgfApiV10Integration:
             limit=1,
         )
 
-        if result.success:
+        if result.is_success:
             logger.info("✅ Successfully retrieved company by ID", record_id=record_id)
         else:
             logger.warning("⚠️ Get by ID failed: %s", result.error)
@@ -434,7 +434,7 @@ class TestAutomationApisIntegration:
         )
 
         # This might fail due to permissions, but we test the API structure
-        if result.success:
+        if result.is_success:
             logger.info("✅ Successfully got entity status")
         else:
             logger.info("⚠️ Entity status call failed (expected): %s", result.error)
@@ -460,7 +460,7 @@ class TestAutomationApisIntegration:
         )
 
         # Expected to fail with business logic error, not client error
-        assert not result.success  # Expected failure
+        assert not result.is_success  # Expected failure
         assert result.error is None or "Client not initialized" not in str(result.error)
         logger.info("⚠️ OBLPN update failed as expected: %s", result.error)
 
@@ -478,7 +478,7 @@ class TestAutomationApisIntegration:
         )
 
         # Expected to fail with business logic error, not client error
-        assert not result.success  # Expected failure
+        assert not result.is_success  # Expected failure
         assert result.error is None or "Client not initialized" not in str(result.error)
         logger.info("⚠️ LPN creation failed as expected: %s", result.error)
 
@@ -498,7 +498,7 @@ class TestErrorHandlingIntegration:
         """Test handling of invalid entity names."""
         result = oracle_wms_client.get_entity_data("invalid_entity_xyz")
 
-        assert not result.success
+        assert not result.is_success
         assert result.error
         assert (
             result.error is not None and "404" in result.error
@@ -512,7 +512,7 @@ class TestErrorHandlingIntegration:
         """Test handling of unknown API calls."""
         result = oracle_wms_client.call_api("unknown_api_xyz")
 
-        assert not result.success
+        assert not result.is_success
         assert result.error is not None and "Unknown API" in str(result.error)
         logger.info("✅ Properly handled unknown API: %s", result.error)
 
@@ -523,7 +523,7 @@ class TestErrorHandlingIntegration:
         """Test handling of malformed LGF API calls."""
         result = oracle_wms_client.call_api("invalid_api_name")
 
-        assert not result.success
+        assert not result.is_success
         logger.info("✅ Properly handled malformed LGF call: %s", result.error)
 
 
@@ -559,7 +559,7 @@ class TestPerformanceIntegration:
         for i, result_item in enumerate(results):
             if isinstance(result_item, Exception):
                 logger.warning("Request %d failed with exception: %s", i, result_item)
-            elif hasattr(result_item, "success") and result_item.success:
+            elif hasattr(result_item, "success") and result_item.is_success:
                 successful_requests += 1
                 logger.info("✅ Concurrent request %d succeeded", i)
             else:
@@ -590,7 +590,7 @@ class TestPerformanceIntegration:
                 limit=page_size,
             )
 
-            if result.success:
+            if result.is_success:
                 data = result.data
                 results = data.get("results", []) if isinstance(data, dict) else []
                 actual_count = len(results) if isinstance(results, list) else 0

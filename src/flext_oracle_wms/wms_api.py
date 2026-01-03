@@ -48,7 +48,7 @@ class FlextOracleWmsApi:
         """Mock server simulating Oracle WMS Cloud API v10 responses."""
 
     @classmethod
-    def create_mock_server(cls, environment: str = "mock") -> OracleWmsMockServer:
+    def create_mock_server(cls) -> OracleWmsMockServer:
         """Create mock server instance.
 
         Returns:

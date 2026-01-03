@@ -85,7 +85,7 @@ class TestFlextOracleWmsClientCore:
             client = FlextOracleWmsClient(mock_config)
             result = client.start()
 
-            assert result.success
+            assert result.is_success
             assert client._client is not None  # Client should be set after start
             mock_api_client.start.assert_called_once()
 
@@ -116,15 +116,15 @@ class TestFlextOracleWmsClientCore:
 
         # Start first time
         result1 = client.start()
-        assert result1.success
+        assert result1.is_success
 
         # Start second time - current implementation allows multiple starts
         result2 = client.start()
-        assert result2.success
+        assert result2.is_success
 
         # Both calls should succeed (no deduplication currently implemented)
-        assert result1.success
-        assert result2.success
+        assert result1.is_success
+        assert result2.is_success
 
     def test_client_stop_success(
         self,
@@ -145,7 +145,7 @@ class TestFlextOracleWmsClientCore:
             client.start()
             result = client.stop()
 
-            assert result.success
+            assert result.is_success
             # FlextHttpClient doesn't have a stop method, so it won't be called
 
     def test_client_stop_not_started(
@@ -156,7 +156,7 @@ class TestFlextOracleWmsClientCore:
         client = FlextOracleWmsClient(mock_config)
         result = client.stop()
 
-        assert result.success  # Should succeed even if not started
+        assert result.is_success  # Should succeed even if not started
 
     def test_client_has_expected_methods(
         self,
@@ -212,7 +212,7 @@ class TestFlextOracleWmsClientCore:
         result = client.health_check()
 
         # Health check returns success but with unhealthy status
-        assert result.success
+        assert result.is_success
         assert isinstance(result.data, dict)
         health_data = result.data
         assert health_data.get("status") == "unhealthy"
@@ -239,7 +239,7 @@ class TestFlextOracleWmsClientCore:
             client.start()
 
             result = client.health_check()
-            assert result.success
+            assert result.is_success
             assert isinstance(result.data, dict)
             health_data = result.data
             assert health_data.get("status") == "healthy"
@@ -255,7 +255,7 @@ class TestFlextOracleWmsClientCore:
         result = client.discover_entities()
 
         # Should use fallback entity list when not started
-        assert result.success
+        assert result.is_success
         assert isinstance(result.data, list)
         assert len(result.data) > 0
 
@@ -291,7 +291,7 @@ class TestFlextOracleWmsClientCore:
                 )
 
                 result = client.discover_entities()
-                assert result.success
+                assert result.is_success
                 assert isinstance(result.data, list)
                 assert len(result.data) == len(sample_entities)
 
@@ -335,7 +335,7 @@ class TestFlextOracleWmsClientCore:
             result = client.get_entity_data("test_entity", limit=10)
             if result.is_failure:
                 logger.error(f"Test failed with error: {result.error}")
-            assert result.success, f"Expected success but got error: {result.error}"
+            assert result.is_success, f"Expected success but got error: {result.error}"
 
             # Compare data excluding the "status" field added by wms_client
             result_data = (

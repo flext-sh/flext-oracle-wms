@@ -162,7 +162,7 @@ class TestValidationHelpers:
 
         for name in valid_names:
             result = flext_oracle_wms_validate_entity_name(name)
-            assert result.success
+            assert result.is_success
             assert result.data == name.lower()
 
     def test_validate_entity_name_invalid(self) -> None:
@@ -187,7 +187,7 @@ class TestValidationHelpers:
         }
 
         result = flext_oracle_wms_validate_api_response(response)
-        assert result.success
+        assert result.is_success
         assert result.data == response
 
     def test_validate_api_response_error_field(self) -> None:
