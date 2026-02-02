@@ -68,7 +68,7 @@ class FlextOracleWmsConstants(c_core):
     }
 
     # Nested classes with advanced composition
-    class Connection:
+    class OracleWms:
         """WMS connection constants - composed from base."""
 
         DEFAULT_TIMEOUT: Final[int] = c_core.Network.DEFAULT_TIMEOUT

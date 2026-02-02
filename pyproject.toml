@@ -49,6 +49,54 @@
         Homepage      = "https://github.com/flext-sh/flext"
         Repository    = "https://github.com/flext-sh/flext"
 
+[tool.deptry]
+    known_first_party = [
+        "flext_oracle_wms",
+        "flext_core",
+        "flext_observability",
+        "flext_api",
+    ]
+    pep621_dev_dependency_groups = [
+        "dev",
+        "test",
+        "typings",
+        "security",
+    ]
+
+[tool.deptry.per_rule_ignores]
+    DEP002 = [
+        # CLI tools (invoked from command line, not imported)
+        "autoflake",
+        "bandit",
+        "black",
+        "codespell",
+        "commitizen",
+        "detect-secrets",
+        "isort",
+        "pip-audit",
+        "pre-commit",
+        "pylint",
+        "pyrefly",
+        "pyupgrade",
+        "radon",
+        "ruff",
+        "vulture",
+        # Type stubs
+        "types-psutil",
+        "types-python-dateutil",
+        "types-pyyaml",
+        "types-redis",
+        "types-requests",
+        "types-setuptools",
+        "types-toml",
+        # Runtime deps used indirectly (via pydantic, python-dotenv)
+        "faker",
+        "pydantic-core",
+        "pytest",
+        "pytest-cov",
+        "python-dotenv",
+    ]
+
 [tool.ruff]
     extend = "../ruff-shared.toml"
 

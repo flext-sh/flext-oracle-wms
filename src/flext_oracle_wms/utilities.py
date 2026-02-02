@@ -19,6 +19,9 @@ class FlextOracleWmsUtilities(u_core):
     Uses composition and delegation to maximize reuse of base utilities.
     """
 
+    class OracleWms:
+        """OracleWms domain namespace."""
+
 
 u = FlextOracleWmsUtilities
 

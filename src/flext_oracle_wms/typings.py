@@ -18,7 +18,7 @@ class FlextOracleWmsTypes(FlextTypes):
     One class per module following SOLID principles.
     """
 
-    class Project:
+    class OracleWms:
         """Oracle WMS-specific project types."""
 
         # Project types using Literal for advanced typing
@@ -73,23 +73,6 @@ class FlextOracleWmsTypes(FlextTypes):
         # Common dictionary types
         type Dict = dict[str, FlextTypes.GeneralValueType]
         """Type alias for generic dictionary (attribute name to value mapping)."""
-
-    class OracleWms:
-        """OracleWms types namespace for cross-project access.
-
-        Provides organized access to all OracleWms types for other FLEXT projects.
-        Usage: Other projects can reference `t.OracleWms.Project.*`, etc.
-        This enables consistent namespace patterns for cross-project type access.
-
-        Examples:
-            from flext_oracle_wms.typings import t
-            config: t.OracleWms.Project.WmsProjectConfig = ...
-            entity: t.OracleWms.WmsEntity = ...
-
-        Note: Namespace composition via inheritance - no aliases needed.
-        Access parent namespaces directly through inheritance.
-
-        """
 
 
 # Alias for simplified usage

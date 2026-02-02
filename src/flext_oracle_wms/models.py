@@ -59,7 +59,7 @@ class FlextWmsModels(FlextModels):
     # =========================================================================
 
     @dataclass
-    class WmsEntity:
+    class OracleWms:
         """Base WMS entity with identity."""
 
         id: str
