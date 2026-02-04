@@ -9,7 +9,7 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from flext_api import FlextApiClient, FlextApiModels, FlextApiSettings
+from flext_api import FlextApiClient, FlextApiModels, FlextApiSettings, FlextApiTypes
 from flext_core import FlextContainer, FlextResult, FlextTypes as t
 
 from flext_oracle_wms.settings import FlextOracleWmsSettings
@@ -51,13 +51,18 @@ class FlextOracleWmsClient:
         self._discovered_entities = []
 
     def get(
-        self, path: str, **kwargs: object
+        self,
+        path: str,
+        *,
+        headers: dict[str, str] | None = None,
+        params: dict[str, str] | None = None,
     ) -> FlextResult[dict[str, t.GeneralValueType]]:
         """Make GET request to Oracle WMS API.
 
         Args:
         path: API endpoint path
-        **kwargs: Additional request parameters
+        headers: Optional request headers
+        params: Optional query parameters
 
         Returns:
         FlextResult containing response data
@@ -66,8 +71,8 @@ class FlextOracleWmsClient:
         request = FlextApiModels.HttpRequest(
             method="GET",
             url=path,
-            headers=kwargs.get("headers", {}),
-            params=kwargs.get("params", {}),
+            headers=headers or {},
+            params=params or {},
         )
         result = self._client.request(request)
         if result.is_failure:
@@ -78,13 +83,18 @@ class FlextOracleWmsClient:
         return FlextResult.ok(response if isinstance(response, dict) else {})
 
     def post(
-        self, path: str, **kwargs: object
+        self,
+        path: str,
+        *,
+        headers: dict[str, str] | None = None,
+        body: FlextApiTypes.Api.RequestBody | None = None,
     ) -> FlextResult[dict[str, t.GeneralValueType]]:
         """Make POST request to Oracle WMS API.
 
         Args:
         path: API endpoint path
-        **kwargs: Additional request parameters
+        headers: Optional request headers
+        body: Optional request body
 
         Returns:
         FlextResult containing response data
@@ -93,8 +103,8 @@ class FlextOracleWmsClient:
         request = FlextApiModels.HttpRequest(
             method="POST",
             url=path,
-            headers=kwargs.get("headers", {}),
-            body=kwargs.get("body"),
+            headers=headers or {},
+            body=body if body is not None else {},
         )
         result = self._client.request(request)
         if result.is_failure:
@@ -105,13 +115,18 @@ class FlextOracleWmsClient:
         return FlextResult.ok(response if isinstance(response, dict) else {})
 
     def put(
-        self, path: str, **kwargs: object
+        self,
+        path: str,
+        *,
+        headers: dict[str, str] | None = None,
+        body: FlextApiTypes.Api.RequestBody | None = None,
     ) -> FlextResult[dict[str, t.GeneralValueType]]:
         """Make PUT request to Oracle WMS API.
 
         Args:
         path: API endpoint path
-        **kwargs: Additional request parameters
+        headers: Optional request headers
+        body: Optional request body
 
         Returns:
         FlextResult containing response data
@@ -120,8 +135,8 @@ class FlextOracleWmsClient:
         request = FlextApiModels.HttpRequest(
             method="PUT",
             url=path,
-            headers=kwargs.get("headers", {}),
-            body=kwargs.get("body"),
+            headers=headers or {},
+            body=body if body is not None else {},
         )
         result = self._client.request(request)
         if result.is_failure:
@@ -132,13 +147,16 @@ class FlextOracleWmsClient:
         return FlextResult.ok(response if isinstance(response, dict) else {})
 
     def delete(
-        self, path: str, **kwargs: object
+        self,
+        path: str,
+        *,
+        headers: dict[str, str] | None = None,
     ) -> FlextResult[dict[str, t.GeneralValueType]]:
         """Make DELETE request to Oracle WMS API.
 
         Args:
         path: API endpoint path
-        **kwargs: Additional request parameters
+        headers: Optional request headers
 
         Returns:
         FlextResult containing response data
@@ -147,7 +165,7 @@ class FlextOracleWmsClient:
         request = FlextApiModels.HttpRequest(
             method="DELETE",
             url=path,
-            headers=kwargs.get("headers", {}),
+            headers=headers or {},
         )
         result = self._client.request(request)
         if result.is_failure:
@@ -261,19 +279,22 @@ class FlextOracleWmsClient:
     def call_api(
         self,
         api_name: str,
-        **kwargs: object,
+        *,
+        headers: dict[str, str] | None = None,
+        params: dict[str, str] | None = None,
     ) -> FlextResult[dict[str, t.GeneralValueType]]:
         """Call a specific Oracle WMS API.
 
         Args:
         api_name: Name of the API to call
-        **kwargs: Additional parameters
+        headers: Optional request headers
+        params: Optional query parameters
 
         Returns:
         FlextResult containing API response
 
         """
-        return self.get(f"/api/{api_name}", **kwargs)
+        return self.get(f"/api/{api_name}", headers=headers, params=params)
 
     def update_oblpn_tracking_number(
         self,

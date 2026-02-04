@@ -55,7 +55,9 @@ class FlextOracleWmsApi:
             Mock server instance
 
         """
-        return cls()
+        return cls.OracleWmsMockServer()
 
 
-__all__ = ["FlextOracleWmsApi"]
+FLEXT_ORACLE_WMS_APIS = FlextOracleWmsApi.FLEXT_ORACLE_WMS_APIS
+
+__all__ = ["FLEXT_ORACLE_WMS_APIS", "FlextOracleWmsApi"]

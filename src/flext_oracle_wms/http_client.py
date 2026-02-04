@@ -95,7 +95,10 @@ class FlextHttpClient:
         headers: dict[str, str] | None = None,
     ) -> FlextResult[dict[str, t.GeneralValueType]]:
         """Make GET request with railway-oriented error handling."""
-        return self._execute_request("GET", path, params=params, headers=headers)
+        params_str: dict[str, str] | None = (
+            {k: str(v) for k, v in params.items()} if params else None
+        )
+        return self._execute_request("GET", path, params=params_str, headers=headers)
 
     def _execute_request(
         self,
@@ -122,7 +125,7 @@ class FlextHttpClient:
                 method=method,
                 url=url,
                 headers=request_headers,
-                body=body,
+                body=body if body is not None else {},
             )
             # Execute via FLEXT API delegation
             response_result = self._client.request(request)
@@ -201,7 +204,7 @@ class FlextHttpClient:
                 method="PUT",
                 url=url,
                 headers=request_headers,
-                body=request_body,
+                body=request_body if request_body is not None else {},
             )
             response_result = self._client.request(request)
             if response_result.is_failure:

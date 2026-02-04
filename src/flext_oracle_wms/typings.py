@@ -56,7 +56,7 @@ class FlextOracleWmsTypes(FlextTypes):
         str, FlextTypes.JsonValue | dict[str, FlextTypes.GeneralValueType]
     ]
     type WmsRecord = dict[str, FlextTypes.GeneralValueType]
-    type WmsRecords = list[WmsRecord]
+    type WmsRecords = list[dict[str, FlextTypes.GeneralValueType]]
 
     # =========================================================================
     # CORE COMMONLY USED TYPES - Convenience aliases for common patterns

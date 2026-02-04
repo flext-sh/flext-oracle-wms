@@ -22,10 +22,10 @@ class FlextOracleWmsProtocols(p):
     """
 
     # Consolidated protocol using generic operation pattern
-    @runtime_checkable
     class OracleWms:
         """OracleWms domain namespace."""
 
+        @runtime_checkable
         class WmsServiceProtocol(p.Service, Protocol):
             """Unified WMS service protocol with operation dispatch."""
 

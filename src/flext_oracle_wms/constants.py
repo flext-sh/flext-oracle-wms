@@ -171,16 +171,16 @@ class FlextOracleWmsConstants(c_core):
         member.name for member in WmsEntityType.__members__.values()
     )
 
-    # PEP 695 Literal type referencing StrEnum members
+    # PEP 695 Literal type (string values to avoid class-scope resolution issues)
     type WmsEntityTypeLiteral = Literal[
-        WmsEntityType.INVENTORY,
-        WmsEntityType.ORDERS,
-        WmsEntityType.SHIPMENTS,
-        WmsEntityType.PICKING,
-        WmsEntityType.LOCATIONS,
-        WmsEntityType.ITEMS,
-        WmsEntityType.PRODUCTS,
-        WmsEntityType.WAREHOUSES,
+        "inventory",
+        "orders",
+        "shipments",
+        "picking",
+        "locations",
+        "items",
+        "products",
+        "warehouses",
     ]
 
     class WmsApiVersion(StrEnum):
@@ -216,13 +216,12 @@ class FlextOracleWmsConstants(c_core):
         RECEIVING = "receiving"
         REPORTING = "reporting"
 
-    # PEP 695 Literal type referencing StrEnum members
     type WmsApiCategoryLiteral = Literal[
-        WmsApiCategory.INVENTORY,
-        WmsApiCategory.ORDERS,
-        WmsApiCategory.SHIPPING,
-        WmsApiCategory.RECEIVING,
-        WmsApiCategory.REPORTING,
+        "inventory",
+        "orders",
+        "shipping",
+        "receiving",
+        "reporting",
     ]
 
     class WmsOperationStatus(StrEnum):
@@ -239,14 +238,13 @@ class FlextOracleWmsConstants(c_core):
         TIMEOUT = "timeout"
         CANCELLED = "cancelled"
 
-    # PEP 695 Literal type referencing StrEnum members
     type WmsOperationStatusLiteral = Literal[
-        WmsOperationStatus.PENDING,
-        WmsOperationStatus.RUNNING,
-        WmsOperationStatus.SUCCESS,
-        WmsOperationStatus.ERROR,
-        WmsOperationStatus.TIMEOUT,
-        WmsOperationStatus.CANCELLED,
+        "pending",
+        "running",
+        "success",
+        "error",
+        "timeout",
+        "cancelled",
     ]
 
     class WmsDataQuality(StrEnum):
@@ -261,13 +259,7 @@ class FlextOracleWmsConstants(c_core):
         LOW = "low"
         UNKNOWN = "unknown"
 
-    # PEP 695 Literal type referencing StrEnum members
-    type WmsDataQualityLiteral = Literal[
-        WmsDataQuality.HIGH,
-        WmsDataQuality.MEDIUM,
-        WmsDataQuality.LOW,
-        WmsDataQuality.UNKNOWN,
-    ]
+    type WmsDataQualityLiteral = Literal["high", "medium", "low", "unknown"]
 
     class WmsFilterOperator(StrEnum):
         """Filter operators.
@@ -288,19 +280,18 @@ class FlextOracleWmsConstants(c_core):
         STARTS_WITH = "starts_with"
         ENDS_WITH = "ends_with"
 
-    # PEP 695 Literal type referencing StrEnum members
     type WmsFilterOperatorLiteral = Literal[
-        WmsFilterOperator.EQ,
-        WmsFilterOperator.NE,
-        WmsFilterOperator.GT,
-        WmsFilterOperator.GTE,
-        WmsFilterOperator.LT,
-        WmsFilterOperator.LTE,
-        WmsFilterOperator.IN,
-        WmsFilterOperator.NOT_IN,
-        WmsFilterOperator.CONTAINS,
-        WmsFilterOperator.STARTS_WITH,
-        WmsFilterOperator.ENDS_WITH,
+        "eq",
+        "ne",
+        "gt",
+        "gte",
+        "lt",
+        "lte",
+        "in",
+        "not_in",
+        "contains",
+        "starts_with",
+        "ends_with",
     ]
 
     class WmsPageMode(StrEnum):
@@ -314,12 +305,7 @@ class FlextOracleWmsConstants(c_core):
         REPLACE = "replace"
         MERGE = "merge"
 
-    # PEP 695 Literal type referencing StrEnum members
-    type WmsPageModeLiteral = Literal[
-        WmsPageMode.APPEND,
-        WmsPageMode.REPLACE,
-        WmsPageMode.MERGE,
-    ]
+    type WmsPageModeLiteral = Literal["append", "replace", "merge"]
 
     class WmsWriteMode(StrEnum):
         """Write modes.
@@ -333,13 +319,7 @@ class FlextOracleWmsConstants(c_core):
         UPSERT = "upsert"
         DELETE = "delete"
 
-    # PEP 695 Literal type referencing StrEnum members
-    type WmsWriteModeLiteral = Literal[
-        WmsWriteMode.INSERT,
-        WmsWriteMode.UPDATE,
-        WmsWriteMode.UPSERT,
-        WmsWriteMode.DELETE,
-    ]
+    type WmsWriteModeLiteral = Literal["insert", "update", "upsert", "delete"]
 
     class EndpointDiscoveryStrategy(StrEnum):
         """Discovery strategy enum.

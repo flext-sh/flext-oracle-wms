@@ -10,7 +10,7 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import Annotated
+from typing import Annotated, Literal
 
 from flext_core import FlextModels, FlextResult, FlextTypes as t
 from flext_core.utilities import u
@@ -40,17 +40,17 @@ class FlextWmsModels(FlextModels):
     # =========================================================================
 
     type TRecord = dict[str, t.GeneralValueType]
-    type TRecordBatch = list[TRecord]
+    type TRecordBatch = list[dict[str, t.GeneralValueType]]
     type TSchema = dict[str, dict[str, t.GeneralValueType]]
     type TApiResponse = dict[str, t.GeneralValueType]
-    type TApiVersion = Literal[v2, v1, legacy]
+    type TApiVersion = Literal["v2", "v1", "legacy"]
     type TEntityId = Annotated[str, StringConstraints(min_length=1, max_length=100)]
     type TEntityName = Annotated[
         str,
         StringConstraints(min_length=1, max_length=50, pattern=r"^[a-z0-9_]+$"),
     ]
     type TFilterValue = str | int | float | bool | None
-    type TFilters = dict[str, TFilterValue]
+    type TFilters = dict[str, str | int | float | bool | None]
     type TPaginationInfo = dict[str, int]
     type TTimeout = Annotated[int, Field(ge=1, le=300)]
 
@@ -59,13 +59,19 @@ class FlextWmsModels(FlextModels):
     # =========================================================================
 
     @dataclass
-    class OracleWms:
+    class WmsEntity:
         """Base WMS entity with identity."""
 
-        id: str
-        name: str
+        id: str = ""
+        name: str = ""
         created_at: str | None = field(default=None)
         updated_at: str | None = field(default=None)
+
+    @dataclass
+    class OracleWms(WmsEntity):
+        """Oracle WMS entity (alias/compatibility)."""
+
+        pass
 
     @dataclass
     class InventoryItem(WmsEntity):
@@ -173,10 +179,12 @@ class FlextWmsModels(FlextModels):
 
         id: str
         name: str
-        locations: list[WarehouseLocation] = field(default_factory=list)
-        inventory: list[InventoryItem] = field(default_factory=list)
+        locations: list[FlextWmsModels.WarehouseLocation] = field(default_factory=list)
+        inventory: list[FlextWmsModels.InventoryItem] = field(default_factory=list)
 
-        def add_inventory(self, item: InventoryItem) -> FlextResult[None]:
+        def add_inventory(
+            self, item: FlextWmsModels.InventoryItem
+        ) -> FlextResult[None]:
             """Add inventory to warehouse."""
             if any(i.sku == item.sku for i in self.inventory):
                 return FlextResult.fail("SKU already exists")
