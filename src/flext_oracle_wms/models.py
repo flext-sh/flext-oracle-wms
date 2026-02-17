@@ -184,7 +184,7 @@ class FlextWmsModels(FlextModels):
 
         def add_inventory(
             self, item: FlextWmsModels.InventoryItem
-        ) -> FlextResult[None]:
+        ) -> FlextResult[bool]:
             """Add inventory to warehouse."""
             if any(i.sku == item.sku for i in self.inventory):
                 return FlextResult.fail("SKU already exists")

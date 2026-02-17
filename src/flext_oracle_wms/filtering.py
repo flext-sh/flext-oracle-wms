@@ -57,7 +57,7 @@ class FlextOracleWmsFilter:
     def _validate_filter_conditions_total(
         self,
         filters: dict[str, t.GeneralValueType],
-    ) -> FlextResult[None]:
+    ) -> FlextResult[bool]:
         """Validate total filter conditions."""
         total = sum(len(v) if isinstance(v, list) else 1 for v in filters.values())
         if total > self.max_conditions:
@@ -129,7 +129,7 @@ class FlextOracleWmsFilter:
 
     def _validate_filters(
         self, filters: dict[str, t.GeneralValueType]
-    ) -> FlextResult[None]:
+    ) -> FlextResult[bool]:
         """Validate filter conditions."""
         total = sum(len(v) if isinstance(v, list) else 1 for v in filters.values())
         if total > self.max_conditions:

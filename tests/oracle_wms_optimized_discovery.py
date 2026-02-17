@@ -89,13 +89,13 @@ class OptimizedOracleWmsDiscovery:
         self.high_value_entities = {}  # Entities with data
         self.complete_schemas = {}
 
-    def start_discovery(self) -> FlextResult[None]:
+    def start_discovery(self) -> FlextResult[bool]:
         """Start optimized discovery."""
         start_result = self.client.start()
         if not start_result.is_success:
-            return FlextResult[None].fail(f"Client start failed: {start_result.error}")
+            return FlextResult[bool].fail(f"Client start failed: {start_result.error}")
 
-        return FlextResult[None].ok(None)
+        return FlextResult[bool].ok(value=True)
 
     def discover_priority_entities_fast(
         self,
@@ -104,7 +104,7 @@ class OptimizedOracleWmsDiscovery:
         # Get all entities first
         entities_result = self.client.discover_entities()
         if not entities_result.is_success:
-            return FlextResult[None].fail(
+            return FlextResult[bool].fail(
                 f"Entity discovery failed: {entities_result.error}",
             )
 
@@ -157,7 +157,7 @@ class OptimizedOracleWmsDiscovery:
             if result.get("has_data", False)
         }
 
-        return FlextResult[None].ok(
+        return FlextResult[bool].ok(
             {
                 "total_processed": len(all_results),
                 "entities_with_data": len(self.high_value_entities),
@@ -306,7 +306,7 @@ class OptimizedOracleWmsDiscovery:
     ) -> FlextResult[dict[str, t.GeneralValueType]]:
         """Generate complete Singer schemas for high-value entities."""
         if not self.high_value_entities:
-            return FlextResult[None].fail(
+            return FlextResult[bool].fail(
                 "No high-value entities available for schema generation",
             )
 
@@ -341,7 +341,7 @@ class OptimizedOracleWmsDiscovery:
         # Generate Singer catalog
         catalog = self._generate_singer_catalog(singer_schemas)
 
-        return FlextResult[None].ok(
+        return FlextResult[bool].ok(
             {
                 "schemas_generated": len(singer_schemas),
                 "schemas": singer_schemas,
@@ -638,15 +638,15 @@ class OptimizedOracleWmsDiscovery:
         if self.complete_schemas:
             pass
 
-        return FlextResult[None].ok(str(results_dir))
+        return FlextResult[bool].ok(str(results_dir))
 
-    def cleanup(self) -> FlextResult[None]:
+    def cleanup(self) -> FlextResult[bool]:
         """Clean up resources."""
         try:
             self.client.stop()
-            return FlextResult[None].ok(None)
+            return FlextResult[bool].ok(value=True)
         except Exception as e:
-            return FlextResult[None].fail(f"Cleanup failed: {e}")
+            return FlextResult[bool].fail(f"Cleanup failed: {e}")
 
 
 def run_optimized_discovery() -> None:

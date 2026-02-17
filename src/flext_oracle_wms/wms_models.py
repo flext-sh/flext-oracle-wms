@@ -31,7 +31,7 @@ class FlextOracleWmsModels(FlextModels):
         replication_key: str | None = None
         supports_incremental: bool = False
 
-        def validate_entity(self) -> FlextResult[None]:
+        def validate_entity(self) -> FlextResult[bool]:
             """Validate using FLEXT patterns."""
             if (
                 len(self.name)
@@ -48,7 +48,7 @@ class FlextOracleWmsModels(FlextModels):
         success: bool = True
         error_message: str | None = None
 
-        def validate_response(self) -> FlextResult[None]:
+        def validate_response(self) -> FlextResult[bool]:
             """Validate using railway pattern."""
             if not self.success and not self.error_message:
                 return FlextResult.fail("Failed response needs error message")

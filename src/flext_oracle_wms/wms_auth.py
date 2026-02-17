@@ -25,7 +25,7 @@ class FlextOracleWmsAuthSettings(BaseModel):
     oauth2_scope: str = Field(default="wms.read wms.write")
     token_refresh_threshold: int = Field(default=300)  # 5 minutes
 
-    def validate_business_rules(self) -> FlextResult[None]:
+    def validate_business_rules(self) -> FlextResult[bool]:
         """Validate auth configuration."""
         errors = []
         if self.method == OracleWMSAuthMethod.BASIC and (
@@ -37,9 +37,9 @@ class FlextOracleWmsAuthSettings(BaseModel):
         ):
             errors.append("OAuth2 credentials required")
         return (
-            FlextResult[None].fail("; ".join(errors))
+            FlextResult[bool].fail("; ".join(errors))
             if errors
-            else FlextResult[None].ok(None)
+            else FlextResult[bool].ok(value=True)
         )
 
 

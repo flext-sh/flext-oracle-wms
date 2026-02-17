@@ -96,7 +96,7 @@ class FlextOracleWmsSettings(FlextSettings):
         """Create testing configuration with modern patterns."""
         return cls(use_mock=True, base_url="https://test-wms.example.com")
 
-    def validate_config(self) -> FlextResult[None]:
+    def validate_config(self) -> FlextResult[bool]:
         """Validate configuration using railway pattern."""
         errors = []
         if self.timeout <= 0:
@@ -104,9 +104,9 @@ class FlextOracleWmsSettings(FlextSettings):
         if self.retry_attempts < 0:
             errors.append("Retry attempts cannot be negative")
         return (
-            FlextResult[None].fail("; ".join(errors))
+            FlextResult[bool].fail("; ".join(errors))
             if errors
-            else FlextResult[None].ok(None)
+            else FlextResult[bool].ok(value=True)
         )
 
 
