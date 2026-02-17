@@ -83,7 +83,7 @@ class TestFlextOracleWmsDynamicSchemaProcessor:
             {"id": "2", "name": "test2", "count": "20"},
         ]
 
-        schema: t.NestedDict = {
+        schema: dict[str, t.GeneralValueType] = {
             "id": {"type": "string"},
             "name": {"type": "string"},
             "count": {"type": "integer"},
@@ -130,7 +130,7 @@ class TestFlextOracleWmsDynamicSchemaProcessor:
             {"id": "1", "count": 10},
             {"id": "2", "count": 20},
         ]
-        schema: t.NestedDict = {
+        schema: dict[str, t.GeneralValueType] = {
             "id": {"type": "string"},
             "count": {"type": "integer"},
         }
@@ -252,6 +252,6 @@ class TestEdgeCases:
         assert confidence == 0.0
 
         # Empty records with schema
-        schema: t.NestedDict = {"id": {"type": "string"}}
+        schema: dict[str, t.GeneralValueType] = {"id": {"type": "string"}}
         confidence = processor._calculate_schema_confidence([], schema)
         assert confidence == 0.0

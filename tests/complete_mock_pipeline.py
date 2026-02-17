@@ -559,7 +559,7 @@ class CompleteMockPipeline:
     def _simulate_target_loading(
         self,
         tap_records: list[dict[str, t.GeneralValueType]],
-    ) -> t.NestedDict:
+    ) -> dict[str, t.GeneralValueType]:
         """Simulate TARGET loading process."""
         target_results = {}
 
@@ -586,8 +586,8 @@ class CompleteMockPipeline:
 
     def _simulate_dbt_transformations(
         self,
-        target_results: t.NestedDict,
-    ) -> t.NestedDict:
+        target_results: dict[str, t.GeneralValueType],
+    ) -> dict[str, t.GeneralValueType]:
         """Simulate DBT transformation process."""
         dbt_results = {}
 
@@ -682,8 +682,8 @@ class CompleteMockPipeline:
         schemas: dict[str, t.GeneralValueType],
         catalog: dict[str, t.GeneralValueType],
         tap_records: list[dict[str, t.GeneralValueType]],
-        target_results: t.NestedDict,
-        dbt_results: t.NestedDict,
+        target_results: dict[str, t.GeneralValueType],
+        dbt_results: dict[str, t.GeneralValueType],
     ) -> FlextResult[str]:
         """Save complete pipeline results."""
         results_dir = Path("complete_pipeline_results")
