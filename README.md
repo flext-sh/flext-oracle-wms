@@ -6,7 +6,7 @@
 
 **FLEXT-Oracle-WMS** is the specialized framework for integrating with Oracle Warehouse Management Systems (WMS). It provides typed access to the LGF Cloud API, handling complex entities like inventory, shipments, and orders with enterprise reliability.
 
-Part of the [FLEXT](https://github.com/flext/flext) ecosystem.
+Part of the [FLEXT](https://github.com/flext-sh/flext) ecosystem.
 
 ## 🚀 Key Features
 
