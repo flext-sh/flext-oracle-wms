@@ -348,3 +348,4 @@ staging/
 
 # Claude AI files
 .claude/
+.github/*.rej
