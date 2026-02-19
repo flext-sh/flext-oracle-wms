@@ -232,11 +232,12 @@ class FlextOracleWmsFilter:
     ) -> FlextResult[list[dict[str, t.GeneralValueType]]]:
         """Filter records by field value."""
         engine = cls()
-        filters = (
-            {field: {"operator": operator or "eq", "value": value}}
-            if operator
-            else {field: value}
-        )
+        filters: dict[str, t.GeneralValueType] = {field: value}
+        if operator:
+            filters[field] = cast(
+                "t.GeneralValueType",
+                {"operator": operator or "eq", "value": value},
+            )
         # filters is already dict[str, t.GeneralValueType] compatible - no cast needed
         return engine.filter_records(records, filters)
 

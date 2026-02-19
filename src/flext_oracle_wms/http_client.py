@@ -266,19 +266,9 @@ class FlextHttpClient:
                     f"HTTP request failed: {response_result.error}",
                 )
             response = response_result.value
-            # Parse JSON response safely
-            try:
-                if isinstance(response.body, dict):
-                    data = response.body
-                elif isinstance(response.body, str):
-                    data = json.loads(response.body) if response.body else {}
-                else:
-                    data = {}
-            except (ValueError, AttributeError):
-                data = {
-                    "text": str(response.body) if response.body else "",
-                }
-            return FlextResult[dict[str, t.GeneralValueType]].ok(data)
+            return FlextResult[dict[str, t.GeneralValueType]].ok(
+                self._parse_response_body(response.body),
+            )
         except Exception as e:
             FlextHttpClient.logger.exception(f"DELETE {path} error")
             return FlextResult[dict[str, t.GeneralValueType]].fail(

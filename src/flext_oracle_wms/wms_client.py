@@ -273,13 +273,13 @@ class FlextOracleWmsClient:
         FlextResult containing entity data
 
         """
-        params: dict[str, t.GeneralValueType] = {}
+        params: dict[str, str] = {}
         if limit:
-            params["limit"] = limit
+            params["limit"] = str(limit)
         if filters:
-            params.update(filters)
+            params.update({k: str(v) for k, v in filters.items()})
 
-        result = self.get(f"/entities/{entity_name}", **params)
+        result = self.get(f"/entities/{entity_name}", params=params)
         if result.is_failure:
             return FlextResult.fail(result.error)
         data = result.value
