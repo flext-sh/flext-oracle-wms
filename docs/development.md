@@ -1,7 +1,7 @@
 # Development Guide
 
-
 <!-- TOC START -->
+
 - [Development Setup](#development-setup)
   - [Prerequisites](#prerequisites)
   - [Installation](#installation)
@@ -30,13 +30,14 @@
 - [Troubleshooting](#troubleshooting)
   - [Common Issues](#common-issues)
   - [Development Tools](#development-tools)
+
 <!-- TOC END -->
 
 **Development workflow and guidelines for flext-oracle-wms**
 
 **Version**: 0.9.9 RC | **Last Updated**: September 17, 2025 | **Status**: Framework requiring implementation · 1.0.0 Release Preparation
 
----
+______________________________________________________________________
 
 ## Development Setup
 
@@ -214,25 +215,30 @@ def test_real_connection():
 ### Phase 1: FLEXT Compliance (Weeks 1-2)
 
 1. **Replace httpx with flext-api patterns**
+
    - Migrate `http_client.py` and `wms_discovery.py`
    - Update all HTTP client usage
 
-2. **Consolidate class architecture**
+1. **Consolidate class architecture**
+
    - Reduce from 71 classes to unified classes per module
    - Implement nested helper pattern
 
-3. **Integrate flext-auth**
+1. **Integrate flext-auth**
+
    - Replace custom authentication classes
    - Add OAuth2 support for Oracle WMS Cloud
 
 ### Phase 2: Oracle WMS Integration (Weeks 3-4)
 
 1. **Add missing LGF v10 APIs**
+
    - Implement modern pick_confirm API
    - Add bulk_update_inventory_attributes endpoint
    - Add object store data extraction capabilities
 
-2. **Establish real connectivity**
+1. **Establish real connectivity**
+
    - Replace fake test URLs with actual Oracle WMS Cloud testing
    - Implement proper authentication testing
    - Validate against real Oracle WMS instances
@@ -240,10 +246,12 @@ def test_real_connection():
 ### Phase 3: Enhanced Features (Weeks 5-6)
 
 1. **Complete Singer protocol implementation**
+
    - Enhanced tap/target functionality
    - Real-time streaming capabilities
 
-2. **Performance optimization**
+1. **Performance optimization**
+
    - Connection pooling
    - Intelligent caching strategies
 
@@ -294,9 +302,9 @@ export PYTHONPATH="src"
 ### Common Issues
 
 1. **Import errors** - Ensure `PYTHONPATH=src` is set
-2. **Type errors** - Run `mypy src/` for detailed error messages
-3. **Test failures** - Check if using correct test configuration
-4. **FLEXT compliance** - Review class architecture and HTTP client usage
+1. **Type errors** - Run `mypy src/` for detailed error messages
+1. **Test failures** - Check if using correct test configuration
+1. **FLEXT compliance** - Review class architecture and HTTP client usage
 
 ### Development Tools
 
@@ -306,6 +314,6 @@ python -m pdb script.py    # Python debugger
 python -v script.py        # Verbose imports
 ```
 
----
+______________________________________________________________________
 
 **Last Updated**: September 17, 2025 | **Status**: Framework requiring FLEXT compliance and Oracle WMS implementation · 1.0.0 Release Preparation

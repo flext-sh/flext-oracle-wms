@@ -1,7 +1,7 @@
 # API Reference
 
-
 <!-- TOC START -->
+
 - [Client API](#client-api)
   - [FlextOracleWmsClient](#flextoraclewmsclient)
 - [Configuration API](#configuration-api)
@@ -18,13 +18,14 @@
   - [Completed Components](#completed-components)
   - [Implementation Gaps](#implementation-gaps)
 - [Related Documentation](#related-documentation)
+
 <!-- TOC END -->
 
 **Complete API documentation for flext-oracle-wms**
 
 **Version**: 0.9.9 RC | **Last Updated**: September 17, 2025 | **Status**: Framework with implementation gaps · 1.0.0 Release Preparation
 
----
+______________________________________________________________________
 
 ## Client API
 
@@ -173,7 +174,7 @@ entity = FlextOracleWmsEntity(
 - ❌ **Authentication** - Limited to test scenarios
 - ❌ **FLEXT compliance** - Uses httpx instead of flext-api
 
----
+______________________________________________________________________
 
 **Last Updated**: September 17, 2025 | **Status**: Framework requiring Oracle WMS Cloud integration implementation · 1.0.0 Release Preparation
 

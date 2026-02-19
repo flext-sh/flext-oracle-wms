@@ -1,7 +1,7 @@
 # Troubleshooting Guide
 
-
 <!-- TOC START -->
+
 - [Common Issues](#common-issues)
   - [Connection Issues](#connection-issues)
   - [Type Safety Issues](#type-safety-issues)
@@ -20,13 +20,14 @@
   - [Documentation Resources](#documentation-resources)
   - [Known Limitations](#known-limitations)
   - [Reporting Issues](#reporting-issues)
+
 <!-- TOC END -->
 
 **Common issues and solutions for flext-oracle-wms**
 
 **Version**: 0.9.9 RC | **Last Updated**: September 17, 2025 | **Status**: Framework troubleshooting · 1.0.0 Release Preparation
 
----
+______________________________________________________________________
 
 ## Common Issues
 
@@ -48,8 +49,8 @@ result = client.test_connection()  # Expected to fail
 **Solution**: This is expected behavior. For real Oracle WMS connectivity:
 
 1. Obtain actual Oracle WMS Cloud instance URL
-2. Configure proper authentication credentials
-3. Implement real Oracle WMS integration (currently not available)
+1. Configure proper authentication credentials
+1. Implement real Oracle WMS integration (currently not available)
 
 #### "Import errors from flext_core"
 
@@ -134,8 +135,8 @@ import httpx  # FLEXT compliance violation
 **Solution**: This requires implementation work:
 
 1. Replace httpx imports with flext-api
-2. Migrate HTTP client patterns
-3. Update authentication mechanisms
+1. Migrate HTTP client patterns
+1. Update authentication mechanisms
 
 **Current Status**: Known violation requiring architectural changes
 
@@ -146,8 +147,8 @@ import httpx  # FLEXT compliance violation
 **Solution**: This requires architectural refactoring:
 
 1. Consolidate to single unified class per module
-2. Convert standalone classes to nested helpers
-3. Follow FLEXT domain service patterns
+1. Convert standalone classes to nested helpers
+1. Follow FLEXT domain service patterns
 
 **Current Status**: Known violation requiring significant refactoring
 
@@ -340,20 +341,20 @@ pytest --pdb tests/test_client.py
 This is a framework requiring implementation:
 
 1. **No real Oracle WMS connectivity** - Tests use fake URLs
-2. **Missing modern APIs** - LGF v10 endpoints not implemented
-3. **FLEXT compliance gaps** - httpx usage, class architecture violations
-4. **Limited authentication** - No OAuth2 implementation
+1. **Missing modern APIs** - LGF v10 endpoints not implemented
+1. **FLEXT compliance gaps** - httpx usage, class architecture violations
+1. **Limited authentication** - No OAuth2 implementation
 
 ### Reporting Issues
 
 When reporting issues, include:
 
 1. **Error message** - Full error text
-2. **Environment** - Python version, OS
-3. **Configuration** - Sanitized configuration (no passwords)
-4. **Steps to reproduce** - Minimal example
-5. **Expected vs actual behavior**
+1. **Environment** - Python version, OS
+1. **Configuration** - Sanitized configuration (no passwords)
+1. **Steps to reproduce** - Minimal example
+1. **Expected vs actual behavior**
 
----
+______________________________________________________________________
 
 **Last Updated**: September 17, 2025 | **Status**: Framework troubleshooting guide · 1.0.0 Release Preparation

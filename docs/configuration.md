@@ -1,7 +1,7 @@
 # Configuration Guide
 
-
 <!-- TOC START -->
+
 - [Configuration Overview](#configuration-overview)
 - [Test Configuration](#test-configuration)
   - [FlextOracleWmsModuleSettings.for_testing()](#flextoraclewmsmodulesettingsfortesting)
@@ -20,13 +20,14 @@
 - [Implementation Status](#implementation-status)
   - [Current Status](#current-status)
   - [Required Implementation](#required-implementation)
+
 <!-- TOC END -->
 
 **Settings and environment management for flext-oracle-wms**
 
 **Version**: 0.9.9 RC | **Last Updated**: September 17, 2025 | **Status**: Test configuration only · 1.0.0 Release Preparation
 
----
+______________________________________________________________________
 
 ## Configuration Overview
 
@@ -133,10 +134,10 @@ config = FlextOracleWmsModuleSettings.for_testing()
 For production Oracle WMS Cloud integration:
 
 1. **Real URL validation** - Replace test URLs with actual Oracle WMS Cloud endpoints
-2. **Authentication validation** - Implement OAuth2 and API key authentication
-3. **Connection testing** - Validate against real Oracle WMS instances
-4. **SSL/TLS configuration** - Proper certificate handling
-5. **Rate limiting** - Configure API call limits per Oracle WMS guidelines
+1. **Authentication validation** - Implement OAuth2 and API key authentication
+1. **Connection testing** - Validate against real Oracle WMS instances
+1. **SSL/TLS configuration** - Proper certificate handling
+1. **Rate limiting** - Configure API call limits per Oracle WMS guidelines
 
 ## Oracle WMS Cloud Requirements
 
@@ -172,11 +173,11 @@ Oracle WMS Cloud authentication standards:
 ### Required Implementation
 
 1. Replace test URLs with actual Oracle WMS Cloud endpoints
-2. Implement OAuth2 authentication flow
-3. Add SSL/TLS certificate validation
-4. Configure rate limiting and retry policies
-5. Validate against real Oracle WMS instances
+1. Implement OAuth2 authentication flow
+1. Add SSL/TLS certificate validation
+1. Configure rate limiting and retry policies
+1. Validate against real Oracle WMS instances
 
----
+______________________________________________________________________
 
 **Last Updated**: September 17, 2025 | **Status**: Test configuration only, requires Oracle WMS Cloud implementation · 1.0.0 Release Preparation

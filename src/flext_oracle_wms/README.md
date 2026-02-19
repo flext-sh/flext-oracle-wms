@@ -1,7 +1,7 @@
 # FLEXT Oracle WMS - Core Module
 
-
 <!-- TOC START -->
+
 - [📁 Module Structure](#-module-structure)
   - [🎯 **Core Interface**](#-core-interface)
   - [🔧 **Infrastructure Components**](#-infrastructure-components)
@@ -29,6 +29,7 @@
 - [📚 **Additional Resources**](#-additional-resources)
   - [Documentation](#documentation)
   - [Oracle WMS Resources](#oracle-wms-resources)
+
 <!-- TOC END -->
 
 This directory contains the core implementation of the **flext-oracle-wms** library, providing enterprise-grade Oracle Warehouse Management System (WMS) Cloud integration for the FLEXT data integration platform.
@@ -298,11 +299,11 @@ make security               # Bandit + pip-audit security scanning
 - **[REST API Reference](https://docs.oracle.com/en/cloud/saas/warehouse-management/25b/owmre/)**
 - **[Authentication Guide](https://docs.oracle.com/en/cloud/saas/warehouse-management/25b/owmre/Authentication.html)**
 
----
+______________________________________________________________________
 
-**Module Status**: Production Ready  
-**Type Coverage**: 95%+  
-**Test Coverage**: 90%+  
-**FLEXT Compliance**: Full Integration  
-**Oracle WMS API Version**: v10 (LGF API)  
+**Module Status**: Production Ready\
+**Type Coverage**: 95%+\
+**Test Coverage**: 90%+\
+**FLEXT Compliance**: Full Integration\
+**Oracle WMS API Version**: v10 (LGF API)\
 **Last Updated**: January 4, 2025

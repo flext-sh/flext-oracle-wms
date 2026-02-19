@@ -1,7 +1,7 @@
 # Getting Started with flext-oracle-wms
 
-
 <!-- TOC START -->
+
 - [Installation](#installation)
   - [Prerequisites](#prerequisites)
   - [Installation Steps](#installation-steps)
@@ -13,13 +13,14 @@
   - [What Needs Implementation](#what-needs-implementation)
 - [Next Steps](#next-steps)
 - [Related Documentation](#related-documentation)
+
 <!-- TOC END -->
 
 **Quick start guide for Oracle WMS integration framework**
 
 **Version**: 0.9.9 RC | **Last Updated**: September 17, 2025 | **Status**: Framework requiring implementation · 1.0.0 Release Preparation
 
----
+______________________________________________________________________
 
 ## Installation
 
@@ -89,11 +90,11 @@ with FlextOracleWmsClient(config) as client:
 ## Next Steps
 
 1. **Review Architecture** - [Architecture documentation](architecture.md)
-2. **Check Integration Status** - [Integration guide](guides/integration.md)
-3. **Development Setup** - [Development guidelines](development.md)
-4. **Implementation Roadmap** - [TODO.md](../TODO.md)
+1. **Check Integration Status** - [Integration guide](guides/integration.md)
+1. **Development Setup** - [Development guidelines](development.md)
+1. **Implementation Roadmap** - [TODO.md](../TODO.md)
 
----
+______________________________________________________________________
 
 **Last Updated**: September 17, 2025 | **Status**: Framework requiring Oracle WMS Cloud integration implementation · 1.0.0 Release Preparation
 

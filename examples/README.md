@@ -1,7 +1,7 @@
 # FLEXT Oracle WMS - Usage Examples
 
-
 <!-- TOC START -->
+
 - [📁 Example Categories](#-example-categories)
   - [🚀 **Getting Started**](#-getting-started)
   - [🔍 **Data Operations**](#-data-operations)
@@ -28,6 +28,7 @@
 - [🤝 **Contributing Examples**](#-contributing-examples)
   - [Adding New Examples](#adding-new-examples)
   - [Example Quality Standards](#example-quality-standards)
+
 <!-- TOC END -->
 
 This directory contains comprehensive examples demonstrating Oracle WMS Cloud integration patterns using the flext-oracle-wms library. All examples are tested and represent real-world usage scenarios.
@@ -220,9 +221,9 @@ make examples-test
 ### Adding New Examples
 
 1. Follow the standard example structure
-2. Include comprehensive docstrings and comments
-3. Test with actual Oracle WMS environment
-4. Update this README with new example description
+1. Include comprehensive docstrings and comments
+1. Test with actual Oracle WMS environment
+1. Update this README with new example description
 
 ### Example Quality Standards
 
@@ -232,9 +233,9 @@ make examples-test
 - **Clear documentation** explaining purpose and usage
 - **Security best practices** for credential management
 
----
+______________________________________________________________________
 
-**Last Updated**: January 4, 2025  
-**Example Status**: Production Ready  
-**Environment**: Oracle WMS Cloud Integration  
+**Last Updated**: January 4, 2025\
+**Example Status**: Production Ready\
+**Environment**: Oracle WMS Cloud Integration\
 **Language**: Python 3.13+
