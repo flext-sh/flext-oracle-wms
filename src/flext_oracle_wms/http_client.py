@@ -7,9 +7,9 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 import json
-from typing import Self
+from typing import Self, cast
 
-from flext_api import FlextApiClient, FlextApiModels, FlextApiSettings
+from flext_api import FlextApiClient, FlextApiModels, FlextApiSettings, FlextApiTypes
 from flext_core import FlextLogger, FlextResult, FlextTypes as t
 from pydantic import BaseModel, Field
 
@@ -125,7 +125,9 @@ class FlextHttpClient:
                 method=method,
                 url=url,
                 headers=request_headers,
-                body=body if body is not None else {},
+                body=cast(
+                    "FlextApiTypes.Api.RequestBody", body if body is not None else {}
+                ),
             )
             # Execute via FLEXT API delegation
             response_result = self._client.request(request)
@@ -147,14 +149,16 @@ class FlextHttpClient:
         """Parse response body with modern Python patterns."""
         match body:
             case dict():
-                return body
+                return cast("dict[str, t.GeneralValueType]", body)
             case str() if body:
                 try:
-                    return dict(json.loads(body))
+                    return cast("dict[str, t.GeneralValueType]", dict(json.loads(body)))
                 except (ValueError, TypeError):
                     return {"text": body}
             case _:
-                return {"data": body} if body else {}
+                return cast(
+                    "dict[str, t.GeneralValueType]", {"data": body} if body else {}
+                )
 
     def post(
         self,

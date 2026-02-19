@@ -1,5 +1,17 @@
 # Integration Documentation
 
+
+<!-- TOC START -->
+- [Integration Status](#integration-status)
+  - [Current Integration](#current-integration)
+- [Integration Objectives](#integration-objectives)
+  - [Required FLEXT Compliance](#required-flext-compliance)
+  - [Oracle WMS Implementation](#oracle-wms-implementation)
+- [Implementation Gaps](#implementation-gaps)
+  - [Critical Issues](#critical-issues)
+  - [Required Development](#required-development)
+<!-- TOC END -->
+
 **Version 0.9.9 | September 17, 2025 | Status: Partial integration with gaps**
 
 ## Integration Status

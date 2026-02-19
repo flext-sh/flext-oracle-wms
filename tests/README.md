@@ -1,5 +1,42 @@
 # FLEXT Oracle WMS - Test Suite
 
+
+<!-- TOC START -->
+- [📁 Test Structure](#-test-structure)
+  - [🎯 **Core Component Tests**](#-core-component-tests)
+  - [🔧 **Configuration & Setup Tests**](#-configuration-setup-tests)
+  - [🏗️ **Infrastructure Tests**](#-infrastructure-tests)
+  - [🧪 **Integration & Advanced Tests**](#-integration-advanced-tests)
+  - [⚙️ **Test Configuration**](#-test-configuration)
+- [🎯 **Test Categories & Markers**](#-test-categories-markers)
+  - [Test Markers](#test-markers)
+  - [Test Types](#test-types)
+- [🚀 **Running Tests**](#-running-tests)
+  - [Basic Test Execution](#basic-test-execution)
+  - [Advanced Test Execution](#advanced-test-execution)
+  - [Quality Gate Testing](#quality-gate-testing)
+- [🔧 **Test Configuration**](#-test-configuration)
+  - [Environment Variables](#environment-variables)
+  - [Test Data Management](#test-data-management)
+- [📊 **Coverage Requirements**](#-coverage-requirements)
+  - [Coverage Targets](#coverage-targets)
+  - [Coverage Reporting](#coverage-reporting)
+- [🧪 **Test Development Guidelines**](#-test-development-guidelines)
+  - [Test Structure Standards](#test-structure-standards)
+  - [Test Quality Standards](#test-quality-standards)
+  - [Performance Testing](#performance-testing)
+- [🔗 **Test Dependencies**](#-test-dependencies)
+  - [Testing Framework](#testing-framework)
+  - [Additional Testing Tools](#additional-testing-tools)
+  - [Development Dependencies](#development-dependencies)
+- [📚 **Test Documentation**](#-test-documentation)
+  - [Test Case Documentation](#test-case-documentation)
+  - [Integration Test Requirements](#integration-test-requirements)
+- [🚨 **Troubleshooting Tests**](#-troubleshooting-tests)
+  - [Common Test Issues](#common-test-issues)
+  - [Debugging Failed Tests](#debugging-failed-tests)
+<!-- TOC END -->
+
 This directory contains the comprehensive test suite for the **flext-oracle-wms** library, ensuring enterprise-grade quality and reliability for Oracle Warehouse Management System (WMS) Cloud integration.
 
 ## 📁 Test Structure
@@ -318,7 +355,7 @@ pytest --fixtures                  # List available fixtures
 
 # Coverage issues
 pytest --cov-report=term-missing   # Show missing coverage lines
-pytest --cov-fail-under=90         # Fail if coverage below threshold
+make test                          # Coverage thresholds in pyproject.toml
 
 # Performance issues
 pytest --benchmark-only            # Run only performance tests

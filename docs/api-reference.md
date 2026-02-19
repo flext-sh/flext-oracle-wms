@@ -1,5 +1,25 @@
 # API Reference
 
+
+<!-- TOC START -->
+- [Client API](#client-api)
+  - [FlextOracleWmsClient](#flextoraclewmsclient)
+- [Configuration API](#configuration-api)
+  - [FlextOracleWmsModuleSettings](#flextoraclewmsmodulesettings)
+- [API Endpoints (Framework)](#api-endpoints-framework)
+  - [Implemented Endpoints (22 total)](#implemented-endpoints-22-total)
+  - [Missing Modern APIs (LGF v10)](#missing-modern-apis-lgf-v10)
+- [Error Handling](#error-handling)
+  - [Exception Hierarchy](#exception-hierarchy)
+  - [FlextResult Pattern](#flextresult-pattern)
+- [Models](#models)
+  - [FlextOracleWmsEntity](#flextoraclewmsentity)
+- [Implementation Status](#implementation-status)
+  - [Completed Components](#completed-components)
+  - [Implementation Gaps](#implementation-gaps)
+- [Related Documentation](#related-documentation)
+<!-- TOC END -->
+
 **Complete API documentation for flext-oracle-wms**
 
 **Version**: 0.9.9 RC | **Last Updated**: September 17, 2025 | **Status**: Framework with implementation gaps · 1.0.0 Release Preparation

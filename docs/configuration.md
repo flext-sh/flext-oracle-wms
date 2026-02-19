@@ -1,5 +1,27 @@
 # Configuration Guide
 
+
+<!-- TOC START -->
+- [Configuration Overview](#configuration-overview)
+- [Test Configuration](#test-configuration)
+  - [FlextOracleWmsModuleSettings.for_testing()](#flextoraclewmsmodulesettingsfortesting)
+- [Environment Variables](#environment-variables)
+  - [Test Environment](#test-environment)
+  - [Required for Production (Not Implemented)](#required-for-production-not-implemented)
+- [Configuration Classes](#configuration-classes)
+  - [FlextOracleWmsClientSettings](#flextoraclewmsclientsettings)
+  - [Authentication Configuration (Framework)](#authentication-configuration-framework)
+- [Configuration Validation](#configuration-validation)
+  - [Current Validation](#current-validation)
+  - [Required Implementation](#required-implementation)
+- [Oracle WMS Cloud Requirements](#oracle-wms-cloud-requirements)
+  - [API Version Support](#api-version-support)
+  - [Authentication Requirements](#authentication-requirements)
+- [Implementation Status](#implementation-status)
+  - [Current Status](#current-status)
+  - [Required Implementation](#required-implementation)
+<!-- TOC END -->
+
 **Settings and environment management for flext-oracle-wms**
 
 **Version**: 0.9.9 RC | **Last Updated**: September 17, 2025 | **Status**: Test configuration only · 1.0.0 Release Preparation

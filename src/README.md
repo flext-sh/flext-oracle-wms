@@ -1,5 +1,33 @@
 # FLEXT Oracle WMS - Source Code
 
+
+<!-- TOC START -->
+- [📁 Module Organization](#-module-organization)
+  - [🎯 **Core Interface**](#-core-interface)
+  - [🏗️ **Architecture Overview**](#-architecture-overview)
+- [🎯 **Key Features**](#-key-features)
+  - [Oracle WMS Cloud Integration](#oracle-wms-cloud-integration)
+  - [FLEXT Ecosystem Integration](#flext-ecosystem-integration)
+  - [Performance & Reliability](#performance-reliability)
+- [📖 **Module Documentation**](#-module-documentation)
+  - [Core Client Interface](#core-client-interface)
+  - [Configuration Management](#configuration-management)
+  - [Error Handling](#error-handling)
+- [🔧 **Development Guidelines**](#-development-guidelines)
+  - [Code Quality Standards](#code-quality-standards)
+  - [Architecture Compliance](#architecture-compliance)
+  - [Performance Requirements](#performance-requirements)
+- [🧪 **Testing**](#-testing)
+  - [Test Coverage](#test-coverage)
+  - [Quality Gates](#quality-gates)
+- [🔗 **Integration**](#-integration)
+  - [FLEXT Ecosystem Dependencies](#flext-ecosystem-dependencies)
+  - [External Dependencies](#external-dependencies)
+- [📚 **Additional Resources**](#-additional-resources)
+  - [Documentation](#documentation)
+  - [Oracle WMS Resources](#oracle-wms-resources)
+<!-- TOC END -->
+
 This directory contains the core implementation of the flext-oracle-wms library, providing enterprise-grade Oracle Warehouse Management System (WMS) Cloud integration for the FLEXT data integration platform.
 
 ## 📁 Module Organization

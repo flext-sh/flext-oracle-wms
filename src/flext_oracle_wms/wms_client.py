@@ -9,7 +9,15 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from flext_api import FlextApiClient, FlextApiModels, FlextApiSettings, FlextApiTypes
+from typing import cast
+
+from flext_api import (
+    FlextApiClient,
+    FlextApiConstants,
+    FlextApiModels,
+    FlextApiSettings,
+    FlextApiTypes,
+)
 from flext_core import FlextContainer, FlextResult, FlextTypes as t
 
 from flext_oracle_wms.settings import FlextOracleWmsSettings
@@ -69,18 +77,23 @@ class FlextOracleWmsClient:
 
         """
         request = FlextApiModels.HttpRequest(
-            method="GET",
+            method=FlextApiConstants.Api.Method.GET,
             url=path,
             headers=headers or {},
-            params=params or {},
+            query_params=params or {},
         )
         result = self._client.request(request)
         if result.is_failure:
             return FlextResult.fail(f"GET {path} failed: {result.error}")
         response = result.value
         if hasattr(response, "body") and isinstance(response.body, dict):
-            return FlextResult.ok(response.body)
-        return FlextResult.ok(response if isinstance(response, dict) else {})
+            return FlextResult.ok(cast("dict[str, t.GeneralValueType]", response.body))
+        return FlextResult.ok(
+            cast(
+                "dict[str, t.GeneralValueType]",
+                response if isinstance(response, dict) else {},
+            )
+        )
 
     def post(
         self,
@@ -101,18 +114,25 @@ class FlextOracleWmsClient:
 
         """
         request = FlextApiModels.HttpRequest(
-            method="POST",
+            method=FlextApiConstants.Api.Method.POST,
             url=path,
             headers=headers or {},
-            body=body if body is not None else {},
+            body=cast(
+                "FlextApiTypes.Api.RequestBody", body if body is not None else {}
+            ),
         )
         result = self._client.request(request)
         if result.is_failure:
             return FlextResult.fail(f"POST {path} failed: {result.error}")
         response = result.value
         if hasattr(response, "body") and isinstance(response.body, dict):
-            return FlextResult.ok(response.body)
-        return FlextResult.ok(response if isinstance(response, dict) else {})
+            return FlextResult.ok(cast("dict[str, t.GeneralValueType]", response.body))
+        return FlextResult.ok(
+            cast(
+                "dict[str, t.GeneralValueType]",
+                response if isinstance(response, dict) else {},
+            )
+        )
 
     def put(
         self,
@@ -133,18 +153,25 @@ class FlextOracleWmsClient:
 
         """
         request = FlextApiModels.HttpRequest(
-            method="PUT",
+            method=FlextApiConstants.Api.Method.PUT,
             url=path,
             headers=headers or {},
-            body=body if body is not None else {},
+            body=cast(
+                "FlextApiTypes.Api.RequestBody", body if body is not None else {}
+            ),
         )
         result = self._client.request(request)
         if result.is_failure:
             return FlextResult.fail(f"PUT {path} failed: {result.error}")
         response = result.value
         if hasattr(response, "body") and isinstance(response.body, dict):
-            return FlextResult.ok(response.body)
-        return FlextResult.ok(response if isinstance(response, dict) else {})
+            return FlextResult.ok(cast("dict[str, t.GeneralValueType]", response.body))
+        return FlextResult.ok(
+            cast(
+                "dict[str, t.GeneralValueType]",
+                response if isinstance(response, dict) else {},
+            )
+        )
 
     def delete(
         self,
@@ -163,7 +190,7 @@ class FlextOracleWmsClient:
 
         """
         request = FlextApiModels.HttpRequest(
-            method="DELETE",
+            method=FlextApiConstants.Api.Method.DELETE,
             url=path,
             headers=headers or {},
         )
@@ -172,8 +199,13 @@ class FlextOracleWmsClient:
             return FlextResult.fail(f"DELETE {path} failed: {result.error}")
         response = result.value
         if hasattr(response, "body") and isinstance(response.body, dict):
-            return FlextResult.ok(response.body)
-        return FlextResult.ok(response if isinstance(response, dict) else {})
+            return FlextResult.ok(cast("dict[str, t.GeneralValueType]", response.body))
+        return FlextResult.ok(
+            cast(
+                "dict[str, t.GeneralValueType]",
+                response if isinstance(response, dict) else {},
+            )
+        )
 
     def health_check(self) -> FlextResult[dict[str, t.GeneralValueType]]:
         """Check Oracle WMS API health.

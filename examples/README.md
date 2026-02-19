@@ -1,5 +1,35 @@
 # FLEXT Oracle WMS - Usage Examples
 
+
+<!-- TOC START -->
+- [📁 Example Categories](#-example-categories)
+  - [🚀 **Getting Started**](#-getting-started)
+  - [🔍 **Data Operations**](#-data-operations)
+  - [🏗️ **Enterprise Integration**](#-enterprise-integration)
+  - [📊 **Data Pipeline Integration**](#-data-pipeline-integration)
+  - [🧪 **Testing & Development**](#-testing-development)
+- [🎯 **Quick Start**](#-quick-start)
+  - [Basic Client Setup](#basic-client-setup)
+  - [Environment Configuration](#environment-configuration)
+- [📖 **Example Structure**](#-example-structure)
+- [🔧 **Prerequisites**](#-prerequisites)
+  - [Oracle WMS Cloud Access](#oracle-wms-cloud-access)
+  - [Python Environment](#python-environment)
+  - [Environment Setup](#environment-setup)
+- [🚨 **Security Notes**](#-security-notes)
+  - [Credential Management](#credential-management)
+  - [Network Security](#network-security)
+- [🧪 **Testing Examples**](#-testing-examples)
+  - [Run Individual Examples](#run-individual-examples)
+  - [Run All Examples](#run-all-examples)
+- [📚 **Additional Resources**](#-additional-resources)
+  - [Documentation](#documentation)
+  - [Oracle WMS Resources](#oracle-wms-resources)
+- [🤝 **Contributing Examples**](#-contributing-examples)
+  - [Adding New Examples](#adding-new-examples)
+  - [Example Quality Standards](#example-quality-standards)
+<!-- TOC END -->
+
 This directory contains comprehensive examples demonstrating Oracle WMS Cloud integration patterns using the flext-oracle-wms library. All examples are tested and represent real-world usage scenarios.
 
 ## 📁 Example Categories

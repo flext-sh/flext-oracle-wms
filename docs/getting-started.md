@@ -1,5 +1,20 @@
 # Getting Started with flext-oracle-wms
 
+
+<!-- TOC START -->
+- [Installation](#installation)
+  - [Prerequisites](#prerequisites)
+  - [Installation Steps](#installation-steps)
+- [Basic Configuration](#basic-configuration)
+  - [Environment Variables](#environment-variables)
+  - [Basic Usage Example](#basic-usage-example)
+- [Implementation Status](#implementation-status)
+  - [What Works](#what-works)
+  - [What Needs Implementation](#what-needs-implementation)
+- [Next Steps](#next-steps)
+- [Related Documentation](#related-documentation)
+<!-- TOC END -->
+
 **Quick start guide for Oracle WMS integration framework**
 
 **Version**: 0.9.9 RC | **Last Updated**: September 17, 2025 | **Status**: Framework requiring implementation · 1.0.0 Release Preparation

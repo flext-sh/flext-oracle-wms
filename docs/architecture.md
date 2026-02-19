@@ -1,5 +1,19 @@
 # flext-oracle-wms Architecture
 
+
+<!-- TOC START -->
+- [Architecture Status](#architecture-status)
+  - [Current Implementation](#current-implementation)
+  - [Module Structure](#module-structure)
+  - [FLEXT Compliance Issues](#flext-compliance-issues)
+  - [Oracle WMS Integration Status](#oracle-wms-integration-status)
+- [Required Changes](#required-changes)
+  - [1. FLEXT Compliance](#1-flext-compliance)
+  - [2. Oracle WMS Implementation](#2-oracle-wms-implementation)
+  - [3. Architectural Consolidation](#3-architectural-consolidation)
+- [Related Documentation](#related-documentation)
+<!-- TOC END -->
+
 **Current implementation analysis | September 17, 2025 | Version 0.9.9**
 
 ## Architecture Status

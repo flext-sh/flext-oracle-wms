@@ -6,6 +6,8 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
+from typing import cast
+
 from flext_core import FlextExceptions, FlextLogger, FlextResult, FlextTypes as t
 
 from flext_oracle_wms.constants import FlextOracleWmsConstants
@@ -64,7 +66,7 @@ class FlextOracleWmsFilter:
             return FlextResult.fail(
                 f"Too many filter conditions: {total} > {self.max_conditions}",
             )
-        return FlextResult.ok(None)
+        return FlextResult.ok(True)
 
     def _get_nested_value(
         self, record: dict[str, t.GeneralValueType], field: str
@@ -77,10 +79,10 @@ class FlextOracleWmsFilter:
                 if isinstance(value, dict):
                     value = value.get(key)
                 else:
-                    return None
-            return value
+                    return cast("t.GeneralValueType", None)
+            return cast("t.GeneralValueType", value)
         except (KeyError, TypeError):
-            return None
+            return cast("t.GeneralValueType", None)
 
     def _normalize(self, value: object) -> object:
         """Normalize value for comparison."""
@@ -136,7 +138,7 @@ class FlextOracleWmsFilter:
             return FlextResult.fail(
                 f"Too many conditions. Max: {self.max_conditions}, Got: {total}",
             )
-        return FlextResult.ok(None)
+        return FlextResult.ok(True)
 
     def _matches_all_filters(
         self,

@@ -38,7 +38,7 @@ class FlextOracleWmsModels(FlextModels):
                 > FlextOracleWmsConstants.WmsEntities.MAX_ENTITY_NAME_LENGTH
             ):
                 return FlextResult.fail("Entity name too long")
-            return FlextResult.ok(None)
+            return FlextResult.ok(True)
 
     class ApiResponse(BaseModel):
         """API response model."""
@@ -52,7 +52,7 @@ class FlextOracleWmsModels(FlextModels):
             """Validate using railway pattern."""
             if not self.success and not self.error_message:
                 return FlextResult.fail("Failed response needs error message")
-            return FlextResult.ok(None)
+            return FlextResult.ok(True)
 
 
 # Backward compatibility classes with real inheritance

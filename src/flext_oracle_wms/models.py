@@ -189,7 +189,7 @@ class FlextWmsModels(FlextModels):
             if any(i.sku == item.sku for i in self.inventory):
                 return FlextResult.fail("SKU already exists")
             self.inventory.append(item)
-            return FlextResult.ok(None)
+            return FlextResult.ok(True)
 
 
 # Short aliases

@@ -1,5 +1,27 @@
 # Troubleshooting Guide
 
+
+<!-- TOC START -->
+- [Common Issues](#common-issues)
+  - [Connection Issues](#connection-issues)
+  - [Type Safety Issues](#type-safety-issues)
+  - [FLEXT Compliance Issues](#flext-compliance-issues)
+  - [Testing Issues](#testing-issues)
+  - [Development Environment Issues](#development-environment-issues)
+  - [Oracle WMS Specific Issues](#oracle-wms-specific-issues)
+  - [Performance Issues](#performance-issues)
+- [Error Messages Reference](#error-messages-reference)
+  - [Common Error Patterns](#common-error-patterns)
+- [Debugging Tips](#debugging-tips)
+  - [Enable Debug Logging](#enable-debug-logging)
+  - [Type Checking](#type-checking)
+  - [Test Debugging](#test-debugging)
+- [Getting Help](#getting-help)
+  - [Documentation Resources](#documentation-resources)
+  - [Known Limitations](#known-limitations)
+  - [Reporting Issues](#reporting-issues)
+<!-- TOC END -->
+
 **Common issues and solutions for flext-oracle-wms**
 
 **Version**: 0.9.9 RC | **Last Updated**: September 17, 2025 | **Status**: Framework troubleshooting · 1.0.0 Release Preparation
