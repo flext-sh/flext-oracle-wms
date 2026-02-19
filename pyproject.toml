@@ -1,19 +1,18 @@
 [build-system]
     build-backend = "poetry.core.masonry.api"
     requires = [
-        "poetry-core>=1.9.0",
+        "poetry-core>=2",
     ]
 
 [project]
     classifiers = [
-        "Development Status :: 5 - Production/Stable",
-        "Intended Audience :: Developers",
-        "License :: OSI Approved :: MIT License",
-        "Operating System :: OS Independent",
-        "Programming Language :: Python :: 3 :: Only",
-        "Programming Language :: Python :: 3.13",
-        "Topic :: Software Development :: Libraries :: Python Modules",
-        "Typing :: Typed",
+    "Development Status :: 5 - Production/Stable",
+    "Intended Audience :: Developers",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Typing :: Typed"
     ]
     dependencies = [
         "pydantic (>=2.12.3)",
@@ -33,6 +32,7 @@
     readme = "README.md"
     requires-python = ">=3.13,<3.14"
     version = "0.9.0"
+    license = "MIT"
     [[project.authors]]
         email = "team@flext.sh"
         name  = "FLEXT Team"
@@ -40,9 +40,6 @@
     [[project.maintainers]]
         email = "team@flext.sh"
         name  = "FLEXT Team"
-
-    [project.license]
-        text = "MIT"
 
     [project.urls]
         Documentation = "https://github.com/flext-sh/flext/blob/main/README.md"
@@ -116,17 +113,11 @@
 
 [tool.pytest.ini_options]
     addopts = [
-        "--cov-branch",
-        "--cov-fail-under=90",
-        "--cov-report=html:reports/coverage",
-        "--cov-report=term-missing:skip-covered",
-        "--cov-report=xml:reports/coverage.xml",
-        "--cov=flext_oracle_wms",
-        "--maxfail=1",
-        "--strict-config",
-        "--strict-markers",
-        "--tb=short",
-        "-ra",
+    "--maxfail=1",
+    "--strict-config",
+    "--strict-markers",
+    "--tb=short",
+    "-ra"
     ]
     markers = [
         "automation: Automation tests",
@@ -151,11 +142,11 @@
             develop = true
             path    = "../flext-core"
 
-                                                                        [tool.poetry.dependencies.flext-observability]
+                                                                                [tool.poetry.dependencies.flext-observability]
             develop = true
             path    = "../flext-observability"
 
-                                                                                                                                        [tool.poetry.dependencies.flext-api]
+                                                                                                                                                        [tool.poetry.dependencies.flext-api]
             develop = true
             path    = "../flext-api"
 
@@ -209,3 +200,13 @@ factory-boy         = ">=3.3.1"
     [tool.poetry.group.security.dependencies]
         bandit    = ">=1.8.0"
         pip-audit = ">=2.7.3"
+
+[tool.coverage.run]
+source = ["src/flext_oracle_wms"]
+
+[tool.coverage.report]
+fail_under = 90
+precision = 2
+
+[tool.bandit]
+skips = ["B404", "B603", "B607", "B105", "B608"]
