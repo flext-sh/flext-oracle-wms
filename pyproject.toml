@@ -4,7 +4,7 @@ requires = [ "poetry-core>=2.0", "poetry-core>=2" ]
 
 [project]
 name = "flext-oracle-wms"
-version = "0.11.0"
+version = "0.12.0-dev"
 description = "Enterprise Oracle WMS client library for FLEXT data integration platform"
 readme = "README.md"
 keywords = [
