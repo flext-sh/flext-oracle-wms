@@ -48,28 +48,6 @@ class FlextOracleWmsProtocols(p):
                 """
                 ...
 
-        # Legacy aliases for backward compatibility during transition
-        WmsClientProtocol = WmsServiceProtocol
-        EntityDiscoveryProtocol = WmsServiceProtocol
-        InventoryManagementProtocol = WmsServiceProtocol
-        ShippingOperationsProtocol = WmsServiceProtocol
-        WarehouseOperationsProtocol = WmsServiceProtocol
-        DataProcessingProtocol = WmsServiceProtocol
-        AuthenticationProtocol = WmsServiceProtocol
-        PerformanceProtocol = WmsServiceProtocol
-        MonitoringProtocol = WmsServiceProtocol
-
-        # Convenience aliases
-        OracleWmsClientProtocol = WmsServiceProtocol
-        OracleWmsEntityDiscoveryProtocol = WmsServiceProtocol
-        OracleWmsInventoryManagementProtocol = WmsServiceProtocol
-        OracleWmsShippingOperationsProtocol = WmsServiceProtocol
-        OracleWmsWarehouseOperationsProtocol = WmsServiceProtocol
-        OracleWmsDataProcessingProtocol = WmsServiceProtocol
-        OracleWmsAuthenticationProtocol = WmsServiceProtocol
-        OracleWmsPerformanceProtocol = WmsServiceProtocol
-        OracleWmsMonitoringProtocol = WmsServiceProtocol
-
 
 # Runtime alias for simplified usage
 p = FlextOracleWmsProtocols

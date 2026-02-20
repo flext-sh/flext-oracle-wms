@@ -17,17 +17,14 @@ SPDX-License-Identifier: MIT
 """
 
 import pytest
+from flext_core import FlextTypes as t
 
-
-
+from flext_oracle_wms import (
     FlextOracleWmsDataValidationError,
     FlextOracleWmsDefaults,
     FlextOracleWmsError,
     FlextOracleWmsFilter,
     OracleWMSFilterOperator,
-    flext_oracle_wms_create_filter,
-    flext_oracle_wms_filter_by_field,
-    flext_oracle_wms_filter_by_id_range,
 )
 
 
@@ -510,7 +507,7 @@ class TestFactoryFunction:
 
     def test_create_filter_default(self) -> None:
         """Test creating filter with default parameters."""
-        filter_engine = flext_oracle_wms_create_filter()
+        filter_engine = FlextOracleWmsFilter.create_filter()
         assert filter_engine.case_sensitive is False
         assert (
             filter_engine.max_conditions == FlextOracleWmsDefaults.MAX_FILTER_CONDITIONS
@@ -518,7 +515,7 @@ class TestFactoryFunction:
 
     def test_create_filter_custom(self) -> None:
         """Test creating filter with custom parameters."""
-        filter_engine = flext_oracle_wms_create_filter(
+        filter_engine = FlextOracleWmsFilter.create_filter(
             case_sensitive=True,
             max_conditions=50,
         )
@@ -528,13 +525,13 @@ class TestFactoryFunction:
     def test_create_filter_invalid_max_conditions(self) -> None:
         """Test factory function fails with invalid max conditions."""
         with pytest.raises(FlextOracleWmsError) as exc:
-            flext_oracle_wms_create_filter(max_conditions=0)
+            FlextOracleWmsFilter.create_filter(max_conditions=0)
         assert "must be positive" in str(exc.value)
 
     def test_create_filter_exceeds_limit(self) -> None:
         """Test factory function fails when exceeding limit."""
         with pytest.raises(FlextOracleWmsError) as exc:
-            flext_oracle_wms_create_filter(
+            FlextOracleWmsFilter.create_filter(
                 max_conditions=FlextOracleWmsDefaults.MAX_FILTER_CONDITIONS + 1,
             )
         assert "cannot exceed" in str(exc.value)
@@ -554,7 +551,7 @@ class TestConvenienceFunctions:
 
     def test_filter_by_field_string_value(self) -> None:
         """Test filter by field with string value."""
-        result = flext_oracle_wms_filter_by_field(
+        result = FlextOracleWmsFilter.filter_by_field(
             self.sample_records,
             "status",
             "active",
@@ -566,7 +563,7 @@ class TestConvenienceFunctions:
 
     def test_filter_by_field_numeric_value(self) -> None:
         """Test filter by field with numeric value."""
-        result = flext_oracle_wms_filter_by_field(self.sample_records, "id", 2)
+        result = FlextOracleWmsFilter.filter_by_field(self.sample_records, "id", 2)
 
         assert result.is_success
         assert len(result.value) == 1
@@ -574,7 +571,7 @@ class TestConvenienceFunctions:
 
     def test_filter_by_field_list_value(self) -> None:
         """Test filter by field with list value."""
-        result = flext_oracle_wms_filter_by_field(
+        result = FlextOracleWmsFilter.filter_by_field(
             self.sample_records,
             "id",
             [1, 3],
@@ -586,7 +583,7 @@ class TestConvenienceFunctions:
 
     def test_filter_by_field_custom_operator(self) -> None:
         """Test filter by field with custom operator."""
-        result = flext_oracle_wms_filter_by_field(
+        result = FlextOracleWmsFilter.filter_by_field(
             self.sample_records,
             "status",
             "inactive",
@@ -601,11 +598,11 @@ class TestConvenienceFunctions:
     def test_filter_by_field_invalid_records(self) -> None:
         """Test filter by field with invalid records raises error."""
         with pytest.raises(FlextOracleWmsDataValidationError):
-            flext_oracle_wms_filter_by_field("not_a_list", "field", "value")
+            FlextOracleWmsFilter.filter_by_field("not_a_list", "field", "value")
 
     def test_filter_by_id_range_both_bounds(self) -> None:
         """Test filter by ID range with both min and max."""
-        result = flext_oracle_wms_filter_by_id_range(
+        result = FlextOracleWmsFilter.filter_by_id_range(
             self.sample_records,
             "id",
             min_id=1,
@@ -617,7 +614,7 @@ class TestConvenienceFunctions:
 
     def test_filter_by_id_range_min_only(self) -> None:
         """Test filter by ID range with min only."""
-        result = flext_oracle_wms_filter_by_id_range(
+        result = FlextOracleWmsFilter.filter_by_id_range(
             self.sample_records,
             "id",
             min_id=2,
@@ -628,7 +625,7 @@ class TestConvenienceFunctions:
 
     def test_filter_by_id_range_max_only(self) -> None:
         """Test filter by ID range with max only."""
-        result = flext_oracle_wms_filter_by_id_range(
+        result = FlextOracleWmsFilter.filter_by_id_range(
             self.sample_records,
             "id",
             max_id=2,
@@ -639,14 +636,14 @@ class TestConvenienceFunctions:
 
     def test_filter_by_id_range_no_bounds(self) -> None:
         """Test filter by ID range with no bounds returns all records."""
-        result = flext_oracle_wms_filter_by_id_range(self.sample_records, "id")
+        result = FlextOracleWmsFilter.filter_by_id_range(self.sample_records, "id")
 
         assert result.is_success
         assert len(result.value) == 3  # All records
 
     def test_filter_by_id_range_custom_field(self) -> None:
         """Test filter by ID range with custom ID field."""
-        result = flext_oracle_wms_filter_by_id_range(
+        result = FlextOracleWmsFilter.filter_by_id_range(
             self.sample_records,
             "name",
             min_id="Company B",
@@ -657,7 +654,7 @@ class TestConvenienceFunctions:
     def test_filter_by_id_range_invalid_records(self) -> None:
         """Test filter by ID range with invalid records raises error."""
         with pytest.raises(FlextOracleWmsDataValidationError):
-            flext_oracle_wms_filter_by_id_range("not_a_list", "id")
+            FlextOracleWmsFilter.filter_by_id_range("not_a_list", "id")
 
 
 class TestErrorHandling:

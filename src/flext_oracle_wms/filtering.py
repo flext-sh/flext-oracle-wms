@@ -298,14 +298,4 @@ class FlextOracleWmsFilter:
         return True
 
 
-# Backward compatibility aliases
-flext_oracle_wms_create_filter = FlextOracleWmsFilter.create_filter
-flext_oracle_wms_filter_by_field = FlextOracleWmsFilter.filter_by_field
-flext_oracle_wms_filter_by_id_range = FlextOracleWmsFilter.filter_by_id_range
-
-__all__ = [
-    "FlextOracleWmsFilter",
-    "flext_oracle_wms_create_filter",
-    "flext_oracle_wms_filter_by_field",
-    "flext_oracle_wms_filter_by_id_range",
-]
+__all__ = ["FlextOracleWmsFilter"]
