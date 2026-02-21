@@ -62,8 +62,6 @@ from flext_oracle_wms.wms_models import (
     FlextOracleWmsEntity,
     FlextOracleWmsModels,
     FlextOracleWmsModels as m,
-    TOracleWmsRecord,
-    TOracleWmsRecordBatch,
 )
 
 __all__ = [
@@ -92,8 +90,6 @@ __all__ = [
     "FlextOracleWmsTypes",
     "FlextOracleWmsUtilities",
     "OracleWMSAuthMethod",
-    "TOracleWmsRecord",
-    "TOracleWmsRecordBatch",
     "__version__",
     "__version_info__",
     "c",

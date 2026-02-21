@@ -12,8 +12,7 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import Annotated, Literal
 
-from flext_core import FlextModels, FlextResult, FlextTypes as t
-from flext_core.utilities import u
+from flext_core import FlextModels, FlextResult as r, FlextTypes as t
 from pydantic import Field, StringConstraints
 
 from flext_oracle_wms.constants import c
@@ -28,12 +27,8 @@ class FlextWmsModels(FlextModels):
     """
 
     def __init_subclass__(cls, **kwargs: object) -> None:
-        """Warn when FlextWmsModels is subclassed directly."""
+        """Allow downstream projects to inherit FlextWmsModels for namespace composition."""
         super().__init_subclass__(**kwargs)
-        u.Deprecation.warn_once(
-            f"subclass:{cls.__name__}",
-            "Subclassing FlextWmsModels is deprecated. Use FlextModels.Wms instead.",
-        )
 
     # =========================================================================
     # TYPE ALIASES - Advanced composition for minimal declarations
@@ -158,11 +153,11 @@ class FlextWmsModels(FlextModels):
     MAX_ENTITY_NAME_LENGTH: int = 50
 
     @staticmethod
-    def validate_entity_name(name: str) -> FlextResult[str]:
+    def validate_entity_name(name: str) -> r[str]:
         """Validate entity name using domain rules."""
         if not name or len(name) > FlextWmsModels.MAX_ENTITY_NAME_LENGTH:
-            return FlextResult.fail("Invalid entity name")
-        return FlextResult.ok(name)
+            return r.fail("Invalid entity name")
+        return r.ok(name)
 
     @staticmethod
     def calculate_inventory_value(item: InventoryItem, price: float) -> float:
@@ -182,18 +177,14 @@ class FlextWmsModels(FlextModels):
         locations: list[FlextWmsModels.WarehouseLocation] = field(default_factory=list)
         inventory: list[FlextWmsModels.InventoryItem] = field(default_factory=list)
 
-        def add_inventory(
-            self, item: FlextWmsModels.InventoryItem
-        ) -> FlextResult[bool]:
+        def add_inventory(self, item: FlextWmsModels.InventoryItem) -> r[bool]:
             """Add inventory to warehouse."""
             if any(i.sku == item.sku for i in self.inventory):
-                return FlextResult.fail("SKU already exists")
+                return r.fail("SKU already exists")
             self.inventory.append(item)
-            return FlextResult.ok(True)
+            return r.ok(True)
 
 
-# Short aliases
 m = FlextWmsModels
-m_wms = FlextWmsModels
 
-__all__ = ["FlextWmsModels", "m", "m_wms"]
+__all__ = ["FlextWmsModels", "m"]

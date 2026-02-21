@@ -7,6 +7,7 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 import json
+from collections.abc import Mapping, Sequence
 from typing import Self, cast
 
 from flext_api import FlextApiClient, FlextApiModels, FlextApiSettings, FlextApiTypes
@@ -84,9 +85,37 @@ class FlextHttpClient:
 
     def close(self) -> None:
         """Close HTTP client with FLEXT cleanup."""
-        if self._client and hasattr(self._client, "close"):
-            self._client.close()
+        if self._client is not None:
+            close_fn = getattr(self._client, "close", None)
+            if callable(close_fn):
+                close_fn()
         self._client = None
+
+    @staticmethod
+    def _to_request_body_value(
+        value: object,
+    ) -> Mapping[str, object] | Sequence[object] | bool | float | int | str | None:
+        """Normalize FLEXT values to flext-api request-body compatible values."""
+        if isinstance(value, (str, int, float, bool)) or value is None:
+            return value
+        if isinstance(value, dict):
+            return {
+                str(k): FlextHttpClient._to_request_body_value(v)
+                for k, v in value.items()
+            }
+        if isinstance(value, list | tuple):
+            return [FlextHttpClient._to_request_body_value(v) for v in value]
+        return str(value)
+
+    @classmethod
+    def _normalize_request_body(
+        cls,
+        body: dict[str, t.GeneralValueType] | None,
+    ) -> FlextApiTypes.Api.RequestBody:
+        if body is None:
+            return {}
+        normalized = {str(k): cls._to_request_body_value(v) for k, v in body.items()}
+        return cast("FlextApiTypes.Api.RequestBody", normalized)
 
     def get(
         self,
@@ -125,9 +154,7 @@ class FlextHttpClient:
                 method=method,
                 url=url,
                 headers=request_headers,
-                body=cast(
-                    "FlextApiTypes.Api.RequestBody", body if body is not None else {}
-                ),
+                body=self._normalize_request_body(body),
             )
             # Execute via FLEXT API delegation
             response_result = self._client.request(request)
@@ -138,7 +165,9 @@ class FlextHttpClient:
             response = response_result.value
             # Check HTTP status
             if response.status_code >= HTTP_BAD_REQUEST_THRESHOLD:
-                return FlextResult.fail(f"HTTP {response.status_code}: {response.body}")
+                return FlextResult.fail(
+                    f"HTTP {response.status_code}: {response.body!r}"
+                )
             # Parse response body
             return FlextResult.ok(self._parse_response_body(response.body))
         except Exception as e:
@@ -208,7 +237,7 @@ class FlextHttpClient:
                 method="PUT",
                 url=url,
                 headers=request_headers,
-                body=request_body if request_body is not None else {},
+                body=self._normalize_request_body(request_body),
             )
             response_result = self._client.request(request)
             if response_result.is_failure:
@@ -218,7 +247,7 @@ class FlextHttpClient:
             response = response_result.value
             if response.status_code >= HTTP_BAD_REQUEST_THRESHOLD:
                 return FlextResult[dict[str, t.GeneralValueType]].fail(
-                    f"HTTP {response.status_code}: {response.body}",
+                    f"HTTP {response.status_code}: {response.body!r}",
                 )
             response_data = self._parse_response_body(response.body)
             return FlextResult[dict[str, t.GeneralValueType]].ok(response_data)

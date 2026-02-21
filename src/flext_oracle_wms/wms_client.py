@@ -56,14 +56,27 @@ class FlextOracleWmsClient:
         self._client = FlextApiClient(config=api_config)
 
         # Initialize discovered entities cache
-        self._discovered_entities = []
+        self._discovered_entities: list[str] = []
+
+    @staticmethod
+    def _to_record_list(
+        value: object,
+    ) -> list[dict[str, t.GeneralValueType]]:
+        """Convert API payload to a typed list of records."""
+        if not isinstance(value, list):
+            return []
+        return [
+            cast("dict[str, t.GeneralValueType]", item)
+            for item in value
+            if isinstance(item, dict)
+        ]
 
     def get(
         self,
         path: str,
         *,
         headers: dict[str, str] | None = None,
-        params: dict[str, str] | None = None,
+        params: dict[str, str | list[str]] | None = None,
     ) -> FlextResult[dict[str, t.GeneralValueType]]:
         """Make GET request to Oracle WMS API.
 
@@ -273,7 +286,7 @@ class FlextOracleWmsClient:
         FlextResult containing entity data
 
         """
-        params: dict[str, str] = {}
+        params: dict[str, str | list[str]] = {}
         if limit:
             params["limit"] = str(limit)
         if filters:
@@ -284,9 +297,7 @@ class FlextOracleWmsClient:
             return FlextResult.fail(result.error)
         data = result.value
         entity_data = data.get("data", []) if isinstance(data, dict) else []
-        return FlextResult.ok(
-            list(entity_data) if isinstance(entity_data, list) else [],
-        )
+        return FlextResult.ok(self._to_record_list(entity_data))
 
     def get_apis_by_category(
         self,
@@ -306,14 +317,14 @@ class FlextOracleWmsClient:
             return FlextResult.fail(result.error)
         data = result.value
         apis = data.get("apis", []) if isinstance(data, dict) else []
-        return FlextResult.ok(list(apis) if isinstance(apis, list) else [])
+        return FlextResult.ok(self._to_record_list(apis))
 
     def call_api(
         self,
         api_name: str,
         *,
         headers: dict[str, str] | None = None,
-        params: dict[str, str] | None = None,
+        params: dict[str, str | list[str]] | None = None,
     ) -> FlextResult[dict[str, t.GeneralValueType]]:
         """Call a specific Oracle WMS API.
 
