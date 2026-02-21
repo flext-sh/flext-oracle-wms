@@ -6,7 +6,7 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from flext_core import FlextResult as r
+from flext_core import r
 from flext_core.models import FlextModels
 from pydantic import BaseModel, Field
 

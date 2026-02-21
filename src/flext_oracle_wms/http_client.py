@@ -11,7 +11,7 @@ from collections.abc import Mapping, Sequence
 from typing import Self, cast
 
 from flext_api import FlextApiClient, FlextApiModels, FlextApiSettings, FlextApiTypes
-from flext_core import FlextLogger, FlextResult, FlextTypes as t
+from flext_core import FlextLogger, FlextResult, t
 from pydantic import BaseModel, Field
 
 # HTTP status codes

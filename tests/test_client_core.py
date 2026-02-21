@@ -11,7 +11,8 @@ SPDX-License-Identifier: MIT
 from unittest.mock import Mock, patch
 
 import pytest
-from flext_core import FlextTypes as t, FlextLogger, FlextResult
+from flext_oracle_wms import t
+from flext_core import FlextLogger, FlextResult
 
 from flext_oracle_wms import (
     FlextOracleWmsClient,

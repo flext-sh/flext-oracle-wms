@@ -18,7 +18,7 @@ from flext_api import (
     FlextApiSettings,
     FlextApiTypes,
 )
-from flext_core import FlextContainer, FlextResult, FlextTypes as t
+from flext_core import FlextContainer, FlextResult, t
 
 from flext_oracle_wms.settings import FlextOracleWmsSettings
 

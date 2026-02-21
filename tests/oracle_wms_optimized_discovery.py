@@ -18,7 +18,7 @@ import time
 from datetime import UTC, datetime
 from pathlib import Path
 
-from flext_core import FlextLogger, FlextResult, FlextTypes as t
+from flext_core import FlextLogger, FlextResult, t
 
 from flext_oracle_wms import (
     FlextOracleWmsApiVersion,

@@ -21,7 +21,8 @@ import time
 from unittest.mock import Mock, patch
 
 import pytest
-from flext_core import FlextTypes as t, FlextResult
+from flext_oracle_wms import t
+from flext_core import FlextResult
 
 
 

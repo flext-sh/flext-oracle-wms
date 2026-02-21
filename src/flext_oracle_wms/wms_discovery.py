@@ -10,7 +10,7 @@ from __future__ import annotations
 
 from typing import ClassVar
 
-from flext_core import FlextResult, FlextTypes as t
+from flext_core import FlextResult, t
 
 from flext_oracle_wms.constants import c
 from flext_oracle_wms.http_client import FlextHttpClient

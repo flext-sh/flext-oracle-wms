@@ -9,10 +9,10 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from flext_core import u as u_core
+from flext_core import u
 
 
-class FlextOracleWmsUtilities(u_core):
+class FlextOracleWmsUtilities(u):
     """Oracle WMS utilities extending FlextUtilities with domain-specific helpers.
 
     Architecture: Extends FlextUtilities with Oracle WMS-specific operations.

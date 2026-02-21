@@ -17,8 +17,8 @@ from flext_core import (
     FlextExceptions as e,
     FlextHandlers as h,
     FlextMixins as x,
-    FlextResult as r,
     FlextService as s,
+    r,
 )
 
 from flext_oracle_wms.__version__ import __version__, __version_info__

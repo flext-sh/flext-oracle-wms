@@ -7,7 +7,7 @@ import os
 import traceback
 from collections import defaultdict
 
-from flext_core import FlextLogger, FlextTypes as t
+from flext_core import FlextLogger, t
 
 from flext_oracle_wms import FlextOracleWmsClient
 from flext_oracle_wms.constants import FlextOracleWmsConstants

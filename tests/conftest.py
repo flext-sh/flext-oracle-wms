@@ -10,7 +10,7 @@ from pathlib import Path
 
 import pytest
 from dotenv import load_dotenv
-from flext_core import FlextTypes as t
+from flext_oracle_wms import t
 
 from flext_oracle_wms import FlextOracleWmsSettings
 

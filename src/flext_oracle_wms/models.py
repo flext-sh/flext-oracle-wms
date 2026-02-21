@@ -12,7 +12,7 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import Annotated, Literal
 
-from flext_core import FlextModels, FlextResult as r, FlextTypes as t
+from flext_core import FlextModels, r, t
 from pydantic import Field, StringConstraints
 
 from flext_oracle_wms.constants import c
