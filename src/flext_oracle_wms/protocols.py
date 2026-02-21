@@ -12,10 +12,8 @@ from flext_core.protocols import FlextProtocols
 
 from flext_oracle_wms.typings import t
 
-p = FlextProtocols
 
-
-class FlextOracleWmsProtocols(p):
+class FlextOracleWmsProtocols(FlextProtocols):
     """Oracle WMS protocols with composition.
 
     Uses Python 3.13+ syntax, reduces declarations through patterns.
@@ -27,7 +25,7 @@ class FlextOracleWmsProtocols(p):
         """OracleWms domain namespace."""
 
         @runtime_checkable
-        class WmsServiceProtocol(p.Service, Protocol):
+        class WmsServiceProtocol(FlextProtocols.Service, Protocol):
             """Unified WMS service protocol with operation dispatch."""
 
             def execute_wms_operation(
