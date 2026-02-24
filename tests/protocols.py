@@ -17,9 +17,9 @@ class TestsFlextOracleWmsProtocols(FlextTestsProtocols, FlextOracleWmsProtocols)
     """Test protocols combining FlextTestsProtocols and FlextOracleWmsProtocols.
 
     Provides access to:
-    - tp.Tests.Docker.* (from FlextTestsProtocols)
-    - tp.Tests.Factory.* (from FlextTestsProtocols)
-    - tp.OracleWms.* (from FlextOracleWmsProtocols)
+    - p.Tests.Docker.* (from FlextTestsProtocols)
+    - p.Tests.Factory.* (from FlextTestsProtocols)
+    - p.OracleWms.* (from FlextOracleWmsProtocols)
     """
 
     class Tests:
@@ -34,6 +34,6 @@ class TestsFlextOracleWmsProtocols(FlextTestsProtocols, FlextOracleWmsProtocols)
 
 # Runtime aliases
 p = TestsFlextOracleWmsProtocols
-tp = TestsFlextOracleWmsProtocols
+p = TestsFlextOracleWmsProtocols
 
-__all__ = ["TestsFlextOracleWmsProtocols", "p", "tp"]
+__all__ = ["TestsFlextOracleWmsProtocols", "p"]
