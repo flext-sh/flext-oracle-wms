@@ -6,6 +6,7 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
+from collections.abc import Mapping
 from typing import Protocol, runtime_checkable
 
 from flext_core.protocols import FlextProtocols
@@ -31,9 +32,9 @@ class FlextOracleWmsProtocols(FlextProtocols):
             def execute_wms_operation(
                 self,
                 operation: str,
-                config: dict[str, t.GeneralValueType],
+                config: Mapping[str, t.GeneralValueType],
                 **params: object,
-            ) -> FlextProtocols.Result[dict[str, t.GeneralValueType]]:
+            ) -> FlextProtocols.Result[Mapping[str, t.GeneralValueType]]:
                 """Execute WMS operation with unified interface.
 
                 Args:

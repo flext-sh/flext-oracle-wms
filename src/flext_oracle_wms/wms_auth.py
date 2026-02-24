@@ -8,6 +8,8 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
+from collections.abc import Mapping
+
 from flext_core import FlextResult
 from pydantic import BaseModel, Field
 
@@ -67,7 +69,7 @@ class FlextOracleWmsAuthenticator:
 
         return FlextResult.fail(f"Unsupported auth method: {self.config.method}")
 
-    def get_auth_headers(self) -> FlextResult[dict[str, str]]:
+    def get_auth_headers(self) -> FlextResult[Mapping[str, str]]:
         """Get authentication headers."""
         auth_result = self.authenticate()
         if auth_result.is_failure:

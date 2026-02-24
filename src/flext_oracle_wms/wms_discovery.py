@@ -8,6 +8,7 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
+from collections.abc import Mapping
 from typing import ClassVar
 
 from flext_core import FlextResult, t
@@ -45,7 +46,7 @@ class FlextOracleWmsEntityDiscovery:
         """Initialize entity discovery with HTTP client."""
         self.client = client
 
-    def discover_entities(self) -> FlextResult[list[dict[str, t.GeneralValueType]]]:
+    def discover_entities(self) -> FlextResult[list[Mapping[str, t.GeneralValueType]]]:
         """Discover entities placeholder."""
         return FlextResult.ok([])
 
