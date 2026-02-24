@@ -168,14 +168,13 @@ class FlextWmsModels(FlextModels):
     # AGGREGATE ROOTS - Consistency boundaries
     # =========================================================================
 
-    @dataclass
     class WarehouseAggregate(FlextModels.AggregateRoot):
         """Warehouse aggregate root."""
 
         id: str
         name: str
-        locations: list[FlextWmsModels.WarehouseLocation] = field(default_factory=list)
-        inventory: list[FlextWmsModels.InventoryItem] = field(default_factory=list)
+        locations: list[FlextWmsModels.WarehouseLocation] = Field(default_factory=list)
+        inventory: list[FlextWmsModels.InventoryItem] = Field(default_factory=list)
 
         def add_inventory(self, item: FlextWmsModels.InventoryItem) -> r[bool]:
             """Add inventory to warehouse."""

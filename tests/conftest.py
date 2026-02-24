@@ -10,7 +10,6 @@ from pathlib import Path
 
 import pytest
 from dotenv import load_dotenv
-
 from flext_oracle_wms import FlextOracleWmsSettings, t
 
 
@@ -23,6 +22,16 @@ def load_test_env() -> bool:
         load_dotenv(env_file)
         return True
     return False
+
+
+@pytest.fixture(autouse=True)
+def _reset_settings_singleton() -> None:
+    """Reset FlextOracleWmsSettings singleton between tests.
+
+    FlextSettings uses a singleton pattern via __new__. Without reset,
+    state leaks between tests (e.g. enable_metrics=True persists).
+    """
+    FlextOracleWmsSettings._reset_instance()
 
 
 @pytest.fixture
@@ -52,13 +61,12 @@ def real_config(_load_test_env: bool) -> FlextOracleWmsSettings:
     assert password is not None
 
     return FlextOracleWmsSettings(
-        oracle_wms_base_url=base_url,
-        oracle_wms_username=username,
-        oracle_wms_password=password,
-        oracle_wms_timeout=int(os.getenv("ORACLE_WMS_TIMEOUT", "30")),
-        oracle_wms_max_retries=int(os.getenv("ORACLE_WMS_MAX_RETRIES", "3")),
-        oracle_wms_verify_ssl=True,
-        oracle_wms_enable_logging=True,
+        base_url=base_url,
+        username=username,
+        password=password,
+        timeout=int(os.getenv("ORACLE_WMS_TIMEOUT", "30")),
+        retry_attempts=int(os.getenv("ORACLE_WMS_MAX_RETRIES", "3")),
+        enable_ssl_verification=True,
     )
 
 

@@ -1,4 +1,4 @@
-"""Oracle WMS Configuration Module - Standardized Testing Suite.
+"""Oracle WMS Configuration Module tests.
 
 Copyright (c) 2025 FLEXT Team. All rights reserved.
 SPDX-License-Identifier: MIT
@@ -9,76 +9,49 @@ from flext_oracle_wms import FlextOracleWmsSettings
 
 
 def test_config_creation() -> None:
-    """Test basic configuration creation using enhanced singleton pattern."""
-    # Reset global instance for clean test
-    FlextOracleWmsSettings.reset_global_instance()
-
-    config = FlextOracleWmsSettings.get_global_instance()
+    """Test basic configuration creation."""
+    config = FlextOracleWmsSettings()
     assert isinstance(config, FlextOracleWmsSettings)
-    assert config.oracle_wms_base_url is not None
-    assert config.oracle_wms_username is not None
+    assert config.base_url is not None
 
 
 def test_config_singleton_behavior() -> None:
-    """Test enhanced singleton pattern implementation."""
-    # Reset global instance for clean test
-    FlextOracleWmsSettings.reset_global_instance()
-
-    config1 = FlextOracleWmsSettings.get_global_instance()
-    config2 = FlextOracleWmsSettings.get_global_instance()
+    """Test singleton pattern: same class returns same instance."""
+    config1 = FlextOracleWmsSettings()
+    config2 = FlextOracleWmsSettings()
     assert config1 is config2
 
 
 def test_config_custom_values() -> None:
     """Test configuration with custom values."""
     config = FlextOracleWmsSettings(
-        oracle_wms_base_url="https://example.com",
-        oracle_wms_username="test_user",
-        oracle_wms_password="test_password",
+        base_url="https://example.com",
+        username="test_user",
+        password="test_password",
     )
-    assert str(config.oracle_wms_base_url) == "https://example.com"
-    assert config.oracle_wms_username == "test_user"
-    assert config.oracle_wms_password.get_secret_value() == "test_password"
+    assert config.base_url == "https://example.com"
+    assert config.username == "test_user"
+    assert config.password == "test_password"
 
 
 def test_config_validation() -> None:
-    """Test successful configuration validation."""
-    config = FlextOracleWmsSettings(
-        oracle_wms_base_url="https://example.com",
-        oracle_wms_username="test_user",
-        oracle_wms_password="test_password",
-    )
-    result = config.validate_business_rules()
+    """Test validate_config returns success for valid config."""
+    config = FlextOracleWmsSettings(timeout=30, retry_attempts=3)
+    result = config.validate_config()
     assert result.is_success
 
 
-def test_config_factory_methods() -> None:
-    """Test configuration factory methods."""
-    # Test for_testing factory method
-    config = FlextOracleWmsSettings.create_testing_config()
+def test_config_testing_factory() -> None:
+    """Test testing_config factory method."""
+    config = FlextOracleWmsSettings.testing_config()
     assert isinstance(config, FlextOracleWmsSettings)
-    assert config.oracle_wms_base_url == "https://test.example.com"
-
-
-def test_config_environment_specific() -> None:
-    """Test environment-specific configuration creation."""
-    dev_config = FlextOracleWmsSettings.create_for_development()
-    prod_config = FlextOracleWmsSettings.create_for_production()
-
-    assert dev_config.oracle_wms_timeout == 10
-    assert prod_config.oracle_wms_timeout == 60
-    assert dev_config.oracle_wms_use_mock is True
-    assert prod_config.oracle_wms_use_mock is False
+    assert config.use_mock is True
+    assert config.base_url == "https://test-wms.example.com"
 
 
 def test_config_reset_functionality() -> None:
-    """Test singleton reset functionality."""
-    # Create initial instance
-    config1 = FlextOracleWmsSettings.get_global_instance()
-
-    # Reset global instance
-    FlextOracleWmsSettings.reset_global_instance()
-    config2 = FlextOracleWmsSettings.get_global_instance()
-
-    # Should be different instances after reset
+    """Test singleton reset creates fresh instance."""
+    config1 = FlextOracleWmsSettings()
+    FlextOracleWmsSettings._reset_instance()
+    config2 = FlextOracleWmsSettings()
     assert config1 is not config2

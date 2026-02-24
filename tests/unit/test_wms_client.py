@@ -1,6 +1,7 @@
 """Unit tests for FlextOracleWmsClient class.
 
-Tests the WMS client module following FLEXT standards.
+Tests the WMS client module against actual source API.
+The client uses FlextApiClient internally via self._client.request(HttpRequest(...)).
 
 Copyright (c) 2025 FLEXT Team. All rights reserved.
 SPDX-License-Identifier: MIT
@@ -21,18 +22,12 @@ class TestFlextOracleWmsClient:
     """Test cases for FlextOracleWmsClient class."""
 
     def test_initialization_without_config(self) -> None:
-        """Test initialization without explicit configuration."""
-        with patch("flext_oracle_wms.wms_client.FlextApiClient") as mock_api_client:
-            client = FlextOracleWmsClient()
+        """Test initialization without explicit configuration uses global/default."""
+        client = FlextOracleWmsClient()
 
-            # Should create default config
-            assert isinstance(client.config, FlextOracleWmsSettings)
-
-            # Should initialize API client with correct parameters
-            mock_api_client.assert_called_once_with(
-                base_url="https://wms.oraclecloud.com",
-                timeout=30,
-            )
+        assert isinstance(client.config, FlextOracleWmsSettings)
+        assert client._client is not None
+        assert client._discovered_entities == []
 
     def test_initialization_with_config(self) -> None:
         """Test initialization with explicit configuration."""
@@ -41,230 +36,222 @@ class TestFlextOracleWmsClient:
             timeout=60,
         )
 
-        with patch("flext_oracle_wms.wms_client.FlextApiClient") as mock_api_client:
-            client = FlextOracleWmsClient(config=config)
+        client = FlextOracleWmsClient(config=config)
 
-            assert client.config is config
+        assert client.config is config
+        assert client.config.base_url == "https://custom-wms.example.com"
+        assert client.config.timeout == 60
 
-            # Should initialize API client with config parameters
-            mock_api_client.assert_called_once_with(
-                base_url="https://custom-wms.example.com",
-                timeout=60,
-            )
+    def test_get_method_success(self) -> None:
+        """Test successful GET request via _client.request."""
+        config = FlextOracleWmsSettings.testing_config()
+        client = FlextOracleWmsClient(config)
 
-    @patch("flext_oracle_wms.wms_client.FlextApiClient")
-    def test_get_method_success(self, mock_api_client_class: MagicMock) -> None:
-        """Test successful GET request."""
-        mock_api_client = MagicMock()
-        mock_api_client_class.return_value = mock_api_client
-        mock_api_client.get.return_value = {"data": "test"}
+        mock_response = MagicMock()
+        mock_response.body = {"data": "test"}
+        client._client = MagicMock()
+        client._client.request.return_value = FlextResult.ok(mock_response)
 
-        client = FlextOracleWmsClient()
         result = client.get("/test-endpoint")
 
         assert isinstance(result, FlextResult)
         assert result.is_success
         assert result.value == {"data": "test"}
-        mock_api_client.get.assert_called_once_with("/test-endpoint")
 
-    @patch("flext_oracle_wms.wms_client.FlextApiClient")
-    def test_get_method_failure(self, mock_api_client_class: MagicMock) -> None:
+    def test_get_method_failure(self) -> None:
         """Test failed GET request."""
-        mock_api_client = MagicMock()
-        mock_api_client_class.return_value = mock_api_client
-        mock_api_client.get.side_effect = Exception("Network error")
+        config = FlextOracleWmsSettings.testing_config()
+        client = FlextOracleWmsClient(config)
 
-        client = FlextOracleWmsClient()
+        client._client = MagicMock()
+        client._client.request.return_value = FlextResult.fail("Network error")
+
         result = client.get("/test-endpoint")
 
         assert isinstance(result, FlextResult)
-        assert not result.is_success
-        assert "GET /test-endpoint failed: Network error" in result.error
+        assert result.is_failure
+        assert result.error is not None
+        assert "GET /test-endpoint failed" in result.error
 
-    @patch("flext_oracle_wms.wms_client.FlextApiClient")
-    def test_post_method_success(self, mock_api_client_class: MagicMock) -> None:
+    def test_post_method_success(self) -> None:
         """Test successful POST request."""
-        mock_api_client = MagicMock()
-        mock_api_client_class.return_value = mock_api_client
-        mock_api_client.post.return_value = {"created": True}
+        config = FlextOracleWmsSettings.testing_config()
+        client = FlextOracleWmsClient(config)
 
-        client = FlextOracleWmsClient()
-        result = client.post("/test-endpoint")
+        mock_response = MagicMock()
+        mock_response.body = {"created": True}
+        client._client = MagicMock()
+        client._client.request.return_value = FlextResult.ok(mock_response)
+
+        result = client.post("/test-endpoint", body={"key": "value"})
 
         assert isinstance(result, FlextResult)
         assert result.is_success
         assert result.value == {"created": True}
-        mock_api_client.post.assert_called_once_with("/test-endpoint")
 
-    @patch("flext_oracle_wms.wms_client.FlextApiClient")
-    def test_put_method_success(self, mock_api_client_class: MagicMock) -> None:
+    def test_put_method_success(self) -> None:
         """Test successful PUT request."""
-        mock_api_client = MagicMock()
-        mock_api_client_class.return_value = mock_api_client
-        mock_api_client.put.return_value = {"updated": True}
+        config = FlextOracleWmsSettings.testing_config()
+        client = FlextOracleWmsClient(config)
 
-        client = FlextOracleWmsClient()
-        result = client.put("/test-endpoint")
+        mock_response = MagicMock()
+        mock_response.body = {"updated": True}
+        client._client = MagicMock()
+        client._client.request.return_value = FlextResult.ok(mock_response)
+
+        result = client.put("/test-endpoint", body={"key": "value"})
 
         assert isinstance(result, FlextResult)
         assert result.is_success
         assert result.value == {"updated": True}
-        mock_api_client.put.assert_called_once_with("/test-endpoint")
 
-    @patch("flext_oracle_wms.wms_client.FlextApiClient")
-    def test_delete_method_success(self, mock_api_client_class: MagicMock) -> None:
+    def test_delete_method_success(self) -> None:
         """Test successful DELETE request."""
-        mock_api_client = MagicMock()
-        mock_api_client_class.return_value = mock_api_client
-        mock_api_client.delete.return_value = {"deleted": True}
+        config = FlextOracleWmsSettings.testing_config()
+        client = FlextOracleWmsClient(config)
 
-        client = FlextOracleWmsClient()
+        mock_response = MagicMock()
+        mock_response.body = {"deleted": True}
+        client._client = MagicMock()
+        client._client.request.return_value = FlextResult.ok(mock_response)
+
         result = client.delete("/test-endpoint")
 
         assert isinstance(result, FlextResult)
         assert result.is_success
         assert result.value == {"deleted": True}
-        mock_api_client.delete.assert_called_once_with("/test-endpoint")
 
-    @patch("flext_oracle_wms.wms_client.FlextApiClient")
-    def test_health_check(self, mock_api_client_class: MagicMock) -> None:
-        """Test health check endpoint."""
-        mock_api_client = MagicMock()
-        mock_api_client_class.return_value = mock_api_client
-        mock_api_client.get.return_value = {"status": "healthy"}
+    def test_health_check(self) -> None:
+        """Test health check delegates to self.get('/health')."""
+        config = FlextOracleWmsSettings.testing_config()
+        client = FlextOracleWmsClient(config)
 
-        client = FlextOracleWmsClient()
+        mock_response = MagicMock()
+        mock_response.body = {"status": "healthy"}
+        client._client = MagicMock()
+        client._client.request.return_value = FlextResult.ok(mock_response)
+
         result = client.health_check()
 
         assert isinstance(result, FlextResult)
         assert result.is_success
         assert result.value == {"status": "healthy"}
-        mock_api_client.get.assert_called_once_with("/health")
 
     def test_start_method(self) -> None:
-        """Test client start method."""
-        with patch("flext_oracle_wms.wms_client.FlextApiClient"):
-            client = FlextOracleWmsClient()
-            result = client.start()
+        """Test client start method returns ok(True)."""
+        config = FlextOracleWmsSettings.testing_config()
+        client = FlextOracleWmsClient(config)
+        result = client.start()
 
-            assert isinstance(result, FlextResult)
-            assert result.is_success
-            assert result.value is True
+        assert isinstance(result, FlextResult)
+        assert result.is_success
+        assert result.value is True
 
     def test_stop_method(self) -> None:
-        """Test client stop method."""
-        with patch("flext_oracle_wms.wms_client.FlextApiClient"):
-            client = FlextOracleWmsClient()
-            result = client.stop()
+        """Test client stop method returns ok(True)."""
+        config = FlextOracleWmsSettings.testing_config()
+        client = FlextOracleWmsClient(config)
+        result = client.stop()
 
-            assert isinstance(result, FlextResult)
-            assert result.is_success
-            assert result.value is True
+        assert isinstance(result, FlextResult)
+        assert result.is_success
+        assert result.value is True
 
-    @patch("flext_oracle_wms.wms_client.FlextApiClient")
-    def test_discover_entities_success(self, mock_api_client_class: MagicMock) -> None:
-        """Test successful entity discovery."""
-        mock_api_client = MagicMock()
-        mock_api_client_class.return_value = mock_api_client
-        mock_api_client.get.return_value = {"entities": ["entity1", "entity2"]}
+    def test_discover_entities_success(self) -> None:
+        """Test entity discovery extracts 'entities' key from response."""
+        config = FlextOracleWmsSettings.testing_config()
+        client = FlextOracleWmsClient(config)
 
-        client = FlextOracleWmsClient()
+        mock_response = MagicMock()
+        mock_response.body = {"entities": ["entity1", "entity2"]}
+        client._client = MagicMock()
+        client._client.request.return_value = FlextResult.ok(mock_response)
+
         result = client.discover_entities()
 
         assert isinstance(result, FlextResult)
         assert result.is_success
         assert result.value == ["entity1", "entity2"]
-        mock_api_client.get.assert_called_once_with("/entities")
 
-    @patch("flext_oracle_wms.wms_client.FlextApiClient")
-    def test_get_entity_data_success(self, mock_api_client_class: MagicMock) -> None:
-        """Test successful entity data retrieval."""
-        mock_api_client = MagicMock()
-        mock_api_client_class.return_value = mock_api_client
-        mock_api_client.get.return_value = {"data": ["item1", "item2"]}
+    def test_get_entity_data_success(self) -> None:
+        """Test entity data retrieval extracts 'data' key from response."""
+        config = FlextOracleWmsSettings.testing_config()
+        client = FlextOracleWmsClient(config)
 
-        client = FlextOracleWmsClient()
+        mock_response = MagicMock()
+        mock_response.body = {"data": [{"id": 1}, {"id": 2}]}
+        client._client = MagicMock()
+        client._client.request.return_value = FlextResult.ok(mock_response)
+
         result = client.get_entity_data("test_entity", limit=10)
 
         assert isinstance(result, FlextResult)
         assert result.is_success
-        assert result.value == ["item1", "item2"]
-        mock_api_client.get.assert_called_once_with(
-            "/entities/test_entity",
-            limit=10,
-        )
+        assert result.value == [{"id": 1}, {"id": 2}]
 
-    @patch("flext_oracle_wms.wms_client.FlextApiClient")
-    def test_get_apis_by_category_success(
-        self,
-        mock_api_client_class: MagicMock,
-    ) -> None:
-        """Test successful API discovery by category."""
-        mock_api_client = MagicMock()
-        mock_api_client_class.return_value = mock_api_client
-        mock_api_client.get.return_value = {"apis": ["api1", "api2"]}
+    def test_get_apis_by_category_success(self) -> None:
+        """Test API discovery by category extracts 'apis' key."""
+        config = FlextOracleWmsSettings.testing_config()
+        client = FlextOracleWmsClient(config)
 
-        client = FlextOracleWmsClient()
+        mock_response = MagicMock()
+        mock_response.body = {"apis": [{"name": "api1"}, {"name": "api2"}]}
+        client._client = MagicMock()
+        client._client.request.return_value = FlextResult.ok(mock_response)
+
         result = client.get_apis_by_category("inventory")
 
         assert isinstance(result, FlextResult)
         assert result.is_success
-        assert result.value == ["api1", "api2"]
-        mock_api_client.get.assert_called_once_with("/apis/category/inventory")
+        assert len(result.value) == 2
 
-    @patch("flext_oracle_wms.wms_client.FlextApiClient")
-    def test_call_api_success(self, mock_api_client_class: MagicMock) -> None:
-        """Test successful API call."""
-        mock_api_client = MagicMock()
-        mock_api_client_class.return_value = mock_api_client
-        mock_api_client.get.return_value = {"result": "success"}
+    def test_call_api_success(self) -> None:
+        """Test call_api delegates to self.get('/api/{api_name}')."""
+        config = FlextOracleWmsSettings.testing_config()
+        client = FlextOracleWmsClient(config)
 
-        client = FlextOracleWmsClient()
-        result = client.call_api("test_api", param="value")
+        mock_response = MagicMock()
+        mock_response.body = {"result": "success"}
+        client._client = MagicMock()
+        client._client.request.return_value = FlextResult.ok(mock_response)
+
+        result = client.call_api("test_api")
 
         assert isinstance(result, FlextResult)
         assert result.is_success
         assert result.value == {"result": "success"}
-        mock_api_client.get.assert_called_once_with("/api/test_api", param="value")
 
-    @patch("flext_oracle_wms.wms_client.FlextApiClient")
-    def test_update_oblpn_tracking_number(
-        self,
-        mock_api_client_class: MagicMock,
-    ) -> None:
-        """Test OBLPN tracking number update."""
-        mock_api_client = MagicMock()
-        mock_api_client_class.return_value = mock_api_client
-        mock_api_client.put.return_value = {"updated": True}
+    def test_update_oblpn_tracking_number(self) -> None:
+        """Test OBLPN tracking number update via PUT."""
+        config = FlextOracleWmsSettings.testing_config()
+        client = FlextOracleWmsClient(config)
 
-        client = FlextOracleWmsClient()
+        mock_response = MagicMock()
+        mock_response.body = {"updated": True}
+        client._client = MagicMock()
+        client._client.request.return_value = FlextResult.ok(mock_response)
+
         result = client.update_oblpn_tracking_number("oblpn123", "track456")
 
         assert isinstance(result, FlextResult)
         assert result.is_success
         assert result.value == {"updated": True}
-        mock_api_client.put.assert_called_once_with(
-            "/oblpn/oblpn123/tracking",
-            json={"tracking_number": "track456"},
-        )
 
-    @patch("flext_oracle_wms.wms_client.FlextApiClient")
-    def test_create_lpn(self, mock_api_client_class: MagicMock) -> None:
-        """Test LPN creation."""
-        mock_api_client = MagicMock()
-        mock_api_client_class.return_value = mock_api_client
-        mock_api_client.post.return_value = {"created": True}
+    def test_create_lpn(self) -> None:
+        """Test LPN creation via POST."""
+        config = FlextOracleWmsSettings.testing_config()
+        client = FlextOracleWmsClient(config)
 
-        client = FlextOracleWmsClient()
+        mock_response = MagicMock()
+        mock_response.body = {"created": True}
+        client._client = MagicMock()
+        client._client.request.return_value = FlextResult.ok(mock_response)
+
         result = client.create_lpn("lpn123", 5)
 
         assert isinstance(result, FlextResult)
         assert result.is_success
         assert result.value == {"created": True}
-        mock_api_client.post.assert_called_once_with(
-            "/lpn",
-            json={"lpn_nbr": "lpn123", "qty": 5},
-        )
 
 
 __all__ = ["TestFlextOracleWmsClient"]

@@ -5,8 +5,7 @@ SPDX-License-Identifier: MIT
 
 """
 
-
-
+from flext_oracle_wms import (
     FlextOracleWmsClient,
     FlextOracleWmsSettings,
 )
@@ -17,185 +16,59 @@ def test_client_class_creation() -> None:
     config = FlextOracleWmsSettings.testing_config()
     client = FlextOracleWmsClient(config)
     assert isinstance(client, FlextOracleWmsClient)
-    assert client.config == config
+    assert client.config is config
 
 
-def test_client_class_with_real_methods() -> None:
-    """Test client class with real available methods."""
+def test_client_has_http_methods() -> None:
+    """Test client has get/post/put/delete methods."""
     config = FlextOracleWmsSettings.testing_config()
     client = FlextOracleWmsClient(config)
+    assert callable(client.get)
+    assert callable(client.post)
+    assert callable(client.put)
+    assert callable(client.delete)
 
-    # Test real methods that exist
-    assert hasattr(client, "get_available_apis")
-    assert hasattr(client, "ship_oblpn")
-    assert hasattr(client, "create_lpn")
 
-
-def test_entity_name_validation() -> None:
-    """Test entity name validation using real client methods."""
+def test_client_has_lifecycle_methods() -> None:
+    """Test client has start/stop/health_check methods."""
     config = FlextOracleWmsSettings.testing_config()
     client = FlextOracleWmsClient(config)
-    # Test with real client - entity validation is done internally
-    assert client is not None
-
-
-def test_api_url_building() -> None:
-    """Test API URL building using real client methods."""
-    config = FlextOracleWmsSettings.testing_config()
-    client = FlextOracleWmsClient(config)
-    # URL building is done internally by the client
-    assert client is not None
-    assert client.config == config
-
-
-def test_client_creation_class() -> None:
-    """Test client class creation without context manager."""
-    config = FlextOracleWmsSettings.testing_config()
-    client = FlextOracleWmsClient(config)
-    assert isinstance(client, FlextOracleWmsClient)
-    assert client.config is not None
-
-
-def test_client_basic_properties() -> None:
-    """Test client basic properties and methods exist."""
-    config = FlextOracleWmsSettings.testing_config()
-    client = FlextOracleWmsClient(config)
-
-    # Test that real methods exist
-    assert hasattr(client, "start")
-    assert hasattr(client, "stop")
-    assert hasattr(client, "health_check")
-    assert hasattr(client, "get_available_apis")
-
-    # Test properties
-    assert hasattr(client, "config")
-    assert client.config is not None
-
-
-def test_discover_entities_class() -> None:
-    """Test entity discovery method exists ()."""
-    config = FlextOracleWmsSettings.testing_config()
-    client = FlextOracleWmsClient(config)
-
-    # Test that method exists and is callable (method)
-    assert hasattr(client, "discover_entities")
-    assert callable(client.discover_entities)
-
-
-def test_specialized_wms_methods_class() -> None:
-    """Test specialized WMS methods exist."""
-    config = FlextOracleWmsSettings.testing_config()
-    client = FlextOracleWmsClient(config)
-
-    # Test real WMS-specific methods that exist
-    assert hasattr(client, "ship_oblpn")
-    assert hasattr(client, "create_lpn")
-    assert callable(client.ship_oblpn)
-    assert callable(client.create_lpn)
-
-
-def test_health_check_method_class() -> None:
-    """Test health check method exists ()."""
-    config = FlextOracleWmsSettings.testing_config()
-    client = FlextOracleWmsClient(config)
-
-    # Test that health_check method exists and is callable (method)
-    assert hasattr(client, "health_check")
+    assert callable(client.start)
+    assert callable(client.stop)
     assert callable(client.health_check)
 
 
-def test_get_available_apis_method() -> None:
-    """Test get available APIs method."""
+def test_client_has_discovery_methods() -> None:
+    """Test client has discover_entities and get_entity_data."""
     config = FlextOracleWmsSettings.testing_config()
     client = FlextOracleWmsClient(config)
-
-    # Test actual method that exists
-    result = client.get_available_apis()
-    assert isinstance(result, dict)
-    assert len(result) >= 0  # May be empty in test environment
+    assert callable(client.discover_entities)
+    assert callable(client.get_entity_data)
 
 
-def test_bulk_post_records_class() -> None:
-    """Test bulk record posting in class."""
+def test_client_has_wms_operations() -> None:
+    """Test client has WMS-specific operations."""
     config = FlextOracleWmsSettings.testing_config()
     client = FlextOracleWmsClient(config)
-
-    # Test that the client exists and has ship_oblpn method as alternative
-    assert hasattr(client, "ship_oblpn")
-    assert callable(client.ship_oblpn)
-
-
-def test_bulk_update_records_class() -> None:
-    """Test bulk record updating in class."""
-    config = FlextOracleWmsSettings.testing_config()
-    client = FlextOracleWmsClient(config)
-
-    # Test that the client exists and has create_lpn method as alternative
-    assert hasattr(client, "create_lpn")
+    assert callable(client.update_oblpn_tracking_number)
     assert callable(client.create_lpn)
+    assert callable(client.call_api)
+    assert callable(client.get_apis_by_category)
 
 
-def test_client_internal_properties() -> None:
-    """Test client internal properties exist."""
+def test_client_internal_state() -> None:
+    """Test client internal attributes after creation."""
     config = FlextOracleWmsSettings.testing_config()
     client = FlextOracleWmsClient(config)
-
-    # Test that internal properties exist as expected
     assert hasattr(client, "_client")
     assert hasattr(client, "_discovered_entities")
-    assert hasattr(client, "_auth_headers")
 
 
-def test_client_lifecycle_methods() -> None:
-    """Test client lifecycle methods exist."""
+def test_client_config_access() -> None:
+    """Test client configuration is accessible with correct field names."""
     config = FlextOracleWmsSettings.testing_config()
     client = FlextOracleWmsClient(config)
-
-    # Test that lifecycle methods exist
-    assert hasattr(client, "start")
-    assert hasattr(client, "stop")
-    assert callable(client.start)
-    assert callable(client.stop)
-
-
-def test_client_configuration_access() -> None:
-    """Test client configuration is accessible."""
-    config = FlextOracleWmsSettings.testing_config()
-    client = FlextOracleWmsClient(config)
-
-    # Test configuration access
     assert client.config is not None
-    assert hasattr(client.config, "oracle_wms_base_url")
-    assert hasattr(client.config, "oracle_wms_username")
+    assert hasattr(client.config, "base_url")
+    assert hasattr(client.config, "timeout")
     assert hasattr(client.config, "environment_from_url")
-
-
-def test_real_helper_functions() -> None:
-    """Test using real helper functions from helpers module."""
-    # Test real client functionality
-    config = FlextOracleWmsSettings.testing_config()
-    client = FlextOracleWmsClient(config)
-    # Entity validation and URL building are done internally by the client
-    assert client is not None
-    assert client.config == config
-
-
-def test_client_repr_and_str() -> None:
-    """Test client string representation."""
-    config = FlextOracleWmsSettings.testing_config()
-    client = FlextOracleWmsClient(config)
-
-    # Test string representation doesn't raise errors
-    str_repr = str(client)
-    assert isinstance(str_repr, str)
-    assert len(str_repr) > 0
-
-
-def test_imports_and_modules() -> None:
-    """Test that all required imports work correctly."""
-    # Test that classes can be imported and instantiated
-    config = FlextOracleWmsSettings.testing_config()
-    client = FlextOracleWmsClient(config)
-
-    assert isinstance(client, FlextOracleWmsClient)
-    assert isinstance(config, FlextOracleWmsSettings)

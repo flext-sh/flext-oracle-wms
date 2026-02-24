@@ -24,7 +24,6 @@ from pathlib import Path
 
 from dotenv import load_dotenv
 from flext_core import FlextContainer, FlextLogger, FlextResult, t
-
 from flext_oracle_wms import (
     FlextOracleWmsClient,
     FlextOracleWmsExceptions,
