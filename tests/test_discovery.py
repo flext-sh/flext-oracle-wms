@@ -1,10 +1,7 @@
 """Tests for Oracle WMS discovery module.
 
-Tests against actual wms_discovery.py source (minimal placeholder).
-
 Copyright (c) 2025 FLEXT Team. All rights reserved.
 SPDX-License-Identifier: MIT
-
 """
 
 from __future__ import annotations
@@ -17,11 +14,7 @@ from flext_oracle_wms import FlextOracleWmsEntityDiscovery
 from flext_oracle_wms.wms_discovery import (
     DISCOVERY_FAILURE,
     DISCOVERY_SUCCESS,
-    CacheValue,
-    DiscoveryContext,
     EndpointDiscoveryStrategy,
-    EntityResponseParser,
-    FlextOracleWmsDefaults,
 )
 
 
@@ -31,23 +24,6 @@ class TestDiscoveryConstants:
 
     def test_discovery_failure_constant(self) -> None:
         assert DISCOVERY_FAILURE == "discovery_failure"
-
-
-class TestPlaceholderClasses:
-    def test_cache_value_instantiates(self) -> None:
-        cv = CacheValue()
-        assert cv is not None
-
-    def test_discovery_context_instantiates(self) -> None:
-        ctx = DiscoveryContext()
-        assert ctx is not None
-
-    def test_entity_response_parser_instantiates(self) -> None:
-        parser = EntityResponseParser()
-        assert parser is not None
-
-    def test_flext_oracle_wms_defaults_cache_ttl(self) -> None:
-        assert FlextOracleWmsDefaults.CACHE_TTL == 3600
 
 
 class TestEndpointDiscoveryStrategyEnum:
@@ -67,17 +43,67 @@ class TestFlextOracleWmsEntityDiscovery:
         discovery = FlextOracleWmsEntityDiscovery(client=mock_client)
         assert discovery.client is mock_client
 
-    def test_discover_entities_returns_ok_empty_list(self) -> None:
+    def test_discover_entities_returns_normalized_entities(self) -> None:
         mock_client = MagicMock()
+        mock_client.discover_entities.return_value = FlextResult.ok(
+            ["inventory", "orders"],
+        )
+
         discovery = FlextOracleWmsEntityDiscovery(client=mock_client)
         result = discovery.discover_entities()
 
         assert isinstance(result, FlextResult)
         assert result.is_success
-        assert result.value == []
+        assert result.value == [
+            {
+                "name": "inventory",
+                "path": "/entities/inventory",
+                "strategy": EndpointDiscoveryStrategy.API_BASED,
+            },
+            {
+                "name": "orders",
+                "path": "/entities/orders",
+                "strategy": EndpointDiscoveryStrategy.API_BASED,
+            },
+        ]
+
+    def test_discover_entities_filters_empty_names(self) -> None:
+        mock_client = MagicMock()
+        mock_client.discover_entities.return_value = FlextResult.ok(
+            ["inventory", "", "orders"],
+        )
+
+        discovery = FlextOracleWmsEntityDiscovery(client=mock_client)
+        result = discovery.discover_entities()
+
+        assert result.is_success
+        assert result.value == [
+            {
+                "name": "inventory",
+                "path": "/entities/inventory",
+                "strategy": EndpointDiscoveryStrategy.API_BASED,
+            },
+            {
+                "name": "orders",
+                "path": "/entities/orders",
+                "strategy": EndpointDiscoveryStrategy.API_BASED,
+            },
+        ]
+
+    def test_discover_entities_propagates_client_failure(self) -> None:
+        mock_client = MagicMock()
+        mock_client.discover_entities.return_value = FlextResult.fail("upstream error")
+
+        discovery = FlextOracleWmsEntityDiscovery(client=mock_client)
+        result = discovery.discover_entities()
+
+        assert result.is_failure
+        assert result.error == "upstream error"
 
     def test_discover_entities_result_is_list(self) -> None:
         mock_client = MagicMock()
+        mock_client.discover_entities.return_value = FlextResult.ok([])
+
         discovery = FlextOracleWmsEntityDiscovery(client=mock_client)
         result = discovery.discover_entities()
 

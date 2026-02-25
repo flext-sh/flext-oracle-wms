@@ -8,6 +8,7 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
+import base64
 from collections.abc import Mapping
 
 from flext_core import FlextResult
@@ -58,14 +59,19 @@ class FlextOracleWmsAuthenticator:
         if self.config.method == OracleWMSAuthMethod.BASIC:
             if not self.config.username or not self.config.password:
                 return FlextResult.fail("Username and password required for basic auth")
-            # Basic auth logic would go here
-            return FlextResult.ok("basic_token_placeholder")
+
+            credentials = f"{self.config.username}:{self.config.password}".encode(
+                "utf-8"
+            )
+            token = base64.b64encode(credentials).decode("ascii")
+            self._token = token
+            return FlextResult.ok(token)
 
         if self.config.method == OracleWMSAuthMethod.OAUTH2:
             if not self.config.oauth2_client_id or not self.config.oauth2_client_secret:
                 return FlextResult.fail("OAuth2 credentials required")
-            # OAuth2 logic would go here
-            return FlextResult.ok("oauth2_token_placeholder")
+
+            return FlextResult.fail("OAuth2 not configured")
 
         return FlextResult.fail(f"Unsupported auth method: {self.config.method}")
 
@@ -76,7 +82,10 @@ class FlextOracleWmsAuthenticator:
             return FlextResult.fail(f"Authentication failed: {auth_result.error}")
 
         token = auth_result.value
-        return FlextResult.ok({"Authorization": f"Bearer {token}"})
+        auth_scheme = (
+            "Basic" if self.config.method == OracleWMSAuthMethod.BASIC else "Bearer"
+        )
+        return FlextResult.ok({"Authorization": f"{auth_scheme} {token}"})
 
 
 def create_oracle_wms_client(config: FlextOracleWmsAuthSettings) -> FlextResult[object]:
@@ -85,8 +94,8 @@ def create_oracle_wms_client(config: FlextOracleWmsAuthSettings) -> FlextResult[
     auth_result = authenticator.authenticate()
     if auth_result.is_failure:
         return FlextResult.fail(f"Authentication failed: {auth_result.error}")
-    # Client creation logic would go here
-    return FlextResult.ok("client_placeholder")
+
+    return FlextResult.fail("Oracle WMS client creation not configured")
 
 
 __all__ = [

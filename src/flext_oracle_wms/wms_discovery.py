@@ -9,46 +9,46 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 from collections.abc import Mapping
-from typing import ClassVar
+from typing import Protocol
 
 from flext_core import FlextResult, t
 
 from flext_oracle_wms.constants import c
-from flext_oracle_wms.http_client import FlextHttpClient
+
+
+class _EntityDiscoveryClient(Protocol):
+    def discover_entities(self) -> FlextResult[list[str]]: ...
+
 
 # Alias for backward compatibility - EndpointDiscoveryStrategy is now in constants.py
 EndpointDiscoveryStrategy = c.EndpointDiscoveryStrategy
 
 
-# Simple placeholders for missing classes
-class CacheValue:
-    """Cache value placeholder."""
-
-
-class DiscoveryContext:
-    """Discovery context placeholder."""
-
-
-class EntityResponseParser:
-    """Entity response parser placeholder."""
-
-
-class FlextOracleWmsDefaults:
-    """Defaults placeholder."""
-
-    CACHE_TTL: ClassVar[int] = 3600
-
-
 class FlextOracleWmsEntityDiscovery:
-    """Entity discovery placeholder."""
-
-    def __init__(self, client: FlextHttpClient) -> None:
-        """Initialize entity discovery with HTTP client."""
+    def __init__(self, client: _EntityDiscoveryClient) -> None:
         self.client = client
 
+    @staticmethod
+    def _to_discovered_entity(
+        entity_name: str,
+    ) -> Mapping[str, t.GeneralValueType]:
+        return {
+            "name": entity_name,
+            "path": f"/entities/{entity_name}",
+            "strategy": EndpointDiscoveryStrategy.API_BASED,
+        }
+
     def discover_entities(self) -> FlextResult[list[Mapping[str, t.GeneralValueType]]]:
-        """Discover entities placeholder."""
-        return FlextResult.ok([])
+        entities_result = self.client.discover_entities()
+        if entities_result.is_failure:
+            return FlextResult.fail(entities_result.error)
+
+        discovered = [
+            self._to_discovered_entity(entity_name)
+            for entity_name in entities_result.value
+            if entity_name
+        ]
+        return FlextResult.ok(discovered)
 
 
 # Constants
@@ -59,10 +59,6 @@ DISCOVERY_FAILURE = "discovery_failure"
 __all__ = [
     "DISCOVERY_FAILURE",
     "DISCOVERY_SUCCESS",
-    "CacheValue",
-    "DiscoveryContext",
     "EndpointDiscoveryStrategy",
-    "EntityResponseParser",
-    "FlextOracleWmsDefaults",
     "FlextOracleWmsEntityDiscovery",
 ]

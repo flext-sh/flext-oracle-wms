@@ -11,6 +11,7 @@ from flext_oracle_wms import (
     FlextOracleWmsAuthenticator,
     FlextOracleWmsAuthSettings,
     OracleWMSAuthMethod,
+    create_oracle_wms_client,
 )
 
 
@@ -130,6 +131,7 @@ class TestAuthenticator:
         authenticator = FlextOracleWmsAuthenticator(config)
         result = authenticator.authenticate()
         assert result.is_success
+        assert result.value == "dGVzdF91c2VyOnRlc3RfcGFzc3dvcmQ="
 
     def test_authenticate_basic_failure(self) -> None:
         """Test basic auth authenticate fails without credentials."""
@@ -138,8 +140,7 @@ class TestAuthenticator:
         result = authenticator.authenticate()
         assert result.is_failure
 
-    def test_authenticate_oauth2_success(self) -> None:
-        """Test oauth2 authenticate returns success."""
+    def test_authenticate_oauth2_not_configured(self) -> None:
         config = FlextOracleWmsAuthSettings(
             method=OracleWMSAuthMethod.OAUTH2,
             oauth2_client_id="id",
@@ -147,7 +148,8 @@ class TestAuthenticator:
         )
         authenticator = FlextOracleWmsAuthenticator(config)
         result = authenticator.authenticate()
-        assert result.is_success
+        assert result.is_failure
+        assert result.error == "OAuth2 not configured"
 
     def test_authenticate_oauth2_failure(self) -> None:
         """Test oauth2 authenticate fails without credentials."""
@@ -157,7 +159,6 @@ class TestAuthenticator:
         assert result.is_failure
 
     def test_get_auth_headers_success(self) -> None:
-        """Test get_auth_headers returns Authorization header."""
         config = FlextOracleWmsAuthSettings(
             method=OracleWMSAuthMethod.BASIC,
             username="test_user",
@@ -168,7 +169,17 @@ class TestAuthenticator:
         assert result.is_success
         headers = result.value
         assert "Authorization" in headers
-        assert headers["Authorization"].startswith("Bearer ")
+        assert headers["Authorization"].startswith("Basic ")
+
+    def test_create_oracle_wms_client_not_configured(self) -> None:
+        config = FlextOracleWmsAuthSettings(
+            method=OracleWMSAuthMethod.BASIC,
+            username="test_user",
+            password="test_password",
+        )
+        result = create_oracle_wms_client(config)
+        assert result.is_failure
+        assert result.error == "Oracle WMS client creation not configured"
 
     def test_get_auth_headers_failure(self) -> None:
         """Test get_auth_headers fails without credentials."""
