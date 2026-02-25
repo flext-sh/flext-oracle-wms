@@ -60,9 +60,7 @@ class FlextOracleWmsAuthenticator:
             if not self.config.username or not self.config.password:
                 return FlextResult.fail("Username and password required for basic auth")
 
-            credentials = f"{self.config.username}:{self.config.password}".encode(
-                "utf-8"
-            )
+            credentials = f"{self.config.username}:{self.config.password}".encode()
             token = base64.b64encode(credentials).decode("ascii")
             self._token = token
             return FlextResult.ok(token)
