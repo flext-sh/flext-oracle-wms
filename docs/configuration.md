@@ -27,7 +27,7 @@
 
 **Version**: 0.9.9 RC | **Last Updated**: September 17, 2025 | **Status**: Test configuration only · 1.0.0 Release Preparation
 
-______________________________________________________________________
+---
 
 ## Configuration Overview
 
@@ -178,6 +178,6 @@ Oracle WMS Cloud authentication standards:
 1. Configure rate limiting and retry policies
 1. Validate against real Oracle WMS instances
 
-______________________________________________________________________
+---
 
 **Last Updated**: September 17, 2025 | **Status**: Test configuration only, requires Oracle WMS Cloud implementation · 1.0.0 Release Preparation

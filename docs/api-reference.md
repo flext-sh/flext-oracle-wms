@@ -25,7 +25,7 @@
 
 **Version**: 0.9.9 RC | **Last Updated**: September 17, 2025 | **Status**: Framework with implementation gaps · 1.0.0 Release Preparation
 
-______________________________________________________________________
+---
 
 ## Client API
 
@@ -174,7 +174,7 @@ entity = FlextOracleWmsEntity(
 - ❌ **Authentication** - Limited to test scenarios
 - ❌ **FLEXT compliance** - Uses httpx instead of flext-api
 
-______________________________________________________________________
+---
 
 **Last Updated**: September 17, 2025 | **Status**: Framework requiring Oracle WMS Cloud integration implementation · 1.0.0 Release Preparation
 

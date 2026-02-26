@@ -379,7 +379,7 @@ pytest --lf
 pytest --pdb
 ```
 
-______________________________________________________________________
+---
 
 **Test Suite Status**: Production Ready\
 **Coverage**: 90%+ (Enforced)\

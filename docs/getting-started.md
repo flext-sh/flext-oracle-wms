@@ -20,7 +20,7 @@
 
 **Version**: 0.9.9 RC | **Last Updated**: September 17, 2025 | **Status**: Framework requiring implementation · 1.0.0 Release Preparation
 
-______________________________________________________________________
+---
 
 ## Installation
 
@@ -94,7 +94,7 @@ with FlextOracleWmsClient(config) as client:
 1. **Development Setup** - [Development guidelines](development.md)
 1. **Implementation Roadmap** - [TODO.md](../TODO.md)
 
-______________________________________________________________________
+---
 
 **Last Updated**: September 17, 2025 | **Status**: Framework requiring Oracle WMS Cloud integration implementation · 1.0.0 Release Preparation
 

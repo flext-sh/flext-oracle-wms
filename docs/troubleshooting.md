@@ -27,7 +27,7 @@
 
 **Version**: 0.9.9 RC | **Last Updated**: September 17, 2025 | **Status**: Framework troubleshooting · 1.0.0 Release Preparation
 
-______________________________________________________________________
+---
 
 ## Common Issues
 
@@ -355,6 +355,6 @@ When reporting issues, include:
 1. **Steps to reproduce** - Minimal example
 1. **Expected vs actual behavior**
 
-______________________________________________________________________
+---
 
 **Last Updated**: September 17, 2025 | **Status**: Framework troubleshooting guide · 1.0.0 Release Preparation
