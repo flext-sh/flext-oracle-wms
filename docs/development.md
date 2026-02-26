@@ -37,7 +37,7 @@
 
 **Version**: 0.9.9 RC | **Last Updated**: September 17, 2025 | **Status**: Framework requiring implementation · 1.0.0 Release Preparation
 
----
+______________________________________________________________________
 
 ## Development Setup
 
@@ -215,25 +215,30 @@ def test_real_connection():
 ### Phase 1: FLEXT Compliance (Weeks 1-2)
 
 1. **Replace httpx with flext-api patterns**
+
    - Migrate `http_client.py` and `wms_discovery.py`
    - Update all HTTP client usage
 
 1. **Consolidate class architecture**
+
    - Reduce from 71 classes to unified classes per module
    - Implement nested helper pattern
 
 1. **Integrate flext-auth**
+
    - Replace custom authentication classes
    - Add OAuth2 support for Oracle WMS Cloud
 
 ### Phase 2: Oracle WMS Integration (Weeks 3-4)
 
 1. **Add missing LGF v10 APIs**
+
    - Implement modern pick_confirm API
    - Add bulk_update_inventory_attributes endpoint
    - Add object store data extraction capabilities
 
 1. **Establish real connectivity**
+
    - Replace fake test URLs with actual Oracle WMS Cloud testing
    - Implement proper authentication testing
    - Validate against real Oracle WMS instances
@@ -241,10 +246,12 @@ def test_real_connection():
 ### Phase 3: Enhanced Features (Weeks 5-6)
 
 1. **Complete Singer protocol implementation**
+
    - Enhanced tap/target functionality
    - Real-time streaming capabilities
 
 1. **Performance optimization**
+
    - Connection pooling
    - Intelligent caching strategies
 
@@ -307,6 +314,6 @@ python -m pdb script.py    # Python debugger
 python -v script.py        # Verbose imports
 ```
 
----
+______________________________________________________________________
 
 **Last Updated**: September 17, 2025 | **Status**: Framework requiring FLEXT compliance and Oracle WMS implementation · 1.0.0 Release Preparation
