@@ -9,11 +9,10 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from dataclasses import dataclass, field
 from typing import Annotated, Literal
 
 from flext_core import FlextModels, r, t
-from pydantic import Field, StringConstraints
+from pydantic import BaseModel, ConfigDict, Field, StringConstraints
 
 from flext_oracle_wms.constants import c
 
@@ -53,90 +52,97 @@ class FlextWmsModels(FlextModels):
     # DOMAIN ENTITIES - Composed DDD patterns
     # =========================================================================
 
-    @dataclass
-    class WmsEntity:
+    class WmsEntity(BaseModel):
         """Base WMS entity with identity."""
 
-        id: str = ""
-        name: str = ""
-        created_at: str | None = field(default=None)
-        updated_at: str | None = field(default=None)
+        model_config = ConfigDict(extra="forbid")
 
-    @dataclass
+        id: str = Field(default="", description="Entity identifier")
+        name: str = Field(default="", description="Entity name")
+        created_at: str | None = Field(default=None, description="Creation timestamp")
+        updated_at: str | None = Field(
+            default=None, description="Last update timestamp"
+        )
+
     class OracleWms(WmsEntity):
         """Oracle WMS entity (alias/compatibility)."""
 
         pass
 
-    @dataclass
     class InventoryItem(WmsEntity):
         """Inventory domain entity."""
 
-        sku: str = ""
-        quantity: int = 0
-        location_id: str = ""
-        status: str = "active"
+        sku: str = Field(default="", description="Stock keeping unit")
+        quantity: int = Field(default=0, description="Item quantity", ge=0)
+        location_id: str = Field(default="", description="Storage location identifier")
+        status: str = Field(default="active", description="Item status")
 
-    @dataclass
     class Order(WmsEntity):
         """Order domain entity."""
 
-        customer_id: str = ""
-        status: str = "pending"
-        total_amount: float = 0.0
-        items: list[dict[str, t.GeneralValueType]] = field(default_factory=list)
+        customer_id: str = Field(default="", description="Customer identifier")
+        status: str = Field(default="pending", description="Order status")
+        total_amount: float = Field(
+            default=0.0, description="Total order amount", ge=0.0
+        )
+        items: list[dict[str, t.GeneralValueType]] = Field(
+            default_factory=list, description="Order items"
+        )
 
-    @dataclass
     class Shipment(WmsEntity):
         """Shipment domain entity."""
 
-        order_id: str = ""
-        status: str = "pending"
-        carrier: str | None = None
-        tracking_number: str | None = None
+        order_id: str = Field(default="", description="Associated order identifier")
+        status: str = Field(default="pending", description="Shipment status")
+        carrier: str | None = Field(default=None, description="Shipping carrier name")
+        tracking_number: str | None = Field(
+            default=None, description="Shipment tracking number"
+        )
 
-    @dataclass
     class PickingTask(WmsEntity):
         """Picking task domain entity."""
 
-        wave_id: str = ""
-        status: str = "pending"
-        items: list[dict[str, t.GeneralValueType]] = field(default_factory=list)
+        wave_id: str = Field(default="", description="Wave identifier")
+        status: str = Field(default="pending", description="Task status")
+        items: list[dict[str, t.GeneralValueType]] = Field(
+            default_factory=list, description="Task items"
+        )
 
-    @dataclass
     class Location(WmsEntity):
         """Location domain entity."""
 
-        aisle: str = ""
-        shelf: str = ""
-        bin_: str = ""
-        zone: str = ""
+        aisle: str = Field(default="", description="Aisle identifier")
+        shelf: str = Field(default="", description="Shelf identifier")
+        bin_: str = Field(default="", description="Bin identifier")
+        zone: str = Field(default="", description="Zone identifier")
 
     # =========================================================================
     # VALUE OBJECTS - Immutable domain values
     # =========================================================================
 
-    @dataclass(frozen=True)
-    class WarehouseLocation:
+    class WarehouseLocation(BaseModel):
         """Warehouse location value object."""
 
-        aisle: str
-        shelf: str
-        bin_: str
-        zone: str = ""
+        model_config = ConfigDict(frozen=True, extra="forbid")
+
+        aisle: str = Field(description="Aisle identifier")
+        shelf: str = Field(description="Shelf identifier")
+        bin_: str = Field(description="Bin identifier")
+        zone: str = Field(default="", description="Zone identifier")
 
         @property
         def full_location(self) -> str:
             """Get full location string."""
             return f"{self.zone}-{self.aisle}-{self.shelf}-{self.bin_}"
 
-    @dataclass(frozen=True)
-    class ApiCredentials:
+    class ApiCredentials(BaseModel):
         """API credentials value object."""
 
-        username: str
-        password: str | None = None
-        token: str | None = None
+        model_config = ConfigDict(frozen=True, extra="forbid")
+
+        username: str = Field(description="API username")
+        password: str | None = Field(default=None, description="API password")
+        token: str | None = Field(default=None, description="API token")
 
     # =========================================================================
     # ENUMS - Aliases from constants.py (single source of truth)
