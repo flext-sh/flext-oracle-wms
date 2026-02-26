@@ -6,7 +6,6 @@ SPDX-License-Identifier: MIT
 """
 
 import pytest
-
 from flext_oracle_wms import (
     FlextOracleWmsAuthenticator,
     FlextOracleWmsAuthSettings,

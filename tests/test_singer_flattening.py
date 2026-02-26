@@ -8,13 +8,12 @@ SPDX-License-Identifier: MIT
 """
 
 import pytest
-from pydantic import ValidationError
-
 from flext_oracle_wms import (
     FlextOracleWmsApiResponse,
     FlextOracleWmsEntity,
     FlextOracleWmsModels,
 )
+from pydantic import ValidationError
 
 
 class TestFlextOracleWmsEntity:

@@ -9,7 +9,6 @@ from __future__ import annotations
 from unittest.mock import MagicMock
 
 from flext_core import FlextResult
-
 from flext_oracle_wms import FlextOracleWmsEntityDiscovery
 from flext_oracle_wms.wms_discovery import (
     DISCOVERY_FAILURE,
@@ -19,6 +18,8 @@ from flext_oracle_wms.wms_discovery import (
 
 
 class TestDiscoveryConstants:
+    """Test suite for discovery constants."""
+
     def test_discovery_success_constant(self) -> None:
         assert DISCOVERY_SUCCESS == "discovery_success"
 
@@ -27,6 +28,8 @@ class TestDiscoveryConstants:
 
 
 class TestEndpointDiscoveryStrategyEnum:
+    """Test suite for EndpointDiscoveryStrategy enum."""
+
     def test_api_based_value(self) -> None:
         assert EndpointDiscoveryStrategy.API_BASED == "api_based"
 
@@ -38,6 +41,8 @@ class TestEndpointDiscoveryStrategyEnum:
 
 
 class TestFlextOracleWmsEntityDiscovery:
+    """Test suite for FlextOracleWmsEntityDiscovery class."""
+
     def test_initialization_with_mock_client(self) -> None:
         mock_client = MagicMock()
         discovery = FlextOracleWmsEntityDiscovery(client=mock_client)

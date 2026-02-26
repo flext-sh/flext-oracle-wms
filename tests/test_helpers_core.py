@@ -7,20 +7,19 @@ SPDX-License-Identifier: MIT
 """
 
 import pytest
-from flext_oracle_wms.utilities import FlextOracleWmsUtilities
+from flext_core import FlextUtilities
+from flext_oracle_wms.utilities import FlextOracleWmsUtilities, u
 
 
 @pytest.mark.unit
 class TestFlextOracleWmsUtilities:
-    def test_inherits_from_flext_utilities(self) -> None:
-        from flext_core import FlextUtilities
+    """Test suite for FlextOracleWmsUtilities class."""
 
+    def test_inherits_from_flext_utilities(self) -> None:
         assert issubclass(FlextOracleWmsUtilities, FlextUtilities)
 
     def test_has_oracle_wms_namespace(self) -> None:
         assert hasattr(FlextOracleWmsUtilities, "OracleWms")
 
     def test_module_alias(self) -> None:
-        from flext_oracle_wms.utilities import u
-
         assert u is FlextOracleWmsUtilities

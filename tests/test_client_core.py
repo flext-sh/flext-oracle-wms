@@ -11,7 +11,6 @@ from unittest.mock import MagicMock
 
 import pytest
 from flext_core import FlextLogger, FlextResult
-
 from flext_oracle_wms import (
     FlextOracleWmsClient,
     FlextOracleWmsSettings,
@@ -265,6 +264,8 @@ class TestFlextOracleWmsClientCore:
 
 @pytest.mark.unit
 class TestGetLogger:
+    """Tests for FlextLogger utility within WMS package."""
+
     def test_get_logger_module_name(self) -> None:
         logger = FlextLogger("test_module")
         assert hasattr(logger, "info")

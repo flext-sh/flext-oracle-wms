@@ -6,13 +6,13 @@ This demonstrates the declarative approach with massive code reduction.
 from pathlib import Path
 from urllib.parse import urlparse
 
-from flext_oracle_wms import t
 from flext_core import FlextLogger
 from flext_oracle_wms import (
     FLEXT_ORACLE_WMS_APIS,
     FlextOracleWmsApiVersion,
     FlextOracleWmsClient,
     FlextOracleWmsClientSettings,
+    t,
 )
 
 logger = FlextLogger(__name__)
