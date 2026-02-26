@@ -680,7 +680,7 @@ class TestErrorHandling:
 
     def test_sort_records_handles_exception(self) -> None:
         filter_engine = FlextOracleWmsFilter(case_sensitive=False, max_conditions=50)
-        result = filter_engine.sort_records(None, "field")  # type: ignore[arg-type]
+        result = filter_engine.sort_records(None, "field")
         assert result.is_failure
         assert result.error is not None and "Sort failed" in result.error
 
