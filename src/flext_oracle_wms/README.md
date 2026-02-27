@@ -47,7 +47,7 @@ This directory contains the core implementation of the **flext-oracle-wms** libr
 - **[exceptions.py](exceptions.py)** - Comprehensive error hierarchy for Oracle WMS operations
 - **[constants.py](constants.py)** - Oracle WMS constants, enums, and default values
 - **[types.py](types.py)** - Type definitions and aliases for Oracle WMS integration
-- **[models.py](models.py)** - Data models using FLEXT ValueObject patterns
+- **[models.py](models.py)** - Data models using FLEXT Value patterns
 
 ### 🏗️ **API & Discovery**
 

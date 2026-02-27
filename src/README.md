@@ -49,7 +49,7 @@ src/flext_oracle_wms/
 ├── exceptions.py           # Comprehensive error hierarchy for Oracle WMS
 ├── constants.py            # Oracle WMS constants, enums, and defaults
 ├── types.py
-├── models.py               # Data models using FLEXT ValueObject patterns
+├── models.py               # Data models using FLEXT Value patterns
 ├── api_catalog.py          # Declarative API endpoint catalog
 ├── authentication.py       # Multi-method authentication (Basic, Bearer, API Key)
 ├── discovery.py            # Automatic entity and schema discovery
