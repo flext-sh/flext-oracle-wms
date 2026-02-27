@@ -89,6 +89,8 @@ class FlextOracleWmsClient:
                     return FlextResult.fail(f"Invalid JSON payload: {exc}")
             case None:
                 return FlextResult.fail("Empty response payload")
+            case _:
+                return FlextResult.fail("Unsupported response type")
 
     def _request(
         self,

@@ -188,6 +188,8 @@ class FlextHttpClient:
                             return {"text": text_body}
                         case dict() as json_body:
                             return json_body
+                        case _:
+                            return {"text": str(validated.body)}
                 except (ValidationError, ValueError):
                     return {"text": raw}
             case bytes() as raw_bytes:
@@ -202,10 +204,12 @@ class FlextHttpClient:
                             return {"text": text_body}
                         case dict() as json_body:
                             return json_body
+                        case _:
+                            return {"text": str(validated.body)}
                 except (UnicodeDecodeError, ValidationError, ValueError):
                     return {"text": raw_bytes.decode("utf-8", errors="ignore")}
             case _:
-                return {"data": str(body)} if body is not None else {}
+                return {}
 
     def post(
         self,

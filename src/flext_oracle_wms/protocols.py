@@ -26,7 +26,7 @@ class FlextOracleWmsProtocols(FlextProtocols):
         """OracleWms domain namespace."""
 
         @runtime_checkable
-        class WmsServiceProtocol(FlextProtocols.Service, Protocol):
+        class WmsServiceProtocol(FlextProtocols.Service[None], Protocol):
             """Unified WMS service protocol with operation dispatch."""
 
             def execute_wms_operation(

@@ -8,6 +8,8 @@ from __future__ import annotations
 
 from flext_core import r
 from flext_core.models import FlextModels
+from flext_core.typings import t
+from flext_core.models import FlextModels
 from pydantic import BaseModel, Field
 
 from flext_oracle_wms.constants import FlextOracleWmsConstants
@@ -48,7 +50,7 @@ class FlextOracleWmsModels(FlextModels):
         class ApiResponse(BaseModel):
             """API response model."""
 
-            data: dict = Field(default_factory=dict)
+            data: dict[str, t.GeneralValueType] = Field(default_factory=dict)
             status_code: int = Field(default=200, ge=200, le=599)
             success: bool = True
             error_message: str | None = None

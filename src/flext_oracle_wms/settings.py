@@ -98,7 +98,7 @@ class FlextOracleWmsSettings(FlextSettings):
 
     def validate_config(self) -> FlextResult[bool]:
         """Validate configuration using railway pattern."""
-        errors = []
+        errors: list[str] = []
         if self.timeout <= 0:
             errors.append("Timeout must be positive")
         if self.retry_attempts < 0:

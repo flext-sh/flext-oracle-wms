@@ -30,7 +30,7 @@ class FlextOracleWmsAuthSettings(BaseModel):
 
     def validate_business_rules(self) -> FlextResult[bool]:
         """Validate auth configuration."""
-        errors = []
+        errors: list[str] = []
         if self.method == OracleWMSAuthMethod.BASIC and (
             not self.username or not self.password
         ):
