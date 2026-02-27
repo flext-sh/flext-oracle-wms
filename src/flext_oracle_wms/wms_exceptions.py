@@ -7,6 +7,7 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 from flext_core import FlextLogger
+from flext_core.exceptions import e
 
 
 # Direct FLEXT pattern implementation - no inheritance from FlextExceptions to avoid conflicts
@@ -20,7 +21,7 @@ class FlextOracleWmsExceptions:
     logger = FlextLogger(__name__)
 
     # Base exception class following FLEXT patterns directly
-    class BaseError(Exception):
+    class BaseError(e.BaseError):
         """Base WMS exception with FLEXT context handling."""
 
         def __init__(
