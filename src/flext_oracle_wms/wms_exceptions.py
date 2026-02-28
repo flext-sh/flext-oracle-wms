@@ -6,7 +6,7 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from flext_core import FlextLogger, e
+from flext_core import FlextLogger, e, t
 
 
 # Direct FLEXT pattern implementation - no inheritance from FlextExceptions to avoid conflicts
@@ -27,7 +27,7 @@ class FlextOracleWmsExceptions:
             self,
             message: str,
             code: str = "WMS_ERROR",
-            **context: object,
+            **context: t.GeneralValueType,
         ) -> None:
             """Initialize base WMS error with message and error code."""
             super().__init__(message)
@@ -39,35 +39,35 @@ class FlextOracleWmsExceptions:
     class ValidationError(BaseError):
         """Validation error."""
 
-        def __init__(self, message: str, **context: object) -> None:
+        def __init__(self, message: str, **context: t.GeneralValueType) -> None:
             """Initialize validation error."""
             super().__init__(message, "WMS_VALIDATION_ERROR", **context)
 
     class ConfigurationError(BaseError):
         """Configuration error."""
 
-        def __init__(self, message: str, **context: object) -> None:
+        def __init__(self, message: str, **context: t.GeneralValueType) -> None:
             """Initialize configuration error."""
             super().__init__(message, "WMS_CONFIG_ERROR", **context)
 
     class WmsConnectionError(BaseError):
         """Connection error."""
 
-        def __init__(self, message: str, **context: object) -> None:
+        def __init__(self, message: str, **context: t.GeneralValueType) -> None:
             """Initialize WMS connection error."""
             super().__init__(message, "WMS_CONNECTION_ERROR", **context)
 
     class AuthenticationError(BaseError):
         """Authentication error."""
 
-        def __init__(self, message: str, **context: object) -> None:
+        def __init__(self, message: str, **context: t.GeneralValueType) -> None:
             """Initialize authentication error."""
             super().__init__(message, "WMS_AUTH_ERROR", **context)
 
     class ProcessingError(BaseError):
         """Processing error."""
 
-        def __init__(self, message: str, **context: object) -> None:
+        def __init__(self, message: str, **context: t.GeneralValueType) -> None:
             """Initialize processing error."""
             super().__init__(message, "WMS_PROCESSING_ERROR", **context)
 
@@ -75,7 +75,7 @@ class FlextOracleWmsExceptions:
     class ApiError(BaseError):
         """API error."""
 
-        def __init__(self, message: str, **context: object) -> None:
+        def __init__(self, message: str, **context: t.GeneralValueType) -> None:
             """Initialize API error."""
             super().__init__(message, "WMS_API_ERROR", **context)
 
