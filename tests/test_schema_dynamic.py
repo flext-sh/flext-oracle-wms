@@ -108,14 +108,14 @@ class TestNestedConstants:
 
     def test_entity_types_tuple(self) -> None:
         """Test ENTITY_TYPES generated from StrEnum."""
-        et = FlextOracleWmsConstants.ENTITY_TYPES
+        et = tuple(FlextOracleWmsConstants.WmsEntityType)
         assert isinstance(et, tuple)
         assert "inventory" in et
         assert "orders" in et
 
     def test_wms_entities_types_from_enum(self) -> None:
         """Test WmsEntities.TYPES generated from StrEnum names."""
-        types = FlextOracleWmsConstants.WmsEntities.TYPES
+        types = tuple(member.name for member in FlextOracleWmsConstants.WmsEntityType)
         assert isinstance(types, tuple)
         assert "INVENTORY" in types
         assert "ORDERS" in types

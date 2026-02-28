@@ -45,7 +45,7 @@ class TestFlextOracleWmsConstants:
 
     def test_entity_type_constants(self) -> None:
         """Test ENTITY_TYPES tuple derived from WmsEntityType enum."""
-        entity_types = FlextOracleWmsConstants.ENTITY_TYPES
+        entity_types = tuple(FlextOracleWmsConstants.WmsEntityType)
         assert isinstance(entity_types, tuple)
         assert "inventory" in entity_types
         assert "orders" in entity_types

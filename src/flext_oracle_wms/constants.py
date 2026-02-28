@@ -168,17 +168,6 @@ class FlextOracleWmsConstants(FlextConstants):
         PRODUCTS = "products"
         WAREHOUSES = "warehouses"
 
-    # Generate ENTITY_TYPES list from StrEnum for backward compatibility
-    ENTITY_TYPES: Final[tuple[str, ...]] = tuple(
-        member.value for member in WmsEntityType.__members__.values()
-    )
-
-    # Generate WmsEntities.TYPES from StrEnum (uppercase for backward compatibility)
-    # Set class attribute after enum definition
-    WmsEntities.TYPES = tuple(
-        member.name for member in WmsEntityType.__members__.values()
-    )
-
     # PEP 695 Literal type (string values to avoid class-scope resolution issues)
     type WmsEntityTypeLiteral = Literal[
         "inventory",
@@ -374,20 +363,10 @@ type OracleWMSAuthMethodLiteral = Literal[
 ]
 
 
-# Module-level aliases for backward compatibility
-# Note: Cannot inherit from nested StrEnum classes, use type aliases instead
-WmsFilterOperator = FlextOracleWmsConstants.WmsFilterOperator
-WmsApiVersion = FlextOracleWmsConstants.WmsApiVersion
-WmsApiCategory = FlextOracleWmsConstants.WmsApiCategory
-
-
 c = FlextOracleWmsConstants
 
 __all__ = [
     "FlextOracleWmsConstants",
     "OracleWMSAuthMethod",
-    "WmsApiCategory",
-    "WmsApiVersion",
-    "WmsFilterOperator",
     "c",
 ]

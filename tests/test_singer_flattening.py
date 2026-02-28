@@ -21,7 +21,7 @@ class TestFlextOracleWmsEntity:
 
     def test_entity_creation_valid(self) -> None:
         """Test entity creation with valid parameters."""
-        entity = FlextOracleWmsEntity(name="inventory", endpoint="/inventory")
+        entity = m.OracleWms.Entity(name="inventory", endpoint="/inventory")
         assert entity.name == "inventory"
         assert entity.endpoint == "/inventory"
         assert entity.description is None
@@ -31,7 +31,7 @@ class TestFlextOracleWmsEntity:
 
     def test_entity_creation_all_fields(self) -> None:
         """Test entity creation with all fields."""
-        entity = FlextOracleWmsEntity(
+        entity = m.OracleWms.Entity(
             name="orders",
             endpoint="/orders",
             description="Order data",
@@ -49,22 +49,22 @@ class TestFlextOracleWmsEntity:
     def test_entity_name_min_length(self) -> None:
         """Test entity name must have min length 1."""
         with pytest.raises(ValidationError):
-            FlextOracleWmsEntity(name="", endpoint="/test")
+            m.OracleWms.Entity(name="", endpoint="/test")
 
     def test_entity_endpoint_pattern(self) -> None:
         """Test entity endpoint must start with /."""
         with pytest.raises(ValidationError):
-            FlextOracleWmsEntity(name="test", endpoint="no-slash")
+            m.OracleWms.Entity(name="test", endpoint="no-slash")
 
     def test_entity_validate_entity_success(self) -> None:
         """Test entity validation success."""
-        entity = FlextOracleWmsEntity(name="inventory", endpoint="/inventory")
+        entity = m.OracleWms.Entity(name="inventory", endpoint="/inventory")
         result = entity.validate_entity()
         assert result.is_success
 
     def test_entity_validate_entity_name_too_long(self) -> None:
         """Test entity validation fails for long name."""
-        entity = FlextOracleWmsEntity(name="x" * 101, endpoint="/test")
+        entity = m.OracleWms.Entity(name="x" * 101, endpoint="/test")
         result = entity.validate_entity()
         assert result.is_failure
         assert result.error is not None
@@ -76,7 +76,7 @@ class TestFlextOracleWmsEntity:
             name="test",
             endpoint="/test",
         )
-        assert isinstance(entity, FlextOracleWmsEntity)
+        assert isinstance(entity, m.OracleWms.Entity)
 
 
 class TestFlextOracleWmsApiResponse:
@@ -84,7 +84,7 @@ class TestFlextOracleWmsApiResponse:
 
     def test_response_defaults(self) -> None:
         """Test response creation with defaults."""
-        response = FlextOracleWmsApiResponse()
+        response = m.OracleWms.ApiResponse()
         assert response.data == {}
         assert response.status_code == 200
         assert response.success is True
@@ -92,7 +92,7 @@ class TestFlextOracleWmsApiResponse:
 
     def test_response_custom_fields(self) -> None:
         """Test response creation with custom fields."""
-        response = FlextOracleWmsApiResponse(
+        response = m.OracleWms.ApiResponse(
             data={"key": "value"},
             status_code=201,
             success=True,
@@ -103,7 +103,7 @@ class TestFlextOracleWmsApiResponse:
 
     def test_response_error(self) -> None:
         """Test response with error."""
-        response = FlextOracleWmsApiResponse(
+        response = m.OracleWms.ApiResponse(
             success=False,
             error_message="Something went wrong",
             status_code=500,
@@ -113,13 +113,13 @@ class TestFlextOracleWmsApiResponse:
 
     def test_response_validate_success(self) -> None:
         """Test response validation success."""
-        response = FlextOracleWmsApiResponse(success=True)
+        response = m.OracleWms.ApiResponse(success=True)
         result = response.validate_response()
         assert result.is_success
 
     def test_response_validate_failure_needs_message(self) -> None:
         """Test failed response without error message fails validation."""
-        response = FlextOracleWmsApiResponse(success=False, error_message=None)
+        response = m.OracleWms.ApiResponse(success=False, error_message=None)
         result = response.validate_response()
         assert result.is_failure
         assert result.error is not None
@@ -127,7 +127,7 @@ class TestFlextOracleWmsApiResponse:
 
     def test_response_validate_failure_with_message(self) -> None:
         """Test failed response with error message passes validation."""
-        response = FlextOracleWmsApiResponse(
+        response = m.OracleWms.ApiResponse(
             success=False,
             error_message="Error occurred",
         )
@@ -137,10 +137,10 @@ class TestFlextOracleWmsApiResponse:
     def test_response_status_code_bounds(self) -> None:
         """Test status code validation bounds."""
         with pytest.raises(ValidationError):
-            FlextOracleWmsApiResponse(status_code=199)
+            m.OracleWms.ApiResponse(status_code=199)
 
         with pytest.raises(ValidationError):
-            FlextOracleWmsApiResponse(status_code=600)
+            m.OracleWms.ApiResponse(status_code=600)
 
     def test_response_namespace_access(self) -> None:
         """Test response accessible via namespace."""
@@ -148,4 +148,4 @@ class TestFlextOracleWmsApiResponse:
             data={"test": True},
             status_code=200,
         )
-        assert isinstance(response, FlextOracleWmsApiResponse)
+        assert isinstance(response, m.OracleWms.ApiResponse)

@@ -59,15 +59,9 @@ class FlextOracleWmsModels(FlextModels):
                 return r.ok(True)
 
 
-# Backward compatibility — use m.OracleWms.Entity in new code
-FlextOracleWmsEntity = FlextOracleWmsModels.OracleWms.Entity
-FlextOracleWmsApiResponse = FlextOracleWmsModels.OracleWms.ApiResponse
-
 m = FlextOracleWmsModels
 
 __all__ = [
-    "FlextOracleWmsApiResponse",
-    "FlextOracleWmsEntity",
     "FlextOracleWmsModels",
     "m",
 ]

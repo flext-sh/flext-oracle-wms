@@ -20,10 +20,6 @@ class _EntityDiscoveryClient(Protocol):
     def discover_entities(self) -> FlextResult[list[str]]: ...
 
 
-# Alias for backward compatibility - EndpointDiscoveryStrategy is now in constants.py
-EndpointDiscoveryStrategy = c.EndpointDiscoveryStrategy
-
-
 class FlextOracleWmsEntityDiscovery:
     """Discovery service for Oracle WMS entities."""
 
@@ -38,7 +34,7 @@ class FlextOracleWmsEntityDiscovery:
         return {
             "name": entity_name,
             "path": f"/entities/{entity_name}",
-            "strategy": EndpointDiscoveryStrategy.API_BASED,
+            "strategy": c.EndpointDiscoveryStrategy.API_BASED,
         }
 
     def discover_entities(self) -> FlextResult[list[Mapping[str, t.GeneralValueType]]]:
@@ -63,6 +59,5 @@ DISCOVERY_FAILURE = "discovery_failure"
 __all__ = [
     "DISCOVERY_FAILURE",
     "DISCOVERY_SUCCESS",
-    "EndpointDiscoveryStrategy",
     "FlextOracleWmsEntityDiscovery",
 ]
