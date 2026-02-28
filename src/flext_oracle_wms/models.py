@@ -11,7 +11,7 @@ from __future__ import annotations
 
 from typing import Annotated, Literal
 
-from flext_core import FlextModels, r, t
+from flext_core import FlextModels, r, t as core_t
 from pydantic import BaseModel, ConfigDict, Field, StringConstraints
 
 from flext_oracle_wms.constants import c
@@ -33,10 +33,10 @@ class FlextOracleWmsModels(FlextModels):
     # TYPE ALIASES - Advanced composition for minimal declarations
     # =========================================================================
 
-    type TRecord = dict[str, t.GeneralValueType]
-    type TRecordBatch = list[dict[str, t.GeneralValueType]]
-    type TSchema = dict[str, dict[str, t.GeneralValueType]]
-    type TApiResponse = dict[str, t.GeneralValueType]
+    type TRecord = dict[str, core_t.GeneralValueType]
+    type TRecordBatch = list[dict[str, core_t.GeneralValueType]]
+    type TSchema = dict[str, dict[str, core_t.GeneralValueType]]
+    type TApiResponse = dict[str, core_t.GeneralValueType]
     type TApiVersion = Literal["v2", "v1", "legacy"]
     type TEntityId = Annotated[str, StringConstraints(min_length=1, max_length=100)]
     type TEntityName = Annotated[
@@ -55,7 +55,7 @@ class FlextOracleWmsModels(FlextModels):
     class WmsEntity(BaseModel):
         """Base WMS entity with identity."""
 
-        model_config: ConfigDict = ConfigDict(extra="forbid")
+        model_config = ConfigDict(extra="forbid")
 
         id: str = Field(default="", description="Entity identifier")
         name: str = Field(default="", description="Entity name")
@@ -85,7 +85,7 @@ class FlextOracleWmsModels(FlextModels):
         total_amount: float = Field(
             default=0.0, description="Total order amount", ge=0.0
         )
-        items: list[dict[str, t.GeneralValueType]] = Field(
+        items: list[dict] = Field(
             default_factory=list, description="Order items"
         )
 
@@ -104,7 +104,7 @@ class FlextOracleWmsModels(FlextModels):
 
         wave_id: str = Field(default="", description="Wave identifier")
         status: str = Field(default="pending", description="Task status")
-        items: list[dict[str, t.GeneralValueType]] = Field(
+        items: list[dict] = Field(
             default_factory=list, description="Task items"
         )
 
@@ -123,7 +123,7 @@ class FlextOracleWmsModels(FlextModels):
     class WarehouseLocation(BaseModel):
         """Warehouse location value object."""
 
-        model_config: ConfigDict = ConfigDict(frozen=True, extra="forbid")
+        model_config = ConfigDict(frozen=True, extra="forbid")
 
         aisle: str = Field(description="Aisle identifier")
         shelf: str = Field(description="Shelf identifier")
@@ -138,7 +138,7 @@ class FlextOracleWmsModels(FlextModels):
     class ApiCredentials(BaseModel):
         """API credentials value object."""
 
-        model_config: ConfigDict = ConfigDict(frozen=True, extra="forbid")
+        model_config = ConfigDict(frozen=True, extra="forbid")
 
         username: str = Field(description="API username")
         password: str | None = Field(default=None, description="API password")
