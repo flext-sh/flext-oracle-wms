@@ -60,22 +60,19 @@ if TYPE_CHECKING:
         FlextOracleWmsSchemaFlatteningError,
         FlextOracleWmsShipmentError,
     )
-    from flext_oracle_wms.wms_models import (
-        FlextOracleWmsApiResponse,
-        FlextOracleWmsEntity,
-        FlextOracleWmsModels,
-        FlextOracleWmsModels as m,
-    )
+    from flext_oracle_wms.wms_models import FlextOracleWmsModels
+
+    # Nested classes
+    FlextOracleWmsApiResponse = FlextOracleWmsModels.ApiResponse
+    FlextOracleWmsEntity = FlextOracleWmsModels.Entity
 
 # Lazy import mapping: export_name -> (module_path, attr_name)
 _LAZY_IMPORTS: dict[str, tuple[str, str]] = {
     "FLEXT_ORACLE_WMS_APIS": ("flext_oracle_wms.wms_api", "FLEXT_ORACLE_WMS_APIS"),
     "FlextOracleWmsApi": ("flext_oracle_wms.wms_api", "FlextOracleWmsApi"),
     "FlextOracleWmsApiError": ("flext_oracle_wms.wms_exceptions", "FlextOracleWmsApiError"),
-    "FlextOracleWmsApiResponse": (
-        "flext_oracle_wms.wms_models",
-        "FlextOracleWmsApiResponse",
-    ),
+
+
     "FlextOracleWmsAuthSettings": (
         "flext_oracle_wms.wms_auth",
         "FlextOracleWmsAuthSettings",
@@ -90,7 +87,6 @@ _LAZY_IMPORTS: dict[str, tuple[str, str]] = {
         "flext_oracle_wms.constants",
         "FlextOracleWmsConstants",
     ),
-    "FlextOracleWmsEntity": ("flext_oracle_wms.wms_models", "FlextOracleWmsEntity"),
     "FlextOracleWmsEntityDiscovery": (
         "flext_oracle_wms.wms_discovery",
         "FlextOracleWmsEntityDiscovery",
@@ -137,13 +133,11 @@ __all__ = [
     "FLEXT_ORACLE_WMS_APIS",
     "FlextOracleWmsApi",
     "FlextOracleWmsApiError",
-    "FlextOracleWmsApiResponse",
     "FlextOracleWmsAuthSettings",
     "FlextOracleWmsAuthenticationError",
     "FlextOracleWmsAuthenticator",
     "FlextOracleWmsClient",
     "FlextOracleWmsConstants",
-    "FlextOracleWmsEntity",
     "FlextOracleWmsEntityDiscovery",
     "FlextOracleWmsEntityNotFoundError",
     "FlextOracleWmsError",
