@@ -11,7 +11,7 @@ from __future__ import annotations
 
 from typing import Annotated, Literal
 
-from flext_core import FlextModels, r, t as core_t
+from flext_core import FlextModels, r, t
 from pydantic import BaseModel, ConfigDict, Field, StringConstraints
 
 from flext_oracle_wms.constants import c
@@ -33,10 +33,10 @@ class FlextOracleWmsModels(FlextModels):
     # TYPE ALIASES - Advanced composition for minimal declarations
     # =========================================================================
 
-    type TRecord = dict[str, core_t.GeneralValueType]
-    type TRecordBatch = list[dict[str, core_t.GeneralValueType]]
-    type TSchema = dict[str, dict[str, core_t.GeneralValueType]]
-    type TApiResponse = dict[str, core_t.GeneralValueType]
+    type TRecord = dict[str, t.GeneralValueType]
+    type TRecordBatch = list[dict[str, t.GeneralValueType]]
+    type TSchema = dict[str, dict[str, t.GeneralValueType]]
+    type TApiResponse = dict[str, t.GeneralValueType]
     type TApiVersion = Literal["v2", "v1", "legacy"]
     type TEntityId = Annotated[str, StringConstraints(min_length=1, max_length=100)]
     type TEntityName = Annotated[

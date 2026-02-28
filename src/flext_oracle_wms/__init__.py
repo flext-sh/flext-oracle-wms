@@ -36,7 +36,7 @@ if TYPE_CHECKING:
         FlextOracleWmsProtocols as p,
     )
     from flext_oracle_wms.settings import FlextOracleWmsSettings
-    from flext_oracle_wms.typings import t
+    from flext_oracle_wms.typings import FlextOracleWmsTypes, t
     from flext_oracle_wms.utilities import (
         FlextOracleWmsUtilities,
         FlextOracleWmsUtilities as u,
@@ -114,6 +114,7 @@ _LAZY_IMPORTS: dict[str, tuple[str, str]] = {
         "FlextOracleWmsUtilities",
     ),
     "OracleWMSAuthMethod": ("flext_oracle_wms.constants", "OracleWMSAuthMethod"),
+    "FlextOracleWmsTypes": ("flext_oracle_wms.typings", "FlextOracleWmsTypes"),
     "__version__": ("flext_oracle_wms.__version__", "__version__"),
     "__version_info__": ("flext_oracle_wms.__version__", "__version_info__"),
     "c": ("flext_oracle_wms.constants", "FlextOracleWmsConstants"),
@@ -127,7 +128,7 @@ _LAZY_IMPORTS: dict[str, tuple[str, str]] = {
     "m": ("flext_oracle_wms.wms_models", "FlextOracleWmsModels"),
     "p": ("flext_oracle_wms.protocols", "FlextOracleWmsProtocols"),
     "r": ("flext_core", "r"),
-    "t": ("flext_oracle_wms.typings", "t"),
+    "t": ("flext_oracle_wms.typings", "FlextOracleWmsTypes"),
     "u": ("flext_oracle_wms.utilities", "FlextOracleWmsUtilities"),
     "x": ("flext_core", "x"),
 }
