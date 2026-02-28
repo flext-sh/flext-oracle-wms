@@ -1,6 +1,6 @@
 """FLEXT WMS Models - Generic WMS Domain Model.
 
- domain-driven design with minimal declarations using composition.
+domain-driven design with minimal declarations using composition.
 Python 3.13+ syntax, one class per module, SOLID principles. Generic for any WMS.
 
 Copyright (c) 2025 FLEXT Team. All rights reserved.
@@ -17,7 +17,7 @@ from pydantic import BaseModel, ConfigDict, Field, StringConstraints
 from flext_oracle_wms.constants import c
 
 
-class FlextWmsModels(FlextModels):
+class FlextOracleWmsModels(FlextModels):
     """Generic WMS domain models with composition patterns.
 
     Single class per module following DDD, SOLID, and flext-core patterns.
@@ -26,7 +26,7 @@ class FlextWmsModels(FlextModels):
     """
 
     def __init_subclass__(cls, **kwargs: object) -> None:
-        """Allow downstream projects to inherit FlextWmsModels for namespace composition."""
+        """Allow downstream projects to inherit FlextOracleWmsModels for namespace composition."""
         super().__init_subclass__(**kwargs)
 
     # =========================================================================
@@ -55,7 +55,7 @@ class FlextWmsModels(FlextModels):
     class WmsEntity(BaseModel):
         """Base WMS entity with identity."""
 
-        model_config = ConfigDict(extra="forbid")
+        model_config: ConfigDict = ConfigDict(extra="forbid")
 
         id: str = Field(default="", description="Entity identifier")
         name: str = Field(default="", description="Entity name")
@@ -123,7 +123,7 @@ class FlextWmsModels(FlextModels):
     class WarehouseLocation(BaseModel):
         """Warehouse location value object."""
 
-        model_config = ConfigDict(frozen=True, extra="forbid")
+        model_config: ConfigDict = ConfigDict(frozen=True, extra="forbid")
 
         aisle: str = Field(description="Aisle identifier")
         shelf: str = Field(description="Shelf identifier")
@@ -138,7 +138,7 @@ class FlextWmsModels(FlextModels):
     class ApiCredentials(BaseModel):
         """API credentials value object."""
 
-        model_config = ConfigDict(frozen=True, extra="forbid")
+        model_config: ConfigDict = ConfigDict(frozen=True, extra="forbid")
 
         username: str = Field(description="API username")
         password: str | None = Field(default=None, description="API password")
@@ -148,8 +148,8 @@ class FlextWmsModels(FlextModels):
     # ENUMS - Aliases from constants.py (single source of truth)
     # =========================================================================
 
-    EntityType = c.WmsEntityType
-    OperationStatus = c.WmsOperationStatus
+    EntityType: type[c.WmsEntityType] = c.WmsEntityType
+    OperationStatus: type[c.WmsOperationStatus] = c.WmsOperationStatus
 
     # =========================================================================
     # DOMAIN SERVICES - Business logic composition
@@ -161,7 +161,7 @@ class FlextWmsModels(FlextModels):
     @staticmethod
     def validate_entity_name(name: str) -> r[str]:
         """Validate entity name using domain rules."""
-        if not name or len(name) > FlextWmsModels.MAX_ENTITY_NAME_LENGTH:
+        if not name or len(name) > FlextOracleWmsModels.MAX_ENTITY_NAME_LENGTH:
             return r.fail("Invalid entity name")
         return r.ok(name)
 
@@ -179,10 +179,10 @@ class FlextWmsModels(FlextModels):
 
         id: str
         name: str
-        locations: list[FlextWmsModels.WarehouseLocation] = Field(default_factory=list)
-        inventory: list[FlextWmsModels.InventoryItem] = Field(default_factory=list)
+        locations: list[FlextOracleWmsModels.WarehouseLocation] = Field(default_factory=list)
+        inventory: list[FlextOracleWmsModels.InventoryItem] = Field(default_factory=list)
 
-        def add_inventory(self, item: FlextWmsModels.InventoryItem) -> r[bool]:
+        def add_inventory(self, item: FlextOracleWmsModels.InventoryItem) -> r[bool]:
             """Add inventory to warehouse."""
             if any(i.sku == item.sku for i in self.inventory):
                 return r.fail("SKU already exists")
@@ -190,6 +190,6 @@ class FlextWmsModels(FlextModels):
             return r.ok(True)
 
 
-m = FlextWmsModels
+m = FlextOracleWmsModels
 
-__all__ = ["FlextWmsModels", "m"]
+__all__ = ["FlextOracleWmsModels", "m"]
