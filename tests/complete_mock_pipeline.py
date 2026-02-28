@@ -332,7 +332,7 @@ class CompleteMockPipeline:
         except Exception as e:
             logger.exception("Complete pipeline failed")
             return FlextResult[dict[str, t.GeneralValueType]].fail(
-                f"Pipeline failed: {e}"
+                f"Pipeline failed: {e}",
             )
 
     def _generate_complete_singer_schemas(self) -> dict[str, t.GeneralValueType]:
@@ -550,7 +550,8 @@ class CompleteMockPipeline:
                 record["_sdc_sequence"] = i + 1
                 # Ensure all values are objects
                 record_obj: dict[str, t.GeneralValueType] = dict[
-                    str, t.GeneralValueType
+                    str,
+                    t.GeneralValueType,
                 ](record.items())
                 tap_records.append({"entity": entity_name, "record": record_obj})
 

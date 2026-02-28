@@ -648,13 +648,17 @@ class TestMatchesCondition:
         record: dict[str, t.GeneralValueType] = {"score": 85}
         assert (
             filter_engine._matches_condition(
-                record, "score", {"operator": "gt", "value": 80}
+                record,
+                "score",
+                {"operator": "gt", "value": 80},
             )
             is True
         )
         assert (
             filter_engine._matches_condition(
-                record, "score", {"operator": "gt", "value": 90}
+                record,
+                "score",
+                {"operator": "gt", "value": 90},
             )
             is False
         )

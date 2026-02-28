@@ -61,7 +61,8 @@ class FlextOracleWmsModels(FlextModels):
         name: str = Field(default="", description="Entity name")
         created_at: str | None = Field(default=None, description="Creation timestamp")
         updated_at: str | None = Field(
-            default=None, description="Last update timestamp"
+            default=None,
+            description="Last update timestamp",
         )
 
     class InventoryItem(WmsEntity):
@@ -78,7 +79,9 @@ class FlextOracleWmsModels(FlextModels):
         customer_id: str = Field(default="", description="Customer identifier")
         status: str = Field(default="pending", description="Order status")
         total_amount: float = Field(
-            default=0.0, description="Total order amount", ge=0.0
+            default=0.0,
+            description="Total order amount",
+            ge=0.0,
         )
         items: Annotated[
             list[dict[str, t.GeneralValueType]],
@@ -92,7 +95,8 @@ class FlextOracleWmsModels(FlextModels):
         status: str = Field(default="pending", description="Shipment status")
         carrier: str | None = Field(default=None, description="Shipping carrier name")
         tracking_number: str | None = Field(
-            default=None, description="Shipment tracking number"
+            default=None,
+            description="Shipment tracking number",
         )
 
     class PickingTask(WmsEntity):
@@ -177,10 +181,12 @@ class FlextOracleWmsModels(FlextModels):
         id: str
         name: str
         locations: Annotated[
-            list[FlextOracleWmsModels.WarehouseLocation], Field(default_factory=list)
+            list[FlextOracleWmsModels.WarehouseLocation],
+            Field(default_factory=list),
         ]
         inventory: Annotated[
-            list[FlextOracleWmsModels.InventoryItem], Field(default_factory=list)
+            list[FlextOracleWmsModels.InventoryItem],
+            Field(default_factory=list),
         ]
 
         def add_inventory(self, item: FlextOracleWmsModels.InventoryItem) -> r[bool]:

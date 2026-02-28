@@ -286,7 +286,8 @@ class OptimizedOracleWmsDiscovery:
             }
 
     def _safe_sample_record(
-        self, record: dict[str, t.GeneralValueType]
+        self,
+        record: dict[str, t.GeneralValueType],
     ) -> dict[str, t.GeneralValueType]:
         """Create safe sample record for storage."""
         safe_record = {}

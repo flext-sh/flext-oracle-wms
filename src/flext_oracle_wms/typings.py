@@ -45,15 +45,18 @@ class FlextOracleWmsTypes(FlextTypes):
         type WmsProjectConfig = dict[str, FlextTypes.GeneralValueType]
         type WarehouseConfig = dict[str, str | int | bool | list[str]]
         type InventoryConfig = dict[
-            str, bool | str | dict[str, FlextTypes.GeneralValueType]
+            str,
+            bool | str | dict[str, FlextTypes.GeneralValueType],
         ]
 
     # Core types using advanced composition and unions
     type WmsConfig = dict[
-        str, str | int | bool | dict[str, FlextTypes.GeneralValueType]
+        str,
+        str | int | bool | dict[str, FlextTypes.GeneralValueType],
     ]
     type WmsEntity = dict[
-        str, FlextTypes.JsonValue | dict[str, FlextTypes.GeneralValueType]
+        str,
+        FlextTypes.JsonValue | dict[str, FlextTypes.GeneralValueType],
     ]
     type WmsRecord = dict[str, FlextTypes.GeneralValueType]
     type WmsRecords = list[dict[str, FlextTypes.GeneralValueType]]

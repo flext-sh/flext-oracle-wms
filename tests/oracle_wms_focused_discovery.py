@@ -259,7 +259,8 @@ class FocusedOracleWmsDiscovery:
         return structures
 
     def _safe_sample(
-        self, record: dict[str, t.GeneralValueType]
+        self,
+        record: dict[str, t.GeneralValueType],
     ) -> dict[str, t.GeneralValueType]:
         """Create safe sample record."""
         safe = {}

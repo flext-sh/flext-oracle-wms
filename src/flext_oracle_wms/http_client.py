@@ -156,13 +156,13 @@ class FlextHttpClient:
             response_result = self._client.request(request)
             if response_result.is_failure:
                 return FlextResult.fail(
-                    f"HTTP {method} failed: {response_result.error}"
+                    f"HTTP {method} failed: {response_result.error}",
                 )
 
             response = response_result.value
             if response.status_code >= HTTP_BAD_REQUEST_THRESHOLD:
                 return FlextResult.fail(
-                    f"HTTP {response.status_code}: {response.body!r}"
+                    f"HTTP {response.status_code}: {response.body!r}",
                 )
             return FlextResult.ok(self._parse_response_body(response.body))
         except Exception as exc:
@@ -170,7 +170,8 @@ class FlextHttpClient:
             return FlextResult.fail(f"Request error: {exc}")
 
     def _parse_response_body(
-        self, body: FlextApiTypes.Api.ResponseBody
+        self,
+        body: FlextApiTypes.Api.ResponseBody,
     ) -> HttpJsonObject:
         """Parse response body using strict model validation."""
         match body:
@@ -252,7 +253,7 @@ class FlextHttpClient:
             response = response_result.value
             if response.status_code >= HTTP_BAD_REQUEST_THRESHOLD:
                 return FlextResult.fail(
-                    f"HTTP {response.status_code}: {response.body!r}"
+                    f"HTTP {response.status_code}: {response.body!r}",
                 )
 
             return FlextResult.ok(self._parse_response_body(response.body))

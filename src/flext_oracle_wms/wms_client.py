@@ -55,7 +55,7 @@ class FlextOracleWmsClient:
                 config_result = container.get("FlextOracleWmsSettings")
                 if config_result.is_success:
                     resolved_config = FlextOracleWmsSettings.model_validate(
-                        config_result.value
+                        config_result.value,
                     )
             except (ValueError, FlextExceptions.BaseError):
                 pass
@@ -121,7 +121,7 @@ class FlextOracleWmsClient:
         response = result.value
         if response.status_code >= HTTP_BAD_REQUEST_THRESHOLD:
             return FlextResult.fail(
-                f"{method} {path} returned HTTP {response.status_code}"
+                f"{method} {path} returned HTTP {response.status_code}",
             )
         return FlextResult.ok(response.body)
 
@@ -264,7 +264,9 @@ class FlextOracleWmsClient:
         return self.put(f"/oblpn/{oblpn_id}/tracking", body=payload)
 
     def create_lpn(
-        self, lpn_nbr: str, qty: int
+        self,
+        lpn_nbr: str,
+        qty: int,
     ) -> FlextResult[FlextApiModels.HttpResponse]:
         """Create LPN (License Plate Number)."""
         payload: FlextApiTypes.Api.RequestBody = {"lpn_nbr": lpn_nbr, "qty": qty}

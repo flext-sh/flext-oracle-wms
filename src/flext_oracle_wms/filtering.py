@@ -84,7 +84,7 @@ class FlextOracleWmsFilter:
         total = sum(self._condition_size(value) for value in filters.values())
         if total > self.max_conditions:
             return FlextResult.fail(
-                f"Too many filter conditions: {total} > {self.max_conditions}"
+                f"Too many filter conditions: {total} > {self.max_conditions}",
             )
         return FlextResult.ok(True)
 
@@ -103,7 +103,9 @@ class FlextOracleWmsFilter:
                 return 1
 
     def _get_nested_value(
-        self, record: FilterRecord, field: str
+        self,
+        record: FilterRecord,
+        field: str,
     ) -> FilterRecordValue | None:
         keys = field.split(".")
         current: FilterRecordValue | Mapping[str, FilterRecordValue] = record
@@ -119,7 +121,8 @@ class FlextOracleWmsFilter:
         return current
 
     def _normalize(
-        self, value: FilterRecordValue | FilterScalar
+        self,
+        value: FilterRecordValue | FilterScalar,
     ) -> FilterRecordValue | str:
         match value:
             case None:
@@ -167,12 +170,13 @@ class FlextOracleWmsFilter:
             return FlextResult.fail(f"Sort failed: {exc}")
 
     def _validate_filters(
-        self, filters: Mapping[str, FilterEntry]
+        self,
+        filters: Mapping[str, FilterEntry],
     ) -> FlextResult[bool]:
         total = sum(self._condition_size(value) for value in filters.values())
         if total > self.max_conditions:
             return FlextResult.fail(
-                f"Too many conditions. Max: {self.max_conditions}, Got: {total}"
+                f"Too many conditions. Max: {self.max_conditions}, Got: {total}",
             )
         return FlextResult.ok(True)
 
@@ -196,7 +200,9 @@ class FlextOracleWmsFilter:
         match filter_value:
             case OperatorFilter() as condition:
                 return self._apply_operator(
-                    field_value, condition.operator, condition.value
+                    field_value,
+                    condition.operator,
+                    condition.value,
                 )
             case list() as candidates:
                 return field_value in candidates if field_value is not None else False
