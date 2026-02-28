@@ -1,4 +1,4 @@
-"""FLEXT Oracle WMS Protocols - composition patterns.
+"""Oracle WMS protocols for FLEXT ecosystem.
 
 Copyright (c) 2025 FLEXT Team. All rights reserved.
 SPDX-License-Identifier: MIT
@@ -15,15 +15,39 @@ from flext_oracle_wms.typings import t
 
 
 class FlextOracleWmsProtocols(FlextProtocols):
-    """Oracle WMS protocols with composition.
+    """Oracle WMS protocols extending FlextProtocols.
 
-    Uses Python 3.13+ syntax, reduces declarations through patterns.
-    One class per module following SOLID principles.
+    Extends FlextProtocols to inherit all foundation protocols (Result, Service, etc.)
+    and adds Oracle WMS-specific protocols in the OracleWms namespace.
+
+    Architecture:
+    - EXTENDS: FlextProtocols (inherits Foundation, Domain, Application, etc.)
+    - ADDS: Oracle WMS-specific protocols in OracleWms namespace
+    - PROVIDES: Root-level alias `p` for convenient access
+
+    Usage:
+    from flext_oracle_wms.protocols import p
+
+    # Foundation protocols (inherited)
+    result: p.Result[str]
+    service: p.Service[str]
+
+    # Oracle WMS-specific protocols
+    wms_service: p.OracleWms.WmsServiceProtocol
     """
 
-    # Consolidated protocol using generic operation pattern
+    # =========================================================================
+    # INHERITED FOUNDATION PROTOCOLS - Available from FlextProtocols
+    # =========================================================================
+    # Foundation, Domain, Application, Infrastructure, Extensions, Commands
+    # are all inherited from FlextProtocols parent class
+
+    # =========================================================================
+    # ORACLE WMS-SPECIFIC PROTOCOLS - Domain extension for WMS operations
+    # =========================================================================
+
     class OracleWms:
-        """OracleWms domain namespace."""
+        """Oracle WMS domain-specific protocols."""
 
         @runtime_checkable
         class WmsServiceProtocol(FlextProtocols.Service[None], Protocol):
@@ -46,7 +70,7 @@ class FlextOracleWmsProtocols(FlextProtocols):
                 FlextResult[dict[str, t.GeneralValueType]]: Operation result or error
 
                 """
-                ...
+                ...  # INTERFACE
 
 
 # Runtime alias for simplified usage
