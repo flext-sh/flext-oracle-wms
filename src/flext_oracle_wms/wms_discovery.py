@@ -13,7 +13,7 @@ from typing import Protocol
 
 from flext_core import FlextResult, t
 
-from flext_oracle_wms.constants import c
+from flext_oracle_wms.constants import FlextOracleWmsConstants as c
 
 
 class _EntityDiscoveryClient(Protocol):

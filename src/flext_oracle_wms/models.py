@@ -14,7 +14,7 @@ from typing import Annotated, Literal
 from flext_core import FlextModels, r, t
 from pydantic import BaseModel, ConfigDict, Field, StringConstraints
 
-from flext_oracle_wms.constants import c
+from flext_oracle_wms.constants import FlextOracleWmsConstants as c
 
 
 class FlextOracleWmsModels(FlextModels):
@@ -181,6 +181,4 @@ class FlextOracleWmsModels(FlextModels):
             return r.ok(True)
 
 
-m = FlextOracleWmsModels
-
-__all__ = ["FlextOracleWmsModels", "m"]
+__all__ = ["FlextOracleWmsModels"]

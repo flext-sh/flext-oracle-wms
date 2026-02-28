@@ -9,8 +9,7 @@ SPDX-License-Identifier: MIT
 
 import pytest
 from flext_oracle_wms import (
-    FlextOracleWmsModels,
-    m,
+    FlextOracleWmsModels as m,
 )
 from pydantic import ValidationError
 
@@ -71,7 +70,7 @@ class TestFlextOracleWmsEntity:
 
     def test_entity_namespace_access(self) -> None:
         """Test entity accessible via namespace."""
-        entity = FlextOracleWmsModels.OracleWms.Entity(
+        entity = m.OracleWms.Entity(
             name="test",
             endpoint="/test",
         )
@@ -143,7 +142,7 @@ class TestFlextOracleWmsApiResponse:
 
     def test_response_namespace_access(self) -> None:
         """Test response accessible via namespace."""
-        response = FlextOracleWmsModels.OracleWms.ApiResponse(
+        response = m.OracleWms.ApiResponse(
             data={"test": True},
             status_code=200,
         )

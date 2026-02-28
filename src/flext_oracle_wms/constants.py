@@ -363,10 +363,7 @@ type OracleWMSAuthMethodLiteral = Literal[
 ]
 
 
-c = FlextOracleWmsConstants
-
 __all__ = [
     "FlextOracleWmsConstants",
     "OracleWMSAuthMethod",
-    "c",
 ]

@@ -59,9 +59,6 @@ class FlextOracleWmsModels(FlextModels):
                 return r.ok(True)
 
 
-m = FlextOracleWmsModels
-
 __all__ = [
     "FlextOracleWmsModels",
-    "m",
 ]
