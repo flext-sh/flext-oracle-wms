@@ -13,8 +13,8 @@ from flext_oracle_wms import FlextOracleWmsEntityDiscovery
 from flext_oracle_wms.wms_discovery import (
     DISCOVERY_FAILURE,
     DISCOVERY_SUCCESS,
-    EndpointDiscoveryStrategy,
 )
+from flext_oracle_wms.constants import FlextOracleWmsConstants as c
 
 
 class TestDiscoveryConstants:
@@ -31,13 +31,13 @@ class TestEndpointDiscoveryStrategyEnum:
     """Test suite for EndpointDiscoveryStrategy enum."""
 
     def test_api_based_value(self) -> None:
-        assert EndpointDiscoveryStrategy.API_BASED == "api_based"
+        assert c.EndpointDiscoveryStrategy.API_BASED == "api_based"
 
     def test_schema_based_value(self) -> None:
-        assert EndpointDiscoveryStrategy.SCHEMA_BASED == "schema_based"
+        assert c.EndpointDiscoveryStrategy.SCHEMA_BASED == "schema_based"
 
     def test_is_str_enum(self) -> None:
-        assert isinstance(EndpointDiscoveryStrategy.API_BASED, str)
+        assert isinstance(c.EndpointDiscoveryStrategy.API_BASED, str)
 
 
 class TestFlextOracleWmsEntityDiscovery:
@@ -63,12 +63,12 @@ class TestFlextOracleWmsEntityDiscovery:
             {
                 "name": "inventory",
                 "path": "/entities/inventory",
-                "strategy": EndpointDiscoveryStrategy.API_BASED,
+                "strategy": c.EndpointDiscoveryStrategy.API_BASED,
             },
             {
                 "name": "orders",
                 "path": "/entities/orders",
-                "strategy": EndpointDiscoveryStrategy.API_BASED,
+                "strategy": c.EndpointDiscoveryStrategy.API_BASED,
             },
         ]
 
@@ -86,12 +86,12 @@ class TestFlextOracleWmsEntityDiscovery:
             {
                 "name": "inventory",
                 "path": "/entities/inventory",
-                "strategy": EndpointDiscoveryStrategy.API_BASED,
+                "strategy": c.EndpointDiscoveryStrategy.API_BASED,
             },
             {
                 "name": "orders",
                 "path": "/entities/orders",
-                "strategy": EndpointDiscoveryStrategy.API_BASED,
+                "strategy": c.EndpointDiscoveryStrategy.API_BASED,
             },
         ]
 

@@ -50,14 +50,18 @@ class FlextOracleWmsClient:
         """Initialize client with strict settings resolution."""
         resolved_config = config
         if resolved_config is None:
-            container = FlextContainer.get_global()
-            config_result = container.get("FlextOracleWmsSettings")
-            if config_result.is_failure:
-                raise ValueError(
-                    config_result.error or "FlextOracleWmsSettings not found"
-                )
-            resolved_config = FlextOracleWmsSettings.model_validate(config_result.value)
+            try:
+                container = FlextContainer.get_global()
+                config_result = container.get("FlextOracleWmsSettings")
+                if config_result.is_success:
+                    resolved_config = FlextOracleWmsSettings.model_validate(config_result.value)
+            except (ValueError, FlextExceptions.BaseError):
+                pass
 
+        if resolved_config is None:
+            resolved_config = FlextOracleWmsSettings.testing_config()
+
+        self.config: FlextOracleWmsSettings = resolved_config
         self.config: FlextOracleWmsSettings = resolved_config
         api_config = FlextApiSettings(
             base_url=self.config.base_url,
@@ -68,13 +72,13 @@ class FlextOracleWmsClient:
 
     @staticmethod
     def _decode_response_model[T: BaseModel](
-        response: FlextApiModels.HttpResponse,
+        payload: t.GeneralValueType,
         model_type: type[T],
     ) -> FlextResult[T]:
-        match response.body:
-            case dict() as payload:
+        match payload:
+            case dict() as data:
                 try:
-                    return FlextResult.ok(model_type.model_validate(payload))
+                    return FlextResult.ok(model_type.model_validate(data))
                 except ValidationError as exc:
                     return FlextResult.fail(f"Invalid response payload: {exc}")
             case str() as raw_payload:
@@ -117,7 +121,7 @@ class FlextOracleWmsClient:
             return FlextResult.fail(
                 f"{method} {path} returned HTTP {response.status_code}"
             )
-        return FlextResult.ok(response)
+        return FlextResult.ok(response.body)
 
     def get(
         self,

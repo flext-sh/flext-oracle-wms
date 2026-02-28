@@ -37,7 +37,7 @@ class FlextOracleWmsModels(FlextModels):
     type TRecordBatch = list[dict[str, t.GeneralValueType]]
     type TSchema = dict[str, dict[str, t.GeneralValueType]]
     type TApiResponse = dict[str, t.GeneralValueType]
-    type TApiVersion = Literal["v2", "v1", "legacy"]
+    type TApiVersion = Literal["v2", "v1"]
     type TEntityId = Annotated[str, StringConstraints(min_length=1, max_length=100)]
     type TEntityName = Annotated[
         str,

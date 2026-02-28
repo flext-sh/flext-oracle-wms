@@ -47,6 +47,8 @@ class TestFlextOracleWmsClient:
         client = FlextOracleWmsClient(config)
 
         mock_response = MagicMock()
+        mock_response.status_code = 200
+        mock_response.body = {"data": "test"}
         mock_response.body = {"data": "test"}
         client._client = MagicMock()
         client._client.request.return_value = FlextResult.ok(mock_response)
@@ -78,6 +80,8 @@ class TestFlextOracleWmsClient:
         client = FlextOracleWmsClient(config)
 
         mock_response = MagicMock()
+        mock_response.status_code = 201
+        mock_response.body = {"created": True}
         mock_response.body = {"created": True}
         client._client = MagicMock()
         client._client.request.return_value = FlextResult.ok(mock_response)
@@ -94,6 +98,8 @@ class TestFlextOracleWmsClient:
         client = FlextOracleWmsClient(config)
 
         mock_response = MagicMock()
+        mock_response.status_code = 200
+        mock_response.body = {"updated": True}
         mock_response.body = {"updated": True}
         client._client = MagicMock()
         client._client.request.return_value = FlextResult.ok(mock_response)
@@ -110,6 +116,8 @@ class TestFlextOracleWmsClient:
         client = FlextOracleWmsClient(config)
 
         mock_response = MagicMock()
+        mock_response.status_code = 200
+        mock_response.body = {"deleted": True}
         mock_response.body = {"deleted": True}
         client._client = MagicMock()
         client._client.request.return_value = FlextResult.ok(mock_response)
@@ -126,6 +134,8 @@ class TestFlextOracleWmsClient:
         client = FlextOracleWmsClient(config)
 
         mock_response = MagicMock()
+        mock_response.status_code = 200
+        mock_response.body = {"status": "healthy"}
         mock_response.body = {"status": "healthy"}
         client._client = MagicMock()
         client._client.request.return_value = FlextResult.ok(mock_response)
@@ -162,6 +172,8 @@ class TestFlextOracleWmsClient:
         client = FlextOracleWmsClient(config)
 
         mock_response = MagicMock()
+        mock_response.status_code = 200
+        mock_response.body = {"entities": ["entity1", "entity2"]}
         mock_response.body = {"entities": ["entity1", "entity2"]}
         client._client = MagicMock()
         client._client.request.return_value = FlextResult.ok(mock_response)
@@ -178,6 +190,8 @@ class TestFlextOracleWmsClient:
         client = FlextOracleWmsClient(config)
 
         mock_response = MagicMock()
+        mock_response.status_code = 200
+        mock_response.body = {"data": [{"id": 1}, {"id": 2}]}
         mock_response.body = {"data": [{"id": 1}, {"id": 2}]}
         client._client = MagicMock()
         client._client.request.return_value = FlextResult.ok(mock_response)
@@ -194,6 +208,8 @@ class TestFlextOracleWmsClient:
         client = FlextOracleWmsClient(config)
 
         mock_response = MagicMock()
+        mock_response.status_code = 200
+        mock_response.body = {"apis": [{"name": "api1"}, {"name": "api2"}]}
         mock_response.body = {"apis": [{"name": "api1"}, {"name": "api2"}]}
         client._client = MagicMock()
         client._client.request.return_value = FlextResult.ok(mock_response)
@@ -210,6 +226,8 @@ class TestFlextOracleWmsClient:
         client = FlextOracleWmsClient(config)
 
         mock_response = MagicMock()
+        mock_response.status_code = 200
+        mock_response.body = {"result": "success"}
         mock_response.body = {"result": "success"}
         client._client = MagicMock()
         client._client.request.return_value = FlextResult.ok(mock_response)
@@ -226,6 +244,8 @@ class TestFlextOracleWmsClient:
         client = FlextOracleWmsClient(config)
 
         mock_response = MagicMock()
+        mock_response.status_code = 200
+        mock_response.body = {"updated": True}
         mock_response.body = {"updated": True}
         client._client = MagicMock()
         client._client.request.return_value = FlextResult.ok(mock_response)
@@ -242,6 +262,8 @@ class TestFlextOracleWmsClient:
         client = FlextOracleWmsClient(config)
 
         mock_response = MagicMock()
+        mock_response.status_code = 201
+        mock_response.body = {"created": True}
         mock_response.body = {"created": True}
         client._client = MagicMock()
         client._client.request.return_value = FlextResult.ok(mock_response)

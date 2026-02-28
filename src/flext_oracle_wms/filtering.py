@@ -206,30 +206,39 @@ class FlextOracleWmsFilter:
     def _apply_operator(
         self,
         field_value: FilterRecordValue | None,
-        operator: FilterOperator,
+        operator: FilterOperator | str,
         filter_value: FilterScalar | FilterList,
     ) -> bool:
-        if operator is FilterOperator.EQ:
-            return self._normalize(field_value) == self._normalize(filter_value)
-        if operator is FilterOperator.NE:
-            return self._normalize(field_value) != self._normalize(filter_value)
-        if operator is FilterOperator.IN:
-            match filter_value:
-                case list() as options:
-                    return str(field_value) in [str(item) for item in options]
-                case _:
-                    return False
-        if operator is FilterOperator.CONTAINS:
-            return str(filter_value) in str(field_value)
-        if operator is FilterOperator.GT:
-            return self._compare(field_value, filter_value, ">")
-        if operator is FilterOperator.LT:
-            return self._compare(field_value, filter_value, "<")
-        if operator is FilterOperator.GTE:
-            return self._compare(field_value, filter_value, ">=")
-        if operator is FilterOperator.LTE:
-            return self._compare(field_value, filter_value, "<=")
-        return False
+        if field_value is None and filter_value is not None:
+            return False
+        if field_value is not None and filter_value is None:
+            return False
+        if field_value is None and filter_value is None:
+            return operator in (FilterOperator.EQ, FilterOperator.GTE, FilterOperator.LTE, "eq", "gte", "lte")
+
+        match operator:
+            case FilterOperator.EQ | "eq":
+                return self._normalize(field_value) == self._normalize(filter_value)
+            case FilterOperator.NE | "ne":
+                return self._normalize(field_value) != self._normalize(filter_value)
+            case FilterOperator.IN | "in":
+                match filter_value:
+                    case list() as options:
+                        return str(field_value) in [str(item) for item in options]
+                    case _:
+                        return False
+            case FilterOperator.CONTAINS | "contains":
+                return str(filter_value) in str(field_value)
+            case FilterOperator.GT | "gt":
+                return self._compare(field_value, filter_value, ">")
+            case FilterOperator.LT | "lt":
+                return self._compare(field_value, filter_value, "<")
+            case FilterOperator.GTE | "gte":
+                return self._compare(field_value, filter_value, ">=")
+            case FilterOperator.LTE | "lte":
+                return self._compare(field_value, filter_value, "<=")
+            case _:
+                return False
 
     @staticmethod
     def _compare(
