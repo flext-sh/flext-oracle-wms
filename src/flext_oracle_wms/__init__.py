@@ -13,7 +13,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any
 
-from flext_core.lazy import cleanup_submodule_namespace, lazy_getattr
+from flext_core import cleanup_submodule_namespace, lazy_getattr
 
 if TYPE_CHECKING:
     from flext_core import (
@@ -67,14 +67,18 @@ if TYPE_CHECKING:
 _LAZY_IMPORTS: dict[str, tuple[str, str]] = {
     "FLEXT_ORACLE_WMS_APIS": ("flext_oracle_wms.wms_api", "FLEXT_ORACLE_WMS_APIS"),
     "FlextOracleWmsApi": ("flext_oracle_wms.wms_api", "FlextOracleWmsApi"),
-    "FlextOracleWmsApiError": ("flext_oracle_wms.wms_exceptions", "FlextOracleWmsApiError"),
-
-
+    "FlextOracleWmsApiError": (
+        "flext_oracle_wms.wms_exceptions",
+        "FlextOracleWmsApiError",
+    ),
     "FlextOracleWmsAuthSettings": (
         "flext_oracle_wms.wms_auth",
         "FlextOracleWmsAuthSettings",
     ),
-    "FlextOracleWmsAuthenticationError": ("flext_oracle_wms.wms_exceptions", "FlextOracleWmsAuthenticationError"),
+    "FlextOracleWmsAuthenticationError": (
+        "flext_oracle_wms.wms_exceptions",
+        "FlextOracleWmsAuthenticationError",
+    ),
     "FlextOracleWmsAuthenticator": (
         "flext_oracle_wms.wms_auth",
         "FlextOracleWmsAuthenticator",
@@ -88,20 +92,38 @@ _LAZY_IMPORTS: dict[str, tuple[str, str]] = {
         "flext_oracle_wms.wms_discovery",
         "FlextOracleWmsEntityDiscovery",
     ),
-    "FlextOracleWmsEntityNotFoundError": ("flext_oracle_wms.wms_exceptions", "FlextOracleWmsEntityNotFoundError"),
+    "FlextOracleWmsEntityNotFoundError": (
+        "flext_oracle_wms.wms_exceptions",
+        "FlextOracleWmsEntityNotFoundError",
+    ),
     "FlextOracleWmsError": ("flext_oracle_wms.wms_exceptions", "FlextOracleWmsError"),
     "FlextOracleWmsExceptions": ("flext_core", "FlextExceptions"),
-    "FlextOracleWmsInventoryError": ("flext_oracle_wms.wms_exceptions", "FlextOracleWmsInventoryError"),
+    "FlextOracleWmsInventoryError": (
+        "flext_oracle_wms.wms_exceptions",
+        "FlextOracleWmsInventoryError",
+    ),
     "FlextOracleWmsModels": ("flext_oracle_wms.wms_models", "FlextOracleWmsModels"),
-    "FlextOracleWmsPickingError": ("flext_oracle_wms.wms_exceptions", "FlextOracleWmsPickingError"),
+    "FlextOracleWmsPickingError": (
+        "flext_oracle_wms.wms_exceptions",
+        "FlextOracleWmsPickingError",
+    ),
     "FlextOracleWmsProtocols": (
         "flext_oracle_wms.protocols",
         "FlextOracleWmsProtocols",
     ),
-    "FlextOracleWmsSchemaError": ("flext_oracle_wms.wms_exceptions", "FlextOracleWmsSchemaError"),
-    "FlextOracleWmsSchemaFlatteningError": ("flext_oracle_wms.wms_exceptions", "FlextOracleWmsSchemaFlatteningError"),
+    "FlextOracleWmsSchemaError": (
+        "flext_oracle_wms.wms_exceptions",
+        "FlextOracleWmsSchemaError",
+    ),
+    "FlextOracleWmsSchemaFlatteningError": (
+        "flext_oracle_wms.wms_exceptions",
+        "FlextOracleWmsSchemaFlatteningError",
+    ),
     "FlextOracleWmsSettings": ("flext_oracle_wms.settings", "FlextOracleWmsSettings"),
-    "FlextOracleWmsShipmentError": ("flext_oracle_wms.wms_exceptions", "FlextOracleWmsShipmentError"),
+    "FlextOracleWmsShipmentError": (
+        "flext_oracle_wms.wms_exceptions",
+        "FlextOracleWmsShipmentError",
+    ),
     "FlextOracleWmsUtilities": (
         "flext_oracle_wms.utilities",
         "FlextOracleWmsUtilities",

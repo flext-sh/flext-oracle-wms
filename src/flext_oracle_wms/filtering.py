@@ -214,7 +214,14 @@ class FlextOracleWmsFilter:
         if field_value is not None and filter_value is None:
             return False
         if field_value is None and filter_value is None:
-            return operator in (FilterOperator.EQ, FilterOperator.GTE, FilterOperator.LTE, "eq", "gte", "lte")
+            return operator in {
+                FilterOperator.EQ,
+                FilterOperator.GTE,
+                FilterOperator.LTE,
+                "eq",
+                "gte",
+                "lte",
+            }
 
         match operator:
             case FilterOperator.EQ | "eq":

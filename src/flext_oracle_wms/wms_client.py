@@ -17,7 +17,7 @@ from flext_api import (
     FlextApiSettings,
     FlextApiTypes,
 )
-from flext_core import FlextContainer, FlextResult
+from flext_core import FlextContainer, FlextExceptions, FlextResult, t
 from pydantic import BaseModel, Field, ValidationError
 
 from flext_oracle_wms.settings import FlextOracleWmsSettings
@@ -54,7 +54,9 @@ class FlextOracleWmsClient:
                 container = FlextContainer.get_global()
                 config_result = container.get("FlextOracleWmsSettings")
                 if config_result.is_success:
-                    resolved_config = FlextOracleWmsSettings.model_validate(config_result.value)
+                    resolved_config = FlextOracleWmsSettings.model_validate(
+                        config_result.value
+                    )
             except (ValueError, FlextExceptions.BaseError):
                 pass
 

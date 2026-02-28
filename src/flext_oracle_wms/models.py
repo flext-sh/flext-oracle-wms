@@ -80,7 +80,10 @@ class FlextOracleWmsModels(FlextModels):
         total_amount: float = Field(
             default=0.0, description="Total order amount", ge=0.0
         )
-        items: Annotated[list[dict[str, t.GeneralValueType]], Field(default_factory=list, description="Order items")]
+        items: Annotated[
+            list[dict[str, t.GeneralValueType]],
+            Field(default_factory=list, description="Order items"),
+        ]
 
     class Shipment(WmsEntity):
         """Shipment domain entity."""
@@ -97,7 +100,10 @@ class FlextOracleWmsModels(FlextModels):
 
         wave_id: str = Field(default="", description="Wave identifier")
         status: str = Field(default="pending", description="Task status")
-        items: Annotated[list[dict[str, t.GeneralValueType]], Field(default_factory=list, description="Task items")]
+        items: Annotated[
+            list[dict[str, t.GeneralValueType]],
+            Field(default_factory=list, description="Task items"),
+        ]
 
     class Location(WmsEntity):
         """Location domain entity."""
@@ -170,8 +176,12 @@ class FlextOracleWmsModels(FlextModels):
 
         id: str
         name: str
-        locations: Annotated[list[FlextOracleWmsModels.WarehouseLocation], Field(default_factory=list)]
-        inventory: Annotated[list[FlextOracleWmsModels.InventoryItem], Field(default_factory=list)]
+        locations: Annotated[
+            list[FlextOracleWmsModels.WarehouseLocation], Field(default_factory=list)
+        ]
+        inventory: Annotated[
+            list[FlextOracleWmsModels.InventoryItem], Field(default_factory=list)
+        ]
 
         def add_inventory(self, item: FlextOracleWmsModels.InventoryItem) -> r[bool]:
             """Add inventory to warehouse."""
