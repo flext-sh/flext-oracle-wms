@@ -6,9 +6,7 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from flext_core import r
-from flext_core.models import FlextModels
-from flext_core.typings import t
+from flext_core import FlextModels, r, t
 from pydantic import BaseModel, Field
 
 from flext_oracle_wms.constants import FlextOracleWmsConstants

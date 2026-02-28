@@ -35,8 +35,8 @@ from flext_oracle_wms._backward_compat import (
 )
 from flext_oracle_wms.constants import (
     FlextOracleWmsConstants,
-    c,
     OracleWMSAuthMethod,
+    c,
 )
 from flext_oracle_wms.protocols import (
     FlextOracleWmsProtocols,

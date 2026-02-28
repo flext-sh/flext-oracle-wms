@@ -6,8 +6,7 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from flext_core import FlextLogger
-from flext_core.exceptions import e
+from flext_core import FlextLogger, e
 
 
 # Direct FLEXT pattern implementation - no inheritance from FlextExceptions to avoid conflicts
