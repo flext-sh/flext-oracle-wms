@@ -60,11 +60,10 @@ if TYPE_CHECKING:
         FlextOracleWmsSchemaFlatteningError,
         FlextOracleWmsShipmentError,
     )
-    from flext_oracle_wms.wms_models import FlextOracleWmsModels
-
-    # Nested classes
-    FlextOracleWmsApiResponse = FlextOracleWmsModels.ApiResponse
-    FlextOracleWmsEntity = FlextOracleWmsModels.Entity
+    from flext_oracle_wms.wms_models import (
+        FlextOracleWmsModels,
+        FlextOracleWmsModels as m,
+    )
 
 # Lazy import mapping: export_name -> (module_path, attr_name)
 _LAZY_IMPORTS: dict[str, tuple[str, str]] = {
