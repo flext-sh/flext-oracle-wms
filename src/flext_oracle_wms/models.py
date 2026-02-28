@@ -64,11 +64,6 @@ class FlextOracleWmsModels(FlextModels):
             default=None, description="Last update timestamp"
         )
 
-    class OracleWms(WmsEntity):
-        """Oracle WMS entity (alias/compatibility)."""
-
-        pass
-
     class InventoryItem(WmsEntity):
         """Inventory domain entity."""
 

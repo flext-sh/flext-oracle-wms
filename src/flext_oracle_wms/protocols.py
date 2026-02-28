@@ -57,7 +57,7 @@ class FlextOracleWmsProtocols(FlextProtocols):
                 self,
                 operation: str,
                 config: Mapping[str, t.GeneralValueType],
-                **params: object,
+                **params: t.GeneralValueType,
             ) -> FlextProtocols.Result[Mapping[str, t.GeneralValueType]]:
                 """Execute WMS operation with unified interface.
 

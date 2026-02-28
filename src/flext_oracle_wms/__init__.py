@@ -26,18 +26,6 @@ if TYPE_CHECKING:
     )
 
     from flext_oracle_wms.__version__ import __version__, __version_info__
-    from flext_oracle_wms._backward_compat import (
-        FlextOracleWmsApiError,
-        FlextOracleWmsAuthenticationError,
-        FlextOracleWmsEntityNotFoundError,
-        FlextOracleWmsError,
-        FlextOracleWmsInventoryError,
-        FlextOracleWmsPickingError,
-        FlextOracleWmsSchemaError,
-        FlextOracleWmsSchemaFlatteningError,
-        FlextOracleWmsShipmentError,
-        get_mock_server,
-    )
     from flext_oracle_wms.constants import (
         FlextOracleWmsConstants,
         FlextOracleWmsConstants as c,
@@ -61,6 +49,17 @@ if TYPE_CHECKING:
     )
     from flext_oracle_wms.wms_client import FlextOracleWmsClient
     from flext_oracle_wms.wms_discovery import FlextOracleWmsEntityDiscovery
+    from flext_oracle_wms.wms_exceptions import (
+        FlextOracleWmsApiError,
+        FlextOracleWmsAuthenticationError,
+        FlextOracleWmsEntityNotFoundError,
+        FlextOracleWmsError,
+        FlextOracleWmsInventoryError,
+        FlextOracleWmsPickingError,
+        FlextOracleWmsSchemaError,
+        FlextOracleWmsSchemaFlatteningError,
+        FlextOracleWmsShipmentError,
+    )
     from flext_oracle_wms.wms_models import (
         FlextOracleWmsApiResponse,
         FlextOracleWmsEntity,
@@ -72,10 +71,7 @@ if TYPE_CHECKING:
 _LAZY_IMPORTS: dict[str, tuple[str, str]] = {
     "FLEXT_ORACLE_WMS_APIS": ("flext_oracle_wms.wms_api", "FLEXT_ORACLE_WMS_APIS"),
     "FlextOracleWmsApi": ("flext_oracle_wms.wms_api", "FlextOracleWmsApi"),
-    "FlextOracleWmsApiError": (
-        "flext_oracle_wms._backward_compat",
-        "FlextOracleWmsApiError",
-    ),
+    "FlextOracleWmsApiError": ("flext_oracle_wms.wms_exceptions", "FlextOracleWmsApiError"),
     "FlextOracleWmsApiResponse": (
         "flext_oracle_wms.wms_models",
         "FlextOracleWmsApiResponse",
@@ -84,10 +80,7 @@ _LAZY_IMPORTS: dict[str, tuple[str, str]] = {
         "flext_oracle_wms.wms_auth",
         "FlextOracleWmsAuthSettings",
     ),
-    "FlextOracleWmsAuthenticationError": (
-        "flext_oracle_wms._backward_compat",
-        "FlextOracleWmsAuthenticationError",
-    ),
+    "FlextOracleWmsAuthenticationError": ("flext_oracle_wms.wms_exceptions", "FlextOracleWmsAuthenticationError"),
     "FlextOracleWmsAuthenticator": (
         "flext_oracle_wms.wms_auth",
         "FlextOracleWmsAuthenticator",
@@ -102,38 +95,20 @@ _LAZY_IMPORTS: dict[str, tuple[str, str]] = {
         "flext_oracle_wms.wms_discovery",
         "FlextOracleWmsEntityDiscovery",
     ),
-    "FlextOracleWmsEntityNotFoundError": (
-        "flext_oracle_wms._backward_compat",
-        "FlextOracleWmsEntityNotFoundError",
-    ),
-    "FlextOracleWmsError": ("flext_oracle_wms._backward_compat", "FlextOracleWmsError"),
+    "FlextOracleWmsEntityNotFoundError": ("flext_oracle_wms.wms_exceptions", "FlextOracleWmsEntityNotFoundError"),
+    "FlextOracleWmsError": ("flext_oracle_wms.wms_exceptions", "FlextOracleWmsError"),
     "FlextOracleWmsExceptions": ("flext_core", "FlextExceptions"),
-    "FlextOracleWmsInventoryError": (
-        "flext_oracle_wms._backward_compat",
-        "FlextOracleWmsInventoryError",
-    ),
+    "FlextOracleWmsInventoryError": ("flext_oracle_wms.wms_exceptions", "FlextOracleWmsInventoryError"),
     "FlextOracleWmsModels": ("flext_oracle_wms.wms_models", "FlextOracleWmsModels"),
-    "FlextOracleWmsPickingError": (
-        "flext_oracle_wms._backward_compat",
-        "FlextOracleWmsPickingError",
-    ),
+    "FlextOracleWmsPickingError": ("flext_oracle_wms.wms_exceptions", "FlextOracleWmsPickingError"),
     "FlextOracleWmsProtocols": (
         "flext_oracle_wms.protocols",
         "FlextOracleWmsProtocols",
     ),
-    "FlextOracleWmsSchemaError": (
-        "flext_oracle_wms._backward_compat",
-        "FlextOracleWmsSchemaError",
-    ),
-    "FlextOracleWmsSchemaFlatteningError": (
-        "flext_oracle_wms._backward_compat",
-        "FlextOracleWmsSchemaFlatteningError",
-    ),
+    "FlextOracleWmsSchemaError": ("flext_oracle_wms.wms_exceptions", "FlextOracleWmsSchemaError"),
+    "FlextOracleWmsSchemaFlatteningError": ("flext_oracle_wms.wms_exceptions", "FlextOracleWmsSchemaFlatteningError"),
     "FlextOracleWmsSettings": ("flext_oracle_wms.settings", "FlextOracleWmsSettings"),
-    "FlextOracleWmsShipmentError": (
-        "flext_oracle_wms._backward_compat",
-        "FlextOracleWmsShipmentError",
-    ),
+    "FlextOracleWmsShipmentError": ("flext_oracle_wms.wms_exceptions", "FlextOracleWmsShipmentError"),
     "FlextOracleWmsUtilities": (
         "flext_oracle_wms.utilities",
         "FlextOracleWmsUtilities",
@@ -148,7 +123,6 @@ _LAZY_IMPORTS: dict[str, tuple[str, str]] = {
     ),
     "d": ("flext_core", "FlextDecorators"),
     "e": ("flext_core", "FlextExceptions"),
-    "get_mock_server": ("flext_oracle_wms._backward_compat", "get_mock_server"),
     "h": ("flext_core", "FlextHandlers"),
     "m": ("flext_oracle_wms.wms_models", "FlextOracleWmsModels"),
     "p": ("flext_oracle_wms.protocols", "FlextOracleWmsProtocols"),
@@ -190,7 +164,6 @@ __all__ = [
     "create_oracle_wms_client",
     "d",
     "e",
-    "get_mock_server",
     "h",
     "m",
     "p",
