@@ -19,53 +19,8 @@ class FlextOracleWmsConstants(FlextConstants):
     One class per module following SOLID principles. Generic for any WMS system.
     """
 
-    # Core domain constants using advanced patterns
-    FLEXT_WMS_VERSION: Final[str] = "0.9.0"
-
-    # Application metadata - composed into single dict
-    APP_METADATA: Final[dict[str, str]] = {
-        "name": "flext-wms",
-        "description": "FLEXT Generic WMS Integration",
-        "author": "FLEXT Team",
-        "license": "MIT",
-    }
-
-    # API configuration - composed patterns
-    API_CONFIG: Final[dict[str, str | int]] = {
-        "version_default": "v1",
-        "base_url_default": "https://api.wms.example.com",
-        "timeout_default": FlextConstants.Defaults.TIMEOUT * 2,
-        "max_retries": 3,
-        "rate_limit_per_minute": 1000,
-    }
-
-    # Authentication constants - advanced composition
-    # AUTH_CONFIG is created after OracleWMSAuthMethod StrEnum definition (see below)
+    # Authentication constants - set dynamically after OracleWMSAuthMethod definition
     AUTH_CONFIG: ClassVar[dict[str, str | object]]
-
-    # Entity types - will be generated from WmsEntityType StrEnum after definition
-
-    # Batch and performance - advanced dict composition
-    PROCESSING_CONFIG: Final[dict[str, int]] = {
-        "default_batch_size": FlextConstants.Defaults.PAGE_SIZE * 10,
-        "max_batch_size": FlextConstants.Defaults.PAGE_SIZE * 100,
-        "default_page_size": FlextConstants.Defaults.PAGE_SIZE,
-        "cache_ttl_default": 3600,
-        "cache_max_size": 10000,
-        "cache_cleanup_interval": 300,
-        "max_retry_attempts": 3,
-        "retry_delay_base": 1,
-        "retry_delay_max": 60,
-        "performance_warning_threshold": 5000,
-        "performance_critical_threshold": 10000,
-    }
-
-    # Environment configuration
-    ENVIRONMENTS: Final[dict[str, str]] = {
-        "default": "default",
-        "test": "test",
-        "production": "production",
-    }
 
     # Nested classes with advanced composition
     class OracleWms:
@@ -80,6 +35,62 @@ class FlextOracleWmsConstants(FlextConstants):
             FlextConstants.Network.DEFAULT_CONNECTION_POOL_SIZE
         )
         MAX_POOL_SIZE: Final[int] = FlextConstants.Network.MAX_CONNECTION_POOL_SIZE
+
+        # Auth methods — moved from module level into namespace
+        class OracleWMSAuthMethod(StrEnum):
+            """Auth methods.
+
+            DRY Pattern: This StrEnum is the single source of truth for Oracle WMS
+            authentication methods. All authentication method-related constants and
+            Literal types MUST reference this enum.
+            """
+
+            BASIC = "basic"
+            OAUTH2 = "oauth2"
+            API_KEY = "api_key"
+            BEARER = "bearer"
+
+        # Core domain constants
+        VERSION: Final[str] = "0.9.0"
+
+        # Application metadata - composed into single dict
+        APP_METADATA: Final[dict[str, str]] = {
+            "name": "flext-wms",
+            "description": "FLEXT Generic WMS Integration",
+            "author": "FLEXT Team",
+            "license": "MIT",
+        }
+
+        # API configuration - composed patterns
+        API_CONFIG: Final[dict[str, str | int]] = {
+            "version_default": "v1",
+            "base_url_default": "https://api.wms.example.com",
+            "timeout_default": FlextConstants.Defaults.TIMEOUT * 2,
+            "max_retries": 3,
+            "rate_limit_per_minute": 1000,
+        }
+
+        # Batch and performance - advanced dict composition
+        PROCESSING_CONFIG: Final[dict[str, int]] = {
+            "default_batch_size": FlextConstants.Defaults.PAGE_SIZE * 10,
+            "max_batch_size": FlextConstants.Defaults.PAGE_SIZE * 100,
+            "default_page_size": FlextConstants.Defaults.PAGE_SIZE,
+            "cache_ttl_default": 3600,
+            "cache_max_size": 10000,
+            "cache_cleanup_interval": 300,
+            "max_retry_attempts": 3,
+            "retry_delay_base": 1,
+            "retry_delay_max": 60,
+            "performance_warning_threshold": 5000,
+            "performance_critical_threshold": 10000,
+        }
+
+        # Environment configuration
+        ENVIRONMENTS: Final[dict[str, str]] = {
+            "default": "default",
+            "test": "test",
+            "production": "production",
+        }
 
     class WmsEntities:
         """WMS entity configuration - patterns."""
@@ -339,31 +350,28 @@ class FlextOracleWmsConstants(FlextConstants):
         API_BASED = "api_based"
         SCHEMA_BASED = "schema_based"
 
-
-# Module-level enums for direct import - advanced composition
-class OracleWMSAuthMethod(StrEnum):
-    """Auth methods.
-
-    DRY Pattern: This StrEnum is the single source of truth for Oracle WMS authentication methods.
-    All authentication method-related constants and Literal types MUST reference this enum.
-    """
-
-    BASIC = "basic"
-    OAUTH2 = "oauth2"
-    API_KEY = "api_key"
-    BEARER = "bearer"
+    # Backward-compatible class-level aliases (canonical path: OracleWms.*)
+    FLEXT_WMS_VERSION = OracleWms.VERSION
+    APP_METADATA = OracleWms.APP_METADATA
+    API_CONFIG = OracleWms.API_CONFIG
+    PROCESSING_CONFIG = OracleWms.PROCESSING_CONFIG
+    ENVIRONMENTS = OracleWms.ENVIRONMENTS
+    OracleWMSAuthMethod = OracleWms.OracleWMSAuthMethod
 
 
 # Generate AUTH_CONFIG with auth method values from StrEnum
 # Set class attribute after enum definition
 FlextOracleWmsConstants.AUTH_CONFIG = {
-    "basic": OracleWMSAuthMethod.BASIC,
-    "oauth2": OracleWMSAuthMethod.OAUTH2,
-    "api_key": OracleWMSAuthMethod.API_KEY,
-    "bearer": OracleWMSAuthMethod.BEARER,
+    "basic": FlextOracleWmsConstants.OracleWms.OracleWMSAuthMethod.BASIC,
+    "oauth2": FlextOracleWmsConstants.OracleWms.OracleWMSAuthMethod.OAUTH2,
+    "api_key": FlextOracleWmsConstants.OracleWms.OracleWMSAuthMethod.API_KEY,
+    "bearer": FlextOracleWmsConstants.OracleWms.OracleWMSAuthMethod.BEARER,
     "oauth2_token_endpoint": "/oauth2/token",
     "oauth2_scope_default": "read write",
 }
+
+# Module-level backward-compatible reference for direct imports
+OracleWMSAuthMethod = FlextOracleWmsConstants.OracleWms.OracleWMSAuthMethod
 
 # PEP 695 Literal type referencing StrEnum members
 type OracleWMSAuthMethodLiteral = Literal[
@@ -374,20 +382,10 @@ type OracleWMSAuthMethodLiteral = Literal[
 ]
 
 
-# Module-level aliases for backward compatibility
-# Note: Cannot inherit from nested StrEnum classes, use type aliases instead
-WmsFilterOperator = FlextOracleWmsConstants.WmsFilterOperator
-WmsApiVersion = FlextOracleWmsConstants.WmsApiVersion
-WmsApiCategory = FlextOracleWmsConstants.WmsApiCategory
-
-
 c = FlextOracleWmsConstants
 
 __all__ = [
     "FlextOracleWmsConstants",
     "OracleWMSAuthMethod",
-    "WmsApiCategory",
-    "WmsApiVersion",
-    "WmsFilterOperator",
     "c",
 ]
