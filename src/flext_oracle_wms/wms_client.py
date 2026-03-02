@@ -64,7 +64,7 @@ class FlextOracleWmsClient:
             resolved_config = FlextOracleWmsSettings.testing_config()
 
         self.config: FlextOracleWmsSettings = resolved_config
-        self.config: FlextOracleWmsSettings = resolved_config
+
         api_config = FlextApiSettings(
             base_url=self.config.base_url,
             timeout=int(self.config.timeout),
@@ -123,7 +123,7 @@ class FlextOracleWmsClient:
             return FlextResult.fail(
                 f"{method} {path} returned HTTP {response.status_code}",
             )
-        return FlextResult.ok(response.body)
+        return FlextResult.ok(response)
 
     def get(
         self,

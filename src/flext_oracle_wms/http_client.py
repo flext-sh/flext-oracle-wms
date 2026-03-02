@@ -9,10 +9,10 @@ from __future__ import annotations
 import json
 from collections.abc import Mapping, MutableMapping
 from types import TracebackType
-from typing import Self
+from typing import Self, cast
 
 from flext_api import FlextApiClient, FlextApiModels, FlextApiSettings, FlextApiTypes
-from flext_core import FlextLogger, FlextResult
+from flext_core import FlextLogger, FlextResult, FlextTypes
 from pydantic import BaseModel, Field, ValidationError
 
 # HTTP status codes
@@ -109,7 +109,7 @@ class FlextHttpClient:
     @staticmethod
     def _normalize_request_body(
         body: HttpJsonObject | None,
-    ) -> FlextApiTypes.Api.RequestBody:
+    ) -> dict[str, FlextTypes.JsonValue] | None:
         if body is None:
             return {}
         return body
@@ -151,7 +151,7 @@ class FlextHttpClient:
                 method=method,
                 url=url,
                 headers=request_headers,
-                body=self._normalize_request_body(body),
+                body=cast("FlextApiTypes.Api.RequestBody", self._normalize_request_body(body)),
             )
             response_result = self._client.request(request)
             if response_result.is_failure:
@@ -172,11 +172,11 @@ class FlextHttpClient:
     def _parse_response_body(
         self,
         body: FlextApiTypes.Api.ResponseBody,
-    ) -> HttpJsonObject:
+    ) -> dict[str, FlextTypes.JsonValue]:
         """Parse response body using strict model validation."""
         match body:
             case dict() as payload:
-                return payload
+                return cast("dict[str, FlextTypes.JsonValue]", payload)
             case str() as raw if raw:
                 try:
                     parsed = json.loads(raw)
@@ -244,7 +244,7 @@ class FlextHttpClient:
                 method="PUT",
                 url=url,
                 headers=request_headers,
-                body=self._normalize_request_body(request_body),
+                body=cast("FlextApiTypes.Api.RequestBody", self._normalize_request_body(request_body)),
             )
             response_result = self._client.request(request)
             if response_result.is_failure:

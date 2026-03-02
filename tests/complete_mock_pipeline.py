@@ -15,6 +15,7 @@ import json
 import uuid
 from datetime import UTC, datetime
 from pathlib import Path
+from typing import cast
 
 from flext_core import FlextLogger, FlextResult, t
 
@@ -489,14 +490,14 @@ class CompleteMockPipeline:
                 "mod_ts" if "mod_ts" in schema.get("properties", {}) else None
             )
 
-            stream: dict[str, t.GeneralValueType] = {
+            stream: dict[str, object] = {
                 "tap_stream_id": entity_name,
                 "stream": entity_name,
                 "schema": schema_without_keys,
                 "key_properties": key_properties,
                 "metadata": [
                     {
-                        "breadcrumb": [],
+                        "breadcrumb": list[str](),
                         "metadata": {
                             "inclusion": "available",
                             "selected": True,
@@ -509,7 +510,9 @@ class CompleteMockPipeline:
             }
 
             if replication_key:
-                stream["metadata"][0]["metadata"]["replication-key"] = replication_key
+                metadata_list = cast("list[dict[str, object]]", stream["metadata"])
+                metadata_dict = cast("dict[str, object]", metadata_list[0]["metadata"])
+                metadata_dict["replication-key"] = replication_key
 
             streams.append(stream)
 
@@ -523,7 +526,7 @@ class CompleteMockPipeline:
             if not isinstance(entity_info, dict):
                 continue
             sample_data_raw = entity_info.get("sample_data", {})
-            sample_data = (
+            sample_data: dict[str, object] = (
                 sample_data_raw.copy() if isinstance(sample_data_raw, dict) else {}
             )
 
@@ -543,16 +546,16 @@ class CompleteMockPipeline:
             for i in range(count):
                 record = sample_data.copy()
                 if "id" in record:
-                    record["id"] += i
+                    record["id"] = cast("int", record["id"]) + i
                 if "order_nbr" in record:
                     record["order_nbr"] = f"{record['order_nbr']}-{i + 1:03d}"
 
                 record["_sdc_sequence"] = i + 1
                 # Ensure all values are objects
-                record_obj: dict[str, t.GeneralValueType] = dict[
-                    str,
-                    t.GeneralValueType,
-                ](record.items())
+                record_obj: dict[str, t.GeneralValueType] = cast(
+                    "dict[str, t.GeneralValueType]",
+                    record,
+                )
                 tap_records.append({"entity": entity_name, "record": record_obj})
 
         return tap_records
@@ -579,11 +582,11 @@ class CompleteMockPipeline:
                     and isinstance(entity_records[0], dict)
                     and isinstance(entity_records[0].get("record"), dict)
                     and hasattr(entity_records[0]["record"], "keys")
-                    else []
+                    else list[str]()
                 ),
             }
 
-        return target_results
+        return cast("dict[str, t.GeneralValueType]", target_results)
 
     def _simulate_dbt_transformations(
         self,
@@ -666,7 +669,7 @@ class CompleteMockPipeline:
                     "source_tables": available_sources,
                     "rows_processed": sum(
                         self._safe_int(
-                            target_results.get(src, {}).get("records_loaded", 0),
+                            cast("dict[str, object]", target_results.get(src, {})).get("records_loaded", 0),
                         )
                         for src in available_sources
                         if src in target_results
@@ -676,7 +679,7 @@ class CompleteMockPipeline:
                     "status": "SUCCESS",
                 }
 
-        return dbt_results
+        return cast("dict[str, t.GeneralValueType]", dbt_results)
 
     def _save_complete_pipeline_results(
         self,
@@ -752,7 +755,7 @@ class CompleteMockPipeline:
                 )
                 if isinstance(catalog, dict)
                 and isinstance(streams := catalog.get("streams", []), list)
-                else [],
+                else list[object](),
             },
             "target_loading": {
                 "tables_created": len(target_results),
