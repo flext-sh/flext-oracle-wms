@@ -801,9 +801,7 @@ class CompleteMockPipeline:
 def main() -> None:
     """Main execution."""
     pipeline = CompleteMockPipeline()
-    result: FlextResult[dict[str, t.ContainerValue]] = (
-        pipeline.run_complete_pipeline()
-    )
+    result: FlextResult[dict[str, t.ContainerValue]] = pipeline.run_complete_pipeline()
 
     if result.is_success:
         pass
