@@ -212,7 +212,7 @@ class FlextOracleWmsClient:
         self,
         entity_name: str,
         limit: int | None = None,
-        filters: Mapping[str, t.JsonPrimitive] | None = None,
+        filters: Mapping[str, t.Scalar] | None = None,
     ) -> FlextResult[list[FlextApiTypes.Api.JsonObject]]:
         """Get data for a specific Oracle WMS entity."""
         params: FlextApiTypes.Api.WebParams = {}

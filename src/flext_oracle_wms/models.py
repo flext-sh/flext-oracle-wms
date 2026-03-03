@@ -43,8 +43,8 @@ class FlextOracleWmsModels(FlextModels):
         str,
         StringConstraints(min_length=1, max_length=50, pattern=r"^[a-z0-9_]+$"),
     ]
-    type TFilterValue = t.JsonPrimitive | None
-    type TFilters = dict[str, t.JsonPrimitive | None]
+    type TFilterValue = t.Scalar | None
+    type TFilters = dict[str, t.Scalar | None]
     type TPaginationInfo = dict[str, int]
     type TTimeout = Annotated[int, Field(ge=1, le=300)]
 

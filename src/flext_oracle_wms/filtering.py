@@ -14,7 +14,7 @@ from pydantic import BaseModel, ConfigDict
 
 from flext_oracle_wms.constants import FlextOracleWmsConstants
 
-type FilterScalar = t.JsonPrimitive | None
+type FilterScalar = t.Scalar | None
 type FilterList = list[FilterScalar]
 type FilterRecordValue = FilterScalar | FilterList | Mapping[str, FilterRecordValue]
 type FilterRecord = Mapping[str, FilterRecordValue]
