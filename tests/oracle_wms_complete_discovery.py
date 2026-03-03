@@ -18,6 +18,8 @@ from datetime import UTC, datetime
 from pathlib import Path
 
 from flext_core import FlextLogger, FlextResult, t
+from pydantic import ConfigDict
+
 from flext_oracle_wms import (
     FLEXT_ORACLE_WMS_APIS,
     FlextOracleWmsApiCategory,
@@ -27,7 +29,6 @@ from flext_oracle_wms import (
     FlextOracleWmsClientSettings,
     create_oracle_wms_client,
 )
-from pydantic import ConfigDict
 
 logger = FlextLogger(__name__)
 

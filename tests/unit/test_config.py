@@ -8,6 +8,7 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 from flext_core import FlextSettings
+
 from flext_oracle_wms import FlextOracleWmsConstants
 from flext_oracle_wms.settings import FlextOracleWmsSettings
 

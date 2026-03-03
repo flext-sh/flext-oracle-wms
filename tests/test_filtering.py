@@ -18,6 +18,7 @@ SPDX-License-Identifier: MIT
 
 import pytest
 from flext_core import FlextExceptions, t
+
 from flext_oracle_wms import FlextOracleWmsConstants
 from flext_oracle_wms.filtering import (
     FlextOracleWmsDataValidationError,

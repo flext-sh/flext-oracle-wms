@@ -151,7 +151,9 @@ class FlextHttpClient:
                 method=method,
                 url=url,
                 headers=request_headers,
-                body=cast("FlextApiTypes.Api.RequestBody", self._normalize_request_body(body)),
+                body=cast(
+                    "FlextApiTypes.Api.RequestBody", self._normalize_request_body(body)
+                ),
             )
             response_result = self._client.request(request)
             if response_result.is_failure:
@@ -244,7 +246,10 @@ class FlextHttpClient:
                 method="PUT",
                 url=url,
                 headers=request_headers,
-                body=cast("FlextApiTypes.Api.RequestBody", self._normalize_request_body(request_body)),
+                body=cast(
+                    "FlextApiTypes.Api.RequestBody",
+                    self._normalize_request_body(request_body),
+                ),
             )
             response_result = self._client.request(request)
             if response_result.is_failure:

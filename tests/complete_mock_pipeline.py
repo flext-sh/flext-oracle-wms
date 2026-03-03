@@ -669,7 +669,9 @@ class CompleteMockPipeline:
                     "source_tables": available_sources,
                     "rows_processed": sum(
                         self._safe_int(
-                            cast("dict[str, object]", target_results.get(src, {})).get("records_loaded", 0),
+                            cast("dict[str, object]", target_results.get(src, {})).get(
+                                "records_loaded", 0
+                            ),
                         )
                         for src in available_sources
                         if src in target_results

@@ -9,6 +9,7 @@ from __future__ import annotations
 from unittest.mock import MagicMock
 
 from flext_core import FlextResult
+
 from flext_oracle_wms import FlextOracleWmsEntityDiscovery
 from flext_oracle_wms.constants import FlextOracleWmsConstants as c
 from flext_oracle_wms.wms_discovery import (

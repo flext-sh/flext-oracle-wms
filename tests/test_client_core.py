@@ -11,6 +11,7 @@ from unittest.mock import MagicMock
 
 import pytest
 from flext_core import FlextLogger, FlextResult
+
 from flext_oracle_wms import (
     FlextOracleWmsClient,
     FlextOracleWmsSettings,

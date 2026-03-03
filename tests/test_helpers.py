@@ -7,6 +7,7 @@ SPDX-License-Identifier: MIT
 
 import pytest
 from flext_core import FlextUtilities
+
 from flext_oracle_wms.utilities import FlextOracleWmsUtilities
 
 
