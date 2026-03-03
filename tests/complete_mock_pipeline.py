@@ -311,7 +311,7 @@ class CompleteMockPipeline:
 
             # Show pipeline flow
 
-            return FlextResult[dict[str, t.ContainerValue]].ok(
+            return FlextResult[t.ConfigurationMapping].ok(
                 {
                     "duration": duration,
                     "schemas_count": len(schemas),
@@ -332,7 +332,7 @@ class CompleteMockPipeline:
 
         except Exception as e:
             logger.exception("Complete pipeline failed")
-            return FlextResult[dict[str, t.ContainerValue]].fail(
+            return FlextResult[t.ConfigurationMapping].fail(
                 f"Pipeline failed: {e}",
             )
 
