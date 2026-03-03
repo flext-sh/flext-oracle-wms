@@ -74,7 +74,7 @@ class FlextOracleWmsClient:
 
     @staticmethod
     def _decode_response_model[T: BaseModel](
-        payload: t.GeneralValueType,
+        payload: t.ContainerValue,
         model_type: type[T],
     ) -> FlextResult[T]:
         match payload:
@@ -212,7 +212,7 @@ class FlextOracleWmsClient:
         self,
         entity_name: str,
         limit: int | None = None,
-        filters: Mapping[str, str | int | float | bool] | None = None,
+        filters: Mapping[str, t.JsonPrimitive] | None = None,
     ) -> FlextResult[list[FlextApiTypes.Api.JsonObject]]:
         """Get data for a specific Oracle WMS entity."""
         params: FlextApiTypes.Api.WebParams = {}

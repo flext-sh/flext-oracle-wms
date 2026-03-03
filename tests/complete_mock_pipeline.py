@@ -37,7 +37,7 @@ class CompleteMockPipeline:
     def __init__(self) -> None:
         """Initialize with realistic Oracle WMS mock data."""
         # Realistic Oracle WMS entities with actual data structures
-        self.mock_entities: dict[str, t.GeneralValueType] = {
+        self.mock_entities: dict[str, t.ContainerValue] = {
             "company": {
                 "count": 5,
                 "sample_data": {
@@ -266,9 +266,9 @@ class CompleteMockPipeline:
             },
         }
 
-        self.results: dict[str, t.GeneralValueType] = {}
+        self.results: dict[str, t.ContainerValue] = {}
 
-    def run_complete_pipeline(self) -> FlextResult[dict[str, t.GeneralValueType]]:
+    def run_complete_pipeline(self) -> FlextResult[dict[str, t.ContainerValue]]:
         """Run complete Oracle WMS pipeline with mock data."""
         start_time = datetime.now(UTC)
 
@@ -311,7 +311,7 @@ class CompleteMockPipeline:
 
             # Show pipeline flow
 
-            return FlextResult[dict[str, t.GeneralValueType]].ok(
+            return FlextResult[dict[str, t.ContainerValue]].ok(
                 {
                     "duration": duration,
                     "schemas_count": len(schemas),
@@ -332,13 +332,13 @@ class CompleteMockPipeline:
 
         except Exception as e:
             logger.exception("Complete pipeline failed")
-            return FlextResult[dict[str, t.GeneralValueType]].fail(
+            return FlextResult[dict[str, t.ContainerValue]].fail(
                 f"Pipeline failed: {e}",
             )
 
-    def _generate_complete_singer_schemas(self) -> dict[str, t.GeneralValueType]:
+    def _generate_complete_singer_schemas(self) -> dict[str, t.ContainerValue]:
         """Generate complete Singer schemas for all entities."""
-        schemas: dict[str, t.GeneralValueType] = {}
+        schemas: dict[str, t.ContainerValue] = {}
 
         for entity_name, entity_info in self.mock_entities.items():
             if isinstance(entity_info, dict) and "sample_data" in entity_info:
@@ -355,10 +355,10 @@ class CompleteMockPipeline:
 
     def _create_entity_properties(
         self,
-        sample_data: dict[str, t.GeneralValueType],
-    ) -> tuple[dict[str, t.GeneralValueType], list[str]]:
+        sample_data: dict[str, t.ContainerValue],
+    ) -> tuple[dict[str, t.ContainerValue], list[str]]:
         """Create properties and key properties from sample data - SRP compliance."""
-        properties: dict[str, t.GeneralValueType] = {}
+        properties: dict[str, t.ContainerValue] = {}
         key_properties: list[str] = []
 
         for field, value in sample_data.items():
@@ -437,7 +437,7 @@ class CompleteMockPipeline:
         """Determine if field should be a key property."""
         return field == "id" or (field.endswith("_code") and not existing_keys)
 
-    def _add_singer_metadata(self, properties: dict[str, t.GeneralValueType]) -> None:
+    def _add_singer_metadata(self, properties: dict[str, t.ContainerValue]) -> None:
         """Add Singer metadata properties - SRP compliance."""
         properties.update(
             {
@@ -450,9 +450,9 @@ class CompleteMockPipeline:
 
     def _build_singer_schema(
         self,
-        properties: dict[str, t.GeneralValueType],
+        properties: dict[str, t.ContainerValue],
         key_properties: list[str],
-    ) -> dict[str, t.GeneralValueType]:
+    ) -> dict[str, t.ContainerValue]:
         """Build complete Singer schema - SRP compliance."""
         return {
             "type": "object",
@@ -463,8 +463,8 @@ class CompleteMockPipeline:
 
     def _create_complete_singer_catalog(
         self,
-        schemas: dict[str, t.GeneralValueType],
-    ) -> dict[str, t.GeneralValueType]:
+        schemas: dict[str, t.ContainerValue],
+    ) -> dict[str, t.ContainerValue]:
         """Create complete Singer catalog for Meltano integration."""
         streams = []
 
@@ -518,9 +518,9 @@ class CompleteMockPipeline:
 
         return {"version": 1, "streams": streams}
 
-    def _simulate_tap_extraction(self) -> list[dict[str, t.GeneralValueType]]:
+    def _simulate_tap_extraction(self) -> list[dict[str, t.ContainerValue]]:
         """Simulate TAP extraction process."""
-        tap_records: list[dict[str, t.GeneralValueType]] = []
+        tap_records: list[dict[str, t.ContainerValue]] = []
 
         for entity_name, entity_info in self.mock_entities.items():
             if not isinstance(entity_info, dict):
@@ -552,8 +552,8 @@ class CompleteMockPipeline:
 
                 record["_sdc_sequence"] = i + 1
                 # Ensure all values are objects
-                record_obj: dict[str, t.GeneralValueType] = cast(
-                    "dict[str, t.GeneralValueType]",
+                record_obj: dict[str, t.ContainerValue] = cast(
+                    "dict[str, t.ContainerValue]",
                     record,
                 )
                 tap_records.append({"entity": entity_name, "record": record_obj})
@@ -562,8 +562,8 @@ class CompleteMockPipeline:
 
     def _simulate_target_loading(
         self,
-        tap_records: list[dict[str, t.GeneralValueType]],
-    ) -> dict[str, t.GeneralValueType]:
+        tap_records: list[dict[str, t.ContainerValue]],
+    ) -> dict[str, t.ContainerValue]:
         """Simulate TARGET loading process."""
         target_results = {}
 
@@ -586,12 +586,12 @@ class CompleteMockPipeline:
                 ),
             }
 
-        return cast("dict[str, t.GeneralValueType]", target_results)
+        return cast("dict[str, t.ContainerValue]", target_results)
 
     def _simulate_dbt_transformations(
         self,
-        target_results: dict[str, t.GeneralValueType],
-    ) -> dict[str, t.GeneralValueType]:
+        target_results: dict[str, t.ContainerValue],
+    ) -> dict[str, t.ContainerValue]:
         """Simulate DBT transformation process."""
         dbt_results = {}
 
@@ -681,15 +681,15 @@ class CompleteMockPipeline:
                     "status": "SUCCESS",
                 }
 
-        return cast("dict[str, t.GeneralValueType]", dbt_results)
+        return cast("dict[str, t.ContainerValue]", dbt_results)
 
     def _save_complete_pipeline_results(
         self,
-        schemas: dict[str, t.GeneralValueType],
-        catalog: dict[str, t.GeneralValueType],
-        tap_records: list[dict[str, t.GeneralValueType]],
-        target_results: dict[str, t.GeneralValueType],
-        dbt_results: dict[str, t.GeneralValueType],
+        schemas: dict[str, t.ContainerValue],
+        catalog: dict[str, t.ContainerValue],
+        tap_records: list[dict[str, t.ContainerValue]],
+        target_results: dict[str, t.ContainerValue],
+        dbt_results: dict[str, t.ContainerValue],
     ) -> FlextResult[str]:
         """Save complete pipeline results."""
         results_dir = Path("complete_pipeline_results")
@@ -801,7 +801,7 @@ class CompleteMockPipeline:
 def main() -> None:
     """Main execution."""
     pipeline = CompleteMockPipeline()
-    result: FlextResult[dict[str, t.GeneralValueType]] = (
+    result: FlextResult[dict[str, t.ContainerValue]] = (
         pipeline.run_complete_pipeline()
     )
 

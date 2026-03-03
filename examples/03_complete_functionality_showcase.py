@@ -150,9 +150,9 @@ def showcase_2_entity_discovery(
 def showcase_3_data_retrieval(
     client: FlextOracleWmsClient,
     entities: list[str],
-) -> dict[str, t.GeneralValueType]:
+) -> dict[str, t.ContainerValue]:
     """Feature 3: Data Retrieval and Querying."""
-    sample_data: dict[str, t.GeneralValueType] = {}
+    sample_data: dict[str, t.ContainerValue] = {}
 
     # Test data retrieval from key entities
     test_entities = ["company", "facility", "item"]

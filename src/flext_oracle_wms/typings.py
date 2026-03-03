@@ -42,24 +42,24 @@ class FlextOracleWmsTypes(FlextTypes):
         ]
 
         # Configuration types using dict composition
-        type WmsProjectConfig = dict[str, FlextTypes.GeneralValueType]
+        type WmsProjectConfig = dict[str, FlextTypes.ContainerValue]
         type WarehouseConfig = dict[str, str | int | bool | list[str]]
         type InventoryConfig = dict[
             str,
-            bool | str | dict[str, FlextTypes.GeneralValueType],
+            bool | str | dict[str, FlextTypes.ContainerValue],
         ]
 
     # Core types using advanced composition and unions
     type WmsConfig = dict[
         str,
-        str | int | bool | dict[str, FlextTypes.GeneralValueType],
+        str | int | bool | dict[str, FlextTypes.ContainerValue],
     ]
     type WmsEntity = dict[
         str,
-        FlextTypes.JsonValue | dict[str, FlextTypes.GeneralValueType],
+        FlextTypes.JsonValue | dict[str, FlextTypes.ContainerValue],
     ]
-    type WmsRecord = dict[str, FlextTypes.GeneralValueType]
-    type WmsRecords = list[dict[str, FlextTypes.GeneralValueType]]
+    type WmsRecord = dict[str, FlextTypes.ContainerValue]
+    type WmsRecords = list[dict[str, FlextTypes.ContainerValue]]
 
     # =========================================================================
     # CORE COMMONLY USED TYPES - Convenience aliases for common patterns
@@ -74,7 +74,7 @@ class FlextOracleWmsTypes(FlextTypes):
         """
 
         # Common dictionary types
-        type Dict = dict[str, FlextTypes.GeneralValueType]
+        type Dict = dict[str, FlextTypes.ContainerValue]
         """Type alias for generic dictionary (attribute name to value mapping)."""
 
 

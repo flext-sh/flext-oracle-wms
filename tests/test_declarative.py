@@ -56,7 +56,7 @@ def find_env_file() -> Path | None:
     return None
 
 
-def load_env_config() -> dict[str, t.GeneralValueType] | None:
+def load_env_config() -> dict[str, t.ContainerValue] | None:
     """Load Oracle WMS configuration from .env file."""
     env_path = find_env_file()
     if not env_path:
@@ -119,7 +119,7 @@ def load_env_config() -> dict[str, t.GeneralValueType] | None:
 
 
 @pytest.fixture
-def env_config() -> dict[str, t.GeneralValueType]:
+def env_config() -> dict[str, t.ContainerValue]:
     """Fixture that provides .env configuration or skips test."""
     config = load_env_config()
     if not config or not all(
@@ -135,7 +135,7 @@ def env_config() -> dict[str, t.GeneralValueType]:
 
 @pytest.fixture
 def oracle_wms_client(
-    env_config: dict[str, t.GeneralValueType],
+    env_config: dict[str, t.ContainerValue],
 ) -> Generator[FlextOracleWmsClient]:
     """Fixture that provides configured Oracle WMS client."""
     # Properly cast env_config values to expected types for FlextOracleWmsClientSettings
@@ -210,7 +210,7 @@ class TestOracleWmsDeclarativeIntegration:
 
     def test_client_configuration_and_lifecycle(
         self,
-        env_config: dict[str, t.GeneralValueType],
+        env_config: dict[str, t.ContainerValue],
     ) -> None:
         """Test client configuration and initialization."""
         # Properly cast env_config values to expected types for FlextOracleWmsClientSettings

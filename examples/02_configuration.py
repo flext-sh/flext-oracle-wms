@@ -142,7 +142,7 @@ def create_demo_config() -> FlextOracleWmsClientSettings:
 
 def validate_configuration(
     config: FlextOracleWmsClientSettings,
-) -> dict[str, t.GeneralValueType]:
+) -> dict[str, t.ContainerValue]:
     """Validate Oracle WMS client configuration.
 
     Args:
@@ -154,7 +154,7 @@ def validate_configuration(
     """
     errors: list[str] = []
     warnings: list[str] = []
-    config_summary: dict[str, t.GeneralValueType] = {}
+    config_summary: dict[str, t.ContainerValue] = {}
 
     # Validate base URL
     if not config.base_url:
@@ -198,7 +198,7 @@ def validate_configuration(
         "enable_logging": config.enable_audit_logging,
     }
 
-    validation_results: dict[str, t.GeneralValueType] = {
+    validation_results: dict[str, t.ContainerValue] = {
         "valid": len(errors) == 0,
         "warnings": warnings,
         "errors": errors,
@@ -210,7 +210,7 @@ def validate_configuration(
 
 def test_configuration(
     config: FlextOracleWmsClientSettings,
-) -> dict[str, t.GeneralValueType]:
+) -> dict[str, t.ContainerValue]:
     """Test Oracle WMS configuration by attempting connection.
 
     Args:
@@ -220,7 +220,7 @@ def test_configuration(
       Dictionary with test results
 
     """
-    test_results: dict[str, t.GeneralValueType] = {
+    test_results: dict[str, t.ContainerValue] = {
         "connection_success": False,
         "health_check_success": False,
         "error": None,

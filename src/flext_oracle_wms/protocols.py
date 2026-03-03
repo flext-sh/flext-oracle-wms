@@ -56,9 +56,9 @@ class FlextOracleWmsProtocols(FlextProtocols):
             def execute_wms_operation(
                 self,
                 operation: str,
-                config: Mapping[str, t.GeneralValueType],
-                **params: t.GeneralValueType,
-            ) -> FlextProtocols.Result[Mapping[str, t.GeneralValueType]]:
+                config: Mapping[str, t.ContainerValue],
+                **params: t.ContainerValue,
+            ) -> FlextProtocols.Result[t.ConfigurationMapping]:
                 """Execute WMS operation with unified interface.
 
                 Args:
@@ -67,7 +67,7 @@ class FlextOracleWmsProtocols(FlextProtocols):
                 **params: Operation parameters
 
                 Returns:
-                FlextResult[dict[str, t.GeneralValueType]]: Operation result or error
+                FlextResult[dict[str, t.ContainerValue]]: Operation result or error
 
                 """
                 ...  # INTERFACE

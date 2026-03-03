@@ -30,14 +30,14 @@ class FlextOracleWmsEntityDiscovery:
     @staticmethod
     def _to_discovered_entity(
         entity_name: str,
-    ) -> Mapping[str, t.GeneralValueType]:
+    ) -> Mapping[str, t.ContainerValue]:
         return {
             "name": entity_name,
             "path": f"/entities/{entity_name}",
             "strategy": c.EndpointDiscoveryStrategy.API_BASED,
         }
 
-    def discover_entities(self) -> FlextResult[list[Mapping[str, t.GeneralValueType]]]:
+    def discover_entities(self) -> FlextResult[list[Mapping[str, t.ContainerValue]]]:
         """Discover entities from Oracle WMS API."""
         entities_result = self.client.discover_entities()
         if entities_result.is_failure:

@@ -99,7 +99,7 @@ class OptimizedOracleWmsDiscovery:
 
     def discover_priority_entities_fast(
         self,
-    ) -> FlextResult[dict[str, t.GeneralValueType]]:
+    ) -> FlextResult[dict[str, t.ContainerValue]]:
         """Fast discovery of priority entities with data."""
         # Get all entities first
         entities_result = self.client.discover_entities()
@@ -170,7 +170,7 @@ class OptimizedOracleWmsDiscovery:
         self,
         entities: list[str],
         batch_size: int = 10,
-    ) -> dict[str, t.GeneralValueType]:
+    ) -> dict[str, t.ContainerValue]:
         """Process entity batch with parallel requests."""
         results = {}
 
@@ -219,7 +219,7 @@ class OptimizedOracleWmsDiscovery:
 
         return results
 
-    def _analyze_single_entity(self, entity_name: str) -> dict[str, t.GeneralValueType]:
+    def _analyze_single_entity(self, entity_name: str) -> dict[str, t.ContainerValue]:
         """Analyze single entity for data and structure."""
         try:
             # Get entity data with small sample
@@ -288,8 +288,8 @@ class OptimizedOracleWmsDiscovery:
 
     def _safe_sample_record(
         self,
-        record: dict[str, t.GeneralValueType],
-    ) -> dict[str, t.GeneralValueType]:
+        record: dict[str, t.ContainerValue],
+    ) -> dict[str, t.ContainerValue]:
         """Create safe sample record for storage."""
         safe_record = {}
         for k, v in record.items():
@@ -304,7 +304,7 @@ class OptimizedOracleWmsDiscovery:
 
     def generate_complete_singer_schemas(
         self,
-    ) -> FlextResult[dict[str, t.GeneralValueType]]:
+    ) -> FlextResult[dict[str, t.ContainerValue]]:
         """Generate complete Singer schemas for high-value entities."""
         if not self.high_value_entities:
             return FlextResult[bool].fail(
@@ -353,8 +353,8 @@ class OptimizedOracleWmsDiscovery:
     def _generate_singer_schema_from_entity_data(
         self,
         entity_name: str,
-        entity_data: dict[str, t.GeneralValueType],
-    ) -> dict[str, t.GeneralValueType] | None:
+        entity_data: dict[str, t.ContainerValue],
+    ) -> dict[str, t.ContainerValue] | None:
         """Generate Singer schema from entity data with proper typing."""
         try:
             fields = entity_data.get("fields", [])
@@ -413,7 +413,7 @@ class OptimizedOracleWmsDiscovery:
         field_name: str,
         python_type: str,
         sample_value: object,
-    ) -> dict[str, t.GeneralValueType]:
+    ) -> dict[str, t.ContainerValue]:
         """Convert Oracle field to Singer type with real data analysis."""
         # Analyze sample value for precise typing
         if sample_value is not None:
@@ -558,8 +558,8 @@ class OptimizedOracleWmsDiscovery:
 
     def _generate_singer_catalog(
         self,
-        schemas: dict[str, t.GeneralValueType],
-    ) -> dict[str, t.GeneralValueType]:
+        schemas: dict[str, t.ContainerValue],
+    ) -> dict[str, t.ContainerValue]:
         """Generate Singer catalog from schemas."""
         streams = []
 

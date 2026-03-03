@@ -18,7 +18,7 @@ class FlextOracleWmsModels(FlextModels):
     Access via m.OracleWms.Entity, m.OracleWms.ApiResponse after inheritance.
     """
 
-    def __init_subclass__(cls, **kwargs: t.GeneralValueType) -> None:
+    def __init_subclass__(cls, **kwargs: t.ContainerValue) -> None:
         """Allow downstream projects to inherit FlextOracleWmsModels for namespace composition."""
         super().__init_subclass__(**kwargs)
 
@@ -47,7 +47,7 @@ class FlextOracleWmsModels(FlextModels):
         class ApiResponse(BaseModel):
             """API response model."""
 
-            data: dict[str, t.GeneralValueType] = Field(default_factory=dict)
+            data: dict[str, t.ContainerValue] = Field(default_factory=dict)
             status_code: int = Field(default=200, ge=200, le=599)
             success: bool = True
             error_message: str | None = None

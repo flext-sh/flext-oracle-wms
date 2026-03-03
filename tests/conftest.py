@@ -85,7 +85,7 @@ def sample_entities() -> list[str]:
 
 
 @pytest.fixture
-def sample_entity_data() -> dict[str, t.GeneralValueType]:
+def sample_entity_data() -> dict[str, t.ContainerValue]:
     """Sample entity response data based on REAL query results."""
     return {
         "result_count": 4,

@@ -25,7 +25,7 @@ class FlextOracleWmsModels(FlextModels):
     Generic for any WMS system.
     """
 
-    def __init_subclass__(cls, **kwargs: t.GeneralValueType) -> None:
+    def __init_subclass__(cls, **kwargs: t.ContainerValue) -> None:
         """Allow downstream projects to inherit FlextOracleWmsModels for namespace composition."""
         super().__init_subclass__(**kwargs)
 
@@ -33,18 +33,18 @@ class FlextOracleWmsModels(FlextModels):
     # TYPE ALIASES - Advanced composition for minimal declarations
     # =========================================================================
 
-    type TRecord = dict[str, t.GeneralValueType]
-    type TRecordBatch = list[dict[str, t.GeneralValueType]]
-    type TSchema = dict[str, dict[str, t.GeneralValueType]]
-    type TApiResponse = dict[str, t.GeneralValueType]
+    type TRecord = dict[str, t.ContainerValue]
+    type TRecordBatch = list[dict[str, t.ContainerValue]]
+    type TSchema = dict[str, dict[str, t.ContainerValue]]
+    type TApiResponse = dict[str, t.ContainerValue]
     type TApiVersion = Literal["v2", "v1"]
     type TEntityId = Annotated[str, StringConstraints(min_length=1, max_length=100)]
     type TEntityName = Annotated[
         str,
         StringConstraints(min_length=1, max_length=50, pattern=r"^[a-z0-9_]+$"),
     ]
-    type TFilterValue = str | int | float | bool | None
-    type TFilters = dict[str, str | int | float | bool | None]
+    type TFilterValue = t.JsonPrimitive | None
+    type TFilters = dict[str, t.JsonPrimitive | None]
     type TPaginationInfo = dict[str, int]
     type TTimeout = Annotated[int, Field(ge=1, le=300)]
 
@@ -84,7 +84,7 @@ class FlextOracleWmsModels(FlextModels):
             ge=0.0,
         )
         items: Annotated[
-            list[dict[str, t.GeneralValueType]],
+            list[dict[str, t.ContainerValue]],
             Field(default_factory=list, description="Order items"),
         ]
 
@@ -105,7 +105,7 @@ class FlextOracleWmsModels(FlextModels):
         wave_id: str = Field(default="", description="Wave identifier")
         status: str = Field(default="pending", description="Task status")
         items: Annotated[
-            list[dict[str, t.GeneralValueType]],
+            list[dict[str, t.ContainerValue]],
             Field(default_factory=list, description="Task items"),
         ]
 
