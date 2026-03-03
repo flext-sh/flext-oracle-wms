@@ -9,7 +9,7 @@ from __future__ import annotations
 from collections.abc import Mapping
 from enum import StrEnum
 
-from flext_core import FlextExceptions, FlextLogger, FlextResult
+from flext_core import FlextExceptions, FlextLogger, FlextResult, t
 from pydantic import BaseModel, ConfigDict
 
 from flext_oracle_wms.constants import FlextOracleWmsConstants
