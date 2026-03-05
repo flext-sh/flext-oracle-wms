@@ -5,6 +5,8 @@ integration using the ACTUAL API that exists and functions properly.
 
 """
 
+from __future__ import annotations
+
 import contextlib
 import os
 from dataclasses import dataclass
