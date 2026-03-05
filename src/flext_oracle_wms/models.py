@@ -160,16 +160,16 @@ class FlextOracleWmsModels(FlextModels):
     MAX_ENTITY_NAME_LENGTH: int = 50
 
     @staticmethod
+    def calculate_inventory_value(item: InventoryItem, price: float) -> float:
+        """Calculate inventory value using domain logic."""
+        return item.quantity * price
+
+    @staticmethod
     def validate_entity_name(name: str) -> r[str]:
         """Validate entity name using domain rules."""
         if not name or len(name) > FlextOracleWmsModels.MAX_ENTITY_NAME_LENGTH:
             return r.fail("Invalid entity name")
         return r.ok(name)
-
-    @staticmethod
-    def calculate_inventory_value(item: InventoryItem, price: float) -> float:
-        """Calculate inventory value using domain logic."""
-        return item.quantity * price
 
     # =========================================================================
     # AGGREGATE ROOTS - Consistency boundaries
