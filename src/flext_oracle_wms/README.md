@@ -289,7 +289,7 @@ make security               # Bandit + pip-audit security scanning
 ### Documentation
 
 - **[Project README](../../README.md)** - Complete project overview and usage guide
-- **[Development Guide](../../CLAUDE.md)** - Comprehensive development practices and standards
+- **[Development Guide](../../AGENTS.md)** - Comprehensive development practices and standards
 - **[Examples](../../examples/)** - Working code examples and integration patterns
 - **[API Documentation](../../docs/api/)** - Detailed API reference and specifications
 

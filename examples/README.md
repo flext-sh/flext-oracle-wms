@@ -208,7 +208,7 @@ make examples-test
 
 - **[Project README](../README.md)** - Complete project overview
 - **[API Documentation](../docs/api/)** - Detailed API reference
-- **[Development Guide](../CLAUDE.md)** - Development practices
+- **[Development Guide](../AGENTS.md)** - Development practices
 
 ### Oracle WMS Resources
 
