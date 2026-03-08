@@ -8,9 +8,7 @@ SPDX-License-Identifier: MIT
 import pytest
 from pydantic import ValidationError
 
-from flext_oracle_wms import (
-    FlextOracleWmsModels as m,
-)
+from flext_oracle_wms import FlextOracleWmsModels as m
 
 
 def test_entity_creation() -> None:
@@ -60,9 +58,7 @@ def test_entity_validate_entity_success() -> None:
 def test_api_response_creation() -> None:
     """Test API response creation."""
     response = m.OracleWms.ApiResponse(
-        data={"order_id": "ORD001"},
-        status_code=200,
-        success=True,
+        data={"order_id": "ORD001"}, status_code=200, success=True
     )
     assert response.status_code == 200
     assert response.data["order_id"] == "ORD001"
@@ -73,10 +69,7 @@ def test_api_response_creation() -> None:
 def test_api_response_error() -> None:
     """Test API response with error."""
     response = m.OracleWms.ApiResponse(
-        data={},
-        status_code=404,
-        success=False,
-        error_message="Order not found",
+        data={}, status_code=404, success=False, error_message="Order not found"
     )
     assert response.status_code == 404
     assert response.success is False
@@ -109,9 +102,7 @@ def test_api_response_validate_response_failure() -> None:
 def test_api_response_with_nested_data() -> None:
     """Test API response with nested data."""
     response = m.OracleWms.ApiResponse(
-        data={"results": [{"id": 1}, {"id": 2}]},
-        status_code=200,
-        success=True,
+        data={"results": [{"id": 1}, {"id": 2}]}, status_code=200, success=True
     )
     assert isinstance(response.data["results"], list)
     assert len(response.data["results"]) == 2

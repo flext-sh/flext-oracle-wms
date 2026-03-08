@@ -17,8 +17,6 @@ class FlextOracleWmsApi:
     with proper inheritance levels and enterprise patterns.
     """
 
-    # =========================================================================
-    # API CATALOG - CLASS CONSTANT
     FLEXT_ORACLE_WMS_APIS: ClassVar[dict[str, FlextOracleWmsApiEndpoint]] = {
         "test": FlextOracleWmsApiEndpoint(
             name="test",
@@ -27,7 +25,7 @@ class FlextOracleWmsApi:
             version="v1",
             category="test",
             description="Test endpoint",
-        ),
+        )
     }
 
     class OracleWmsMockServer:
@@ -45,5 +43,4 @@ class FlextOracleWmsApi:
 
 
 FLEXT_ORACLE_WMS_APIS = FlextOracleWmsApi.FLEXT_ORACLE_WMS_APIS
-
 __all__ = ["FLEXT_ORACLE_WMS_APIS", "FlextOracleWmsApi"]

@@ -64,8 +64,6 @@ if TYPE_CHECKING:
         FlextOracleWmsModels,
         FlextOracleWmsModels as m,
     )
-
-# Lazy import mapping: export_name -> (module_path, attr_name)
 _LAZY_IMPORTS: dict[str, tuple[str, str]] = {
     "FLEXT_ORACLE_WMS_APIS": ("flext_oracle_wms.wms_api", "FLEXT_ORACLE_WMS_APIS"),
     "FlextOracleWmsApi": ("flext_oracle_wms.wms_api", "FlextOracleWmsApi"),
@@ -149,7 +147,6 @@ _LAZY_IMPORTS: dict[str, tuple[str, str]] = {
     "u": ("flext_oracle_wms.utilities", "FlextOracleWmsUtilities"),
     "x": ("flext_core", "x"),
 }
-
 __all__ = [
     "FLEXT_ORACLE_WMS_APIS",
     "FlextOracleWmsApi",
@@ -190,7 +187,7 @@ __all__ = [
 ]
 
 
-def __getattr__(name: str) -> Any:  # noqa: ANN401
+def __getattr__(name: str) -> Any:
     """Lazy-load module attributes on first access (PEP 562)."""
     return lazy_getattr(name, _LAZY_IMPORTS, globals(), __name__)
 

@@ -25,9 +25,7 @@ def test_config_singleton_behavior() -> None:
 def test_config_custom_values() -> None:
     """Test configuration with custom values."""
     config = FlextOracleWmsSettings(
-        base_url="https://example.com",
-        username="test_user",
-        password="test_password",
+        base_url="https://example.com", username="test_user", password="test_password"
     )
     assert config.base_url == "https://example.com"
     assert config.username == "test_user"

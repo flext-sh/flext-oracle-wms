@@ -44,13 +44,11 @@ def test_config_defaults_from_constants() -> None:
     """Test config defaults come from API_CONFIG constants."""
     config = FlextOracleWmsSettings()
     assert config.base_url == str(
-        FlextOracleWmsConstants.API_CONFIG["base_url_default"],
+        FlextOracleWmsConstants.API_CONFIG["base_url_default"]
     )
-    assert config.timeout == int(
-        FlextOracleWmsConstants.API_CONFIG["timeout_default"],
-    )
+    assert config.timeout == int(FlextOracleWmsConstants.API_CONFIG["timeout_default"])
     assert config.retry_attempts == int(
-        FlextOracleWmsConstants.API_CONFIG["max_retries"],
+        FlextOracleWmsConstants.API_CONFIG["max_retries"]
     )
 
 
@@ -82,9 +80,7 @@ def test_config_environment_from_url() -> None:
 def test_config_enterprise_features() -> None:
     """Test enterprise feature flags."""
     config = FlextOracleWmsSettings(
-        enable_metrics=True,
-        enable_tracing=True,
-        enable_audit_logging=True,
+        enable_metrics=True, enable_tracing=True, enable_audit_logging=True
     )
     assert config.enable_metrics is True
     assert config.enable_tracing is True

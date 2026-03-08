@@ -15,9 +15,7 @@ from flext_api import FlextApiClient, FlextApiModels, FlextApiSettings, FlextApi
 from flext_core import FlextLogger, FlextResult, FlextTypes
 from pydantic import ValidationError
 
-# HTTP status codes
 HTTP_BAD_REQUEST_THRESHOLD = 400
-
 type HttpJsonObject = FlextApiTypes.Api.JsonObject
 
 
@@ -89,28 +87,22 @@ class FlextHttpClient:
         self._client = None
 
     def delete(
-        self,
-        path: str,
-        headers: Mapping[str, str] | None = None,
+        self, path: str, headers: Mapping[str, str] | None = None
     ) -> FlextResult[HttpJsonObject]:
         """Make DELETE request."""
         try:
             self._ensure_client()
             if self._client is None:
                 return FlextResult.fail("Client not initialized")
-
             request_headers = dict(self.default_headers)
             request_headers.update(self._normalize_headers(headers))
             url = f"{self.base_url}/{path.lstrip('/')}"
             request = FlextApiModels.HttpRequest(
-                method="DELETE",
-                url=url,
-                headers=request_headers,
+                method="DELETE", url=url, headers=request_headers
             )
             response_result = self._client.request(request)
             if response_result.is_failure:
                 return FlextResult.fail(f"HTTP request failed: {response_result.error}")
-
             response = response_result.value
             return FlextResult.ok(self._parse_response_body(response.body))
         except Exception as exc:
@@ -152,7 +144,6 @@ class FlextHttpClient:
             self._ensure_client()
             if self._client is None:
                 return FlextResult.fail("Client not initialized")
-
             request_headers = dict(self.default_headers)
             request_headers.update(self._normalize_headers(headers))
             request_body = json_data or data
@@ -169,13 +160,11 @@ class FlextHttpClient:
             response_result = self._client.request(request)
             if response_result.is_failure:
                 return FlextResult.fail(f"HTTP request failed: {response_result.error}")
-
             response = response_result.value
             if response.status_code >= HTTP_BAD_REQUEST_THRESHOLD:
                 return FlextResult.fail(
-                    f"HTTP {response.status_code}: {response.body!r}",
+                    f"HTTP {response.status_code}: {response.body!r}"
                 )
-
             return FlextResult.ok(self._parse_response_body(response.body))
         except Exception as exc:
             FlextHttpClient.logger.exception("Unexpected error")
@@ -204,14 +193,12 @@ class FlextHttpClient:
             self._ensure_client()
             if self._client is None:
                 return FlextResult.fail("Client not initialized")
-
             request_headers = dict(self.default_headers)
             request_headers.update(self._normalize_headers(headers))
             url = f"{self.base_url}/{path.lstrip('/')}" if path else self.base_url
             if params:
-                query = "&".join(f"{k}={v}" for k, v in params.items())
+                query = "&".join((f"{k}={v}" for k, v in params.items()))
                 url = f"{url}?{query}"
-
             request = FlextApiModels.HttpRequest(
                 method=method,
                 url=url,
@@ -223,13 +210,12 @@ class FlextHttpClient:
             response_result = self._client.request(request)
             if response_result.is_failure:
                 return FlextResult.fail(
-                    f"HTTP {method} failed: {response_result.error}",
+                    f"HTTP {method} failed: {response_result.error}"
                 )
-
             response = response_result.value
             if response.status_code >= HTTP_BAD_REQUEST_THRESHOLD:
                 return FlextResult.fail(
-                    f"HTTP {response.status_code}: {response.body!r}",
+                    f"HTTP {response.status_code}: {response.body!r}"
                 )
             return FlextResult.ok(self._parse_response_body(response.body))
         except Exception as exc:
@@ -237,8 +223,7 @@ class FlextHttpClient:
             return FlextResult.fail(f"Request error: {exc}")
 
     def _parse_response_body(
-        self,
-        body: FlextApiTypes.Api.ResponseBody,
+        self, body: FlextApiTypes.Api.ResponseBody
     ) -> dict[str, FlextTypes.JsonValue]:
         """Parse response body using strict model validation."""
         match body:
@@ -289,14 +274,8 @@ def create_flext_http_client(
 ) -> FlextHttpClient:
     """Create FlextHttpClient instance."""
     return FlextHttpClient(
-        base_url=base_url,
-        timeout=timeout,
-        headers=headers,
-        verify_ssl=verify_ssl,
+        base_url=base_url, timeout=timeout, headers=headers, verify_ssl=verify_ssl
     )
 
 
-__all__ = [
-    "FlextHttpClient",
-    "create_flext_http_client",
-]
+__all__ = ["FlextHttpClient", "create_flext_http_client"]

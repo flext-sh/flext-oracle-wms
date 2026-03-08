@@ -9,7 +9,6 @@ from __future__ import annotations
 from flext_core import FlextLogger, e, t
 
 
-# Direct FLEXT pattern implementation - no inheritance from FlextExceptions to avoid conflicts
 class FlextOracleWmsExceptions:
     """Oracle WMS exceptions using direct FLEXT patterns.
 
@@ -19,15 +18,11 @@ class FlextOracleWmsExceptions:
 
     logger = FlextLogger(__name__)
 
-    # Base exception class following FLEXT patterns directly
     class BaseError(e.BaseError):
         """Base WMS exception with FLEXT context handling."""
 
         def __init__(
-            self,
-            message: str,
-            code: str = "WMS_ERROR",
-            **context: t.ContainerValue,
+            self, message: str, code: str = "WMS_ERROR", **context: t.ContainerValue
         ) -> None:
             """Initialize base WMS error with message and error code."""
             super().__init__(message)
@@ -35,7 +30,6 @@ class FlextOracleWmsExceptions:
             self.code = code
             self.context = context
 
-    # Domain-specific exceptions following FLEXT inheritance patterns
     class ValidationError(BaseError):
         """Validation error."""
 
@@ -71,7 +65,6 @@ class FlextOracleWmsExceptions:
             """Initialize processing error."""
             super().__init__(message, "WMS_PROCESSING_ERROR", **context)
 
-    # Specific domain exceptions following FLEXT inheritance
     class ApiError(BaseError):
         """API error."""
 
@@ -98,7 +91,6 @@ class FlextOracleWmsExceptions:
         """Schema flattening error."""
 
 
-# Direct FLEXT pattern exports with real inheritance
 class FlextOracleWmsError(FlextOracleWmsExceptions.BaseError):
     """FlextOracleWmsError - real inheritance from BaseError."""
 
@@ -144,7 +136,7 @@ class FlextOracleWmsSchemaError(FlextOracleWmsExceptions.SchemaError):
 
 
 class FlextOracleWmsSchemaFlatteningError(
-    FlextOracleWmsExceptions.SchemaFlatteningError,
+    FlextOracleWmsExceptions.SchemaFlatteningError
 ):
     """FlextOracleWmsSchemaFlatteningError - real inheritance from SchemaFlatteningError."""
 

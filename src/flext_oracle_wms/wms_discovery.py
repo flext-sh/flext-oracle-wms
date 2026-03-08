@@ -28,9 +28,7 @@ class FlextOracleWmsEntityDiscovery:
         self.client = client
 
     @staticmethod
-    def _to_discovered_entity(
-        entity_name: str,
-    ) -> Mapping[str, t.ContainerValue]:
+    def _to_discovered_entity(entity_name: str) -> Mapping[str, t.ContainerValue]:
         return {
             "name": entity_name,
             "path": f"/entities/{entity_name}",
@@ -42,7 +40,6 @@ class FlextOracleWmsEntityDiscovery:
         entities_result = self.client.discover_entities()
         if entities_result.is_failure:
             return FlextResult.fail(entities_result.error)
-
         discovered = [
             self._to_discovered_entity(entity_name)
             for entity_name in entities_result.value
@@ -51,13 +48,6 @@ class FlextOracleWmsEntityDiscovery:
         return FlextResult.ok(discovered)
 
 
-# Constants
 DISCOVERY_SUCCESS = "discovery_success"
 DISCOVERY_FAILURE = "discovery_failure"
-
-
-__all__ = [
-    "DISCOVERY_FAILURE",
-    "DISCOVERY_SUCCESS",
-    "FlextOracleWmsEntityDiscovery",
-]
+__all__ = ["DISCOVERY_FAILURE", "DISCOVERY_SUCCESS", "FlextOracleWmsEntityDiscovery"]

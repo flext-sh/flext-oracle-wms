@@ -92,7 +92,6 @@ class TestFlextOracleWmsConstants:
     def test_nested_oracle_wms_constants(self) -> None:
         """Test nested OracleWms class constants (connection-related)."""
         connection = FlextOracleWmsConstants.OracleWms
-
         assert hasattr(connection, "DEFAULT_TIMEOUT")
         assert hasattr(connection, "DEFAULT_MAX_RETRIES")
         assert hasattr(connection, "DEFAULT_RETRY_DELAY")
@@ -102,7 +101,6 @@ class TestFlextOracleWmsConstants:
     def test_nested_wms_entities_constants(self) -> None:
         """Test nested WmsEntities class constants."""
         wms_entities = FlextOracleWmsConstants.WmsEntities
-
         assert hasattr(wms_entities, "TYPES")
         assert isinstance(wms_entities.TYPES, tuple)
         assert len(wms_entities.TYPES) > 0
@@ -112,7 +110,6 @@ class TestFlextOracleWmsConstants:
     def test_nested_processing_constants(self) -> None:
         """Test nested WmsProcessing class constants."""
         processing = FlextOracleWmsConstants.WmsProcessing
-
         assert hasattr(processing, "DEFAULT_BATCH_SIZE")
         assert hasattr(processing, "MAX_BATCH_SIZE")
         assert hasattr(processing, "DEFAULT_PAGE_SIZE")
@@ -121,13 +118,11 @@ class TestFlextOracleWmsConstants:
     def test_nested_filtering_constants(self) -> None:
         """Test nested Filtering class constants."""
         filtering = FlextOracleWmsConstants.Filtering
-
         assert hasattr(filtering, "MAX_FILTER_CONDITIONS")
 
     def test_nested_error_messages_constants(self) -> None:
         """Test nested ErrorMessages class via MESSAGES dict."""
         error_messages = FlextOracleWmsConstants.ErrorMessages
-
         assert hasattr(error_messages, "MESSAGES")
         msgs = error_messages.MESSAGES
         assert "entity_validation_failed" in msgs
@@ -137,14 +132,12 @@ class TestFlextOracleWmsConstants:
     def test_nested_authentication_constants(self) -> None:
         """Test nested Authentication class constants."""
         auth = FlextOracleWmsConstants.Authentication
-
         assert hasattr(auth, "MIN_TOKEN_LENGTH")
         assert hasattr(auth, "MIN_API_KEY_LENGTH")
 
     def test_nested_api_constants(self) -> None:
         """Test nested Api class via CONFIG dict."""
         api = FlextOracleWmsConstants.Api
-
         assert hasattr(api, "CONFIG")
         config = api.CONFIG
         assert "default_timeout" in config
@@ -154,7 +147,6 @@ class TestFlextOracleWmsConstants:
     def test_entity_type_enum(self) -> None:
         """Test WmsEntityType enum."""
         entity_type = FlextOracleWmsConstants.WmsEntityType
-
         assert entity_type.INVENTORY == "inventory"
         assert entity_type.ORDERS == "orders"
         assert entity_type.SHIPMENTS == "shipments"
@@ -165,7 +157,6 @@ class TestFlextOracleWmsConstants:
     def test_api_version_enum(self) -> None:
         """Test WmsApiVersion enum."""
         api_version = FlextOracleWmsConstants.WmsApiVersion
-
         assert api_version.V1 == "v1"
         assert api_version.V2 == "v2"
         assert api_version.V3 == "v3"
@@ -174,7 +165,6 @@ class TestFlextOracleWmsConstants:
     def test_operation_status_enum(self) -> None:
         """Test WmsOperationStatus enum."""
         status = FlextOracleWmsConstants.WmsOperationStatus
-
         assert status.PENDING == "pending"
         assert status.RUNNING == "running"
         assert status.SUCCESS == "success"
@@ -185,7 +175,6 @@ class TestFlextOracleWmsConstants:
     def test_data_quality_enum(self) -> None:
         """Test WmsDataQuality enum."""
         quality = FlextOracleWmsConstants.WmsDataQuality
-
         assert quality.HIGH == "high"
         assert quality.MEDIUM == "medium"
         assert quality.LOW == "low"
@@ -194,7 +183,6 @@ class TestFlextOracleWmsConstants:
     def test_filter_operator_enum(self) -> None:
         """Test WmsFilterOperator enum."""
         operator = FlextOracleWmsConstants.WmsFilterOperator
-
         assert operator.EQ == "eq"
         assert operator.NE == "ne"
         assert operator.GT == "gt"
@@ -208,7 +196,6 @@ class TestFlextOracleWmsConstants:
     def test_page_mode_enum(self) -> None:
         """Test WmsPageMode enum."""
         mode = FlextOracleWmsConstants.WmsPageMode
-
         assert mode.APPEND == "append"
         assert mode.REPLACE == "replace"
         assert mode.MERGE == "merge"
@@ -216,7 +203,6 @@ class TestFlextOracleWmsConstants:
     def test_write_mode_enum(self) -> None:
         """Test WmsWriteMode enum."""
         mode = FlextOracleWmsConstants.WmsWriteMode
-
         assert mode.INSERT == "insert"
         assert mode.UPDATE == "update"
         assert mode.UPSERT == "upsert"
@@ -232,7 +218,6 @@ class TestFlextOracleWmsConstants:
     def test_endpoint_discovery_strategy_enum(self) -> None:
         """Test EndpointDiscoveryStrategy enum."""
         strategy = FlextOracleWmsConstants.EndpointDiscoveryStrategy
-
         assert strategy.API_BASED == "api_based"
         assert strategy.SCHEMA_BASED == "schema_based"
 
@@ -244,7 +229,6 @@ class TestFlextOracleWmsConstants:
     def test_wms_pagination_constants(self) -> None:
         """Test WmsPagination class constants."""
         pagination = FlextOracleWmsConstants.WmsPagination
-
         assert pagination.DEFAULT_PAGE_SIZE == 100
 
 

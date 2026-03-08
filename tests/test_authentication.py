@@ -73,9 +73,7 @@ class TestAuthenticationConfig:
 
     def test_config_validation_failure_basic_missing_credentials(self) -> None:
         """Test validate_business_rules fails for basic auth with no credentials."""
-        config = FlextOracleWmsAuthSettings(
-            method=OracleWMSAuthMethod.BASIC,
-        )
+        config = FlextOracleWmsAuthSettings(method=OracleWMSAuthMethod.BASIC)
         result = config.validate_business_rules()
         assert result.is_failure
         assert result.error is not None
@@ -83,9 +81,7 @@ class TestAuthenticationConfig:
 
     def test_config_validation_failure_oauth2_missing_credentials(self) -> None:
         """Test validate_business_rules fails for oauth2 with no credentials."""
-        config = FlextOracleWmsAuthSettings(
-            method=OracleWMSAuthMethod.OAUTH2,
-        )
+        config = FlextOracleWmsAuthSettings(method=OracleWMSAuthMethod.OAUTH2)
         result = config.validate_business_rules()
         assert result.is_failure
         assert result.error is not None
@@ -139,9 +135,7 @@ class TestAuthenticator:
 
     def test_authenticate_basic_failure(self) -> None:
         """Test basic auth fails without credentials."""
-        config = FlextOracleWmsAuthSettings(
-            method=OracleWMSAuthMethod.BASIC,
-        )
+        config = FlextOracleWmsAuthSettings(method=OracleWMSAuthMethod.BASIC)
         authenticator = FlextOracleWmsAuthenticator(config)
         result = authenticator.authenticate()
         assert result.is_failure
@@ -162,9 +156,7 @@ class TestAuthenticator:
 
     def test_get_auth_headers_failure(self) -> None:
         """Test get_auth_headers fails without credentials."""
-        config = FlextOracleWmsAuthSettings(
-            method=OracleWMSAuthMethod.BASIC,
-        )
+        config = FlextOracleWmsAuthSettings(method=OracleWMSAuthMethod.BASIC)
         authenticator = FlextOracleWmsAuthenticator(config)
         result = authenticator.get_auth_headers()
         assert result.is_failure

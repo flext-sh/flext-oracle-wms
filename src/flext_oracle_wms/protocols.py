@@ -36,16 +36,6 @@ class FlextOracleWmsProtocols(FlextProtocols):
     wms_service: p.OracleWms.WmsServiceProtocol
     """
 
-    # =========================================================================
-    # INHERITED FOUNDATION PROTOCOLS - Available from FlextProtocols
-    # =========================================================================
-    # Foundation, Domain, Application, Infrastructure, Extensions, Commands
-    # are all inherited from FlextProtocols parent class
-
-    # =========================================================================
-    # ORACLE WMS-SPECIFIC PROTOCOLS - Domain extension for WMS operations
-    # =========================================================================
-
     class OracleWms:
         """Oracle WMS domain-specific protocols."""
 
@@ -70,13 +60,8 @@ class FlextOracleWmsProtocols(FlextProtocols):
                 FlextResult[dict[str, t.ContainerValue]]: Operation result or error
 
                 """
-                ...  # INTERFACE
+                ...
 
 
-# Runtime alias for simplified usage
 p = FlextOracleWmsProtocols
-
-__all__ = [
-    "FlextOracleWmsProtocols",
-    "p",
-]
+__all__ = ["FlextOracleWmsProtocols", "p"]

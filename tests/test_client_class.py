@@ -5,10 +5,7 @@ SPDX-License-Identifier: MIT
 
 """
 
-from flext_oracle_wms import (
-    FlextOracleWmsClient,
-    FlextOracleWmsSettings,
-)
+from flext_oracle_wms import FlextOracleWmsClient, FlextOracleWmsSettings
 
 
 def test_client_class_creation() -> None:

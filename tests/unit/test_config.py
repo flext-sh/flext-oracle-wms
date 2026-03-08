@@ -23,22 +23,21 @@ class TestFlextOracleWmsSettings:
     def test_default_initialization(self) -> None:
         """Test default configuration initialization."""
         config = FlextOracleWmsSettings()
-
         assert config.base_url == str(
-            FlextOracleWmsConstants.API_CONFIG["base_url_default"],
+            FlextOracleWmsConstants.API_CONFIG["base_url_default"]
         )
         assert config.timeout == int(
-            FlextOracleWmsConstants.API_CONFIG["timeout_default"],
+            FlextOracleWmsConstants.API_CONFIG["timeout_default"]
         )
         assert config.retry_attempts == int(
-            FlextOracleWmsConstants.API_CONFIG["max_retries"],
+            FlextOracleWmsConstants.API_CONFIG["max_retries"]
         )
         assert config.enable_ssl_verification is True
         assert config.enable_metrics is False
         assert config.enable_tracing is False
         assert config.enable_audit_logging is False
         assert config.api_version == str(
-            FlextOracleWmsConstants.API_CONFIG["version_default"],
+            FlextOracleWmsConstants.API_CONFIG["version_default"]
         )
 
     def test_custom_initialization(self) -> None:
@@ -50,7 +49,6 @@ class TestFlextOracleWmsSettings:
             enable_ssl_verification=False,
             enable_metrics=True,
         )
-
         assert config.base_url == "https://custom-wms.example.com"
         assert config.timeout == 60
         assert config.retry_attempts == 5
@@ -59,22 +57,15 @@ class TestFlextOracleWmsSettings:
 
     def test_authentication_fields(self) -> None:
         """Test authentication configuration fields."""
-        config = FlextOracleWmsSettings(
-            username="test_user",
-            password="test_pass",
-        )
-
+        config = FlextOracleWmsSettings(username="test_user", password="test_pass")
         assert config.username == "test_user"
         assert config.password == "test_pass"
 
     def test_enterprise_features(self) -> None:
         """Test enterprise feature configuration."""
         config = FlextOracleWmsSettings(
-            enable_metrics=True,
-            enable_tracing=True,
-            enable_audit_logging=True,
+            enable_metrics=True, enable_tracing=True, enable_audit_logging=True
         )
-
         assert config.enable_metrics is True
         assert config.enable_tracing is True
         assert config.enable_audit_logging is True
@@ -88,8 +79,6 @@ class TestFlextOracleWmsSettings:
 
     def test_environment_from_url_property(self) -> None:
         """Test environment_from_url property."""
-        config = FlextOracleWmsSettings(
-            base_url="https://custom.example.com",
-        )
+        config = FlextOracleWmsSettings(base_url="https://custom.example.com")
         assert isinstance(config.environment_from_url, str)
         assert config.environment_from_url == "unknown"

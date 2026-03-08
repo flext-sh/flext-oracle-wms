@@ -17,7 +17,7 @@ class TestFlextOracleWmsSettings:
         """Test config creation with defaults."""
         config = FlextOracleWmsSettings()
         assert config.base_url == str(
-            FlextOracleWmsConstants.API_CONFIG["base_url_default"],
+            FlextOracleWmsConstants.API_CONFIG["base_url_default"]
         )
         assert config.username is None
         assert config.password is None
@@ -48,7 +48,6 @@ class TestFlextOracleWmsSettings:
         """Test timeout validation bounds."""
         with pytest.raises(ValidationError):
             FlextOracleWmsSettings(timeout=0)
-
         with pytest.raises(ValidationError):
             FlextOracleWmsSettings(timeout=301)
 
@@ -56,7 +55,6 @@ class TestFlextOracleWmsSettings:
         """Test retry_attempts validation bounds."""
         with pytest.raises(ValidationError):
             FlextOracleWmsSettings(retry_attempts=-1)
-
         with pytest.raises(ValidationError):
             FlextOracleWmsSettings(retry_attempts=11)
 
@@ -93,9 +91,7 @@ class TestFlextOracleWmsSettings:
     def test_enterprise_feature_flags_enabled(self) -> None:
         """Test enterprise feature flags can be enabled."""
         config = FlextOracleWmsSettings(
-            enable_metrics=True,
-            enable_tracing=True,
-            enable_audit_logging=True,
+            enable_metrics=True, enable_tracing=True, enable_audit_logging=True
         )
         assert config.enable_metrics is True
         assert config.enable_tracing is True

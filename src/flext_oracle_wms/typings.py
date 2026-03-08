@@ -21,7 +21,6 @@ class FlextOracleWmsTypes(FlextTypes):
     class OracleWms:
         """Oracle WMS-specific project types."""
 
-        # Project types using Literal for advanced typing
         type ProjectType = Literal[
             "wms-service",
             "warehouse-management",
@@ -40,30 +39,18 @@ class FlextOracleWmsTypes(FlextTypes):
             "logistics-service",
             "warehouse-optimizer",
         ]
-
-        # Configuration types using dict composition
         type WmsProjectConfig = dict[str, FlextTypes.ContainerValue]
         type WarehouseConfig = dict[str, str | int | bool | list[str]]
         type InventoryConfig = dict[
-            str,
-            bool | str | dict[str, FlextTypes.ContainerValue],
+            str, bool | str | dict[str, FlextTypes.ContainerValue]
         ]
 
-    # Core types using advanced composition and unions
-    type WmsConfig = dict[
-        str,
-        str | int | bool | dict[str, FlextTypes.ContainerValue],
-    ]
+    type WmsConfig = dict[str, str | int | bool | dict[str, FlextTypes.ContainerValue]]
     type WmsEntity = dict[
-        str,
-        FlextTypes.JsonValue | dict[str, FlextTypes.ContainerValue],
+        str, FlextTypes.JsonValue | dict[str, FlextTypes.ContainerValue]
     ]
     type WmsRecord = dict[str, FlextTypes.ContainerValue]
     type WmsRecords = list[dict[str, FlextTypes.ContainerValue]]
-
-    # =========================================================================
-    # CORE COMMONLY USED TYPES - Convenience aliases for common patterns
-    # =========================================================================
 
     class Core:
         """Core convenience type aliases for common patterns.
@@ -73,19 +60,9 @@ class FlextOracleWmsTypes(FlextTypes):
         Access parent core types via inheritance from FlextOracleWmsTypes.
         """
 
-        # Common dictionary types
         type Dict = dict[str, FlextTypes.ContainerValue]
-        """Type alias for generic dictionary (attribute name to value mapping)."""
+        "Type alias for generic dictionary (attribute name to value mapping)."
 
 
-# Alias for simplified usage
 t = FlextOracleWmsTypes
-
-# Namespace composition via class inheritance
-# OracleWms namespace provides access to nested classes through inheritance
-# Access patterns:
-# - t.OracleWms.* for OracleWms-specific types
-# - t.Project.* for project types
-# - t.Core.* for core types (inherited from parent)
-
 __all__ = ["FlextOracleWmsTypes", "t"]

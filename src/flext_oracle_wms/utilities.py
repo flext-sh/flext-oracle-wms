@@ -24,8 +24,4 @@ class FlextOracleWmsUtilities(FlextUtilities):
 
 
 u = FlextOracleWmsUtilities
-
-__all__ = [
-    "FlextOracleWmsUtilities",
-    "u",
-]
+__all__ = ["FlextOracleWmsUtilities", "u"]

@@ -29,18 +29,14 @@ class FlextOracleWmsAuthenticator:
         if self.config.method == OracleWMSAuthMethod.BASIC:
             if not self.config.username or not self.config.password:
                 return FlextResult.fail("Username and password required for basic auth")
-
             credentials = f"{self.config.username}:{self.config.password}".encode()
             token = base64.b64encode(credentials).decode("ascii")
             self._token = token
             return FlextResult.ok(token)
-
         if self.config.method == OracleWMSAuthMethod.OAUTH2:
             if not self.config.oauth2_client_id or not self.config.oauth2_client_secret:
                 return FlextResult.fail("OAuth2 credentials required")
-
             return FlextResult.fail("OAuth2 not configured")
-
         return FlextResult.fail(f"Unsupported auth method: {self.config.method}")
 
     def get_auth_headers(self) -> FlextResult[Mapping[str, str]]:
@@ -48,7 +44,6 @@ class FlextOracleWmsAuthenticator:
         auth_result = self.authenticate()
         if auth_result.is_failure:
             return FlextResult.fail(f"Authentication failed: {auth_result.error}")
-
         token = auth_result.value
         auth_scheme = (
             "Basic" if self.config.method == OracleWMSAuthMethod.BASIC else "Bearer"
@@ -62,7 +57,6 @@ def create_oracle_wms_client(config: FlextOracleWmsAuthSettings) -> FlextResult[
     auth_result = authenticator.authenticate()
     if auth_result.is_failure:
         return FlextResult.fail(f"Authentication failed: {auth_result.error}")
-
     return FlextResult.fail("Oracle WMS client creation not configured")
 
 

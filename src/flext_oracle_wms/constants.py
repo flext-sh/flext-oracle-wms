@@ -19,18 +19,13 @@ class FlextOracleWmsConstants(FlextConstants):
     One class per module following SOLID principles. Generic for any WMS system.
     """
 
-    # Core domain constants using advanced patterns
     FLEXT_WMS_VERSION: Final[str] = "0.9.0"
-
-    # Application metadata - composed into single dict
     APP_METADATA: Final[dict[str, str]] = {
         "name": "flext-wms",
         "description": "FLEXT Generic WMS Integration",
         "author": "FLEXT Team",
         "license": "MIT",
     }
-
-    # API configuration - composed patterns
     API_CONFIG: Final[dict[str, str | int]] = {
         "version_default": "v1",
         "base_url_default": "https://api.wms.example.com",
@@ -38,14 +33,7 @@ class FlextOracleWmsConstants(FlextConstants):
         "max_retries": 3,
         "rate_limit_per_minute": 1000,
     }
-
-    # Authentication constants - advanced composition
-    # AUTH_CONFIG is created after OracleWMSAuthMethod StrEnum definition (see below)
     AUTH_CONFIG: ClassVar[dict[str, str | object]]
-
-    # Entity types - will be generated from WmsEntityType StrEnum after definition
-
-    # Batch and performance - advanced dict composition
     PROCESSING_CONFIG: Final[dict[str, int]] = {
         "default_batch_size": FlextConstants.Defaults.PAGE_SIZE * 10,
         "max_batch_size": FlextConstants.Defaults.PAGE_SIZE * 100,
@@ -59,15 +47,12 @@ class FlextOracleWmsConstants(FlextConstants):
         "performance_warning_threshold": 5000,
         "performance_critical_threshold": 10000,
     }
-
-    # Environment configuration
     ENVIRONMENTS: Final[dict[str, str]] = {
         "default": "default",
         "test": "test",
         "production": "production",
     }
 
-    # Nested classes with advanced composition
     class OracleWms:
         """WMS connection constants - composed from base."""
 
@@ -85,8 +70,7 @@ class FlextOracleWmsConstants(FlextConstants):
         """WMS entity configuration - patterns."""
 
         MAX_ENTITY_NAME_LENGTH: ClassVar[int] = 100
-        ENTITY_NAME_PATTERN: ClassVar[str] = r"^[a-zA-Z][a-zA-Z0-9_]*$"
-        # TYPES is generated from WmsEntityType StrEnum after definition (see below)
+        ENTITY_NAME_PATTERN: ClassVar[str] = "^[a-zA-Z][a-zA-Z0-9_]*$"
         TYPES: ClassVar[tuple[str, ...]]
 
     class WmsProcessing:
@@ -151,7 +135,6 @@ class FlextOracleWmsConstants(FlextConstants):
             "max_http_status_code": 599,
         }
 
-    # Enums - advanced StrEnum composition
     class WmsEntityType(StrEnum):
         """Entity types.
 
@@ -168,7 +151,6 @@ class FlextOracleWmsConstants(FlextConstants):
         PRODUCTS = "products"
         WAREHOUSES = "warehouses"
 
-    # PEP 695 Literal type (string values to avoid class-scope resolution issues)
     type WmsEntityTypeLiteral = Literal[
         "inventory",
         "orders",
@@ -192,12 +174,8 @@ class FlextOracleWmsConstants(FlextConstants):
         V3 = "v3"
         LEGACY = "legacy"
 
-    # PEP 695 Literal type referencing StrEnum members
     type WmsApiVersionLiteral = Literal[
-        WmsApiVersion.V1,
-        WmsApiVersion.V2,
-        WmsApiVersion.V3,
-        WmsApiVersion.LEGACY,
+        WmsApiVersion.V1, WmsApiVersion.V2, WmsApiVersion.V3, WmsApiVersion.LEGACY
     ]
 
     class WmsApiCategory(StrEnum):
@@ -214,11 +192,7 @@ class FlextOracleWmsConstants(FlextConstants):
         REPORTING = "reporting"
 
     type WmsApiCategoryLiteral = Literal[
-        "inventory",
-        "orders",
-        "shipping",
-        "receiving",
-        "reporting",
+        "inventory", "orders", "shipping", "receiving", "reporting"
     ]
 
     class WmsOperationStatus(StrEnum):
@@ -236,12 +210,7 @@ class FlextOracleWmsConstants(FlextConstants):
         CANCELLED = "cancelled"
 
     type WmsOperationStatusLiteral = Literal[
-        "pending",
-        "running",
-        "success",
-        "error",
-        "timeout",
-        "cancelled",
+        "pending", "running", "success", "error", "timeout", "cancelled"
     ]
 
     class WmsDataQuality(StrEnum):
@@ -329,7 +298,6 @@ class FlextOracleWmsConstants(FlextConstants):
         SCHEMA_BASED = "schema_based"
 
 
-# Module-level enums for direct import - advanced composition
 class OracleWMSAuthMethod(StrEnum):
     """Auth methods.
 
@@ -343,8 +311,6 @@ class OracleWMSAuthMethod(StrEnum):
     BEARER = "bearer"
 
 
-# Generate AUTH_CONFIG with auth method values from StrEnum
-# Set class attribute after enum definition
 FlextOracleWmsConstants.AUTH_CONFIG = {
     "basic": OracleWMSAuthMethod.BASIC,
     "oauth2": OracleWMSAuthMethod.OAUTH2,
@@ -353,17 +319,10 @@ FlextOracleWmsConstants.AUTH_CONFIG = {
     "oauth2_token_endpoint": "/oauth2/token",
     "oauth2_scope_default": "read write",
 }
-
-# PEP 695 Literal type referencing StrEnum members
 type OracleWMSAuthMethodLiteral = Literal[
     OracleWMSAuthMethod.BASIC,
     OracleWMSAuthMethod.OAUTH2,
     OracleWMSAuthMethod.API_KEY,
     OracleWMSAuthMethod.BEARER,
 ]
-
-
-__all__ = [
-    "FlextOracleWmsConstants",
-    "OracleWMSAuthMethod",
-]
+__all__ = ["FlextOracleWmsConstants", "OracleWMSAuthMethod"]

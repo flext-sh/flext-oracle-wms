@@ -35,9 +35,6 @@ class FlextOracleWmsApi(FlextService[None]):
     def __init__(self) -> None:
         """Initialize Oracle WMS facade with FLEXT integration."""
         super().__init__()
-
-        # Domain services (delegate all business logic here)
-        # Client retrieves domain config from global container
         self._client = FlextOracleWmsClient()
 
     @override

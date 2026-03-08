@@ -23,6 +23,4 @@ class FlextOracleWmsModels(FlextModels):
         """Oracle WMS domain namespace — m.OracleWms.*."""
 
 
-__all__ = [
-    "FlextOracleWmsModels",
-]
+__all__ = ["FlextOracleWmsModels"]

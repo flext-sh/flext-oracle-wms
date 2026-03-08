@@ -37,27 +37,22 @@ class FlextOracleWmsClient:
                 config_result = container.get("FlextOracleWmsSettings")
                 if config_result.is_success:
                     resolved_config = FlextOracleWmsSettings.model_validate(
-                        config_result.value,
+                        config_result.value
                     )
             except (ValueError, FlextExceptions.BaseError):
                 pass
-
         if resolved_config is None:
             resolved_config = FlextOracleWmsSettings.testing_config()
-
         self.config: FlextOracleWmsSettings = resolved_config
-
         api_config = FlextApiSettings(
-            base_url=self.config.base_url,
-            timeout=int(self.config.timeout),
+            base_url=self.config.base_url, timeout=int(self.config.timeout)
         )
         self._client: FlextApiClient = FlextApiClient(config=api_config)
         self._discovered_entities: list[str] = []
 
     @staticmethod
     def _decode_response_model[T: BaseModel](
-        payload: t.ContainerValue,
-        model_type: type[T],
+        payload: t.ContainerValue, model_type: type[T]
     ) -> FlextResult[T]:
         match payload:
             case dict() as data:
@@ -91,37 +86,26 @@ class FlextOracleWmsClient:
         return self.get(f"/api/{api_name}", headers=headers, params=params)
 
     def create_lpn(
-        self,
-        lpn_nbr: str,
-        qty: int,
+        self, lpn_nbr: str, qty: int
     ) -> FlextResult[FlextApiModels.HttpResponse]:
         """Create LPN (License Plate Number)."""
         payload: FlextApiTypes.Api.RequestBody = {"lpn_nbr": lpn_nbr, "qty": qty}
         return self.post("/lpn", body=payload)
 
     def delete(
-        self,
-        path: str,
-        *,
-        headers: Mapping[str, str] | None = None,
+        self, path: str, *, headers: Mapping[str, str] | None = None
     ) -> FlextResult[FlextApiModels.HttpResponse]:
         """Make DELETE request to Oracle WMS API."""
-        return self._request(
-            FlextApiConstants.Api.Method.DELETE,
-            path,
-            headers=headers,
-        )
+        return self._request(FlextApiConstants.Api.Method.DELETE, path, headers=headers)
 
     def discover_entities(self) -> FlextResult[list[str]]:
         """Discover available Oracle WMS entities."""
         result = self.get("/entities")
         if result.is_failure:
             return FlextResult.fail(result.error)
-
         payload_result = self._decode_response_model(result.value, EntitiesResponse)
         if payload_result.is_failure:
             return FlextResult.fail(payload_result.error)
-
         self._discovered_entities = payload_result.value.entities
         return FlextResult.ok(payload_result.value.entities)
 
@@ -134,21 +118,16 @@ class FlextOracleWmsClient:
     ) -> FlextResult[FlextApiModels.HttpResponse]:
         """Make GET request to Oracle WMS API."""
         return self._request(
-            FlextApiConstants.Api.Method.GET,
-            path,
-            headers=headers,
-            params=params,
+            FlextApiConstants.Api.Method.GET, path, headers=headers, params=params
         )
 
     def get_apis_by_category(
-        self,
-        category: str,
+        self, category: str
     ) -> FlextResult[list[FlextApiTypes.Api.JsonObject]]:
         """Get Oracle WMS APIs by category."""
         result = self.get(f"/apis/category/{category}")
         if result.is_failure:
             return FlextResult.fail(result.error)
-
         payload_result = self._decode_response_model(result.value, ApiCategoryResponse)
         if payload_result.is_failure:
             return FlextResult.fail(payload_result.error)
@@ -166,11 +145,9 @@ class FlextOracleWmsClient:
             params["limit"] = str(limit)
         if filters:
             params |= {key: str(value) for key, value in filters.items()}
-
         result = self.get(f"/entities/{entity_name}", params=params)
         if result.is_failure:
             return FlextResult.fail(result.error)
-
         payload_result = self._decode_response_model(result.value, EntityDataResponse)
         if payload_result.is_failure:
             return FlextResult.fail(payload_result.error)
@@ -189,10 +166,7 @@ class FlextOracleWmsClient:
     ) -> FlextResult[FlextApiModels.HttpResponse]:
         """Make POST request to Oracle WMS API."""
         return self._request(
-            FlextApiConstants.Api.Method.POST,
-            path,
-            headers=headers,
-            body=body,
+            FlextApiConstants.Api.Method.POST, path, headers=headers, body=body
         )
 
     def put(
@@ -204,10 +178,7 @@ class FlextOracleWmsClient:
     ) -> FlextResult[FlextApiModels.HttpResponse]:
         """Make PUT request to Oracle WMS API."""
         return self._request(
-            FlextApiConstants.Api.Method.PUT,
-            path,
-            headers=headers,
-            body=body,
+            FlextApiConstants.Api.Method.PUT, path, headers=headers, body=body
         )
 
     def start(self) -> FlextResult[bool]:
@@ -219,9 +190,7 @@ class FlextOracleWmsClient:
         return FlextResult.ok(True)
 
     def update_oblpn_tracking_number(
-        self,
-        oblpn_id: str,
-        tracking_number: str,
+        self, oblpn_id: str, tracking_number: str
     ) -> FlextResult[FlextApiModels.HttpResponse]:
         """Update OBLPN tracking number."""
         payload: FlextApiTypes.Api.RequestBody = {"tracking_number": tracking_number}
@@ -246,11 +215,10 @@ class FlextOracleWmsClient:
         result = self._client.request(request)
         if result.is_failure:
             return FlextResult.fail(f"{method} {path} failed: {result.error}")
-
         response = result.value
         if response.status_code >= HTTP_BAD_REQUEST_THRESHOLD:
             return FlextResult.fail(
-                f"{method} {path} returned HTTP {response.status_code}",
+                f"{method} {path} returned HTTP {response.status_code}"
             )
         return FlextResult.ok(response)
 

@@ -51,7 +51,7 @@ class TestFlextOracleWmsApi:
         ]
         for method in business_methods:
             assert method not in public_methods or not callable(
-                getattr(api, method, None),
+                getattr(api, method, None)
             )
 
 

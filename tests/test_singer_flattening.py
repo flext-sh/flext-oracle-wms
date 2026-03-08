@@ -10,9 +10,7 @@ SPDX-License-Identifier: MIT
 import pytest
 from pydantic import ValidationError
 
-from flext_oracle_wms import (
-    FlextOracleWmsModels as m,
-)
+from flext_oracle_wms import FlextOracleWmsModels as m
 
 
 class TestFlextOracleWmsEntity:
@@ -71,10 +69,7 @@ class TestFlextOracleWmsEntity:
 
     def test_entity_namespace_access(self) -> None:
         """Test entity accessible via namespace."""
-        entity = m.OracleWms.Entity(
-            name="test",
-            endpoint="/test",
-        )
+        entity = m.OracleWms.Entity(name="test", endpoint="/test")
         assert isinstance(entity, m.OracleWms.Entity)
 
 
@@ -92,10 +87,7 @@ class TestFlextOracleWmsApiResponse:
     def test_response_custom_fields(self) -> None:
         """Test response creation with custom fields."""
         response = m.OracleWms.ApiResponse(
-            data={"key": "value"},
-            status_code=201,
-            success=True,
-            error_message=None,
+            data={"key": "value"}, status_code=201, success=True, error_message=None
         )
         assert response.data == {"key": "value"}
         assert response.status_code == 201
@@ -103,9 +95,7 @@ class TestFlextOracleWmsApiResponse:
     def test_response_error(self) -> None:
         """Test response with error."""
         response = m.OracleWms.ApiResponse(
-            success=False,
-            error_message="Something went wrong",
-            status_code=500,
+            success=False, error_message="Something went wrong", status_code=500
         )
         assert response.success is False
         assert response.error_message == "Something went wrong"
@@ -127,8 +117,7 @@ class TestFlextOracleWmsApiResponse:
     def test_response_validate_failure_with_message(self) -> None:
         """Test failed response with error message passes validation."""
         response = m.OracleWms.ApiResponse(
-            success=False,
-            error_message="Error occurred",
+            success=False, error_message="Error occurred"
         )
         result = response.validate_response()
         assert result.is_success
@@ -137,14 +126,10 @@ class TestFlextOracleWmsApiResponse:
         """Test status code validation bounds."""
         with pytest.raises(ValidationError):
             m.OracleWms.ApiResponse(status_code=199)
-
         with pytest.raises(ValidationError):
             m.OracleWms.ApiResponse(status_code=600)
 
     def test_response_namespace_access(self) -> None:
         """Test response accessible via namespace."""
-        response = m.OracleWms.ApiResponse(
-            data={"test": True},
-            status_code=200,
-        )
+        response = m.OracleWms.ApiResponse(data={"test": True}, status_code=200)
         assert isinstance(response, m.OracleWms.ApiResponse)

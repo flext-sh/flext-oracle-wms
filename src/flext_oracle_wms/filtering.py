@@ -56,7 +56,6 @@ class FlextOracleWmsFilter:
         ):
             error_message = "Invalid max_conditions"
             raise FlextExceptions.BaseError(error_message)
-
         self.max_conditions: int = max_conditions
         self.case_sensitive: bool = case_sensitive
         self.filters: Mapping[str, FilterEntry] = filters or {}
@@ -69,10 +68,7 @@ class FlextOracleWmsFilter:
 
     @classmethod
     def create_filter(
-        cls,
-        *,
-        case_sensitive: bool = False,
-        max_conditions: int = 50,
+        cls, *, case_sensitive: bool = False, max_conditions: int = 50
     ) -> FlextOracleWmsFilter:
         """Create a filter engine with explicit configuration."""
         return cls(case_sensitive=case_sensitive, max_conditions=max_conditions)
@@ -104,19 +100,16 @@ class FlextOracleWmsFilter:
         """Filter records by inclusive identifier range."""
         if not records:
             return FlextResult.ok([])
-
         filtered: list[FilterRecord] = []
         for record in records:
             field_value = record.get(id_field)
             if field_value is None:
                 continue
-
-            if min_id is not None and not cls._check_min(field_value, min_id):
+            if min_id is not None and (not cls._check_min(field_value, min_id)):
                 continue
-            if max_id is not None and not cls._check_max(field_value, max_id):
+            if max_id is not None and (not cls._check_max(field_value, max_id)):
                 continue
             filtered.append(record)
-
         return FlextResult.ok(filtered)
 
     @staticmethod
@@ -129,9 +122,7 @@ class FlextOracleWmsFilter:
 
     @staticmethod
     def _compare(
-        left: FilterRecordValue | None,
-        right: FilterScalar | FilterList,
-        op: str,
+        left: FilterRecordValue | None, right: FilterScalar | FilterList, op: str
     ) -> bool:
         try:
             left_num = float(str(left))
@@ -177,7 +168,6 @@ class FlextOracleWmsFilter:
         """Filter records against field conditions and optional limit."""
         if (result := self._validate_filters(filters)).is_failure:
             return FlextResult.fail(result.error or "Validation failed")
-
         self.filters = filters
         filtered = [
             record for record in records if self._matches_all_filters(record, filters)
@@ -187,18 +177,14 @@ class FlextOracleWmsFilter:
         return FlextResult.ok(filtered)
 
     def sort_records(
-        self,
-        records: list[FilterRecord],
-        sort_field: str,
-        *,
-        ascending: bool = True,
+        self, records: list[FilterRecord], sort_field: str, *, ascending: bool = True
     ) -> FlextResult[list[FilterRecord]]:
         """Sort records by a dot-path field."""
         try:
 
             def key_func(record: FilterRecord) -> str:
                 value = self._get_nested_value(record, sort_field)
-                return str(value if value is not None else ("" if ascending else "zzz"))
+                return str(value if value is not None else "" if ascending else "zzz")
 
             return FlextResult.ok(sorted(records, key=key_func, reverse=not ascending))
         except Exception as exc:
@@ -224,7 +210,6 @@ class FlextOracleWmsFilter:
                 "gte",
                 "lte",
             }
-
         match operator:
             case FilterOperator.EQ | "eq":
                 return self._normalize(field_value) == self._normalize(filter_value)
@@ -250,9 +235,7 @@ class FlextOracleWmsFilter:
                 return False
 
     def _get_nested_value(
-        self,
-        record: FilterRecord,
-        field: str,
+        self, record: FilterRecord, field: str
     ) -> FilterRecordValue | None:
         keys = field.split(".")
         current: FilterRecordValue | Mapping[str, FilterRecordValue] = record
@@ -268,28 +251,23 @@ class FlextOracleWmsFilter:
         return current
 
     def _matches_all_filters(
-        self,
-        record: FilterRecord,
-        filters: Mapping[str, FilterEntry],
+        self, record: FilterRecord, filters: Mapping[str, FilterEntry]
     ) -> bool:
         return all(
-            self._matches_condition(record, field, filter_value)
-            for field, filter_value in filters.items()
+            (
+                self._matches_condition(record, field, filter_value)
+                for field, filter_value in filters.items()
+            )
         )
 
     def _matches_condition(
-        self,
-        record: FilterRecord,
-        field: str,
-        filter_value: FilterEntry,
+        self, record: FilterRecord, field: str, filter_value: FilterEntry
     ) -> bool:
         field_value = self._get_nested_value(record, field)
         match filter_value:
             case OperatorFilter() as condition:
                 return self._apply_operator(
-                    field_value,
-                    condition.operator,
-                    condition.value,
+                    field_value, condition.operator, condition.value
                 )
             case list() as candidates:
                 return field_value in candidates if field_value is not None else False
@@ -297,8 +275,7 @@ class FlextOracleWmsFilter:
                 return self._normalize(field_value) == self._normalize(filter_value)
 
     def _normalize(
-        self,
-        value: FilterRecordValue | FilterScalar,
+        self, value: FilterRecordValue | FilterScalar
     ) -> FilterRecordValue | str:
         match value:
             case None:
@@ -309,24 +286,22 @@ class FlextOracleWmsFilter:
                 return value
 
     def _validate_filter_conditions_total(
-        self,
-        filters: Mapping[str, FilterEntry],
+        self, filters: Mapping[str, FilterEntry]
     ) -> FlextResult[bool]:
         total = sum(self._condition_size(value) for value in filters.values())
         if total > self.max_conditions:
             return FlextResult.fail(
-                f"Too many filter conditions: {total} > {self.max_conditions}",
+                f"Too many filter conditions: {total} > {self.max_conditions}"
             )
         return FlextResult.ok(True)
 
     def _validate_filters(
-        self,
-        filters: Mapping[str, FilterEntry],
+        self, filters: Mapping[str, FilterEntry]
     ) -> FlextResult[bool]:
         total = sum(self._condition_size(value) for value in filters.values())
         if total > self.max_conditions:
             return FlextResult.fail(
-                f"Too many conditions. Max: {self.max_conditions}, Got: {total}",
+                f"Too many conditions. Max: {self.max_conditions}, Got: {total}"
             )
         return FlextResult.ok(True)
 
