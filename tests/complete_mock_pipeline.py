@@ -263,7 +263,7 @@ class CompleteMockPipeline:
                 },
             },
         }
-        self.results: dict[str, t.ContainerValue] = {}
+        _ = self.results: dict[str, t.ContainerValue] = {}
 
     def run_complete_pipeline(self) -> FlextResult[dict[str, t.ContainerValue]]:
         """Run complete Oracle WMS pipeline with mock data."""
