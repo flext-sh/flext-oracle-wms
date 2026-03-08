@@ -13,28 +13,12 @@ from typing import Self, cast
 
 from flext_api import FlextApiClient, FlextApiModels, FlextApiSettings, FlextApiTypes
 from flext_core import FlextLogger, FlextResult, FlextTypes
-from pydantic import BaseModel, Field, ValidationError
+from pydantic import ValidationError
 
 # HTTP status codes
 HTTP_BAD_REQUEST_THRESHOLD = 400
 
 type HttpJsonObject = FlextApiTypes.Api.JsonObject
-
-
-class HttpRequest(BaseModel):
-    """Generic Pydantic model for HTTP requests."""
-
-    method: str
-    url: str
-    headers: Mapping[str, str] = Field(default_factory=dict)
-    body: HttpJsonObject | None = None
-
-
-class HttpResponse(BaseModel):
-    """Generic Pydantic model for HTTP responses."""
-
-    status_code: int
-    body: HttpJsonObject | str = Field(default_factory=dict)
 
 
 class FlextHttpClient:

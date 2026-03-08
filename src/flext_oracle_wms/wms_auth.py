@@ -12,38 +12,8 @@ import base64
 from collections.abc import Mapping
 
 from flext_core import FlextResult
-from pydantic import BaseModel, Field
 
 from flext_oracle_wms.constants import OracleWMSAuthMethod
-
-
-class FlextOracleWmsAuthSettings(BaseModel):
-    """Oracle WMS authentication configuration."""
-
-    method: OracleWMSAuthMethod = Field(default=OracleWMSAuthMethod.BASIC)
-    username: str | None = Field(default=None)
-    password: str | None = Field(default=None)
-    oauth2_client_id: str | None = Field(default=None)
-    oauth2_client_secret: str | None = Field(default=None)
-    oauth2_scope: str = Field(default="wms.read wms.write")
-    token_refresh_threshold: int = Field(default=300)  # 5 minutes
-
-    def validate_business_rules(self) -> FlextResult[bool]:
-        """Validate auth configuration."""
-        errors: list[str] = []
-        if self.method == OracleWMSAuthMethod.BASIC and (
-            not self.username or not self.password
-        ):
-            errors.append("Username and password required for basic auth")
-        elif self.method == OracleWMSAuthMethod.OAUTH2 and (
-            not self.oauth2_client_id or not self.oauth2_client_secret
-        ):
-            errors.append("OAuth2 credentials required")
-        return (
-            FlextResult[bool].fail("; ".join(errors))
-            if errors
-            else FlextResult[bool].ok(value=True)
-        )
 
 
 class FlextOracleWmsAuthenticator:

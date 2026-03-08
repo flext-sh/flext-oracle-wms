@@ -9,7 +9,6 @@ from __future__ import annotations
 
 import contextlib
 import os
-from dataclasses import dataclass
 from enum import StrEnum
 from pathlib import Path
 
@@ -33,16 +32,6 @@ class Environment(StrEnum):
     DEVELOPMENT = "dev"
     STAGING = "staging"
     PRODUCTION = "prod"
-
-
-@dataclass
-class WmsEnvironmentConfig:
-    """Environment-specific Oracle WMS configuration."""
-
-    name: str
-    base_url: str
-    timeout: float = FlextOracleWmsConstants.Connection.DEFAULT_TIMEOUT
-    max_retries: int = FlextOracleWmsConstants.Connection.DEFAULT_MAX_RETRIES
 
 
 def get_environment_configs() -> dict[Environment, WmsEnvironmentConfig]:

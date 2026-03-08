@@ -10,7 +10,6 @@ from collections.abc import Mapping
 from enum import StrEnum
 
 from flext_core import FlextExceptions, FlextLogger, FlextResult, t
-from pydantic import BaseModel, ConfigDict
 
 from flext_oracle_wms.constants import FlextOracleWmsConstants
 
@@ -36,15 +35,6 @@ class FilterOperator(StrEnum):
     LT = "lt"
     GTE = "gte"
     LTE = "lte"
-
-
-class OperatorFilter(BaseModel):
-    """Filter declaration with explicit operator/value pair."""
-
-    model_config = ConfigDict(extra="forbid", strict=True)
-
-    operator: FilterOperator
-    value: FilterScalar | FilterList
 
 
 class FlextOracleWmsFilter:

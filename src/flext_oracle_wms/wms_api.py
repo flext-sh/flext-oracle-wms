@@ -9,20 +9,6 @@ from __future__ import annotations
 
 from typing import ClassVar
 
-from pydantic import BaseModel
-
-
-class FlextOracleWmsApiEndpoint(BaseModel):
-    """Simple Pydantic model for API endpoints using FLEXT patterns."""
-
-    name: str
-    method: str
-    path: str
-    version: str
-    category: str
-    description: str
-    since_version: str = "6.1"
-
 
 class FlextOracleWmsApi:
     """Main Oracle WMS API class following FLEXT standards.

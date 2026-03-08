@@ -18,29 +18,11 @@ from flext_api import (
     FlextApiTypes,
 )
 from flext_core import FlextContainer, FlextExceptions, FlextResult, t
-from pydantic import BaseModel, Field, ValidationError
+from pydantic import BaseModel, ValidationError
 
 from flext_oracle_wms.settings import FlextOracleWmsSettings
 
 HTTP_BAD_REQUEST_THRESHOLD = 400
-
-
-class EntitiesResponse(BaseModel):
-    """Typed payload for discovered entity names."""
-
-    entities: list[str] = Field(default_factory=list)
-
-
-class EntityDataResponse(BaseModel):
-    """Typed payload for entity records."""
-
-    data: list[FlextApiTypes.Api.JsonObject] = Field(default_factory=list)
-
-
-class ApiCategoryResponse(BaseModel):
-    """Typed payload for category APIs."""
-
-    apis: list[FlextApiTypes.Api.JsonObject] = Field(default_factory=list)
 
 
 class FlextOracleWmsClient:
