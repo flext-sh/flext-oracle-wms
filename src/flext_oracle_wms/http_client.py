@@ -9,11 +9,11 @@ from __future__ import annotations
 import json
 from collections.abc import Mapping, MutableMapping
 from types import TracebackType
-from typing import Self, cast
+from typing import Self
 
 from flext_api import FlextApiClient, FlextApiModels, FlextApiSettings, FlextApiTypes
 from flext_core import FlextLogger, FlextResult, FlextTypes
-from pydantic import ValidationError
+from pydantic import TypeAdapter, ValidationError
 
 HTTP_BAD_REQUEST_THRESHOLD = 400
 type HttpJsonObject = FlextApiTypes.Api.JsonObject
@@ -73,7 +73,7 @@ class FlextHttpClient:
     @staticmethod
     def _normalize_request_body(
         body: HttpJsonObject | None,
-    ) -> dict[str, FlextTypes.JsonValue] | None:
+    ) -> HttpJsonObject:
         if body is None:
             return {}
         return body
@@ -152,10 +152,7 @@ class FlextHttpClient:
                 method="PUT",
                 url=url,
                 headers=request_headers,
-                body=cast(
-                    "FlextApiTypes.Api.RequestBody",
-                    self._normalize_request_body(request_body),
-                ),
+                body=self._normalize_request_body(request_body),
             )
             response_result = self._client.request(request)
             if response_result.is_failure:
@@ -203,9 +200,7 @@ class FlextHttpClient:
                 method=method,
                 url=url,
                 headers=request_headers,
-                body=cast(
-                    "FlextApiTypes.Api.RequestBody", self._normalize_request_body(body)
-                ),
+                body=self._normalize_request_body(body),
             )
             response_result = self._client.request(request)
             if response_result.is_failure:
@@ -228,11 +223,16 @@ class FlextHttpClient:
         """Parse response body using strict model validation."""
         match body:
             case dict() as payload:
-                return cast("dict[str, FlextTypes.JsonValue]", payload)
+                try:
+                    return TypeAdapter(dict[str, FlextTypes.JsonValue]).validate_python(
+                        payload
+                    )
+                except ValidationError:
+                    return {"text": str(payload)}
             case str() as raw if raw:
                 try:
                     parsed = json.loads(raw)
-                    validated = HttpResponse.model_validate({
+                    validated = FlextApiModels.HttpResponse.model_validate({
                         "status_code": 200,
                         "body": parsed,
                     })
@@ -248,7 +248,7 @@ class FlextHttpClient:
             case bytes() as raw_bytes:
                 try:
                     parsed = json.loads(raw_bytes.decode("utf-8"))
-                    validated = HttpResponse.model_validate({
+                    validated = FlextApiModels.HttpResponse.model_validate({
                         "status_code": 200,
                         "body": parsed,
                     })
