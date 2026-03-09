@@ -97,7 +97,7 @@ from flext_oracle_wms import FlextOracleWmsClient, FlextOracleWmsClientSettings
 config = FlextOracleWmsClientSettings(
     base_url="https://your-wms.oraclecloud.com",
     username="your_username",
-    password="your_password"
+    password="your_password",
 )
 
 # Enterprise client with comprehensive error handling
@@ -125,7 +125,7 @@ config = FlextOracleWmsClientSettings(
     auth_method="basic",
     timeout=30,
     max_retries=3,
-    enable_caching=True
+    enable_caching=True,
 )
 ```
 
@@ -135,7 +135,7 @@ config = FlextOracleWmsClientSettings(
 from flext_oracle_wms.exceptions import (
     FlextOracleWmsError,
     FlextOracleWmsConnectionError,
-    FlextOracleWmsAuthenticationError
+    FlextOracleWmsAuthenticationError,
 )
 
 try:

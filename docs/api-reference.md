@@ -121,12 +121,12 @@ Based on Oracle WMS best practices research:
 
 ```python
 from flext_oracle_wms.wms_exceptions import (
-    FlextOracleWmsError,              # Base exception
-    FlextOracleWmsConnectionError,    # Connection issues
-    FlextOracleWmsAuthenticationError, # Auth failures
-    FlextOracleWmsValidationError,    # Validation errors
-    FlextOracleWmsApiError,           # API errors
-    FlextOracleWmsEntityNotFoundError # Entity not found
+    FlextOracleWmsError,  # Base exception
+    FlextOracleWmsConnectionError,  # Connection issues
+    FlextOracleWmsAuthenticationError,  # Auth failures
+    FlextOracleWmsValidationError,  # Validation errors
+    FlextOracleWmsApiError,  # API errors
+    FlextOracleWmsEntityNotFoundError,  # Entity not found
 )
 ```
 

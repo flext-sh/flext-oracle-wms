@@ -39,10 +39,12 @@ flext-oracle-wms has partial FLEXT ecosystem integration with significant compli
 ```python
 # Current: Non-compliant httpx usage
 import httpx
+
 client = httpx.Client()
 
 # Required: flext-api integration
 from flext_api import FlextApiClient
+
 client = FlextApiClient()
 ```
 

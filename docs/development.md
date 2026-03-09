@@ -108,10 +108,12 @@ Current compliance gaps requiring implementation:
 ```python
 # Current: Non-compliant httpx usage
 import httpx  # ❌ VIOLATION
+
 client = httpx.Client()
 
 # Required: flext-api integration
 from flext_api import FlextApiClient  # ✅ REQUIRED
+
 client = FlextApiClient()
 ```
 
@@ -119,8 +121,13 @@ client = FlextApiClient()
 
 ```python
 # Current: Multiple classes per module (71 classes total)
-class WmsClient: pass
-class WmsHelper: pass     # ❌ VIOLATION
+class WmsClient:
+    pass
+
+
+class WmsHelper:
+    pass  # ❌ VIOLATION
+
 
 # Required: Single unified class per module
 class FlextOracleWmsClient(FlextService):
@@ -132,7 +139,9 @@ class FlextOracleWmsClient(FlextService):
 
 ```python
 # Current: Custom authentication
-class CustomAuth: pass   # ❌ VIOLATION
+class CustomAuth:
+    pass  # ❌ VIOLATION
+
 
 # Required: flext-auth integration
 from flext_auth import FlextAuthenticator  # ✅ REQUIRED
@@ -163,6 +172,7 @@ from flext_core import FlextRuntime
 from flext_core import FlextService
 from flext_core import t
 from flext_core import u
+
 
 def operation() -> FlextResult[ReturnType]:
     try:

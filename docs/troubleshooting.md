@@ -118,7 +118,7 @@ from flext_oracle_wms import FlextOracleWmsModuleSettings, FlextOracleWmsApiVers
 
 config = FlextOracleWmsModuleSettings(
     api_version=FlextOracleWmsApiVersion.V1,  # Use enum, not string
-    oracle_wms_timeout=30,                    # Use int, not float
+    oracle_wms_timeout=30,  # Use int, not float
 )
 ```
 
@@ -302,6 +302,7 @@ from flext_core import FlextRuntime
 from flext_core import FlextService
 from flext_core import t
 from flext_core import u
+
 logger = FlextLogger(__name__)
 logger.debug("Debug message")
 ```

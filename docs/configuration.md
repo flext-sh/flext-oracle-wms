@@ -45,8 +45,8 @@ from flext_oracle_wms import FlextOracleWmsModuleSettings
 config = FlextOracleWmsModuleSettings.for_testing()
 print(config.oracle_wms_base_url)  # "https://test.example.com"
 print(config.oracle_wms_username)  # "test_user"
-print(config.api_version)          # Current API version
-print(config.oracle_wms_timeout)   # Default timeout
+print(config.api_version)  # Current API version
+print(config.oracle_wms_timeout)  # Default timeout
 ```
 
 ## Environment Variables
@@ -111,8 +111,8 @@ from flext_oracle_wms import OracleWMSAuthMethod
 
 # Framework supports these methods (implementation required)
 auth_methods = [
-    OracleWMSAuthMethod.BASIC,    # Username/password
-    OracleWMSAuthMethod.OAUTH2,   # Token-based (not implemented)
+    OracleWMSAuthMethod.BASIC,  # Username/password
+    OracleWMSAuthMethod.OAUTH2,  # Token-based (not implemented)
     OracleWMSAuthMethod.API_KEY,  # API key (not implemented)
 ]
 ```

@@ -106,7 +106,7 @@ config = FlextOracleWmsClientSettings(
     base_url="https://your-wms.oraclecloud.com",
     username="your_username",
     password="your_password",
-    environment="production"
+    environment="production",
 )
 
 # Initialize client
@@ -135,6 +135,7 @@ from flext_core import FlextRuntime
 from flext_core import FlextService
 from flext_core import t
 from flext_core import u
+
 if result.success:
     logger = FlextLogger(__name__)
     logger.info("Discovered WMS entities", count=len(result.data))
