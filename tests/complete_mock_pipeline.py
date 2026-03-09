@@ -284,7 +284,7 @@ class CompleteMockPipeline:
                     sample_data = data["sample_data"]
                     if isinstance(sample_data, dict):
                         len(sample_data.keys())
-            return FlextResult[t.ConfigurationMapping].ok({
+            return FlextResult[dict[str, t.ContainerValue]].ok({
                 "duration": duration,
                 "schemas_count": len(schemas),
                 "catalog_streams": len(
@@ -300,7 +300,9 @@ class CompleteMockPipeline:
             })
         except Exception as e:
             logger.exception("Complete pipeline failed")
-            return FlextResult[t.ConfigurationMapping].fail(f"Pipeline failed: {e}")
+            return FlextResult[dict[str, t.ContainerValue]].fail(
+                f"Pipeline failed: {e}"
+            )
 
     def _generate_complete_singer_schemas(self) -> dict[str, t.ContainerValue]:
         """Generate complete Singer schemas for all entities."""
