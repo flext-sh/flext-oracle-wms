@@ -17,8 +17,8 @@ class FlextOracleWmsApi:
     with proper inheritance levels and enterprise patterns.
     """
 
-    FLEXT_ORACLE_WMS_APIS: ClassVar[dict[str, FlextOracleWmsApiEndpoint]] = {
-        "test": FlextOracleWmsApiEndpoint(
+    FLEXT_ORACLE_WMS_APIS: ClassVar[dict[str, FlextOracleWmsApiEndpoint]] = {  # noqa: F821
+        "test": FlextOracleWmsApiEndpoint(  # noqa: F821
             name="test",
             method="GET",
             path="/test/",

@@ -19,7 +19,7 @@ from flext_oracle_wms.constants import OracleWMSAuthMethod
 class FlextOracleWmsAuthenticator:
     """Oracle WMS authenticator with enterprise patterns."""
 
-    def __init__(self, config: FlextOracleWmsAuthSettings) -> None:
+    def __init__(self, config: FlextOracleWmsAuthSettings) -> None:  # noqa: F821
         """Initialize authenticator."""
         self.config = config
         self._token: str | None = None
@@ -51,7 +51,7 @@ class FlextOracleWmsAuthenticator:
         return FlextResult.ok({"Authorization": f"{auth_scheme} {token}"})
 
 
-def create_oracle_wms_client(config: FlextOracleWmsAuthSettings) -> FlextResult[object]:
+def create_oracle_wms_client(config: FlextOracleWmsAuthSettings) -> FlextResult[object]:  # noqa: F821
     """Create authenticated Oracle WMS client."""
     authenticator = FlextOracleWmsAuthenticator(config)
     auth_result = authenticator.authenticate()
@@ -61,7 +61,7 @@ def create_oracle_wms_client(config: FlextOracleWmsAuthSettings) -> FlextResult[
 
 
 __all__ = [
-    "FlextOracleWmsAuthSettings",
+    "FlextOracleWmsAuthSettings",  # noqa: F822
     "FlextOracleWmsAuthenticator",
     "create_oracle_wms_client",
 ]

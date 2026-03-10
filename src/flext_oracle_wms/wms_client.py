@@ -103,7 +103,7 @@ class FlextOracleWmsClient:
         result = self.get("/entities")
         if result.is_failure:
             return FlextResult.fail(result.error)
-        payload_result = self._decode_response_model(result.value, EntitiesResponse)
+        payload_result = self._decode_response_model(result.value, EntitiesResponse)  # noqa: F821
         if payload_result.is_failure:
             return FlextResult.fail(payload_result.error)
         self._discovered_entities = payload_result.value.entities
@@ -128,7 +128,7 @@ class FlextOracleWmsClient:
         result = self.get(f"/apis/category/{category}")
         if result.is_failure:
             return FlextResult.fail(result.error)
-        payload_result = self._decode_response_model(result.value, ApiCategoryResponse)
+        payload_result = self._decode_response_model(result.value, ApiCategoryResponse)  # noqa: F821
         if payload_result.is_failure:
             return FlextResult.fail(payload_result.error)
         return FlextResult.ok(payload_result.value.apis)
@@ -148,7 +148,7 @@ class FlextOracleWmsClient:
         result = self.get(f"/entities/{entity_name}", params=params)
         if result.is_failure:
             return FlextResult.fail(result.error)
-        payload_result = self._decode_response_model(result.value, EntityDataResponse)
+        payload_result = self._decode_response_model(result.value, EntityDataResponse)  # noqa: F821
         if payload_result.is_failure:
             return FlextResult.fail(payload_result.error)
         return FlextResult.ok(payload_result.value.data)

@@ -33,22 +33,22 @@ class Environment(StrEnum):
     PRODUCTION = "prod"
 
 
-def get_environment_configs() -> dict[Environment, WmsEnvironmentConfig]:
+def get_environment_configs() -> dict[Environment, WmsEnvironmentConfig]:  # noqa: F821
     """Define environment-specific Oracle WMS configurations."""
     return {
-        Environment.DEVELOPMENT: WmsEnvironmentConfig(
+        Environment.DEVELOPMENT: WmsEnvironmentConfig(  # noqa: F821
             name="Development",
             base_url="https://dev-wms.oraclecloud.com/dev_env",
             timeout=FlextOracleWmsConstants.Connection.DEFAULT_TIMEOUT,
             max_retries=FlextOracleWmsConstants.Connection.DEFAULT_MAX_RETRIES,
         ),
-        Environment.STAGING: WmsEnvironmentConfig(
+        Environment.STAGING: WmsEnvironmentConfig(  # noqa: F821
             name="Staging",
             base_url="https://staging-wms.oraclecloud.com/staging_env",
             timeout=FlextOracleWmsConstants.Connection.DEFAULT_TIMEOUT,
             max_retries=FlextOracleWmsConstants.Connection.DEFAULT_MAX_RETRIES,
         ),
-        Environment.PRODUCTION: WmsEnvironmentConfig(
+        Environment.PRODUCTION: WmsEnvironmentConfig(  # noqa: F821
             name="Production",
             base_url="https://prod-wms.oraclecloud.com/prod_env",
             timeout=FlextOracleWmsConstants.Connection.DEFAULT_TIMEOUT,

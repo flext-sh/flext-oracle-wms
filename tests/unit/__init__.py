@@ -29,9 +29,18 @@ if TYPE_CHECKING:
 # Lazy import mapping: export_name -> (module_path, attr_name)
 _LAZY_IMPORTS: dict[str, tuple[str, str]] = {
     "TestFlextOracleWmsApi": ("tests.unit.test_wms_api", "TestFlextOracleWmsApi"),
-    "TestFlextOracleWmsClient": ("tests.unit.test_wms_client", "TestFlextOracleWmsClient"),
-    "TestFlextOracleWmsConstants": ("tests.unit.test_constants", "TestFlextOracleWmsConstants"),
-    "TestFlextOracleWmsSettings": ("tests.unit.test_config", "TestFlextOracleWmsSettings"),
+    "TestFlextOracleWmsClient": (
+        "tests.unit.test_wms_client",
+        "TestFlextOracleWmsClient",
+    ),
+    "TestFlextOracleWmsConstants": (
+        "tests.unit.test_constants",
+        "TestFlextOracleWmsConstants",
+    ),
+    "TestFlextOracleWmsSettings": (
+        "tests.unit.test_config",
+        "TestFlextOracleWmsSettings",
+    ),
     "c": ("tests.unit.test_constants", "TestFlextOracleWmsConstants"),
 }
 

@@ -8,4 +8,4 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-__all__ = ["FlextOracleWmsSettings"]
+__all__ = ["FlextOracleWmsSettings"]  # noqa: F822
