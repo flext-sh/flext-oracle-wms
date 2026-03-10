@@ -9,14 +9,17 @@ from __future__ import annotations
 from collections.abc import Mapping
 from enum import StrEnum
 
-from flext_core import FlextExceptions, FlextLogger, FlextResult, t
+from flext_core import FlextExceptions, FlextLogger, FlextResult
 
 from flext_oracle_wms.constants import FlextOracleWmsConstants
+from flext_oracle_wms.typings import (
+    FilterList,
+    FilterRecord,
+    FilterRecordValue,
+    FilterScalar,
+    OperatorFilter,
+)
 
-type FilterScalar = t.Scalar | None
-type FilterList = list[FilterScalar]
-type FilterRecordValue = FilterScalar | FilterList | Mapping[str, FilterRecordValue]
-type FilterRecord = Mapping[str, FilterRecordValue]
 type FilterEntry = FilterScalar | FilterList | OperatorFilter
 
 

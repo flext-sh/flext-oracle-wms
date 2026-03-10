@@ -6,9 +6,11 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
+from collections.abc import Mapping
 from typing import Literal
 
 from flext_core import FlextTypes
+from pydantic import BaseModel
 
 
 class FlextOracleWmsTypes(FlextTypes):
@@ -66,3 +68,20 @@ class FlextOracleWmsTypes(FlextTypes):
 
 t = FlextOracleWmsTypes
 __all__ = ["FlextOracleWmsTypes", "t"]
+
+
+type FilterScalar = t.Scalar | None
+
+
+type FilterList = list[FilterScalar]
+
+
+type FilterRecordValue = FilterScalar | FilterList | Mapping[str, FilterRecordValue]
+
+
+type FilterRecord = Mapping[str, FilterRecordValue]
+
+
+class OperatorFilter(BaseModel):
+    operator: str
+    value: FilterScalar | FilterList

@@ -1,10 +1,7 @@
 # AUTO-GENERATED FILE — DO NOT EDIT MANUALLY.
 # Regenerate with: make codegen
 #
-"""Init module.
-
-This module is part of the FLEXT ecosystem. Docstrings follow PEP 257 and Google style.
-"""
+"""Examples package."""
 
 from __future__ import annotations
 
@@ -13,19 +10,17 @@ from typing import TYPE_CHECKING, Any
 from flext_core.lazy import cleanup_submodule_namespace, lazy_getattr
 
 if TYPE_CHECKING:
-    from tests.test_declarative_example import load_env_config, logger, main
+    from tests.test_declarative_example import load_env_config, logger
 
 # Lazy import mapping: export_name -> (module_path, attr_name)
 _LAZY_IMPORTS: dict[str, tuple[str, str]] = {
     "load_env_config": ("tests.test_declarative_example", "load_env_config"),
     "logger": ("tests.test_declarative_example", "logger"),
-    "main": ("tests.test_declarative_example", "main"),
 }
 
 __all__ = [
     "load_env_config",
     "logger",
-    "main",
 ]
 
 
