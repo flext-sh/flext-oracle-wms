@@ -168,7 +168,7 @@ class FlextOracleWmsModels(FlextModels):
     def validate_entity_name(name: str) -> r[str]:
         """Validate entity name using domain rules."""
         if not name or len(name) > FlextOracleWmsModels.MAX_ENTITY_NAME_LENGTH:
-            return r.fail("Invalid entity name")
+            return r[str].fail("Invalid entity name")
         return r.ok(name)
 
     # =========================================================================
@@ -192,7 +192,7 @@ class FlextOracleWmsModels(FlextModels):
         def add_inventory(self, item: FlextOracleWmsModels.InventoryItem) -> r[bool]:
             """Add inventory to warehouse."""
             if any(i.sku == item.sku for i in self.inventory):
-                return r.fail("SKU already exists")
+                return r[bool].fail("SKU already exists")
             self.inventory.append(item)
             return r.ok(True)
 

@@ -170,7 +170,9 @@ class FlextOracleWmsFilter:
     ) -> FlextResult[list[t.Core.FilterRecord]]:
         """Filter records against field conditions and optional limit."""
         if (result := self._validate_filters(filters)).is_failure:
-            return FlextResult.fail(result.error or "Validation failed")
+            return FlextResult[list[t.Core.FilterRecord]].fail(
+                result.error or "Validation failed"
+            )
         self.filters = filters
         filtered = [
             record for record in records if self._matches_all_filters(record, filters)
@@ -196,7 +198,7 @@ class FlextOracleWmsFilter:
             return FlextResult.ok(sorted(records, key=key_func, reverse=not ascending))
         except Exception as exc:
             self.logger.exception("Sort failed")
-            return FlextResult.fail(f"Sort failed: {exc}")
+            return FlextResult[list[t.Core.FilterRecord]].fail(f"Sort failed: {exc}")
 
     def _apply_operator(
         self,
@@ -299,7 +301,7 @@ class FlextOracleWmsFilter:
     ) -> FlextResult[bool]:
         total = sum(self._condition_size(value) for value in filters.values())
         if total > self.max_conditions:
-            return FlextResult.fail(
+            return FlextResult[bool].fail(
                 f"Too many filter conditions: {total} > {self.max_conditions}"
             )
         return FlextResult.ok(True)
@@ -309,7 +311,7 @@ class FlextOracleWmsFilter:
     ) -> FlextResult[bool]:
         total = sum(self._condition_size(value) for value in filters.values())
         if total > self.max_conditions:
-            return FlextResult.fail(
+            return FlextResult[bool].fail(
                 f"Too many conditions. Max: {self.max_conditions}, Got: {total}"
             )
         return FlextResult.ok(True)

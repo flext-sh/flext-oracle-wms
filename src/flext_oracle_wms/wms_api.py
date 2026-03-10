@@ -9,6 +9,19 @@ from __future__ import annotations
 
 from typing import ClassVar
 
+from pydantic import BaseModel, Field
+
+
+class FlextOracleWmsApiEndpoint(BaseModel):
+    """Typed Oracle WMS API endpoint definition."""
+
+    name: str = Field(min_length=1)
+    method: str = Field(min_length=1)
+    path: str = Field(min_length=1)
+    version: str = Field(min_length=1)
+    category: str = Field(min_length=1)
+    description: str = Field(default="")
+
 
 class FlextOracleWmsApi:
     """Main Oracle WMS API class following FLEXT standards.
@@ -17,8 +30,8 @@ class FlextOracleWmsApi:
     with proper inheritance levels and enterprise patterns.
     """
 
-    FLEXT_ORACLE_WMS_APIS: ClassVar[dict[str, FlextOracleWmsApiEndpoint]] = {  # noqa: F821
-        "test": FlextOracleWmsApiEndpoint(  # noqa: F821
+    FLEXT_ORACLE_WMS_APIS: ClassVar[dict[str, FlextOracleWmsApiEndpoint]] = {
+        "test": FlextOracleWmsApiEndpoint(
             name="test",
             method="GET",
             path="/test/",
@@ -43,4 +56,4 @@ class FlextOracleWmsApi:
 
 
 FLEXT_ORACLE_WMS_APIS = FlextOracleWmsApi.FLEXT_ORACLE_WMS_APIS
-__all__ = ["FLEXT_ORACLE_WMS_APIS", "FlextOracleWmsApi"]
+__all__ = ["FLEXT_ORACLE_WMS_APIS", "FlextOracleWmsApi", "FlextOracleWmsApiEndpoint"]

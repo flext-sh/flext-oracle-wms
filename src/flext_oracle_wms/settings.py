@@ -8,4 +8,22 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-__all__ = ["FlextOracleWmsSettings"]  # noqa: F822
+from flext_core import FlextSettings
+from pydantic import ConfigDict, Field
+
+
+class FlextOracleWmsSettings(FlextSettings):
+    """Runtime settings for Oracle WMS client."""
+
+    model_config = ConfigDict(extra="ignore")
+
+    base_url: str = Field(default="http://localhost:8080", min_length=1)
+    timeout: float = Field(default=30.0, ge=1.0, le=300.0)
+
+    @classmethod
+    def testing_config(cls) -> FlextOracleWmsSettings:
+        """Build deterministic settings for tests."""
+        return cls(base_url="http://localhost:8080", timeout=30.0)
+
+
+__all__ = ["FlextOracleWmsSettings"]
