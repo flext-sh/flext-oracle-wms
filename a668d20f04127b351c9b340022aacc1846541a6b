@@ -1,0 +1,23 @@
+src/flext_oracle_wms/wms_client.py
+  3cb488a5ecba4323 37,43,142,146,151-152,159,168,173-174
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.1.10",
+  "base_commit_sha": "a668d20f04127b351c9b340022aacc1846541a6b",
+  "prompts": {
+    "3cb488a5ecba4323": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_327384379ffeu3hhA34Ch64Dzc",
+        "model": "anthropic/claude-haiku-4-5"
+      },
+      "human_author": "FLEXT Bot <team@flext.sh>",
+      "messages": [],
+      "total_additions": 54,
+      "total_deletions": 56,
+      "accepted_lines": 10,
+      "overriden_lines": 0
+    }
+  }
+}
