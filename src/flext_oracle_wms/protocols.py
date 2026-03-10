@@ -63,5 +63,6 @@ class FlextOracleWmsProtocols(FlextProtocols):
                 ...
 
 
-p = FlextOracleWmsProtocols
 __all__ = ["FlextOracleWmsProtocols", "p"]
+
+p = FlextOracleWmsProtocols

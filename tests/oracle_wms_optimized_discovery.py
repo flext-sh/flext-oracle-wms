@@ -11,10 +11,13 @@ OPTIMIZED approach:
 5. No fallbacks, no estimations - 100% Oracle discovery
 """
 
+from __future__ import annotations
+
 import asyncio
 import json
 import operator
 import time
+from collections.abc import Mapping
 from datetime import UTC, datetime
 from pathlib import Path
 
@@ -226,7 +229,7 @@ class OptimizedOracleWmsDiscovery:
             }
 
     def _safe_sample_record(
-        self, record: dict[str, t.ContainerValue]
+        self, record: Mapping[str, t.ContainerValue]
     ) -> dict[str, t.ContainerValue]:
         """Create safe sample record for storage."""
         safe_record = {}
@@ -276,7 +279,7 @@ class OptimizedOracleWmsDiscovery:
         })
 
     def _generate_singer_schema_from_entity_data(
-        self, entity_name: str, entity_data: dict[str, t.ContainerValue]
+        self, entity_name: str, entity_data: Mapping[str, t.ContainerValue]
     ) -> dict[str, t.ContainerValue] | None:
         """Generate Singer schema from entity data with proper typing."""
         try:
@@ -440,7 +443,7 @@ class OptimizedOracleWmsDiscovery:
         return potential_keys[:3]
 
     def _generate_singer_catalog(
-        self, schemas: dict[str, t.ContainerValue]
+        self, schemas: Mapping[str, t.ContainerValue]
     ) -> dict[str, t.ContainerValue]:
         """Generate Singer catalog from schemas."""
         streams = []

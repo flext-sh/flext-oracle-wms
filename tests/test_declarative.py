@@ -9,7 +9,9 @@ SPDX-License-Identifier: MIT
 
 """
 
-from collections.abc import Generator
+from __future__ import annotations
+
+from collections.abc import Generator, Mapping
 from pathlib import Path
 from typing import cast
 from urllib.parse import urlparse
@@ -21,11 +23,9 @@ from flext_oracle_wms import (
     FLEXT_ORACLE_WMS_APIS,
     FlextOracleWmsClient,
     FlextOracleWmsConstants,
-    FlextOracleWmsSettings,
     t,
 )
 
-FlextOracleWmsClientSettings = FlextOracleWmsSettings
 FlextOracleWmsApiVersion = FlextOracleWmsConstants.WmsApiVersion
 FlextOracleWmsApiCategory = FlextOracleWmsConstants.WmsApiCategory
 logger = FlextLogger(__name__)
@@ -113,7 +113,7 @@ def env_config() -> dict[str, t.ContainerValue]:
 
 @pytest.fixture
 def oracle_wms_client(
-    env_config: dict[str, t.ContainerValue],
+    env_config: Mapping[str, t.ContainerValue],
 ) -> Generator[FlextOracleWmsClient]:
     """Fixture that provides configured Oracle WMS client."""
     config_kwargs = {
@@ -176,7 +176,7 @@ class TestOracleWmsDeclarativeIntegration:
         assert len(versions) >= 1
 
     def test_client_configuration_and_lifecycle(
-        self, env_config: dict[str, t.ContainerValue]
+        self, env_config: Mapping[str, t.ContainerValue]
     ) -> None:
         """Test client configuration and initialization."""
         config_kwargs = {

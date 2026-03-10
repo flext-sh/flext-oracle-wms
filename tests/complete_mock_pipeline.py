@@ -10,8 +10,11 @@ REALISTIC MOCK IMPLEMENTATION:
 PRAGMATIC SOLUTION FOR PERFORMANCE ISSUES
 """
 
+from __future__ import annotations
+
 import json
 import uuid
+from collections.abc import Mapping
 from datetime import UTC, datetime
 from pathlib import Path
 from typing import cast
@@ -320,7 +323,7 @@ class CompleteMockPipeline:
         return schemas
 
     def _create_entity_properties(
-        self, sample_data: dict[str, t.ContainerValue]
+        self, sample_data: Mapping[str, t.ContainerValue]
     ) -> tuple[dict[str, t.ContainerValue], list[str]]:
         """Create properties and key properties from sample data - SRP compliance."""
         properties: dict[str, t.ContainerValue] = {}
@@ -388,7 +391,7 @@ class CompleteMockPipeline:
         })
 
     def _build_singer_schema(
-        self, properties: dict[str, t.ContainerValue], key_properties: list[str]
+        self, properties: Mapping[str, t.ContainerValue], key_properties: list[str]
     ) -> dict[str, t.ContainerValue]:
         """Build complete Singer schema - SRP compliance."""
         return {
@@ -399,7 +402,7 @@ class CompleteMockPipeline:
         }
 
     def _create_complete_singer_catalog(
-        self, schemas: dict[str, t.ContainerValue]
+        self, schemas: Mapping[str, t.ContainerValue]
     ) -> dict[str, t.ContainerValue]:
         """Create complete Singer catalog for Meltano integration."""
         streams = []
@@ -497,7 +500,7 @@ class CompleteMockPipeline:
         return cast("dict[str, t.ContainerValue]", target_results)
 
     def _simulate_dbt_transformations(
-        self, target_results: dict[str, t.ContainerValue]
+        self, target_results: Mapping[str, t.ContainerValue]
     ) -> dict[str, t.ContainerValue]:
         """Simulate DBT transformation process."""
         dbt_results = {}
@@ -586,11 +589,11 @@ class CompleteMockPipeline:
 
     def _save_complete_pipeline_results(
         self,
-        schemas: dict[str, t.ContainerValue],
-        catalog: dict[str, t.ContainerValue],
+        schemas: Mapping[str, t.ContainerValue],
+        catalog: Mapping[str, t.ContainerValue],
         tap_records: list[dict[str, t.ContainerValue]],
-        target_results: dict[str, t.ContainerValue],
-        dbt_results: dict[str, t.ContainerValue],
+        target_results: Mapping[str, t.ContainerValue],
+        dbt_results: Mapping[str, t.ContainerValue],
     ) -> FlextResult[str]:
         """Save complete pipeline results."""
         results_dir = Path("complete_pipeline_results")

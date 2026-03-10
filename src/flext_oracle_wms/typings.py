@@ -64,24 +64,18 @@ class FlextOracleWmsTypes(FlextTypes):
 
         type Dict = dict[str, FlextTypes.ContainerValue]
         "Type alias for generic dictionary (attribute name to value mapping)."
+        type FilterScalar = t.Scalar | None
+        type FilterList = list[t.Core.FilterScalar]
+        type FilterRecordValue = (
+            t.Core.FilterScalar | t.Core.FilterList | Mapping[str, FilterRecordValue]
+        )
+        type FilterRecord = Mapping[str, t.Core.FilterRecordValue]
 
 
 t = FlextOracleWmsTypes
 __all__ = ["FlextOracleWmsTypes", "t"]
 
 
-type FilterScalar = t.Scalar | None
-
-
-type FilterList = list[FilterScalar]
-
-
-type FilterRecordValue = FilterScalar | FilterList | Mapping[str, FilterRecordValue]
-
-
-type FilterRecord = Mapping[str, FilterRecordValue]
-
-
 class OperatorFilter(BaseModel):
     operator: str
-    value: FilterScalar | FilterList
+    value: t.Core.FilterScalar | t.Core.FilterList

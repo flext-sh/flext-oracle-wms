@@ -12,15 +12,9 @@ from enum import StrEnum
 from flext_core import FlextExceptions, FlextLogger, FlextResult
 
 from flext_oracle_wms.constants import FlextOracleWmsConstants
-from flext_oracle_wms.typings import (
-    FilterList,
-    FilterRecord,
-    FilterRecordValue,
-    FilterScalar,
-    OperatorFilter,
-)
+from flext_oracle_wms.typings import OperatorFilter, t
 
-type FilterEntry = FilterScalar | FilterList | OperatorFilter
+type FilterEntry = t.Core.FilterScalar | t.Core.FilterList | OperatorFilter
 
 
 class FlextOracleWmsDataValidationError(FlextExceptions.BaseError):
@@ -79,11 +73,11 @@ class FlextOracleWmsFilter:
     @classmethod
     def filter_by_field(
         cls,
-        records: list[FilterRecord],
+        records: list[t.Core.FilterRecord],
         field: str,
-        value: FilterScalar,
+        value: t.Core.FilterScalar,
         operator: FilterOperator | None = None,
-    ) -> FlextResult[list[FilterRecord]]:
+    ) -> FlextResult[list[t.Core.FilterRecord]]:
         """Filter records by one field using optional operator semantics."""
         engine = cls()
         if operator is None:
@@ -95,15 +89,15 @@ class FlextOracleWmsFilter:
     @classmethod
     def filter_by_id_range(
         cls,
-        records: list[FilterRecord],
+        records: list[t.Core.FilterRecord],
         id_field: str,
-        min_id: FilterScalar | None = None,
-        max_id: FilterScalar | None = None,
-    ) -> FlextResult[list[FilterRecord]]:
+        min_id: t.Core.FilterScalar | None = None,
+        max_id: t.Core.FilterScalar | None = None,
+    ) -> FlextResult[list[t.Core.FilterRecord]]:
         """Filter records by inclusive identifier range."""
         if not records:
             return FlextResult.ok([])
-        filtered: list[FilterRecord] = []
+        filtered: list[t.Core.FilterRecord] = []
         for record in records:
             field_value = record.get(id_field)
             if field_value is None:
@@ -116,16 +110,22 @@ class FlextOracleWmsFilter:
         return FlextResult.ok(filtered)
 
     @staticmethod
-    def _check_max(field_value: FilterRecordValue, max_val: FilterScalar) -> bool:
+    def _check_max(
+        field_value: t.Core.FilterRecordValue, max_val: t.Core.FilterScalar
+    ) -> bool:
         return FlextOracleWmsFilter._compare(field_value, max_val, "<=")
 
     @staticmethod
-    def _check_min(field_value: FilterRecordValue, min_val: FilterScalar) -> bool:
+    def _check_min(
+        field_value: t.Core.FilterRecordValue, min_val: t.Core.FilterScalar
+    ) -> bool:
         return FlextOracleWmsFilter._compare(field_value, min_val, ">=")
 
     @staticmethod
     def _compare(
-        left: FilterRecordValue | None, right: FilterScalar | FilterList, op: str
+        left: t.Core.FilterRecordValue | None,
+        right: t.Core.FilterScalar | t.Core.FilterList,
+        op: str,
     ) -> bool:
         try:
             left_num = float(str(left))
@@ -164,10 +164,10 @@ class FlextOracleWmsFilter:
 
     def filter_records(
         self,
-        records: list[FilterRecord],
+        records: list[t.Core.FilterRecord],
         filters: Mapping[str, FilterEntry],
         limit: int | None = None,
-    ) -> FlextResult[list[FilterRecord]]:
+    ) -> FlextResult[list[t.Core.FilterRecord]]:
         """Filter records against field conditions and optional limit."""
         if (result := self._validate_filters(filters)).is_failure:
             return FlextResult.fail(result.error or "Validation failed")
@@ -180,12 +180,16 @@ class FlextOracleWmsFilter:
         return FlextResult.ok(filtered)
 
     def sort_records(
-        self, records: list[FilterRecord], sort_field: str, *, ascending: bool = True
-    ) -> FlextResult[list[FilterRecord]]:
+        self,
+        records: list[t.Core.FilterRecord],
+        sort_field: str,
+        *,
+        ascending: bool = True,
+    ) -> FlextResult[list[t.Core.FilterRecord]]:
         """Sort records by a dot-path field."""
         try:
 
-            def key_func(record: FilterRecord) -> str:
+            def key_func(record: t.Core.FilterRecord) -> str:
                 value = self._get_nested_value(record, sort_field)
                 return str(value if value is not None else "" if ascending else "zzz")
 
@@ -196,9 +200,9 @@ class FlextOracleWmsFilter:
 
     def _apply_operator(
         self,
-        field_value: FilterRecordValue | None,
+        field_value: t.Core.FilterRecordValue | None,
         operator: FilterOperator | str,
-        filter_value: FilterScalar | FilterList,
+        filter_value: t.Core.FilterScalar | t.Core.FilterList,
     ) -> bool:
         if field_value is None and filter_value is not None:
             return False
@@ -238,10 +242,12 @@ class FlextOracleWmsFilter:
                 return False
 
     def _get_nested_value(
-        self, record: FilterRecord, field: str
-    ) -> FilterRecordValue | None:
+        self, record: t.Core.FilterRecord, field: str
+    ) -> t.Core.FilterRecordValue | None:
         keys = field.split(".")
-        current: FilterRecordValue | Mapping[str, FilterRecordValue] = record
+        current: t.Core.FilterRecordValue | Mapping[str, t.Core.FilterRecordValue] = (
+            record
+        )
         for key in keys:
             match current:
                 case dict() as mapping:
@@ -254,7 +260,7 @@ class FlextOracleWmsFilter:
         return current
 
     def _matches_all_filters(
-        self, record: FilterRecord, filters: Mapping[str, FilterEntry]
+        self, record: t.Core.FilterRecord, filters: Mapping[str, FilterEntry]
     ) -> bool:
         return all(
             (
@@ -264,7 +270,7 @@ class FlextOracleWmsFilter:
         )
 
     def _matches_condition(
-        self, record: FilterRecord, field: str, filter_value: FilterEntry
+        self, record: t.Core.FilterRecord, field: str, filter_value: FilterEntry
     ) -> bool:
         field_value = self._get_nested_value(record, field)
         match filter_value:
@@ -278,8 +284,8 @@ class FlextOracleWmsFilter:
                 return self._normalize(field_value) == self._normalize(filter_value)
 
     def _normalize(
-        self, value: FilterRecordValue | FilterScalar
-    ) -> FilterRecordValue | str:
+        self, value: t.Core.FilterRecordValue | t.Core.FilterScalar
+    ) -> t.Core.FilterRecordValue | str:
         match value:
             case None:
                 return ""

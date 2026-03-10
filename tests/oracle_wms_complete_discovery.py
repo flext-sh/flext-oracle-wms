@@ -10,9 +10,12 @@ Using ADMINISTRATOR credentials for complete API exploration:
 NO FALLBACKS, NO ESTIMATIONS, NO BASIC LIMITS - FULL EXPLORATION
 """
 
+from __future__ import annotations
+
 import asyncio
 import json
 import operator
+from collections.abc import Mapping
 from datetime import UTC, datetime
 from pathlib import Path
 
@@ -432,7 +435,7 @@ class OracleWmsCompleteDiscovery:
         return FlextResult[bool].ok(singer_schemas)
 
     def _generate_singer_schema_from_metadata(
-        self, entity_name: str, metadata: dict[str, t.ContainerValue]
+        self, entity_name: str, metadata: Mapping[str, t.ContainerValue]
     ) -> dict[str, t.ContainerValue] | None:
         """Generate Singer schema from Oracle WMS metadata with flattening."""
         try:

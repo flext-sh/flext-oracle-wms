@@ -5,8 +5,11 @@ SPDX-License-Identifier: MIT
 
 """
 
+from __future__ import annotations
+
 import asyncio
 import json
+from collections.abc import Mapping
 from datetime import UTC, datetime
 from pathlib import Path
 
@@ -194,7 +197,7 @@ class FocusedOracleWmsDiscovery:
         return structures
 
     def _safe_sample(
-        self, record: dict[str, t.ContainerValue]
+        self, record: Mapping[str, t.ContainerValue]
     ) -> dict[str, t.ContainerValue]:
         """Create safe sample record."""
         safe = {}
@@ -209,7 +212,7 @@ class FocusedOracleWmsDiscovery:
         return safe
 
     def _generate_schemas_from_data(
-        self, data_entities: dict[str, t.ContainerValue]
+        self, data_entities: Mapping[str, t.ContainerValue]
     ) -> dict[str, t.ContainerValue]:
         """Generate Singer schemas from entities with data."""
         schemas = {}
@@ -220,7 +223,7 @@ class FocusedOracleWmsDiscovery:
         return schemas
 
     def _generate_schemas_from_structures(
-        self, structure_entities: dict[str, t.ContainerValue]
+        self, structure_entities: Mapping[str, t.ContainerValue]
     ) -> dict[str, t.ContainerValue]:
         """Generate Singer schemas from structures."""
         schemas = {}
@@ -231,7 +234,7 @@ class FocusedOracleWmsDiscovery:
         return schemas
 
     def _create_singer_schema(
-        self, entity_name: str, entity_data: dict[str, t.ContainerValue]
+        self, entity_name: str, entity_data: Mapping[str, t.ContainerValue]
     ) -> dict[str, t.ContainerValue] | None:
         """Create Singer schema with proper Oracle WMS typing."""
         try:

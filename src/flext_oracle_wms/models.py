@@ -198,3 +198,5 @@ class FlextOracleWmsModels(FlextModels):
 
 
 __all__ = ["FlextOracleWmsModels"]
+
+m = FlextOracleWmsModels

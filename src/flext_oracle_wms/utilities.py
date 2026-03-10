@@ -23,5 +23,6 @@ class FlextOracleWmsUtilities(FlextUtilities):
         """OracleWms domain namespace."""
 
 
-u = FlextOracleWmsUtilities
 __all__ = ["FlextOracleWmsUtilities", "u"]
+
+u = FlextOracleWmsUtilities

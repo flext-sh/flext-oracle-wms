@@ -5,6 +5,8 @@ SPDX-License-Identifier: MIT
 
 """
 
+from __future__ import annotations
+
 from flext_oracle_wms import FlextOracleWmsSettings
 
 

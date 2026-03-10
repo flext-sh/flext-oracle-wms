@@ -326,3 +326,5 @@ type OracleWMSAuthMethodLiteral = Literal[
     OracleWMSAuthMethod.BEARER,
 ]
 __all__ = ["FlextOracleWmsConstants", "OracleWMSAuthMethod"]
+
+c = FlextOracleWmsConstants

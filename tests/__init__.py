@@ -75,7 +75,6 @@ if TYPE_CHECKING:
     from tests.test_declarative import (
         FlextOracleWmsApiCategory,
         FlextOracleWmsApiVersion,
-        FlextOracleWmsClientSettings,
         TestAutomationApisIntegration,
         TestErrorHandlingIntegration,
         TestLgfApiV10Integration,
@@ -148,10 +147,6 @@ _LAZY_IMPORTS: dict[str, tuple[str, str]] = {
         "FlextOracleWmsApiCategory",
     ),
     "FlextOracleWmsApiVersion": ("tests.test_declarative", "FlextOracleWmsApiVersion"),
-    "FlextOracleWmsClientSettings": (
-        "tests.test_declarative",
-        "FlextOracleWmsClientSettings",
-    ),
     "FocusedOracleWmsDiscovery": (
         "tests.oracle_wms_focused_discovery",
         "FocusedOracleWmsDiscovery",
@@ -385,7 +380,6 @@ __all__ = [
     "CompleteMockPipeline",
     "FlextOracleWmsApiCategory",
     "FlextOracleWmsApiVersion",
-    "FlextOracleWmsClientSettings",
     "FocusedOracleWmsDiscovery",
     "OptimizedOracleWmsDiscovery",
     "OracleWmsCompleteDiscovery",
