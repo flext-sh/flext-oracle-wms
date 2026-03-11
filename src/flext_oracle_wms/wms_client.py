@@ -17,7 +17,7 @@ from flext_api import (
     FlextApiSettings,
     FlextApiTypes,
 )
-from flext_core import FlextContainer, FlextExceptions, r, t
+from flext_core import FlextContainer, FlextExceptions, r, t, u
 from pydantic import BaseModel, ConfigDict, Field, ValidationError
 
 from flext_oracle_wms.settings import FlextOracleWmsSettings
@@ -74,20 +74,20 @@ class FlextOracleWmsClient:
     ) -> r[T]:
         match payload:
             case dict() as data:
-                try:
-                    return r[T].ok(model_type.model_validate(data))
-                except ValidationError as exc:
-                    return r[T].fail(f"Invalid response payload: {exc}")
+                return u.try_(
+                    lambda: model_type.model_validate(data),
+                    catch=ValidationError,
+                ).map_error(lambda exc: f"Invalid response payload: {exc}")
             case str() as raw_payload:
-                try:
-                    return r[T].ok(model_type.model_validate_json(raw_payload))
-                except ValidationError as exc:
-                    return r[T].fail(f"Invalid JSON payload: {exc}")
+                return u.try_(
+                    lambda: model_type.model_validate_json(raw_payload),
+                    catch=ValidationError,
+                ).map_error(lambda exc: f"Invalid JSON payload: {exc}")
             case bytes() as raw_payload:
-                try:
-                    return r[T].ok(model_type.model_validate_json(raw_payload))
-                except ValidationError as exc:
-                    return r[T].fail(f"Invalid JSON payload: {exc}")
+                return u.try_(
+                    lambda: model_type.model_validate_json(raw_payload),
+                    catch=ValidationError,
+                ).map_error(lambda exc: f"Invalid JSON payload: {exc}")
             case None:
                 return r[T].fail("Empty response payload")
             case _:
