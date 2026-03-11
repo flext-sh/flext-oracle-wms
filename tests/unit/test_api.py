@@ -7,7 +7,7 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from flext_core import FlextResult, FlextService
+from flext_core import FlextService, r
 
 from flext_oracle_wms.api import FlextOracleWmsApi
 from flext_oracle_wms.wms_client import FlextOracleWmsClient
@@ -16,9 +16,9 @@ from flext_oracle_wms.wms_client import FlextOracleWmsClient
 class _ConcreteWmsApi(FlextOracleWmsApi):
     """Concrete subclass for testing (FlextService.execute is abstract)."""
 
-    def execute(self) -> FlextResult[None]:
+    def execute(self) -> r[None]:
         """No-op execute for tests."""
-        return FlextResult.ok(None)
+        return r.ok(None)
 
 
 class TestFlextOracleWmsApi:

@@ -14,17 +14,7 @@ from datetime import UTC, datetime
 from pathlib import Path
 from types import NoneType
 
-from beartype._cave._cavefast import NoneType
-from flext_core import FlextLogger, FlextResult, t
-from mypy.types import NoneType
-from psycopg.abc import NoneType
-from pydantic._internal._typing_extra import NoneType
-from pydantic.v1.typing import NoneType
-from sqlalchemy.util import NoneType
-from sqlalchemy.util.langhelpers import NoneType
-from sqlalchemy.util.typing import NoneType
-from typer._typing import NoneType
-from typer.models import NoneType
+from flext_core import FlextLogger, r, t
 
 from flext_oracle_wms import (
     FlextOracleWmsApiVersion,
@@ -77,15 +67,13 @@ class FocusedOracleWmsDiscovery:
         self.entities_with_data = {}
         self.complete_schemas = {}
 
-    def execute_focused_discovery(self) -> FlextResult[dict[str, t.ContainerValue]]:
+    def execute_focused_discovery(self) -> r[dict[str, t.ContainerValue]]:
         """Execute complete focused discovery."""
         try:
             self.client.start()
             entities_result = self.client.discover_entities()
             if not entities_result.is_success:
-                return FlextResult[bool].fail(
-                    f"Entity discovery failed: {entities_result.error}"
-                )
+                return r[bool].fail(f"Entity discovery failed: {entities_result.error}")
             all_entities = entities_result.data
             available_quick = [e for e in self.quick_test_entities if e in all_entities]
             data_entities = self._quick_data_scan(available_quick)
@@ -117,7 +105,7 @@ class FocusedOracleWmsDiscovery:
                 for schema in schemas.values():
                     schema.get("properties", {})
                     schema.get("key_properties", [])
-            return FlextResult[bool].ok({
+            return r[bool].ok({
                 "total_entities": len(all_entities),
                 "entities_with_data": len(data_entities),
                 "schemas_generated": len(schemas),
@@ -127,7 +115,7 @@ class FocusedOracleWmsDiscovery:
             })
         except Exception as e:
             logger.exception("Focused discovery failed")
-            return FlextResult[bool].fail(f"Discovery failed: {e}")
+            return r[bool].fail(f"Discovery failed: {e}")
         finally:
             self.client.stop()
 
@@ -375,7 +363,7 @@ class FocusedOracleWmsDiscovery:
                 keys.append(key)
         return keys or (["id"] if "id" in fields else [])
 
-    def _save_focused_results(self) -> FlextResult[str]:
+    def _save_focused_results(self) -> r[str]:
         """Save focused discovery results."""
         results_dir = Path("oracle_wms_focused_results")
         asyncio.to_thread(results_dir.mkdir, exist_ok=True)
@@ -404,7 +392,7 @@ class FocusedOracleWmsDiscovery:
         summary_file = results_dir / f"summary_{timestamp}.json"
         with summary_file.open("w", encoding="utf-8") as f:
             json.dump(summary, f, indent=2, default=str)
-        return FlextResult[bool].ok(str(results_dir))
+        return r[bool].ok(str(results_dir))
 
     def _create_singer_catalog(self) -> dict[str, t.ContainerValue]:
         """Create Singer catalog."""

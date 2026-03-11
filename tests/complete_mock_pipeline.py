@@ -19,7 +19,7 @@ from datetime import UTC, datetime
 from pathlib import Path
 from typing import cast
 
-from flext_core import FlextLogger, FlextResult, t
+from flext_core import FlextLogger, r, t
 
 logger = FlextLogger(__name__)
 
@@ -268,7 +268,7 @@ class CompleteMockPipeline:
         }
         self.results: dict[str, t.ContainerValue] = {}
 
-    def run_complete_pipeline(self) -> FlextResult[dict[str, t.ContainerValue]]:
+    def run_complete_pipeline(self) -> r[dict[str, t.ContainerValue]]:
         """Run complete Oracle WMS pipeline with mock data."""
         start_time = datetime.now(UTC)
         try:
@@ -277,7 +277,7 @@ class CompleteMockPipeline:
             tap_records = self._simulate_tap_extraction()
             target_results = self._simulate_target_loading(tap_records)
             dbt_results = self._simulate_dbt_transformations(target_results)
-            save_result: FlextResult[str] = self._save_complete_pipeline_results(
+            save_result: r[str] = self._save_complete_pipeline_results(
                 schemas, catalog, tap_records, target_results, dbt_results
             )
             end_time = datetime.now(UTC)
@@ -287,7 +287,7 @@ class CompleteMockPipeline:
                     sample_data = data["sample_data"]
                     if isinstance(sample_data, dict):
                         len(sample_data.keys())
-            return FlextResult[dict[str, t.ContainerValue]].ok({
+            return r[dict[str, t.ContainerValue]].ok({
                 "duration": duration,
                 "schemas_count": len(schemas),
                 "catalog_streams": len(
@@ -303,9 +303,7 @@ class CompleteMockPipeline:
             })
         except Exception as e:
             logger.exception("Complete pipeline failed")
-            return FlextResult[dict[str, t.ContainerValue]].fail(
-                f"Pipeline failed: {e}"
-            )
+            return r[dict[str, t.ContainerValue]].fail(f"Pipeline failed: {e}")
 
     def _generate_complete_singer_schemas(self) -> dict[str, t.ContainerValue]:
         """Generate complete Singer schemas for all entities."""
@@ -594,7 +592,7 @@ class CompleteMockPipeline:
         tap_records: list[dict[str, t.ContainerValue]],
         target_results: Mapping[str, t.ContainerValue],
         dbt_results: Mapping[str, t.ContainerValue],
-    ) -> FlextResult[str]:
+    ) -> r[str]:
         """Save complete pipeline results."""
         results_dir = Path("complete_pipeline_results")
         results_dir.mkdir(exist_ok=True)
@@ -680,13 +678,13 @@ class CompleteMockPipeline:
         summary_file = results_dir / f"pipeline_summary_{timestamp}.json"
         with summary_file.open("w", encoding="utf-8") as f:
             json.dump(pipeline_summary, f, indent=2, default=str)
-        return FlextResult[str].ok(str(results_dir))
+        return r[str].ok(str(results_dir))
 
 
 def main() -> None:
     """Main execution."""
     pipeline = CompleteMockPipeline()
-    result: FlextResult[dict[str, t.ContainerValue]] = pipeline.run_complete_pipeline()
+    result: r[dict[str, t.ContainerValue]] = pipeline.run_complete_pipeline()
     if result.is_success:
         pass
 

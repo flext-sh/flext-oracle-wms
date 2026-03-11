@@ -149,7 +149,7 @@ from flext_auth import FlextAuthenticator  # ✅ REQUIRED
 
 ### Error Handling Standards
 
-All operations must use FlextResult pattern:
+All operations must use r pattern:
 
 ```python
 from flext_core import FlextBus
@@ -167,19 +167,19 @@ from flext_core import FlextModels
 from flext_core import FlextProcessors
 from flext_core import p
 from flext_core import FlextRegistry
-from flext_core import FlextResult
+from flext_core import r
 from flext_core import FlextRuntime
 from flext_core import FlextService
 from flext_core import t
 from flext_core import u
 
 
-def operation() -> FlextResult[ReturnType]:
+def operation() -> r[ReturnType]:
     try:
         # Operation logic
-        return FlextResult.ok(result)
+        return r.ok(result)
     except Exception as e:
-        return FlextResult.fail(f"Operation failed: {e}")
+        return r.fail(f"Operation failed: {e}")
 ```
 
 ### Type Safety Requirements
@@ -207,7 +207,7 @@ tests/
 
 - **90%+ coverage** - Minimum coverage target
 - **Real integration preferred** - Minimize mocking
-- **FlextResult validation** - Test error handling
+- **r validation** - Test error handling
 - **Type safety testing** - Validate type annotations
 
 ### Current Test Limitations
@@ -279,7 +279,7 @@ make test                  # All tests must pass
 
 - [ ] **FLEXT compliance** - No httpx usage, unified classes
 - [ ] **Type safety** - Zero MyPy errors
-- [ ] **Error handling** - FlextResult patterns used
+- [ ] **Error handling** - r patterns used
 - [ ] **Test coverage** - New code has tests
 - [ ] **Documentation** - API changes documented
 

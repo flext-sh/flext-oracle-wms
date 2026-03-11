@@ -17,11 +17,12 @@ from typing import cast
 from urllib.parse import urlparse
 
 import pytest
-from flext_core import FlextLogger, FlextResult
+from flext_core import FlextLogger, r
 
 from flext_oracle_wms import (
     FLEXT_ORACLE_WMS_APIS,
     FlextOracleWmsClient,
+    FlextOracleWmsClientSettings,
     FlextOracleWmsConstants,
     t,
 )
@@ -412,7 +413,7 @@ class TestPerformanceIntegration:
         if not oracle_wms_client.config.use_mock:
             pytest.skip("Skipping concurrent test - requires mock server")
         entities = ["company", "facility", "item"]
-        results: list[FlextResult[object] | Exception] = []
+        results: list[r[object] | Exception] = []
         for entity in entities:
             try:
                 result = oracle_wms_client.get_entity_data(entity, limit=3)

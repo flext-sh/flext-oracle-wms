@@ -57,7 +57,7 @@ class FlextOracleWmsProtocols(FlextProtocols):
                 **params: Operation parameters
 
                 Returns:
-                FlextResult[dict[str, t.ContainerValue]]: Operation result or error
+                r[dict[str, t.ContainerValue]]: Operation result or error
 
                 """
                 ...

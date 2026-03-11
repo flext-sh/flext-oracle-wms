@@ -9,7 +9,7 @@ from __future__ import annotations
 from collections.abc import Mapping
 from enum import StrEnum
 
-from flext_core import FlextExceptions, FlextLogger, FlextResult
+from flext_core import FlextExceptions, FlextLogger, r
 
 from flext_oracle_wms.constants import FlextOracleWmsConstants
 from flext_oracle_wms.typings import OperatorFilter, t
@@ -77,7 +77,7 @@ class FlextOracleWmsFilter:
         field: str,
         value: t.Core.FilterScalar,
         operator: FilterOperator | None = None,
-    ) -> FlextResult[list[t.Core.FilterRecord]]:
+    ) -> r[list[t.Core.FilterRecord]]:
         """Filter records by one field using optional operator semantics."""
         engine = cls()
         filters: dict[str, FilterEntry]
@@ -94,10 +94,10 @@ class FlextOracleWmsFilter:
         id_field: str,
         min_id: t.Core.FilterScalar | None = None,
         max_id: t.Core.FilterScalar | None = None,
-    ) -> FlextResult[list[t.Core.FilterRecord]]:
+    ) -> r[list[t.Core.FilterRecord]]:
         """Filter records by inclusive identifier range."""
         if not records:
-            return FlextResult.ok([])
+            return r.ok([])
         filtered: list[t.Core.FilterRecord] = []
         for record in records:
             field_value = record.get(id_field)
@@ -108,7 +108,7 @@ class FlextOracleWmsFilter:
             if max_id is not None and (not cls._check_max(field_value, max_id)):
                 continue
             filtered.append(record)
-        return FlextResult.ok(filtered)
+        return r.ok(filtered)
 
     @staticmethod
     def _check_max(
@@ -168,10 +168,10 @@ class FlextOracleWmsFilter:
         records: list[t.Core.FilterRecord],
         filters: Mapping[str, FilterEntry],
         limit: int | None = None,
-    ) -> FlextResult[list[t.Core.FilterRecord]]:
+    ) -> r[list[t.Core.FilterRecord]]:
         """Filter records against field conditions and optional limit."""
         if (result := self._validate_filters(filters)).is_failure:
-            return FlextResult[list[t.Core.FilterRecord]].fail(
+            return r[list[t.Core.FilterRecord]].fail(
                 result.error or "Validation failed"
             )
         self.filters = filters
@@ -180,7 +180,7 @@ class FlextOracleWmsFilter:
         ]
         if limit is not None:
             filtered = filtered[:limit]
-        return FlextResult.ok(filtered)
+        return r.ok(filtered)
 
     def sort_records(
         self,
@@ -188,7 +188,7 @@ class FlextOracleWmsFilter:
         sort_field: str,
         *,
         ascending: bool = True,
-    ) -> FlextResult[list[t.Core.FilterRecord]]:
+    ) -> r[list[t.Core.FilterRecord]]:
         """Sort records by a dot-path field."""
         try:
 
@@ -196,10 +196,10 @@ class FlextOracleWmsFilter:
                 value = self._get_nested_value(record, sort_field)
                 return str(value if value is not None else "" if ascending else "zzz")
 
-            return FlextResult.ok(sorted(records, key=key_func, reverse=not ascending))
+            return r.ok(sorted(records, key=key_func, reverse=not ascending))
         except Exception as exc:
             self.logger.exception("Sort failed")
-            return FlextResult[list[t.Core.FilterRecord]].fail(f"Sort failed: {exc}")
+            return r[list[t.Core.FilterRecord]].fail(f"Sort failed: {exc}")
 
     def _apply_operator(
         self,
@@ -307,23 +307,21 @@ class FlextOracleWmsFilter:
 
     def _validate_filter_conditions_total(
         self, filters: Mapping[str, FilterEntry]
-    ) -> FlextResult[bool]:
+    ) -> r[bool]:
         total = sum(self._condition_size(value) for value in filters.values())
         if total > self.max_conditions:
-            return FlextResult[bool].fail(
+            return r[bool].fail(
                 f"Too many filter conditions: {total} > {self.max_conditions}"
             )
-        return FlextResult.ok(True)
+        return r.ok(True)
 
-    def _validate_filters(
-        self, filters: Mapping[str, FilterEntry]
-    ) -> FlextResult[bool]:
+    def _validate_filters(self, filters: Mapping[str, FilterEntry]) -> r[bool]:
         total = sum(self._condition_size(value) for value in filters.values())
         if total > self.max_conditions:
-            return FlextResult[bool].fail(
+            return r[bool].fail(
                 f"Too many conditions. Max: {self.max_conditions}, Got: {total}"
             )
-        return FlextResult.ok(True)
+        return r.ok(True)
 
 
 __all__ = ["FilterOperator", "FlextOracleWmsFilter", "OperatorFilter"]

@@ -12,7 +12,7 @@ from __future__ import annotations
 from unittest.mock import MagicMock
 
 import pytest
-from flext_core import FlextLogger, FlextResult
+from flext_core import FlextLogger, r
 
 from flext_oracle_wms import FlextOracleWmsClient, FlextOracleWmsSettings
 
@@ -99,9 +99,9 @@ class TestFlextOracleWmsClientCore:
         mock_response = MagicMock()
         mock_response.body = {"apis": [{"name": "test_api"}]}
         client._client = MagicMock()
-        client._client.request.return_value = FlextResult.ok(mock_response)
+        client._client.request.return_value = r.ok(mock_response)
         result = client.get_apis_by_category("inventory")
-        assert isinstance(result, FlextResult)
+        assert isinstance(result, r)
         assert result.is_success
 
     def test_health_check_delegates_to_get(
@@ -111,7 +111,7 @@ class TestFlextOracleWmsClientCore:
         mock_response = MagicMock()
         mock_response.body = {"status": "healthy"}
         client._client = MagicMock()
-        client._client.request.return_value = FlextResult.ok(mock_response)
+        client._client.request.return_value = r.ok(mock_response)
         result = client.health_check()
         assert result.is_success
         assert isinstance(result.value, dict)
@@ -123,7 +123,7 @@ class TestFlextOracleWmsClientCore:
         mock_response = MagicMock()
         mock_response.body = {"entities": ["company", "facility", "item"]}
         client._client = MagicMock()
-        client._client.request.return_value = FlextResult.ok(mock_response)
+        client._client.request.return_value = r.ok(mock_response)
         result = client.discover_entities()
         assert result.is_success
         assert isinstance(result.value, list)
@@ -134,7 +134,7 @@ class TestFlextOracleWmsClientCore:
     ) -> None:
         client = FlextOracleWmsClient(mock_config)
         client._client = MagicMock()
-        client._client.request.return_value = FlextResult.fail("Connection refused")
+        client._client.request.return_value = r.fail("Connection refused")
         result = client.discover_entities()
         assert result.is_failure
 
@@ -143,7 +143,7 @@ class TestFlextOracleWmsClientCore:
         mock_response = MagicMock()
         mock_response.body = {"data": [{"id": 1}, {"id": 2}]}
         client._client = MagicMock()
-        client._client.request.return_value = FlextResult.ok(mock_response)
+        client._client.request.return_value = r.ok(mock_response)
         result = client.get_entity_data("test_entity", limit=10)
         assert result.is_success
         assert result.value == [{"id": 1}, {"id": 2}]
@@ -151,7 +151,7 @@ class TestFlextOracleWmsClientCore:
     def test_get_entity_data_failure(self, mock_config: FlextOracleWmsSettings) -> None:
         client = FlextOracleWmsClient(mock_config)
         client._client = MagicMock()
-        client._client.request.return_value = FlextResult.fail("Not found")
+        client._client.request.return_value = r.fail("Not found")
         result = client.get_entity_data("test_entity")
         assert result.is_failure
 
@@ -160,14 +160,14 @@ class TestFlextOracleWmsClientCore:
         mock_response = MagicMock()
         mock_response.body = {"result": "ok"}
         client._client = MagicMock()
-        client._client.request.return_value = FlextResult.ok(mock_response)
+        client._client.request.return_value = r.ok(mock_response)
         result = client.call_api("test_api")
         assert result.is_success
 
     def test_call_api_failure(self, mock_config: FlextOracleWmsSettings) -> None:
         client = FlextOracleWmsClient(mock_config)
         client._client = MagicMock()
-        client._client.request.return_value = FlextResult.fail("API error")
+        client._client.request.return_value = r.fail("API error")
         result = client.call_api("test_api")
         assert result.is_failure
 

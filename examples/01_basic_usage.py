@@ -25,7 +25,7 @@ import os
 from pathlib import Path
 
 from dotenv import load_dotenv
-from flext_core import FlextContainer, FlextLogger, FlextResult, t
+from flext_core import FlextContainer, FlextLogger, r, t
 
 from flext_oracle_wms import (
     FlextOracleWmsClient,
@@ -59,14 +59,14 @@ def setup_client_config() -> None:
 
 def discover_wms_entities(
     client: FlextOracleWmsClient,
-) -> FlextResult[list[dict[str, t.ContainerValue]]]:
+) -> r[list[dict[str, t.ContainerValue]]]:
     """Discover available Oracle WMS entities.
 
     Args:
       client: Configured Oracle WMS client
 
     Returns:
-      FlextResult containing list of discovered entities or error details
+      r containing list of discovered entities or error details
 
     """
     result = client.discover_entities()
@@ -93,7 +93,7 @@ def discover_wms_entities(
 
 def query_entity_data(
     client: FlextOracleWmsClient, entity_name: str
-) -> FlextResult[list[dict[str, t.ContainerValue]]]:
+) -> r[list[dict[str, t.ContainerValue]]]:
     """Query data from a specific Oracle WMS entity.
 
     Args:
@@ -101,7 +101,7 @@ def query_entity_data(
       entity_name: Name of the entity to query
 
     Returns:
-      FlextResult containing entity data or error details
+      r containing entity data or error details
 
     """
     result = client.get_entity_data(entity_name=entity_name, limit=10)
@@ -135,7 +135,7 @@ def query_entity_data(
 
 
 def demonstrate_error_handling(client: FlextOracleWmsClient) -> None:
-    """Demonstrate proper error handling patterns with FlextResult."""
+    """Demonstrate proper error handling patterns with r."""
     result = client.get_entity_data("NON_EXISTENT_ENTITY")
     if (
         result.is_failure

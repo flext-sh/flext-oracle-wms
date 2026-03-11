@@ -22,17 +22,7 @@ from datetime import UTC, datetime
 from pathlib import Path
 from types import NoneType
 
-from beartype._cave._cavefast import NoneType
-from flext_core import FlextLogger, FlextResult, t
-from mypy.types import NoneType
-from psycopg.abc import NoneType
-from pydantic._internal._typing_extra import NoneType
-from pydantic.v1.typing import NoneType
-from sqlalchemy.util import NoneType
-from sqlalchemy.util.langhelpers import NoneType
-from sqlalchemy.util.typing import NoneType
-from typer._typing import NoneType
-from typer.models import NoneType
+from flext_core import FlextLogger, r, t
 
 from flext_oracle_wms import (
     FlextOracleWmsApiVersion,
@@ -94,22 +84,20 @@ class OptimizedOracleWmsDiscovery:
         self.high_value_entities = {}
         self.complete_schemas = {}
 
-    def start_discovery(self) -> FlextResult[bool]:
+    def start_discovery(self) -> r[bool]:
         """Start optimized discovery."""
         start_result = self.client.start()
         if not start_result.is_success:
-            return FlextResult[bool].fail(f"Client start failed: {start_result.error}")
-        return FlextResult[bool].ok(value=True)
+            return r[bool].fail(f"Client start failed: {start_result.error}")
+        return r[bool].ok(value=True)
 
     def discover_priority_entities_fast(
         self,
-    ) -> FlextResult[dict[str, t.ContainerValue]]:
+    ) -> r[dict[str, t.ContainerValue]]:
         """Fast discovery of priority entities with data."""
         entities_result = self.client.discover_entities()
         if not entities_result.is_success:
-            return FlextResult[bool].fail(
-                f"Entity discovery failed: {entities_result.error}"
-            )
+            return r[bool].fail(f"Entity discovery failed: {entities_result.error}")
         all_entities = entities_result.data
         available_priority = [e for e in all_entities if e in self.priority_entities]
         other_entities = [e for e in all_entities if e not in self.priority_entities]
@@ -140,7 +128,7 @@ class OptimizedOracleWmsDiscovery:
             for name, result in all_results.items()
             if result.get("has_data", False)
         }
-        return FlextResult[bool].ok({
+        return r[bool].ok({
             "total_processed": len(all_results),
             "entities_with_data": len(self.high_value_entities),
             "high_value_entities": list(self.high_value_entities.keys()),
@@ -256,10 +244,10 @@ class OptimizedOracleWmsDiscovery:
 
     def generate_complete_singer_schemas(
         self,
-    ) -> FlextResult[dict[str, t.ContainerValue]]:
+    ) -> r[dict[str, t.ContainerValue]]:
         """Generate complete Singer schemas for high-value entities."""
         if not self.high_value_entities:
-            return FlextResult[bool].fail(
+            return r[bool].fail(
                 "No high-value entities available for schema generation"
             )
         singer_schemas = {}
@@ -283,7 +271,7 @@ class OptimizedOracleWmsDiscovery:
                     pass
         self.complete_schemas = singer_schemas
         catalog = self._generate_singer_catalog(singer_schemas)
-        return FlextResult[bool].ok({
+        return r[bool].ok({
             "schemas_generated": len(singer_schemas),
             "schemas": singer_schemas,
             "singer_catalog": catalog,
@@ -481,7 +469,7 @@ class OptimizedOracleWmsDiscovery:
             streams.append(stream)
         return {"version": 1, "streams": streams}
 
-    def save_optimized_results(self) -> FlextResult[str]:
+    def save_optimized_results(self) -> r[str]:
         """Save optimized discovery results."""
         results_dir = Path("oracle_wms_optimized_results")
         asyncio.to_thread(results_dir.mkdir, exist_ok=True)
@@ -520,15 +508,15 @@ class OptimizedOracleWmsDiscovery:
             json.dump(summary, f, indent=2, default=str)
         if self.complete_schemas:
             pass
-        return FlextResult[bool].ok(str(results_dir))
+        return r[bool].ok(str(results_dir))
 
-    def cleanup(self) -> FlextResult[bool]:
+    def cleanup(self) -> r[bool]:
         """Clean up resources."""
         try:
             self.client.stop()
-            return FlextResult[bool].ok(value=True)
+            return r[bool].ok(value=True)
         except Exception as e:
-            return FlextResult[bool].fail(f"Cleanup failed: {e}")
+            return r[bool].fail(f"Cleanup failed: {e}")
 
 
 def run_optimized_discovery() -> None:

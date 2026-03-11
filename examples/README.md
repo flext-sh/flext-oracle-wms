@@ -231,7 +231,7 @@ make examples-test
 
 - **Professional English** throughout
 - **Working code** tested with Oracle WMS Cloud
-- **Comprehensive error handling** with FlextResult patterns
+- **Comprehensive error handling** with r patterns
 - **Clear documentation** explaining purpose and usage
 - **Security best practices** for credential management
 
