@@ -169,7 +169,7 @@ class FlextOracleWmsModels(FlextModels):
         """Validate entity name using domain rules."""
         if not name or len(name) > FlextOracleWmsModels.MAX_ENTITY_NAME_LENGTH:
             return r[str].fail("Invalid entity name")
-        return r.ok(name)
+        return r[str].ok(name)
 
     # =========================================================================
     # AGGREGATE ROOTS - Consistency boundaries
@@ -194,7 +194,7 @@ class FlextOracleWmsModels(FlextModels):
             if any(i.sku == item.sku for i in self.inventory):
                 return r[bool].fail("SKU already exists")
             self.inventory.append(item)
-            return r.ok(True)
+            return r[bool].ok(True)
 
 
 __all__ = ["FlextOracleWmsModels"]

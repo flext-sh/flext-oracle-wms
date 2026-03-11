@@ -18,7 +18,7 @@ class _ConcreteWmsApi(FlextOracleWmsApi):
 
     def execute(self) -> r[None]:
         """No-op execute for tests."""
-        return r.ok(None)
+        return r[None].ok(None)
 
 
 class TestFlextOracleWmsApi:

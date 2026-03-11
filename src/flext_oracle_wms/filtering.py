@@ -97,7 +97,7 @@ class FlextOracleWmsFilter:
     ) -> r[list[t.Core.FilterRecord]]:
         """Filter records by inclusive identifier range."""
         if not records:
-            return r.ok([])
+            return r[list[t.Core.FilterRecord]].ok([])
         filtered: list[t.Core.FilterRecord] = []
         for record in records:
             field_value = record.get(id_field)
@@ -108,7 +108,7 @@ class FlextOracleWmsFilter:
             if max_id is not None and (not cls._check_max(field_value, max_id)):
                 continue
             filtered.append(record)
-        return r.ok(filtered)
+        return r[list[t.Core.FilterRecord]].ok(filtered)
 
     @staticmethod
     def _check_max(
@@ -180,7 +180,7 @@ class FlextOracleWmsFilter:
         ]
         if limit is not None:
             filtered = filtered[:limit]
-        return r.ok(filtered)
+        return r[list[t.Core.FilterRecord]].ok(filtered)
 
     def sort_records(
         self,
@@ -196,7 +196,9 @@ class FlextOracleWmsFilter:
                 value = self._get_nested_value(record, sort_field)
                 return str(value if value is not None else "" if ascending else "zzz")
 
-            return r.ok(sorted(records, key=key_func, reverse=not ascending))
+            return r[list[t.Core.FilterRecord]].ok(
+                sorted(records, key=key_func, reverse=not ascending)
+            )
         except Exception as exc:
             self.logger.exception("Sort failed")
             return r[list[t.Core.FilterRecord]].fail(f"Sort failed: {exc}")
@@ -313,7 +315,7 @@ class FlextOracleWmsFilter:
             return r[bool].fail(
                 f"Too many filter conditions: {total} > {self.max_conditions}"
             )
-        return r.ok(True)
+        return r[bool].ok(True)
 
     def _validate_filters(self, filters: Mapping[str, FilterEntry]) -> r[bool]:
         total = sum(self._condition_size(value) for value in filters.values())
@@ -321,7 +323,7 @@ class FlextOracleWmsFilter:
             return r[bool].fail(
                 f"Too many conditions. Max: {self.max_conditions}, Got: {total}"
             )
-        return r.ok(True)
+        return r[bool].ok(True)
 
 
 __all__ = ["FilterOperator", "FlextOracleWmsFilter", "OperatorFilter"]

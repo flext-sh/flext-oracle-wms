@@ -40,7 +40,7 @@ class FlextOracleWmsApi(FlextService[None]):
     @override
     def execute(self) -> r[None]:
         """Execute Oracle WMS operations."""
-        return r.ok(None)
+        return r[None].ok(None)
 
 
 __all__ = ["FlextOracleWmsApi"]
