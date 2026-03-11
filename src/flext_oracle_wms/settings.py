@@ -9,13 +9,14 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 from flext_core import FlextSettings
-from pydantic import ConfigDict, Field
+from pydantic import Field
+from pydantic_settings import SettingsConfigDict
 
 
 class FlextOracleWmsSettings(FlextSettings):
     """Runtime settings for Oracle WMS client."""
 
-    model_config = ConfigDict(extra="ignore")
+    model_config = SettingsConfigDict(extra="ignore")
 
     base_url: str = Field(default="http://localhost:8080", min_length=1)
     timeout: float = Field(default=30.0, ge=1.0, le=300.0)

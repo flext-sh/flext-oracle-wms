@@ -80,6 +80,7 @@ class FlextOracleWmsFilter:
     ) -> FlextResult[list[t.Core.FilterRecord]]:
         """Filter records by one field using optional operator semantics."""
         engine = cls()
+        filters: dict[str, FilterEntry]
         if operator is None:
             filters = {field: value}
         else:
@@ -245,11 +246,17 @@ class FlextOracleWmsFilter:
 
     def _get_nested_value(
         self, record: t.Core.FilterRecord, field: str
-    ) -> t.Core.FilterRecordValue | None:
+    ) -> t.Core.NestedFilterValue | None:
         keys = field.split(".")
-        current: t.Core.FilterRecordValue | Mapping[str, t.Core.FilterRecordValue] = (
-            record
-        )
+        current: (
+            t.Core.NestedFilterValue
+            | Mapping[
+                str,
+                t.Core.FilterScalar
+                | t.Core.FilterList
+                | Mapping[str, t.Core.FilterScalar | t.Core.FilterList],
+            ]
+        ) = record
         for key in keys:
             match current:
                 case dict() as mapping:
@@ -259,6 +266,8 @@ class FlextOracleWmsFilter:
                     current = next_value
                 case _:
                     return None
+        if isinstance(current, dict):
+            return None
         return current
 
     def _matches_all_filters(

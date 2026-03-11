@@ -67,9 +67,31 @@ class FlextOracleWmsTypes(FlextTypes):
         type FilterScalar = t.Scalar | None
         type FilterList = list[t.Core.FilterScalar]
         type FilterRecordValue = (
-            t.Core.FilterScalar | t.Core.FilterList | Mapping[str, FilterRecordValue]
+            t.Core.FilterScalar
+            | t.Core.FilterList
+            | Mapping[
+                str,
+                t.Core.FilterScalar
+                | t.Core.FilterList
+                | Mapping[str, t.Core.FilterScalar | t.Core.FilterList],
+            ]
         )
-        type FilterRecord = Mapping[str, t.Core.FilterRecordValue]
+        type FilterRecord = Mapping[
+            str,
+            t.Core.FilterScalar
+            | t.Core.FilterList
+            | Mapping[str, t.Core.FilterScalar | t.Core.FilterList],
+        ]
+        type NestedFilterValue = (
+            t.Core.FilterScalar
+            | t.Core.FilterList
+            | Mapping[
+                str,
+                t.Core.FilterScalar
+                | t.Core.FilterList
+                | Mapping[str, t.Core.FilterScalar | t.Core.FilterList],
+            ]
+        )
 
 
 t = FlextOracleWmsTypes
