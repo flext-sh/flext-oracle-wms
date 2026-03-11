@@ -51,7 +51,7 @@ def load_env_config() -> dict[str, t.ContainerValue] | None:
     env_path = find_env_file()
     if not env_path:
         return None
-    config = {}
+    config: dict[str, str] = {}
     try:
         with Path(env_path).open(encoding="utf-8") as f:
             for raw_line in f:

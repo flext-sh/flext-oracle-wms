@@ -380,8 +380,8 @@ class OracleWmsCompleteDiscovery:
                 return FlextResult[bool].fail("Entity discovery failed")
         metadata_results = {}
         entities_with_data = []
-        entities_without_data = []
-        entities_with_errors = []
+        entities_without_data: list[str] = []
+        entities_with_errors: list[tuple[str, str]] = []
         for i, entity_name in enumerate(self.discovered_entities):
             if i % 50 == 0:
                 pass

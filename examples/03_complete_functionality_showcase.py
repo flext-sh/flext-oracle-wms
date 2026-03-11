@@ -34,7 +34,9 @@ import traceback
 from pathlib import Path
 
 from dotenv import load_dotenv
-from flext_core import FlextLogger, t
+from flext_core import FlextLogger, FlextResult, t
+from flext_core.result import FlextResult
+from src.flext_core.result import FlextResult
 
 from flext_oracle_wms import (
     FLEXT_ORACLE_WMS_APIS,
@@ -239,7 +241,7 @@ def showcase_8_performance_tracking(
     if len(entities) >= min_entities_for_concurrent_test:
         test_entities = entities[:min_entities_for_concurrent_test]
         start_time = time.time()
-        results = []
+        results: list[FlextResult[list[dict[str, str]]]] = []
         for entity in test_entities:
             result = client.get_entity_data(entity, limit=2)
             results.append(result)

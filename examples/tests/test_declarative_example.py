@@ -26,7 +26,7 @@ def load_env_config() -> dict[str, t.ContainerValue] | None:
     env_path = Path("flext-tap-oracle-wms/.env")
     if not env_path.exists():
         return None
-    config = {}
+    config: dict[str, str] = {}
     with env_path.open(encoding="utf-8") as f:
         for line in f:
             stripped_line = line.strip()

@@ -405,7 +405,7 @@ class CompleteMockPipeline:
         self, schemas: Mapping[str, t.ContainerValue]
     ) -> dict[str, t.ContainerValue]:
         """Create complete Singer catalog for Meltano integration."""
-        streams = []
+        streams: list[dict[str, object]] = []
         for entity_name, schema in schemas.items():
             if not isinstance(schema, dict):
                 continue
@@ -503,7 +503,7 @@ class CompleteMockPipeline:
         self, target_results: Mapping[str, t.ContainerValue]
     ) -> dict[str, t.ContainerValue]:
         """Simulate DBT transformation process."""
-        dbt_results = {}
+        dbt_results: dict[str, dict[str, int | list[str] | str]] = {}
         business_models = {
             "dim_company": {
                 "source_tables": ["raw_oracle_wms_company"],

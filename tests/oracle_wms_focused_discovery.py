@@ -12,8 +12,19 @@ import json
 from collections.abc import Mapping
 from datetime import UTC, datetime
 from pathlib import Path
+from types import NoneType
 
+from beartype._cave._cavefast import NoneType
 from flext_core import FlextLogger, FlextResult, t
+from mypy.types import NoneType
+from psycopg.abc import NoneType
+from pydantic._internal._typing_extra import NoneType
+from pydantic.v1.typing import NoneType
+from sqlalchemy.util import NoneType
+from sqlalchemy.util.langhelpers import NoneType
+from sqlalchemy.util.typing import NoneType
+from typer._typing import NoneType
+from typer.models import NoneType
 
 from flext_oracle_wms import (
     FlextOracleWmsApiVersion,
@@ -200,7 +211,7 @@ class FocusedOracleWmsDiscovery:
         self, record: Mapping[str, t.ContainerValue]
     ) -> dict[str, t.ContainerValue]:
         """Create safe sample record."""
-        safe = {}
+        safe: dict[str, NoneType | bool | float | int | str] = {}
         for k, v in list(record.items())[:10]:
             if isinstance(v, (str, int, float, bool, type(None))):
                 if (isinstance(v, str) and len(v) < 50) or not isinstance(v, str):
