@@ -23,7 +23,6 @@ from flext_oracle_wms import (
     FlextOracleWmsClient,
     FlextOracleWmsClientSettings,
     FlextOracleWmsConstants,
-    t,
 )
 
 FlextOracleWmsApiVersion = FlextOracleWmsConstants.WmsApiVersion
@@ -31,7 +30,7 @@ FlextOracleWmsApiCategory = FlextOracleWmsConstants.WmsApiCategory
 logger = FlextLogger(__name__)
 
 
-def _to_str(value: t.ContainerValue | None, default: str) -> str:
+def _to_str(value: object | None, default: str) -> str:
     if isinstance(value, str):
         return value
     if isinstance(value, int | float):
@@ -39,7 +38,7 @@ def _to_str(value: t.ContainerValue | None, default: str) -> str:
     return default
 
 
-def _to_int(value: t.ContainerValue | None, default: int) -> int:
+def _to_int(value: object | None, default: int) -> int:
     if isinstance(value, int | float):
         return int(value)
     if isinstance(value, str):
@@ -50,14 +49,14 @@ def _to_int(value: t.ContainerValue | None, default: int) -> int:
     return default
 
 
-def _to_bool(value: t.ContainerValue | None, default: bool) -> bool:
+def _to_bool(value: object | None, default: bool) -> bool:
     if value is None:
         return default
     return bool(value)
 
 
 def _build_client_settings(
-    env_config: Mapping[str, t.ContainerValue],
+    env_config: Mapping[str, object],
     api_version: str,
 ) -> FlextOracleWmsClientSettings:
     return FlextOracleWmsClientSettings(
@@ -96,7 +95,7 @@ def find_env_file() -> Path | None:
     return None
 
 
-def load_env_config() -> dict[str, t.ContainerValue] | None:
+def load_env_config() -> dict[str, object] | None:
     """Load Oracle WMS configuration from .env file."""
     env_path = find_env_file()
     if not env_path:
@@ -149,7 +148,7 @@ def load_env_config() -> dict[str, t.ContainerValue] | None:
 
 
 @pytest.fixture
-def env_config() -> dict[str, t.ContainerValue]:
+def env_config() -> dict[str, object]:
     """Fixture that provides .env configuration or skips test."""
     config = load_env_config()
     if not config or not all([
@@ -163,7 +162,7 @@ def env_config() -> dict[str, t.ContainerValue]:
 
 @pytest.fixture
 def oracle_wms_client(
-    env_config: Mapping[str, t.ContainerValue],
+    env_config: Mapping[str, object],
 ) -> Generator[FlextOracleWmsClient]:
     """Fixture that provides configured Oracle WMS client."""
     config = _build_client_settings(env_config, "LGF_V10")
@@ -193,7 +192,7 @@ class TestOracleWmsDeclarativeIntegration:
         assert len(versions) >= 1
 
     def test_client_configuration_and_lifecycle(
-        self, env_config: Mapping[str, t.ContainerValue]
+        self, env_config: Mapping[str, object]
     ) -> None:
         """Test client configuration and initialization."""
         config = _build_client_settings(env_config, FlextOracleWmsApiVersion.V1)

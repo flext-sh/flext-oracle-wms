@@ -34,7 +34,7 @@ import traceback
 from pathlib import Path
 
 from dotenv import load_dotenv
-from flext_core import FlextLogger, r, t
+from flext_core import FlextLogger, r
 
 from flext_oracle_wms import (
     FLEXT_ORACLE_WMS_APIS,
@@ -123,9 +123,9 @@ def showcase_2_entity_discovery(client: FlextOracleWmsClient) -> list[str]:
 
 def showcase_3_data_retrieval(
     client: FlextOracleWmsClient, entities: list[str]
-) -> dict[str, t.ContainerValue]:
+) -> dict[str, object]:
     """Feature 3: Data Retrieval and Querying."""
-    sample_data: dict[str, t.ContainerValue] = {}
+    sample_data: dict[str, object] = {}
     test_entities = ["company", "facility", "item"]
     for entity_name in test_entities:
         if entity_name not in entities:

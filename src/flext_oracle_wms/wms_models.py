@@ -6,7 +6,7 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from flext_core import FlextModels, t
+from flext_core import FlextModels
 
 
 class FlextOracleWmsModels(FlextModels):
@@ -15,7 +15,7 @@ class FlextOracleWmsModels(FlextModels):
     Access via m.OracleWms.Entity, m.OracleWms.ApiResponse after inheritance.
     """
 
-    def __init_subclass__(cls, **kwargs: t.ContainerValue) -> None:
+    def __init_subclass__(cls, **kwargs: object) -> None:
         """Allow downstream projects to inherit FlextOracleWmsModels for namespace composition."""
         super().__init_subclass__(**kwargs)
 

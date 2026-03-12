@@ -14,7 +14,7 @@ from datetime import UTC, datetime
 from pathlib import Path
 from types import NoneType
 
-from flext_core import FlextLogger, r, t
+from flext_core import FlextLogger, r
 
 from flext_oracle_wms import (
     FlextOracleWmsApiVersion,
@@ -67,7 +67,7 @@ class FocusedOracleWmsDiscovery:
         self.entities_with_data = {}
         self.complete_schemas = {}
 
-    def execute_focused_discovery(self) -> r[dict[str, t.ContainerValue]]:
+    def execute_focused_discovery(self) -> r[dict[str, object]]:
         """Execute complete focused discovery."""
         try:
             self.client.start()
@@ -119,7 +119,7 @@ class FocusedOracleWmsDiscovery:
         finally:
             self.client.stop()
 
-    def _quick_data_scan(self, entities: list[str]) -> dict[str, t.ContainerValue]:
+    def _quick_data_scan(self, entities: list[str]) -> dict[str, object]:
         """Quick scan to find entities with actual data."""
         data_entities = {}
         for entity_name in entities:
@@ -168,9 +168,7 @@ class FocusedOracleWmsDiscovery:
                 logger.debug("Failed to process entity %s", entity_name)
         return data_entities
 
-    def _get_entity_structures(
-        self, entities: list[str]
-    ) -> dict[str, t.ContainerValue]:
+    def _get_entity_structures(self, entities: list[str]) -> dict[str, object]:
         """Get entity structures even without data."""
         structures = {}
         for entity_name in entities:
@@ -195,9 +193,7 @@ class FocusedOracleWmsDiscovery:
                 logger.debug("Failed to get structure for entity %s", entity_name)
         return structures
 
-    def _safe_sample(
-        self, record: Mapping[str, t.ContainerValue]
-    ) -> dict[str, t.ContainerValue]:
+    def _safe_sample(self, record: Mapping[str, object]) -> dict[str, object]:
         """Create safe sample record."""
         safe: dict[str, NoneType | bool | float | int | str] = {}
         for k, v in list(record.items())[:10]:
@@ -211,8 +207,8 @@ class FocusedOracleWmsDiscovery:
         return safe
 
     def _generate_schemas_from_data(
-        self, data_entities: Mapping[str, t.ContainerValue]
-    ) -> dict[str, t.ContainerValue]:
+        self, data_entities: Mapping[str, object]
+    ) -> dict[str, object]:
         """Generate Singer schemas from entities with data."""
         schemas = {}
         for entity_name, entity_data in data_entities.items():
@@ -222,8 +218,8 @@ class FocusedOracleWmsDiscovery:
         return schemas
 
     def _generate_schemas_from_structures(
-        self, structure_entities: Mapping[str, t.ContainerValue]
-    ) -> dict[str, t.ContainerValue]:
+        self, structure_entities: Mapping[str, object]
+    ) -> dict[str, object]:
         """Generate Singer schemas from structures."""
         schemas = {}
         for entity_name, structure_data in structure_entities.items():
@@ -233,8 +229,8 @@ class FocusedOracleWmsDiscovery:
         return schemas
 
     def _create_singer_schema(
-        self, entity_name: str, entity_data: Mapping[str, t.ContainerValue]
-    ) -> dict[str, t.ContainerValue] | None:
+        self, entity_name: str, entity_data: Mapping[str, object]
+    ) -> dict[str, object] | None:
         """Create Singer schema with proper Oracle WMS typing."""
         try:
             fields = entity_data.get("sample_fields", entity_data.get("fields", []))
@@ -268,7 +264,7 @@ class FocusedOracleWmsDiscovery:
 
     def _oracle_field_to_singer_type(
         self, field_name: str, sample_value: object, entity_name: str
-    ) -> dict[str, t.ContainerValue]:
+    ) -> dict[str, object]:
         """Convert Oracle WMS field to Singer type with context."""
         if sample_value is not None:
             if isinstance(sample_value, bool):
@@ -394,7 +390,7 @@ class FocusedOracleWmsDiscovery:
             json.dump(summary, f, indent=2, default=str)
         return r[bool].ok(str(results_dir))
 
-    def _create_singer_catalog(self) -> dict[str, t.ContainerValue]:
+    def _create_singer_catalog(self) -> dict[str, object]:
         """Create Singer catalog."""
         streams = []
         for entity_name, schema in self.complete_schemas.items():

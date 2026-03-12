@@ -70,7 +70,7 @@ class FlextOracleWmsClient:
 
     @staticmethod
     def _decode_response_model[T: BaseModel](
-        payload: t.ContainerValue, model_type: type[T]
+        payload: object, model_type: type[T]
     ) -> r[T]:
         match payload:
             case dict() as data:

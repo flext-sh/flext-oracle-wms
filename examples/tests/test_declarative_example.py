@@ -15,13 +15,12 @@ from flext_oracle_wms import (
     FlextOracleWmsApiVersion,
     FlextOracleWmsClient,
     FlextOracleWmsClientSettings,
-    t,
 )
 
 logger = FlextLogger(__name__)
 
 
-def load_env_config() -> dict[str, t.ContainerValue] | None:
+def load_env_config() -> dict[str, object] | None:
     """Load configuration from .env file."""
     env_path = Path("flext-tap-oracle-wms/.env")
     if not env_path.exists():

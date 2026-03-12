@@ -19,7 +19,7 @@ from collections.abc import Mapping
 from datetime import UTC, datetime
 from pathlib import Path
 
-from flext_core import FlextLogger, r, t
+from flext_core import FlextLogger, r
 from pydantic import ConfigDict
 
 from flext_oracle_wms import (
@@ -56,8 +56,8 @@ class OracleWmsCompleteDiscovery:
             self.config, mock_mode=False
         )
         self.discovered_entities: list[str] = []
-        self.entity_metadata: dict[str, t.ContainerValue] = {}
-        self.complete_schemas: dict[str, t.ContainerValue] = {}
+        self.entity_metadata: dict[str, object] = {}
+        self.complete_schemas: dict[str, object] = {}
 
     def start_discovery(self) -> r[bool]:
         """Start complete discovery process."""
@@ -299,7 +299,7 @@ class OracleWmsCompleteDiscovery:
         entities_with_data: list[str],
         entities_without_data: list[str],
         entities_with_errors: list[tuple[str, str]],
-        metadata_results: dict[str, t.ContainerValue],
+        metadata_results: dict[str, object],
     ) -> None:
         """Process metadata for a single entity."""
         try:
@@ -324,7 +324,7 @@ class OracleWmsCompleteDiscovery:
 
     def _create_metadata_info(
         self, entity_name: str, count: int, results: object
-    ) -> dict[str, t.ContainerValue]:
+    ) -> dict[str, object]:
         """Create metadata info dict for an entity."""
         metadata_info = {
             "entity_name": entity_name,
@@ -362,7 +362,7 @@ class OracleWmsCompleteDiscovery:
 
     def discover_complete_entity_metadata(
         self,
-    ) -> r[dict[str, t.ContainerValue]]:
+    ) -> r[dict[str, object]]:
         """Discover complete metadata for all entities using Oracle WMS APIs."""
         if not self.discovered_entities:
             entities_result = self.client.discover_entities()
@@ -406,7 +406,7 @@ class OracleWmsCompleteDiscovery:
 
     def generate_singer_schemas_with_flattening(
         self,
-    ) -> r[dict[str, t.ContainerValue]]:
+    ) -> r[dict[str, object]]:
         """Generate Singer schemas with real data flattening based on Oracle metadata."""
         if not self.entity_metadata:
             return r[bool].fail("No entity metadata available for schema generation")
@@ -425,8 +425,8 @@ class OracleWmsCompleteDiscovery:
         return r[bool].ok(singer_schemas)
 
     def _generate_singer_schema_from_metadata(
-        self, entity_name: str, metadata: Mapping[str, t.ContainerValue]
-    ) -> dict[str, t.ContainerValue] | None:
+        self, entity_name: str, metadata: Mapping[str, object]
+    ) -> dict[str, object] | None:
         """Generate Singer schema from Oracle WMS metadata with flattening."""
         try:
             fields = metadata.get("fields", [])
@@ -451,7 +451,7 @@ class OracleWmsCompleteDiscovery:
 
     def _map_to_singer_type(
         self, python_type: str, sample_value: object, field_name: str
-    ) -> dict[str, t.ContainerValue]:
+    ) -> dict[str, object]:
         """Map Oracle/Python types to Singer types based on real data."""
         if sample_value is not None:
             if isinstance(sample_value, bool):
