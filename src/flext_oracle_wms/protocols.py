@@ -9,7 +9,7 @@ from __future__ import annotations
 from collections.abc import Mapping
 from typing import Protocol, runtime_checkable
 
-from flext_core import FlextProtocols
+from flext_core import FlextProtocols, t
 
 
 class FlextOracleWmsProtocols(FlextProtocols):
@@ -45,7 +45,7 @@ class FlextOracleWmsProtocols(FlextProtocols):
                 self,
                 operation: str,
                 config: Mapping[str, object],
-                **params: object,
+                **params: t.Scalar,
             ) -> FlextProtocols.Result[object]:
                 """Execute WMS operation with unified interface.
 

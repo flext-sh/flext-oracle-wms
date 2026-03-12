@@ -25,7 +25,7 @@ class FlextOracleWmsModels(FlextModels):
     Generic for any WMS system.
     """
 
-    def __init_subclass__(cls, **kwargs: object) -> None:
+    def __init_subclass__(cls, **kwargs: t.Scalar) -> None:
         """Allow downstream projects to inherit FlextOracleWmsModels for namespace composition."""
         super().__init_subclass__(**kwargs)
 
