@@ -11,8 +11,6 @@ from typing import Protocol, runtime_checkable
 
 from flext_core import FlextProtocols
 
-from flext_oracle_wms.typings import t
-
 
 class FlextOracleWmsProtocols(FlextProtocols):
     """Oracle WMS protocols extending FlextProtocols.
