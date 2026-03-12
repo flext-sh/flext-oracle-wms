@@ -13,7 +13,6 @@ from __future__ import annotations
 
 from collections.abc import Generator, Mapping
 from pathlib import Path
-from typing import cast
 from urllib.parse import urlparse
 
 import pytest
@@ -30,6 +29,56 @@ from flext_oracle_wms import (
 FlextOracleWmsApiVersion = FlextOracleWmsConstants.WmsApiVersion
 FlextOracleWmsApiCategory = FlextOracleWmsConstants.WmsApiCategory
 logger = FlextLogger(__name__)
+
+
+def _to_str(value: t.ContainerValue | None, default: str) -> str:
+    if isinstance(value, str):
+        return value
+    if isinstance(value, int | float):
+        return str(value)
+    return default
+
+
+def _to_int(value: t.ContainerValue | None, default: int) -> int:
+    if isinstance(value, int | float):
+        return int(value)
+    if isinstance(value, str):
+        try:
+            return int(value)
+        except ValueError:
+            return default
+    return default
+
+
+def _to_bool(value: t.ContainerValue | None, default: bool) -> bool:
+    if value is None:
+        return default
+    return bool(value)
+
+
+def _build_client_settings(
+    env_config: Mapping[str, t.ContainerValue],
+    api_version: str,
+) -> FlextOracleWmsClientSettings:
+    return FlextOracleWmsClientSettings(
+        base_url=_to_str(env_config.get("base_url", ""), ""),
+        username=_to_str(env_config.get("username", ""), ""),
+        password=_to_str(env_config.get("password", ""), ""),
+        api_version=api_version,
+        auth_method=_to_str(env_config.get("auth_method", "BASIC"), "BASIC"),
+        timeout=_to_int(env_config.get("timeout", 30), 30),
+        max_retries=_to_int(env_config.get("max_retries", 3), 3),
+        verify_ssl=_to_bool(env_config.get("verify_ssl", True), True),
+        enable_logging=_to_bool(env_config.get("enable_logging", True), True),
+        use_mock=_to_bool(env_config.get("use_mock"), False),
+        connection_pool_size=_to_int(env_config.get("connection_pool_size", 20), 20),
+        cache_duration=_to_int(env_config.get("cache_duration", 3600), 3600),
+        project_name=_to_str(
+            env_config.get("project_name", "flext-oracle-wms"),
+            "flext-oracle-wms",
+        ),
+        project_version=_to_str(env_config.get("project_version", "0.9.0"), "0.9.0"),
+    )
 
 
 def find_env_file() -> Path | None:
@@ -95,7 +144,7 @@ def load_env_config() -> dict[str, t.ContainerValue] | None:
             == "true",
         }
     except Exception as e:
-        logger.warning("Failed to load .env config: %s", e)
+        logger.warning(f"Failed to load .env config: {e}")
         return None
 
 
@@ -117,40 +166,7 @@ def oracle_wms_client(
     env_config: Mapping[str, t.ContainerValue],
 ) -> Generator[FlextOracleWmsClient]:
     """Fixture that provides configured Oracle WMS client."""
-    config_kwargs = {
-        "base_url": str(
-            cast("str | int | float", env_config.get("base_url", "")) or ""
-        ),
-        "username": str(
-            cast("str | int | float", env_config.get("username", "")) or ""
-        ),
-        "password": env_config.get("password", ""),
-        "api_version": env_config.get("api_version", "LGF_V10"),
-        "auth_method": env_config.get("auth_method", "BASIC"),
-        "timeout": int(cast("int | float", env_config.get("timeout", 30)) or 0),
-        "max_retries": int(cast("int | float", env_config.get("max_retries", 3)) or 0),
-        "verify_ssl": bool(cast("bool | str", env_config.get("verify_ssl", True))),
-        "enable_logging": bool(
-            cast("bool | str", env_config.get("enable_logging", True))
-        ),
-        "use_mock": bool(cast("bool | str", env_config.get("use_mock"))),
-        "connection_pool_size": int(
-            cast("int | float", env_config.get("connection_pool_size", 20)) or 0
-        ),
-        "cache_duration": int(
-            cast("int | float", env_config.get("cache_duration", 3600)) or 0
-        ),
-        "project_name": str(
-            cast(
-                "str | int | float", env_config.get("project_name", "flext-oracle-wms")
-            )
-            or ""
-        ),
-        "project_version": str(
-            cast("str | int | float", env_config.get("project_version", "0.9.0")) or ""
-        ),
-    }
-    config = FlextOracleWmsClientSettings(**config_kwargs)
+    config = _build_client_settings(env_config, "LGF_V10")
     client = FlextOracleWmsClient(config)
     start_result = client.start()
     if not start_result.is_success:
@@ -180,44 +196,7 @@ class TestOracleWmsDeclarativeIntegration:
         self, env_config: Mapping[str, t.ContainerValue]
     ) -> None:
         """Test client configuration and initialization."""
-        config_kwargs = {
-            "base_url": str(
-                cast("str | int | float", env_config.get("base_url", "")) or ""
-            ),
-            "username": str(
-                cast("str | int | float", env_config.get("username", "")) or ""
-            ),
-            "password": env_config.get("password", ""),
-            "api_version": env_config.get("api_version", FlextOracleWmsApiVersion.V1),
-            "auth_method": env_config.get("auth_method", "BASIC"),
-            "timeout": int(cast("int | float", env_config.get("timeout", 30)) or 0),
-            "max_retries": int(
-                cast("int | float", env_config.get("max_retries", 3)) or 0
-            ),
-            "verify_ssl": bool(cast("bool | str", env_config.get("verify_ssl", True))),
-            "enable_logging": bool(
-                cast("bool | str", env_config.get("enable_logging", True))
-            ),
-            "use_mock": bool(cast("bool | str", env_config.get("use_mock"))),
-            "connection_pool_size": int(
-                cast("int | float", env_config.get("connection_pool_size", 20)) or 0
-            ),
-            "cache_duration": int(
-                cast("int | float", env_config.get("cache_duration", 3600)) or 0
-            ),
-            "project_name": str(
-                cast(
-                    "str | int | float",
-                    env_config.get("project_name", "flext-oracle-wms"),
-                )
-                or ""
-            ),
-            "project_version": str(
-                cast("str | int | float", env_config.get("project_version", "0.9.0"))
-                or ""
-            ),
-        }
-        config = FlextOracleWmsClientSettings(**config_kwargs)
+        config = _build_client_settings(env_config, FlextOracleWmsApiVersion.V1)
         assert config.base_url.startswith("https://")
         assert config.username
         assert config.password

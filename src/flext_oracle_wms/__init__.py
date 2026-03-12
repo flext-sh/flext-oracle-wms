@@ -42,7 +42,10 @@ if TYPE_CHECKING:
     )
     from flext_oracle_wms.http_client import FlextHttpClient, create_flext_http_client
     from flext_oracle_wms.protocols import FlextOracleWmsProtocols, p
-    from flext_oracle_wms.settings import FlextOracleWmsSettings
+    from flext_oracle_wms.settings import (
+        FlextOracleWmsClientSettings,
+        FlextOracleWmsSettings,
+    )
     from flext_oracle_wms.typings import FlextOracleWmsTypes, t
     from flext_oracle_wms.utilities import FlextOracleWmsUtilities, u
     from flext_oracle_wms.wms_api import FLEXT_ORACLE_WMS_APIS, FlextOracleWmsApi
@@ -105,6 +108,10 @@ _LAZY_IMPORTS: dict[str, tuple[str, str]] = {
         "FlextOracleWmsAuthenticator",
     ),
     "FlextOracleWmsClient": ("flext_oracle_wms.wms_client", "FlextOracleWmsClient"),
+    "FlextOracleWmsClientSettings": (
+        "flext_oracle_wms.settings",
+        "FlextOracleWmsClientSettings",
+    ),
     "FlextOracleWmsConnectionError": (
         "flext_oracle_wms.wms_exceptions",
         "FlextOracleWmsConnectionError",
@@ -213,6 +220,7 @@ __all__ = [
     "FlextOracleWmsAuthenticationError",
     "FlextOracleWmsAuthenticator",
     "FlextOracleWmsClient",
+    "FlextOracleWmsClientSettings",
     "FlextOracleWmsConnectionError",
     "FlextOracleWmsConstants",
     "FlextOracleWmsDataValidationError",
@@ -258,7 +266,8 @@ __all__ = [
 
 def __getattr__(name: str) -> Any:
     """Lazy-load module attributes on first access (PEP 562)."""
-    return lazy_getattr(name, _LAZY_IMPORTS, globals(), __name__)
+    value: Any = lazy_getattr(name, _LAZY_IMPORTS, globals(), __name__)
+    return value
 
 
 def __dir__() -> list[str]:

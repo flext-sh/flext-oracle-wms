@@ -27,4 +27,25 @@ class FlextOracleWmsSettings(FlextSettings):
         return cls(base_url="http://localhost:8080", timeout=30.0)
 
 
-__all__ = ["FlextOracleWmsSettings"]
+class FlextOracleWmsClientSettings(FlextOracleWmsSettings):
+    """Settings contract consumed by FlextOracleWmsClient."""
+
+    model_config = SettingsConfigDict(extra="ignore")
+
+    base_url: str = Field(default="")
+    username: str = Field(default="")
+    password: str = Field(default="")
+    api_version: str = Field(default="LGF_V10")
+    auth_method: str = Field(default="BASIC")
+    timeout: float = Field(default=30.0, ge=1.0)
+    max_retries: int = Field(default=3, ge=0)
+    verify_ssl: bool = Field(default=True)
+    enable_logging: bool = Field(default=False)
+    use_mock: bool = Field(default=False)
+    connection_pool_size: int = Field(default=10, ge=1)
+    cache_duration: int = Field(default=300, ge=0)
+    project_name: str = Field(default="flext-oracle-wms")
+    project_version: str = Field(default="1.0.0")
+
+
+__all__ = ["FlextOracleWmsClientSettings", "FlextOracleWmsSettings"]
