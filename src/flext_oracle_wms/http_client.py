@@ -12,11 +12,11 @@ from types import TracebackType
 from typing import Self
 
 from flext_api import FlextApiClient, FlextApiModels, FlextApiSettings, FlextApiTypes
-from flext_core import FlextLogger, FlextTypes, r
+from flext_core import FlextLogger, r
 from pydantic import TypeAdapter, ValidationError
 
 HTTP_BAD_REQUEST_THRESHOLD = 400
-type HttpJsonObject = dict[str, FlextTypes.ContainerValue]
+type HttpJsonObject = dict[str, object]
 
 
 class FlextHttpClient:
@@ -228,9 +228,7 @@ class FlextHttpClient:
         match body:
             case dict() as payload:
                 try:
-                    return TypeAdapter(
-                        dict[str, FlextTypes.ContainerValue]
-                    ).validate_python(payload)
+                    return TypeAdapter(dict[str, object]).validate_python(payload)
                 except ValidationError:
                     return {"text": str(payload)}
             case str() as raw if raw:

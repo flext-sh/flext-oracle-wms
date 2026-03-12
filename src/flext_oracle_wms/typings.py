@@ -41,18 +41,14 @@ class FlextOracleWmsTypes(FlextTypes):
             "logistics-service",
             "warehouse-optimizer",
         ]
-        type WmsProjectConfig = dict[str, FlextTypes.ContainerValue]
+        type WmsProjectConfig = dict[str, object]
         type WarehouseConfig = dict[str, str | int | bool | list[str]]
-        type InventoryConfig = dict[
-            str, bool | str | dict[str, FlextTypes.ContainerValue]
-        ]
+        type InventoryConfig = dict[str, bool | str | dict[str, object]]
 
-    type WmsConfig = dict[str, str | int | bool | dict[str, FlextTypes.ContainerValue]]
-    type WmsEntity = dict[
-        str, FlextTypes.JsonValue | dict[str, FlextTypes.ContainerValue]
-    ]
-    type WmsRecord = dict[str, FlextTypes.ContainerValue]
-    type WmsRecords = list[dict[str, FlextTypes.ContainerValue]]
+    type WmsConfig = dict[str, str | int | bool | dict[str, object]]
+    type WmsEntity = dict[str, object | dict[str, object]]
+    type WmsRecord = dict[str, object]
+    type WmsRecords = list[dict[str, object]]
 
     class Core:
         """Core convenience type aliases for common patterns.
@@ -62,7 +58,7 @@ class FlextOracleWmsTypes(FlextTypes):
         Access parent core types via inheritance from FlextOracleWmsTypes.
         """
 
-        type Dict = dict[str, FlextTypes.ContainerValue]
+        type Dict = dict[str, object]
         "Type alias for generic dictionary (attribute name to value mapping)."
         type FilterScalar = t.Scalar | None
         type FilterList = list[t.Core.FilterScalar]
