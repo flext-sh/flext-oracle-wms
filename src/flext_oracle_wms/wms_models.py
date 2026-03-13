@@ -6,7 +6,7 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from flext_core import FlextModels
+from flext_core import FlextModels, FlextTypes as t
 
 
 class FlextOracleWmsModels(FlextModels):
