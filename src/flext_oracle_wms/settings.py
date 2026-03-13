@@ -8,6 +8,8 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
+from typing import Annotated
+
 from flext_core import FlextSettings
 from pydantic import Field
 from pydantic_settings import SettingsConfigDict
@@ -24,7 +26,10 @@ class FlextOracleWmsSettings(FlextSettings):
     @classmethod
     def testing_config(cls) -> FlextOracleWmsSettings:
         """Build deterministic settings for tests."""
-        return cls(base_url="http://localhost:8080", timeout=30.0)
+        return cls.model_validate({
+            "base_url": "http://localhost:8080",
+            "timeout": 30.0,
+        })
 
 
 class FlextOracleWmsClientSettings(FlextOracleWmsSettings):

@@ -55,15 +55,18 @@ class FlextOracleWmsClient:
                 container = FlextContainer.get_global()
                 config_result = container.get("FlextOracleWmsSettings")
                 if config_result.is_success:
-                    resolved_config = FlextOracleWmsSettings(config_result.value)
+                    resolved_config = FlextOracleWmsSettings.model_validate(
+                        config_result.value
+                    )
             except (ValueError, FlextExceptions.BaseError):
                 pass
         if resolved_config is None:
             resolved_config = FlextOracleWmsSettings.testing_config()
         self.config: FlextOracleWmsSettings = resolved_config
-        api_config = FlextApiSettings(
-            base_url=self.config.base_url, timeout=int(self.config.timeout)
-        )
+        api_config = FlextApiSettings.model_validate({
+            "base_url": self.config.base_url,
+            "timeout": int(self.config.timeout),
+        })
         self._client: FlextApiClient = FlextApiClient(config=api_config)
         self._discovered_entities: list[str] = []
 
@@ -71,26 +74,24 @@ class FlextOracleWmsClient:
     def _decode_response_model[T: BaseModel](
         payload: object, model_type: type[T]
     ) -> r[T]:
-        match payload:
-            case dict() as data:
-                return u.try_(
-                    lambda: model_type(data),
-                    catch=ValidationError,
-                ).map_error(lambda exc: f"Invalid response payload: {exc}")
-            case str() as raw_payload:
-                return u.try_(
-                    lambda: model_type.model_validate_json(raw_payload),
-                    catch=ValidationError,
-                ).map_error(lambda exc: f"Invalid JSON payload: {exc}")
-            case bytes() as raw_payload:
-                return u.try_(
-                    lambda: model_type.model_validate_json(raw_payload),
-                    catch=ValidationError,
-                ).map_error(lambda exc: f"Invalid JSON payload: {exc}")
-            case None:
-                return r[T].fail("Empty response payload")
-            case _:
-                return r[T].fail("Unsupported response type")
+        if isinstance(payload, dict):
+            return u.try_(
+                lambda: model_type.model_validate(payload),
+                catch=ValidationError,
+            ).map_error(lambda exc: f"Invalid response payload: {exc}")
+        if isinstance(payload, str):
+            return u.try_(
+                lambda: model_type.model_validate_json(payload),
+                catch=ValidationError,
+            ).map_error(lambda exc: f"Invalid JSON payload: {exc}")
+        if isinstance(payload, bytes):
+            return u.try_(
+                lambda: model_type.model_validate_json(payload),
+                catch=ValidationError,
+            ).map_error(lambda exc: f"Invalid JSON payload: {exc}")
+        if payload is None:
+            return r[T].fail("Empty response payload")
+        return r[T].fail("Unsupported response type")
 
     def call_api(
         self,
@@ -227,6 +228,7 @@ class FlextOracleWmsClient:
         request = FlextApiModels.HttpRequest(
             method=method,
             url=path,
+            timeout=self.config.timeout,
             headers=dict(headers) if headers is not None else {},
             query_params=params or {},
             body=body or {},
