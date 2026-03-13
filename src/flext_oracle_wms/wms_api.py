@@ -7,7 +7,7 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from typing import ClassVar
+from typing import Annotated, ClassVar
 
 from pydantic import BaseModel, Field
 
@@ -15,12 +15,12 @@ from pydantic import BaseModel, Field
 class FlextOracleWmsApiEndpoint(BaseModel):
     """Typed Oracle WMS API endpoint definition."""
 
-    name: str = Field(min_length=1)
-    method: str = Field(min_length=1)
-    path: str = Field(min_length=1)
-    version: str = Field(min_length=1)
-    category: str = Field(min_length=1)
-    description: str = Field(default="")
+    name: Annotated[str, Field(min_length=1)]
+    method: Annotated[str, Field(min_length=1)]
+    path: Annotated[str, Field(min_length=1)]
+    version: Annotated[str, Field(min_length=1)]
+    category: Annotated[str, Field(min_length=1)]
+    description: Annotated[str, Field(default="")]
 
 
 class FlextOracleWmsApi:

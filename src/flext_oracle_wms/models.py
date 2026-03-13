@@ -57,32 +57,44 @@ class FlextOracleWmsModels(FlextModels):
 
         model_config = ConfigDict(extra="forbid")
 
-        id: str = Field(default="", description="Entity identifier")
-        name: str = Field(default="", description="Entity name")
-        created_at: str | None = Field(default=None, description="Creation timestamp")
-        updated_at: str | None = Field(
-            default=None,
-            description="Last update timestamp",
-        )
+        id: Annotated[str, Field(default="", description="Entity identifier")]
+        name: Annotated[str, Field(default="", description="Entity name")]
+        created_at: Annotated[
+            str | None, Field(default=None, description="Creation timestamp")
+        ]
+        updated_at: Annotated[
+            str | None,
+            Field(
+                default=None,
+                description="Last update timestamp",
+            ),
+        ]
 
     class InventoryItem(WmsEntity):
         """Inventory domain entity."""
 
-        sku: str = Field(default="", description="Stock keeping unit")
-        quantity: int = Field(default=0, description="Item quantity", ge=0)
-        location_id: str = Field(default="", description="Storage location identifier")
-        status: str = Field(default="active", description="Item status")
+        sku: Annotated[str, Field(default="", description="Stock keeping unit")]
+        quantity: Annotated[int, Field(default=0, description="Item quantity", ge=0)]
+        location_id: Annotated[
+            str, Field(default="", description="Storage location identifier")
+        ]
+        status: Annotated[str, Field(default="active", description="Item status")]
 
     class Order(WmsEntity):
         """Order domain entity."""
 
-        customer_id: str = Field(default="", description="Customer identifier")
-        status: str = Field(default="pending", description="Order status")
-        total_amount: float = Field(
-            default=0.0,
-            description="Total order amount",
-            ge=0.0,
-        )
+        customer_id: Annotated[
+            str, Field(default="", description="Customer identifier")
+        ]
+        status: Annotated[str, Field(default="pending", description="Order status")]
+        total_amount: Annotated[
+            float,
+            Field(
+                default=0.0,
+                description="Total order amount",
+                ge=0.0,
+            ),
+        ]
         items: Annotated[
             list[dict[str, object]],
             Field(default_factory=list, description="Order items"),
@@ -91,19 +103,26 @@ class FlextOracleWmsModels(FlextModels):
     class Shipment(WmsEntity):
         """Shipment domain entity."""
 
-        order_id: str = Field(default="", description="Associated order identifier")
-        status: str = Field(default="pending", description="Shipment status")
-        carrier: str | None = Field(default=None, description="Shipping carrier name")
-        tracking_number: str | None = Field(
-            default=None,
-            description="Shipment tracking number",
-        )
+        order_id: Annotated[
+            str, Field(default="", description="Associated order identifier")
+        ]
+        status: Annotated[str, Field(default="pending", description="Shipment status")]
+        carrier: Annotated[
+            str | None, Field(default=None, description="Shipping carrier name")
+        ]
+        tracking_number: Annotated[
+            str | None,
+            Field(
+                default=None,
+                description="Shipment tracking number",
+            ),
+        ]
 
     class PickingTask(WmsEntity):
         """Picking task domain entity."""
 
-        wave_id: str = Field(default="", description="Wave identifier")
-        status: str = Field(default="pending", description="Task status")
+        wave_id: Annotated[str, Field(default="", description="Wave identifier")]
+        status: Annotated[str, Field(default="pending", description="Task status")]
         items: Annotated[
             list[dict[str, object]],
             Field(default_factory=list, description="Task items"),
@@ -112,10 +131,10 @@ class FlextOracleWmsModels(FlextModels):
     class Location(WmsEntity):
         """Location domain entity."""
 
-        aisle: str = Field(default="", description="Aisle identifier")
-        shelf: str = Field(default="", description="Shelf identifier")
-        bin_: str = Field(default="", description="Bin identifier")
-        zone: str = Field(default="", description="Zone identifier")
+        aisle: Annotated[str, Field(default="", description="Aisle identifier")]
+        shelf: Annotated[str, Field(default="", description="Shelf identifier")]
+        bin_: Annotated[str, Field(default="", description="Bin identifier")]
+        zone: Annotated[str, Field(default="", description="Zone identifier")]
 
     # =========================================================================
     # VALUE OBJECTS - Immutable domain values
@@ -126,10 +145,10 @@ class FlextOracleWmsModels(FlextModels):
 
         model_config = ConfigDict(frozen=True, extra="forbid")
 
-        aisle: str = Field(description="Aisle identifier")
-        shelf: str = Field(description="Shelf identifier")
-        bin_: str = Field(description="Bin identifier")
-        zone: str = Field(default="", description="Zone identifier")
+        aisle: Annotated[str, Field(description="Aisle identifier")]
+        shelf: Annotated[str, Field(description="Shelf identifier")]
+        bin_: Annotated[str, Field(description="Bin identifier")]
+        zone: Annotated[str, Field(default="", description="Zone identifier")]
 
         @property
         def full_location(self) -> str:
@@ -141,9 +160,9 @@ class FlextOracleWmsModels(FlextModels):
 
         model_config = ConfigDict(frozen=True, extra="forbid")
 
-        username: str = Field(description="API username")
-        password: str | None = Field(default=None, description="API password")
-        token: str | None = Field(default=None, description="API token")
+        username: Annotated[str, Field(description="API username")]
+        password: Annotated[str | None, Field(default=None, description="API password")]
+        token: Annotated[str | None, Field(default=None, description="API token")]
 
     # =========================================================================
     # ENUMS - Aliases from constants.py (single source of truth)

@@ -18,8 +18,8 @@ class FlextOracleWmsSettings(FlextSettings):
 
     model_config = SettingsConfigDict(extra="ignore")
 
-    base_url: str = Field(default="http://localhost:8080", min_length=1)
-    timeout: float = Field(default=30.0, ge=1.0, le=300.0)
+    base_url: Annotated[str, Field(default="http://localhost:8080", min_length=1)]
+    timeout: Annotated[float, Field(default=30.0, ge=1.0, le=300.0)]
 
     @classmethod
     def testing_config(cls) -> FlextOracleWmsSettings:
@@ -32,20 +32,20 @@ class FlextOracleWmsClientSettings(FlextOracleWmsSettings):
 
     model_config = SettingsConfigDict(extra="ignore")
 
-    base_url: str = Field(default="")
-    username: str = Field(default="")
-    password: str = Field(default="")
-    api_version: str = Field(default="LGF_V10")
-    auth_method: str = Field(default="BASIC")
-    timeout: float = Field(default=30.0, ge=1.0)
-    max_retries: int = Field(default=3, ge=0)
-    verify_ssl: bool = Field(default=True)
-    enable_logging: bool = Field(default=False)
-    use_mock: bool = Field(default=False)
-    connection_pool_size: int = Field(default=10, ge=1)
-    cache_duration: int = Field(default=300, ge=0)
-    project_name: str = Field(default="flext-oracle-wms")
-    project_version: str = Field(default="1.0.0")
+    base_url: Annotated[str, Field(default="")]
+    username: Annotated[str, Field(default="")]
+    password: Annotated[str, Field(default="")]
+    api_version: Annotated[str, Field(default="LGF_V10")]
+    auth_method: Annotated[str, Field(default="BASIC")]
+    timeout: Annotated[float, Field(default=30.0, ge=1.0)]
+    max_retries: Annotated[int, Field(default=3, ge=0)]
+    verify_ssl: Annotated[bool, Field(default=True)]
+    enable_logging: Annotated[bool, Field(default=False)]
+    use_mock: Annotated[bool, Field(default=False)]
+    connection_pool_size: Annotated[int, Field(default=10, ge=1)]
+    cache_duration: Annotated[int, Field(default=300, ge=0)]
+    project_name: Annotated[str, Field(default="flext-oracle-wms")]
+    project_version: Annotated[str, Field(default="1.0.0")]
 
 
 __all__ = ["FlextOracleWmsClientSettings", "FlextOracleWmsSettings"]

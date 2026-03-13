@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import base64
 from collections.abc import Mapping
+from typing import Annotated
 
 from flext_core import r
 from pydantic import BaseModel, Field
@@ -66,11 +67,11 @@ def create_oracle_wms_client(config: FlextOracleWmsAuthSettings) -> r[str]:
 class FlextOracleWmsAuthSettings(BaseModel):
     """Authentication configuration for Oracle WMS flows."""
 
-    method: str = Field(default=OracleWMSAuthMethod.BASIC)
-    username: str = Field(default="")
-    password: str = Field(default="")
-    oauth2_client_id: str = Field(default="")
-    oauth2_client_secret: str = Field(default="")
+    method: Annotated[str, Field(default=OracleWMSAuthMethod.BASIC)]
+    username: Annotated[str, Field(default="")]
+    password: Annotated[str, Field(default="")]
+    oauth2_client_id: Annotated[str, Field(default="")]
+    oauth2_client_secret: Annotated[str, Field(default="")]
 
 
 __all__ = [

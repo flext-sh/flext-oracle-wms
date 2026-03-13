@@ -9,6 +9,7 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 from collections.abc import Mapping
+from typing import Annotated
 
 from flext_api import (
     FlextApiClient,
@@ -28,19 +29,19 @@ HTTP_BAD_REQUEST_THRESHOLD = 400
 class EntitiesResponse(BaseModel):
     model_config = ConfigDict(extra="ignore")
 
-    entities: list[str] = Field(default_factory=list)
+    entities: Annotated[list[str], Field(default_factory=list)]
 
 
 class ApiCategoryResponse(BaseModel):
     model_config = ConfigDict(extra="ignore")
 
-    apis: list[dict[str, str]] = Field(default=[])
+    apis: Annotated[list[dict[str, str]], Field(default_factory=list)]
 
 
 class EntityDataResponse(BaseModel):
     model_config = ConfigDict(extra="ignore")
 
-    data: list[dict[str, str]] = Field(default=[])
+    data: Annotated[list[dict[str, str]], Field(default_factory=list)]
 
 
 class FlextOracleWmsClient:
