@@ -6,7 +6,6 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-import json
 from collections.abc import Mapping, MutableMapping
 from types import TracebackType
 from typing import Self
@@ -233,35 +232,15 @@ class FlextHttpClient:
                     return {"text": str(payload)}
             case str() as raw if raw:
                 try:
-                    parsed = json.loads(raw)
-                    validated = FlextApiModels.HttpResponse.model_validate({
-                        "status_code": 200,
-                        "body": parsed,
-                    })
-                    match validated.body:
-                        case str() as text_body:
-                            return {"text": text_body}
-                        case dict() as json_body:
-                            return json_body
-                        case _:
-                            return {"text": str(validated.body)}
+                    parsed = TypeAdapter(dict[str, object]).validate_json(raw)
+                    return parsed
                 except (ValidationError, ValueError):
                     return {"text": raw}
             case bytes() as raw_bytes:
                 try:
-                    parsed = json.loads(raw_bytes.decode("utf-8"))
-                    validated = FlextApiModels.HttpResponse.model_validate({
-                        "status_code": 200,
-                        "body": parsed,
-                    })
-                    match validated.body:
-                        case str() as text_body:
-                            return {"text": text_body}
-                        case dict() as json_body:
-                            return json_body
-                        case _:
-                            return {"text": str(validated.body)}
-                except (UnicodeDecodeError, ValidationError, ValueError):
+                    parsed = TypeAdapter(dict[str, object]).validate_json(raw_bytes)
+                    return parsed
+                except (ValidationError, ValueError):
                     return {"text": raw_bytes.decode("utf-8", errors="ignore")}
             case _:
                 return {}
