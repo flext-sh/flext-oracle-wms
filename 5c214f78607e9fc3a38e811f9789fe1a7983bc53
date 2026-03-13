@@ -1,0 +1,23 @@
+src/flext_oracle_wms/settings.py
+  1ad05dd33a227b7c 11-12
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.1.11",
+  "base_commit_sha": "5c214f78607e9fc3a38e811f9789fe1a7983bc53",
+  "prompts": {
+    "1ad05dd33a227b7c": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_317e1c101ffe6ReK0FyNoboexh",
+        "model": "anthropic/claude-opus-4-6"
+      },
+      "human_author": "FLEXT Bot <team@flext.sh>",
+      "messages": [],
+      "total_additions": 2,
+      "total_deletions": 0,
+      "accepted_lines": 2,
+      "overriden_lines": 0
+    }
+  }
+}
