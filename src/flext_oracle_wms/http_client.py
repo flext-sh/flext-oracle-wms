@@ -232,14 +232,12 @@ class FlextHttpClient:
                     return {"text": str(payload)}
             case str() as raw if raw:
                 try:
-                    parsed = TypeAdapter(dict[str, object]).validate_json(raw)
-                    return parsed
+                    return TypeAdapter(dict[str, object]).validate_json(raw)
                 except (ValidationError, ValueError):
                     return {"text": raw}
             case bytes() as raw_bytes:
                 try:
-                    parsed = TypeAdapter(dict[str, object]).validate_json(raw_bytes)
-                    return parsed
+                    return TypeAdapter(dict[str, object]).validate_json(raw_bytes)
                 except (ValidationError, ValueError):
                     return {"text": raw_bytes.decode("utf-8", errors="ignore")}
             case _:
