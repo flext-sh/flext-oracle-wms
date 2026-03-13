@@ -31,14 +31,14 @@ class FlextOracleWmsProtocols(FlextProtocols):
     service: p.Service[str]
 
     # Oracle WMS-specific protocols
-    wms_service: p.OracleWms.WmsServiceProtocol
+    wms_service: p.OracleWms.WmsService
     """
 
     class OracleWms:
         """Oracle WMS domain-specific protocols."""
 
         @runtime_checkable
-        class WmsServiceProtocol(FlextProtocols.Service[None], Protocol):
+        class WmsService(FlextProtocols.Service[None], Protocol):
             """Unified WMS service protocol with operation dispatch."""
 
             def execute_wms_operation(
