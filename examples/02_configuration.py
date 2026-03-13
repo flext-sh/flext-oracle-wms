@@ -106,7 +106,7 @@ def create_demo_config() -> FlextOracleWmsClientSettings:
       This demonstrates how to use the global singleton with parameter overrides.
 
     """
-    return FlextOracleWmsClientSettings.model_validate({
+    return FlextOracleWmsClientSettings({
         "base_url": "https://demo-wms.oraclecloud.com/demo",
         "username": "demo_user",
         "password": "demo_password",

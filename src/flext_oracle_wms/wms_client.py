@@ -55,9 +55,7 @@ class FlextOracleWmsClient:
                 container = FlextContainer.get_global()
                 config_result = container.get("FlextOracleWmsSettings")
                 if config_result.is_success:
-                    resolved_config = FlextOracleWmsSettings.model_validate(
-                        config_result.value
-                    )
+                    resolved_config = FlextOracleWmsSettings(config_result.value)
             except (ValueError, FlextExceptions.BaseError):
                 pass
         if resolved_config is None:
@@ -76,7 +74,7 @@ class FlextOracleWmsClient:
         match payload:
             case dict() as data:
                 return u.try_(
-                    lambda: model_type.model_validate(data),
+                    lambda: model_type(data),
                     catch=ValidationError,
                 ).map_error(lambda exc: f"Invalid response payload: {exc}")
             case str() as raw_payload:

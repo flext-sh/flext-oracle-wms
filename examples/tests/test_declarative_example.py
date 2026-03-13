@@ -70,7 +70,7 @@ def main() -> None:
         env_config.get("oracle_wms_password"),
     ]):
         return
-    config = FlextOracleWmsClientSettings.model_validate({
+    config = FlextOracleWmsClientSettings({
         "base_url": str(env_config["oracle_wms_base_url"]),
         "username": str(env_config["oracle_wms_username"]),
         "password": str(env_config["oracle_wms_password"]),

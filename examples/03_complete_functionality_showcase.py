@@ -66,7 +66,7 @@ def load_config_from_environment() -> FlextOracleWmsClientSettings:
     if base_url is None or username is None or password is None:
         msg = "Required environment variables cannot be None"
         raise ValueError(msg)
-    return FlextOracleWmsClientSettings.model_validate({
+    return FlextOracleWmsClientSettings({
         "base_url": base_url,
         "username": username,
         "password": password,
@@ -200,7 +200,7 @@ def showcase_6_error_handling(client: FlextOracleWmsClient) -> None:
     if not api_result.is_success:
         pass
     try:
-        invalid_config = FlextOracleWmsClientSettings.model_validate({
+        invalid_config = FlextOracleWmsClientSettings({
             "base_url": "invalid-url",
             "username": "",
             "password": "",
