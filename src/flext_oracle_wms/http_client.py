@@ -14,8 +14,9 @@ from flext_api import FlextApiClient, FlextApiModels, FlextApiSettings, FlextApi
 from flext_core import FlextLogger, r, t
 from pydantic import TypeAdapter, ValidationError
 
+from flext_oracle_wms.typings import HttpJsonObject
+
 HTTP_BAD_REQUEST_THRESHOLD = 400
-type HttpJsonObject = dict[str, t.ContainerValue]
 
 
 class FlextHttpClient:
