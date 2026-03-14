@@ -48,7 +48,11 @@ if TYPE_CHECKING:
     )
     from flext_oracle_wms.typings import FlextOracleWmsTypes, t
     from flext_oracle_wms.utilities import FlextOracleWmsUtilities, u
-    from flext_oracle_wms.wms_api import FLEXT_ORACLE_WMS_APIS, FlextOracleWmsApi
+    from flext_oracle_wms.wms_api import (
+        FLEXT_ORACLE_WMS_APIS,
+        FlextOracleWmsApi,
+        FlextOracleWmsApiEndpoint,
+    )
     from flext_oracle_wms.wms_auth import (
         FlextOracleWmsAuthenticator,
         FlextOracleWmsAuthSettings,
@@ -91,6 +95,10 @@ _LAZY_IMPORTS: dict[str, tuple[str, str]] = {
     "FilterOperator": ("flext_oracle_wms.filtering", "FilterOperator"),
     "FlextHttpClient": ("flext_oracle_wms.http_client", "FlextHttpClient"),
     "FlextOracleWmsApi": ("flext_oracle_wms.wms_api", "FlextOracleWmsApi"),
+    "FlextOracleWmsApiEndpoint": (
+        "flext_oracle_wms.wms_api",
+        "FlextOracleWmsApiEndpoint",
+    ),
     "FlextOracleWmsApiError": (
         "flext_oracle_wms.wms_exceptions",
         "FlextOracleWmsApiError",
@@ -215,6 +223,7 @@ __all__ = [
     "FilterOperator",
     "FlextHttpClient",
     "FlextOracleWmsApi",
+    "FlextOracleWmsApiEndpoint",
     "FlextOracleWmsApiError",
     "FlextOracleWmsAuthSettings",
     "FlextOracleWmsAuthenticationError",
@@ -264,7 +273,7 @@ __all__ = [
 ]
 
 
-def __getattr__(name: str):
+def __getattr__(name: str) -> t.ModuleExport:
     """Lazy-load module attributes on first access (PEP 562)."""
     return lazy_getattr(name, _LAZY_IMPORTS, globals(), __name__)
 
