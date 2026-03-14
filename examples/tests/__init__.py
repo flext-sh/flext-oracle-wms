@@ -16,7 +16,6 @@ if TYPE_CHECKING:
     from flext_core.typings import FlextTypes
     from tests.test_declarative_example import load_env_config, logger, main
 
-# Lazy import mapping: export_name -> (module_path, attr_name)
 _LAZY_IMPORTS: dict[str, tuple[str, str]] = {
     "load_env_config": ("tests.test_declarative_example", "load_env_config"),
     "logger": ("tests.test_declarative_example", "logger"),
