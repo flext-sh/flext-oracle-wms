@@ -39,13 +39,13 @@ class FlextOracleWmsEntityDiscovery:
         """Discover entities from Oracle WMS API."""
         entities_result = self.client.discover_entities()
         if entities_result.is_failure:
-            return r[list[Mapping[str, object]]].fail(entities_result.error)
+            return r[list[Mapping[str, t.ContainerValue]]].fail(entities_result.error)
         discovered = [
             self._to_discovered_entity(entity_name)
             for entity_name in entities_result.value
             if entity_name
         ]
-        return r[list[Mapping[str, object]]].ok(discovered)
+        return r[list[Mapping[str, t.ContainerValue]]].ok(discovered)
 
 
 DISCOVERY_SUCCESS = "discovery_success"

@@ -43,10 +43,10 @@ class FlextOracleWmsTypes(FlextTypes):
         ]
         type WmsProjectConfig = dict[str, object]
         type WarehouseConfig = dict[str, str | int | bool | list[str]]
-        type InventoryConfig = dict[str, bool | str | dict[str, object]]
+        type InventoryConfig = dict[str, bool | str | dict[str, t.ContainerValue]]
 
-    type WmsConfig = dict[str, str | int | bool | dict[str, object]]
-    type WmsEntity = dict[str, object | dict[str, object]]
+    type WmsConfig = dict[str, str | int | bool | dict[str, t.ContainerValue]]
+    type WmsEntity = dict[str, object | dict[str, t.ContainerValue]]
     type WmsRecord = dict[str, object]
     type WmsRecords = list[dict[str, object]]
 
