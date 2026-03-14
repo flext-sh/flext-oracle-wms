@@ -8,60 +8,46 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from typing import ClassVar
+from collections.abc import Mapping
+from typing import Protocol
 
-from flext_core import FlextResult, FlextTypes as t
+from flext_core import r, t
 
-from flext_oracle_wms.constants import c
-from flext_oracle_wms.http_client import FlextHttpClient
-
-# Alias for backward compatibility - EndpointDiscoveryStrategy is now in constants.py
-EndpointDiscoveryStrategy = c.EndpointDiscoveryStrategy
+from flext_oracle_wms.constants import FlextOracleWmsConstants as c
 
 
-# Simple placeholders for missing classes
-class CacheValue:
-    """Cache value placeholder."""
-
-
-class DiscoveryContext:
-    """Discovery context placeholder."""
-
-
-class EntityResponseParser:
-    """Entity response parser placeholder."""
-
-
-class FlextOracleWmsDefaults:
-    """Defaults placeholder."""
-
-    CACHE_TTL: ClassVar[int] = 3600
+class _EntityDiscoveryClient(Protocol):
+    def discover_entities(self) -> r[list[str]]: ...
 
 
 class FlextOracleWmsEntityDiscovery:
-    """Entity discovery placeholder."""
+    """Discovery service for Oracle WMS entities."""
 
-    def __init__(self, client: FlextHttpClient) -> None:
-        """Initialize entity discovery with HTTP client."""
+    def __init__(self, client: _EntityDiscoveryClient) -> None:
+        """Initialize discovery service with a client."""
         self.client = client
 
-    def discover_entities(self) -> FlextResult[list[dict[str, t.GeneralValueType]]]:
-        """Discover entities placeholder."""
-        return FlextResult.ok([])
+    @staticmethod
+    def _to_discovered_entity(entity_name: str) -> Mapping[str, t.ContainerValue]:
+        return {
+            "name": entity_name,
+            "path": f"/entities/{entity_name}",
+            "strategy": c.EndpointDiscoveryStrategy.API_BASED,
+        }
+
+    def discover_entities(self) -> r[list[Mapping[str, t.ContainerValue]]]:
+        """Discover entities from Oracle WMS API."""
+        entities_result = self.client.discover_entities()
+        if entities_result.is_failure:
+            return r[list[Mapping[str, t.ContainerValue]]].fail(entities_result.error)
+        discovered = [
+            self._to_discovered_entity(entity_name)
+            for entity_name in entities_result.value
+            if entity_name
+        ]
+        return r[list[Mapping[str, t.ContainerValue]]].ok(discovered)
 
 
-# Constants
 DISCOVERY_SUCCESS = "discovery_success"
 DISCOVERY_FAILURE = "discovery_failure"
-
-
-__all__ = [
-    "DISCOVERY_FAILURE",
-    "DISCOVERY_SUCCESS",
-    "CacheValue",
-    "DiscoveryContext",
-    "EndpointDiscoveryStrategy",
-    "EntityResponseParser",
-    "FlextOracleWmsDefaults",
-    "FlextOracleWmsEntityDiscovery",
-]
+__all__ = ["DISCOVERY_FAILURE", "DISCOVERY_SUCCESS", "FlextOracleWmsEntityDiscovery"]

@@ -15,7 +15,7 @@
 - [📖 **Usage Examples**](#-usage-examples)
   - [Basic Client Setup](#basic-client-setup)
   - [Entity Data Querying](#entity-data-querying)
-  - [Error Handling with FlextResult](#error-handling-with-flextresult)
+  - [Error Handling with r](#error-handling-with-flextresult)
 - [🔧 **Development Guidelines**](#-development-guidelines)
   - [Code Quality Standards](#code-quality-standards)
   - [Architecture Compliance](#architecture-compliance)
@@ -47,7 +47,7 @@ This directory contains the core implementation of the **flext-oracle-wms** libr
 - **[exceptions.py](exceptions.py)** - Comprehensive error hierarchy for Oracle WMS operations
 - **[constants.py](constants.py)** - Oracle WMS constants, enums, and default values
 - **[types.py](types.py)** - Type definitions and aliases for Oracle WMS integration
-- **[models.py](models.py)** - Data models using FLEXT ValueObject patterns
+- **[models.py](models.py)** - Data models using FLEXT Value patterns
 
 ### 🏗️ **API & Discovery**
 
@@ -80,7 +80,7 @@ This directory contains the core implementation of the **flext-oracle-wms** libr
 
 ### FLEXT Ecosystem Integration
 
-- **FlextResult Pattern** - Railway-oriented programming for consistent error handling
+- **r Pattern** - Railway-oriented programming for consistent error handling
 - **FLEXT Configuration Standards** - Environment-driven settings with comprehensive validation
 - **Structured Logging** - Integration with FLEXT observability for monitoring and diagnostics
 - **Dependency Injection** - Support for FLEXT container patterns and enterprise architecture
@@ -106,7 +106,7 @@ config = FlextOracleWmsClientSettings(
     base_url="https://your-wms.oraclecloud.com",
     username="your_username",
     password="your_password",
-    environment="production"
+    environment="production",
 )
 
 # Initialize client
@@ -130,11 +130,12 @@ from flext_core import FlextModels
 from flext_core import FlextProcessors
 from flext_core import p
 from flext_core import FlextRegistry
-from flext_core import FlextResult
+from flext_core import r
 from flext_core import FlextRuntime
 from flext_core import FlextService
 from flext_core import t
 from flext_core import u
+
 if result.success:
     logger = FlextLogger(__name__)
     logger.info("Discovered WMS entities", count=len(result.data))
@@ -170,7 +171,7 @@ from flext_core import FlextModels
 from flext_core import FlextProcessors
 from flext_core import p
 from flext_core import FlextRegistry
-from flext_core import FlextResult
+from flext_core import r
 from flext_core import FlextRuntime
 from flext_core import FlextService
 from flext_core import t
@@ -178,7 +179,7 @@ from flext_core import u
     FlextLogger(__name__).info("Records retrieved", count=len(data.get('results', [])))
 ```
 
-### Error Handling with FlextResult
+### Error Handling with r
 
 ```python
 from flext_oracle_wms.exceptions import FlextOracleWmsConnectionError
@@ -186,7 +187,7 @@ from flext_oracle_wms.exceptions import FlextOracleWmsConnectionError
 try:
     result = client.get_entity_data("inventory")
     if result.is_failure:
-        # Handle business logic errors via FlextResult
+        # Handle business logic errors via r
 
         FlextLogger(__name__).error("Query failed", error=result.error)
     else:
@@ -212,7 +213,7 @@ from flext_core import FlextModels
 from flext_core import FlextProcessors
 from flext_core import p
 from flext_core import FlextRegistry
-from flext_core import FlextResult
+from flext_core import r
 from flext_core import FlextRuntime
 from flext_core import FlextService
 from flext_core import t
@@ -225,7 +226,7 @@ from flext_core import u
 ### Code Quality Standards
 
 - **Type Safety**: MyPy strict mode adoption; aiming for 95%+ coverage
-- **Error Handling**: All operations return FlextResult for consistent error management
+- **Error Handling**: All operations return r for consistent error management
 - **Documentation**: Comprehensive docstrings following enterprise standards
 - **Testing**: 90%+ test coverage requirement with unit and integration tests
 - **Linting**: Comprehensive Ruff rules (ALL categories enabled) with zero tolerance
@@ -234,7 +235,7 @@ from flext_core import u
 
 - **Clean Architecture**: Clear separation of domain, application, and infrastructure concerns
 - **FLEXT Integration**: Full compliance with FLEXT ecosystem patterns and standards
-- **Railway-Oriented Programming**: Consistent use of FlextResult for error handling
+- **Railway-Oriented Programming**: Consistent use of r for error handling
 - **Enterprise Patterns**: Connection pooling, caching, retry logic, and observability
 
 ### Performance Requirements
@@ -274,7 +275,7 @@ make security               # Bandit + pip-audit security scanning
 
 ### FLEXT Ecosystem Dependencies
 
-- **[flext-core](https://github.com/organization/flext/tree/main/flext-core/)** - Foundation patterns, FlextResult, logging, DI container
+- **[flext-core](https://github.com/organization/flext/tree/main/flext-core/)** - Foundation patterns, r, logging, DI container
 - **[flext-api](https://github.com/organization/flext/tree/main/flext-api/)** - Enterprise API client patterns and authentication
 - **[flext-observability](https://github.com/organization/flext/tree/main/flext-observability/)** - Monitoring, metrics, health checks
 
@@ -289,7 +290,7 @@ make security               # Bandit + pip-audit security scanning
 ### Documentation
 
 - **[Project README](../../README.md)** - Complete project overview and usage guide
-- **[Development Guide](../../CLAUDE.md)** - Comprehensive development practices and standards
+- **[Development Guide](../../AGENTS.md)** - Comprehensive development practices and standards
 - **[Examples](../../examples/)** - Working code examples and integration patterns
 - **[API Documentation](../../docs/api/)** - Detailed API reference and specifications
 

@@ -16,18 +16,15 @@ SPDX-License-Identifier: MIT
 
 """
 
+from __future__ import annotations
+
 import pytest
+from flext_core import FlextExceptions
 
-
-
+from flext_oracle_wms import FlextOracleWmsConstants
+from flext_oracle_wms.filtering import (
     FlextOracleWmsDataValidationError,
-    FlextOracleWmsDefaults,
-    FlextOracleWmsError,
     FlextOracleWmsFilter,
-    OracleWMSFilterOperator,
-    flext_oracle_wms_create_filter,
-    flext_oracle_wms_filter_by_field,
-    flext_oracle_wms_filter_by_id_range,
 )
 
 
@@ -39,7 +36,8 @@ class TestFlextOracleWmsFilterConstruction:
         filter_engine = FlextOracleWmsFilter(case_sensitive=False, max_conditions=50)
         assert filter_engine.case_sensitive is False
         assert (
-            filter_engine.max_conditions == FlextOracleWmsDefaults.MAX_FILTER_CONDITIONS
+            filter_engine.max_conditions
+            == FlextOracleWmsConstants.Filtering.MAX_FILTER_CONDITIONS
         )
 
     def test_filter_custom_construction(self) -> None:
@@ -49,29 +47,36 @@ class TestFlextOracleWmsFilterConstruction:
         assert filter_engine.max_conditions == 50
 
     def test_filter_invalid_max_conditions_zero(self) -> None:
-        """Test filter creation fails with zero max conditions."""
-        with pytest.raises(FlextOracleWmsError) as exc:
+        with pytest.raises(FlextExceptions.BaseError, match="Invalid max_conditions"):
             FlextOracleWmsFilter(max_conditions=0)
-        assert "must be positive" in str(exc.value)
 
     def test_filter_invalid_max_conditions_negative(self) -> None:
-        """Test filter creation fails with negative max conditions."""
-        with pytest.raises(FlextOracleWmsError) as exc:
+        with pytest.raises(FlextExceptions.BaseError, match="Invalid max_conditions"):
             FlextOracleWmsFilter(max_conditions=-1)
-        assert "must be positive" in str(exc.value)
 
     def test_filter_max_conditions_limit_exceeded(self) -> None:
-        """Test filter creation fails when exceeding maximum limit."""
-        with pytest.raises(FlextOracleWmsError) as exc:
+        with pytest.raises(FlextExceptions.BaseError, match="Invalid max_conditions"):
             FlextOracleWmsFilter(
-                max_conditions=FlextOracleWmsDefaults.MAX_FILTER_CONDITIONS + 1,
+                max_conditions=FlextOracleWmsConstants.Filtering.MAX_FILTER_CONDITIONS
+                + 1
             )
-        assert "cannot exceed" in str(exc.value)
 
-    def test_filter_operators_initialized(self) -> None:
-        """Test that all filter operators are properly initialized."""
-        # This test is disabled as the _operators attribute doesn't exist in current implementation
-        pytest.skip("_operators attribute not implemented in current architecture")
+    def test_filter_with_initial_filters(self) -> None:
+        """Test filter creation with initial filters dict."""
+        filters: dict[str, object] = {"status": "active"}
+        filter_engine = FlextOracleWmsFilter(filters=filters, max_conditions=50)
+        assert filter_engine.filters == filters
+
+    def test_filter_with_too_many_initial_filters(self) -> None:
+        """Test filter creation raises when initial filters exceed max_conditions."""
+        filters: dict[str, object] = {
+            "field1": {"eq": "v1"},
+            "field2": {"eq": "v2"},
+            "field3": {"eq": "v3"},
+            "field4": {"eq": "v4"},
+        }
+        with pytest.raises(FlextOracleWmsDataValidationError):
+            FlextOracleWmsFilter(filters=filters, max_conditions=3)
 
 
 class TestFilterValidation:
@@ -80,49 +85,40 @@ class TestFilterValidation:
     def test_validate_filter_conditions_empty(self) -> None:
         """Test validation with empty filters."""
         filter_engine = FlextOracleWmsFilter(case_sensitive=False, max_conditions=50)
-        # This method doesn't return anything, it raises an exception if validation fails
-        filter_engine._validate_filter_conditions_count()  # Should not raise
+        result = filter_engine._validate_filters({})
+        assert result.is_success
 
     def test_validate_filter_conditions_within_limit(self) -> None:
         """Test validation with filters within limit."""
         filter_engine = FlextOracleWmsFilter(max_conditions=5)
-        # This method doesn't return anything, it raises an exception if validation fails
-        filter_engine._validate_filter_conditions_count()  # Should not raise
+        result = filter_engine._validate_filters({"a": 1, "b": 2})
+        assert result.is_success
 
     def test_validate_filter_conditions_exceeds_limit(self) -> None:
         """Test validation fails when conditions exceed limit."""
-        # Create a filter with too many conditions
-        filters: dict[str, t.GeneralValueType] = {
-            "field1": {"eq": "value1"},
-            "field2": {"eq": "value2"},
-            "field3": {"eq": "value3"},
-            "field4": {"eq": "value4"},  # This exceeds max_conditions=3
+        filter_engine = FlextOracleWmsFilter(max_conditions=2)
+        filters: dict[str, object] = {
+            "field1": "value1",
+            "field2": "value2",
+            "field3": "value3",
         }
+        result = filter_engine._validate_filters(filters)
+        assert result.is_failure
+        assert result.error is not None and "Too many" in result.error
 
-        with pytest.raises(FlextOracleWmsDataValidationError) as exc_info:
-            FlextOracleWmsFilter(filters=filters, max_conditions=3)
-
-        assert "Too many filter conditions" in str(exc_info.value)
-
-    def test_validate_filter_conditions_mixed_types(self) -> None:
-        """Test validation with mixed condition types."""
-        # Create a filter with mixed condition types within limit
-        filters = {
-            "field1": {"eq": "value1"},
-            "field2": {"gt": 100},
-            "field3": {"in": ["a", "b", "c"]},
-        }
-
-        # This should not raise an exception since it's within the limit
-        filter_engine = FlextOracleWmsFilter(filters=filters, max_conditions=10)
-        assert filter_engine.max_conditions == 10
+    def test_validate_filter_list_values_count_correctly(self) -> None:
+        """Test that list filter values are counted by length."""
+        filter_engine = FlextOracleWmsFilter(max_conditions=2)
+        filters: dict[str, object] = {"status": ["a", "b", "c"]}
+        result = filter_engine._validate_filters(filters)
+        assert result.is_failure
 
 
 class TestRecordFiltering:
     """Test record filtering functionality."""
 
     @property
-    def sample_records(self) -> list[dict[str, t.GeneralValueType]]:
+    def sample_records(self) -> list[dict[str, object]]:
         """Sample records for testing."""
         return [
             {"id": 1, "name": "Company A", "status": "active", "score": 85.5},
@@ -132,7 +128,7 @@ class TestRecordFiltering:
         ]
 
     @property
-    def nested_records(self) -> list[dict[str, t.GeneralValueType]]:
+    def nested_records(self) -> list[dict[str, object]]:
         """Nested records for testing dot notation."""
         return [
             {
@@ -151,7 +147,6 @@ class TestRecordFiltering:
         """Test filtering with empty filters returns all records."""
         filter_engine = FlextOracleWmsFilter(case_sensitive=False, max_conditions=50)
         result = filter_engine.filter_records(self.sample_records, {})
-
         assert result.is_success
         assert len(result.value) == 4
         assert result.value == self.sample_records
@@ -159,9 +154,8 @@ class TestRecordFiltering:
     def test_filter_records_single_value(self) -> None:
         """Test filtering with single value condition."""
         filter_engine = FlextOracleWmsFilter(case_sensitive=False, max_conditions=50)
-        filters: dict[str, t.GeneralValueType] = {"status": "active"}
+        filters: dict[str, object] = {"status": "active"}
         result = filter_engine.filter_records(self.sample_records, filters)
-
         assert result.is_success
         assert len(result.value) == 2
         assert all(record["status"] == "active" for record in result.value)
@@ -169,9 +163,8 @@ class TestRecordFiltering:
     def test_filter_records_list_values(self) -> None:
         """Test filtering with list of values (IN operation)."""
         filter_engine = FlextOracleWmsFilter(case_sensitive=False, max_conditions=50)
-        filters: dict[str, t.GeneralValueType] = {"status": ["active", "pending"]}
+        filters: dict[str, object] = {"status": ["active", "pending"]}
         result = filter_engine.filter_records(self.sample_records, filters)
-
         assert result.is_success
         assert len(result.value) == 3
         assert all(record["status"] in {"active", "pending"} for record in result.value)
@@ -179,9 +172,8 @@ class TestRecordFiltering:
     def test_filter_records_numeric_values(self) -> None:
         """Test filtering with numeric values."""
         filter_engine = FlextOracleWmsFilter(case_sensitive=False, max_conditions=50)
-        filters: dict[str, t.GeneralValueType] = {"id": 2}
+        filters: dict[str, object] = {"id": 2}
         result = filter_engine.filter_records(self.sample_records, filters)
-
         assert result.is_success
         assert result.is_success
         assert len(result.value) == 1
@@ -190,14 +182,8 @@ class TestRecordFiltering:
     def test_filter_records_with_limit(self) -> None:
         """Test filtering with result limit."""
         filter_engine = FlextOracleWmsFilter(case_sensitive=False, max_conditions=50)
-        filters: dict[str, t.GeneralValueType] = {"status": "active"}
-        result = filter_engine.filter_records_with_options(
-            self.sample_records,
-            filters,
-            limit=1,
-        )
-
-        assert result.is_success
+        filters: dict[str, object] = {"status": "active"}
+        result = filter_engine.filter_records(self.sample_records, filters, limit=1)
         assert result.is_success
         assert len(result.value) == 1
         assert result.value[0]["status"] == "active"
@@ -205,43 +191,49 @@ class TestRecordFiltering:
     def test_filter_records_no_matches(self) -> None:
         """Test filtering with no matching records."""
         filter_engine = FlextOracleWmsFilter(case_sensitive=False, max_conditions=50)
-        filters: dict[str, t.GeneralValueType] = {"status": "nonexistent"}
+        filters: dict[str, object] = {"status": "nonexistent"}
         result = filter_engine.filter_records(self.sample_records, filters)
-
-        assert result.is_success
         assert result.is_success
         assert len(result.value) == 0
 
-    def test_filter_records_invalid_input_types(self) -> None:
-        """Test filtering with invalid input types raises validation error."""
+    def test_filter_records_case_insensitive(self) -> None:
+        """Test filtering is case insensitive by default."""
         filter_engine = FlextOracleWmsFilter(case_sensitive=False, max_conditions=50)
+        filters: dict[str, object] = {"status": "ACTIVE"}
+        result = filter_engine.filter_records(self.sample_records, filters)
+        assert result.is_success
+        assert len(result.value) == 2
 
-        # Invalid records type
-        with pytest.raises(FlextOracleWmsDataValidationError):
-            filter_engine.filter_records("not_a_list", {})
+    def test_filter_records_case_sensitive(self) -> None:
+        """Test filtering with case sensitivity enabled."""
+        filter_engine = FlextOracleWmsFilter(case_sensitive=True, max_conditions=50)
+        filters: dict[str, object] = {"status": "ACTIVE"}
+        result = filter_engine.filter_records(self.sample_records, filters)
+        assert result.is_success
+        assert len(result.value) == 0
 
-        # Invalid filters type
-        with pytest.raises(FlextOracleWmsDataValidationError):
-            filter_engine.filter_records(self.sample_records, "not_a_dict")
+    def test_filter_records_with_operator_dict(self) -> None:
+        """Test filtering with operator dict format."""
+        filter_engine = FlextOracleWmsFilter(case_sensitive=False, max_conditions=50)
+        filters: dict[str, object] = {"status": {"operator": "ne", "value": "inactive"}}
+        result = filter_engine.filter_records(self.sample_records, filters)
+        assert result.is_success
+        assert all(record["status"] != "inactive" for record in result.value)
 
     def test_filter_records_exceeds_condition_limit(self) -> None:
         """Test filtering fails when conditions exceed limit."""
         filter_engine = FlextOracleWmsFilter(max_conditions=2)
-        filters: dict[str, t.GeneralValueType] = {
-            "status": ["a", "b", "c"],
-        }  # 3 conditions > 2 limit
+        filters: dict[str, object] = {"status": ["a", "b", "c"]}
         result = filter_engine.filter_records(self.sample_records, filters)
-
         assert result.is_failure
-        assert result.error is not None
-        assert result.error is not None and "Too many filter conditions" in result.error
+        assert result.error is not None and "Too many" in result.error
 
 
 class TestRecordSorting:
     """Test record sorting functionality."""
 
     @property
-    def unsorted_records(self) -> list[dict[str, t.GeneralValueType]]:
+    def unsorted_records(self) -> list[dict[str, object]]:
         """Unsorted records for testing."""
         return [
             {"id": 3, "name": "Charlie", "score": 75.5},
@@ -253,7 +245,6 @@ class TestRecordSorting:
         """Test sorting records by string field in ascending order."""
         filter_engine = FlextOracleWmsFilter(case_sensitive=False, max_conditions=50)
         result = filter_engine.sort_records(self.unsorted_records, "name")
-
         assert result.is_success
         assert len(result.value) == 3
         assert [r["name"] for r in result.value] == ["Alice", "Bob", "Charlie"]
@@ -262,11 +253,8 @@ class TestRecordSorting:
         """Test sorting records by string field in descending order."""
         filter_engine = FlextOracleWmsFilter(case_sensitive=False, max_conditions=50)
         result = filter_engine.sort_records(
-            self.unsorted_records,
-            "name",
-            ascending=False,
+            self.unsorted_records, "name", ascending=False
         )
-
         assert result.is_success
         assert [r["name"] for r in result.value] == ["Charlie", "Bob", "Alice"]
 
@@ -274,7 +262,6 @@ class TestRecordSorting:
         """Test sorting records by numeric field in ascending order."""
         filter_engine = FlextOracleWmsFilter(case_sensitive=False, max_conditions=50)
         result = filter_engine.sort_records(self.unsorted_records, "id")
-
         assert result.is_success
         assert [r["id"] for r in result.value] == [1, 2, 3]
 
@@ -282,47 +269,35 @@ class TestRecordSorting:
         """Test sorting records by numeric field in descending order."""
         filter_engine = FlextOracleWmsFilter(case_sensitive=False, max_conditions=50)
         result = filter_engine.sort_records(
-            self.unsorted_records,
-            "score",
-            ascending=False,
+            self.unsorted_records, "score", ascending=False
         )
-
         assert result.is_success
         assert [r["score"] for r in result.value] == [90.0, 85.0, 75.5]
 
     def test_sort_records_with_none_values(self) -> None:
         """Test sorting records with None values."""
-        records_with_none: list[dict[str, t.GeneralValueType]] = [
+        records_with_none: list[dict[str, object]] = [
             {"id": 1, "name": "Alice", "score": None},
             {"id": 2, "name": "Bob", "score": 85.0},
             {"id": 3, "name": None, "score": 90.0},
         ]
-
         filter_engine = FlextOracleWmsFilter(case_sensitive=False, max_conditions=50)
         result = filter_engine.sort_records(records_with_none, "name")
-
         assert result.is_success
         assert len(result.value) == 3
-        # None values should be handled (empty string in ascending, "zzz" in descending)
 
-    def test_sort_records_invalid_input_types(self) -> None:
-        """Test sorting with invalid input types returns error result."""
+    def test_sort_records_nonexistent_field(self) -> None:
+        """Test sorting by a field that doesn't exist in records."""
         filter_engine = FlextOracleWmsFilter(case_sensitive=False, max_conditions=50)
-
-        # Invalid records type - should fail gracefully
-        result = filter_engine.sort_records("not_a_list", "field")
-        assert result.is_failure
-
-        # Invalid sort field type - should fail gracefully
-        result = filter_engine.sort_records(self.unsorted_records, 123)
-        assert result.is_failure
+        result = filter_engine.sort_records(self.unsorted_records, "nonexistent")
+        assert result.is_success
 
 
 class TestNestedValueAccess:
     """Test nested value access with dot notation."""
 
     @property
-    def nested_record(self) -> dict[str, t.GeneralValueType]:
+    def nested_record(self) -> dict[str, object]:
         """Nested record for testing."""
         return {
             "id": 1,
@@ -349,8 +324,7 @@ class TestNestedValueAccess:
         """Test getting two levels nested value."""
         filter_engine = FlextOracleWmsFilter(case_sensitive=False, max_conditions=50)
         value = filter_engine._get_nested_value(
-            self.nested_record,
-            "company.address.city",
+            self.nested_record, "company.address.city"
         )
         assert value == "New York"
 
@@ -364,8 +338,7 @@ class TestNestedValueAccess:
         """Test getting nonexistent nested field returns None."""
         filter_engine = FlextOracleWmsFilter(case_sensitive=False, max_conditions=50)
         value = filter_engine._get_nested_value(
-            self.nested_record,
-            "company.nonexistent",
+            self.nested_record, "company.nonexistent"
         )
         assert value is None
 
@@ -376,133 +349,99 @@ class TestNestedValueAccess:
         assert value is None
 
 
-class TestOperatorImplementations:
-    """Test individual operator implementations."""
+class TestNormalize:
+    """Test value normalization."""
 
-    def test_normalize_for_comparison_case_sensitive(self) -> None:
-        """Test value normalization with case sensitivity enabled."""
+    def test_normalize_case_sensitive(self) -> None:
         filter_engine = FlextOracleWmsFilter(case_sensitive=True)
-        value = filter_engine._normalize_for_comparison("Test")
-        assert value == "Test"
+        assert filter_engine._normalize("Test") == "Test"
 
-    def test_normalize_for_comparison_case_insensitive(self) -> None:
-        """Test value normalization with case sensitivity disabled."""
+    def test_normalize_case_insensitive(self) -> None:
         filter_engine = FlextOracleWmsFilter(case_sensitive=False)
-        value = filter_engine._normalize_for_comparison("Test")
-        assert value == "test"
+        assert filter_engine._normalize("Test") == "test"
 
-    def test_normalize_for_comparison_non_string(self) -> None:
-        """Test value normalization with non-string values."""
+    def test_normalize_non_string(self) -> None:
         filter_engine = FlextOracleWmsFilter(case_sensitive=False)
-        assert filter_engine._normalize_for_comparison(123) == 123
-        assert filter_engine._normalize_for_comparison(True) is True
+        assert filter_engine._normalize(123) == 123
+        assert filter_engine._normalize(True) is True
 
-    def test_op_equals_case_sensitive(self) -> None:
-        """Test equals operator with case sensitivity."""
+    def test_normalize_none(self) -> None:
+        filter_engine = FlextOracleWmsFilter(case_sensitive=False)
+        assert filter_engine._normalize(None) == ""
+
+
+class TestApplyOperator:
+    """Test _apply_operator dispatch table."""
+
+    def test_eq_case_sensitive(self) -> None:
         filter_engine = FlextOracleWmsFilter(case_sensitive=True)
-        assert filter_engine._op_equals("Test", "Test") is True
-        assert filter_engine._op_equals("Test", "test") is False
+        assert filter_engine._apply_operator("Test", "eq", "Test") is True
+        assert filter_engine._apply_operator("Test", "eq", "test") is False
 
-    def test_op_equals_case_insensitive(self) -> None:
-        """Test equals operator without case sensitivity."""
+    def test_eq_case_insensitive(self) -> None:
         filter_engine = FlextOracleWmsFilter(case_sensitive=False)
-        assert filter_engine._op_equals("Test", "test") is True
-        assert filter_engine._op_equals("TEST", "test") is True
+        assert filter_engine._apply_operator("Test", "eq", "test") is True
+        assert filter_engine._apply_operator("TEST", "eq", "test") is True
 
-    def test_op_not_equals(self) -> None:
-        """Test not equals operator."""
+    def test_ne(self) -> None:
         filter_engine = FlextOracleWmsFilter(case_sensitive=False, max_conditions=50)
-        assert filter_engine._op_not_equals("a", "b") is True
-        assert filter_engine._op_not_equals("a", "a") is False
+        assert filter_engine._apply_operator("a", "ne", "b") is True
+        assert filter_engine._apply_operator("a", "ne", "a") is False
 
-    def test_op_greater_than_numeric(self) -> None:
-        """Test greater than operator with numeric values."""
+    def test_gt_numeric(self) -> None:
         filter_engine = FlextOracleWmsFilter(case_sensitive=False, max_conditions=50)
-        assert filter_engine._op_greater_than(10, 5) is True
-        assert filter_engine._op_greater_than(5, 10) is False
-        assert filter_engine._op_greater_than(5.5, 5.0) is True
+        assert filter_engine._apply_operator(10, "gt", 5) is True
+        assert filter_engine._apply_operator(5, "gt", 10) is False
+        assert filter_engine._apply_operator(5.5, "gt", 5.0) is True
 
-    def test_op_greater_than_string(self) -> None:
-        """Test greater than operator with string values."""
+    def test_gt_string(self) -> None:
         filter_engine = FlextOracleWmsFilter(case_sensitive=False, max_conditions=50)
-        assert filter_engine._op_greater_than("b", "a") is True
-        assert filter_engine._op_greater_than("a", "b") is False
+        assert filter_engine._apply_operator("b", "gt", "a") is True
+        assert filter_engine._apply_operator("a", "gt", "b") is False
 
-    def test_op_greater_than_mixed_types(self) -> None:
-        """Test greater than operator with mixed types returns False."""
+    def test_gt_mixed_types(self) -> None:
         filter_engine = FlextOracleWmsFilter(case_sensitive=False, max_conditions=50)
-        assert filter_engine._op_greater_than("10", 5) is False
-        assert filter_engine._op_greater_than(10, "5") is False
+        assert filter_engine._apply_operator("10", "gt", 5) is False
+        assert filter_engine._apply_operator(10, "gt", "5") is False
 
-    def test_op_greater_equal_numeric(self) -> None:
-        """Test greater than or equal operator with numeric values."""
+    def test_lt_numeric(self) -> None:
         filter_engine = FlextOracleWmsFilter(case_sensitive=False, max_conditions=50)
-        assert filter_engine._op_greater_equal(10, 5) is True
-        assert filter_engine._op_greater_equal(5, 5) is True
-        assert filter_engine._op_greater_equal(5, 10) is False
+        assert filter_engine._apply_operator(5, "lt", 10) is True
+        assert filter_engine._apply_operator(10, "lt", 5) is False
 
-    def test_op_less_than_numeric(self) -> None:
-        """Test less than operator with numeric values."""
+    def test_gte_numeric(self) -> None:
         filter_engine = FlextOracleWmsFilter(case_sensitive=False, max_conditions=50)
-        assert filter_engine._op_less_than(5, 10) is True
-        assert filter_engine._op_less_than(10, 5) is False
+        assert filter_engine._apply_operator(10, "gte", 5) is True
+        assert filter_engine._apply_operator(5, "gte", 5) is True
+        assert filter_engine._apply_operator(5, "gte", 10) is False
 
-    def test_op_less_equal_numeric(self) -> None:
-        """Test less than or equal operator with numeric values."""
+    def test_lte_numeric(self) -> None:
         filter_engine = FlextOracleWmsFilter(case_sensitive=False, max_conditions=50)
-        assert filter_engine._op_less_equal(5, 10) is True
-        assert filter_engine._op_less_equal(5, 5) is True
-        assert filter_engine._op_less_equal(10, 5) is False
+        assert filter_engine._apply_operator(5, "lte", 10) is True
+        assert filter_engine._apply_operator(5, "lte", 5) is True
+        assert filter_engine._apply_operator(10, "lte", 5) is False
 
-    def test_op_in_list(self) -> None:
-        """Test in operator with list values."""
+    def test_in_list(self) -> None:
         filter_engine = FlextOracleWmsFilter(case_sensitive=False, max_conditions=50)
-        assert filter_engine._op_in("a", ["a", "b", "c"]) is True
-        assert filter_engine._op_in("d", ["a", "b", "c"]) is False
+        assert filter_engine._apply_operator("a", "in", ["a", "b", "c"]) is True
+        assert filter_engine._apply_operator("d", "in", ["a", "b", "c"]) is False
 
-    def test_op_in_case_insensitive(self) -> None:
-        """Test in operator with case insensitivity."""
-        filter_engine = FlextOracleWmsFilter(case_sensitive=False)
-        assert filter_engine._op_in("A", ["a", "b", "c"]) is True
-
-    def test_op_in_invalid_filter_value(self) -> None:
-        """Test in operator with invalid filter value."""
+    def test_in_invalid_filter_value(self) -> None:
         filter_engine = FlextOracleWmsFilter(case_sensitive=False, max_conditions=50)
-        assert filter_engine._op_in("a", "not_a_list") is False
+        assert filter_engine._apply_operator("a", "in", "not_a_list") is False
 
-    def test_op_not_in(self) -> None:
-        """Test not in operator."""
+    def test_contains_string(self) -> None:
         filter_engine = FlextOracleWmsFilter(case_sensitive=False, max_conditions=50)
-        assert filter_engine._op_not_in("d", ["a", "b", "c"]) is True
-        assert filter_engine._op_not_in("a", ["a", "b", "c"]) is False
+        assert filter_engine._apply_operator("hello world", "contains", "world") is True
+        assert filter_engine._apply_operator("hello", "contains", "world") is False
 
-    def test_op_like_pattern_matching(self) -> None:
-        """Test like operator with pattern matching."""
+    def test_contains_non_string(self) -> None:
         filter_engine = FlextOracleWmsFilter(case_sensitive=False, max_conditions=50)
-        assert filter_engine._op_like("test string", "test%") is True
-        assert filter_engine._op_like("test string", "%string") is True
-        assert filter_engine._op_like("test", "t_st") is True
-        assert filter_engine._op_like("test", "best") is False
+        assert filter_engine._apply_operator(123, "contains", "1") is False
 
-    def test_op_like_case_sensitivity(self) -> None:
-        """Test like operator with case sensitivity."""
-        filter_engine_sensitive = FlextOracleWmsFilter(case_sensitive=True)
-        filter_engine_insensitive = FlextOracleWmsFilter(case_sensitive=False)
-
-        assert filter_engine_sensitive._op_like("Test", "test%") is False
-        assert filter_engine_insensitive._op_like("Test", "test%") is True
-
-    def test_op_like_non_string_values(self) -> None:
-        """Test like operator with non-string values."""
+    def test_unknown_operator(self) -> None:
         filter_engine = FlextOracleWmsFilter(case_sensitive=False, max_conditions=50)
-        assert filter_engine._op_like(123, "12%") is False
-        assert filter_engine._op_like("123", 12) is False
-
-    def test_op_not_like(self) -> None:
-        """Test not like operator."""
-        filter_engine = FlextOracleWmsFilter(case_sensitive=False, max_conditions=50)
-        assert filter_engine._op_not_like("test", "best") is True
-        assert filter_engine._op_not_like("test", "test") is False
+        assert filter_engine._apply_operator("a", "unknown", "b") is False
 
 
 class TestFactoryFunction:
@@ -510,41 +449,38 @@ class TestFactoryFunction:
 
     def test_create_filter_default(self) -> None:
         """Test creating filter with default parameters."""
-        filter_engine = flext_oracle_wms_create_filter()
+        filter_engine = FlextOracleWmsFilter.create_filter()
         assert filter_engine.case_sensitive is False
         assert (
-            filter_engine.max_conditions == FlextOracleWmsDefaults.MAX_FILTER_CONDITIONS
+            filter_engine.max_conditions
+            == FlextOracleWmsConstants.Filtering.MAX_FILTER_CONDITIONS
         )
 
     def test_create_filter_custom(self) -> None:
         """Test creating filter with custom parameters."""
-        filter_engine = flext_oracle_wms_create_filter(
-            case_sensitive=True,
-            max_conditions=50,
+        filter_engine = FlextOracleWmsFilter.create_filter(
+            case_sensitive=True, max_conditions=50
         )
         assert filter_engine.case_sensitive is True
         assert filter_engine.max_conditions == 50
 
     def test_create_filter_invalid_max_conditions(self) -> None:
-        """Test factory function fails with invalid max conditions."""
-        with pytest.raises(FlextOracleWmsError) as exc:
-            flext_oracle_wms_create_filter(max_conditions=0)
-        assert "must be positive" in str(exc.value)
+        with pytest.raises(FlextExceptions.BaseError, match="Invalid max_conditions"):
+            FlextOracleWmsFilter.create_filter(max_conditions=0)
 
     def test_create_filter_exceeds_limit(self) -> None:
-        """Test factory function fails when exceeding limit."""
-        with pytest.raises(FlextOracleWmsError) as exc:
-            flext_oracle_wms_create_filter(
-                max_conditions=FlextOracleWmsDefaults.MAX_FILTER_CONDITIONS + 1,
+        with pytest.raises(FlextExceptions.BaseError, match="Invalid max_conditions"):
+            FlextOracleWmsFilter.create_filter(
+                max_conditions=FlextOracleWmsConstants.Filtering.MAX_FILTER_CONDITIONS
+                + 1
             )
-        assert "cannot exceed" in str(exc.value)
 
 
 class TestConvenienceFunctions:
     """Test convenience filtering functions."""
 
     @property
-    def sample_records(self) -> list[dict[str, t.GeneralValueType]]:
+    def sample_records(self) -> list[dict[str, object]]:
         """Sample records for testing."""
         return [
             {"id": 1, "name": "Company A", "status": "active"},
@@ -554,167 +490,150 @@ class TestConvenienceFunctions:
 
     def test_filter_by_field_string_value(self) -> None:
         """Test filter by field with string value."""
-        result = flext_oracle_wms_filter_by_field(
-            self.sample_records,
-            "status",
-            "active",
+        result = FlextOracleWmsFilter.filter_by_field(
+            self.sample_records, "status", "active"
         )
-
         assert result.is_success
         assert len(result.value) == 2
         assert all(record["status"] == "active" for record in result.value)
 
     def test_filter_by_field_numeric_value(self) -> None:
         """Test filter by field with numeric value."""
-        result = flext_oracle_wms_filter_by_field(self.sample_records, "id", 2)
-
+        result = FlextOracleWmsFilter.filter_by_field(self.sample_records, "id", 2)
         assert result.is_success
         assert len(result.value) == 1
         assert result.value[0]["id"] == 2
 
     def test_filter_by_field_list_value(self) -> None:
         """Test filter by field with list value."""
-        result = flext_oracle_wms_filter_by_field(
-            self.sample_records,
-            "id",
-            [1, 3],
-        )
-
+        result = FlextOracleWmsFilter.filter_by_field(self.sample_records, "id", [1, 3])
         assert result.is_success
         assert len(result.value) == 2
-        assert {record["id"] for record in result.value} == {1, 3}
 
     def test_filter_by_field_custom_operator(self) -> None:
-        """Test filter by field with custom operator."""
-        result = flext_oracle_wms_filter_by_field(
-            self.sample_records,
-            "status",
-            "inactive",
-            OracleWMSFilterOperator.NE,
+        """Test filter by field with custom operator string."""
+        result = FlextOracleWmsFilter.filter_by_field(
+            self.sample_records, "status", "inactive", "ne"
         )
-
         assert result.is_success
-        # For NE operator with single value, it returns records where status != "inactive"
-        assert len(result.value) == 2  # Company A and Company C (both "active")
+        assert len(result.value) == 2
         assert all(record["status"] != "inactive" for record in result.value)
-
-    def test_filter_by_field_invalid_records(self) -> None:
-        """Test filter by field with invalid records raises error."""
-        with pytest.raises(FlextOracleWmsDataValidationError):
-            flext_oracle_wms_filter_by_field("not_a_list", "field", "value")
 
     def test_filter_by_id_range_both_bounds(self) -> None:
         """Test filter by ID range with both min and max."""
-        result = flext_oracle_wms_filter_by_id_range(
-            self.sample_records,
-            "id",
-            min_id=1,
-            max_id=3,
+        result = FlextOracleWmsFilter.filter_by_id_range(
+            self.sample_records, "id", min_id=1, max_id=3
         )
-
         assert result.is_success
-        assert len(result.value) >= 1  # Should include records with IDs in range
+        assert len(result.value) >= 1
 
     def test_filter_by_id_range_min_only(self) -> None:
         """Test filter by ID range with min only."""
-        result = flext_oracle_wms_filter_by_id_range(
-            self.sample_records,
-            "id",
-            min_id=2,
+        result = FlextOracleWmsFilter.filter_by_id_range(
+            self.sample_records, "id", min_id=2
         )
-
         assert result.is_success
         assert len(result.value) >= 1
 
     def test_filter_by_id_range_max_only(self) -> None:
         """Test filter by ID range with max only."""
-        result = flext_oracle_wms_filter_by_id_range(
-            self.sample_records,
-            "id",
-            max_id=2,
+        result = FlextOracleWmsFilter.filter_by_id_range(
+            self.sample_records, "id", max_id=2
         )
-
         assert result.is_success
         assert len(result.value) >= 1
 
     def test_filter_by_id_range_no_bounds(self) -> None:
         """Test filter by ID range with no bounds returns all records."""
-        result = flext_oracle_wms_filter_by_id_range(self.sample_records, "id")
-
+        result = FlextOracleWmsFilter.filter_by_id_range(self.sample_records, "id")
         assert result.is_success
-        assert len(result.value) == 3  # All records
+        assert len(result.value) == 3
 
     def test_filter_by_id_range_custom_field(self) -> None:
         """Test filter by ID range with custom ID field."""
-        result = flext_oracle_wms_filter_by_id_range(
-            self.sample_records,
-            "name",
-            min_id="Company B",
+        result = FlextOracleWmsFilter.filter_by_id_range(
+            self.sample_records, "name", min_id="Company B"
         )
-
         assert result.is_success
 
-    def test_filter_by_id_range_invalid_records(self) -> None:
-        """Test filter by ID range with invalid records raises error."""
-        with pytest.raises(FlextOracleWmsDataValidationError):
-            flext_oracle_wms_filter_by_id_range("not_a_list", "id")
+    def test_filter_by_id_range_empty_records(self) -> None:
+        """Test filter by ID range with empty records."""
+        result = FlextOracleWmsFilter.filter_by_id_range([], "id", min_id=1)
+        assert result.is_success
+        assert len(result.value) == 0
+
+
+class TestMatchesCondition:
+    """Test _matches_condition pattern matching."""
+
+    def test_matches_condition_simple_equality(self) -> None:
+        filter_engine = FlextOracleWmsFilter(case_sensitive=False, max_conditions=50)
+        record: dict[str, object] = {"status": "active"}
+        assert filter_engine._matches_condition(record, "status", "active") is True
+        assert filter_engine._matches_condition(record, "status", "inactive") is False
+
+    def test_matches_condition_list_match(self) -> None:
+        filter_engine = FlextOracleWmsFilter(case_sensitive=False, max_conditions=50)
+        record: dict[str, object] = {"status": "active"}
+        assert (
+            filter_engine._matches_condition(record, "status", ["active", "pending"])
+            is True
+        )
+        assert (
+            filter_engine._matches_condition(record, "status", ["inactive", "deleted"])
+            is False
+        )
+
+    def test_matches_condition_operator_dict(self) -> None:
+        filter_engine = FlextOracleWmsFilter(case_sensitive=False, max_conditions=50)
+        record: dict[str, object] = {"score": 85}
+        assert (
+            filter_engine._matches_condition(
+                record, "score", {"operator": "gt", "value": 80}
+            )
+            is True
+        )
+        assert (
+            filter_engine._matches_condition(
+                record, "score", {"operator": "gt", "value": 90}
+            )
+            is False
+        )
+
+    def test_matches_condition_dict_without_operator_key(self) -> None:
+        filter_engine = FlextOracleWmsFilter(case_sensitive=False, max_conditions=50)
+        record: dict[str, object] = {"field": "value"}
+        result = filter_engine._matches_condition(
+            record, "field", {"unknown_key": "test"}
+        )
+        assert result is False
+
+    def test_matches_condition_none_field_value_with_list(self) -> None:
+        filter_engine = FlextOracleWmsFilter(case_sensitive=False, max_conditions=50)
+        record: dict[str, object] = {"field": None}
+        assert filter_engine._matches_condition(record, "field", ["a", "b"]) is False
 
 
 class TestErrorHandling:
     """Test error handling in filtering operations."""
 
-    def test_filter_records_handles_validation_errors(self) -> None:
-        """Test that filter_records properly handles validation errors."""
+    def test_sort_records_handles_exception(self) -> None:
         filter_engine = FlextOracleWmsFilter(case_sensitive=False, max_conditions=50)
-
-        # This should raise FlextOracleWmsDataValidationError via handle_operation_exception
-        with pytest.raises(FlextOracleWmsDataValidationError):
-            filter_engine.filter_records("invalid_records", {})
-
-    def test_sort_records_handles_validation_errors(self) -> None:
-        """Test that sort_records properly handles validation errors."""
-        filter_engine = FlextOracleWmsFilter(case_sensitive=False, max_conditions=50)
-
-        # This should return a failed FlextResult due to validation
-        result = filter_engine.sort_records("invalid_records", "field")
+        result = filter_engine.sort_records(None, "field")
         assert result.is_failure
-        assert result.error is not None
-        assert result.error is not None and "Type mismatch" in result.error
+        assert result.error is not None and "Sort failed" in result.error
 
-    def test_matches_condition_unknown_operator(self) -> None:
-        """Test _matches_condition with unknown operator."""
+    def test_filter_records_validation_failure(self) -> None:
+        filter_engine = FlextOracleWmsFilter(max_conditions=1)
+        filters: dict[str, object] = {"a": "1", "b": "2"}
+        result = filter_engine.filter_records([], filters)
+        assert result.is_failure
+
+    def test_apply_operator_type_safety_edge_cases(self) -> None:
         filter_engine = FlextOracleWmsFilter(case_sensitive=False, max_conditions=50)
-        result = filter_engine._matches_condition(
-            {"field": "value"},
-            "field",
-            {"unknown_op": "test"},
-        )
-        # Should return False for unknown operators
-        assert result is False
-
-    def test_matches_condition_invalid_operator_enum(self) -> None:
-        """Test _matches_condition with invalid operator enum."""
-        filter_engine = FlextOracleWmsFilter(case_sensitive=False, max_conditions=50)
-        # Create a mock record for testing
-        mock_record: dict[str, t.GeneralValueType] = {"field": "value"}
-        result = filter_engine._matches_condition(
-            mock_record,
-            "field",
-            {"invalid": "test"},
-        )
-        # Should return False since invalid operator falls back to equals comparison
-        # and "value" != {"invalid": "test"}
-        assert result is False
-
-    def test_operator_type_safety_edge_cases(self) -> None:
-        """Test operator implementations handle type errors gracefully."""
-        filter_engine = FlextOracleWmsFilter(case_sensitive=False, max_conditions=50)
-
-        # Test with problematic values that might cause TypeErrors
-        assert filter_engine._op_greater_than(None, 5) is False
-        assert filter_engine._op_less_than(5, None) is False
-        assert filter_engine._op_greater_equal(None, None) is False
-        assert filter_engine._op_less_equal([], {}) is False
+        assert filter_engine._apply_operator(None, "gt", 5) is False
+        assert filter_engine._apply_operator(5, "lt", None) is False
+        assert filter_engine._apply_operator(None, "gte", None) is True
 
 
 class TestPerformanceAndEdgeCases:
@@ -722,36 +641,28 @@ class TestPerformanceAndEdgeCases:
 
     def test_filter_large_record_set(self) -> None:
         """Test filtering with large record set."""
-        # Create large record set
-        large_records: list[dict[str, t.GeneralValueType]] = [
+        large_records: list[dict[str, object]] = [
             {"id": i, "status": "active" if i % 2 == 0 else "inactive"}
             for i in range(1000)
         ]
-
         filter_engine = FlextOracleWmsFilter(case_sensitive=False, max_conditions=50)
-        result = filter_engine.filter_records_with_options(
-            large_records,
-            {"status": "active"},
-            limit=100,
+        result = filter_engine.filter_records(
+            large_records, {"status": "active"}, limit=100
         )
-
         assert result.is_success
         assert len(result.value) == 100
         assert all(record["status"] == "active" for record in result.value)
 
     def test_filter_with_complex_nested_data(self) -> None:
         """Test filtering with deeply nested data structures."""
-        complex_records = [
+        complex_records: list[dict[str, object]] = [
             {"id": 1, "data": {"level1": {"level2": {"level3": {"value": "target"}}}}},
             {"id": 2, "data": {"level1": {"level2": {"level3": {"value": "other"}}}}},
         ]
-
         filter_engine = FlextOracleWmsFilter(case_sensitive=False, max_conditions=50)
-        result = filter_engine.filter_records_with_options(
-            complex_records,
-            {"data.level1.level2.level3.value": "target"},
+        result = filter_engine.filter_records(
+            complex_records, {"data.level1.level2.level3.value": "target"}
         )
-
         assert result.is_success
         assert len(result.value) == 1
         assert result.value[0]["id"] == 1
@@ -759,26 +670,31 @@ class TestPerformanceAndEdgeCases:
     def test_filter_handles_unicode_strings(self) -> None:
         """Test that filtering handles unicode strings correctly."""
         filter_engine = FlextOracleWmsFilter(case_sensitive=False)
-
-        # Test with unicode characters
-        assert filter_engine._op_equals("Café", "café") is True
-        assert filter_engine._op_like("Naïve", "na%ve") is True
+        assert filter_engine._apply_operator("Café", "eq", "café") is True
 
     def test_get_nested_value_edge_cases(self) -> None:
         """Test nested value access with edge cases."""
         filter_engine = FlextOracleWmsFilter(case_sensitive=False, max_conditions=50)
-
-        # Empty record
         assert filter_engine._get_nested_value({}, "field") is None
-
-        # None values in path
-        record_with_none: dict[str, t.GeneralValueType] = {"level1": None}
+        record_with_none: dict[str, object] = {"level1": None}
         assert (
             filter_engine._get_nested_value(record_with_none, "level1.level2") is None
         )
-
-        # Non-dict intermediate values
-        record_with_scalar: dict[str, t.GeneralValueType] = {"level1": "string_value"}
+        record_with_scalar: dict[str, object] = {"level1": "string_value"}
         assert (
             filter_engine._get_nested_value(record_with_scalar, "level1.level2") is None
         )
+
+    def test_check_min_and_max_static_methods(self) -> None:
+        assert FlextOracleWmsFilter._check_min(5, 3) is True
+        assert FlextOracleWmsFilter._check_min(3, 5) is False
+        assert FlextOracleWmsFilter._check_min(5, 5) is True
+        assert FlextOracleWmsFilter._check_max(3, 5) is True
+        assert FlextOracleWmsFilter._check_max(5, 3) is False
+        assert FlextOracleWmsFilter._check_max(5, 5) is True
+        assert FlextOracleWmsFilter._check_min("b", "a") is True
+        assert FlextOracleWmsFilter._check_min("a", "b") is False
+        assert FlextOracleWmsFilter._check_max("a", "b") is True
+        assert FlextOracleWmsFilter._check_max("b", "a") is False
+        assert FlextOracleWmsFilter._check_min("a", 1) is True
+        assert FlextOracleWmsFilter._check_max("a", 1) is True

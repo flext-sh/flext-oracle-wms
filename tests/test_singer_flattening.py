@@ -1,158 +1,137 @@
-"""Comprehensive test for Oracle WMS Singer flattening functionality.
+"""Test Oracle WMS models - Entity and ApiResponse functionality.
+
+Replaces legacy flattening tests (module removed).
 
 Copyright (c) 2025 FLEXT Team. All rights reserved.
 SPDX-License-Identifier: MIT
 
 """
 
+from __future__ import annotations
+
+import pytest
+from pydantic import ValidationError
+
+from flext_oracle_wms import FlextOracleWmsModels as m
 
 
-    FlextOracleWmsDataFlattener,
-    flext_oracle_wms_create_data_flattener,
-)
+class TestFlextOracleWmsEntity:
+    """Test the Oracle WMS Entity model."""
 
+    def test_entity_creation_valid(self) -> None:
+        """Test entity creation with valid parameters."""
+        entity = m.OracleWms.Entity(name="inventory", endpoint="/inventory")
+        assert entity.name == "inventory"
+        assert entity.endpoint == "/inventory"
+        assert entity.description is None
+        assert entity.primary_key is None
+        assert entity.replication_key is None
+        assert entity.supports_incremental is False
 
-class TestFlextOracleWmsDataFlattener:
-    """Test the Oracle WMS data flattener class."""
-
-    def test_flattener_creation_default(self) -> None:
-        """Test flattener creation with default config."""
-        flattener = FlextOracleWmsDataFlattener()
-        assert isinstance(flattener, FlextOracleWmsDataFlattener)
-        assert flattener.separator == "_"
-        assert flattener.max_depth == 5
-
-    def test_flattener_creation_custom_config(self) -> None:
-        """Test flattener creation with custom config."""
-        flattener = FlextOracleWmsDataFlattener(
-            separator=".",
-            max_depth=3,
-            preserve_lists=False,
+    def test_entity_creation_all_fields(self) -> None:
+        """Test entity creation with all fields."""
+        entity = m.OracleWms.Entity(
+            name="orders",
+            endpoint="/orders",
+            description="Order data",
+            primary_key="order_id",
+            replication_key="updated_at",
+            supports_incremental=True,
         )
-        assert flattener.separator == "."
-        assert flattener.max_depth == 3
-        assert flattener.preserve_lists is False
+        assert entity.name == "orders"
+        assert entity.endpoint == "/orders"
+        assert entity.description == "Order data"
+        assert entity.primary_key == "order_id"
+        assert entity.replication_key == "updated_at"
+        assert entity.supports_incremental is True
 
-    def test_flatten_simple_record(self) -> None:
-        """Test flattening a simple record."""
-        flattener = FlextOracleWmsDataFlattener()
-        record: dict[str, t.GeneralValueType] = {
-            "id": "123",
-            "name": "Test Item",
-            "status": "active",
-        }
+    def test_entity_name_min_length(self) -> None:
+        """Test entity name must have min length 1."""
+        with pytest.raises(ValidationError):
+            m.OracleWms.Entity(name="", endpoint="/test")
 
-        result = flattener.flatten_records([record])
-        assert isinstance(result, list)
-        assert len(result) == 1
-        assert result[0]["id"] == "123"
-        assert result[0]["name"] == "Test Item"
+    def test_entity_endpoint_pattern(self) -> None:
+        """Test entity endpoint must start with /."""
+        with pytest.raises(ValidationError):
+            m.OracleWms.Entity(name="test", endpoint="no-slash")
 
-    def test_flatten_nested_record(self) -> None:
-        """Test flattening a nested record."""
-        flattener = FlextOracleWmsDataFlattener()
-        record: dict[str, t.GeneralValueType] = {
-            "id": "123",
-            "details": {
-                "name": "Test Item",
-                "category": {"id": "cat1", "name": "Category 1"},
-            },
-        }
-
-        result = flattener.flatten_records([record])
-        assert isinstance(result, list)
-        assert result is not None
-        assert len(result) == 1
-        flattened = result[0]
-        assert flattened["id"] == "123"
-        assert flattened["details_name"] == "Test Item"
-        assert flattened["details_category_id"] == "cat1"
-        assert flattened["details_category_name"] == "Category 1"
-
-    def test_unflatten_record(self) -> None:
-        """Test unflattening a flattened record."""
-        flattener = FlextOracleWmsDataFlattener()
-        flattened_record: dict[str, t.GeneralValueType] = {
-            "id": "123",
-            "details_name": "Test Item",
-            "details_category_id": "cat1",
-            "details_category_name": "Category 1",
-        }
-
-        result = flattener.unflatten_records([flattened_record])
+    def test_entity_validate_entity_success(self) -> None:
+        """Test entity validation success."""
+        entity = m.OracleWms.Entity(name="inventory", endpoint="/inventory")
+        result = entity.validate_entity()
         assert result.is_success
-        assert result.data is not None
-        assert len(result.data) == 1
-        unflattened = result.data[0]
-        assert unflattened["id"] == "123"
-        # Note: Current implementation uses dot notation, not the original nested structure
 
-    def test_get_flattening_stats(self) -> None:
-        """Test getting flattening statistics."""
-        flattener = FlextOracleWmsDataFlattener()
-        records: list[dict[str, t.GeneralValueType]] = [
-            {"id": "1", "name": "Item 1"},
-            {"id": "2", "details": {"name": "Item 2", "type": "special"}},
-            {"id": "3", "info": {"nested": {"deep": "value"}}},
-        ]
+    def test_entity_validate_entity_name_too_long(self) -> None:
+        """Test entity validation fails for long name."""
+        entity = m.OracleWms.Entity(name="x" * 101, endpoint="/test")
+        result = entity.validate_entity()
+        assert result.is_failure
+        assert result.error is not None
+        assert "too long" in result.error
 
-        result = flattener.get_flattening_stats(records)
-        assert result.is_success
-        assert result.data is not None
-        stats = result.data
-        assert stats["total_records"] == 3
-        assert "max_depth" in stats
-        assert "nested_records" in stats
+    def test_entity_namespace_access(self) -> None:
+        """Test entity accessible via namespace."""
+        entity = m.OracleWms.Entity(name="test", endpoint="/test")
+        assert isinstance(entity, m.OracleWms.Entity)
 
 
-class TestFlattenerFactoryFunction:
-    """Test the flattener factory function."""
+class TestFlextOracleWmsApiResponse:
+    """Test the Oracle WMS ApiResponse model."""
 
-    def test_create_data_flattener_default(self) -> None:
-        """Test flattener creation function with defaults."""
-        flattener = flext_oracle_wms_create_data_flattener()
-        assert isinstance(flattener, FlextOracleWmsDataFlattener)
-        assert flattener.separator == "_"
-        assert flattener.max_depth == 5
+    def test_response_defaults(self) -> None:
+        """Test response creation with defaults."""
+        response = m.OracleWms.ApiResponse()
+        assert response.data == {}
+        assert response.status_code == 200
+        assert response.success is True
+        assert response.error_message is None
 
-    def test_create_data_flattener_with_config(self) -> None:
-        """Test flattener creation function with config."""
-        flattener = flext_oracle_wms_create_data_flattener(
-            separator=".",
-            max_depth=3,
-            preserve_lists=False,
+    def test_response_custom_fields(self) -> None:
+        """Test response creation with custom fields."""
+        response = m.OracleWms.ApiResponse(
+            data={"key": "value"}, status_code=201, success=True, error_message=None
         )
-        assert flattener.separator == "."
-        assert flattener.max_depth == 3
-        assert flattener.preserve_lists is False
+        assert response.data == {"key": "value"}
+        assert response.status_code == 201
 
+    def test_response_error(self) -> None:
+        """Test response with error."""
+        response = m.OracleWms.ApiResponse(
+            success=False, error_message="Something went wrong", status_code=500
+        )
+        assert response.success is False
+        assert response.error_message == "Something went wrong"
 
-class TestFlattenerErrorHandling:
-    """Test error handling in flattener operations."""
-
-    def test_flatten_empty_records(self) -> None:
-        """Test flattening empty records list."""
-        flattener = FlextOracleWmsDataFlattener()
-
-        result = flattener.flatten_records([])
-        assert isinstance(result, list)
-        assert len(result) == 0
-
-    def test_unflatten_empty_records(self) -> None:
-        """Test unflattening empty records list."""
-        flattener = FlextOracleWmsDataFlattener()
-
-        result = flattener.unflatten_records([])
+    def test_response_validate_success(self) -> None:
+        """Test response validation success."""
+        response = m.OracleWms.ApiResponse(success=True)
+        result = response.validate_response()
         assert result.is_success
-        assert result.data is not None
-        assert len(result.data) == 0
 
-    def test_stats_empty_records(self) -> None:
-        """Test getting stats for empty records."""
-        flattener = FlextOracleWmsDataFlattener()
+    def test_response_validate_failure_needs_message(self) -> None:
+        """Test failed response without error message fails validation."""
+        response = m.OracleWms.ApiResponse(success=False, error_message=None)
+        result = response.validate_response()
+        assert result.is_failure
+        assert result.error is not None
+        assert "error message" in result.error
 
-        result = flattener.get_flattening_stats([])
+    def test_response_validate_failure_with_message(self) -> None:
+        """Test failed response with error message passes validation."""
+        response = m.OracleWms.ApiResponse(
+            success=False, error_message="Error occurred"
+        )
+        result = response.validate_response()
         assert result.is_success
-        assert result.data is not None
-        stats = result.data
-        assert stats["total_records"] == 0
+
+    def test_response_status_code_bounds(self) -> None:
+        """Test status code validation bounds."""
+        with pytest.raises(ValidationError):
+            m.OracleWms.ApiResponse(status_code=199)
+        with pytest.raises(ValidationError):
+            m.OracleWms.ApiResponse(status_code=600)
+
+    def test_response_namespace_access(self) -> None:
+        """Test response accessible via namespace."""
+        response = m.OracleWms.ApiResponse(data={"test": True}, status_code=200)
+        assert isinstance(response, m.OracleWms.ApiResponse)

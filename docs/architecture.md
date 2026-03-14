@@ -28,7 +28,7 @@ Based on source code analysis:
 - **6,854 lines of code** across 17 Python modules
 - **71 classes** with 248 methods/functions
 - **22 API endpoint definitions** (mostly legacy interfaces)
-- **FlextResult integration** for error handling
+- **r integration** for error handling
 - **MyPy strict compliance** with type safety
 
 ### Module Structure
@@ -102,7 +102,7 @@ ______________________________________________________________________
 
 - [flext-core Foundation](https://github.com/organization/flext/tree/main/flext-core/docs/architecture/overview.md) - Clean architecture and CQRS patterns
 - [flext-core Service Patterns](https://github.com/organization/flext/tree/main/flext-core/docs/guides/service-patterns.md) - Service patterns and dependency injection
-- [flext-db-oracle Integration](https://github.com/organization/flext/tree/main/flext-db-oracle/CLAUDE.md) - Oracle database integration
+- [flext-db-oracle Integration](https://github.com/organization/flext/tree/main/flext-db-oracle/AGENTS.md) - Oracle database integration
 
 **External Resources**:
 

@@ -9,7 +9,7 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from flext_tests.protocols import FlextTestsProtocols
+from flext_tests import FlextTestsProtocols
 
 from flext_oracle_wms.protocols import FlextOracleWmsProtocols
 
@@ -18,9 +18,9 @@ class TestsFlextOracleWmsProtocols(FlextTestsProtocols, FlextOracleWmsProtocols)
     """Test protocols combining FlextTestsProtocols and FlextOracleWmsProtocols.
 
     Provides access to:
-    - tp.Tests.Docker.* (from FlextTestsProtocols)
-    - tp.Tests.Factory.* (from FlextTestsProtocols)
-    - tp.OracleWms.* (from FlextOracleWmsProtocols)
+    - p.Tests.Docker.* (from FlextTestsProtocols)
+    - p.Tests.Factory.* (from FlextTestsProtocols)
+    - p.OracleWms.* (from FlextOracleWmsProtocols)
     """
 
     class Tests:
@@ -33,8 +33,6 @@ class TestsFlextOracleWmsProtocols(FlextTestsProtocols, FlextOracleWmsProtocols)
             """OracleWms-specific test protocols."""
 
 
-# Runtime aliases
 p = TestsFlextOracleWmsProtocols
-tp = TestsFlextOracleWmsProtocols
-
-__all__ = ["TestsFlextOracleWmsProtocols", "p", "tp"]
+p = TestsFlextOracleWmsProtocols
+__all__ = ["TestsFlextOracleWmsProtocols", "p"]

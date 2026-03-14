@@ -252,6 +252,7 @@ pytest --cov=src/flext_oracle_wms --cov-report=xml
 import pytest
 from flext_oracle_wms import FlextOracleWmsClient, FlextOracleWmsClientSettings
 
+
 class TestComponentName:
     """Test class for ComponentName with comprehensive scenarios."""
 

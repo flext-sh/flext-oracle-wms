@@ -80,7 +80,7 @@ from flext_core import FlextModels
 from flext_core import FlextProcessors
 from flext_core import p
 from flext_core import FlextRegistry
-from flext_core import FlextResult
+from flext_core import r
 from flext_core import FlextRuntime
 from flext_core import FlextService
 from flext_core import t
@@ -118,7 +118,7 @@ from flext_oracle_wms import FlextOracleWmsModuleSettings, FlextOracleWmsApiVers
 
 config = FlextOracleWmsModuleSettings(
     api_version=FlextOracleWmsApiVersion.V1,  # Use enum, not string
-    oracle_wms_timeout=30,                    # Use int, not float
+    oracle_wms_timeout=30,  # Use int, not float
 )
 ```
 
@@ -297,11 +297,12 @@ from flext_core import FlextModels
 from flext_core import FlextProcessors
 from flext_core import p
 from flext_core import FlextRegistry
-from flext_core import FlextResult
+from flext_core import r
 from flext_core import FlextRuntime
 from flext_core import FlextService
 from flext_core import t
 from flext_core import u
+
 logger = FlextLogger(__name__)
 logger.debug("Debug message")
 ```

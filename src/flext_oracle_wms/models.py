@@ -1,6 +1,6 @@
 """FLEXT WMS Models - Generic WMS Domain Model.
 
- domain-driven design with minimal declarations using composition.
+domain-driven design with minimal declarations using composition.
 Python 3.13+ syntax, one class per module, SOLID principles. Generic for any WMS.
 
 Copyright (c) 2025 FLEXT Team. All rights reserved.
@@ -9,17 +9,15 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from dataclasses import dataclass, field
 from typing import Annotated, Literal
 
-from flext_core import FlextModels, FlextResult, FlextTypes as t
-from flext_core.utilities import u
-from pydantic import Field, StringConstraints
+from flext_core import FlextModels, r, t
+from pydantic import BaseModel, ConfigDict, Field, StringConstraints
 
-from flext_oracle_wms.constants import c
+from flext_oracle_wms.constants import FlextOracleWmsConstants as c
 
 
-class FlextWmsModels(FlextModels):
+class FlextOracleWmsModels(FlextModels):
     """Generic WMS domain models with composition patterns.
 
     Single class per module following DDD, SOLID, and flext-core patterns.
@@ -27,30 +25,26 @@ class FlextWmsModels(FlextModels):
     Generic for any WMS system.
     """
 
-    def __init_subclass__(cls, **kwargs: object) -> None:
-        """Warn when FlextWmsModels is subclassed directly."""
+    def __init_subclass__(cls, **kwargs: t.Scalar) -> None:
+        """Allow downstream projects to inherit FlextOracleWmsModels for namespace composition."""
         super().__init_subclass__(**kwargs)
-        u.Deprecation.warn_once(
-            f"subclass:{cls.__name__}",
-            "Subclassing FlextWmsModels is deprecated. Use FlextModels.Wms instead.",
-        )
 
     # =========================================================================
     # TYPE ALIASES - Advanced composition for minimal declarations
     # =========================================================================
 
-    type TRecord = dict[str, t.GeneralValueType]
-    type TRecordBatch = list[dict[str, t.GeneralValueType]]
-    type TSchema = dict[str, dict[str, t.GeneralValueType]]
-    type TApiResponse = dict[str, t.GeneralValueType]
-    type TApiVersion = Literal["v2", "v1", "legacy"]
+    type TRecord = dict[str, t.ContainerValue]
+    type TRecordBatch = list[dict[str, t.ContainerValue]]
+    type TSchema = dict[str, dict[str, t.ContainerValue]]
+    type TApiResponse = dict[str, t.ContainerValue]
+    type TApiVersion = Literal["v2", "v1"]
     type TEntityId = Annotated[str, StringConstraints(min_length=1, max_length=100)]
     type TEntityName = Annotated[
         str,
         StringConstraints(min_length=1, max_length=50, pattern=r"^[a-z0-9_]+$"),
     ]
-    type TFilterValue = str | int | float | bool | None
-    type TFilters = dict[str, str | int | float | bool | None]
+    type TFilterValue = t.Scalar | None
+    type TFilters = dict[str, t.Scalar | None]
     type TPaginationInfo = dict[str, int]
     type TTimeout = Annotated[int, Field(ge=1, le=300)]
 
@@ -58,97 +52,124 @@ class FlextWmsModels(FlextModels):
     # DOMAIN ENTITIES - Composed DDD patterns
     # =========================================================================
 
-    @dataclass
-    class WmsEntity:
+    class WmsEntity(BaseModel):
         """Base WMS entity with identity."""
 
-        id: str = ""
-        name: str = ""
-        created_at: str | None = field(default=None)
-        updated_at: str | None = field(default=None)
+        model_config = ConfigDict(extra="forbid")
 
-    @dataclass
-    class OracleWms(WmsEntity):
-        """Oracle WMS entity (alias/compatibility)."""
+        id: Annotated[str, Field(default="", description="Entity identifier")]
+        name: Annotated[str, Field(default="", description="Entity name")]
+        created_at: Annotated[
+            str | None, Field(default=None, description="Creation timestamp")
+        ]
+        updated_at: Annotated[
+            str | None,
+            Field(
+                default=None,
+                description="Last update timestamp",
+            ),
+        ]
 
-        pass
-
-    @dataclass
     class InventoryItem(WmsEntity):
         """Inventory domain entity."""
 
-        sku: str = ""
-        quantity: int = 0
-        location_id: str = ""
-        status: str = "active"
+        sku: Annotated[str, Field(default="", description="Stock keeping unit")]
+        quantity: Annotated[int, Field(default=0, description="Item quantity", ge=0)]
+        location_id: Annotated[
+            str, Field(default="", description="Storage location identifier")
+        ]
+        status: Annotated[str, Field(default="active", description="Item status")]
 
-    @dataclass
     class Order(WmsEntity):
         """Order domain entity."""
 
-        customer_id: str = ""
-        status: str = "pending"
-        total_amount: float = 0.0
-        items: list[dict[str, t.GeneralValueType]] = field(default_factory=list)
+        customer_id: Annotated[
+            str, Field(default="", description="Customer identifier")
+        ]
+        status: Annotated[str, Field(default="pending", description="Order status")]
+        total_amount: Annotated[
+            float,
+            Field(
+                default=0.0,
+                description="Total order amount",
+                ge=0.0,
+            ),
+        ]
+        items: Annotated[
+            list[dict[str, t.ContainerValue]],
+            Field(default_factory=list, description="Order items"),
+        ]
 
-    @dataclass
     class Shipment(WmsEntity):
         """Shipment domain entity."""
 
-        order_id: str = ""
-        status: str = "pending"
-        carrier: str | None = None
-        tracking_number: str | None = None
+        order_id: Annotated[
+            str, Field(default="", description="Associated order identifier")
+        ]
+        status: Annotated[str, Field(default="pending", description="Shipment status")]
+        carrier: Annotated[
+            str | None, Field(default=None, description="Shipping carrier name")
+        ]
+        tracking_number: Annotated[
+            str | None,
+            Field(
+                default=None,
+                description="Shipment tracking number",
+            ),
+        ]
 
-    @dataclass
     class PickingTask(WmsEntity):
         """Picking task domain entity."""
 
-        wave_id: str = ""
-        status: str = "pending"
-        items: list[dict[str, t.GeneralValueType]] = field(default_factory=list)
+        wave_id: Annotated[str, Field(default="", description="Wave identifier")]
+        status: Annotated[str, Field(default="pending", description="Task status")]
+        items: Annotated[
+            list[dict[str, t.ContainerValue]],
+            Field(default_factory=list, description="Task items"),
+        ]
 
-    @dataclass
     class Location(WmsEntity):
         """Location domain entity."""
 
-        aisle: str = ""
-        shelf: str = ""
-        bin_: str = ""
-        zone: str = ""
+        aisle: Annotated[str, Field(default="", description="Aisle identifier")]
+        shelf: Annotated[str, Field(default="", description="Shelf identifier")]
+        bin_: Annotated[str, Field(default="", description="Bin identifier")]
+        zone: Annotated[str, Field(default="", description="Zone identifier")]
 
     # =========================================================================
     # VALUE OBJECTS - Immutable domain values
     # =========================================================================
 
-    @dataclass(frozen=True)
-    class WarehouseLocation:
+    class WarehouseLocation(BaseModel):
         """Warehouse location value object."""
 
-        aisle: str
-        shelf: str
-        bin_: str
-        zone: str = ""
+        model_config = ConfigDict(frozen=True, extra="forbid")
+
+        aisle: Annotated[str, Field(description="Aisle identifier")]
+        shelf: Annotated[str, Field(description="Shelf identifier")]
+        bin_: Annotated[str, Field(description="Bin identifier")]
+        zone: Annotated[str, Field(default="", description="Zone identifier")]
 
         @property
         def full_location(self) -> str:
             """Get full location string."""
             return f"{self.zone}-{self.aisle}-{self.shelf}-{self.bin_}"
 
-    @dataclass(frozen=True)
-    class ApiCredentials:
+    class ApiCredentials(BaseModel):
         """API credentials value object."""
 
-        username: str
-        password: str | None = None
-        token: str | None = None
+        model_config = ConfigDict(frozen=True, extra="forbid")
+
+        username: Annotated[str, Field(description="API username")]
+        password: Annotated[str | None, Field(default=None, description="API password")]
+        token: Annotated[str | None, Field(default=None, description="API token")]
 
     # =========================================================================
     # ENUMS - Aliases from constants.py (single source of truth)
     # =========================================================================
 
-    EntityType = c.WmsEntityType
-    OperationStatus = c.WmsOperationStatus
+    EntityType: type[c.WmsEntityType] = c.WmsEntityType
+    OperationStatus: type[c.WmsOperationStatus] = c.WmsOperationStatus
 
     # =========================================================================
     # DOMAIN SERVICES - Business logic composition
@@ -158,42 +179,43 @@ class FlextWmsModels(FlextModels):
     MAX_ENTITY_NAME_LENGTH: int = 50
 
     @staticmethod
-    def validate_entity_name(name: str) -> FlextResult[str]:
-        """Validate entity name using domain rules."""
-        if not name or len(name) > FlextWmsModels.MAX_ENTITY_NAME_LENGTH:
-            return FlextResult.fail("Invalid entity name")
-        return FlextResult.ok(name)
-
-    @staticmethod
     def calculate_inventory_value(item: InventoryItem, price: float) -> float:
         """Calculate inventory value using domain logic."""
         return item.quantity * price
+
+    @staticmethod
+    def validate_entity_name(name: str) -> r[str]:
+        """Validate entity name using domain rules."""
+        if not name or len(name) > FlextOracleWmsModels.MAX_ENTITY_NAME_LENGTH:
+            return r[str].fail("Invalid entity name")
+        return r[str].ok(name)
 
     # =========================================================================
     # AGGREGATE ROOTS - Consistency boundaries
     # =========================================================================
 
-    @dataclass
     class WarehouseAggregate(FlextModels.AggregateRoot):
         """Warehouse aggregate root."""
 
         id: str
         name: str
-        locations: list[FlextWmsModels.WarehouseLocation] = field(default_factory=list)
-        inventory: list[FlextWmsModels.InventoryItem] = field(default_factory=list)
+        locations: Annotated[
+            list[FlextOracleWmsModels.WarehouseLocation],
+            Field(default_factory=list),
+        ]
+        inventory: Annotated[
+            list[FlextOracleWmsModels.InventoryItem],
+            Field(default_factory=list),
+        ]
 
-        def add_inventory(
-            self, item: FlextWmsModels.InventoryItem
-        ) -> FlextResult[bool]:
+        def add_inventory(self, item: FlextOracleWmsModels.InventoryItem) -> r[bool]:
             """Add inventory to warehouse."""
             if any(i.sku == item.sku for i in self.inventory):
-                return FlextResult.fail("SKU already exists")
+                return r[bool].fail("SKU already exists")
             self.inventory.append(item)
-            return FlextResult.ok(True)
+            return r[bool].ok(True)
 
 
-# Short aliases
-m = FlextWmsModels
-m_wms = FlextWmsModels
+__all__ = ["FlextOracleWmsModels"]
 
-__all__ = ["FlextWmsModels", "m", "m_wms"]
+m = FlextOracleWmsModels

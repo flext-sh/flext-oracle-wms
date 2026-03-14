@@ -49,7 +49,7 @@ src/flext_oracle_wms/
 ├── exceptions.py           # Comprehensive error hierarchy for Oracle WMS
 ├── constants.py            # Oracle WMS constants, enums, and defaults
 ├── types.py
-├── models.py               # Data models using FLEXT ValueObject patterns
+├── models.py               # Data models using FLEXT Value patterns
 ├── api_catalog.py          # Declarative API endpoint catalog
 ├── authentication.py       # Multi-method authentication (Basic, Bearer, API Key)
 ├── discovery.py            # Automatic entity and schema discovery
@@ -72,7 +72,7 @@ src/flext_oracle_wms/
 
 ### FLEXT Ecosystem Integration
 
-- **FlextResult pattern** for railway-oriented programming and consistent error handling
+- **r pattern** for railway-oriented programming and consistent error handling
 - **FLEXT configuration standards** with environment-driven settings and validation
 - **Structured logging** with correlation IDs and enterprise observability
 - **Dependency injection** support with FLEXT container integration
@@ -97,14 +97,14 @@ from flext_oracle_wms import FlextOracleWmsClient, FlextOracleWmsClientSettings
 config = FlextOracleWmsClientSettings(
     base_url="https://your-wms.oraclecloud.com",
     username="your_username",
-    password="your_password"
+    password="your_password",
 )
 
 # Enterprise client with comprehensive error handling
 client = FlextOracleWmsClient(config)
 result = client.discover_entities()
 
-# Railway-oriented programming with FlextResult
+# Railway-oriented programming with r
 if result.success:
     entities = result.data
     print(f"Discovered {len(entities)} WMS entities")
@@ -125,7 +125,7 @@ config = FlextOracleWmsClientSettings(
     auth_method="basic",
     timeout=30,
     max_retries=3,
-    enable_caching=True
+    enable_caching=True,
 )
 ```
 
@@ -135,13 +135,13 @@ config = FlextOracleWmsClientSettings(
 from flext_oracle_wms.exceptions import (
     FlextOracleWmsError,
     FlextOracleWmsConnectionError,
-    FlextOracleWmsAuthenticationError
+    FlextOracleWmsAuthenticationError,
 )
 
 try:
     result = client.query_entity_data("INVENTORY")
     if result.is_failure:
-        # Handle business logic errors via FlextResult
+        # Handle business logic errors via r
         logger.error(f"Query failed: {result.error}")
 except FlextOracleWmsConnectionError:
     # Handle connection issues
@@ -156,7 +156,7 @@ except FlextOracleWmsAuthenticationError:
 ### Code Quality Standards
 
 - **Type Safety**: MyPy strict mode adoption; aiming for 95%+ coverage
-- **Error Handling**: All operations return FlextResult for consistent error management
+- **Error Handling**: All operations return r for consistent error management
 - **Documentation**: Comprehensive docstrings following enterprise standards
 - **Testing**: 90%+ test coverage requirement with unit and integration tests
 - **Linting**: Comprehensive Ruff rules (ALL categories enabled) with zero tolerance
@@ -165,7 +165,7 @@ except FlextOracleWmsAuthenticationError:
 
 - **Clean Architecture**: Proper separation of domain, application, and infrastructure concerns
 - **FLEXT Integration**: Full compliance with FLEXT ecosystem patterns and standards
-- **Railway-Oriented Programming**: Consistent use of FlextResult for error handling
+- **Railway-Oriented Programming**: Consistent use of r for error handling
 - **Enterprise Patterns**: Connection pooling, caching, retry logic, and observability
 
 ### Performance Requirements
@@ -201,7 +201,7 @@ make security               # Bandit + pip-audit security scanning
 
 ### FLEXT Ecosystem Dependencies
 
-- **[flext-core](https://github.com/organization/flext/tree/main/flext-core/)** - Foundation patterns, FlextResult, logging, DI container
+- **[flext-core](https://github.com/organization/flext/tree/main/flext-core/)** - Foundation patterns, r, logging, DI container
 - **[flext-api](https://github.com/organization/flext/tree/main/flext-api/)** - Enterprise API client patterns and authentication
 - **[flext-observability](https://github.com/organization/flext/tree/main/flext-observability/)** - Monitoring, metrics, health checks
 
@@ -216,7 +216,7 @@ make security               # Bandit + pip-audit security scanning
 ### Documentation
 
 - **[Project README](../README.md)** - Complete project overview and usage guide
-- **[Development Guide](../CLAUDE.md)** - Comprehensive development practices
+- **[Development Guide](../AGENTS.md)** - Comprehensive development practices
 - **[Examples](../examples/)** - Working code examples and integration patterns
 - **[API Documentation](../docs/api/)** - Detailed API reference and specifications
 

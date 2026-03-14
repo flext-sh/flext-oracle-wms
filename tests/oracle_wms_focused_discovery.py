@@ -5,12 +5,16 @@ SPDX-License-Identifier: MIT
 
 """
 
+from __future__ import annotations
+
 import asyncio
 import json
+from collections.abc import Mapping
 from datetime import UTC, datetime
 from pathlib import Path
+from types import NoneType
 
-from flext_core import FlextLogger, FlextResult, FlextTypes as t
+from flext_core import FlextLogger, r
 
 from flext_oracle_wms import (
     FlextOracleWmsApiVersion,
@@ -28,7 +32,7 @@ class FocusedOracleWmsDiscovery:
         """Initialize with ADMINISTRATOR credentials."""
         self.config = FlextOracleWmsClientSettings(
             base_url="https://invalid.wms.ocs.oraclecloud.com",
-            username="USER_WMS_INTEGRA",  # ADMINISTRATOR TOTAL
+            username="USER_WMS_INTEGRA",
             password="jmCyS7BK94YvhS@",
             environment="test",
             timeout=30.0,
@@ -38,8 +42,6 @@ class FocusedOracleWmsDiscovery:
             enable_logging=True,
         )
         self.client = create_oracle_wms_client(self.config, mock_mode=False)
-
-        # Quick test entities - most likely to have data
         self.quick_test_entities = [
             "company",
             "facility",
@@ -62,133 +64,80 @@ class FocusedOracleWmsDiscovery:
             "receipt",
             "manifest",
         ]
-
         self.entities_with_data = {}
         self.complete_schemas = {}
 
-    def execute_focused_discovery(self) -> FlextResult[dict[str, t.GeneralValueType]]:
+    def execute_focused_discovery(self) -> r[dict[str, object]]:
         """Execute complete focused discovery."""
         try:
-            # Start client
             self.client.start()
-
-            # Phase 1: Fast entity discovery
-
             entities_result = self.client.discover_entities()
             if not entities_result.is_success:
-                return FlextResult[bool].fail(
-                    f"Entity discovery failed: {entities_result.error}",
-                )
-
+                return r[bool].fail(f"Entity discovery failed: {entities_result.error}")
             all_entities = entities_result.data
-
-            # Phase 2: Quick data scan
-
-            # Test quick entities first
             available_quick = [e for e in self.quick_test_entities if e in all_entities]
-
             data_entities = self._quick_data_scan(available_quick)
-
-            # If we found some, test more
             if data_entities and len(all_entities) > len(available_quick):
                 remaining = [e for e in all_entities if e not in available_quick][:30]
                 additional_data = self._quick_data_scan(remaining)
                 data_entities.update(additional_data)
-
             self.entities_with_data = data_entities
-
-            # Phase 3: Schema generation
-
             if not data_entities:
-                # Generate schemas from available structures anyway
-                structure_entities = self._get_entity_structures(
-                    available_quick[:5],
-                )
-                schemas = self._generate_schemas_from_structures(
-                    structure_entities,
-                )
+                structure_entities = self._get_entity_structures(available_quick[:5])
+                schemas = self._generate_schemas_from_structures(structure_entities)
             else:
                 schemas = self._generate_schemas_from_data(data_entities)
-
             self.complete_schemas = schemas
-
-            # Phase 4: Save results
-
             save_result = self._save_focused_results()
-
-            # Results summary
-
-            # Show entities with data
             if data_entities:
                 sorted_entities = sorted(
                     data_entities.items(),
                     key=lambda x: x[1].get("count", 0),
                     reverse=True,
                 )
-
                 for _entity_name, data in sorted_entities:
                     data.get("count", 0)
                     data.get("field_count", 0)
-
-                    # Show sample field names
                     sample_fields = data.get("sample_fields", [])[:5]
                     if sample_fields:
                         pass
-
-            # Show generated schemas
             if schemas:
                 for schema in schemas.values():
                     schema.get("properties", {})
                     schema.get("key_properties", [])
-
-            return FlextResult[bool].ok(
-                {
-                    "total_entities": len(all_entities),
-                    "entities_with_data": len(data_entities),
-                    "schemas_generated": len(schemas),
-                    "results_path": save_result.data
-                    if save_result.is_success
-                    else None,
-                    "data_entities": data_entities,
-                    "schemas": schemas,
-                },
-            )
-
+            return r[bool].ok({
+                "total_entities": len(all_entities),
+                "entities_with_data": len(data_entities),
+                "schemas_generated": len(schemas),
+                "results_path": save_result.data if save_result.is_success else None,
+                "data_entities": data_entities,
+                "schemas": schemas,
+            })
         except Exception as e:
             logger.exception("Focused discovery failed")
-            return FlextResult[bool].fail(f"Discovery failed: {e}")
+            return r[bool].fail(f"Discovery failed: {e}")
         finally:
             self.client.stop()
 
-    def _quick_data_scan(
-        self,
-        entities: list[str],
-    ) -> dict[str, t.GeneralValueType]:
+    def _quick_data_scan(self, entities: list[str]) -> dict[str, object]:
         """Quick scan to find entities with actual data."""
         data_entities = {}
-
         for entity_name in entities:
             try:
-                # Quick test with limit=1 to check for data
                 result = self.client.get_entity_data(entity_name, limit=1)
-
                 if result.is_success:
                     data = result.data
                     if isinstance(data, dict):
                         count = data.get("count", 0)
                         results = data.get("results", [])
-
                         if count > 0 or (results and len(results) > 0):
-                            # Entity has data - get more details
                             detailed_result = self.client.get_entity_data(
-                                entity_name,
-                                limit=3,
+                                entity_name, limit=3
                             )
                             if detailed_result.is_success:
                                 detailed_data = detailed_result.data
                                 if isinstance(detailed_data, dict):
                                     detailed_results = detailed_data.get("results", [])
-
                                     entity_info = {
                                         "count": detailed_data.get("count", 0),
                                         "has_data": True,
@@ -196,45 +145,32 @@ class FocusedOracleWmsDiscovery:
                                         if isinstance(detailed_results, list)
                                         else 0,
                                     }
-
-                                    # Get field information from sample
                                     if (
                                         detailed_results
                                         and isinstance(detailed_results, list)
-                                        and len(detailed_results) > 0
+                                        and (len(detailed_results) > 0)
                                     ):
                                         sample = detailed_results[0]
                                         if isinstance(sample, dict):
-                                            entity_info.update(
-                                                {
-                                                    "field_count": len(sample.keys()),
-                                                    "sample_fields": list(
-                                                        sample.keys(),
-                                                    ),
-                                                    "field_types": {
-                                                        k: type(v).__name__
-                                                        for k, v in sample.items()
-                                                    },
-                                                    "sample_record": self._safe_sample(
-                                                        sample,
-                                                    ),
+                                            entity_info.update({
+                                                "field_count": len(sample.keys()),
+                                                "sample_fields": list(sample.keys()),
+                                                "field_types": {
+                                                    k: type(v).__name__
+                                                    for k, v in sample.items()
                                                 },
-                                            )
-
+                                                "sample_record": self._safe_sample(
+                                                    sample
+                                                ),
+                                            })
                                     data_entities[entity_name] = entity_info
-
             except Exception:
                 logger.debug("Failed to process entity %s", entity_name)
-
         return data_entities
 
-    def _get_entity_structures(
-        self,
-        entities: list[str],
-    ) -> dict[str, t.GeneralValueType]:
+    def _get_entity_structures(self, entities: list[str]) -> dict[str, object]:
         """Get entity structures even without data."""
         structures = {}
-
         for entity_name in entities:
             try:
                 result = self.client.get_entity_data(entity_name, limit=1)
@@ -242,7 +178,7 @@ class FocusedOracleWmsDiscovery:
                     data = result.data
                     if isinstance(data, dict):
                         results = data.get("results", [])
-                        if results and isinstance(results, list) and len(results) > 0:
+                        if results and isinstance(results, list) and (len(results) > 0):
                             sample = results[0]
                             if isinstance(sample, dict):
                                 structures[entity_name] = {
@@ -253,18 +189,14 @@ class FocusedOracleWmsDiscovery:
                                     "sample_record": self._safe_sample(sample),
                                     "has_data": False,
                                 }
-
             except Exception:
                 logger.debug("Failed to get structure for entity %s", entity_name)
-
         return structures
 
-    def _safe_sample(
-        self, record: dict[str, t.GeneralValueType]
-    ) -> dict[str, t.GeneralValueType]:
+    def _safe_sample(self, record: Mapping[str, object]) -> dict[str, object]:
         """Create safe sample record."""
-        safe = {}
-        for k, v in list(record.items())[:10]:  # First 10 fields only
+        safe: dict[str, NoneType | bool | float | int | str] = {}
+        for k, v in list(record.items())[:10]:
             if isinstance(v, (str, int, float, bool, type(None))):
                 if (isinstance(v, str) and len(v) < 50) or not isinstance(v, str):
                     safe[k] = v
@@ -275,71 +207,49 @@ class FocusedOracleWmsDiscovery:
         return safe
 
     def _generate_schemas_from_data(
-        self,
-        data_entities: dict[str, t.GeneralValueType],
-    ) -> dict[str, t.GeneralValueType]:
+        self, data_entities: Mapping[str, object]
+    ) -> dict[str, object]:
         """Generate Singer schemas from entities with data."""
         schemas = {}
-
         for entity_name, entity_data in data_entities.items():
             schema = self._create_singer_schema(entity_name, entity_data)
             if schema:
                 schemas[entity_name] = schema
-
         return schemas
 
     def _generate_schemas_from_structures(
-        self,
-        structure_entities: dict[str, t.GeneralValueType],
-    ) -> dict[str, t.GeneralValueType]:
+        self, structure_entities: Mapping[str, object]
+    ) -> dict[str, object]:
         """Generate Singer schemas from structures."""
         schemas = {}
-
         for entity_name, structure_data in structure_entities.items():
             schema = self._create_singer_schema(entity_name, structure_data)
             if schema:
                 schemas[entity_name] = schema
-
         return schemas
 
     def _create_singer_schema(
-        self,
-        entity_name: str,
-        entity_data: dict[str, t.GeneralValueType],
-    ) -> dict[str, t.GeneralValueType] | None:
+        self, entity_name: str, entity_data: Mapping[str, object]
+    ) -> dict[str, object] | None:
         """Create Singer schema with proper Oracle WMS typing."""
         try:
             fields = entity_data.get("sample_fields", entity_data.get("fields", []))
             field_types = entity_data.get("field_types", {})
             sample_record = entity_data.get("sample_record", {})
-
             if not fields:
                 return None
-
             properties = {}
-
-            # Process each field with Oracle WMS specific typing
             for field in fields:
                 python_type = field_types.get(field, "str")
                 sample_value = sample_record.get(field)
-
-                # Generate Singer type with Oracle WMS context
                 singer_type = self._oracle_field_to_singer_type(
-                    field,
-                    python_type,
-                    sample_value,
-                    entity_name,
+                    field, python_type, sample_value, entity_name
                 )
                 properties[field] = singer_type
-
-            # Add Singer metadata
             properties["_sdc_extracted_at"] = {"type": "string", "format": "date-time"}
             properties["_sdc_entity"] = {"type": "string"}
             properties["_sdc_record_hash"] = {"type": ["string", "null"]}
-
-            # Determine key properties
             key_properties = self._get_oracle_key_properties(entity_name, fields)
-
             return {
                 "type": "object",
                 "properties": properties,
@@ -348,19 +258,14 @@ class FocusedOracleWmsDiscovery:
                 "oracle_wms_entity": entity_name,
                 "oracle_wms_environment": self.config.environment,
             }
-
         except Exception:
             logger.exception("Schema creation failed for %s", entity_name)
             return None
 
     def _oracle_field_to_singer_type(
-        self,
-        field_name: str,
-        sample_value: object,
-        entity_name: str,
-    ) -> dict[str, t.GeneralValueType]:
+        self, field_name: str, sample_value: object, entity_name: str
+    ) -> dict[str, object]:
         """Convert Oracle WMS field to Singer type with context."""
-        # Oracle WMS specific field analysis
         if sample_value is not None:
             if isinstance(sample_value, bool):
                 return {"type": ["boolean", "null"]}
@@ -396,8 +301,6 @@ class FocusedOracleWmsDiscovery:
                 return {"type": ["object", "null"]}
             if isinstance(sample_value, list):
                 return {"type": ["array", "null"]}
-
-        # Fallback mapping
         return {"type": ["string", "null"]}
 
     def _is_oracle_id_field(self, field_name: str) -> bool:
@@ -408,13 +311,11 @@ class FocusedOracleWmsDiscovery:
         """Check if field is Oracle timestamp."""
         ts_indicators = ["_ts", "timestamp", "_time", "_at"]
         name_check = any(indicator in field_name.lower() for indicator in ts_indicators)
-
         if isinstance(value, str):
             value_check = (
                 "T" in value and ":" in value and ("+" in value or "-" in value[-6:])
             )
             return name_check or value_check
-
         return name_check
 
     def _is_oracle_code(self, field_name: str) -> bool:
@@ -431,18 +332,12 @@ class FocusedOracleWmsDiscovery:
         )
 
     def _get_oracle_key_properties(
-        self,
-        entity_name: str,
-        fields: list[str],
+        self, entity_name: str, fields: list[str]
     ) -> list[str]:
         """Get Oracle WMS key properties for entity."""
         keys: list[str] = []
-
-        # Always include id if present
         if "id" in fields:
             keys.append("id")
-
-        # Entity-specific keys
         entity_keys = {
             "company": ["code", "company_code"],
             "facility": ["code", "facility_code"],
@@ -458,40 +353,29 @@ class FocusedOracleWmsDiscovery:
             "shipment": ["shipment_nbr"],
             "receipt": ["receipt_nbr"],
         }
-
         specific_keys = entity_keys.get(entity_name, [])
         for key in specific_keys:
             if key in fields and key not in keys:
                 keys.append(key)
-
         return keys or (["id"] if "id" in fields else [])
 
-    def _save_focused_results(self) -> FlextResult[str]:
+    def _save_focused_results(self) -> r[str]:
         """Save focused discovery results."""
         results_dir = Path("oracle_wms_focused_results")
         asyncio.to_thread(results_dir.mkdir, exist_ok=True)
-
         timestamp = datetime.now(UTC).strftime("%Y%m%d_%H%M%S")
-
-        # Save entities with data
         if self.entities_with_data:
             entities_file = results_dir / f"entities_with_data_{timestamp}.json"
             with entities_file.open("w", encoding="utf-8") as f:
                 json.dump(self.entities_with_data, f, indent=2, default=str)
-
-        # Save Singer schemas
         if self.complete_schemas:
             schemas_file = results_dir / f"singer_schemas_{timestamp}.json"
             with schemas_file.open("w", encoding="utf-8") as f:
                 json.dump(self.complete_schemas, f, indent=2, default=str)
-
-            # Save Singer catalog
             catalog = self._create_singer_catalog()
             catalog_file = results_dir / f"singer_catalog_{timestamp}.json"
             with catalog_file.open("w", encoding="utf-8") as f:
                 json.dump(catalog, f, indent=2, default=str)
-
-        # Save summary
         summary = {
             "timestamp": timestamp,
             "mode": "FOCUSED_ADMINISTRATOR_DISCOVERY",
@@ -501,23 +385,19 @@ class FocusedOracleWmsDiscovery:
             "entities_with_data": list(self.entities_with_data.keys()),
             "schema_entities": list(self.complete_schemas.keys()),
         }
-
         summary_file = results_dir / f"summary_{timestamp}.json"
         with summary_file.open("w", encoding="utf-8") as f:
             json.dump(summary, f, indent=2, default=str)
+        return r[bool].ok(str(results_dir))
 
-        return FlextResult[bool].ok(str(results_dir))
-
-    def _create_singer_catalog(self) -> dict[str, t.GeneralValueType]:
+    def _create_singer_catalog(self) -> dict[str, object]:
         """Create Singer catalog."""
         streams = []
-
         for entity_name, schema in self.complete_schemas.items():
             key_properties = schema.get("key_properties", [])
             schema_without_keys = {
                 k: v for k, v in schema.items() if k != "key_properties"
             }
-
             stream = {
                 "tap_stream_id": entity_name,
                 "stream": entity_name,
@@ -531,11 +411,10 @@ class FocusedOracleWmsDiscovery:
                             "selected": True,
                             "replication-method": "FULL_TABLE",
                         },
-                    },
+                    }
                 ],
             }
             streams.append(stream)
-
         return {"version": 1, "streams": streams}
 
 
@@ -543,10 +422,8 @@ def main() -> None:
     """Main execution."""
     discovery = FocusedOracleWmsDiscovery()
     result = discovery.execute_focused_discovery()
-
     if result.is_success:
         data = result.data
-
         if data["entities_with_data"] > 0:
             pass
 

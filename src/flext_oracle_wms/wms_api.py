@@ -7,21 +7,20 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from typing import ClassVar
+from typing import Annotated, ClassVar
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 
 class FlextOracleWmsApiEndpoint(BaseModel):
-    """Simple Pydantic model for API endpoints using FLEXT patterns."""
+    """Typed Oracle WMS API endpoint definition."""
 
-    name: str
-    method: str
-    path: str
-    version: str
-    category: str
-    description: str
-    since_version: str = "6.1"
+    name: Annotated[str, Field(min_length=1)]
+    method: Annotated[str, Field(min_length=1)]
+    path: Annotated[str, Field(min_length=1)]
+    version: Annotated[str, Field(min_length=1)]
+    category: Annotated[str, Field(min_length=1)]
+    description: Annotated[str, Field(default="")]
 
 
 class FlextOracleWmsApi:
@@ -31,8 +30,6 @@ class FlextOracleWmsApi:
     with proper inheritance levels and enterprise patterns.
     """
 
-    # =========================================================================
-    # API CATALOG - CLASS CONSTANT
     FLEXT_ORACLE_WMS_APIS: ClassVar[dict[str, FlextOracleWmsApiEndpoint]] = {
         "test": FlextOracleWmsApiEndpoint(
             name="test",
@@ -41,7 +38,7 @@ class FlextOracleWmsApi:
             version="v1",
             category="test",
             description="Test endpoint",
-        ),
+        )
     }
 
     class OracleWmsMockServer:
@@ -59,5 +56,4 @@ class FlextOracleWmsApi:
 
 
 FLEXT_ORACLE_WMS_APIS = FlextOracleWmsApi.FLEXT_ORACLE_WMS_APIS
-
-__all__ = ["FLEXT_ORACLE_WMS_APIS", "FlextOracleWmsApi"]
+__all__ = ["FLEXT_ORACLE_WMS_APIS", "FlextOracleWmsApi", "FlextOracleWmsApiEndpoint"]

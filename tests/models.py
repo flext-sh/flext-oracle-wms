@@ -9,17 +9,17 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from flext_tests.models import FlextTestsModels
+from flext_tests import FlextTestsModels
 
-from flext_oracle_wms.models import FlextWmsModels
+from flext_oracle_wms.models import FlextOracleWmsModels
 
 
-class TestsFlextOracleWmsModels(FlextTestsModels, FlextWmsModels):
+class TestsFlextOracleWmsModels(FlextTestsModels, FlextOracleWmsModels):
     """Models for flext-oracle-wms tests using COMPOSITION INHERITANCE.
 
     MANDATORY: Inherits from BOTH:
     1. FlextTestsModels - for test infrastructure (.Tests.*)
-    2. FlextWmsModels - for domain models
+    2. FlextOracleWmsModels - for domain models
 
     Access patterns:
     - tm.Tests.* (generic test models from FlextTestsModels)

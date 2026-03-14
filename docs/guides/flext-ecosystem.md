@@ -20,7 +20,7 @@ flext-oracle-wms has partial FLEXT ecosystem integration with significant compli
 
 #### flext-core Integration (Partial)
 
-- ✅ **FlextResult usage** - implemented throughout library
+- ✅ **r usage** - implemented throughout library
 - ✅ **FlextLogger support** - structured logging patterns
 - ❌ **FlextContainer** - dependency injection not integrated
 - ❌ **FlextService** - unified service patterns missing
@@ -39,10 +39,12 @@ flext-oracle-wms has partial FLEXT ecosystem integration with significant compli
 ```python
 # Current: Non-compliant httpx usage
 import httpx
+
 client = httpx.Client()
 
 # Required: flext-api integration
 from flext_api import FlextApiClient
+
 client = FlextApiClient()
 ```
 

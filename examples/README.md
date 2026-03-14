@@ -78,7 +78,7 @@ from flext_oracle_wms import FlextOracleWmsClient, FlextOracleWmsClientSettings
 config = FlextOracleWmsClientSettings(
     base_url="https://your-wms-instance.oraclecloud.com",
     username="your_username",
-    password="your_password"
+    password="your_password",
 )
 
 # Initialize client
@@ -129,10 +129,12 @@ Usage:
 
 from flext_oracle_wms import FlextOracleWmsClient, FlextOracleWmsClientSettings
 
+
 def main():
     """Main example function with comprehensive error handling."""
     # Implementation here
     pass
+
 
 if __name__ == "__main__":
     run(main())
@@ -208,7 +210,7 @@ make examples-test
 
 - **[Project README](../README.md)** - Complete project overview
 - **[API Documentation](../docs/api/)** - Detailed API reference
-- **[Development Guide](../CLAUDE.md)** - Development practices
+- **[Development Guide](../AGENTS.md)** - Development practices
 
 ### Oracle WMS Resources
 
@@ -229,7 +231,7 @@ make examples-test
 
 - **Professional English** throughout
 - **Working code** tested with Oracle WMS Cloud
-- **Comprehensive error handling** with FlextResult patterns
+- **Comprehensive error handling** with r patterns
 - **Clear documentation** explaining purpose and usage
 - **Security best practices** for credential management
 

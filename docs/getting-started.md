@@ -77,7 +77,7 @@ with FlextOracleWmsClient(config) as client:
 
 - ✅ **Framework structure** - 6,854 lines across 17 modules
 - ✅ **API endpoint definitions** - 22 endpoints
-- ✅ **FlextResult integration** - error handling patterns
+- ✅ **r integration** - error handling patterns
 - ✅ **Type safety** - MyPy strict compliance
 
 ### What Needs Implementation
@@ -111,7 +111,7 @@ ______________________________________________________________________
 
 - [flext-core Foundation](https://github.com/organization/flext/tree/main/flext-core/docs/architecture/overview.md) - Clean architecture and CQRS patterns
 - [flext-core Service Patterns](https://github.com/organization/flext/tree/main/flext-core/docs/guides/service-patterns.md) - Service patterns and dependency injection
-- [flext-db-oracle Integration](https://github.com/organization/flext/tree/main/flext-db-oracle/CLAUDE.md) - Oracle database integration
+- [flext-db-oracle Integration](https://github.com/organization/flext/tree/main/flext-db-oracle/AGENTS.md) - Oracle database integration
 
 **External Resources**:
 

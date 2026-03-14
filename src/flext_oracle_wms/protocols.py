@@ -1,4 +1,4 @@
-"""FLEXT Oracle WMS Protocols - composition patterns.
+"""Oracle WMS protocols for FLEXT ecosystem.
 
 Copyright (c) 2025 FLEXT Team. All rights reserved.
 SPDX-License-Identifier: MIT
@@ -6,35 +6,47 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
+from collections.abc import Mapping
 from typing import Protocol, runtime_checkable
 
-from flext_core import FlextTypes as t
-from flext_core.protocols import FlextProtocols
-
-p = FlextProtocols
+from flext_core import FlextProtocols, t
 
 
-class FlextOracleWmsProtocols(p):
-    """Oracle WMS protocols with composition.
+class FlextOracleWmsProtocols(FlextProtocols):
+    """Oracle WMS protocols extending FlextProtocols.
 
-    Uses Python 3.13+ syntax, reduces declarations through patterns.
-    One class per module following SOLID principles.
+    Extends FlextProtocols to inherit all foundation protocols (Result, Service, etc.)
+    and adds Oracle WMS-specific protocols in the OracleWms namespace.
+
+    Architecture:
+    - EXTENDS: FlextProtocols (inherits Foundation, Domain, Application, etc.)
+    - ADDS: Oracle WMS-specific protocols in OracleWms namespace
+    - PROVIDES: Root-level alias `p` for convenient access
+
+    Usage:
+    from flext_oracle_wms.protocols import p
+
+    # Foundation protocols (inherited)
+    result: p.Result[str]
+    service: p.Service[str]
+
+    # Oracle WMS-specific protocols
+    wms_service: p.OracleWms.WmsService
     """
 
-    # Consolidated protocol using generic operation pattern
     class OracleWms:
-        """OracleWms domain namespace."""
+        """Oracle WMS domain-specific protocols."""
 
         @runtime_checkable
-        class WmsServiceProtocol(p.Service, Protocol):
+        class WmsService(FlextProtocols.Service[None], Protocol):
             """Unified WMS service protocol with operation dispatch."""
 
             def execute_wms_operation(
                 self,
                 operation: str,
-                config: dict[str, t.GeneralValueType],
-                **params: object,
-            ) -> FlextProtocols.Result[dict[str, t.GeneralValueType]]:
+                config: Mapping[str, t.ContainerValue],
+                **params: t.Scalar,
+            ) -> FlextProtocols.Result[t.ContainerValue]:
                 """Execute WMS operation with unified interface.
 
                 Args:
@@ -43,38 +55,12 @@ class FlextOracleWmsProtocols(p):
                 **params: Operation parameters
 
                 Returns:
-                FlextResult[dict[str, t.GeneralValueType]]: Operation result or error
+                r[dict[str, t.ContainerValue]]: Operation result or error
 
                 """
                 ...
 
-        # Legacy aliases for backward compatibility during transition
-        WmsClientProtocol = WmsServiceProtocol
-        EntityDiscoveryProtocol = WmsServiceProtocol
-        InventoryManagementProtocol = WmsServiceProtocol
-        ShippingOperationsProtocol = WmsServiceProtocol
-        WarehouseOperationsProtocol = WmsServiceProtocol
-        DataProcessingProtocol = WmsServiceProtocol
-        AuthenticationProtocol = WmsServiceProtocol
-        PerformanceProtocol = WmsServiceProtocol
-        MonitoringProtocol = WmsServiceProtocol
 
-        # Convenience aliases
-        OracleWmsClientProtocol = WmsServiceProtocol
-        OracleWmsEntityDiscoveryProtocol = WmsServiceProtocol
-        OracleWmsInventoryManagementProtocol = WmsServiceProtocol
-        OracleWmsShippingOperationsProtocol = WmsServiceProtocol
-        OracleWmsWarehouseOperationsProtocol = WmsServiceProtocol
-        OracleWmsDataProcessingProtocol = WmsServiceProtocol
-        OracleWmsAuthenticationProtocol = WmsServiceProtocol
-        OracleWmsPerformanceProtocol = WmsServiceProtocol
-        OracleWmsMonitoringProtocol = WmsServiceProtocol
+__all__ = ["FlextOracleWmsProtocols", "p"]
 
-
-# Runtime alias for simplified usage
 p = FlextOracleWmsProtocols
-
-__all__ = [
-    "FlextOracleWmsProtocols",
-    "p",
-]

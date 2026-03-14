@@ -10,3 +10,5 @@ No-op sitecustomize for tests - avoid manual sys.path hacks.
 
 The tests should import from the installed package root, not from local src.
 """
+
+from __future__ import annotations

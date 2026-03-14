@@ -6,306 +6,324 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from typing import cast
+from collections.abc import Mapping
+from enum import StrEnum
 
-from flext_core import FlextExceptions, FlextLogger, FlextResult, FlextTypes as t
+from flext_core import FlextExceptions, FlextLogger, r
 
 from flext_oracle_wms.constants import FlextOracleWmsConstants
+from flext_oracle_wms.typings import OperatorFilter, t
+
+type FilterEntry = t.Core.FilterScalar | t.Core.FilterList | OperatorFilter
 
 
-# Exception class with real inheritance
 class FlextOracleWmsDataValidationError(FlextExceptions.BaseError):
-    """FlextOracleWmsDataValidationError - real inheritance from BaseError."""
+    """Data validation error for Oracle WMS filtering."""
+
+
+class FilterOperator(StrEnum):
+    """Supported filter operators."""
+
+    EQ = "eq"
+    NE = "ne"
+    IN = "in"
+    CONTAINS = "contains"
+    GT = "gt"
+    LT = "lt"
+    GTE = "gte"
+    LTE = "lte"
 
 
 class FlextOracleWmsFilter:
-    """Generic filter with functional composition and FLEXT delegation."""
+    """Generic filter with functional composition and strict validation."""
 
     logger = FlextLogger(__name__)
 
     def __init__(
         self,
         *,
-        filters: dict[str, t.GeneralValueType] | None = None,
+        filters: Mapping[str, FilterEntry] | None = None,
         case_sensitive: bool = False,
         max_conditions: int = 50,
     ) -> None:
-        """Initialize with functional defaults."""
+        """Initialize filter engine with strict condition limits."""
         if (
             max_conditions <= 0
             or max_conditions > FlextOracleWmsConstants.Filtering.MAX_FILTER_CONDITIONS
         ):
-            msg = "Invalid max_conditions"
-            raise FlextExceptions.BaseError(msg)
-
-        self.max_conditions = max_conditions
-        self.case_sensitive = case_sensitive
-        self.filters = filters or {}
-
-        # Initialize operator dispatch table
-        self._init_operators()
-
+            error_message = "Invalid max_conditions"
+            raise FlextExceptions.BaseError(error_message)
+        self.max_conditions: int = max_conditions
+        self.case_sensitive: bool = case_sensitive
+        self.filters: Mapping[str, FilterEntry] = filters or {}
         if (
             self.filters
             and self._validate_filter_conditions_total(self.filters).is_failure
         ):
-            msg = "Filter validation failed"
-            raise FlextOracleWmsDataValidationError(msg)
-
-    def _init_operators(self) -> None:
-        """Initialize operator dispatch table."""
-        # This method can be extended for custom operators
-
-    def _validate_filter_conditions_total(
-        self,
-        filters: dict[str, t.GeneralValueType],
-    ) -> FlextResult[bool]:
-        """Validate total filter conditions."""
-        total = sum(len(v) if isinstance(v, list) else 1 for v in filters.values())
-        if total > self.max_conditions:
-            return FlextResult.fail(
-                f"Too many filter conditions: {total} > {self.max_conditions}",
-            )
-        return FlextResult.ok(True)
-
-    def _get_nested_value(
-        self, record: dict[str, t.GeneralValueType], field: str
-    ) -> t.GeneralValueType:
-        """Get nested value from record using dot notation."""
-        keys = field.split(".")
-        value: object = record
-        try:
-            for key in keys:
-                if isinstance(value, dict):
-                    value = value.get(key)
-                else:
-                    return cast("t.GeneralValueType", None)
-            return cast("t.GeneralValueType", value)
-        except (KeyError, TypeError):
-            return cast("t.GeneralValueType", None)
-
-    def _normalize(self, value: object) -> object:
-        """Normalize value for comparison."""
-        if value is None:
-            return ""
-        if not self.case_sensitive and isinstance(value, str):
-            return value.lower()
-        return value
-
-    def filter_records(
-        self,
-        records: list[dict[str, t.GeneralValueType]],
-        filters: dict[str, t.GeneralValueType],
-        limit: int | None = None,
-    ) -> FlextResult[list[dict[str, t.GeneralValueType]]]:
-        """Filter records with functional composition."""
-        if (result := self._validate_filters(filters)).is_failure:
-            return FlextResult.fail(result.error or "Validation failed")
-
-        self.filters = filters
-        filtered = [r for r in records if self._matches_all_filters(r, filters)]
-        if limit:
-            filtered = filtered[:limit]
-        return FlextResult.ok(filtered)
-
-    def sort_records(
-        self,
-        records: list[dict[str, t.GeneralValueType]],
-        sort_field: str,
-        *,
-        ascending: bool = True,
-    ) -> FlextResult[list[dict[str, t.GeneralValueType]]]:
-        """Sort records with functional key extraction."""
-        try:
-
-            def key_func(r: dict[str, t.GeneralValueType]) -> str:
-                return str(
-                    self._get_nested_value(r, sort_field)
-                    or ("" if ascending else "zzz"),
-                )
-
-            return FlextResult.ok(sorted(records, key=key_func, reverse=not ascending))
-        except Exception as e:
-            self.logger.exception("Sort failed")
-            return FlextResult.fail(f"Sort failed: {e}")
-
-    def _validate_filters(
-        self, filters: dict[str, t.GeneralValueType]
-    ) -> FlextResult[bool]:
-        """Validate filter conditions."""
-        total = sum(len(v) if isinstance(v, list) else 1 for v in filters.values())
-        if total > self.max_conditions:
-            return FlextResult.fail(
-                f"Too many conditions. Max: {self.max_conditions}, Got: {total}",
-            )
-        return FlextResult.ok(True)
-
-    def _matches_all_filters(
-        self,
-        record: dict[str, t.GeneralValueType],
-        filters: dict[str, t.GeneralValueType],
-    ) -> bool:
-        """Check if record matches all filters with functional composition."""
-        return all(
-            self._matches_condition(record, field, filter_value)
-            for field, filter_value in filters.items()
-        )
-
-    def _matches_condition(
-        self,
-        record: dict[str, t.GeneralValueType],
-        field: str,
-        filter_value: t.GeneralValueType,
-    ) -> bool:
-        """Match condition with pattern matching."""
-        field_value = self._get_nested_value(record, field)
-
-        match filter_value:
-            case dict() if "operator" in filter_value:
-                # Advanced filter with operator
-                operator = str(filter_value.get("operator", "eq"))
-                value = filter_value.get("value")
-                return self._apply_operator(field_value, operator, value)
-            case list():
-                # List matching
-                return field_value in filter_value if field_value is not None else False
-            case _:
-                # Simple equality
-                return self._normalize(field_value) == self._normalize(filter_value)
-
-    def _apply_operator(
-        self,
-        field_value: object,
-        operator: str,
-        filter_value: object,
-    ) -> bool:
-        """Apply operator with functional dispatch."""
-        operators = {
-            "eq": lambda fv, f: self._normalize(fv) == self._normalize(f),
-            "ne": lambda fv, f: self._normalize(fv) != self._normalize(f),
-            "gt": lambda fv, f: (
-                (
-                    isinstance(fv, (int, float))
-                    and isinstance(f, (int, float))
-                    and fv > f
-                )
-                or (isinstance(fv, str) and isinstance(f, str) and fv > f)
-            ),
-            "lt": lambda fv, f: (
-                (
-                    isinstance(fv, (int, float))
-                    and isinstance(f, (int, float))
-                    and fv < f
-                )
-                or (isinstance(fv, str) and isinstance(f, str) and fv < f)
-            ),
-            "gte": lambda fv, f: (
-                self._apply_operator(fv, "gt", f) or self._apply_operator(fv, "eq", f)
-            ),
-            "lte": lambda fv, f: (
-                self._apply_operator(fv, "lt", f) or self._apply_operator(fv, "eq", f)
-            ),
-            "in": lambda fv, f: isinstance(f, (list, tuple)) and fv in f,
-            "contains": lambda fv, f: (
-                isinstance(fv, str) and isinstance(f, str) and f in fv
-            ),
-        }
-        return operators.get(operator, lambda *_: False)(field_value, filter_value)
+            error_message = "Filter validation failed"
+            raise FlextOracleWmsDataValidationError(error_message)
 
     @classmethod
     def create_filter(
-        cls,
-        *,
-        case_sensitive: bool = False,
-        max_conditions: int = 50,
+        cls, *, case_sensitive: bool = False, max_conditions: int = 50
     ) -> FlextOracleWmsFilter:
-        """Create a new filter instance."""
+        """Create a filter engine with explicit configuration."""
         return cls(case_sensitive=case_sensitive, max_conditions=max_conditions)
 
     @classmethod
     def filter_by_field(
         cls,
-        records: list[dict[str, t.GeneralValueType]],
+        records: list[t.Core.FilterRecord],
         field: str,
-        value: t.GeneralValueType,
-        operator: str | None = None,
-    ) -> FlextResult[list[dict[str, t.GeneralValueType]]]:
-        """Filter records by field value."""
+        value: t.Core.FilterScalar,
+        operator: FilterOperator | None = None,
+    ) -> r[list[t.Core.FilterRecord]]:
+        """Filter records by one field using optional operator semantics."""
         engine = cls()
-        filters: dict[str, t.GeneralValueType] = {field: value}
-        if operator:
-            filters[field] = cast(
-                "t.GeneralValueType",
-                {"operator": operator or "eq", "value": value},
-            )
-        # filters is already dict[str, t.GeneralValueType] compatible - no cast needed
+        filters: dict[str, FilterEntry]
+        if operator is None:
+            filters = {field: value}
+        else:
+            filters = {field: OperatorFilter(operator=operator, value=value)}
         return engine.filter_records(records, filters)
 
     @classmethod
     def filter_by_id_range(
         cls,
-        records: list[dict[str, t.GeneralValueType]],
+        records: list[t.Core.FilterRecord],
         id_field: str,
-        min_id: t.GeneralValueType | None = None,
-        max_id: t.GeneralValueType | None = None,
-    ) -> FlextResult[list[dict[str, t.GeneralValueType]]]:
-        """Filter records by ID range."""
+        min_id: t.Core.FilterScalar | None = None,
+        max_id: t.Core.FilterScalar | None = None,
+    ) -> r[list[t.Core.FilterRecord]]:
+        """Filter records by inclusive identifier range."""
         if not records:
-            return FlextResult.ok([])
-
-        filtered = []
+            return r[list[t.Core.FilterRecord]].ok([])
+        filtered: list[t.Core.FilterRecord] = []
         for record in records:
             field_value = record.get(id_field)
             if field_value is None:
                 continue
-
-            if min_id is not None and not cls._check_min(field_value, min_id):
+            if min_id is not None and (not cls._check_min(field_value, min_id)):
                 continue
-            if max_id is not None and not cls._check_max(field_value, max_id):
+            if max_id is not None and (not cls._check_max(field_value, max_id)):
                 continue
             filtered.append(record)
-
-        return FlextResult.ok(filtered)
-
-    @staticmethod
-    def _check_min(field_value: object, min_val: object) -> bool:
-        """Check minimum value constraint."""
-        try:
-            if isinstance(field_value, (int, float)) and isinstance(
-                min_val,
-                (int, float),
-            ):
-                return float(field_value) >= float(min_val)
-            if isinstance(field_value, str) and isinstance(min_val, str):
-                return field_value >= min_val
-        except (TypeError, ValueError):
-            pass
-        return True
+        return r[list[t.Core.FilterRecord]].ok(filtered)
 
     @staticmethod
-    def _check_max(field_value: object, max_val: object) -> bool:
-        """Check maximum value constraint."""
+    def _check_max(
+        field_value: t.Core.FilterRecordValue, max_val: t.Core.FilterScalar
+    ) -> bool:
+        return FlextOracleWmsFilter._compare(field_value, max_val, "<=")
+
+    @staticmethod
+    def _check_min(
+        field_value: t.Core.FilterRecordValue, min_val: t.Core.FilterScalar
+    ) -> bool:
+        return FlextOracleWmsFilter._compare(field_value, min_val, ">=")
+
+    @staticmethod
+    def _compare(
+        left: t.Core.FilterRecordValue | None,
+        right: t.Core.FilterScalar | t.Core.FilterList,
+        op: str,
+    ) -> bool:
         try:
-            if isinstance(field_value, (int, float)) and isinstance(
-                max_val,
-                (int, float),
-            ):
-                return float(field_value) <= float(max_val)
-            if isinstance(field_value, str) and isinstance(max_val, str):
-                return field_value <= max_val
-        except (TypeError, ValueError):
-            pass
-        return True
+            left_num = float(str(left))
+            right_num = float(str(right))
+            if op == ">":
+                return left_num > right_num
+            if op == "<":
+                return left_num < right_num
+            if op == ">=":
+                return left_num >= right_num
+            return left_num <= right_num
+        except ValueError:
+            left_str = str(left)
+            right_str = str(right)
+            if op == ">":
+                return left_str > right_str
+            if op == "<":
+                return left_str < right_str
+            if op == ">=":
+                return left_str >= right_str
+            return left_str <= right_str
+
+    @staticmethod
+    def _condition_size(value: FilterEntry) -> int:
+        match value:
+            case list() as items:
+                return len(items)
+            case OperatorFilter() as condition:
+                match condition.value:
+                    case list() as values:
+                        return len(values)
+                    case _:
+                        return 1
+            case _:
+                return 1
+
+    def filter_records(
+        self,
+        records: list[t.Core.FilterRecord],
+        filters: Mapping[str, FilterEntry],
+        limit: int | None = None,
+    ) -> r[list[t.Core.FilterRecord]]:
+        """Filter records against field conditions and optional limit."""
+        if (result := self._validate_filters(filters)).is_failure:
+            return r[list[t.Core.FilterRecord]].fail(
+                result.error or "Validation failed"
+            )
+        self.filters = filters
+        filtered = [
+            record for record in records if self._matches_all_filters(record, filters)
+        ]
+        if limit is not None:
+            filtered = filtered[:limit]
+        return r[list[t.Core.FilterRecord]].ok(filtered)
+
+    def sort_records(
+        self,
+        records: list[t.Core.FilterRecord],
+        sort_field: str,
+        *,
+        ascending: bool = True,
+    ) -> r[list[t.Core.FilterRecord]]:
+        """Sort records by a dot-path field."""
+        try:
+
+            def key_func(record: t.Core.FilterRecord) -> str:
+                value = self._get_nested_value(record, sort_field)
+                return str(value if value is not None else "" if ascending else "zzz")
+
+            return r[list[t.Core.FilterRecord]].ok(
+                sorted(records, key=key_func, reverse=not ascending)
+            )
+        except Exception as exc:
+            self.logger.exception("Sort failed")
+            return r[list[t.Core.FilterRecord]].fail(f"Sort failed: {exc}")
+
+    def _apply_operator(
+        self,
+        field_value: t.Core.FilterRecordValue | None,
+        operator: FilterOperator | str,
+        filter_value: t.Core.FilterScalar | t.Core.FilterList,
+    ) -> bool:
+        if field_value is None and filter_value is not None:
+            return False
+        if field_value is not None and filter_value is None:
+            return False
+        if field_value is None and filter_value is None:
+            return operator in {
+                FilterOperator.EQ,
+                FilterOperator.GTE,
+                FilterOperator.LTE,
+                "eq",
+                "gte",
+                "lte",
+            }
+        match operator:
+            case FilterOperator.EQ | "eq":
+                return self._normalize(field_value) == self._normalize(filter_value)
+            case FilterOperator.NE | "ne":
+                return self._normalize(field_value) != self._normalize(filter_value)
+            case FilterOperator.IN | "in":
+                match filter_value:
+                    case list() as options:
+                        return str(field_value) in [str(item) for item in options]
+                    case _:
+                        return False
+            case FilterOperator.CONTAINS | "contains":
+                return str(filter_value) in str(field_value)
+            case FilterOperator.GT | "gt":
+                return self._compare(field_value, filter_value, ">")
+            case FilterOperator.LT | "lt":
+                return self._compare(field_value, filter_value, "<")
+            case FilterOperator.GTE | "gte":
+                return self._compare(field_value, filter_value, ">=")
+            case FilterOperator.LTE | "lte":
+                return self._compare(field_value, filter_value, "<=")
+            case _:
+                return False
+
+    def _get_nested_value(
+        self, record: t.Core.FilterRecord, field: str
+    ) -> t.Core.NestedFilterValue | None:
+        keys = field.split(".")
+        current: (
+            t.Core.NestedFilterValue
+            | Mapping[
+                str,
+                t.Core.FilterScalar
+                | t.Core.FilterList
+                | Mapping[str, t.Core.FilterScalar | t.Core.FilterList],
+            ]
+        ) = record
+        for key in keys:
+            match current:
+                case dict() as mapping:
+                    next_value = mapping.get(key)
+                    if next_value is None:
+                        return None
+                    current = next_value
+                case _:
+                    return None
+        if isinstance(current, dict):
+            return None
+        return current
+
+    def _matches_all_filters(
+        self, record: t.Core.FilterRecord, filters: Mapping[str, FilterEntry]
+    ) -> bool:
+        return all(
+            (
+                self._matches_condition(record, field, filter_value)
+                for field, filter_value in filters.items()
+            )
+        )
+
+    def _matches_condition(
+        self, record: t.Core.FilterRecord, field: str, filter_value: FilterEntry
+    ) -> bool:
+        field_value = self._get_nested_value(record, field)
+        match filter_value:
+            case OperatorFilter() as condition:
+                return self._apply_operator(
+                    field_value, condition.operator, condition.value
+                )
+            case list() as candidates:
+                return field_value in candidates if field_value is not None else False
+            case _:
+                return self._normalize(field_value) == self._normalize(filter_value)
+
+    def _normalize(
+        self, value: t.Core.FilterRecordValue | t.Core.FilterScalar
+    ) -> t.Core.FilterRecordValue | str:
+        match value:
+            case None:
+                return ""
+            case str() as text if not self.case_sensitive:
+                return text.lower()
+            case _:
+                return value
+
+    def _validate_filter_conditions_total(
+        self, filters: Mapping[str, FilterEntry]
+    ) -> r[bool]:
+        total = sum(self._condition_size(value) for value in filters.values())
+        if total > self.max_conditions:
+            return r[bool].fail(
+                f"Too many filter conditions: {total} > {self.max_conditions}"
+            )
+        return r[bool].ok(True)
+
+    def _validate_filters(self, filters: Mapping[str, FilterEntry]) -> r[bool]:
+        total = sum(self._condition_size(value) for value in filters.values())
+        if total > self.max_conditions:
+            return r[bool].fail(
+                f"Too many conditions. Max: {self.max_conditions}, Got: {total}"
+            )
+        return r[bool].ok(True)
 
 
-# Backward compatibility aliases
-flext_oracle_wms_create_filter = FlextOracleWmsFilter.create_filter
-flext_oracle_wms_filter_by_field = FlextOracleWmsFilter.filter_by_field
-flext_oracle_wms_filter_by_id_range = FlextOracleWmsFilter.filter_by_id_range
-
-__all__ = [
-    "FlextOracleWmsFilter",
-    "flext_oracle_wms_create_filter",
-    "flext_oracle_wms_filter_by_field",
-    "flext_oracle_wms_filter_by_id_range",
-]
+__all__ = ["FilterOperator", "FlextOracleWmsFilter", "OperatorFilter"]

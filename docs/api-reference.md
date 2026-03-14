@@ -11,7 +11,7 @@
   - [Missing Modern APIs (LGF v10)](#missing-modern-apis-lgf-v10)
 - [Error Handling](#error-handling)
   - [Exception Hierarchy](#exception-hierarchy)
-  - [FlextResult Pattern](#flextresult-pattern)
+  - [r Pattern](#flextresult-pattern)
 - [Models](#models)
   - [FlextOracleWmsEntity](#flextoraclewmsentity)
 - [Implementation Status](#implementation-status)
@@ -43,7 +43,7 @@ client = FlextOracleWmsClient(config)
 
 #### Methods
 
-##### `test_connection() -> FlextResult[bool]`
+##### `test_connection() -> r[bool]`
 
 Tests connection to Oracle WMS (currently uses fake URLs).
 
@@ -55,7 +55,7 @@ else:
     print(f"Connection failed: {result.error}")
 ```
 
-##### `discover_entities() -> FlextResult[List[Dict]]`
+##### `discover_entities() -> r[List[Dict]]`
 
 Discovers available Oracle WMS entities.
 
@@ -121,18 +121,18 @@ Based on Oracle WMS best practices research:
 
 ```python
 from flext_oracle_wms.wms_exceptions import (
-    FlextOracleWmsError,              # Base exception
-    FlextOracleWmsConnectionError,    # Connection issues
-    FlextOracleWmsAuthenticationError, # Auth failures
-    FlextOracleWmsValidationError,    # Validation errors
-    FlextOracleWmsApiError,           # API errors
-    FlextOracleWmsEntityNotFoundError # Entity not found
+    FlextOracleWmsError,  # Base exception
+    FlextOracleWmsConnectionError,  # Connection issues
+    FlextOracleWmsAuthenticationError,  # Auth failures
+    FlextOracleWmsValidationError,  # Validation errors
+    FlextOracleWmsApiError,  # API errors
+    FlextOracleWmsEntityNotFoundError,  # Entity not found
 )
 ```
 
-### FlextResult Pattern
+### r Pattern
 
-All operations return `FlextResult[T]` for type-safe error handling:
+All operations return `r[T]` for type-safe error handling:
 
 ```python
 result = client.some_operation()
@@ -164,7 +164,7 @@ entity = FlextOracleWmsEntity(
 
 - ✅ **Client interface** - Basic structure implemented
 - ✅ **Configuration** - Test configuration available
-- ✅ **Error handling** - FlextResult patterns throughout
+- ✅ **Error handling** - r patterns throughout
 - ✅ **Type safety** - MyPy strict compliance
 
 ### Implementation Gaps
@@ -190,8 +190,8 @@ ______________________________________________________________________
 **Across Projects**:
 
 - [flext-core Foundation](https://github.com/organization/flext/tree/main/flext-core/docs/api-reference/foundation.md) - Core APIs and patterns
-- [flext-core Railway-Oriented Programming](https://github.com/organization/flext/tree/main/flext-core/docs/guides/railway-oriented-programming.md) - FlextResult patterns
-- [flext-db-oracle Integration](https://github.com/organization/flext/tree/main/flext-db-oracle/CLAUDE.md) - Oracle database integration
+- [flext-core Railway-Oriented Programming](https://github.com/organization/flext/tree/main/flext-core/docs/guides/railway-oriented-programming.md) - r patterns
+- [flext-db-oracle Integration](https://github.com/organization/flext/tree/main/flext-db-oracle/AGENTS.md) - Oracle database integration
 
 **External Resources**:
 

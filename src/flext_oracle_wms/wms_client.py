@@ -1,15 +1,15 @@
 """FLEXT Oracle WMS Client module.
 
-Provides the main FlextOracleWmsClient class following FLEXT standards with proper inheritance levels.
+Provides the main FlextOracleWmsClient class following FLEXT standards.
 
 Copyright (c) 2025 FLEXT Team. All rights reserved.
 SPDX-License-Identifier: MIT
-
 """
 
 from __future__ import annotations
 
-from typing import cast
+from collections.abc import Mapping
+from typing import Annotated
 
 from flext_api import (
     FlextApiClient,
@@ -18,350 +18,233 @@ from flext_api import (
     FlextApiSettings,
     FlextApiTypes,
 )
-from flext_core import FlextContainer, FlextResult, FlextTypes as t
+from flext_core import FlextContainer, FlextExceptions, r, t, u
+from pydantic import BaseModel, ConfigDict, Field, ValidationError
 
 from flext_oracle_wms.settings import FlextOracleWmsSettings
 
+HTTP_BAD_REQUEST_THRESHOLD = 400
+
+
+class EntitiesResponse(BaseModel):
+    model_config = ConfigDict(extra="ignore")
+
+    entities: Annotated[list[str], Field(default_factory=list)]
+
+
+class ApiCategoryResponse(BaseModel):
+    model_config = ConfigDict(extra="ignore")
+
+    apis: Annotated[list[dict[str, str]], Field(default_factory=list)]
+
+
+class EntityDataResponse(BaseModel):
+    model_config = ConfigDict(extra="ignore")
+
+    data: Annotated[list[dict[str, str]], Field(default_factory=list)]
+
 
 class FlextOracleWmsClient:
-    """Minimal Oracle WMS client using flext-api for HTTP operations.
-
-    Provides basic Oracle WMS API access with FlextResult error handling.
-    Uses singleton pattern for configuration management.
-    """
+    """Oracle WMS client with strict request/response typing."""
 
     def __init__(self, config: FlextOracleWmsSettings | None = None) -> None:
-        """Initialize Oracle WMS client.
+        """Initialize client with strict settings resolution."""
+        resolved_config = config
+        if resolved_config is None:
+            try:
+                container = FlextContainer.get_global()
+                config_result = container.get("FlextOracleWmsSettings")
+                if config_result.is_success:
+                    resolved_config = FlextOracleWmsSettings.model_validate(
+                        config_result.value
+                    )
+            except (ValueError, FlextExceptions.BaseError):
+                pass
+        if resolved_config is None:
+            resolved_config = FlextOracleWmsSettings.testing_config()
+        self.config: FlextOracleWmsSettings = resolved_config
+        api_config = FlextApiSettings.model_validate({
+            "base_url": self.config.base_url,
+            "timeout": int(self.config.timeout),
+        })
+        self._client: FlextApiClient = FlextApiClient(config=api_config)
+        self._discovered_entities: list[str] = []
 
-        Args:
-        config: Optional configuration. If None, retrieved from global container.
+    @staticmethod
+    def _decode_response_model[T: BaseModel](
+        payload: FlextApiTypes.Api.ResponseBody | t.ContainerValue,
+        model_type: type[T],
+    ) -> r[T]:
+        if isinstance(payload, dict):
+            return u.try_(
+                lambda: model_type.model_validate(payload),
+                catch=ValidationError,
+            ).map_error(lambda exc: f"Invalid response payload: {exc}")
+        if isinstance(payload, str):
+            return u.try_(
+                lambda: model_type.model_validate_json(payload),
+                catch=ValidationError,
+            ).map_error(lambda exc: f"Invalid JSON payload: {exc}")
+        if isinstance(payload, bytes):
+            return u.try_(
+                lambda: model_type.model_validate_json(payload),
+                catch=ValidationError,
+            ).map_error(lambda exc: f"Invalid JSON payload: {exc}")
+        if payload is None:
+            return r[T].fail("Empty response payload")
+        return r[T].fail("Unsupported response type")
 
-        """
-        if config is None:
-            container = FlextContainer.get_global()
-            config_result = container.get("FlextOracleWmsSettings")
-            config_value = config_result.unwrap_or(FlextOracleWmsSettings())
-            # Type narrowing - config should be FlextOracleWmsSettings
-            if isinstance(config_value, FlextOracleWmsSettings):
-                config = config_value
-            else:
-                config = FlextOracleWmsSettings()
+    def call_api(
+        self,
+        api_name: str,
+        *,
+        headers: Mapping[str, str] | None = None,
+        params: FlextApiTypes.Api.WebParams | None = None,
+    ) -> r[FlextApiModels.HttpResponse]:
+        """Call a specific Oracle WMS API."""
+        return self.get(f"/api/{api_name}", headers=headers, params=params)
 
-        self.config: FlextOracleWmsSettings = config
+    def create_lpn(self, lpn_nbr: str, qty: int) -> r[FlextApiModels.HttpResponse]:
+        """Create LPN (License Plate Number)."""
+        payload: FlextApiTypes.Api.RequestBody = {"lpn_nbr": lpn_nbr, "qty": qty}
+        return self.post("/lpn", body=payload)
 
-        api_config = FlextApiSettings(
-            base_url=self.config.base_url,
-            timeout=int(self.config.timeout),
+    def delete(
+        self, path: str, *, headers: Mapping[str, str] | None = None
+    ) -> r[FlextApiModels.HttpResponse]:
+        """Make DELETE request to Oracle WMS API."""
+        return self._request(FlextApiConstants.Api.Method.DELETE, path, headers=headers)
+
+    def discover_entities(self) -> r[list[str]]:
+        """Discover available Oracle WMS entities."""
+        result = self.get("/entities")
+        if result.is_failure:
+            return r[list[str]].fail(result.error)
+        payload_result = self._decode_response_model(
+            result.value.body, EntitiesResponse
         )
-        self._client = FlextApiClient(config=api_config)
-
-        # Initialize discovered entities cache
-        self._discovered_entities = []
+        if payload_result.is_failure:
+            return r[list[str]].fail(payload_result.error)
+        self._discovered_entities = payload_result.value.entities
+        return r[list[str]].ok(payload_result.value.entities)
 
     def get(
         self,
         path: str,
         *,
-        headers: dict[str, str] | None = None,
-        params: dict[str, str] | None = None,
-    ) -> FlextResult[dict[str, t.GeneralValueType]]:
-        """Make GET request to Oracle WMS API.
-
-        Args:
-        path: API endpoint path
-        headers: Optional request headers
-        params: Optional query parameters
-
-        Returns:
-        FlextResult containing response data
-
-        """
-        request = FlextApiModels.HttpRequest(
-            method=FlextApiConstants.Api.Method.GET,
-            url=path,
-            headers=headers or {},
-            query_params=params or {},
+        headers: Mapping[str, str] | None = None,
+        params: FlextApiTypes.Api.WebParams | None = None,
+    ) -> r[FlextApiModels.HttpResponse]:
+        """Make GET request to Oracle WMS API."""
+        return self._request(
+            FlextApiConstants.Api.Method.GET, path, headers=headers, params=params
         )
-        result = self._client.request(request)
+
+    def get_apis_by_category(self, category: str) -> r[list[dict[str, str]]]:
+        """Get Oracle WMS APIs by category."""
+        result = self.get(f"/apis/category/{category}")
         if result.is_failure:
-            return FlextResult.fail(f"GET {path} failed: {result.error}")
-        response = result.value
-        if hasattr(response, "body") and isinstance(response.body, dict):
-            return FlextResult.ok(cast("dict[str, t.GeneralValueType]", response.body))
-        return FlextResult.ok(
-            cast(
-                "dict[str, t.GeneralValueType]",
-                response if isinstance(response, dict) else {},
-            )
+            return r[list[dict[str, str]]].fail(result.error)
+        payload_result = self._decode_response_model(
+            result.value.body, ApiCategoryResponse
         )
+        if payload_result.is_failure:
+            return r[list[dict[str, str]]].fail(payload_result.error)
+        return r[list[dict[str, str]]].ok(payload_result.value.apis)
+
+    def get_entity_data(
+        self,
+        entity_name: str,
+        limit: int | None = None,
+        filters: Mapping[str, t.Scalar] | None = None,
+    ) -> r[list[dict[str, str]]]:
+        """Get data for a specific Oracle WMS entity."""
+        params: FlextApiTypes.Api.WebParams = {}
+        if limit is not None:
+            params["limit"] = str(limit)
+        if filters:
+            params |= {key: str(value) for key, value in filters.items()}
+        result = self.get(f"/entities/{entity_name}", params=params)
+        if result.is_failure:
+            return r[list[dict[str, str]]].fail(result.error)
+        payload_result = self._decode_response_model(
+            result.value.body, EntityDataResponse
+        )
+        if payload_result.is_failure:
+            return r[list[dict[str, str]]].fail(payload_result.error)
+        return r[list[dict[str, str]]].ok(payload_result.value.data)
+
+    def health_check(self) -> r[FlextApiModels.HttpResponse]:
+        """Check Oracle WMS API health."""
+        return self.get("/health")
 
     def post(
         self,
         path: str,
         *,
-        headers: dict[str, str] | None = None,
+        headers: Mapping[str, str] | None = None,
         body: FlextApiTypes.Api.RequestBody | None = None,
-    ) -> FlextResult[dict[str, t.GeneralValueType]]:
-        """Make POST request to Oracle WMS API.
-
-        Args:
-        path: API endpoint path
-        headers: Optional request headers
-        body: Optional request body
-
-        Returns:
-        FlextResult containing response data
-
-        """
-        request = FlextApiModels.HttpRequest(
-            method=FlextApiConstants.Api.Method.POST,
-            url=path,
-            headers=headers or {},
-            body=cast(
-                "FlextApiTypes.Api.RequestBody", body if body is not None else {}
-            ),
-        )
-        result = self._client.request(request)
-        if result.is_failure:
-            return FlextResult.fail(f"POST {path} failed: {result.error}")
-        response = result.value
-        if hasattr(response, "body") and isinstance(response.body, dict):
-            return FlextResult.ok(cast("dict[str, t.GeneralValueType]", response.body))
-        return FlextResult.ok(
-            cast(
-                "dict[str, t.GeneralValueType]",
-                response if isinstance(response, dict) else {},
-            )
+    ) -> r[FlextApiModels.HttpResponse]:
+        """Make POST request to Oracle WMS API."""
+        return self._request(
+            FlextApiConstants.Api.Method.POST, path, headers=headers, body=body
         )
 
     def put(
         self,
         path: str,
         *,
-        headers: dict[str, str] | None = None,
+        headers: Mapping[str, str] | None = None,
         body: FlextApiTypes.Api.RequestBody | None = None,
-    ) -> FlextResult[dict[str, t.GeneralValueType]]:
-        """Make PUT request to Oracle WMS API.
-
-        Args:
-        path: API endpoint path
-        headers: Optional request headers
-        body: Optional request body
-
-        Returns:
-        FlextResult containing response data
-
-        """
-        request = FlextApiModels.HttpRequest(
-            method=FlextApiConstants.Api.Method.PUT,
-            url=path,
-            headers=headers or {},
-            body=cast(
-                "FlextApiTypes.Api.RequestBody", body if body is not None else {}
-            ),
-        )
-        result = self._client.request(request)
-        if result.is_failure:
-            return FlextResult.fail(f"PUT {path} failed: {result.error}")
-        response = result.value
-        if hasattr(response, "body") and isinstance(response.body, dict):
-            return FlextResult.ok(cast("dict[str, t.GeneralValueType]", response.body))
-        return FlextResult.ok(
-            cast(
-                "dict[str, t.GeneralValueType]",
-                response if isinstance(response, dict) else {},
-            )
+    ) -> r[FlextApiModels.HttpResponse]:
+        """Make PUT request to Oracle WMS API."""
+        return self._request(
+            FlextApiConstants.Api.Method.PUT, path, headers=headers, body=body
         )
 
-    def delete(
-        self,
-        path: str,
-        *,
-        headers: dict[str, str] | None = None,
-    ) -> FlextResult[dict[str, t.GeneralValueType]]:
-        """Make DELETE request to Oracle WMS API.
+    def start(self) -> r[bool]:
+        """Start the Oracle WMS client."""
+        return r[bool].ok(True)
 
-        Args:
-        path: API endpoint path
-        headers: Optional request headers
-
-        Returns:
-        FlextResult containing response data
-
-        """
-        request = FlextApiModels.HttpRequest(
-            method=FlextApiConstants.Api.Method.DELETE,
-            url=path,
-            headers=headers or {},
-        )
-        result = self._client.request(request)
-        if result.is_failure:
-            return FlextResult.fail(f"DELETE {path} failed: {result.error}")
-        response = result.value
-        if hasattr(response, "body") and isinstance(response.body, dict):
-            return FlextResult.ok(cast("dict[str, t.GeneralValueType]", response.body))
-        return FlextResult.ok(
-            cast(
-                "dict[str, t.GeneralValueType]",
-                response if isinstance(response, dict) else {},
-            )
-        )
-
-    def health_check(self) -> FlextResult[dict[str, t.GeneralValueType]]:
-        """Check Oracle WMS API health.
-
-        Returns:
-        FlextResult containing health status
-
-        """
-        return self.get("/health")
-
-    def start(self) -> FlextResult[bool]:
-        """Start the Oracle WMS client.
-
-        Returns:
-        FlextResult indicating success
-
-        """
-        try:
-            # Initialize client if needed
-            return FlextResult.ok(True)
-        except Exception as e:
-            return FlextResult.fail(f"Failed to start client: {e}")
-
-    def stop(self) -> FlextResult[bool]:
-        """Stop the Oracle WMS client.
-
-        Returns:
-        FlextResult indicating success
-
-        """
-        try:
-            # Cleanup client resources
-            return FlextResult.ok(True)
-        except Exception as e:
-            return FlextResult.fail(f"Failed to stop client: {e}")
-
-    def discover_entities(self) -> FlextResult[list[t.GeneralValueType]]:
-        """Discover available Oracle WMS entities.
-
-        Returns:
-        FlextResult containing list of entities
-
-        """
-        result = self.get("/entities")
-        if result.is_failure:
-            return FlextResult.fail(result.error)
-        data = result.value
-        entities = data.get("entities", []) if isinstance(data, dict) else []
-        return FlextResult.ok(list(entities) if isinstance(entities, list) else [])
-
-    def get_entity_data(
-        self,
-        entity_name: str,
-        limit: int | None = None,
-        filters: dict[str, t.GeneralValueType] | None = None,
-    ) -> FlextResult[list[dict[str, t.GeneralValueType]]]:
-        """Get data for a specific Oracle WMS entity.
-
-        Args:
-        entity_name: Name of the entity
-        limit: Maximum number of records to return
-        filters: Optional filters to apply
-
-        Returns:
-        FlextResult containing entity data
-
-        """
-        params: dict[str, str] = {}
-        if limit:
-            params["limit"] = str(limit)
-        if filters:
-            params.update({k: str(v) for k, v in filters.items()})
-
-        result = self.get(f"/entities/{entity_name}", params=params)
-        if result.is_failure:
-            return FlextResult.fail(result.error)
-        data = result.value
-        entity_data = data.get("data", []) if isinstance(data, dict) else []
-        return FlextResult.ok(
-            list(entity_data) if isinstance(entity_data, list) else [],
-        )
-
-    def get_apis_by_category(
-        self,
-        category: str,
-    ) -> FlextResult[list[dict[str, t.GeneralValueType]]]:
-        """Get Oracle WMS APIs by category.
-
-        Args:
-        category: API category name
-
-        Returns:
-        FlextResult containing APIs in the category
-
-        """
-        result = self.get(f"/apis/category/{category}")
-        if result.is_failure:
-            return FlextResult.fail(result.error)
-        data = result.value
-        apis = data.get("apis", []) if isinstance(data, dict) else []
-        return FlextResult.ok(list(apis) if isinstance(apis, list) else [])
-
-    def call_api(
-        self,
-        api_name: str,
-        *,
-        headers: dict[str, str] | None = None,
-        params: dict[str, str] | None = None,
-    ) -> FlextResult[dict[str, t.GeneralValueType]]:
-        """Call a specific Oracle WMS API.
-
-        Args:
-        api_name: Name of the API to call
-        headers: Optional request headers
-        params: Optional query parameters
-
-        Returns:
-        FlextResult containing API response
-
-        """
-        return self.get(f"/api/{api_name}", headers=headers, params=params)
+    def stop(self) -> r[bool]:
+        """Stop the Oracle WMS client."""
+        return r[bool].ok(True)
 
     def update_oblpn_tracking_number(
+        self, oblpn_id: str, tracking_number: str
+    ) -> r[FlextApiModels.HttpResponse]:
+        """Update OBLPN tracking number."""
+        payload: FlextApiTypes.Api.RequestBody = {"tracking_number": tracking_number}
+        return self.put(f"/oblpn/{oblpn_id}/tracking", body=payload)
+
+    def _request(
         self,
-        oblpn_id: str,
-        tracking_number: str,
-    ) -> FlextResult[dict[str, t.GeneralValueType]]:
-        """Update OBLPN tracking number.
-
-        Args:
-        oblpn_id: OBLPN identifier
-        tracking_number: New tracking number
-
-        Returns:
-        FlextResult containing update response
-
-        """
-        return self.put(
-            f"/oblpn/{oblpn_id}/tracking",
-            body={"tracking_number": tracking_number},
+        method: str,
+        path: str,
+        *,
+        headers: Mapping[str, str] | None = None,
+        params: FlextApiTypes.Api.WebParams | None = None,
+        body: FlextApiTypes.Api.RequestBody | None = None,
+    ) -> r[FlextApiModels.HttpResponse]:
+        request = FlextApiModels.HttpRequest(
+            method=method,
+            url=path,
+            timeout=self.config.timeout,
+            headers=dict(headers) if headers is not None else {},
+            query_params=params or {},
+            body=body or {},
         )
-
-    def create_lpn(
-        self, lpn_nbr: str, qty: int
-    ) -> FlextResult[dict[str, t.GeneralValueType]]:
-        """Create LPN (License Plate Number).
-
-        Args:
-        lpn_nbr: LPN number
-        qty: Quantity
-
-        Returns:
-        FlextResult containing LPN creation response
-
-        """
-        return self.post("/lpn", body={"lpn_nbr": lpn_nbr, "qty": qty})
+        result = self._client.request(request)
+        if result.is_failure:
+            return r[FlextApiModels.HttpResponse].fail(
+                f"{method} {path} failed: {result.error}"
+            )
+        response = result.value
+        if response.status_code >= HTTP_BAD_REQUEST_THRESHOLD:
+            return r[FlextApiModels.HttpResponse].fail(
+                f"{method} {path} returned HTTP {response.status_code}"
+            )
+        return r[FlextApiModels.HttpResponse].ok(response)
 
 
 __all__ = ["FlextOracleWmsClient"]
