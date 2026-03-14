@@ -75,15 +75,11 @@ class OracleWmsCompleteDiscovery:
         for api_name, api_endpoint in all_apis.items():
             try:
                 if api_endpoint.category == FlextOracleWmsApiCategory.DATA_EXTRACT:
-                    result: r = self._test_data_extract_api(
-                        api_name, api_endpoint
-                    )
+                    result: r = self._test_data_extract_api(api_name, api_endpoint)
                 elif (
                     api_endpoint.category == FlextOracleWmsApiCategory.ENTITY_OPERATIONS
                 ):
-                    result: r = self._test_entity_operations_api(
-                        api_name, api_endpoint
-                    )
+                    result: r = self._test_entity_operations_api(api_name, api_endpoint)
                 elif (
                     api_endpoint.category
                     == FlextOracleWmsApiCategory.SETUP_TRANSACTIONAL
@@ -93,9 +89,7 @@ class OracleWmsCompleteDiscovery:
                     api_endpoint.category
                     == FlextOracleWmsApiCategory.AUTOMATION_OPERATIONS
                 ):
-                    result: r = self._test_automation_api(
-                        api_name, api_endpoint
-                    )
+                    result: r = self._test_automation_api(api_name, api_endpoint)
                 else:
                     result: r = r[bool].fail("Unknown API category")
                 api_results[api_name] = {
@@ -162,9 +156,7 @@ class OracleWmsCompleteDiscovery:
         except Exception as e:
             return r[bool].fail(f"Entity operations API test failed: {e}")
 
-    def _test_setup_api(
-        self, api_name: str, endpoint: FlextOracleWmsApiEndpoint
-    ) -> r:
+    def _test_setup_api(self, api_name: str, endpoint: FlextOracleWmsApiEndpoint) -> r:
         """Test setup and transactional APIs."""
         try:
             if endpoint.method == "POST":
@@ -274,7 +266,7 @@ class OracleWmsCompleteDiscovery:
         except Exception as e:
             return r[bool].fail(f"Entity with ID test failed: {e}")
 
-    def _summarize_api_response(self, data) -> str:
+    def _summarize_api_response(self, data: object) -> str:
         """Summarize API response data."""
         if isinstance(data, dict):
             if "count" in data:
@@ -370,7 +362,7 @@ class OracleWmsCompleteDiscovery:
                 self.discovered_entities = entities_result.data
             else:
                 return r[bool].fail("Entity discovery failed")
-        metadata_results = {}
+        metadata_results: dict[str, object] = {}
         entities_with_data = []
         entities_without_data: list[str] = []
         entities_with_errors: list[tuple[str, str]] = []
@@ -415,7 +407,7 @@ class OracleWmsCompleteDiscovery:
             for name, meta in self.entity_metadata.items()
             if meta["has_data"] and meta["structure_available"]
         ]
-        singer_schemas = {}
+        singer_schemas: dict[str, dict[str, object]] = {}
         for entity_name in entities_with_data:
             metadata = self.entity_metadata[entity_name]
             schema = self._generate_singer_schema_from_metadata(entity_name, metadata)

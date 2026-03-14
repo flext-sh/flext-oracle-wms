@@ -30,7 +30,7 @@ FlextOracleWmsApiCategory = FlextOracleWmsConstants.WmsApiCategory
 logger = FlextLogger(__name__)
 
 
-def _to_str(value, default: str) -> str:
+def _to_str(value: object, default: str) -> str:
     if isinstance(value, str):
         return value
     if isinstance(value, int | float):
@@ -38,7 +38,7 @@ def _to_str(value, default: str) -> str:
     return default
 
 
-def _to_int(value, default: int) -> int:
+def _to_int(value: object, default: int) -> int:
     if isinstance(value, int | float):
         return int(value)
     if isinstance(value, str):
@@ -49,7 +49,7 @@ def _to_int(value, default: int) -> int:
     return default
 
 
-def _to_bool(value, default: bool) -> bool:
+def _to_bool(value: object | None, default: bool) -> bool:
     if value is None:
         return default
     return bool(value)

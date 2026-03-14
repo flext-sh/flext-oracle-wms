@@ -28,7 +28,7 @@ class CompleteMockPipeline:
     """Complete Oracle WMS pipeline using realistic mock data."""
 
     @staticmethod
-    def _safe_int(value, default: int = 0) -> int:
+    def _safe_int(value: object, default: int = 0) -> int:
         """Safely convert object to int."""
         if isinstance(value, int):
             return value
@@ -333,9 +333,7 @@ class CompleteMockPipeline:
                 key_properties.append(field)
         return (properties, key_properties)
 
-    def _infer_field_type(
-        self, field: str, *, value
-    ) -> dict[str, str | list[str]]:
+    def _infer_field_type(self, field: str, *, value) -> dict[str, str | list[str]]:
         """Infer Singer type from field name and value - Strategy Pattern."""
         field_type = self._infer_type_from_field_name(field)
         if field_type:
@@ -642,7 +640,7 @@ class CompleteMockPipeline:
                 })
                 if isinstance(catalog, dict)
                 and isinstance((streams := catalog.get("streams", [])), list)
-                else list(),
+                else [],
             },
             "target_loading": {
                 "tables_created": len(target_results),

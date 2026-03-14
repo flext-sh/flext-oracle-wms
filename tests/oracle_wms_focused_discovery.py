@@ -210,7 +210,7 @@ class FocusedOracleWmsDiscovery:
         self, data_entities: Mapping[str, object]
     ) -> dict[str, object]:
         """Generate Singer schemas from entities with data."""
-        schemas = {}
+        schemas: dict[str, dict[str, object]] = {}
         for entity_name, entity_data in data_entities.items():
             schema = self._create_singer_schema(entity_name, entity_data)
             if schema:
@@ -221,7 +221,7 @@ class FocusedOracleWmsDiscovery:
         self, structure_entities: Mapping[str, object]
     ) -> dict[str, object]:
         """Generate Singer schemas from structures."""
-        schemas = {}
+        schemas: dict[str, dict[str, object]] = {}
         for entity_name, structure_data in structure_entities.items():
             schema = self._create_singer_schema(entity_name, structure_data)
             if schema:

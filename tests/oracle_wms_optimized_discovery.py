@@ -147,7 +147,7 @@ class OptimizedOracleWmsDiscovery:
             batch_tasks = [
                 self._analyze_single_entity(entity_name) for entity_name in batch
             ]
-            batch_results = []
+            batch_results: list[dict[str, object]] = []
             for task in batch_tasks:
                 try:
                     result = task

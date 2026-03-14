@@ -14,7 +14,7 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING
 
 from flext_core.lazy import cleanup_submodule_namespace, lazy_getattr
 
@@ -266,8 +266,7 @@ __all__ = [
 
 def __getattr__(name: str):
     """Lazy-load module attributes on first access (PEP 562)."""
-    value = lazy_getattr(name, _LAZY_IMPORTS, globals(), __name__)
-    return value
+    return lazy_getattr(name, _LAZY_IMPORTS, globals(), __name__)
 
 
 def __dir__() -> list[str]:
