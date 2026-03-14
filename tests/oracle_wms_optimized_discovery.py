@@ -318,7 +318,7 @@ class OptimizedOracleWmsDiscovery:
             return None
 
     def _oracle_to_singer_type(
-        self, field_name: str, python_type: str, sample_value: object
+        self, field_name: str, python_type: str, sample_value
     ) -> dict[str, object]:
         """Convert Oracle field to Singer type with real data analysis."""
         if sample_value is not None:

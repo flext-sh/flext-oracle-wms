@@ -217,7 +217,7 @@ def showcase_6_error_handling(client: FlextOracleWmsClient) -> None:
         logger.warning("Error handling demonstration: %s", e)
 
 
-def showcase_7_health_monitoring(client: FlextOracleWmsClient) -> object:
+def showcase_7_health_monitoring(client: FlextOracleWmsClient):
     """Feature 7: Health Monitoring."""
     health_result = client.health_check()
     if health_result.is_success:

@@ -263,7 +263,7 @@ class FocusedOracleWmsDiscovery:
             return None
 
     def _oracle_field_to_singer_type(
-        self, field_name: str, sample_value: object, entity_name: str
+        self, field_name: str, sample_value, entity_name: str
     ) -> dict[str, object]:
         """Convert Oracle WMS field to Singer type with context."""
         if sample_value is not None:

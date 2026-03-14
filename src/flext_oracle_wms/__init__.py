@@ -264,9 +264,9 @@ __all__ = [
 ]
 
 
-def __getattr__(name: str) -> Any:
+def __getattr__(name: str):
     """Lazy-load module attributes on first access (PEP 562)."""
-    value: Any = lazy_getattr(name, _LAZY_IMPORTS, globals(), __name__)
+    value = lazy_getattr(name, _LAZY_IMPORTS, globals(), __name__)
     return value
 
 

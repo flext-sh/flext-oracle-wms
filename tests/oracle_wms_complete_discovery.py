@@ -68,36 +68,36 @@ class OracleWmsCompleteDiscovery:
 
     def discover_all_apis(
         self,
-    ) -> r[dict[str, dict[str, object | r[object]]]]:
+    ) -> r[dict[str, dict[str, object | r]]]:
         """Discover and test ALL 22+ Oracle WMS APIs."""
-        api_results: dict[str, dict[str, object | r[object]]] = {}
+        api_results: dict[str, dict[str, object | r]] = {}
         all_apis: dict[str, FlextOracleWmsApiEndpoint] = FLEXT_ORACLE_WMS_APIS
         for api_name, api_endpoint in all_apis.items():
             try:
                 if api_endpoint.category == FlextOracleWmsApiCategory.DATA_EXTRACT:
-                    result: r[object] = self._test_data_extract_api(
+                    result: r = self._test_data_extract_api(
                         api_name, api_endpoint
                     )
                 elif (
                     api_endpoint.category == FlextOracleWmsApiCategory.ENTITY_OPERATIONS
                 ):
-                    result: r[object] = self._test_entity_operations_api(
+                    result: r = self._test_entity_operations_api(
                         api_name, api_endpoint
                     )
                 elif (
                     api_endpoint.category
                     == FlextOracleWmsApiCategory.SETUP_TRANSACTIONAL
                 ):
-                    result: r[object] = self._test_setup_api(api_name, api_endpoint)
+                    result: r = self._test_setup_api(api_name, api_endpoint)
                 elif (
                     api_endpoint.category
                     == FlextOracleWmsApiCategory.AUTOMATION_OPERATIONS
                 ):
-                    result: r[object] = self._test_automation_api(
+                    result: r = self._test_automation_api(
                         api_name, api_endpoint
                     )
                 else:
-                    result: r[object] = r[bool].fail("Unknown API category")
+                    result: r = r[bool].fail("Unknown API category")
                 api_results[api_name] = {
                     "endpoint": api_endpoint,
                     "result": result,
@@ -114,7 +114,7 @@ class OracleWmsCompleteDiscovery:
         _ = sum(1 for r in api_results.values() if r["result"].success)
         return r[bool].ok(api_results)
 
-    def _test_data_extract_api(self, api_name: str) -> r[object]:
+    def _test_data_extract_api(self, api_name: str) -> r:
         """Test data extraction APIs."""
         try:
             if api_name == "lgf_entity_discovery":
@@ -142,7 +142,7 @@ class OracleWmsCompleteDiscovery:
 
     def _test_entity_operations_api(
         self, api_name: str, endpoint: FlextOracleWmsApiEndpoint
-    ) -> r[object]:
+    ) -> r:
         """Test entity operations APIs."""
         try:
             if "entity" in endpoint.path and "{entity_name}" in endpoint.path:
@@ -164,7 +164,7 @@ class OracleWmsCompleteDiscovery:
 
     def _test_setup_api(
         self, api_name: str, endpoint: FlextOracleWmsApiEndpoint
-    ) -> r[object]:
+    ) -> r:
         """Test setup and transactional APIs."""
         try:
             if endpoint.method == "POST":
@@ -176,7 +176,7 @@ class OracleWmsCompleteDiscovery:
 
     def _test_automation_api(
         self, api_name: str, endpoint: FlextOracleWmsApiEndpoint
-    ) -> r[object]:
+    ) -> r:
         """Test automation and operations APIs."""
         try:
             if endpoint.method == "POST":
@@ -186,7 +186,7 @@ class OracleWmsCompleteDiscovery:
         except Exception as e:
             return r[bool].fail(f"Automation API test failed: {e}")
 
-    def _test_entity_get_with_discovery(self) -> r[object]:
+    def _test_entity_get_with_discovery(self) -> r:
         """Test entity get by discovering entity with data first."""
         try:
             self._ensure_discovered_entities()
@@ -201,7 +201,7 @@ class OracleWmsCompleteDiscovery:
             if entities_result.is_success:
                 self.discovered_entities = entities_result.data
 
-    def _find_and_get_entity_with_id(self) -> r[object]:
+    def _find_and_get_entity_with_id(self) -> r:
         """Find an entity with records and get it by ID."""
         for entity_name in self.discovered_entities[:10]:
             entity_result = self._get_entity_with_id(entity_name)
@@ -209,7 +209,7 @@ class OracleWmsCompleteDiscovery:
                 return entity_result
         return r[bool].fail("No entity with ID found for testing lgf_entity_get")
 
-    def _get_entity_with_id(self, entity_name: str) -> r[object] | None:
+    def _get_entity_with_id(self, entity_name: str) -> r | None:
         """Get entity by ID if it has records."""
         list_result = self.client.get_entity_data(entity_name, limit=1)
         if not list_result.is_success:
@@ -229,7 +229,7 @@ class OracleWmsCompleteDiscovery:
             path_params={"entity_name": entity_name, "id": str(entity_id)},
         )
 
-    def _test_data_extract_to_object_store(self) -> r[object]:
+    def _test_data_extract_to_object_store(self) -> r:
         """Test data extract to object store API."""
         try:
             extract_request = {
@@ -242,7 +242,7 @@ class OracleWmsCompleteDiscovery:
         except Exception as e:
             return r[bool].fail(f"Data extract to object store failed: {e}")
 
-    def _test_task_status(self) -> r[object]:
+    def _test_task_status(self) -> r:
         """Test task status API."""
         try:
             return self.client.call_api(
@@ -251,7 +251,7 @@ class OracleWmsCompleteDiscovery:
         except Exception as e:
             return r[bool].fail(f"task status test failed: {e}")
 
-    def _test_entity_with_id(self, api_name: str, entity_name: str) -> r[object]:
+    def _test_entity_with_id(self, api_name: str, entity_name: str) -> r:
         """Test entity API that requires ID parameter."""
         try:
             list_result = self.client.get_entity_data(entity_name, limit=1)
@@ -274,7 +274,7 @@ class OracleWmsCompleteDiscovery:
         except Exception as e:
             return r[bool].fail(f"Entity with ID test failed: {e}")
 
-    def _summarize_api_response(self, data: object) -> str:
+    def _summarize_api_response(self, data) -> str:
         """Summarize API response data."""
         if isinstance(data, dict):
             if "count" in data:
@@ -323,7 +323,7 @@ class OracleWmsCompleteDiscovery:
             entities_with_errors.append((entity_name, f"Exception: {e}"))
 
     def _create_metadata_info(
-        self, entity_name: str, count: int, results: object
+        self, entity_name: str, count: int, results
     ) -> dict[str, object]:
         """Create metadata info dict for an entity."""
         metadata_info = {
@@ -450,7 +450,7 @@ class OracleWmsCompleteDiscovery:
             return None
 
     def _map_to_singer_type(
-        self, python_type: str, sample_value: object, field_name: str
+        self, python_type: str, sample_value, field_name: str
     ) -> dict[str, object]:
         """Map Oracle/Python types to Singer types based on real data."""
         if sample_value is not None:
