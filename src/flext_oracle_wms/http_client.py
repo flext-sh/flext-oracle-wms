@@ -11,11 +11,11 @@ from types import TracebackType
 from typing import Self
 
 from flext_api import FlextApiClient, FlextApiModels, FlextApiSettings, FlextApiTypes
-from flext_core import FlextLogger, r
+from flext_core import FlextLogger, r, t
 from pydantic import TypeAdapter, ValidationError
 
 HTTP_BAD_REQUEST_THRESHOLD = 400
-type HttpJsonObject = dict[str, object]
+type HttpJsonObject = dict[str, t.ContainerValue]
 
 
 class FlextHttpClient:
@@ -97,7 +97,12 @@ class FlextHttpClient:
             request_headers.update(self._normalize_headers(headers))
             url = f"{self.base_url}/{path.lstrip('/')}"
             request = FlextApiModels.HttpRequest(
-                method="DELETE", url=url, headers=request_headers
+                method="DELETE",
+                url=url,
+                headers=request_headers,
+                body={},
+                query_params={},
+                timeout=self.timeout,
             )
             response_result = self._client.request(request)
             if response_result.is_failure:
@@ -154,6 +159,8 @@ class FlextHttpClient:
                 url=url,
                 headers=request_headers,
                 body=self._normalize_request_body(request_body),
+                query_params={},
+                timeout=self.timeout,
             )
             response_result = self._client.request(request)
             if response_result.is_failure:
@@ -177,6 +184,11 @@ class FlextHttpClient:
                 base_url=self.base_url,
                 timeout=self.timeout,
                 headers=dict(self.default_headers),
+                max_retries=0,
+                verify_ssl=self.verify_ssl,
+                default_headers=dict(self.default_headers),
+                log_requests=False,
+                log_responses=False,
             )
             self._client = FlextApiClient(config=config)
 
@@ -204,6 +216,8 @@ class FlextHttpClient:
                 url=url,
                 headers=request_headers,
                 body=self._normalize_request_body(body),
+                query_params=params or {},
+                timeout=self.timeout,
             )
             response_result = self._client.request(request)
             if response_result.is_failure:
@@ -227,7 +241,9 @@ class FlextHttpClient:
         match body:
             case dict() as payload:
                 try:
-                    return TypeAdapter(dict[str, t.ContainerValue]).validate_python(payload)
+                    return TypeAdapter(dict[str, t.ContainerValue]).validate_python(
+                        payload
+                    )
                 except ValidationError:
                     return {"text": str(payload)}
             case str() as raw if raw:
@@ -237,7 +253,9 @@ class FlextHttpClient:
                     return {"text": raw}
             case bytes() as raw_bytes:
                 try:
-                    return TypeAdapter(dict[str, t.ContainerValue]).validate_json(raw_bytes)
+                    return TypeAdapter(dict[str, t.ContainerValue]).validate_json(
+                        raw_bytes
+                    )
                 except (ValidationError, ValueError):
                     return {"text": raw_bytes.decode("utf-8", errors="ignore")}
             case _:

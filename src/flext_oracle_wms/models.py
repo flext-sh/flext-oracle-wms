@@ -33,10 +33,10 @@ class FlextOracleWmsModels(FlextModels):
     # TYPE ALIASES - Advanced composition for minimal declarations
     # =========================================================================
 
-    type TRecord = dict[str, object]
-    type TRecordBatch = list[dict[str, object]]
-    type TSchema = dict[str, dict[str, object]]
-    type TApiResponse = dict[str, object]
+    type TRecord = dict[str, t.ContainerValue]
+    type TRecordBatch = list[dict[str, t.ContainerValue]]
+    type TSchema = dict[str, dict[str, t.ContainerValue]]
+    type TApiResponse = dict[str, t.ContainerValue]
     type TApiVersion = Literal["v2", "v1"]
     type TEntityId = Annotated[str, StringConstraints(min_length=1, max_length=100)]
     type TEntityName = Annotated[
@@ -96,7 +96,7 @@ class FlextOracleWmsModels(FlextModels):
             ),
         ]
         items: Annotated[
-            list[dict[str, object]],
+            list[dict[str, t.ContainerValue]],
             Field(default_factory=list, description="Order items"),
         ]
 
@@ -124,7 +124,7 @@ class FlextOracleWmsModels(FlextModels):
         wave_id: Annotated[str, Field(default="", description="Wave identifier")]
         status: Annotated[str, Field(default="pending", description="Task status")]
         items: Annotated[
-            list[dict[str, object]],
+            list[dict[str, t.ContainerValue]],
             Field(default_factory=list, description="Task items"),
         ]
 

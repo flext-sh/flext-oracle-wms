@@ -11,7 +11,7 @@ from __future__ import annotations
 from collections.abc import Mapping
 from typing import Protocol
 
-from flext_core import r
+from flext_core import r, t
 
 from flext_oracle_wms.constants import FlextOracleWmsConstants as c
 
@@ -28,14 +28,14 @@ class FlextOracleWmsEntityDiscovery:
         self.client = client
 
     @staticmethod
-    def _to_discovered_entity(entity_name: str) -> Mapping[str, object]:
+    def _to_discovered_entity(entity_name: str) -> Mapping[str, t.ContainerValue]:
         return {
             "name": entity_name,
             "path": f"/entities/{entity_name}",
             "strategy": c.EndpointDiscoveryStrategy.API_BASED,
         }
 
-    def discover_entities(self) -> r[list[Mapping[str, object]]]:
+    def discover_entities(self) -> r[list[Mapping[str, t.ContainerValue]]]:
         """Discover entities from Oracle WMS API."""
         entities_result = self.client.discover_entities()
         if entities_result.is_failure:

@@ -34,7 +34,11 @@ class FlextOracleWmsApi(FlextService[None]):
 
     def __init__(self) -> None:
         """Initialize Oracle WMS facade with FLEXT integration."""
-        super().__init__()
+        super().__init__(
+            config_type=None,
+            config_overrides=None,
+            initial_context=None,
+        )
         self._client = FlextOracleWmsClient()
 
     @override

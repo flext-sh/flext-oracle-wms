@@ -41,14 +41,23 @@ class FlextOracleWmsTypes(FlextTypes):
             "logistics-service",
             "warehouse-optimizer",
         ]
-        type WmsProjectConfig = dict[str, object]
+        type WmsProjectConfig = dict[str, FlextTypes.ContainerValue]
         type WarehouseConfig = dict[str, str | int | bool | list[str]]
-        type InventoryConfig = dict[str, bool | str | dict[str, t.ContainerValue]]
+        type InventoryConfig = dict[
+            str,
+            bool | str | dict[str, FlextTypes.ContainerValue],
+        ]
 
-    type WmsConfig = dict[str, str | int | bool | dict[str, t.ContainerValue]]
-    type WmsEntity = dict[str, object | dict[str, t.ContainerValue]]
-    type WmsRecord = dict[str, object]
-    type WmsRecords = list[dict[str, object]]
+    type WmsConfig = dict[
+        str,
+        str | int | bool | dict[str, FlextTypes.ContainerValue],
+    ]
+    type WmsEntity = dict[
+        str,
+        FlextTypes.ContainerValue | dict[str, FlextTypes.ContainerValue],
+    ]
+    type WmsRecord = dict[str, FlextTypes.ContainerValue]
+    type WmsRecords = list[dict[str, FlextTypes.ContainerValue]]
 
     class Core:
         """Core convenience type aliases for common patterns.
@@ -58,34 +67,46 @@ class FlextOracleWmsTypes(FlextTypes):
         Access parent core types via inheritance from FlextOracleWmsTypes.
         """
 
-        type Dict = dict[str, object]
+        type Dict = dict[str, FlextTypes.ContainerValue]
         "Type alias for generic dictionary (attribute name to value mapping)."
-        type FilterScalar = t.Scalar | None
-        type FilterList = list[t.Core.FilterScalar]
+        type FilterScalar = FlextTypes.Scalar | None
+        type FilterList = list[FlextOracleWmsTypes.Core.FilterScalar]
         type FilterRecordValue = (
-            t.Core.FilterScalar
-            | t.Core.FilterList
+            FlextOracleWmsTypes.Core.FilterScalar
+            | FlextOracleWmsTypes.Core.FilterList
             | Mapping[
                 str,
-                t.Core.FilterScalar
-                | t.Core.FilterList
-                | Mapping[str, t.Core.FilterScalar | t.Core.FilterList],
+                FlextOracleWmsTypes.Core.FilterScalar
+                | FlextOracleWmsTypes.Core.FilterList
+                | Mapping[
+                    str,
+                    FlextOracleWmsTypes.Core.FilterScalar
+                    | FlextOracleWmsTypes.Core.FilterList,
+                ],
             ]
         )
         type FilterRecord = Mapping[
             str,
-            t.Core.FilterScalar
-            | t.Core.FilterList
-            | Mapping[str, t.Core.FilterScalar | t.Core.FilterList],
-        ]
-        type NestedFilterValue = (
-            t.Core.FilterScalar
-            | t.Core.FilterList
+            FlextOracleWmsTypes.Core.FilterScalar
+            | FlextOracleWmsTypes.Core.FilterList
             | Mapping[
                 str,
-                t.Core.FilterScalar
-                | t.Core.FilterList
-                | Mapping[str, t.Core.FilterScalar | t.Core.FilterList],
+                FlextOracleWmsTypes.Core.FilterScalar
+                | FlextOracleWmsTypes.Core.FilterList,
+            ],
+        ]
+        type NestedFilterValue = (
+            FlextOracleWmsTypes.Core.FilterScalar
+            | FlextOracleWmsTypes.Core.FilterList
+            | Mapping[
+                str,
+                FlextOracleWmsTypes.Core.FilterScalar
+                | FlextOracleWmsTypes.Core.FilterList
+                | Mapping[
+                    str,
+                    FlextOracleWmsTypes.Core.FilterScalar
+                    | FlextOracleWmsTypes.Core.FilterList,
+                ],
             ]
         )
 
@@ -96,4 +117,4 @@ __all__ = ["FlextOracleWmsTypes", "t"]
 
 class OperatorFilter(BaseModel):
     operator: str
-    value: t.Core.FilterScalar | t.Core.FilterList
+    value: FlextOracleWmsTypes.Core.FilterScalar | FlextOracleWmsTypes.Core.FilterList
