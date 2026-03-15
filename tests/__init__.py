@@ -1,15 +1,7 @@
 # AUTO-GENERATED FILE — DO NOT EDIT MANUALLY.
 # Regenerate with: make codegen
 #
-"""init   module.
-
-This module is part of the FLEXT ecosystem. Docstrings follow PEP 257 and Google style.
-
-
-Copyright (c) 2025 FLEXT Team. All rights reserved.
-SPDX-License-Identifier: MIT
-
-"""
+"""Tests package."""
 
 from __future__ import annotations
 
@@ -20,6 +12,7 @@ from flext_core.lazy import cleanup_submodule_namespace, lazy_getattr
 if TYPE_CHECKING:
     from flext_core.typings import FlextTypes
 
+    from tests import unit
     from tests.complete_mock_pipeline import CompleteMockPipeline
     from tests.conftest import (
         load_test_env,
@@ -375,6 +368,7 @@ _LAZY_IMPORTS: dict[str, tuple[str, str]] = {
     "test_real_connection": ("tests.test_connection", "test_real_connection"),
     "tm": ("tests.models", "tm"),
     "u": ("tests.test_helpers_core", "TestFlextOracleWmsUtilities"),
+    "unit": ("tests.unit", ""),
 }
 
 __all__ = [
@@ -476,6 +470,7 @@ __all__ = [
     "test_real_connection",
     "tm",
     "u",
+    "unit",
 ]
 
 
