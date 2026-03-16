@@ -14,6 +14,7 @@ from pathlib import Path
 
 from dotenv import load_dotenv
 from flext_core import FlextLogger
+from pydantic import BaseModel, ConfigDict, Field
 
 from flext_oracle_wms import (
     FlextOracleWmsClient,
@@ -31,6 +32,15 @@ class Environment(StrEnum):
     DEVELOPMENT = "dev"
     STAGING = "staging"
     PRODUCTION = "prod"
+
+
+class WmsEnvironmentConfig(BaseModel):
+    model_config = ConfigDict(extra="forbid", validate_assignment=True)
+
+    name: str = Field(description="Environment display name")
+    base_url: str = Field(description="Oracle WMS base URL")
+    timeout: int = Field(ge=1, description="Request timeout in seconds")
+    max_retries: int = Field(ge=0, description="Maximum retry attempts")
 
 
 def get_environment_configs() -> dict[Environment, WmsEnvironmentConfig]:

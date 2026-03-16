@@ -9,7 +9,7 @@ from __future__ import annotations
 from collections.abc import Mapping
 from typing import Literal
 
-from flext_core import FlextTypes, t
+from flext_core import FlextTypes, t as _core_t
 from pydantic import BaseModel
 
 
@@ -120,4 +120,4 @@ class OperatorFilter(BaseModel):
     value: FlextOracleWmsTypes.Core.FilterScalar | FlextOracleWmsTypes.Core.FilterList
 
 
-type HttpJsonObject = dict[str, t.ContainerValue]
+type HttpJsonObject = dict[str, _core_t.ContainerValue]
