@@ -6,7 +6,7 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from enum import StrEnum
+from enum import StrEnum, unique
 from typing import ClassVar, Final, Literal
 
 from flext_core import FlextConstants
@@ -135,6 +135,7 @@ class FlextOracleWmsConstants(FlextConstants):
             "max_http_status_code": 599,
         }
 
+    @unique
     class WmsEntityType(StrEnum):
         """Entity types.
 
@@ -162,6 +163,7 @@ class FlextOracleWmsConstants(FlextConstants):
         "warehouses",
     ]
 
+    @unique
     class WmsApiVersion(StrEnum):
         """API versions.
 
@@ -178,6 +180,7 @@ class FlextOracleWmsConstants(FlextConstants):
         WmsApiVersion.V1, WmsApiVersion.V2, WmsApiVersion.V3, WmsApiVersion.LEGACY
     ]
 
+    @unique
     class WmsApiCategory(StrEnum):
         """API categories.
 
@@ -195,6 +198,7 @@ class FlextOracleWmsConstants(FlextConstants):
         "inventory", "orders", "shipping", "receiving", "reporting"
     ]
 
+    @unique
     class WmsOperationStatus(StrEnum):
         """Operation status values.
 
@@ -213,6 +217,7 @@ class FlextOracleWmsConstants(FlextConstants):
         "pending", "running", "success", "error", "timeout", "cancelled"
     ]
 
+    @unique
     class WmsDataQuality(StrEnum):
         """Data quality levels.
 
@@ -227,6 +232,7 @@ class FlextOracleWmsConstants(FlextConstants):
 
     type WmsDataQualityLiteral = Literal["high", "medium", "low", "unknown"]
 
+    @unique
     class WmsFilterOperator(StrEnum):
         """Filter operators.
 
@@ -260,6 +266,7 @@ class FlextOracleWmsConstants(FlextConstants):
         "ends_with",
     ]
 
+    @unique
     class WmsPageMode(StrEnum):
         """Page modes.
 
@@ -273,6 +280,7 @@ class FlextOracleWmsConstants(FlextConstants):
 
     type WmsPageModeLiteral = Literal["append", "replace", "merge"]
 
+    @unique
     class WmsWriteMode(StrEnum):
         """Write modes.
 
@@ -287,6 +295,7 @@ class FlextOracleWmsConstants(FlextConstants):
 
     type WmsWriteModeLiteral = Literal["insert", "update", "upsert", "delete"]
 
+    @unique
     class EndpointDiscoveryStrategy(StrEnum):
         """Discovery strategy enum.
 
@@ -297,34 +306,54 @@ class FlextOracleWmsConstants(FlextConstants):
         API_BASED = "api_based"
         SCHEMA_BASED = "schema_based"
 
+    @unique
+    class OracleWMSAuthMethod(StrEnum):
+        """Auth methods.
 
-class OracleWMSAuthMethod(StrEnum):
-    """Auth methods.
+        DRY Pattern: This StrEnum is the single source of truth for Oracle WMS authentication methods.
+        All authentication method-related constants and Literal types MUST reference this enum.
+        """
 
-    DRY Pattern: This StrEnum is the single source of truth for Oracle WMS authentication methods.
-    All authentication method-related constants and Literal types MUST reference this enum.
-    """
+        BASIC = "basic"
+        OAUTH2 = "oauth2"
+        API_KEY = "api_key"
+        BEARER = "bearer"
 
-    BASIC = "basic"
-    OAUTH2 = "oauth2"
-    API_KEY = "api_key"
-    BEARER = "bearer"
+    FlextOracleWmsConstants.AUTH_CONFIG = {
+        "basic": OracleWMSAuthMethod.BASIC,
+        "oauth2": OracleWMSAuthMethod.OAUTH2,
+        "api_key": OracleWMSAuthMethod.API_KEY,
+        "bearer": OracleWMSAuthMethod.BEARER,
+        "oauth2_token_endpoint": "/oauth2/token",
+        "oauth2_scope_default": "read write",
+    }
+    type OracleWMSAuthMethodLiteral = Literal[
+        OracleWMSAuthMethod.BASIC,
+        OracleWMSAuthMethod.OAUTH2,
+        OracleWMSAuthMethod.API_KEY,
+        OracleWMSAuthMethod.BEARER,
+    ]
 
+    @unique
+    class ProjectType(StrEnum):
+        WMS_SERVICE = "wms-service"
+        WAREHOUSE_MANAGEMENT = "warehouse-management"
+        INVENTORY_SYSTEM = "inventory-system"
+        SHIPPING_SERVICE = "shipping-service"
+        PICKING_SYSTEM = "picking-system"
+        WMS_INTEGRATION = "wms-integration"
+        WAREHOUSE_API = "warehouse-api"
+        LOGISTICS_PLATFORM = "logistics-platform"
+        INVENTORY_TRACKER = "inventory-tracker"
+        WAREHOUSE_MONITOR = "warehouse-monitor"
+        WMS_CONNECTOR = "wms-connector"
+        FULFILLMENT_ENGINE = "fulfillment-engine"
+        WAREHOUSE_ANALYTICS = "warehouse-analytics"
+        WMS_CLIENT = "wms-client"
+        LOGISTICS_SERVICE = "logistics-service"
+        WAREHOUSE_OPTIMIZER = "warehouse-optimizer"
 
-FlextOracleWmsConstants.AUTH_CONFIG = {
-    "basic": OracleWMSAuthMethod.BASIC,
-    "oauth2": OracleWMSAuthMethod.OAUTH2,
-    "api_key": OracleWMSAuthMethod.API_KEY,
-    "bearer": OracleWMSAuthMethod.BEARER,
-    "oauth2_token_endpoint": "/oauth2/token",
-    "oauth2_scope_default": "read write",
-}
-type OracleWMSAuthMethodLiteral = Literal[
-    OracleWMSAuthMethod.BASIC,
-    OracleWMSAuthMethod.OAUTH2,
-    OracleWMSAuthMethod.API_KEY,
-    OracleWMSAuthMethod.BEARER,
-]
-__all__ = ["FlextOracleWmsConstants", "OracleWMSAuthMethod"]
 
 c = FlextOracleWmsConstants
+
+__all__ = ["FlextOracleWmsConstants", "OracleWMSAuthMethod"]

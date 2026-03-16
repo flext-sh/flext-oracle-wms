@@ -7,10 +7,11 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 from collections.abc import Mapping
-from typing import Literal
 
 from flext_core import FlextTypes, t as _core_t
 from pydantic import BaseModel
+
+from flext_oracle_wms import c
 
 
 class FlextOracleWmsTypes(FlextTypes):
@@ -23,24 +24,7 @@ class FlextOracleWmsTypes(FlextTypes):
     class OracleWms:
         """Oracle WMS-specific project types."""
 
-        type ProjectType = Literal[
-            "wms-service",
-            "warehouse-management",
-            "inventory-system",
-            "shipping-service",
-            "picking-system",
-            "wms-integration",
-            "warehouse-api",
-            "logistics-platform",
-            "inventory-tracker",
-            "warehouse-monitor",
-            "wms-connector",
-            "fulfillment-engine",
-            "warehouse-analytics",
-            "wms-client",
-            "logistics-service",
-            "warehouse-optimizer",
-        ]
+        type ProjectType = c.ProjectType
         type WmsProjectConfig = dict[str, FlextTypes.ContainerValue]
         type WarehouseConfig = dict[str, str | int | bool | list[str]]
         type InventoryConfig = dict[

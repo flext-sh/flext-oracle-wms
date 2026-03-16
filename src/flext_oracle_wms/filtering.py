@@ -7,7 +7,7 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 from collections.abc import Mapping
-from enum import StrEnum
+from enum import StrEnum, unique
 
 from flext_core import FlextExceptions, FlextLogger, r
 
@@ -21,6 +21,7 @@ class FlextOracleWmsDataValidationError(FlextExceptions.BaseError):
     """Data validation error for Oracle WMS filtering."""
 
 
+@unique
 class FilterOperator(StrEnum):
     """Supported filter operators."""
 

@@ -9,7 +9,7 @@ from __future__ import annotations
 
 import contextlib
 import os
-from enum import StrEnum
+from enum import StrEnum, unique
 from pathlib import Path
 
 from dotenv import load_dotenv
@@ -26,6 +26,7 @@ from flext_oracle_wms.constants import FlextOracleWmsConstants
 logger = FlextLogger(__name__)
 
 
+@unique
 class Environment(StrEnum):
     """Oracle WMS deployment environments."""
 
