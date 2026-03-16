@@ -35,6 +35,8 @@ class Environment(StrEnum):
 
 
 class WmsEnvironmentConfig(BaseModel):
+    """WMS environment configuration."""
+
     model_config = ConfigDict(extra="forbid", validate_assignment=True)
 
     name: str = Field(description="Environment display name")
