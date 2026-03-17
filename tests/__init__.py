@@ -12,9 +12,9 @@ from flext_core.lazy import cleanup_submodule_namespace, lazy_getattr
 if TYPE_CHECKING:
     from flext_core.typings import FlextTypes
 
-    from tests import unit
-    from tests.complete_mock_pipeline import CompleteMockPipeline
-    from tests.conftest import (
+    from . import unit as unit
+    from .complete_mock_pipeline import CompleteMockPipeline
+    from .conftest import (
         load_test_env,
         mock_config,
         pytest_configure,
@@ -22,25 +22,25 @@ if TYPE_CHECKING:
         sample_entities,
         sample_entity_data,
     )
-    from tests.constants import TestsFlextOracleWmsConstants
-    from tests.models import TestsFlextOracleWmsModels, m, tm
-    from tests.oracle_wms_complete_discovery import (
+    from .constants import TestsFlextOracleWmsConstants
+    from .models import TestsFlextOracleWmsModels, m, tm
+    from .oracle_wms_complete_discovery import (
         OracleWmsCompleteDiscovery,
         run_complete_discovery,
     )
-    from tests.oracle_wms_focused_discovery import FocusedOracleWmsDiscovery, main
-    from tests.oracle_wms_optimized_discovery import (
+    from .oracle_wms_focused_discovery import FocusedOracleWmsDiscovery, main
+    from .oracle_wms_optimized_discovery import (
         OptimizedOracleWmsDiscovery,
         run_optimized_discovery,
     )
-    from tests.protocols import TestsFlextOracleWmsProtocols, p
-    from tests.test_authentication_core import (
+    from .protocols import TestsFlextOracleWmsProtocols, p
+    from .test_authentication_core import (
         TestAuthenticationConfig,
         TestAuthenticationMethod,
         TestAuthenticator,
     )
-    from tests.test_client import TestClientSimpleNew
-    from tests.test_client_class import (
+    from .test_client import TestClientSimpleNew
+    from .test_client_class import (
         test_client_class_creation,
         test_client_config_access,
         test_client_has_discovery_methods,
@@ -49,8 +49,8 @@ if TYPE_CHECKING:
         test_client_has_wms_operations,
         test_client_internal_state,
     )
-    from tests.test_client_core import TestFlextOracleWmsClientCore, TestGetLogger
-    from tests.test_config import (
+    from .test_client_core import TestFlextOracleWmsClientCore, TestGetLogger
+    from .test_config import (
         test_config_creation_valid,
         test_config_defaults_from_constants,
         test_config_enterprise_features,
@@ -58,7 +58,7 @@ if TYPE_CHECKING:
         test_config_optional_auth_fields,
         test_config_validate_config_success,
     )
-    from tests.test_config_module import (
+    from .test_config_module import (
         test_config_creation,
         test_config_custom_values,
         test_config_reset_functionality,
@@ -66,8 +66,8 @@ if TYPE_CHECKING:
         test_config_testing_factory,
         test_config_validation,
     )
-    from tests.test_connection import test_real_connection
-    from tests.test_declarative import (
+    from .test_connection import test_real_connection
+    from .test_declarative import (
         FlextOracleWmsApiCategory,
         FlextOracleWmsApiVersion,
         TestAutomationApisIntegration,
@@ -82,12 +82,12 @@ if TYPE_CHECKING:
         oracle_wms_client,
         pytestmark,
     )
-    from tests.test_discovery import (
+    from .test_discovery import (
         TestDiscoveryConstants,
         TestEndpointDiscoveryStrategyEnum,
         TestFlextOracleWmsEntityDiscovery,
     )
-    from tests.test_filtering import (
+    from .test_filtering import (
         TestApplyOperator,
         TestConvenienceFunctions,
         TestErrorHandling,
@@ -101,11 +101,11 @@ if TYPE_CHECKING:
         TestRecordFiltering,
         TestRecordSorting,
     )
-    from tests.test_helpers_core import (
+    from .test_helpers_core import (
         TestFlextOracleWmsUtilities,
         TestFlextOracleWmsUtilities as u,
     )
-    from tests.test_models import (
+    from .test_models import (
         test_api_response_creation,
         test_api_response_defaults,
         test_api_response_error,
@@ -118,21 +118,21 @@ if TYPE_CHECKING:
         test_entity_validation_bad_endpoint_raises,
         test_entity_validation_empty_name_raises,
     )
-    from tests.test_schema_dynamic import (
+    from .test_schema_dynamic import (
         TestFlextOracleWmsConstants,
         TestNestedConstants,
         TestWmsEnums,
     )
-    from tests.test_singer_flattening import (
+    from .test_singer_flattening import (
         TestFlextOracleWmsApiResponse,
         TestFlextOracleWmsEntity,
     )
-    from tests.test_unified_config import TestFlextOracleWmsSettings
-    from tests.typings import TestsFlextOracleWmsTypes, TestsFlextOracleWmsTypes as t
-    from tests.unit.test_constants import TestFlextOracleWmsConstants as c
-    from tests.unit.test_wms_api import TestFlextOracleWmsApi
-    from tests.unit.test_wms_client import TestFlextOracleWmsClient
-    from tests.utilities import TestsFlextOracleWmsUtilities
+    from .test_unified_config import TestFlextOracleWmsSettings
+    from .typings import TestsFlextOracleWmsTypes, TestsFlextOracleWmsTypes as t
+    from .unit.test_constants import TestFlextOracleWmsConstants as c
+    from .unit.test_wms_api import TestFlextOracleWmsApi
+    from .unit.test_wms_client import TestFlextOracleWmsClient
+    from .utilities import TestsFlextOracleWmsUtilities
 
 _LAZY_IMPORTS: dict[str, tuple[str, str]] = {
     "CompleteMockPipeline": ("tests.complete_mock_pipeline", "CompleteMockPipeline"),
