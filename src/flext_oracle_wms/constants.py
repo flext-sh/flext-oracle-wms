@@ -33,7 +33,6 @@ class FlextOracleWmsConstants(FlextConstants):
         "max_retries": 3,
         "rate_limit_per_minute": 1000,
     }
-    AUTH_CONFIG: ClassVar[dict[str, str | object]]
     PROCESSING_CONFIG: Final[dict[str, int]] = {
         "default_batch_size": FlextConstants.Defaults.PAGE_SIZE * 10,
         "max_batch_size": FlextConstants.Defaults.PAGE_SIZE * 100,
@@ -319,7 +318,7 @@ class FlextOracleWmsConstants(FlextConstants):
         API_KEY = "api_key"
         BEARER = "bearer"
 
-    FlextOracleWmsConstants.AUTH_CONFIG = {
+    AUTH_CONFIG: ClassVar[dict[str, str | OracleWMSAuthMethod]] = {
         "basic": OracleWMSAuthMethod.BASIC,
         "oauth2": OracleWMSAuthMethod.OAUTH2,
         "api_key": OracleWMSAuthMethod.API_KEY,
@@ -336,6 +335,8 @@ class FlextOracleWmsConstants(FlextConstants):
 
     @unique
     class ProjectType(StrEnum):
+        """Project type literals for package metadata."""
+
         WMS_SERVICE = "wms-service"
         WAREHOUSE_MANAGEMENT = "warehouse-management"
         INVENTORY_SYSTEM = "inventory-system"
