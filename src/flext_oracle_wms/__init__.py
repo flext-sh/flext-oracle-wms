@@ -35,7 +35,6 @@ if TYPE_CHECKING:
     from flext_oracle_wms.constants import (
         FlextOracleWmsConstants,
         FlextOracleWmsConstants as c,
-        OracleWMSAuthMethod,
     )
     from flext_oracle_wms.filtering import (
         FilterOperator,
@@ -191,7 +190,6 @@ _LAZY_IMPORTS: dict[str, tuple[str, str]] = {
         "FlextOracleWmsValidationError",
     ),
     "OperatorFilter": ("flext_oracle_wms.filtering", "OperatorFilter"),
-    "OracleWMSAuthMethod": ("flext_oracle_wms.constants", "OracleWMSAuthMethod"),
     "__all__": ("flext_oracle_wms.__version__", "__all__"),
     "__author__": ("flext_oracle_wms.__version__", "__author__"),
     "__author_email__": ("flext_oracle_wms.__version__", "__author_email__"),
@@ -253,7 +251,6 @@ __all__ = [
     "FlextOracleWmsUtilities",
     "FlextOracleWmsValidationError",
     "OperatorFilter",
-    "OracleWMSAuthMethod",
     "__all__",
     "__author__",
     "__author_email__",
