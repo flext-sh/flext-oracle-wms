@@ -357,4 +357,6 @@ class FlextOracleWmsConstants(FlextConstants):
 
 c = FlextOracleWmsConstants
 
-__all__ = ["FlextOracleWmsConstants"]
+OracleWMSAuthMethod = FlextOracleWmsConstants.OracleWMSAuthMethod
+
+__all__ = ["FlextOracleWmsConstants", "OracleWMSAuthMethod", "c"]
