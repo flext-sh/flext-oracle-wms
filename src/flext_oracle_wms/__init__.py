@@ -34,7 +34,8 @@ if TYPE_CHECKING:
     )
     from flext_oracle_wms.constants import (
         FlextOracleWmsConstants,
-        FlextOracleWmsConstants as c,
+        OracleWMSAuthMethod,
+        c,
     )
     from flext_oracle_wms.filtering import (
         FilterOperator,
@@ -190,6 +191,7 @@ _LAZY_IMPORTS: dict[str, tuple[str, str]] = {
         "FlextOracleWmsValidationError",
     ),
     "OperatorFilter": ("flext_oracle_wms.filtering", "OperatorFilter"),
+    "OracleWMSAuthMethod": ("flext_oracle_wms.constants", "OracleWMSAuthMethod"),
     "__all__": ("flext_oracle_wms.__version__", "__all__"),
     "__author__": ("flext_oracle_wms.__version__", "__author__"),
     "__author_email__": ("flext_oracle_wms.__version__", "__author_email__"),
@@ -199,7 +201,7 @@ _LAZY_IMPORTS: dict[str, tuple[str, str]] = {
     "__url__": ("flext_oracle_wms.__version__", "__url__"),
     "__version__": ("flext_oracle_wms.__version__", "__version__"),
     "__version_info__": ("flext_oracle_wms.__version__", "__version_info__"),
-    "c": ("flext_oracle_wms.constants", "FlextOracleWmsConstants"),
+    "c": ("flext_oracle_wms.constants", "c"),
     "create_flext_http_client": (
         "flext_oracle_wms.http_client",
         "create_flext_http_client",
@@ -251,6 +253,7 @@ __all__ = [
     "FlextOracleWmsUtilities",
     "FlextOracleWmsValidationError",
     "OperatorFilter",
+    "OracleWMSAuthMethod",
     "__all__",
     "__author__",
     "__author_email__",
