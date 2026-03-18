@@ -13,3 +13,7 @@ from flext_tests import FlextTestsUtilities
 
 class TestsFlextOracleWmsUtilities(FlextTestsUtilities):
     """Test utilities for flextoraclewms."""
+
+
+u = TestsFlextOracleWmsUtilities
+__all__ = ["TestsFlextOracleWmsUtilities", "u"]

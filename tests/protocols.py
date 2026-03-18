@@ -33,6 +33,6 @@ class TestsFlextOracleWmsProtocols(FlextTestsProtocols, FlextOracleWmsProtocols)
             """OracleWms-specific test protocols."""
 
 
-p = TestsFlextOracleWmsProtocols
-p = TestsFlextOracleWmsProtocols
 __all__ = ["TestsFlextOracleWmsProtocols", "p"]
+
+p = TestsFlextOracleWmsProtocols
