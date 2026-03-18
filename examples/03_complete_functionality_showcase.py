@@ -172,7 +172,7 @@ def showcase_4_authentication(config: FlextOracleWmsClientSettings) -> None:
 
 def showcase_5_api_catalog(client: FlextOracleWmsClient) -> None:
     """Feature 5: API Catalog Management."""
-    categories = {}
+    categories: dict[str, list[str]] = {}
     for api_name, api_info in FLEXT_ORACLE_WMS_APIS.items():
         category = api_info.category
         if category not in categories:
@@ -221,7 +221,7 @@ def showcase_7_health_monitoring(client: FlextOracleWmsClient) -> dict[str, obje
     """Feature 7: Health Monitoring."""
     health_result = client.health_check()
     if health_result.is_success:
-        health_data = health_result.value or {}
+        health_data: dict[str, object] = health_result.value or {}
         for key in health_data:
             if key == "test_call_success":
                 pass
