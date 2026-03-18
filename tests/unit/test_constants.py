@@ -12,7 +12,9 @@ from __future__ import annotations
 from flext_core import FlextConstants
 from flext_tests import tm
 
-from flext_oracle_wms.constants import FlextOracleWmsConstants, OracleWMSAuthMethod
+from flext_oracle_wms.constants import FlextOracleWmsConstants
+
+OracleWMSAuthMethod = FlextOracleWmsConstants.OracleWMSAuthMethod
 
 
 class TestFlextOracleWmsConstants:

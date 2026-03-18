@@ -333,7 +333,9 @@ class CompleteMockPipeline:
                 key_properties.append(field)
         return (properties, key_properties)
 
-    def _infer_field_type(self, field: str, *, value) -> dict[str, str | list[str]]:
+    def _infer_field_type(
+        self, field: str, *, value: object
+    ) -> dict[str, str | list[str]]:
         """Infer Singer type from field name and value - Strategy Pattern."""
         field_type = self._infer_type_from_field_name(field)
         if field_type:
@@ -361,7 +363,7 @@ class CompleteMockPipeline:
                 return type_info
         return None
 
-    def _infer_type_from_value(self, *, value) -> dict[str, str | list[str]]:
+    def _infer_type_from_value(self, *, value: object) -> dict[str, str | list[str]]:
         """Infer type from Python value type - Template Method Pattern."""
         if isinstance(value, bool):
             return {"type": ["boolean", "null"]}
@@ -468,7 +470,7 @@ class CompleteMockPipeline:
                 if "order_nbr" in record:
                     record["order_nbr"] = f"{record['order_nbr']}-{i + 1:03d}"
                 record["_sdc_sequence"] = i + 1
-                record_obj: dict[str, object] = cast("dict[str, object]", record)
+                record_obj: dict[str, object] = record
                 tap_records.append({"entity": entity_name, "record": record_obj})
         return tap_records
 
@@ -640,7 +642,7 @@ class CompleteMockPipeline:
                 })
                 if isinstance(catalog, dict)
                 and isinstance((streams := catalog.get("streams", [])), list)
-                else [],
+                else list[str](),
             },
             "target_loading": {
                 "tables_created": len(target_results),

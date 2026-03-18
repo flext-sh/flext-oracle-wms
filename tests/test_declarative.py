@@ -296,10 +296,17 @@ class TestLgfApiV10Integration:
                 f"Cannot test get_entity_by_id - list failed: {list_result.error}"
             )
         data = list_result.data
-        results = data.get("results", []) if isinstance(data, dict) else []
+        empty_results: list[object] = []
+        results = (
+            data.get("results", empty_results)
+            if isinstance(data, dict)
+            else empty_results
+        )
         if not results or not isinstance(results, list):
             pytest.skip("No company records found for ID test")
         first_record = results[0]
+        if not isinstance(first_record, Mapping):
+            pytest.skip("Company record format is invalid")
         record_id = first_record.get("id") or first_record.get("company_code")
         if not record_id:
             pytest.skip("No ID field found in company record")
@@ -391,7 +398,7 @@ class TestPerformanceIntegration:
         if not oracle_wms_client.config.use_mock:
             pytest.skip("Skipping concurrent test - requires mock server")
         entities = ["company", "facility", "item"]
-        results: list[r | Exception] = []
+        results: list[r[object] | Exception] = []
         for entity in entities:
             try:
                 result = oracle_wms_client.get_entity_data(entity, limit=3)
@@ -425,7 +432,12 @@ class TestPerformanceIntegration:
             )
             if result.is_success:
                 data = result.data
-                results = data.get("results", []) if isinstance(data, dict) else []
+                empty_results: list[object] = []
+                results = (
+                    data.get("results", empty_results)
+                    if isinstance(data, dict)
+                    else empty_results
+                )
                 actual_count = len(results) if isinstance(results, list) else 0
                 logger.info(
                     "✅ Page size %d returned %d records", page_size, actual_count

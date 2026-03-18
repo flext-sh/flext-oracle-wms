@@ -32,6 +32,9 @@ from flext_oracle_wms import (
 
 logger = FlextLogger(__name__)
 
+type JsonScalar = str | int | float | bool | None
+type JsonValue = JsonScalar | dict[str, JsonValue] | list[JsonValue]
+
 
 class OptimizedOracleWmsDiscovery:
     """Optimized Oracle WMS Discovery for fast, complete results."""
@@ -104,7 +107,7 @@ class OptimizedOracleWmsDiscovery:
         priority_results = self._process_entity_batch(
             available_priority, "PRIORITY", batch_size=10
         )
-        entities_with_data = []
+        entities_with_data: list[str] = []
         for entity_name, result in priority_results.items():
             if result.get("has_data", False):
                 entities_with_data.append(entity_name)
@@ -285,7 +288,7 @@ class OptimizedOracleWmsDiscovery:
             sample_record = entity_data.get("sample_record", {})
             if not fields:
                 return None
-            properties = {}
+            properties: dict[str, dict[str, JsonValue]] = {}
             for field in fields:
                 python_type = field_types.get(field, "str")
                 sample_value = sample_record.get(field)
@@ -318,7 +321,7 @@ class OptimizedOracleWmsDiscovery:
             return None
 
     def _oracle_to_singer_type(
-        self, field_name: str, python_type: str, sample_value
+        self, field_name: str, python_type: str, sample_value: object
     ) -> dict[str, object]:
         """Convert Oracle field to Singer type with real data analysis."""
         if sample_value is not None:
@@ -443,17 +446,18 @@ class OptimizedOracleWmsDiscovery:
         self, schemas: Mapping[str, object]
     ) -> dict[str, object]:
         """Generate Singer catalog from schemas."""
-        streams = []
+        streams: list[dict[str, object]] = []
         for entity_name, schema in schemas.items():
             key_properties = schema.get("key_properties", ["id"])
-            stream = {
+            breadcrumb: list[str] = []
+            stream: dict[str, object] = {
                 "tap_stream_id": entity_name,
                 "stream": entity_name,
                 "schema": {k: v for k, v in schema.items() if k != "key_properties"},
                 "key_properties": key_properties,
                 "metadata": [
                     {
-                        "breadcrumb": [],
+                        "breadcrumb": breadcrumb,
                         "metadata": {
                             "inclusion": "available",
                             "selected": True,

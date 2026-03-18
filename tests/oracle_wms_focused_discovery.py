@@ -24,6 +24,9 @@ from flext_oracle_wms import (
 
 logger = FlextLogger(__name__)
 
+type JsonScalar = str | int | float | bool | None
+type JsonValue = JsonScalar | dict[str, JsonValue] | list[JsonValue]
+
 
 class FocusedOracleWmsDiscovery:
     """Focused Oracle WMS Discovery - find entities with data FAST."""
@@ -238,7 +241,7 @@ class FocusedOracleWmsDiscovery:
             sample_record = entity_data.get("sample_record", {})
             if not fields:
                 return None
-            properties = {}
+            properties: dict[str, dict[str, JsonValue]] = {}
             for field in fields:
                 python_type = field_types.get(field, "str")
                 sample_value = sample_record.get(field)
@@ -263,7 +266,7 @@ class FocusedOracleWmsDiscovery:
             return None
 
     def _oracle_field_to_singer_type(
-        self, field_name: str, sample_value, entity_name: str
+        self, field_name: str, sample_value: object, entity_name: str
     ) -> dict[str, object]:
         """Convert Oracle WMS field to Singer type with context."""
         if sample_value is not None:
@@ -392,20 +395,21 @@ class FocusedOracleWmsDiscovery:
 
     def _create_singer_catalog(self) -> dict[str, object]:
         """Create Singer catalog."""
-        streams = []
+        streams: list[dict[str, object]] = []
         for entity_name, schema in self.complete_schemas.items():
             key_properties = schema.get("key_properties", [])
             schema_without_keys = {
                 k: v for k, v in schema.items() if k != "key_properties"
             }
-            stream = {
+            breadcrumb: list[str] = []
+            stream: dict[str, object] = {
                 "tap_stream_id": entity_name,
                 "stream": entity_name,
                 "schema": schema_without_keys,
                 "key_properties": key_properties,
                 "metadata": [
                     {
-                        "breadcrumb": [],
+                        "breadcrumb": breadcrumb,
                         "metadata": {
                             "inclusion": "available",
                             "selected": True,
