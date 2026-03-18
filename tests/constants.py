@@ -11,7 +11,7 @@ from __future__ import annotations
 from flext_tests import c
 
 
-class TestsFlextOracleWmsConstants(FlextTestsConstants):
+class TestsFlextOracleWmsConstants(c):
     """Test constants for flextoraclewms."""
 
 

@@ -8,6 +8,7 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 from flext_core import FlextSettings
+from flext_tests import tm
 
 from flext_oracle_wms import FlextOracleWmsConstants
 from flext_oracle_wms.settings import FlextOracleWmsSettings
@@ -18,26 +19,34 @@ class TestFlextOracleWmsSettings:
 
     def test_class_inheritance(self) -> None:
         """Test proper inheritance from FlextSettings."""
-        assert issubclass(FlextOracleWmsSettings, FlextSettings)
+        tm.that(issubclass(FlextOracleWmsSettings, FlextSettings), eq=True)
 
     def test_default_initialization(self) -> None:
         """Test default configuration initialization."""
         config = FlextOracleWmsSettings()
-        assert config.base_url == str(
-            FlextOracleWmsConstants.API_CONFIG["base_url_default"]
+        tm.that(
+            config.base_url
+            == str(FlextOracleWmsConstants.API_CONFIG["base_url_default"]),
+            eq=True,
         )
-        assert config.timeout == int(
-            FlextOracleWmsConstants.API_CONFIG["timeout_default"]
+        tm.that(
+            config.timeout
+            == int(FlextOracleWmsConstants.API_CONFIG["timeout_default"]),
+            eq=True,
         )
-        assert config.retry_attempts == int(
-            FlextOracleWmsConstants.API_CONFIG["max_retries"]
+        tm.that(
+            config.retry_attempts
+            == int(FlextOracleWmsConstants.API_CONFIG["max_retries"]),
+            eq=True,
         )
-        assert config.enable_ssl_verification is True
-        assert config.enable_metrics is False
-        assert config.enable_tracing is False
-        assert config.enable_audit_logging is False
-        assert config.api_version == str(
-            FlextOracleWmsConstants.API_CONFIG["version_default"]
+        tm.that(config.enable_ssl_verification is True, eq=True)
+        tm.that(config.enable_metrics is False, eq=True)
+        tm.that(config.enable_tracing is False, eq=True)
+        tm.that(config.enable_audit_logging is False, eq=True)
+        tm.that(
+            config.api_version
+            == str(FlextOracleWmsConstants.API_CONFIG["version_default"]),
+            eq=True,
         )
 
     def test_custom_initialization(self) -> None:
@@ -49,36 +58,36 @@ class TestFlextOracleWmsSettings:
             enable_ssl_verification=False,
             enable_metrics=True,
         )
-        assert config.base_url == "https://custom-wms.example.com"
-        assert config.timeout == 60
-        assert config.retry_attempts == 5
-        assert config.enable_ssl_verification is False
-        assert config.enable_metrics is True
+        tm.that(config.base_url == "https://custom-wms.example.com", eq=True)
+        tm.that(config.timeout == 60, eq=True)
+        tm.that(config.retry_attempts == 5, eq=True)
+        tm.that(config.enable_ssl_verification is False, eq=True)
+        tm.that(config.enable_metrics is True, eq=True)
 
     def test_authentication_fields(self) -> None:
         """Test authentication configuration fields."""
         config = FlextOracleWmsSettings(username="test_user", password="test_pass")
-        assert config.username == "test_user"
-        assert config.password == "test_pass"
+        tm.that(config.username == "test_user", eq=True)
+        tm.that(config.password == "test_pass", eq=True)
 
     def test_enterprise_features(self) -> None:
         """Test enterprise feature configuration."""
         config = FlextOracleWmsSettings(
             enable_metrics=True, enable_tracing=True, enable_audit_logging=True
         )
-        assert config.enable_metrics is True
-        assert config.enable_tracing is True
-        assert config.enable_audit_logging is True
+        tm.that(config.enable_metrics is True, eq=True)
+        tm.that(config.enable_tracing is True, eq=True)
+        tm.that(config.enable_audit_logging is True, eq=True)
 
     def test_testing_config_factory(self) -> None:
         """Test testing_config classmethod."""
         config = FlextOracleWmsSettings.testing_config()
-        assert isinstance(config, FlextOracleWmsSettings)
-        assert config.use_mock is True
-        assert config.base_url == "https://test-wms.example.com"
+        tm.that(isinstance(config, FlextOracleWmsSettings), eq=True)
+        tm.that(config.use_mock is True, eq=True)
+        tm.that(config.base_url == "https://test-wms.example.com", eq=True)
 
     def test_environment_from_url_property(self) -> None:
         """Test environment_from_url property."""
         config = FlextOracleWmsSettings(base_url="https://custom.example.com")
-        assert isinstance(config.environment_from_url, str)
-        assert config.environment_from_url == "unknown"
+        tm.that(isinstance(config.environment_from_url, str), eq=True)
+        tm.that(config.environment_from_url == "unknown", eq=True)

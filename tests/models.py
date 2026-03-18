@@ -1,6 +1,6 @@
 """Test models for flext-oracle-wms tests.
 
-Provides TestsFlextOracleWmsModels, extending FlextTestsModels with
+Provides TestsFlextOracleWmsModels, extending m with
 flext-oracle-wms-specific models using COMPOSITION INHERITANCE.
 
 Copyright (c) 2025 FLEXT Team. All rights reserved.
@@ -14,15 +14,15 @@ from flext_tests import m
 from flext_oracle_wms.models import FlextOracleWmsModels
 
 
-class TestsFlextOracleWmsModels(FlextTestsModels, FlextOracleWmsModels):
+class TestsFlextOracleWmsModels(m, FlextOracleWmsModels):
     """Models for flext-oracle-wms tests using COMPOSITION INHERITANCE.
 
     MANDATORY: Inherits from BOTH:
-    1. FlextTestsModels - for test infrastructure (.Tests.*)
+    1. m - for test infrastructure (.Tests.*)
     2. FlextOracleWmsModels - for domain models
 
     Access patterns:
-    - tm.Tests.* (generic test models from FlextTestsModels)
+    - tm.Tests.* (generic test models from m)
     - tm.* (Oracle WMS domain models)
     - m.* (production models via alternative alias)
     """
