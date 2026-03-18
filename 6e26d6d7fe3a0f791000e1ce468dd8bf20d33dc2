@@ -1,0 +1,23 @@
+examples/03_complete_functionality_showcase.py
+  af6716664f6ebcf8 175,224
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.1.15",
+  "base_commit_sha": "6e26d6d7fe3a0f791000e1ce468dd8bf20d33dc2",
+  "prompts": {
+    "af6716664f6ebcf8": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_2fdc92b12ffelvD8zSvF1iqKMa",
+        "model": "anthropic/claude-haiku-4-5"
+      },
+      "human_author": "FLEXT Bot <team@flext.sh>",
+      "messages": [],
+      "total_additions": 2,
+      "total_deletions": 2,
+      "accepted_lines": 2,
+      "overriden_lines": 0
+    }
+  }
+}
