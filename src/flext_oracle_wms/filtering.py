@@ -11,8 +11,9 @@ from enum import StrEnum, unique
 
 from flext_core import FlextExceptions, FlextLogger, r
 
+from flext_oracle_wms import t
 from flext_oracle_wms.constants import FlextOracleWmsConstants
-from flext_oracle_wms.typings import OperatorFilter, t
+from flext_oracle_wms.typings import OperatorFilter
 
 type FilterEntry = t.Core.FilterScalar | t.Core.FilterList | OperatorFilter
 

@@ -18,9 +18,10 @@ from flext_api import (
     FlextApiSettings,
     FlextApiTypes,
 )
-from flext_core import FlextContainer, FlextExceptions, r, t, u
+from flext_core import FlextContainer, FlextExceptions, r
 from pydantic import BaseModel, ConfigDict, Field, ValidationError
 
+from flext_oracle_wms import t, u
 from flext_oracle_wms.settings import FlextOracleWmsSettings
 
 HTTP_BAD_REQUEST_THRESHOLD = 400

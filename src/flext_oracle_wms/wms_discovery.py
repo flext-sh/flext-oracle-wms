@@ -11,8 +11,9 @@ from __future__ import annotations
 from collections.abc import Mapping
 from typing import Protocol
 
-from flext_core import r, t
+from flext_core import r
 
+from flext_oracle_wms import t
 from flext_oracle_wms.constants import FlextOracleWmsConstants as c
 
 

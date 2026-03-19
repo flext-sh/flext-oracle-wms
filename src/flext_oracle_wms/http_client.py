@@ -11,9 +11,10 @@ from types import TracebackType
 from typing import Self
 
 from flext_api import FlextApiClient, FlextApiModels, FlextApiSettings, FlextApiTypes
-from flext_core import FlextLogger, r, t
+from flext_core import FlextLogger, r
 from pydantic import TypeAdapter, ValidationError
 
+from flext_oracle_wms import t
 from flext_oracle_wms.typings import HttpJsonObject
 
 HTTP_BAD_REQUEST_THRESHOLD = 400
