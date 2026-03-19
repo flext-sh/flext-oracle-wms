@@ -19,13 +19,7 @@ from typing import TYPE_CHECKING
 from flext_core.lazy import cleanup_submodule_namespace, lazy_getattr
 
 if TYPE_CHECKING:
-    from flext_core.decorators import d
-    from flext_core.exceptions import e
-    from flext_core.handlers import h
-    from flext_core.mixins import x
-    from flext_core.models import m
-    from flext_core.result import r
-    from flext_core.service import s
+    from flext_core import d, e, h, m, r, s, x
     from flext_core.typings import FlextTypes
 
     from flext_oracle_wms.__version__ import (
@@ -213,16 +207,16 @@ _LAZY_IMPORTS: dict[str, tuple[str, str]] = {
         "flext_oracle_wms.wms_auth",
         "create_oracle_wms_client",
     ),
-    "d": ("flext_core.decorators", "d"),
-    "e": ("flext_core.exceptions", "e"),
-    "h": ("flext_core.handlers", "h"),
-    "m": ("flext_core.models", "m"),
+    "d": ("flext_core", "d"),
+    "e": ("flext_core", "e"),
+    "h": ("flext_core", "h"),
+    "m": ("flext_core", "m"),
     "p": ("flext_oracle_wms.protocols", "p"),
-    "r": ("flext_core.result", "r"),
-    "s": ("flext_core.service", "s"),
+    "r": ("flext_core", "r"),
+    "s": ("flext_core", "s"),
     "t": ("flext_oracle_wms.typings", "t"),
     "u": ("flext_oracle_wms.utilities", "u"),
-    "x": ("flext_core.mixins", "x"),
+    "x": ("flext_core", "x"),
 }
 
 __all__ = [

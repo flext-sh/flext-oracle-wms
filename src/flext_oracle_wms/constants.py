@@ -19,39 +19,6 @@ class FlextOracleWmsConstants(FlextConstants):
     One class per module following SOLID principles. Generic for any WMS system.
     """
 
-    FLEXT_WMS_VERSION: Final[str] = "0.9.0"
-    APP_METADATA: Final[dict[str, str]] = {
-        "name": "flext-wms",
-        "description": "FLEXT Generic WMS Integration",
-        "author": "FLEXT Team",
-        "license": "MIT",
-    }
-    API_CONFIG: Final[dict[str, str | int]] = {
-        "version_default": "v1",
-        "base_url_default": "https://api.wms.example.com",
-        "timeout_default": FlextConstants.Defaults.TIMEOUT * 2,
-        "max_retries": 3,
-        "rate_limit_per_minute": 1000,
-    }
-    PROCESSING_CONFIG: Final[dict[str, int]] = {
-        "default_batch_size": FlextConstants.Defaults.PAGE_SIZE * 10,
-        "max_batch_size": FlextConstants.Defaults.PAGE_SIZE * 100,
-        "default_page_size": FlextConstants.Defaults.PAGE_SIZE,
-        "cache_ttl_default": 3600,
-        "cache_max_size": 10000,
-        "cache_cleanup_interval": 300,
-        "max_retry_attempts": 3,
-        "retry_delay_base": 1,
-        "retry_delay_max": 60,
-        "performance_warning_threshold": 5000,
-        "performance_critical_threshold": 10000,
-    }
-    ENVIRONMENTS: Final[dict[str, str]] = {
-        "default": "default",
-        "test": "test",
-        "production": "production",
-    }
-
     class OracleWms:
         """WMS connection constants - composed from base."""
 
@@ -59,9 +26,6 @@ class FlextOracleWmsConstants(FlextConstants):
         DEFAULT_MAX_RETRIES: Final[int] = FlextConstants.Reliability.MAX_RETRY_ATTEMPTS
         DEFAULT_RETRY_DELAY: Final[int] = (
             FlextConstants.Reliability.DEFAULT_RETRY_DELAY_SECONDS
-        )
-        DEFAULT_POOL_SIZE: Final[int] = (
-            FlextConstants.Network.DEFAULT_CONNECTION_POOL_SIZE
         )
         MAX_POOL_SIZE: Final[int] = FlextConstants.Network.MAX_CONNECTION_POOL_SIZE
 

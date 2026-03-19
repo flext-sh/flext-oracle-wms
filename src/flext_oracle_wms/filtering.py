@@ -5,6 +5,7 @@ SPDX-License-Identifier: MIT
 """
 
 from __future__ import annotations
+from flext_oracle_wms import c
 
 from collections.abc import Mapping
 from enum import StrEnum, unique
@@ -12,7 +13,6 @@ from enum import StrEnum, unique
 from flext_core import FlextExceptions, FlextLogger, r
 
 from flext_oracle_wms import t
-from flext_oracle_wms.constants import FlextOracleWmsConstants
 from flext_oracle_wms.typings import OperatorFilter
 
 type FilterEntry = t.Core.FilterScalar | t.Core.FilterList | OperatorFilter
@@ -49,10 +49,7 @@ class FlextOracleWmsFilter:
         max_conditions: int = 50,
     ) -> None:
         """Initialize filter engine with strict condition limits."""
-        if (
-            max_conditions <= 0
-            or max_conditions > FlextOracleWmsConstants.Filtering.MAX_FILTER_CONDITIONS
-        ):
+        if max_conditions <= 0 or max_conditions > c.Filtering.MAX_FILTER_CONDITIONS:
             error_message = "Invalid max_conditions"
             raise FlextExceptions.BaseError(error_message)
         self.max_conditions: int = max_conditions
