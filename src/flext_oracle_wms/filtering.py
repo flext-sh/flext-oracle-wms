@@ -5,14 +5,13 @@ SPDX-License-Identifier: MIT
 """
 
 from __future__ import annotations
-from flext_oracle_wms import c
 
 from collections.abc import Mapping
 from enum import StrEnum, unique
 
 from flext_core import FlextExceptions, FlextLogger, r
 
-from flext_oracle_wms import t
+from flext_oracle_wms import c, t
 from flext_oracle_wms.typings import OperatorFilter
 
 type FilterEntry = t.Core.FilterScalar | t.Core.FilterList | OperatorFilter
