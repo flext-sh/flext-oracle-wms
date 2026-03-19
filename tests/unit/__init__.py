@@ -21,10 +21,7 @@ if TYPE_CHECKING:
     from flext_core.typings import FlextTypes
 
     from .test_config import TestFlextOracleWmsSettings
-    from .test_constants import (
-        TestFlextOracleWmsConstants,
-        TestFlextOracleWmsConstants as c,
-    )
+    from .test_constants import TestFlextOracleWmsConstants
     from .test_wms_api import TestFlextOracleWmsApi
     from .test_wms_client import TestFlextOracleWmsClient
 
@@ -42,7 +39,6 @@ _LAZY_IMPORTS: dict[str, tuple[str, str]] = {
         "tests.unit.test_config",
         "TestFlextOracleWmsSettings",
     ),
-    "c": ("tests.unit.test_constants", "TestFlextOracleWmsConstants"),
 }
 
 __all__ = [
@@ -50,7 +46,6 @@ __all__ = [
     "TestFlextOracleWmsClient",
     "TestFlextOracleWmsConstants",
     "TestFlextOracleWmsSettings",
-    "c",
 ]
 
 

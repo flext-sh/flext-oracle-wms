@@ -19,6 +19,13 @@ from typing import TYPE_CHECKING
 from flext_core.lazy import cleanup_submodule_namespace, lazy_getattr
 
 if TYPE_CHECKING:
+    from flext_core.decorators import d
+    from flext_core.exceptions import e
+    from flext_core.handlers import h
+    from flext_core.mixins import x
+    from flext_core.models import m
+    from flext_core.result import r
+    from flext_core.service import s
     from flext_core.typings import FlextTypes
 
     from flext_oracle_wms.__version__ import (
@@ -74,7 +81,6 @@ if TYPE_CHECKING:
         FlextOracleWmsEntityNotFoundError,
         FlextOracleWmsError,
         FlextOracleWmsExceptions,
-        FlextOracleWmsExceptions as e,
         FlextOracleWmsInventoryError,
         FlextOracleWmsPickingError,
         FlextOracleWmsProcessingError,
@@ -84,10 +90,7 @@ if TYPE_CHECKING:
         FlextOracleWmsShipmentError,
         FlextOracleWmsValidationError,
     )
-    from flext_oracle_wms.wms_models import (
-        FlextOracleWmsModels,
-        FlextOracleWmsModels as m,
-    )
+    from flext_oracle_wms.wms_models import FlextOracleWmsModels
 
 _LAZY_IMPORTS: dict[str, tuple[str, str]] = {
     "DISCOVERY_FAILURE": ("flext_oracle_wms.wms_discovery", "DISCOVERY_FAILURE"),
@@ -210,11 +213,16 @@ _LAZY_IMPORTS: dict[str, tuple[str, str]] = {
         "flext_oracle_wms.wms_auth",
         "create_oracle_wms_client",
     ),
-    "e": ("flext_oracle_wms.wms_exceptions", "FlextOracleWmsExceptions"),
-    "m": ("flext_oracle_wms.wms_models", "FlextOracleWmsModels"),
+    "d": ("flext_core.decorators", "d"),
+    "e": ("flext_core.exceptions", "e"),
+    "h": ("flext_core.handlers", "h"),
+    "m": ("flext_core.models", "m"),
     "p": ("flext_oracle_wms.protocols", "p"),
+    "r": ("flext_core.result", "r"),
+    "s": ("flext_core.service", "s"),
     "t": ("flext_oracle_wms.typings", "t"),
     "u": ("flext_oracle_wms.utilities", "u"),
+    "x": ("flext_core.mixins", "x"),
 }
 
 __all__ = [
@@ -266,11 +274,16 @@ __all__ = [
     "c",
     "create_flext_http_client",
     "create_oracle_wms_client",
+    "d",
     "e",
+    "h",
     "m",
     "p",
+    "r",
+    "s",
     "t",
     "u",
+    "x",
 ]
 
 
