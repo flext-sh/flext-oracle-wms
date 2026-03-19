@@ -19,7 +19,7 @@ from typing import TYPE_CHECKING
 from flext_core.lazy import cleanup_submodule_namespace, lazy_getattr
 
 if TYPE_CHECKING:
-    from flext_core import d, e, h, m, r, s, x
+    from flext_core import d, e, h, r, s, x
     from flext_core.typings import FlextTypes
 
     from flext_oracle_wms.__version__ import (
@@ -33,6 +33,7 @@ if TYPE_CHECKING:
         __version__,
         __version_info__,
     )
+    from flext_oracle_wms.api import FlextOracleWmsApi
     from flext_oracle_wms.constants import (
         FlextOracleWmsConstants,
         OracleWMSAuthMethod,
@@ -44,6 +45,7 @@ if TYPE_CHECKING:
         OperatorFilter,
     )
     from flext_oracle_wms.http_client import FlextHttpClient, create_flext_http_client
+    from flext_oracle_wms.models import FlextOracleWmsModels, FlextOracleWmsModels as m
     from flext_oracle_wms.protocols import FlextOracleWmsProtocols, p
     from flext_oracle_wms.settings import (
         FlextOracleWmsClientSettings,
@@ -53,7 +55,6 @@ if TYPE_CHECKING:
     from flext_oracle_wms.utilities import FlextOracleWmsUtilities, u
     from flext_oracle_wms.wms_api import (
         FLEXT_ORACLE_WMS_APIS,
-        FlextOracleWmsApi,
         FlextOracleWmsApiEndpoint,
     )
     from flext_oracle_wms.wms_auth import (
@@ -84,7 +85,6 @@ if TYPE_CHECKING:
         FlextOracleWmsShipmentError,
         FlextOracleWmsValidationError,
     )
-    from flext_oracle_wms.wms_models import FlextOracleWmsModels
 
 _LAZY_IMPORTS: dict[str, tuple[str, str]] = {
     "DISCOVERY_FAILURE": ("flext_oracle_wms.wms_discovery", "DISCOVERY_FAILURE"),
@@ -92,7 +92,7 @@ _LAZY_IMPORTS: dict[str, tuple[str, str]] = {
     "FLEXT_ORACLE_WMS_APIS": ("flext_oracle_wms.wms_api", "FLEXT_ORACLE_WMS_APIS"),
     "FilterOperator": ("flext_oracle_wms.filtering", "FilterOperator"),
     "FlextHttpClient": ("flext_oracle_wms.http_client", "FlextHttpClient"),
-    "FlextOracleWmsApi": ("flext_oracle_wms.wms_api", "FlextOracleWmsApi"),
+    "FlextOracleWmsApi": ("flext_oracle_wms.api", "FlextOracleWmsApi"),
     "FlextOracleWmsApiEndpoint": (
         "flext_oracle_wms.wms_api",
         "FlextOracleWmsApiEndpoint",
@@ -148,7 +148,7 @@ _LAZY_IMPORTS: dict[str, tuple[str, str]] = {
         "flext_oracle_wms.wms_exceptions",
         "FlextOracleWmsInventoryError",
     ),
-    "FlextOracleWmsModels": ("flext_oracle_wms.wms_models", "FlextOracleWmsModels"),
+    "FlextOracleWmsModels": ("flext_oracle_wms.models", "FlextOracleWmsModels"),
     "FlextOracleWmsPickingError": (
         "flext_oracle_wms.wms_exceptions",
         "FlextOracleWmsPickingError",
@@ -210,7 +210,7 @@ _LAZY_IMPORTS: dict[str, tuple[str, str]] = {
     "d": ("flext_core", "d"),
     "e": ("flext_core", "e"),
     "h": ("flext_core", "h"),
-    "m": ("flext_core", "m"),
+    "m": ("flext_oracle_wms.models", "FlextOracleWmsModels"),
     "p": ("flext_oracle_wms.protocols", "p"),
     "r": ("flext_core", "r"),
     "s": ("flext_core", "s"),

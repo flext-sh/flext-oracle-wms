@@ -126,7 +126,7 @@ if TYPE_CHECKING:
     )
     from .test_unified_config import TestFlextOracleWmsSettings
     from .typings import TestsFlextOracleWmsTypes, t
-    from .unit.test_wms_api import TestFlextOracleWmsApi
+    from .unit.test_api import TestFlextOracleWmsApi
     from .unit.test_wms_client import TestFlextOracleWmsClient
     from .utilities import TestsFlextOracleWmsUtilities, u
 
@@ -177,7 +177,7 @@ _LAZY_IMPORTS: dict[str, tuple[str, str]] = {
     ),
     "TestFactoryFunction": ("tests.test_filtering", "TestFactoryFunction"),
     "TestFilterValidation": ("tests.test_filtering", "TestFilterValidation"),
-    "TestFlextOracleWmsApi": ("tests.unit.test_wms_api", "TestFlextOracleWmsApi"),
+    "TestFlextOracleWmsApi": ("tests.unit.test_api", "TestFlextOracleWmsApi"),
     "TestFlextOracleWmsApiResponse": (
         "tests.test_singer_flattening",
         "TestFlextOracleWmsApiResponse",
