@@ -19,7 +19,7 @@ from typing import TYPE_CHECKING
 from flext_core.lazy import cleanup_submodule_namespace, lazy_getattr
 
 if TYPE_CHECKING:
-    from flext_core import d, e, h, r, s, x
+    from flext_core import d, h, r, s, x
     from flext_core.typings import FlextTypes
 
     from flext_oracle_wms.__version__ import (
@@ -36,8 +36,8 @@ if TYPE_CHECKING:
     from flext_oracle_wms.api import FlextOracleWmsApi
     from flext_oracle_wms.constants import (
         FlextOracleWmsConstants,
+        FlextOracleWmsConstants as c,
         OracleWMSAuthMethod,
-        c,
     )
     from flext_oracle_wms.filtering import (
         FilterOperator,
@@ -46,13 +46,19 @@ if TYPE_CHECKING:
     )
     from flext_oracle_wms.http_client import FlextHttpClient, create_flext_http_client
     from flext_oracle_wms.models import FlextOracleWmsModels, FlextOracleWmsModels as m
-    from flext_oracle_wms.protocols import FlextOracleWmsProtocols, p
+    from flext_oracle_wms.protocols import (
+        FlextOracleWmsProtocols,
+        FlextOracleWmsProtocols as p,
+    )
     from flext_oracle_wms.settings import (
         FlextOracleWmsClientSettings,
         FlextOracleWmsSettings,
     )
-    from flext_oracle_wms.typings import FlextOracleWmsTypes, t
-    from flext_oracle_wms.utilities import FlextOracleWmsUtilities, u
+    from flext_oracle_wms.typings import FlextOracleWmsTypes, FlextOracleWmsTypes as t
+    from flext_oracle_wms.utilities import (
+        FlextOracleWmsUtilities,
+        FlextOracleWmsUtilities as u,
+    )
     from flext_oracle_wms.wms_api import (
         FLEXT_ORACLE_WMS_APIS,
         FlextOracleWmsApiEndpoint,
@@ -76,6 +82,7 @@ if TYPE_CHECKING:
         FlextOracleWmsEntityNotFoundError,
         FlextOracleWmsError,
         FlextOracleWmsExceptions,
+        FlextOracleWmsExceptions as e,
         FlextOracleWmsInventoryError,
         FlextOracleWmsPickingError,
         FlextOracleWmsProcessingError,
@@ -198,7 +205,7 @@ _LAZY_IMPORTS: dict[str, tuple[str, str]] = {
     "__url__": ("flext_oracle_wms.__version__", "__url__"),
     "__version__": ("flext_oracle_wms.__version__", "__version__"),
     "__version_info__": ("flext_oracle_wms.__version__", "__version_info__"),
-    "c": ("flext_oracle_wms.constants", "c"),
+    "c": ("flext_oracle_wms.constants", "FlextOracleWmsConstants"),
     "create_flext_http_client": (
         "flext_oracle_wms.http_client",
         "create_flext_http_client",
@@ -208,14 +215,14 @@ _LAZY_IMPORTS: dict[str, tuple[str, str]] = {
         "create_oracle_wms_client",
     ),
     "d": ("flext_core", "d"),
-    "e": ("flext_core", "e"),
+    "e": ("flext_oracle_wms.wms_exceptions", "FlextOracleWmsExceptions"),
     "h": ("flext_core", "h"),
     "m": ("flext_oracle_wms.models", "FlextOracleWmsModels"),
-    "p": ("flext_oracle_wms.protocols", "p"),
+    "p": ("flext_oracle_wms.protocols", "FlextOracleWmsProtocols"),
     "r": ("flext_core", "r"),
     "s": ("flext_core", "s"),
-    "t": ("flext_oracle_wms.typings", "t"),
-    "u": ("flext_oracle_wms.utilities", "u"),
+    "t": ("flext_oracle_wms.typings", "FlextOracleWmsTypes"),
+    "u": ("flext_oracle_wms.utilities", "FlextOracleWmsUtilities"),
     "x": ("flext_core", "x"),
 }
 
