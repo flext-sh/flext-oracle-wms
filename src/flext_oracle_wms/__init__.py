@@ -19,7 +19,7 @@ from typing import TYPE_CHECKING
 from flext_core.lazy import cleanup_submodule_namespace, lazy_getattr
 
 if TYPE_CHECKING:
-    from flext_core import d, h, r, s, x
+    from flext_core import d, e, h, r, s, x
     from flext_core.typings import FlextTypes
 
     from flext_oracle_wms.__version__ import (
@@ -82,7 +82,6 @@ if TYPE_CHECKING:
         FlextOracleWmsEntityNotFoundError,
         FlextOracleWmsError,
         FlextOracleWmsExceptions,
-        FlextOracleWmsExceptions as e,
         FlextOracleWmsInventoryError,
         FlextOracleWmsPickingError,
         FlextOracleWmsProcessingError,
@@ -215,7 +214,7 @@ _LAZY_IMPORTS: dict[str, tuple[str, str]] = {
         "create_oracle_wms_client",
     ),
     "d": ("flext_core", "d"),
-    "e": ("flext_oracle_wms.wms_exceptions", "FlextOracleWmsExceptions"),
+    "e": ("flext_core", "e"),
     "h": ("flext_core", "h"),
     "m": ("flext_oracle_wms.models", "FlextOracleWmsModels"),
     "p": ("flext_oracle_wms.protocols", "FlextOracleWmsProtocols"),

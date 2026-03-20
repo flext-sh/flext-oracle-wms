@@ -107,10 +107,7 @@ if TYPE_CHECKING:
         TestRecordFiltering,
         TestRecordSorting,
     )
-    from .test_helpers_core import (
-        TestFlextOracleWmsUtilities,
-        TestFlextOracleWmsUtilities as u,
-    )
+    from .test_helpers_core import TestFlextOracleWmsUtilities
     from .test_models import (
         test_api_response_creation,
         test_api_response_defaults,
@@ -137,7 +134,10 @@ if TYPE_CHECKING:
     from .typings import TestsFlextOracleWmsTypes, TestsFlextOracleWmsTypes as t
     from .unit.test_api import TestFlextOracleWmsApi
     from .unit.test_wms_client import TestFlextOracleWmsClient
-    from .utilities import TestsFlextOracleWmsUtilities
+    from .utilities import (
+        TestsFlextOracleWmsUtilities,
+        TestsFlextOracleWmsUtilities as u,
+    )
 
 _LAZY_IMPORTS: dict[str, tuple[str, str]] = {
     "CompleteMockPipeline": ("tests.complete_mock_pipeline", "CompleteMockPipeline"),
@@ -372,7 +372,7 @@ _LAZY_IMPORTS: dict[str, tuple[str, str]] = {
     ),
     "test_real_connection": ("tests.test_connection", "test_real_connection"),
     "tm": ("tests.models", "tm"),
-    "u": ("tests.test_helpers_core", "TestFlextOracleWmsUtilities"),
+    "u": ("tests.utilities", "TestsFlextOracleWmsUtilities"),
     "unit": ("tests.unit", ""),
 }
 
