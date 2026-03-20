@@ -22,7 +22,7 @@ class FlextOracleWmsConstants(FlextConstants):
     class OracleWms:
         """WMS connection constants - composed from base."""
 
-        DEFAULT_TIMEOUT: Final[int] = FlextConstants.Network.DEFAULT_TIMEOUT
+        DEFAULT_TIMEOUT: Final[int] = FlextConstants.DEFAULT_TIMEOUT_SECONDS
         DEFAULT_MAX_RETRIES: Final[int] = FlextConstants.Reliability.MAX_RETRY_ATTEMPTS
         DEFAULT_RETRY_DELAY: Final[int] = (
             FlextConstants.Reliability.DEFAULT_RETRY_DELAY_SECONDS
