@@ -75,7 +75,9 @@ class FlextOracleWmsModels(FlextModels):
         """Inventory domain entity."""
 
         sku: Annotated[str, Field(default="", description="Stock keeping unit")]
-        quantity: Annotated[int, Field(default=0, description="Item quantity", ge=0)]
+        quantity: Annotated[
+            t.NonNegativeInt, Field(default=0, description="Item quantity")
+        ]
         location_id: Annotated[
             str, Field(default="", description="Storage location identifier")
         ]
@@ -89,11 +91,10 @@ class FlextOracleWmsModels(FlextModels):
         ]
         status: Annotated[str, Field(default="pending", description="Order status")]
         total_amount: Annotated[
-            float,
+            t.NonNegativeFloat,
             Field(
                 default=0.0,
                 description="Total order amount",
-                ge=0.0,
             ),
         ]
         items: Annotated[
