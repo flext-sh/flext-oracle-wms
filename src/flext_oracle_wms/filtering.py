@@ -236,12 +236,20 @@ class FlextOracleWmsFilter:
                     return False
                 return str(filter_value) in field_value
             case FilterOperator.GT | "gt":
+                if type(field_value) is not type(filter_value):
+                    return False
                 return self._compare(field_value, filter_value, ">")
             case FilterOperator.LT | "lt":
+                if type(field_value) is not type(filter_value):
+                    return False
                 return self._compare(field_value, filter_value, "<")
             case FilterOperator.GTE | "gte":
+                if type(field_value) is not type(filter_value):
+                    return False
                 return self._compare(field_value, filter_value, ">=")
             case FilterOperator.LTE | "lte":
+                if type(field_value) is not type(filter_value):
+                    return False
                 return self._compare(field_value, filter_value, "<=")
             case _:
                 return False

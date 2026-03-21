@@ -75,6 +75,8 @@ class FlextOracleWmsModels(FlextModels):
                 """Validate entity configuration."""
                 if not self.name:
                     return r[bool].fail("Entity name is required")
+                if len(self.name) > c.WmsEntities.MAX_ENTITY_NAME_LENGTH:
+                    return r[bool].fail("Entity name is too long")
                 if not self.endpoint:
                     return r[bool].fail("Entity endpoint is required")
                 return r[bool].ok(True)
