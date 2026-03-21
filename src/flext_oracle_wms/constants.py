@@ -23,11 +23,9 @@ class FlextOracleWmsConstants(FlextConstants):
         """WMS connection constants - composed from base."""
 
         DEFAULT_TIMEOUT: Final[int] = FlextConstants.DEFAULT_TIMEOUT_SECONDS
-        DEFAULT_MAX_RETRIES: Final[int] = FlextConstants.Reliability.MAX_RETRY_ATTEMPTS
-        DEFAULT_RETRY_DELAY: Final[int] = (
-            FlextConstants.Reliability.DEFAULT_RETRY_DELAY_SECONDS
-        )
-        MAX_POOL_SIZE: Final[int] = FlextConstants.Network.MAX_CONNECTION_POOL_SIZE
+        DEFAULT_MAX_RETRIES: Final[int] = FlextConstants.MAX_RETRY_ATTEMPTS
+        DEFAULT_RETRY_DELAY: Final[int] = FlextConstants.DEFAULT_RETRY_DELAY_SECONDS
+        MAX_POOL_SIZE: Final[int] = FlextConstants.MAX_CONNECTION_POOL_SIZE
 
     class WmsEntities:
         """WMS entity configuration - patterns."""
@@ -39,13 +37,9 @@ class FlextOracleWmsConstants(FlextConstants):
     class WmsProcessing:
         """WMS processing constants - domain-specific."""
 
-        DEFAULT_BATCH_SIZE: Final[int] = (
-            FlextConstants.Performance.BatchProcessing.DEFAULT_SIZE
-        )
-        MAX_BATCH_SIZE: Final[int] = (
-            FlextConstants.Performance.BatchProcessing.MAX_ITEMS
-        )
-        DEFAULT_PAGE_SIZE: Final[int] = FlextConstants.Pagination.DEFAULT_PAGE_SIZE
+        DEFAULT_BATCH_SIZE: Final[int] = FlextConstants.DEFAULT_SIZE
+        MAX_BATCH_SIZE: Final[int] = FlextConstants.MAX_ITEMS
+        DEFAULT_PAGE_SIZE: Final[int] = FlextConstants.DEFAULT_PAGE_SIZE
         MAX_SCHEMA_DEPTH: ClassVar[int] = 10
 
     class Filtering:

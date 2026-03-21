@@ -68,7 +68,7 @@ class TestFlextOracleWmsConstants:
         u.Tests.Matchers.that(proc["default_batch_size"] >= 1000, eq=True)
         u.Tests.Matchers.that(proc["max_batch_size"] >= 10000, eq=True)
         u.Tests.Matchers.that(
-            proc["default_page_size"] == FlextConstants.Defaults.PAGE_SIZE, eq=True
+            proc["default_page_size"] == FlextConstants.PAGE_SIZE, eq=True
         )
 
     def test_cache_constants(self) -> None:
