@@ -132,8 +132,7 @@ if TYPE_CHECKING:
     )
     from .test_unified_config import TestFlextOracleWmsSettings
     from .typings import TestsFlextOracleWmsTypes, TestsFlextOracleWmsTypes as t
-    from .unit.test_api import TestFlextOracleWmsApi
-    from .unit.test_wms_client import TestFlextOracleWmsClient
+    from .unit import TestFlextOracleWmsApi, TestFlextOracleWmsClient
     from .utilities import (
         TestsFlextOracleWmsUtilities,
         TestsFlextOracleWmsUtilities as u,
@@ -186,15 +185,12 @@ _LAZY_IMPORTS: dict[str, tuple[str, str]] = {
     ),
     "TestFactoryFunction": ("tests.test_filtering", "TestFactoryFunction"),
     "TestFilterValidation": ("tests.test_filtering", "TestFilterValidation"),
-    "TestFlextOracleWmsApi": ("tests.unit.test_api", "TestFlextOracleWmsApi"),
+    "TestFlextOracleWmsApi": ("tests.unit", "TestFlextOracleWmsApi"),
     "TestFlextOracleWmsApiResponse": (
         "tests.test_singer_flattening",
         "TestFlextOracleWmsApiResponse",
     ),
-    "TestFlextOracleWmsClient": (
-        "tests.unit.test_wms_client",
-        "TestFlextOracleWmsClient",
-    ),
+    "TestFlextOracleWmsClient": ("tests.unit", "TestFlextOracleWmsClient"),
     "TestFlextOracleWmsClientCore": (
         "tests.test_client_core",
         "TestFlextOracleWmsClientCore",
