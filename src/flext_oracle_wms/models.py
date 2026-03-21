@@ -12,9 +12,9 @@ from __future__ import annotations
 from typing import Annotated, Literal
 
 from flext_core import FlextModels, r
+from flext_core.typings import t
 from pydantic import BaseModel, ConfigDict, Field, StringConstraints
 
-from flext_oracle_wms import t
 from flext_oracle_wms.constants import FlextOracleWmsConstants as c
 
 

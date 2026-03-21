@@ -10,8 +10,9 @@ from collections.abc import Mapping
 from enum import StrEnum, unique
 
 from flext_core import FlextExceptions, FlextLogger, r
+from flext_core.constants import c
+from flext_core.typings import t
 
-from flext_oracle_wms import c, t
 from flext_oracle_wms.typings import OperatorFilter
 
 type FilterEntry = t.Core.FilterScalar | t.Core.FilterList | OperatorFilter
