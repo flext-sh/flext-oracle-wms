@@ -57,11 +57,9 @@ if TYPE_CHECKING:
     )
     from .test_client_core import TestFlextOracleWmsClientCore, TestGetLogger
     from .test_config import (
+        test_config_auth_fields_default_empty,
         test_config_creation_valid,
-        test_config_defaults_from_constants,
-        test_config_enterprise_features,
-        test_config_environment_from_url,
-        test_config_optional_auth_fields,
+        test_config_defaults,
         test_config_validate_config_success,
     )
     from .test_config_module import (
@@ -317,28 +315,17 @@ _LAZY_IMPORTS: dict[str, tuple[str, str]] = {
         "tests.test_client_class",
         "test_client_internal_state",
     ),
+    "test_config_auth_fields_default_empty": (
+        "tests.test_config",
+        "test_config_auth_fields_default_empty",
+    ),
     "test_config_creation": ("tests.test_config_module", "test_config_creation"),
     "test_config_creation_valid": ("tests.test_config", "test_config_creation_valid"),
     "test_config_custom_values": (
         "tests.test_config_module",
         "test_config_custom_values",
     ),
-    "test_config_defaults_from_constants": (
-        "tests.test_config",
-        "test_config_defaults_from_constants",
-    ),
-    "test_config_enterprise_features": (
-        "tests.test_config",
-        "test_config_enterprise_features",
-    ),
-    "test_config_environment_from_url": (
-        "tests.test_config",
-        "test_config_environment_from_url",
-    ),
-    "test_config_optional_auth_fields": (
-        "tests.test_config",
-        "test_config_optional_auth_fields",
-    ),
+    "test_config_defaults": ("tests.test_config", "test_config_defaults"),
     "test_config_reset_functionality": (
         "tests.test_config_module",
         "test_config_reset_functionality",
@@ -455,13 +442,11 @@ __all__ = [
     "test_client_has_lifecycle_methods",
     "test_client_has_wms_operations",
     "test_client_internal_state",
+    "test_config_auth_fields_default_empty",
     "test_config_creation",
     "test_config_creation_valid",
     "test_config_custom_values",
-    "test_config_defaults_from_constants",
-    "test_config_enterprise_features",
-    "test_config_environment_from_url",
-    "test_config_optional_auth_fields",
+    "test_config_defaults",
     "test_config_reset_functionality",
     "test_config_singleton_behavior",
     "test_config_testing_factory",

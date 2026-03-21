@@ -21,6 +21,7 @@ class FlextOracleWmsApiEndpoint(BaseModel):
     version: Annotated[str, Field(min_length=1)]
     category: Annotated[str, Field(min_length=1)]
     description: Annotated[str, Field(default="")]
+    since_version: Annotated[str, Field(default="6.1")]
 
 
 class FlextOracleWmsApi:

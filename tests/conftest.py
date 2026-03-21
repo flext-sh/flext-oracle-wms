@@ -44,7 +44,7 @@ def mock_config() -> FlextOracleWmsSettings:
 
 
 @pytest.fixture
-def real_config(_load_test_env: bool) -> FlextOracleWmsSettings:
+def real_config(load_test_env: bool) -> FlextOracleWmsSettings:
     """Real config from .env - EXACTLY like working basic_usage.py example."""
     base_url = os.getenv("ORACLE_WMS_BASE_URL") or os.getenv(
         "FLEXT_ORACLE_WMS_BASE_URL"
@@ -66,7 +66,6 @@ def real_config(_load_test_env: bool) -> FlextOracleWmsSettings:
         password=password,
         timeout=int(os.getenv("ORACLE_WMS_TIMEOUT", "30")),
         retry_attempts=int(os.getenv("ORACLE_WMS_MAX_RETRIES", "3")),
-        enable_ssl_verification=True,
     )
 
 

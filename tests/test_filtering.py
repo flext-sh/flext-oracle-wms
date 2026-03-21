@@ -697,4 +697,4 @@ class TestPerformanceAndEdgeCases:
         assert FlextOracleWmsFilter._check_max("a", "b") is True
         assert FlextOracleWmsFilter._check_max("b", "a") is False
         assert FlextOracleWmsFilter._check_min("a", 1) is True
-        assert FlextOracleWmsFilter._check_max("a", 1) is True
+        assert FlextOracleWmsFilter._check_max("a", 1) is False

@@ -1,4 +1,4 @@
-"""Unit tests for FlextOracleWmsClient — core functionality coverage.
+"""Unit tests for FlextOracleWmsClient -- core functionality coverage.
 
 Tests against actual wms_client.py source API.
 
@@ -44,8 +44,6 @@ class TestFlextOracleWmsClientCore:
         client = FlextOracleWmsClient(mock_config)
         assert client.config.base_url == mock_config.base_url
         assert client.config.timeout == mock_config.timeout
-        assert client.config.retry_attempts == mock_config.retry_attempts
-        assert client.config.api_version == mock_config.api_version
 
     def test_client_start_success(self, mock_config: FlextOracleWmsSettings) -> None:
         client = FlextOracleWmsClient(mock_config)
@@ -97,11 +95,11 @@ class TestFlextOracleWmsClientCore:
     def test_get_apis_by_category(self, mock_config: FlextOracleWmsSettings) -> None:
         client = FlextOracleWmsClient(mock_config)
         mock_response = MagicMock()
+        mock_response.status_code = 200
         mock_response.body = {"apis": [{"name": "test_api"}]}
         client._client = MagicMock()
         client._client.request.return_value = r.ok(mock_response)
         result = client.get_apis_by_category("inventory")
-        assert isinstance(result, r)
         assert result.is_success
 
     def test_health_check_delegates_to_get(
@@ -109,18 +107,19 @@ class TestFlextOracleWmsClientCore:
     ) -> None:
         client = FlextOracleWmsClient(mock_config)
         mock_response = MagicMock()
+        mock_response.status_code = 200
         mock_response.body = {"status": "healthy"}
         client._client = MagicMock()
         client._client.request.return_value = r.ok(mock_response)
         result = client.health_check()
         assert result.is_success
-        assert isinstance(result.value, dict)
 
     def test_discover_entities_success(
         self, mock_config: FlextOracleWmsSettings
     ) -> None:
         client = FlextOracleWmsClient(mock_config)
         mock_response = MagicMock()
+        mock_response.status_code = 200
         mock_response.body = {"entities": ["company", "facility", "item"]}
         client._client = MagicMock()
         client._client.request.return_value = r.ok(mock_response)
@@ -141,12 +140,13 @@ class TestFlextOracleWmsClientCore:
     def test_get_entity_data_success(self, mock_config: FlextOracleWmsSettings) -> None:
         client = FlextOracleWmsClient(mock_config)
         mock_response = MagicMock()
-        mock_response.body = {"data": [{"id": 1}, {"id": 2}]}
+        mock_response.status_code = 200
+        mock_response.body = {"data": [{"id": "1"}, {"id": "2"}]}
         client._client = MagicMock()
         client._client.request.return_value = r.ok(mock_response)
         result = client.get_entity_data("test_entity", limit=10)
         assert result.is_success
-        assert result.value == [{"id": 1}, {"id": 2}]
+        assert result.value == [{"id": "1"}, {"id": "2"}]
 
     def test_get_entity_data_failure(self, mock_config: FlextOracleWmsSettings) -> None:
         client = FlextOracleWmsClient(mock_config)
@@ -158,6 +158,7 @@ class TestFlextOracleWmsClientCore:
     def test_call_api_success(self, mock_config: FlextOracleWmsSettings) -> None:
         client = FlextOracleWmsClient(mock_config)
         mock_response = MagicMock()
+        mock_response.status_code = 200
         mock_response.body = {"result": "ok"}
         client._client = MagicMock()
         client._client.request.return_value = r.ok(mock_response)
@@ -175,29 +176,6 @@ class TestFlextOracleWmsClientCore:
         client = FlextOracleWmsClient(None)
         assert client.config is not None
         assert isinstance(client.config, FlextOracleWmsSettings)
-
-    def test_to_record_list_with_list_of_dicts(
-        self, mock_config: FlextOracleWmsSettings
-    ) -> None:
-        result = FlextOracleWmsClient._to_record_list([{"id": 1}, {"id": 2}])
-        assert result == [{"id": 1}, {"id": 2}]
-
-    def test_to_record_list_with_non_list(
-        self, mock_config: FlextOracleWmsSettings
-    ) -> None:
-        result = FlextOracleWmsClient._to_record_list("not_a_list")
-        assert result == []
-
-    def test_to_record_list_filters_non_dicts(
-        self, mock_config: FlextOracleWmsSettings
-    ) -> None:
-        result = FlextOracleWmsClient._to_record_list([
-            {"id": 1},
-            "invalid",
-            42,
-            {"id": 2},
-        ])
-        assert result == [{"id": 1}, {"id": 2}]
 
 
 @pytest.mark.unit

@@ -10,7 +10,7 @@ from __future__ import annotations
 
 from typing import Annotated
 
-from flext_core import FlextSettings
+from flext_core import FlextSettings, r
 from pydantic import Field
 from pydantic_settings import SettingsConfigDict
 
@@ -22,13 +22,24 @@ class FlextOracleWmsSettings(FlextSettings):
 
     base_url: Annotated[str, Field(default="http://localhost:8080", min_length=1)]
     timeout: Annotated[float, Field(default=30.0, ge=1.0, le=300.0)]
+    username: Annotated[str, Field(default="")]
+    password: Annotated[str, Field(default="")]
+    use_mock: Annotated[bool, Field(default=False)]
+    retry_attempts: Annotated[int, Field(default=3, ge=0)]
+
+    def validate_config(self) -> r[bool]:
+        """Validate configuration business rules."""
+        if not self.base_url:
+            return r[bool].fail("base_url is required")
+        return r[bool].ok(True)
 
     @classmethod
     def testing_config(cls) -> FlextOracleWmsSettings:
         """Build deterministic settings for tests."""
         return cls.model_validate({
-            "base_url": "http://localhost:8080",
+            "base_url": "https://test-wms.example.com",
             "timeout": 30.0,
+            "use_mock": True,
         })
 
 

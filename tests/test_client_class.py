@@ -70,4 +70,4 @@ def test_client_config_access() -> None:
     assert client.config is not None
     assert hasattr(client.config, "base_url")
     assert hasattr(client.config, "timeout")
-    assert hasattr(client.config, "environment_from_url")
+    assert hasattr(client.config, "use_mock")

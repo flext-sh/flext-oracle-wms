@@ -9,7 +9,7 @@ from __future__ import annotations
 
 import pytest
 
-from flext_oracle_wms import FlextOracleWmsConstants, FlextOracleWmsSettings
+from flext_oracle_wms import FlextOracleWmsSettings
 
 
 @pytest.mark.unit
@@ -19,18 +19,14 @@ def test_config_creation_valid() -> None:
         base_url="https://wms.oraclecloud.com/test",
         username="USER_WMS_INTEGRA",
         password="test_password",
-        api_version="v1",
         timeout=30,
         retry_attempts=3,
-        enable_ssl_verification=True,
     )
     assert config.base_url == "https://wms.oraclecloud.com/test"
     assert config.username == "USER_WMS_INTEGRA"
     assert config.password == "test_password"
-    assert config.api_version == "v1"
     assert config.timeout == 30
     assert config.retry_attempts == 3
-    assert config.enable_ssl_verification is True
 
 
 @pytest.mark.unit
@@ -42,16 +38,12 @@ def test_config_validate_config_success() -> None:
 
 
 @pytest.mark.unit
-def test_config_defaults_from_constants() -> None:
-    """Test config defaults come from API_CONFIG constants."""
+def test_config_defaults() -> None:
+    """Test config default values."""
     config = FlextOracleWmsSettings()
-    assert config.base_url == str(
-        FlextOracleWmsConstants.API_CONFIG["base_url_default"]
-    )
-    assert config.timeout == int(FlextOracleWmsConstants.API_CONFIG["timeout_default"])
-    assert config.retry_attempts == int(
-        FlextOracleWmsConstants.API_CONFIG["max_retries"]
-    )
+    assert config.base_url == "http://localhost:8080"
+    assert config.timeout == 30.0
+    assert config.retry_attempts == 3
 
 
 @pytest.mark.unit
@@ -63,27 +55,8 @@ def test_config_testing_factory() -> None:
 
 
 @pytest.mark.unit
-def test_config_optional_auth_fields() -> None:
-    """Test optional auth fields default to None."""
+def test_config_auth_fields_default_empty() -> None:
+    """Test auth fields default to empty string."""
     config = FlextOracleWmsSettings()
-    assert config.username is None
-    assert config.password is None
-    assert config.api_key is None
-
-
-@pytest.mark.unit
-def test_config_environment_from_url() -> None:
-    """Test environment_from_url property."""
-    config = FlextOracleWmsSettings(base_url="https://custom.example.com")
-    assert isinstance(config.environment_from_url, str)
-
-
-@pytest.mark.unit
-def test_config_enterprise_features() -> None:
-    """Test enterprise feature flags."""
-    config = FlextOracleWmsSettings(
-        enable_metrics=True, enable_tracing=True, enable_audit_logging=True
-    )
-    assert config.enable_metrics is True
-    assert config.enable_tracing is True
-    assert config.enable_audit_logging is True
+    assert config.username == ""
+    assert config.password == ""

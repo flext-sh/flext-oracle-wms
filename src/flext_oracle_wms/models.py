@@ -12,10 +12,10 @@ from __future__ import annotations
 from typing import Annotated, Literal
 
 from flext_core import FlextModels, r
-from flext_core.typings import t
-from pydantic import BaseModel, ConfigDict, Field, StringConstraints
+from pydantic import BaseModel, ConfigDict, Field, StringConstraints, field_validator
 
 from flext_oracle_wms.constants import FlextOracleWmsConstants as c
+from flext_oracle_wms.typings import t
 
 
 class FlextOracleWmsModels(FlextModels):
@@ -29,6 +29,78 @@ class FlextOracleWmsModels(FlextModels):
     def __init_subclass__(cls, **kwargs: t.Scalar) -> None:
         """Allow downstream projects to inherit FlextOracleWmsModels for namespace composition."""
         super().__init_subclass__(**kwargs)
+
+    # =========================================================================
+    # ORACLE WMS NAMESPACE - Domain-specific models
+    # =========================================================================
+
+    class OracleWms:
+        """Oracle WMS domain namespace -- m.OracleWms.*."""
+
+        class Entity(BaseModel):
+            """Oracle WMS entity definition."""
+
+            model_config = ConfigDict(extra="forbid")
+
+            name: Annotated[str, Field(min_length=1, description="Entity name")]
+            endpoint: Annotated[
+                str, Field(min_length=1, description="API endpoint path")
+            ]
+            description: Annotated[
+                str | None, Field(default=None, description="Entity description")
+            ]
+            primary_key: Annotated[
+                str | None, Field(default=None, description="Primary key field")
+            ]
+            replication_key: Annotated[
+                str | None, Field(default=None, description="Replication key field")
+            ]
+            supports_incremental: Annotated[
+                bool,
+                Field(
+                    default=False,
+                    description="Whether entity supports incremental sync",
+                ),
+            ]
+
+            @field_validator("endpoint")
+            @classmethod
+            def _validate_endpoint_starts_with_slash(cls, v: str) -> str:
+                if not v.startswith("/"):
+                    msg = "Endpoint must start with '/'"
+                    raise ValueError(msg)
+                return v
+
+            def validate_entity(self) -> r[bool]:
+                """Validate entity configuration."""
+                if not self.name:
+                    return r[bool].fail("Entity name is required")
+                if not self.endpoint:
+                    return r[bool].fail("Entity endpoint is required")
+                return r[bool].ok(True)
+
+        class ApiResponse(BaseModel):
+            """Oracle WMS API response model."""
+
+            data: Annotated[
+                dict[str, t.ContainerValue],
+                Field(default_factory=dict, description="Response data"),
+            ]
+            status_code: Annotated[
+                int, Field(default=200, ge=200, le=599, description="HTTP status code")
+            ]
+            success: Annotated[
+                bool, Field(default=True, description="Whether request succeeded")
+            ]
+            error_message: Annotated[
+                str | None, Field(default=None, description="Error message if any")
+            ]
+
+            def validate_response(self) -> r[bool]:
+                """Validate response state."""
+                if not self.success and not self.error_message:
+                    return r[bool].fail("Failed response must include error message")
+                return r[bool].ok(True)
 
     # =========================================================================
     # TYPE ALIASES - Advanced composition for minimal declarations

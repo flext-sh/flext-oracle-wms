@@ -19,6 +19,27 @@ class FlextOracleWmsConstants(FlextConstants):
     One class per module following SOLID principles. Generic for any WMS system.
     """
 
+    FLEXT_WMS_VERSION: Final[str] = "1.0.0"
+
+    API_CONFIG: ClassVar[dict[str, str | int]] = {
+        "version_default": "v1",
+        "base_url_default": "http://localhost:8080",
+        "timeout_default": 30,
+        "max_retries": 3,
+    }
+
+    PROCESSING_CONFIG: ClassVar[dict[str, int]] = {
+        "default_batch_size": FlextConstants.DEFAULT_SIZE,
+        "max_batch_size": FlextConstants.MAX_ITEMS,
+        "default_page_size": FlextConstants.DEFAULT_PAGE_SIZE,
+    }
+
+    ENVIRONMENTS: ClassVar[dict[str, str]] = {
+        "default": "http://localhost:8080",
+        "test": "https://test-wms.example.com",
+        "production": "https://prod-wms.example.com",
+    }
+
     class OracleWms:
         """WMS connection constants - composed from base."""
 

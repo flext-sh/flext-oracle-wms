@@ -61,17 +61,31 @@ def create_oracle_wms_client(config: FlextOracleWmsAuthSettings) -> r[str]:
     auth_result = authenticator.authenticate()
     if auth_result.is_failure:
         return r[str].fail(f"Authentication failed: {auth_result.error}")
-    return r[str].ok(auth_result.value)
+    return r[str].fail("Oracle WMS client creation not configured")
 
 
 class FlextOracleWmsAuthSettings(BaseModel):
     """Authentication configuration for Oracle WMS flows."""
 
     method: Annotated[str, Field(default=OracleWMSAuthMethod.BASIC)]
-    username: Annotated[str, Field(default="")]
-    password: Annotated[str, Field(default="")]
-    oauth2_client_id: Annotated[str, Field(default="")]
-    oauth2_client_secret: Annotated[str, Field(default="")]
+    username: Annotated[str | None, Field(default=None)]
+    password: Annotated[str | None, Field(default=None)]
+    oauth2_client_id: Annotated[str | None, Field(default=None)]
+    oauth2_client_secret: Annotated[str | None, Field(default=None)]
+    oauth2_scope: Annotated[str, Field(default="wms.read wms.write")]
+    token_refresh_threshold: Annotated[int, Field(default=300)]
+
+    def validate_business_rules(self) -> r[bool]:
+        """Validate authentication configuration business rules."""
+        if self.method == OracleWMSAuthMethod.BASIC:
+            if not self.username or not self.password:
+                return r[bool].fail("Basic auth requires username and password")
+            return r[bool].ok(True)
+        if self.method == OracleWMSAuthMethod.OAUTH2:
+            if not self.oauth2_client_id or not self.oauth2_client_secret:
+                return r[bool].fail("OAuth2 requires client_id and client_secret")
+            return r[bool].ok(True)
+        return r[bool].fail(f"Unsupported auth method: {self.method}")
 
 
 __all__ = [

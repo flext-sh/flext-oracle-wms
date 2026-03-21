@@ -12,9 +12,9 @@ from collections.abc import Mapping
 from typing import Protocol
 
 from flext_core import r
-from flext_core.typings import t
 
 from flext_oracle_wms.constants import FlextOracleWmsConstants as c
+from flext_oracle_wms.typings import t
 
 
 class _EntityDiscoveryClient(Protocol):

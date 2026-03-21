@@ -10,7 +10,6 @@ from __future__ import annotations
 from typing import override
 
 from flext_core import FlextService, r
-from flext_tests import u
 
 from flext_oracle_wms.api import FlextOracleWmsApi
 from flext_oracle_wms.wms_client import FlextOracleWmsClient
@@ -30,18 +29,18 @@ class TestFlextOracleWmsApi:
 
     def test_class_inheritance(self) -> None:
         """Test FlextOracleWmsApi inherits from FlextService."""
-        u.Tests.Matchers.that(issubclass(FlextOracleWmsApi, FlextService), eq=True)
+        assert issubclass(FlextOracleWmsApi, FlextService)
 
     def test_initialization(self) -> None:
         """Test initialization creates WMS client."""
         api = _ConcreteWmsApi()
-        u.Tests.Matchers.that(hasattr(api, "_client"), eq=True)
-        u.Tests.Matchers.that(isinstance(api._client, FlextOracleWmsClient), eq=True)
+        assert hasattr(api, "_client")
+        assert isinstance(api._client, FlextOracleWmsClient)
 
     def test_has_logger(self) -> None:
         """Test facade has logger from FlextService."""
         api = _ConcreteWmsApi()
-        u.Tests.Matchers.that(hasattr(api, "logger"), eq=True)
+        assert hasattr(api, "logger")
 
     def test_no_business_methods_exposed(self) -> None:
         """Test facade has no public business methods (all commented out)."""
@@ -54,10 +53,8 @@ class TestFlextOracleWmsApi:
             "execute_picking_wave",
         ]
         for method in business_methods:
-            u.Tests.Matchers.that(
-                method not in public_methods
-                or not callable(getattr(api, method, None)),
-                eq=True,
+            assert method not in public_methods or not callable(
+                getattr(api, method, None)
             )
 
 

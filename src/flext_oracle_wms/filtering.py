@@ -10,10 +10,9 @@ from collections.abc import Mapping
 from enum import StrEnum, unique
 
 from flext_core import FlextExceptions, FlextLogger, r
-from flext_core.constants import c
-from flext_core.typings import t
 
-from flext_oracle_wms.typings import OperatorFilter
+from flext_oracle_wms.constants import c
+from flext_oracle_wms.typings import OperatorFilter, t
 
 type FilterEntry = t.Core.FilterScalar | t.Core.FilterList | OperatorFilter
 
@@ -233,7 +232,9 @@ class FlextOracleWmsFilter:
                     case _:
                         return False
             case FilterOperator.CONTAINS | "contains":
-                return str(filter_value) in str(field_value)
+                if not isinstance(field_value, str):
+                    return False
+                return str(filter_value) in field_value
             case FilterOperator.GT | "gt":
                 return self._compare(field_value, filter_value, ">")
             case FilterOperator.LT | "lt":
@@ -290,6 +291,8 @@ class FlextOracleWmsFilter:
                 return self._apply_operator(
                     field_value, condition.operator, condition.value
                 )
+            case dict() as d if "operator" in d:
+                return self._apply_operator(field_value, d["operator"], d.get("value"))
             case list() as candidates:
                 return field_value in candidates if field_value is not None else False
             case _:
