@@ -9,7 +9,6 @@ from __future__ import annotations
 from collections.abc import Mapping
 
 from flext_core import FlextTypes, t as _core_t
-from pydantic import BaseModel
 
 from flext_oracle_wms.constants import c
 

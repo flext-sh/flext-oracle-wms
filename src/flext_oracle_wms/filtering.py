@@ -338,4 +338,7 @@ class FlextOracleWmsFilter:
         return r[bool].ok(True)
 
 
+# Backward compatibility alias
+OperatorFilter = FlextOracleWmsOperatorFilter
+
 __all__ = ["FilterOperator", "FlextOracleWmsFilter", "OperatorFilter"]
