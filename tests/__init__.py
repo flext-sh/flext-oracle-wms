@@ -130,9 +130,9 @@ if TYPE_CHECKING:
         TestFlextOracleWmsApiResponse,
         TestFlextOracleWmsEntity,
     )
-    from .test_unified_config import TestFlextOracleWmsSettings
     from .typings import TestsFlextOracleWmsTypes, TestsFlextOracleWmsTypes as t
     from .unit.test_api import TestFlextOracleWmsApi
+    from .unit.test_config import TestFlextOracleWmsSettings
     from .unit.test_wms_client import TestFlextOracleWmsClient
     from .utilities import (
         TestsFlextOracleWmsUtilities,
@@ -216,7 +216,7 @@ _LAZY_IMPORTS: dict[str, tuple[str, str]] = {
         "TestFlextOracleWmsFilterConstruction",
     ),
     "TestFlextOracleWmsSettings": (
-        "tests.test_unified_config",
+        "tests.unit.test_config",
         "TestFlextOracleWmsSettings",
     ),
     "TestFlextOracleWmsUtilities": (
