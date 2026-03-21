@@ -12,9 +12,13 @@ from enum import StrEnum, unique
 from flext_core import FlextExceptions, FlextLogger, r
 
 from flext_oracle_wms.constants import c
-from flext_oracle_wms.typings import OperatorFilter, t
+from flext_oracle_wms.models import FlextOracleWmsOperatorFilter
+from flext_oracle_wms.typings import t
 
-type FilterEntry = t.Core.FilterScalar | t.Core.FilterList | OperatorFilter
+# Type alias for filter entries (can be scalar, list, or operator filter)
+FilterEntry: type = (
+    t.Core.FilterScalar | t.Core.FilterList | FlextOracleWmsOperatorFilter
+)
 
 
 class FlextOracleWmsDataValidationError(FlextExceptions.BaseError):
@@ -82,7 +86,7 @@ class FlextOracleWmsFilter:
         if operator is None:
             filters = {field: value}
         else:
-            filters = {field: OperatorFilter(operator=operator, value=value)}
+            filters = {field: FlextOracleWmsOperatorFilter(operator=operator, value=value)}
         return engine.filter_records(records, filters)
 
     @classmethod
@@ -152,7 +156,7 @@ class FlextOracleWmsFilter:
         match value:
             case list() as items:
                 return len(items)
-            case OperatorFilter() as condition:
+            case FlextOracleWmsOperatorFilter() as condition:
                 match condition.value:
                     case list() as values:
                         return len(values)
@@ -295,12 +299,10 @@ class FlextOracleWmsFilter:
     ) -> bool:
         field_value = self._get_nested_value(record, field)
         match filter_value:
-            case OperatorFilter() as condition:
+            case FlextOracleWmsOperatorFilter() as condition:
                 return self._apply_operator(
                     field_value, condition.operator, condition.value
                 )
-            case dict() as d if "operator" in d:
-                return self._apply_operator(field_value, d["operator"], d.get("value"))
             case list() as candidates:
                 return field_value in candidates if field_value is not None else False
             case _:

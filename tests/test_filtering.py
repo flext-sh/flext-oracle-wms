@@ -26,6 +26,7 @@ from flext_oracle_wms.filtering import (
     FlextOracleWmsDataValidationError,
     FlextOracleWmsFilter,
 )
+from flext_oracle_wms.typings import OperatorFilter
 
 
 class TestFlextOracleWmsFilterConstruction:
@@ -584,28 +585,26 @@ class TestMatchesCondition:
             is False
         )
 
-    def test_matches_condition_operator_dict(self) -> None:
+    def test_matches_condition_operator_filter(self) -> None:
         filter_engine = FlextOracleWmsFilter(case_sensitive=False, max_conditions=50)
         record: dict[str, object] = {"score": 85}
         assert (
             filter_engine._matches_condition(
-                record, "score", {"operator": "gt", "value": 80}
+                record, "score", OperatorFilter(operator="gt", value=80)
             )
             is True
         )
         assert (
             filter_engine._matches_condition(
-                record, "score", {"operator": "gt", "value": 90}
+                record, "score", OperatorFilter(operator="gt", value=90)
             )
             is False
         )
 
-    def test_matches_condition_dict_without_operator_key(self) -> None:
+    def test_matches_condition_scalar_mismatch(self) -> None:
         filter_engine = FlextOracleWmsFilter(case_sensitive=False, max_conditions=50)
         record: dict[str, object] = {"field": "value"}
-        result = filter_engine._matches_condition(
-            record, "field", {"unknown_key": "test"}
-        )
+        result = filter_engine._matches_condition(record, "field", "other_value")
         assert result is False
 
     def test_matches_condition_none_field_value_with_list(self) -> None:

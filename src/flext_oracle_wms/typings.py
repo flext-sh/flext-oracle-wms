@@ -93,15 +93,11 @@ class FlextOracleWmsTypes(FlextTypes):
                 ],
             ]
         )
+        type HttpJsonObject = dict[str, _core_t.ContainerValue]
+        type FilterEntry = (
+            FlextOracleWmsTypes.Core.FilterScalar | FlextOracleWmsTypes.Core.FilterList
+        )
 
 
 t = FlextOracleWmsTypes
 __all__ = ["FlextOracleWmsTypes", "t"]
-
-
-class OperatorFilter(BaseModel):
-    operator: str
-    value: FlextOracleWmsTypes.Core.FilterScalar | FlextOracleWmsTypes.Core.FilterList
-
-
-type HttpJsonObject = dict[str, _core_t.ContainerValue]

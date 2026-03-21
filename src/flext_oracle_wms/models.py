@@ -15,7 +15,16 @@ from flext_core import FlextModels, r
 from pydantic import BaseModel, ConfigDict, Field, StringConstraints, field_validator
 
 from flext_oracle_wms.constants import FlextOracleWmsConstants as c
-from flext_oracle_wms.typings import t
+from flext_oracle_wms.typings import FlextOracleWmsTypes, t
+
+
+class FlextOracleWmsOperatorFilter(BaseModel):
+    """Operator filter model for WMS filtering operations."""
+
+    operator: str
+    value: (
+        FlextOracleWmsTypes.Core.FilterScalar | FlextOracleWmsTypes.Core.FilterList
+    )
 
 
 class FlextOracleWmsModels(FlextModels):
