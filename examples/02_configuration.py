@@ -11,6 +11,7 @@ import contextlib
 import os
 from enum import StrEnum, unique
 from pathlib import Path
+from typing import ClassVar
 
 from dotenv import load_dotenv
 from flext_core import FlextLogger
@@ -39,7 +40,9 @@ class Environment(StrEnum):
 class WmsEnvironmentConfig(BaseModel):
     """WMS environment configuration."""
 
-    model_config: ClassVar[ConfigDict] = ConfigDict(extra="forbid", validate_assignment=True)
+    model_config: ClassVar[ConfigDict] = ConfigDict(
+        extra="forbid", validate_assignment=True
+    )
 
     name: str = Field(description="Environment display name")
     base_url: str = Field(description="Oracle WMS base URL")
