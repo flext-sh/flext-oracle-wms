@@ -21,6 +21,7 @@ from flext_oracle_wms import (
     FlextOracleWmsClientSettings,
     create_oracle_wms_client,
 )
+from tests import t
 
 logger = FlextLogger(__name__)
 
@@ -70,7 +71,7 @@ class FocusedOracleWmsDiscovery:
         self.entities_with_data = {}
         self.complete_schemas = {}
 
-    def execute_focused_discovery(self) -> r[dict[str, object]]:
+    def execute_focused_discovery(self) -> r[dict[str, t.NormalizedValue]]:
         """Execute complete focused discovery."""
         try:
             self.client.start()
@@ -122,7 +123,7 @@ class FocusedOracleWmsDiscovery:
         finally:
             self.client.stop()
 
-    def _quick_data_scan(self, entities: list[str]) -> dict[str, object]:
+    def _quick_data_scan(self, entities: list[str]) -> dict[str, t.NormalizedValue]:
         """Quick scan to find entities with actual data."""
         data_entities = {}
         for entity_name in entities:
@@ -171,7 +172,9 @@ class FocusedOracleWmsDiscovery:
                 logger.debug("Failed to process entity %s", entity_name)
         return data_entities
 
-    def _get_entity_structures(self, entities: list[str]) -> dict[str, object]:
+    def _get_entity_structures(
+        self, entities: list[str]
+    ) -> dict[str, t.NormalizedValue]:
         """Get entity structures even without data."""
         structures = {}
         for entity_name in entities:
@@ -196,7 +199,9 @@ class FocusedOracleWmsDiscovery:
                 logger.debug("Failed to get structure for entity %s", entity_name)
         return structures
 
-    def _safe_sample(self, record: Mapping[str, object]) -> dict[str, object]:
+    def _safe_sample(
+        self, record: Mapping[str, t.NormalizedValue]
+    ) -> dict[str, t.NormalizedValue]:
         """Create safe sample record."""
         safe: dict[str, NoneType | bool | float | int | str] = {}
         for k, v in list(record.items())[:10]:
@@ -210,10 +215,10 @@ class FocusedOracleWmsDiscovery:
         return safe
 
     def _generate_schemas_from_data(
-        self, data_entities: Mapping[str, object]
-    ) -> dict[str, object]:
+        self, data_entities: Mapping[str, t.NormalizedValue]
+    ) -> dict[str, t.NormalizedValue]:
         """Generate Singer schemas from entities with data."""
-        schemas: dict[str, dict[str, object]] = {}
+        schemas: dict[str, dict[str, t.NormalizedValue]] = {}
         for entity_name, entity_data in data_entities.items():
             schema = self._create_singer_schema(entity_name, entity_data)
             if schema:
@@ -221,10 +226,10 @@ class FocusedOracleWmsDiscovery:
         return schemas
 
     def _generate_schemas_from_structures(
-        self, structure_entities: Mapping[str, object]
-    ) -> dict[str, object]:
+        self, structure_entities: Mapping[str, t.NormalizedValue]
+    ) -> dict[str, t.NormalizedValue]:
         """Generate Singer schemas from structures."""
-        schemas: dict[str, dict[str, object]] = {}
+        schemas: dict[str, dict[str, t.NormalizedValue]] = {}
         for entity_name, structure_data in structure_entities.items():
             schema = self._create_singer_schema(entity_name, structure_data)
             if schema:
@@ -232,8 +237,8 @@ class FocusedOracleWmsDiscovery:
         return schemas
 
     def _create_singer_schema(
-        self, entity_name: str, entity_data: Mapping[str, object]
-    ) -> dict[str, object] | None:
+        self, entity_name: str, entity_data: Mapping[str, t.NormalizedValue]
+    ) -> dict[str, t.NormalizedValue] | None:
         """Create Singer schema with proper Oracle WMS typing."""
         try:
             fields = entity_data.get("sample_fields", entity_data.get("fields", []))
@@ -254,7 +259,7 @@ class FocusedOracleWmsDiscovery:
             properties["_sdc_record_hash"] = {"type": ["string", "null"]}
             key_properties = self._get_oracle_key_properties(entity_name, fields)
             return {
-                "type": "object",
+                "type": "t.NormalizedValue",
                 "properties": properties,
                 "additionalProperties": False,
                 "key_properties": key_properties,
@@ -266,8 +271,8 @@ class FocusedOracleWmsDiscovery:
             return None
 
     def _oracle_field_to_singer_type(
-        self, field_name: str, sample_value: object, entity_name: str
-    ) -> dict[str, object]:
+        self, field_name: str, sample_value: t.NormalizedValue, entity_name: str
+    ) -> dict[str, t.NormalizedValue]:
         """Convert Oracle WMS field to Singer type with context."""
         if sample_value is not None:
             if isinstance(sample_value, bool):
@@ -301,7 +306,7 @@ class FocusedOracleWmsDiscovery:
                     }
                 return {"type": ["string", "null"]}
             if isinstance(sample_value, dict):
-                return {"type": ["object", "null"]}
+                return {"type": ["t.NormalizedValue", "null"]}
             if isinstance(sample_value, list):
                 return {"type": ["array", "null"]}
         return {"type": ["string", "null"]}
@@ -393,16 +398,16 @@ class FocusedOracleWmsDiscovery:
             json.dump(summary, f, indent=2, default=str)
         return r[bool].ok(str(results_dir))
 
-    def _create_singer_catalog(self) -> dict[str, object]:
+    def _create_singer_catalog(self) -> dict[str, t.NormalizedValue]:
         """Create Singer catalog."""
-        streams: list[dict[str, object]] = []
+        streams: list[dict[str, t.NormalizedValue]] = []
         for entity_name, schema in self.complete_schemas.items():
             key_properties = schema.get("key_properties", [])
             schema_without_keys = {
                 k: v for k, v in schema.items() if k != "key_properties"
             }
             breadcrumb: list[str] = []
-            stream: dict[str, object] = {
+            stream: dict[str, t.NormalizedValue] = {
                 "tap_stream_id": entity_name,
                 "stream": entity_name,
                 "schema": schema_without_keys,

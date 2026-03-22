@@ -46,7 +46,7 @@ class FlextOracleWmsModels(FlextModels):
         class Entity(BaseModel):
             """Oracle WMS entity definition."""
 
-            model_config = ConfigDict(extra="forbid")
+            model_config: ClassVar[ConfigDict] = ConfigDict(extra="forbid")
 
             name: Annotated[str, Field(min_length=1, description="Entity name")]
             endpoint: Annotated[
@@ -149,21 +149,21 @@ class FlextOracleWmsModels(FlextModels):
         class EntitiesResponse(BaseModel):
             """Oracle WMS entities list response."""
 
-            model_config = ConfigDict(extra="ignore")
+            model_config: ClassVar[ConfigDict] = ConfigDict(extra="ignore")
 
             entities: Annotated[list[str], Field(default_factory=list)]
 
         class ApiCategoryResponse(BaseModel):
             """Oracle WMS API category response."""
 
-            model_config = ConfigDict(extra="ignore")
+            model_config: ClassVar[ConfigDict] = ConfigDict(extra="ignore")
 
             apis: Annotated[list[dict[str, str]], Field(default_factory=list)]
 
         class EntityDataResponse(BaseModel):
             """Oracle WMS entity data response."""
 
-            model_config = ConfigDict(extra="ignore")
+            model_config: ClassVar[ConfigDict] = ConfigDict(extra="ignore")
 
             data: Annotated[list[dict[str, str]], Field(default_factory=list)]
 
@@ -193,7 +193,7 @@ class FlextOracleWmsModels(FlextModels):
     class WmsEntity(BaseModel):
         """Base WMS entity with identity."""
 
-        model_config = ConfigDict(extra="forbid")
+        model_config: ClassVar[ConfigDict] = ConfigDict(extra="forbid")
 
         id: Annotated[str, Field(default="", description="Entity identifier")]
         name: Annotated[str, Field(default="", description="Entity name")]
@@ -280,9 +280,9 @@ class FlextOracleWmsModels(FlextModels):
     # =========================================================================
 
     class WarehouseLocation(BaseModel):
-        """Warehouse location value object."""
+        """Warehouse location value t.NormalizedValue."""
 
-        model_config = ConfigDict(frozen=True, extra="forbid")
+        model_config: ClassVar[ConfigDict] = ConfigDict(frozen=True, extra="forbid")
 
         aisle: Annotated[str, Field(description="Aisle identifier")]
         shelf: Annotated[str, Field(description="Shelf identifier")]
@@ -295,9 +295,9 @@ class FlextOracleWmsModels(FlextModels):
             return f"{self.zone}-{self.aisle}-{self.shelf}-{self.bin_}"
 
     class ApiCredentials(BaseModel):
-        """API credentials value object."""
+        """API credentials value t.NormalizedValue."""
 
-        model_config = ConfigDict(frozen=True, extra="forbid")
+        model_config: ClassVar[ConfigDict] = ConfigDict(frozen=True, extra="forbid")
 
         username: Annotated[str, Field(description="API username")]
         password: Annotated[str | None, Field(default=None, description="API password")]

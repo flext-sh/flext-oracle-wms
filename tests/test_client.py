@@ -38,7 +38,7 @@ class TestClientSimpleNew:
         assert (
             "FlextOracleWmsClient" in repr_str
             or "WMS" in repr_str
-            or "object" in repr_str
+            or "t.NormalizedValue" in repr_str
         )
 
     def test_client_creation_extended(self) -> None:

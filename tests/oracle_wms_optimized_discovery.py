@@ -29,6 +29,7 @@ from flext_oracle_wms import (
     FlextOracleWmsClientSettings,
     create_oracle_wms_client,
 )
+from tests import t
 
 logger = FlextLogger(__name__)
 
@@ -96,7 +97,7 @@ class OptimizedOracleWmsDiscovery:
 
     def discover_priority_entities_fast(
         self,
-    ) -> r[dict[str, object]]:
+    ) -> r[dict[str, t.NormalizedValue]]:
         """Fast discovery of priority entities with data."""
         entities_result = self.client.discover_entities()
         if not entities_result.is_success:
@@ -140,7 +141,7 @@ class OptimizedOracleWmsDiscovery:
 
     def _process_entity_batch(
         self, entities: list[str], batch_size: int = 10
-    ) -> dict[str, object]:
+    ) -> dict[str, t.NormalizedValue]:
         """Process entity batch with parallel requests."""
         results: dict[str, dict[str, bool | str]] = {}
         for i in range(0, len(entities), batch_size):
@@ -150,7 +151,7 @@ class OptimizedOracleWmsDiscovery:
             batch_tasks = [
                 self._analyze_single_entity(entity_name) for entity_name in batch
             ]
-            batch_results: list[dict[str, object]] = []
+            batch_results: list[dict[str, t.NormalizedValue]] = []
             for task in batch_tasks:
                 try:
                     result = task
@@ -176,7 +177,7 @@ class OptimizedOracleWmsDiscovery:
             time.sleep(0.1)
         return results
 
-    def _analyze_single_entity(self, entity_name: str) -> dict[str, object]:
+    def _analyze_single_entity(self, entity_name: str) -> dict[str, t.NormalizedValue]:
         """Analyze single entity for data and structure."""
         try:
             data_result = self.client.get_entity_data(entity_name, limit=3, offset=0)
@@ -230,7 +231,9 @@ class OptimizedOracleWmsDiscovery:
                 "processed_at": datetime.now(UTC).isoformat(),
             }
 
-    def _safe_sample_record(self, record: Mapping[str, object]) -> dict[str, object]:
+    def _safe_sample_record(
+        self, record: Mapping[str, t.NormalizedValue]
+    ) -> dict[str, t.NormalizedValue]:
         """Create safe sample record for storage."""
         safe_record: dict[str, NoneType | bool | float | int | str] = {}
         for k, v in record.items():
@@ -245,7 +248,7 @@ class OptimizedOracleWmsDiscovery:
 
     def generate_complete_singer_schemas(
         self,
-    ) -> r[dict[str, object]]:
+    ) -> r[dict[str, t.NormalizedValue]]:
         """Generate complete Singer schemas for high-value entities."""
         if not self.high_value_entities:
             return r[bool].fail(
@@ -279,8 +282,8 @@ class OptimizedOracleWmsDiscovery:
         })
 
     def _generate_singer_schema_from_entity_data(
-        self, entity_name: str, entity_data: Mapping[str, object]
-    ) -> dict[str, object] | None:
+        self, entity_name: str, entity_data: Mapping[str, t.NormalizedValue]
+    ) -> dict[str, t.NormalizedValue] | None:
         """Generate Singer schema from entity data with proper typing."""
         try:
             fields = entity_data.get("fields", [])
@@ -311,7 +314,7 @@ class OptimizedOracleWmsDiscovery:
             }
             key_properties = self._determine_key_properties(entity_name, fields)
             return {
-                "type": "object",
+                "type": "t.NormalizedValue",
                 "properties": properties,
                 "additionalProperties": False,
                 "key_properties": key_properties,
@@ -321,8 +324,8 @@ class OptimizedOracleWmsDiscovery:
             return None
 
     def _oracle_to_singer_type(
-        self, field_name: str, python_type: str, sample_value: object
-    ) -> dict[str, object]:
+        self, field_name: str, python_type: str, sample_value: t.NormalizedValue
+    ) -> dict[str, t.NormalizedValue]:
         """Convert Oracle field to Singer type with real data analysis."""
         if sample_value is not None:
             if isinstance(sample_value, bool):
@@ -357,8 +360,8 @@ class OptimizedOracleWmsDiscovery:
                 return {"type": ["string", "null"]}
             if isinstance(sample_value, dict):
                 return {
-                    "type": ["object", "null"],
-                    "description": f"Oracle WMS nested object: {field_name}",
+                    "type": ["t.NormalizedValue", "null"],
+                    "description": f"Oracle WMS nested t.NormalizedValue: {field_name}",
                 }
             if isinstance(sample_value, list):
                 return {
@@ -370,7 +373,7 @@ class OptimizedOracleWmsDiscovery:
             "float": {"type": ["number", "null"]},
             "str": {"type": ["string", "null"]},
             "bool": {"type": ["boolean", "null"]},
-            "dict": {"type": ["object", "null"]},
+            "dict": {"type": ["t.NormalizedValue", "null"]},
             "list": {"type": ["array", "null"]},
             "NoneType": {"type": "null"},
         }
@@ -443,14 +446,14 @@ class OptimizedOracleWmsDiscovery:
         return potential_keys[:3]
 
     def _generate_singer_catalog(
-        self, schemas: Mapping[str, object]
-    ) -> dict[str, object]:
+        self, schemas: Mapping[str, t.NormalizedValue]
+    ) -> dict[str, t.NormalizedValue]:
         """Generate Singer catalog from schemas."""
-        streams: list[dict[str, object]] = []
+        streams: list[dict[str, t.NormalizedValue]] = []
         for entity_name, schema in schemas.items():
             key_properties = schema.get("key_properties", ["id"])
             breadcrumb: list[str] = []
-            stream: dict[str, object] = {
+            stream: dict[str, t.NormalizedValue] = {
                 "tap_stream_id": entity_name,
                 "stream": entity_name,
                 "schema": {k: v for k, v in schema.items() if k != "key_properties"},

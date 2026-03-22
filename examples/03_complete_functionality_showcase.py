@@ -46,6 +46,7 @@ from flext_oracle_wms import (
     FlextOracleWmsClientSettings,
     FlextOracleWmsError,
     OracleWMSAuthMethod,
+    t,
 )
 from flext_oracle_wms.constants import FlextOracleWmsConstants
 
@@ -123,9 +124,9 @@ def showcase_2_entity_discovery(client: FlextOracleWmsClient) -> list[str]:
 
 def showcase_3_data_retrieval(
     client: FlextOracleWmsClient, entities: list[str]
-) -> dict[str, object]:
+) -> dict[str, t.NormalizedValue]:
     """Feature 3: Data Retrieval and Querying."""
-    sample_data: dict[str, object] = {}
+    sample_data: dict[str, t.NormalizedValue] = {}
     test_entities = ["company", "facility", "item"]
     for entity_name in test_entities:
         if entity_name not in entities:
@@ -217,11 +218,13 @@ def showcase_6_error_handling(client: FlextOracleWmsClient) -> None:
         logger.warning("Error handling demonstration: %s", e)
 
 
-def showcase_7_health_monitoring(client: FlextOracleWmsClient) -> dict[str, object]:
+def showcase_7_health_monitoring(
+    client: FlextOracleWmsClient,
+) -> dict[str, t.NormalizedValue]:
     """Feature 7: Health Monitoring."""
     health_result = client.health_check()
     if health_result.is_success:
-        health_data: dict[str, object] = health_result.value or {}
+        health_data: dict[str, t.NormalizedValue] = health_result.value or {}
         for key in health_data:
             if key == "test_call_success":
                 pass

@@ -20,6 +20,7 @@ from flext_oracle_wms import (
     FlextOracleWmsClient,
     FlextOracleWmsClientSettings,
     FlextOracleWmsSettings,
+    t,
 )
 from flext_oracle_wms.constants import FlextOracleWmsConstants
 
@@ -38,7 +39,7 @@ class Environment(StrEnum):
 class WmsEnvironmentConfig(BaseModel):
     """WMS environment configuration."""
 
-    model_config = ConfigDict(extra="forbid", validate_assignment=True)
+    model_config: ClassVar[ConfigDict] = ConfigDict(extra="forbid", validate_assignment=True)
 
     name: str = Field(description="Environment display name")
     base_url: str = Field(description="Oracle WMS base URL")
@@ -133,7 +134,7 @@ def create_demo_config() -> FlextOracleWmsClientSettings:
 
 def validate_configuration(
     config: FlextOracleWmsClientSettings,
-) -> dict[str, object]:
+) -> dict[str, t.NormalizedValue]:
     """Validate Oracle WMS client configuration.
 
     Args:
@@ -145,7 +146,7 @@ def validate_configuration(
     """
     errors: list[str] = []
     warnings: list[str] = []
-    config_summary: dict[str, object] = {}
+    config_summary: dict[str, t.NormalizedValue] = {}
     if not config.base_url:
         errors.append("Base URL is required")
     elif not config.base_url.startswith("https://"):
@@ -173,7 +174,7 @@ def validate_configuration(
         "verify_ssl": config.enable_ssl_verification,
         "enable_logging": config.enable_audit_logging,
     }
-    validation_results: dict[str, object] = {
+    validation_results: dict[str, t.NormalizedValue] = {
         "valid": len(errors) == 0,
         "warnings": warnings,
         "errors": errors,
@@ -184,7 +185,7 @@ def validate_configuration(
 
 def test_configuration(
     config: FlextOracleWmsClientSettings,
-) -> dict[str, object]:
+) -> dict[str, t.NormalizedValue]:
     """Test Oracle WMS configuration by attempting connection.
 
     Args:
@@ -194,7 +195,7 @@ def test_configuration(
       Dictionary with test results
 
     """
-    test_results: dict[str, object] = {
+    test_results: dict[str, t.NormalizedValue] = {
         "connection_success": False,
         "health_check_success": False,
         "error": None,

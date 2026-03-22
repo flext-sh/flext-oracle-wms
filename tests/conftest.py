@@ -14,6 +14,7 @@ import pytest
 from dotenv import load_dotenv
 
 from flext_oracle_wms import FlextOracleWmsSettings
+from tests import t
 
 
 @pytest.fixture(scope="session")
@@ -76,7 +77,7 @@ def sample_entities() -> list[str]:
 
 
 @pytest.fixture
-def sample_entity_data() -> dict[str, object]:
+def sample_entity_data() -> dict[str, t.NormalizedValue]:
     """Sample entity response data based on REAL query results."""
     return {
         "result_count": 4,

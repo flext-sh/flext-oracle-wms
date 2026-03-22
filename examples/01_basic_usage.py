@@ -31,6 +31,7 @@ from flext_oracle_wms import (
     FlextOracleWmsClient,
     FlextOracleWmsExceptions,
     FlextOracleWmsSettings,
+    t,
 )
 
 MAX_ENTITIES_TO_SHOW = 5
@@ -59,7 +60,7 @@ def setup_client_config() -> None:
 
 def discover_wms_entities(
     client: FlextOracleWmsClient,
-) -> r[list[dict[str, object]]]:
+) -> r[list[dict[str, t.NormalizedValue]]]:
     """Discover available Oracle WMS entities.
 
     Args:
@@ -93,7 +94,7 @@ def discover_wms_entities(
 
 def query_entity_data(
     client: FlextOracleWmsClient, entity_name: str
-) -> r[list[dict[str, object]]]:
+) -> r[list[dict[str, t.NormalizedValue]]]:
     """Query data from a specific Oracle WMS entity.
 
     Args:

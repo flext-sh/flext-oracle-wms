@@ -21,6 +21,8 @@ from typing import cast
 
 from flext_core import FlextLogger, r
 
+from tests import t
+
 logger = FlextLogger(__name__)
 
 
@@ -28,8 +30,8 @@ class CompleteMockPipeline:
     """Complete Oracle WMS pipeline using realistic mock data."""
 
     @staticmethod
-    def _safe_int(value: object, default: int = 0) -> int:
-        """Safely convert object to int."""
+    def _safe_int(value: t.NormalizedValue, default: int = 0) -> int:
+        """Safely convert t.NormalizedValue to int."""
         if isinstance(value, int):
             return value
         if isinstance(value, str) and value.isdigit():
@@ -38,7 +40,7 @@ class CompleteMockPipeline:
 
     def __init__(self) -> None:
         """Initialize with realistic Oracle WMS mock data."""
-        self.mock_entities: dict[str, object] = {
+        self.mock_entities: dict[str, t.NormalizedValue] = {
             "company": {
                 "count": 5,
                 "sample_data": {
@@ -266,9 +268,9 @@ class CompleteMockPipeline:
                 },
             },
         }
-        self.results: dict[str, object] = {}
+        self.results: dict[str, t.NormalizedValue] = {}
 
-    def run_complete_pipeline(self) -> r[dict[str, object]]:
+    def run_complete_pipeline(self) -> r[dict[str, t.NormalizedValue]]:
         """Run complete Oracle WMS pipeline with mock data."""
         start_time = datetime.now(UTC)
         try:
@@ -287,7 +289,7 @@ class CompleteMockPipeline:
                     sample_data = data["sample_data"]
                     if isinstance(sample_data, dict):
                         len(sample_data.keys())
-            return r[dict[str, object]].ok({
+            return r[dict[str, t.NormalizedValue]].ok({
                 "duration": duration,
                 "schemas_count": len(schemas),
                 "catalog_streams": len(
@@ -303,11 +305,11 @@ class CompleteMockPipeline:
             })
         except Exception as e:
             logger.exception("Complete pipeline failed")
-            return r[dict[str, object]].fail(f"Pipeline failed: {e}")
+            return r[dict[str, t.NormalizedValue]].fail(f"Pipeline failed: {e}")
 
-    def _generate_complete_singer_schemas(self) -> dict[str, object]:
+    def _generate_complete_singer_schemas(self) -> dict[str, t.NormalizedValue]:
         """Generate complete Singer schemas for all entities."""
-        schemas: dict[str, object] = {}
+        schemas: dict[str, t.NormalizedValue] = {}
         for entity_name, entity_info in self.mock_entities.items():
             if isinstance(entity_info, dict) and "sample_data" in entity_info:
                 sample_data = entity_info["sample_data"]
@@ -321,10 +323,10 @@ class CompleteMockPipeline:
         return schemas
 
     def _create_entity_properties(
-        self, sample_data: Mapping[str, object]
-    ) -> tuple[dict[str, object], list[str]]:
+        self, sample_data: Mapping[str, t.NormalizedValue]
+    ) -> tuple[dict[str, t.NormalizedValue], list[str]]:
         """Create properties and key properties from sample data - SRP compliance."""
-        properties: dict[str, object] = {}
+        properties: dict[str, t.NormalizedValue] = {}
         key_properties: list[str] = []
         for field, value in sample_data.items():
             field_property = self._infer_field_type(field, value=value)
@@ -334,7 +336,7 @@ class CompleteMockPipeline:
         return (properties, key_properties)
 
     def _infer_field_type(
-        self, field: str, *, value: object
+        self, field: str, *, value: t.NormalizedValue
     ) -> dict[str, str | list[str]]:
         """Infer Singer type from field name and value - Strategy Pattern."""
         field_type = self._infer_type_from_field_name(field)
@@ -363,7 +365,9 @@ class CompleteMockPipeline:
                 return type_info
         return None
 
-    def _infer_type_from_value(self, *, value: object) -> dict[str, str | list[str]]:
+    def _infer_type_from_value(
+        self, *, value: t.NormalizedValue
+    ) -> dict[str, str | list[str]]:
         """Infer type from Python value type - Template Method Pattern."""
         if isinstance(value, bool):
             return {"type": ["boolean", "null"]}
@@ -379,7 +383,7 @@ class CompleteMockPipeline:
         """Determine if field should be a key property."""
         return field == "id" or (field.endswith("_code") and (not existing_keys))
 
-    def _add_singer_metadata(self, properties: dict[str, object]) -> None:
+    def _add_singer_metadata(self, properties: dict[str, t.NormalizedValue]) -> None:
         """Add Singer metadata properties - SRP compliance."""
         properties.update({
             "_sdc_extracted_at": {"type": "string", "format": "date-time"},
@@ -389,21 +393,21 @@ class CompleteMockPipeline:
         })
 
     def _build_singer_schema(
-        self, properties: Mapping[str, object], key_properties: list[str]
-    ) -> dict[str, object]:
+        self, properties: Mapping[str, t.NormalizedValue], key_properties: list[str]
+    ) -> dict[str, t.NormalizedValue]:
         """Build complete Singer schema - SRP compliance."""
         return {
-            "type": "object",
+            "type": "t.NormalizedValue",
             "properties": properties,
             "additionalProperties": False,
             "key_properties": key_properties or ["id"],
         }
 
     def _create_complete_singer_catalog(
-        self, schemas: Mapping[str, object]
-    ) -> dict[str, object]:
+        self, schemas: Mapping[str, t.NormalizedValue]
+    ) -> dict[str, t.NormalizedValue]:
         """Create complete Singer catalog for Meltano integration."""
-        streams: list[dict[str, object]] = []
+        streams: list[dict[str, t.NormalizedValue]] = []
         for entity_name, schema in schemas.items():
             if not isinstance(schema, dict):
                 continue
@@ -422,7 +426,7 @@ class CompleteMockPipeline:
             replication_key = (
                 "mod_ts" if "mod_ts" in schema.get("properties", {}) else None
             )
-            stream: dict[str, object] = {
+            stream: dict[str, t.NormalizedValue] = {
                 "tap_stream_id": entity_name,
                 "stream": entity_name,
                 "schema": schema_without_keys,
@@ -441,20 +445,24 @@ class CompleteMockPipeline:
                 ],
             }
             if replication_key:
-                metadata_list = cast("list[dict[str, object]]", stream["metadata"])
-                metadata_dict = cast("dict[str, object]", metadata_list[0]["metadata"])
+                metadata_list = cast(
+                    "list[dict[str, t.NormalizedValue]]", stream["metadata"]
+                )
+                metadata_dict = cast(
+                    "dict[str, t.NormalizedValue]", metadata_list[0]["metadata"]
+                )
                 metadata_dict["replication-key"] = replication_key
             streams.append(stream)
         return {"version": 1, "streams": streams}
 
-    def _simulate_tap_extraction(self) -> list[dict[str, object]]:
+    def _simulate_tap_extraction(self) -> list[dict[str, t.NormalizedValue]]:
         """Simulate TAP extraction process."""
-        tap_records: list[dict[str, object]] = []
+        tap_records: list[dict[str, t.NormalizedValue]] = []
         for entity_name, entity_info in self.mock_entities.items():
             if not isinstance(entity_info, dict):
                 continue
             sample_data_raw = entity_info.get("sample_data", {})
-            sample_data: dict[str, object] = (
+            sample_data: dict[str, t.NormalizedValue] = (
                 sample_data_raw.copy() if isinstance(sample_data_raw, dict) else {}
             )
             sample_data["_sdc_extracted_at"] = datetime.now(UTC).isoformat()
@@ -470,13 +478,13 @@ class CompleteMockPipeline:
                 if "order_nbr" in record:
                     record["order_nbr"] = f"{record['order_nbr']}-{i + 1:03d}"
                 record["_sdc_sequence"] = i + 1
-                record_obj: dict[str, object] = record
+                record_obj: dict[str, t.NormalizedValue] = record
                 tap_records.append({"entity": entity_name, "record": record_obj})
         return tap_records
 
     def _simulate_target_loading(
-        self, tap_records: list[dict[str, object]]
-    ) -> dict[str, object]:
+        self, tap_records: list[dict[str, t.NormalizedValue]]
+    ) -> dict[str, t.NormalizedValue]:
         """Simulate TARGET loading process."""
         target_results = {}
         for entity_name in self.mock_entities:
@@ -493,11 +501,11 @@ class CompleteMockPipeline:
                 and hasattr(entity_records[0]["record"], "keys")
                 else list[str](),
             }
-        return cast("dict[str, object]", target_results)
+        return cast("dict[str, t.NormalizedValue]", target_results)
 
     def _simulate_dbt_transformations(
-        self, target_results: Mapping[str, object]
-    ) -> dict[str, object]:
+        self, target_results: Mapping[str, t.NormalizedValue]
+    ) -> dict[str, t.NormalizedValue]:
         """Simulate DBT transformation process."""
         dbt_results: dict[str, dict[str, int | list[str] | str]] = {}
         business_models = {
@@ -570,9 +578,10 @@ class CompleteMockPipeline:
                     "source_tables": available_sources,
                     "rows_processed": sum(
                         self._safe_int(
-                            cast("dict[str, object]", target_results.get(src, {})).get(
-                                "records_loaded", 0
-                            )
+                            cast(
+                                "dict[str, t.NormalizedValue]",
+                                target_results.get(src, {}),
+                            ).get("records_loaded", 0)
                         )
                         for src in available_sources
                         if src in target_results
@@ -581,15 +590,15 @@ class CompleteMockPipeline:
                     "transformation_timestamp": datetime.now(UTC).isoformat(),
                     "status": "SUCCESS",
                 }
-        return cast("dict[str, object]", dbt_results)
+        return cast("dict[str, t.NormalizedValue]", dbt_results)
 
     def _save_complete_pipeline_results(
         self,
-        schemas: Mapping[str, object],
-        catalog: Mapping[str, object],
-        tap_records: list[dict[str, object]],
-        target_results: Mapping[str, object],
-        dbt_results: Mapping[str, object],
+        schemas: Mapping[str, t.NormalizedValue],
+        catalog: Mapping[str, t.NormalizedValue],
+        tap_records: list[dict[str, t.NormalizedValue]],
+        target_results: Mapping[str, t.NormalizedValue],
+        dbt_results: Mapping[str, t.NormalizedValue],
     ) -> r[str]:
         """Save complete pipeline results."""
         results_dir = Path("complete_pipeline_results")
@@ -682,7 +691,7 @@ class CompleteMockPipeline:
 def main() -> None:
     """Main execution."""
     pipeline = CompleteMockPipeline()
-    result: r[dict[str, object]] = pipeline.run_complete_pipeline()
+    result: r[dict[str, t.NormalizedValue]] = pipeline.run_complete_pipeline()
     if result.is_success:
         pass
 
