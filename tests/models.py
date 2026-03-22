@@ -1,7 +1,7 @@
-"""Test models for flext-oracle-wms tests.
+"""Test models for flext-oracle-wms.
 
-Provides TestsFlextOracleWmsModels, extending m with
-flext-oracle-wms-specific models using COMPOSITION INHERITANCE.
+Provides FlextOracleWmsTestModels, combining FlextTestsModels with
+FlextOracleWmsModels for test-specific model definitions.
 
 Copyright (c) 2025 FLEXT Team. All rights reserved.
 SPDX-License-Identifier: MIT
@@ -9,23 +9,13 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from flext_tests import m
+from flext_tests import FlextTestsModels
 
 from flext_oracle_wms.models import FlextOracleWmsModels
 
 
-class TestsFlextOracleWmsModels(m, FlextOracleWmsModels):
-    """Models for flext-oracle-wms tests using COMPOSITION INHERITANCE.
-
-    MANDATORY: Inherits from BOTH:
-    1. m - for test infrastructure (.Tests.*)
-    2. FlextOracleWmsModels - for domain models
-
-    Access patterns:
-    - tm.Tests.* (generic test models from m)
-    - tm.* (Oracle WMS domain models)
-    - m.* (production models via alternative alias)
-    """
+class FlextOracleWmsTestModels(FlextTestsModels, FlextOracleWmsModels):
+    """Test models combining FlextTestsModels with flext-oracle-wms models."""
 
     class Tests:
         """Project-specific test fixtures namespace."""
@@ -34,12 +24,9 @@ class TestsFlextOracleWmsModels(m, FlextOracleWmsModels):
             """Oracle WMS-specific test fixtures."""
 
 
-# Short aliases per FLEXT convention
-tm = TestsFlextOracleWmsModels
-m = TestsFlextOracleWmsModels
+m = FlextOracleWmsTestModels
 
 __all__ = [
-    "TestsFlextOracleWmsModels",
+    "FlextOracleWmsTestModels",
     "m",
-    "tm",
 ]

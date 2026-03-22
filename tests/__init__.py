@@ -11,6 +11,7 @@ from flext_core.lazy import cleanup_submodule_namespace, lazy_getattr
 
 if TYPE_CHECKING:
     from flext_core.typings import FlextTypes
+    from flext_tests import d, e, h, r, s, x
 
     from . import unit as unit
     from .complete_mock_pipeline import CompleteMockPipeline
@@ -22,11 +23,8 @@ if TYPE_CHECKING:
         sample_entities,
         sample_entity_data,
     )
-    from .constants import (
-        TestsFlextOracleWmsConstants,
-        TestsFlextOracleWmsConstants as c,
-    )
-    from .models import TestsFlextOracleWmsModels, TestsFlextOracleWmsModels as m, tm
+    from .constants import FlextOracleWmsTestConstants, FlextOracleWmsTestConstants as c
+    from .models import FlextOracleWmsTestModels, FlextOracleWmsTestModels as m
     from .oracle_wms_complete_discovery import (
         OracleWmsCompleteDiscovery,
         run_complete_discovery,
@@ -36,10 +34,7 @@ if TYPE_CHECKING:
         OptimizedOracleWmsDiscovery,
         run_optimized_discovery,
     )
-    from .protocols import (
-        TestsFlextOracleWmsProtocols,
-        TestsFlextOracleWmsProtocols as p,
-    )
+    from .protocols import FlextOracleWmsTestProtocols, FlextOracleWmsTestProtocols as p
     from .test_authentication_core import (
         TestAuthenticationConfig,
         TestAuthenticationMethod,
@@ -128,14 +123,11 @@ if TYPE_CHECKING:
         TestFlextOracleWmsApiResponse,
         TestFlextOracleWmsEntity,
     )
-    from .typings import TestsFlextOracleWmsTypes, TestsFlextOracleWmsTypes as t
+    from .typings import FlextOracleWmsTestTypes, FlextOracleWmsTestTypes as t
     from .unit.test_api import TestFlextOracleWmsApi
     from .unit.test_config import TestFlextOracleWmsSettings
     from .unit.test_wms_client import TestFlextOracleWmsClient
-    from .utilities import (
-        TestsFlextOracleWmsUtilities,
-        TestsFlextOracleWmsUtilities as u,
-    )
+    from .utilities import FlextOracleWmsTestUtilities, FlextOracleWmsTestUtilities as u
 
 _LAZY_IMPORTS: dict[str, tuple[str, str]] = {
     "CompleteMockPipeline": ("tests.complete_mock_pipeline", "CompleteMockPipeline"),
@@ -144,6 +136,11 @@ _LAZY_IMPORTS: dict[str, tuple[str, str]] = {
         "FlextOracleWmsApiCategory",
     ),
     "FlextOracleWmsApiVersion": ("tests.test_declarative", "FlextOracleWmsApiVersion"),
+    "FlextOracleWmsTestConstants": ("tests.constants", "FlextOracleWmsTestConstants"),
+    "FlextOracleWmsTestModels": ("tests.models", "FlextOracleWmsTestModels"),
+    "FlextOracleWmsTestProtocols": ("tests.protocols", "FlextOracleWmsTestProtocols"),
+    "FlextOracleWmsTestTypes": ("tests.typings", "FlextOracleWmsTestTypes"),
+    "FlextOracleWmsTestUtilities": ("tests.utilities", "FlextOracleWmsTestUtilities"),
     "FocusedOracleWmsDiscovery": (
         "tests.oracle_wms_focused_discovery",
         "FocusedOracleWmsDiscovery",
@@ -242,24 +239,23 @@ _LAZY_IMPORTS: dict[str, tuple[str, str]] = {
     "TestRecordFiltering": ("tests.test_filtering", "TestRecordFiltering"),
     "TestRecordSorting": ("tests.test_filtering", "TestRecordSorting"),
     "TestWmsEnums": ("tests.test_schema_dynamic", "TestWmsEnums"),
-    "TestsFlextOracleWmsConstants": ("tests.constants", "TestsFlextOracleWmsConstants"),
-    "TestsFlextOracleWmsModels": ("tests.models", "TestsFlextOracleWmsModels"),
-    "TestsFlextOracleWmsProtocols": ("tests.protocols", "TestsFlextOracleWmsProtocols"),
-    "TestsFlextOracleWmsTypes": ("tests.typings", "TestsFlextOracleWmsTypes"),
-    "TestsFlextOracleWmsUtilities": ("tests.utilities", "TestsFlextOracleWmsUtilities"),
-    "c": ("tests.constants", "TestsFlextOracleWmsConstants"),
+    "c": ("tests.constants", "FlextOracleWmsTestConstants"),
+    "d": ("flext_tests", "d"),
+    "e": ("flext_tests", "e"),
     "env_config": ("tests.test_declarative", "env_config"),
     "find_env_file": ("tests.test_declarative", "find_env_file"),
+    "h": ("flext_tests", "h"),
     "load_env_config": ("tests.test_declarative", "load_env_config"),
     "load_test_env": ("tests.conftest", "load_test_env"),
     "logger": ("tests.test_declarative", "logger"),
-    "m": ("tests.models", "TestsFlextOracleWmsModels"),
+    "m": ("tests.models", "FlextOracleWmsTestModels"),
     "main": ("tests.oracle_wms_focused_discovery", "main"),
     "mock_config": ("tests.conftest", "mock_config"),
     "oracle_wms_client": ("tests.test_declarative", "oracle_wms_client"),
-    "p": ("tests.protocols", "TestsFlextOracleWmsProtocols"),
+    "p": ("tests.protocols", "FlextOracleWmsTestProtocols"),
     "pytest_configure": ("tests.conftest", "pytest_configure"),
     "pytestmark": ("tests.test_declarative", "pytestmark"),
+    "r": ("flext_tests", "r"),
     "real_config": ("tests.conftest", "real_config"),
     "run_complete_discovery": (
         "tests.oracle_wms_complete_discovery",
@@ -269,9 +265,10 @@ _LAZY_IMPORTS: dict[str, tuple[str, str]] = {
         "tests.oracle_wms_optimized_discovery",
         "run_optimized_discovery",
     ),
+    "s": ("flext_tests", "s"),
     "sample_entities": ("tests.conftest", "sample_entities"),
     "sample_entity_data": ("tests.conftest", "sample_entity_data"),
-    "t": ("tests.typings", "TestsFlextOracleWmsTypes"),
+    "t": ("tests.typings", "FlextOracleWmsTestTypes"),
     "test_api_response_creation": ("tests.test_models", "test_api_response_creation"),
     "test_api_response_defaults": ("tests.test_models", "test_api_response_defaults"),
     "test_api_response_error": ("tests.test_models", "test_api_response_error"),
@@ -358,15 +355,20 @@ _LAZY_IMPORTS: dict[str, tuple[str, str]] = {
         "test_entity_validation_empty_name_raises",
     ),
     "test_real_connection": ("tests.test_connection", "test_real_connection"),
-    "tm": ("tests.models", "tm"),
-    "u": ("tests.utilities", "TestsFlextOracleWmsUtilities"),
+    "u": ("tests.utilities", "FlextOracleWmsTestUtilities"),
     "unit": ("tests.unit", ""),
+    "x": ("flext_tests", "x"),
 }
 
 __all__ = [
     "CompleteMockPipeline",
     "FlextOracleWmsApiCategory",
     "FlextOracleWmsApiVersion",
+    "FlextOracleWmsTestConstants",
+    "FlextOracleWmsTestModels",
+    "FlextOracleWmsTestProtocols",
+    "FlextOracleWmsTestTypes",
+    "FlextOracleWmsTestUtilities",
     "FocusedOracleWmsDiscovery",
     "OptimizedOracleWmsDiscovery",
     "OracleWmsCompleteDiscovery",
@@ -405,14 +407,12 @@ __all__ = [
     "TestRecordFiltering",
     "TestRecordSorting",
     "TestWmsEnums",
-    "TestsFlextOracleWmsConstants",
-    "TestsFlextOracleWmsModels",
-    "TestsFlextOracleWmsProtocols",
-    "TestsFlextOracleWmsTypes",
-    "TestsFlextOracleWmsUtilities",
     "c",
+    "d",
+    "e",
     "env_config",
     "find_env_file",
+    "h",
     "load_env_config",
     "load_test_env",
     "logger",
@@ -423,9 +423,11 @@ __all__ = [
     "p",
     "pytest_configure",
     "pytestmark",
+    "r",
     "real_config",
     "run_complete_discovery",
     "run_optimized_discovery",
+    "s",
     "sample_entities",
     "sample_entity_data",
     "t",
@@ -458,9 +460,9 @@ __all__ = [
     "test_entity_validation_bad_endpoint_raises",
     "test_entity_validation_empty_name_raises",
     "test_real_connection",
-    "tm",
     "u",
     "unit",
+    "x",
 ]
 
 

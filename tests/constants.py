@@ -1,6 +1,7 @@
-"""Module skeleton for TestsFlextOracleWmsConstants.
+"""Test constants for flext-oracle-wms tests.
 
-Test constants for flextoraclewms.
+Provides FlextOracleWmsTestConstants, extending FlextTestsConstants with
+flext-oracle-wms-specific constants.
 
 Copyright (c) 2025 FLEXT Team. All rights reserved.
 SPDX-License-Identifier: MIT
@@ -8,12 +9,12 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from flext_tests import c
+from flext_tests import FlextTestsConstants
 
 
-class TestsFlextOracleWmsConstants(c):
-    """Test constants for flextoraclewms."""
+class FlextOracleWmsTestConstants(FlextTestsConstants):
+    """Test constants for flext-oracle-wms."""
 
 
-c = TestsFlextOracleWmsConstants
-__all__ = ["TestsFlextOracleWmsConstants", "c"]
+c = FlextOracleWmsTestConstants
+__all__ = ["FlextOracleWmsTestConstants", "c"]
