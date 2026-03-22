@@ -22,9 +22,7 @@ class FlextOracleWmsOperatorFilter(BaseModel):
     """Operator filter model for WMS filtering operations."""
 
     operator: str
-    value: (
-        FlextOracleWmsTypes.Core.FilterScalar | FlextOracleWmsTypes.Core.FilterList
-    )
+    value: FlextOracleWmsTypes.Core.FilterScalar | FlextOracleWmsTypes.Core.FilterList
 
 
 class FlextOracleWmsModels(FlextModels):

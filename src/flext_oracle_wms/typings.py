@@ -98,5 +98,7 @@ class FlextOracleWmsTypes(FlextTypes):
         )
 
 
+type HttpJsonObject = dict[str, _core_t.ContainerValue]
+
 t = FlextOracleWmsTypes
 __all__ = ["FlextOracleWmsTypes", "t"]

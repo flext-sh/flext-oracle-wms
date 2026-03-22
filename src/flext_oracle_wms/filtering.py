@@ -86,7 +86,9 @@ class FlextOracleWmsFilter:
         if operator is None:
             filters = {field: value}
         else:
-            filters = {field: FlextOracleWmsOperatorFilter(operator=operator, value=value)}
+            filters = {
+                field: FlextOracleWmsOperatorFilter(operator=operator, value=value)
+            }
         return engine.filter_records(records, filters)
 
     @classmethod
