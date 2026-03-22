@@ -8,7 +8,7 @@ from __future__ import annotations
 
 from collections.abc import Mapping, MutableMapping
 from types import TracebackType
-from typing import Self, cast
+from typing import Self
 
 from flext_api import FlextApiClient, FlextApiModels, FlextApiSettings, FlextApiTypes
 from flext_core import FlextLogger, r
@@ -75,7 +75,8 @@ class FlextHttpClient:
         body: HttpJsonObject | None,
     ) -> HttpJsonObject:
         if body is None:
-            return cast("HttpJsonObject", {})
+            empty_body: HttpJsonObject = {}
+            return empty_body
         return body
 
     def close(self) -> None:
@@ -260,7 +261,8 @@ class FlextHttpClient:
                 except (ValidationError, ValueError):
                     return {"text": raw_bytes.decode("utf-8", errors="ignore")}
             case _:
-                return cast("HttpJsonObject", {})
+                empty_body: HttpJsonObject = {}
+                return empty_body
 
 
 def create_flext_http_client(
