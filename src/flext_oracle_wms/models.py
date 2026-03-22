@@ -14,15 +14,14 @@ from typing import Annotated, Literal
 from flext_core import FlextModels, r
 from pydantic import BaseModel, ConfigDict, Field, StringConstraints, field_validator
 
-from flext_oracle_wms.constants import FlextOracleWmsConstants as c
-from flext_oracle_wms.typings import FlextOracleWmsTypes, t
+from flext_oracle_wms import OracleWMSAuthMethod, c, t
 
 
 class FlextOracleWmsOperatorFilter(BaseModel):
     """Operator filter model for WMS filtering operations."""
 
     operator: str
-    value: FlextOracleWmsTypes.Core.FilterScalar | FlextOracleWmsTypes.Core.FilterList
+    value: t.Core.FilterScalar | t.Core.FilterList
 
 
 class FlextOracleWmsModels(FlextModels):
@@ -110,6 +109,63 @@ class FlextOracleWmsModels(FlextModels):
                 if not self.success and not self.error_message:
                     return r[bool].fail("Failed response must include error message")
                 return r[bool].ok(True)
+
+        class ApiEndpoint(BaseModel):
+            """Typed Oracle WMS API endpoint definition."""
+
+            name: Annotated[str, Field(min_length=1)]
+            method: Annotated[str, Field(min_length=1)]
+            path: Annotated[str, Field(min_length=1)]
+            version: Annotated[str, Field(min_length=1)]
+            category: Annotated[str, Field(min_length=1)]
+            description: str = Field(default="")
+            since_version: str = Field(default="6.1")
+
+        class AuthSettings(BaseModel):
+            """Authentication configuration for Oracle WMS flows."""
+
+            method: Annotated[str, Field(default=OracleWMSAuthMethod.BASIC)]
+            username: Annotated[str | None, Field(default=None)]
+            password: Annotated[str | None, Field(default=None)]
+            oauth2_client_id: Annotated[str | None, Field(default=None)]
+            oauth2_client_secret: Annotated[str | None, Field(default=None)]
+            oauth2_scope: Annotated[str, Field(default="wms.read wms.write")]
+            token_refresh_threshold: Annotated[int, Field(default=300)]
+
+            def validate_business_rules(self) -> r[bool]:
+                """Validate authentication configuration business rules."""
+                if self.method == OracleWMSAuthMethod.BASIC:
+                    if not self.username or not self.password:
+                        return r[bool].fail("Basic auth requires username and password")
+                    return r[bool].ok(True)
+                if self.method == OracleWMSAuthMethod.OAUTH2:
+                    if not self.oauth2_client_id or not self.oauth2_client_secret:
+                        return r[bool].fail(
+                            "OAuth2 requires client_id and client_secret"
+                        )
+                    return r[bool].ok(True)
+                return r[bool].fail(f"Unsupported auth method: {self.method}")
+
+        class EntitiesResponse(BaseModel):
+            """Oracle WMS entities list response."""
+
+            model_config = ConfigDict(extra="ignore")
+
+            entities: Annotated[list[str], Field(default_factory=list)]
+
+        class ApiCategoryResponse(BaseModel):
+            """Oracle WMS API category response."""
+
+            model_config = ConfigDict(extra="ignore")
+
+            apis: Annotated[list[dict[str, str]], Field(default_factory=list)]
+
+        class EntityDataResponse(BaseModel):
+            """Oracle WMS entity data response."""
+
+            model_config = ConfigDict(extra="ignore")
+
+            data: Annotated[list[dict[str, str]], Field(default_factory=list)]
 
     # =========================================================================
     # TYPE ALIASES - Advanced composition for minimal declarations

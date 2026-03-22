@@ -9,7 +9,6 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 from collections.abc import Mapping
-from typing import Annotated
 
 from flext_api import (
     FlextApiClient,
@@ -18,32 +17,12 @@ from flext_api import (
     FlextApiSettings,
     FlextApiTypes,
 )
-from flext_core import FlextContainer, FlextExceptions, r
-from flext_core.utilities import u
-from pydantic import BaseModel, ConfigDict, Field, ValidationError
+from flext_core import FlextContainer, e, r
+from pydantic import BaseModel, ValidationError
 
-from flext_oracle_wms.settings import FlextOracleWmsSettings
-from flext_oracle_wms.typings import t
+from flext_oracle_wms import FlextOracleWmsSettings, m, t, u
 
 HTTP_BAD_REQUEST_THRESHOLD = 400
-
-
-class EntitiesResponse(BaseModel):
-    model_config = ConfigDict(extra="ignore")
-
-    entities: Annotated[list[str], Field(default_factory=list)]
-
-
-class ApiCategoryResponse(BaseModel):
-    model_config = ConfigDict(extra="ignore")
-
-    apis: Annotated[list[dict[str, str]], Field(default_factory=list)]
-
-
-class EntityDataResponse(BaseModel):
-    model_config = ConfigDict(extra="ignore")
-
-    data: Annotated[list[dict[str, str]], Field(default_factory=list)]
 
 
 class FlextOracleWmsClient:
@@ -60,7 +39,7 @@ class FlextOracleWmsClient:
                     resolved_config = FlextOracleWmsSettings.model_validate(
                         config_result.value
                     )
-            except (ValueError, FlextExceptions.BaseError):
+            except (ValueError, e.BaseError):
                 pass
         if resolved_config is None:
             resolved_config = FlextOracleWmsSettings.testing_config()
@@ -123,7 +102,7 @@ class FlextOracleWmsClient:
         if result.is_failure:
             return r[list[str]].fail(result.error)
         payload_result = self._decode_response_model(
-            result.value.body, EntitiesResponse
+            result.value.body, m.OracleWms.EntitiesResponse
         )
         if payload_result.is_failure:
             return r[list[str]].fail(payload_result.error)
@@ -148,7 +127,7 @@ class FlextOracleWmsClient:
         if result.is_failure:
             return r[list[dict[str, str]]].fail(result.error)
         payload_result = self._decode_response_model(
-            result.value.body, ApiCategoryResponse
+            result.value.body, m.OracleWms.ApiCategoryResponse
         )
         if payload_result.is_failure:
             return r[list[dict[str, str]]].fail(payload_result.error)
@@ -170,7 +149,7 @@ class FlextOracleWmsClient:
         if result.is_failure:
             return r[list[dict[str, str]]].fail(result.error)
         payload_result = self._decode_response_model(
-            result.value.body, EntityDataResponse
+            result.value.body, m.OracleWms.EntityDataResponse
         )
         if payload_result.is_failure:
             return r[list[dict[str, str]]].fail(payload_result.error)

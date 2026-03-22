@@ -25,8 +25,8 @@ from flext_oracle_wms import FlextOracleWmsConstants
 from flext_oracle_wms.filtering import (
     FlextOracleWmsDataValidationError,
     FlextOracleWmsFilter,
+    OperatorFilter,
 )
-from flext_oracle_wms.typings import OperatorFilter
 
 
 class TestFlextOracleWmsFilterConstruction:
