@@ -9,22 +9,18 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 from collections.abc import Mapping
-from typing import Protocol
 
 from flext_core import r
 
 from flext_oracle_wms.constants import FlextOracleWmsConstants as c
+from flext_oracle_wms.protocols import p
 from flext_oracle_wms.typings import t
-
-
-class _EntityDiscoveryClient(Protocol):
-    def discover_entities(self) -> r[list[str]]: ...
 
 
 class FlextOracleWmsEntityDiscovery:
     """Discovery service for Oracle WMS entities."""
 
-    def __init__(self, client: _EntityDiscoveryClient) -> None:
+    def __init__(self, client: p.OracleWms.EntityDiscoveryClient) -> None:
         """Initialize discovery service with a client."""
         self.client = client
 

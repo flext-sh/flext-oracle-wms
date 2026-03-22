@@ -40,6 +40,14 @@ class FlextOracleWmsProtocols(FlextProtocols):
         """Oracle WMS domain-specific protocols."""
 
         @runtime_checkable
+        class EntityDiscoveryClient(Protocol):
+            """Protocol for entity discovery client used by FlextOracleWmsEntityDiscovery."""
+
+            def discover_entities(self) -> FlextProtocols.Result[list[str]]:
+                """Discover available entities."""
+                ...
+
+        @runtime_checkable
         class WmsService(FlextProtocols.Service[None], Protocol):
             """Unified WMS service protocol with operation dispatch."""
 
