@@ -1,7 +1,6 @@
 # API Reference
 
 <!-- TOC START -->
-
 - [Client API](#client-api)
   - [FlextOracleWmsClient](#flextoraclewmsclient)
 - [Configuration API](#configuration-api)
@@ -11,14 +10,13 @@
   - [Missing Modern APIs (LGF v10)](#missing-modern-apis-lgf-v10)
 - [Error Handling](#error-handling)
   - [Exception Hierarchy](#exception-hierarchy)
-  - [r Pattern](#flextresult-pattern)
+  - [r Pattern](#r-pattern)
 - [Models](#models)
   - [FlextOracleWmsEntity](#flextoraclewmsentity)
 - [Implementation Status](#implementation-status)
   - [Completed Components](#completed-components)
   - [Implementation Gaps](#implementation-gaps)
 - [Related Documentation](#related-documentation)
-
 <!-- TOC END -->
 
 **Complete API documentation for flext-oracle-wms**

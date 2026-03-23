@@ -1,7 +1,6 @@
 # Development Guide
 
 <!-- TOC START -->
-
 - [Development Setup](#development-setup)
   - [Prerequisites](#prerequisites)
   - [Installation](#installation)
@@ -30,7 +29,6 @@
 - [Troubleshooting](#troubleshooting)
   - [Common Issues](#common-issues)
   - [Development Tools](#development-tools)
-
 <!-- TOC END -->
 
 **Development workflow and guidelines for flext-oracle-wms**

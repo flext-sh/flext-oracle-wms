@@ -1,7 +1,6 @@
 # flext-oracle-wms Documentation
 
 <!-- TOC START -->
-
 - [Project Documentation](#project-documentation)
   - [Core Documentation](#core-documentation)
 - [Implementation Status](#implementation-status)
@@ -9,7 +8,6 @@
   - [Critical Gaps](#critical-gaps)
 - [Development Commands](#development-commands)
 - [Architecture Status](#architecture-status)
-
 <!-- TOC END -->
 
 **Version 0.9.9 | September 17, 2025 | Status: Partial implementation with FLEXT compliance gaps**

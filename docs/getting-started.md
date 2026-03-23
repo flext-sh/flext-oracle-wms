@@ -1,7 +1,6 @@
 # Getting Started with flext-oracle-wms
 
 <!-- TOC START -->
-
 - [Installation](#installation)
   - [Prerequisites](#prerequisites)
   - [Installation Steps](#installation-steps)
@@ -13,7 +12,6 @@
   - [What Needs Implementation](#what-needs-implementation)
 - [Next Steps](#next-steps)
 - [Related Documentation](#related-documentation)
-
 <!-- TOC END -->
 
 **Quick start guide for Oracle WMS integration framework**

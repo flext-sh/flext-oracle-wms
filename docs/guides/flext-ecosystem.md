@@ -1,13 +1,11 @@
 # FLEXT Ecosystem Integration Status
 
 <!-- TOC START -->
-
 - [Integration Overview](#integration-overview)
   - [Current FLEXT Integration](#current-flext-integration)
   - [Integration Gaps Analysis](#integration-gaps-analysis)
   - [Required Implementation Work](#required-implementation-work)
   - [Success Criteria](#success-criteria)
-
 <!-- TOC END -->
 
 **Current integration analysis | September 17, 2025 | Version 0.9.9**

@@ -1,7 +1,6 @@
 # Configuration Guide
 
 <!-- TOC START -->
-
 - [Configuration Overview](#configuration-overview)
 - [Test Configuration](#test-configuration)
   - [FlextOracleWmsModuleSettings.for_testing()](#flextoraclewmsmodulesettingsfortesting)
@@ -20,7 +19,6 @@
 - [Implementation Status](#implementation-status)
   - [Current Status](#current-status)
   - [Required Implementation](#required-implementation)
-
 <!-- TOC END -->
 
 **Settings and environment management for flext-oracle-wms**

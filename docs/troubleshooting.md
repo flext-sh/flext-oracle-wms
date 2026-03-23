@@ -1,7 +1,6 @@
 # Troubleshooting Guide
 
 <!-- TOC START -->
-
 - [Common Issues](#common-issues)
   - [Connection Issues](#connection-issues)
   - [Type Safety Issues](#type-safety-issues)
@@ -20,7 +19,6 @@
   - [Documentation Resources](#documentation-resources)
   - [Known Limitations](#known-limitations)
   - [Reporting Issues](#reporting-issues)
-
 <!-- TOC END -->
 
 **Common issues and solutions for flext-oracle-wms**
