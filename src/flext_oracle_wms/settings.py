@@ -8,7 +8,7 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from typing import Annotated
+from typing import Annotated, ClassVar
 
 from flext_core import FlextSettings, r
 from pydantic import Field
@@ -18,7 +18,7 @@ from pydantic_settings import SettingsConfigDict
 class FlextOracleWmsSettings(FlextSettings):
     """Runtime settings for Oracle WMS client."""
 
-    model_config = SettingsConfigDict(extra="ignore")
+    model_config: ClassVar[SettingsConfigDict] = SettingsConfigDict(extra="ignore")
 
     base_url: Annotated[str, Field(default="http://localhost:8080", min_length=1)]
     timeout: Annotated[float, Field(default=30.0, ge=1.0, le=300.0)]
@@ -46,7 +46,7 @@ class FlextOracleWmsSettings(FlextSettings):
 class FlextOracleWmsClientSettings(FlextOracleWmsSettings):
     """Settings contract consumed by FlextOracleWmsClient."""
 
-    model_config = SettingsConfigDict(extra="ignore")
+    model_config: ClassVar[SettingsConfigDict] = SettingsConfigDict(extra="ignore")
 
     base_url: Annotated[str, Field(default="")]
     username: Annotated[str, Field(default="")]

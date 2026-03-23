@@ -20,10 +20,10 @@ from flext_core.lazy import cleanup_submodule_namespace, lazy_getattr
 if TYPE_CHECKING:
     from flext_core import FlextTypes
 
-    from .test_api import TestFlextOracleWmsApi
-    from .test_config import TestFlextOracleWmsSettings
-    from .test_constants import TestFlextOracleWmsConstants
-    from .test_wms_client import TestFlextOracleWmsClient
+    from tests.unit.test_api import TestFlextOracleWmsApi
+    from tests.unit.test_config import TestFlextOracleWmsSettings
+    from tests.unit.test_constants import TestFlextOracleWmsConstants
+    from tests.unit.test_wms_client import TestFlextOracleWmsClient
 
 _LAZY_IMPORTS: dict[str, tuple[str, str]] = {
     "TestFlextOracleWmsApi": ("tests.unit.test_api", "TestFlextOracleWmsApi"),
