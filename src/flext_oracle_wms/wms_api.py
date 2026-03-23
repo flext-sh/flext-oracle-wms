@@ -7,6 +7,7 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
+from collections.abc import Mapping
 from typing import ClassVar
 
 from flext_oracle_wms.models import m
@@ -19,7 +20,7 @@ class FlextOracleWmsApi:
     with proper inheritance levels and enterprise patterns.
     """
 
-    FLEXT_ORACLE_WMS_APIS: ClassVar[dict[str, m.OracleWms.ApiEndpoint]] = {
+    FLEXT_ORACLE_WMS_APIS: ClassVar[Mapping[str, m.OracleWms.ApiEndpoint]] = {
         "test": m.OracleWms.ApiEndpoint(
             name="test",
             method="GET",

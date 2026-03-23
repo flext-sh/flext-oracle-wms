@@ -243,19 +243,21 @@ class FlextHttpClient:
         match body:
             case dict() as payload:
                 try:
-                    return TypeAdapter(dict[str, t.ContainerValue]).validate_python(
+                    return TypeAdapter(Mapping[str, t.ContainerValue]).validate_python(
                         payload
                     )
                 except ValidationError:
                     return {"text": str(payload)}
             case str() as raw if raw:
                 try:
-                    return TypeAdapter(dict[str, t.ContainerValue]).validate_json(raw)
+                    return TypeAdapter(Mapping[str, t.ContainerValue]).validate_json(
+                        raw
+                    )
                 except (ValidationError, ValueError):
                     return {"text": raw}
             case bytes() as raw_bytes:
                 try:
-                    return TypeAdapter(dict[str, t.ContainerValue]).validate_json(
+                    return TypeAdapter(Mapping[str, t.ContainerValue]).validate_json(
                         raw_bytes
                     )
                 except (ValidationError, ValueError):

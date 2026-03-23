@@ -31,6 +31,7 @@ import asyncio
 import os
 import time
 import traceback
+from collections.abc import Mapping, Sequence
 from pathlib import Path
 
 from dotenv import load_dotenv
@@ -93,13 +94,13 @@ def showcase_1_client_initialization(
     return client
 
 
-def showcase_2_entity_discovery(client: FlextOracleWmsClient) -> list[str]:
+def showcase_2_entity_discovery(client: FlextOracleWmsClient) -> Sequence[str]:
     """Feature 2: Entity Discovery (320+ entities)."""
     entities_result = client.discover_entities()
     if not entities_result.is_success:
         return []
     entity_dicts = entities_result.value or []
-    entities: list[str] = [
+    entities: Sequence[str] = [
         str(entity.get("name", "Unknown")) if isinstance(entity, dict) else str(entity)
         for entity in entity_dicts
     ]
@@ -123,10 +124,10 @@ def showcase_2_entity_discovery(client: FlextOracleWmsClient) -> list[str]:
 
 
 def showcase_3_data_retrieval(
-    client: FlextOracleWmsClient, entities: list[str]
-) -> dict[str, t.NormalizedValue]:
+    client: FlextOracleWmsClient, entities: Sequence[str]
+) -> Mapping[str, t.NormalizedValue]:
     """Feature 3: Data Retrieval and Querying."""
-    sample_data: dict[str, t.NormalizedValue] = {}
+    sample_data: Mapping[str, t.NormalizedValue] = {}
     test_entities = ["company", "facility", "item"]
     for entity_name in test_entities:
         if entity_name not in entities:
@@ -173,7 +174,7 @@ def showcase_4_authentication(config: FlextOracleWmsClientSettings) -> None:
 
 def showcase_5_api_catalog(client: FlextOracleWmsClient) -> None:
     """Feature 5: API Catalog Management."""
-    categories: dict[str, list[str]] = {}
+    categories: Mapping[str, Sequence[str]] = {}
     for api_name, api_info in FLEXT_ORACLE_WMS_APIS.items():
         category = api_info.category
         if category not in categories:
@@ -220,11 +221,11 @@ def showcase_6_error_handling(client: FlextOracleWmsClient) -> None:
 
 def showcase_7_health_monitoring(
     client: FlextOracleWmsClient,
-) -> dict[str, t.NormalizedValue]:
+) -> Mapping[str, t.NormalizedValue]:
     """Feature 7: Health Monitoring."""
     health_result = client.health_check()
     if health_result.is_success:
-        health_data: dict[str, t.NormalizedValue] = health_result.value or {}
+        health_data: Mapping[str, t.NormalizedValue] = health_result.value or {}
         for key in health_data:
             if key == "test_call_success":
                 pass
@@ -233,7 +234,7 @@ def showcase_7_health_monitoring(
 
 
 def showcase_8_performance_tracking(
-    client: FlextOracleWmsClient, entities: list[str]
+    client: FlextOracleWmsClient, entities: Sequence[str]
 ) -> None:
     """Feature 8: Performance Tracking."""
     min_entities_for_concurrent_test = (
@@ -242,7 +243,7 @@ def showcase_8_performance_tracking(
     if len(entities) >= min_entities_for_concurrent_test:
         test_entities = entities[:min_entities_for_concurrent_test]
         start_time = time.time()
-        results: list[r[list[dict[str, str]]]] = []
+        results: Sequence[r[Sequence[Mapping[str, str]]]] = []
         for entity in test_entities:
             result = client.get_entity_data(entity, limit=2)
             results.append(result)

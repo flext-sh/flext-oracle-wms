@@ -11,7 +11,7 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from collections.abc import Generator, Mapping
+from collections.abc import Generator, Mapping, Sequence
 from pathlib import Path
 from urllib.parse import urlparse
 
@@ -96,12 +96,12 @@ def find_env_file() -> Path | None:
     return None
 
 
-def load_env_config() -> dict[str, t.NormalizedValue] | None:
+def load_env_config() -> Mapping[str, t.NormalizedValue] | None:
     """Load Oracle WMS configuration from .env file."""
     env_path = find_env_file()
     if not env_path:
         return None
-    config: dict[str, str] = {}
+    config: Mapping[str, str] = {}
     try:
         with Path(env_path).open(encoding="utf-8") as f:
             for raw_line in f:
@@ -149,7 +149,7 @@ def load_env_config() -> dict[str, t.NormalizedValue] | None:
 
 
 @pytest.fixture
-def env_config() -> dict[str, t.NormalizedValue]:
+def env_config() -> Mapping[str, t.NormalizedValue]:
     """Fixture that provides .env configuration or skips test."""
     config = load_env_config()
     if not config or not all([
@@ -297,7 +297,7 @@ class TestLgfApiV10Integration:
                 f"Cannot test get_entity_by_id - list failed: {list_result.error}"
             )
         data = list_result.data
-        empty_results: list[t.NormalizedValue] = []
+        empty_results: Sequence[t.NormalizedValue] = []
         results = (
             data.get("results", empty_results)
             if isinstance(data, dict)
@@ -399,7 +399,7 @@ class TestPerformanceIntegration:
         if not oracle_wms_client.config.use_mock:
             pytest.skip("Skipping concurrent test - requires mock server")
         entities = ["company", "facility", "item"]
-        results: list[r[t.NormalizedValue] | Exception] = []
+        results: Sequence[r[t.NormalizedValue] | Exception] = []
         for entity in entities:
             try:
                 result = oracle_wms_client.get_entity_data(entity, limit=3)
@@ -433,7 +433,7 @@ class TestPerformanceIntegration:
             )
             if result.is_success:
                 data = result.data
-                empty_results: list[t.NormalizedValue] = []
+                empty_results: Sequence[t.NormalizedValue] = []
                 results = (
                     data.get("results", empty_results)
                     if isinstance(data, dict)

@@ -9,7 +9,7 @@ from __future__ import annotations
 
 import asyncio
 import json
-from collections.abc import Mapping
+from collections.abc import Mapping, Sequence
 from datetime import UTC, datetime
 from pathlib import Path
 from types import NoneType
@@ -26,7 +26,7 @@ from tests import t
 logger = FlextLogger(__name__)
 
 type JsonScalar = str | int | float | bool | None
-type JsonValue = JsonScalar | dict[str, JsonValue] | list[JsonValue]
+type JsonValue = JsonScalar | Mapping[str, JsonValue] | Sequence[JsonValue]
 
 
 class FocusedOracleWmsDiscovery:
@@ -71,7 +71,7 @@ class FocusedOracleWmsDiscovery:
         self.entities_with_data = {}
         self.complete_schemas = {}
 
-    def execute_focused_discovery(self) -> r[dict[str, t.NormalizedValue]]:
+    def execute_focused_discovery(self) -> r[Mapping[str, t.NormalizedValue]]:
         """Execute complete focused discovery."""
         try:
             self.client.start()
@@ -123,7 +123,9 @@ class FocusedOracleWmsDiscovery:
         finally:
             self.client.stop()
 
-    def _quick_data_scan(self, entities: list[str]) -> dict[str, t.NormalizedValue]:
+    def _quick_data_scan(
+        self, entities: Sequence[str]
+    ) -> Mapping[str, t.NormalizedValue]:
         """Quick scan to find entities with actual data."""
         data_entities = {}
         for entity_name in entities:
@@ -173,8 +175,8 @@ class FocusedOracleWmsDiscovery:
         return data_entities
 
     def _get_entity_structures(
-        self, entities: list[str]
-    ) -> dict[str, t.NormalizedValue]:
+        self, entities: Sequence[str]
+    ) -> Mapping[str, t.NormalizedValue]:
         """Get entity structures even without data."""
         structures = {}
         for entity_name in entities:
@@ -201,9 +203,9 @@ class FocusedOracleWmsDiscovery:
 
     def _safe_sample(
         self, record: Mapping[str, t.NormalizedValue]
-    ) -> dict[str, t.NormalizedValue]:
+    ) -> Mapping[str, t.NormalizedValue]:
         """Create safe sample record."""
-        safe: dict[str, NoneType | bool | float | int | str] = {}
+        safe: Mapping[str, NoneType | bool | float | int | str] = {}
         for k, v in list(record.items())[:10]:
             if isinstance(v, (str, int, float, bool, type(None))):
                 if (isinstance(v, str) and len(v) < 50) or not isinstance(v, str):
@@ -216,9 +218,9 @@ class FocusedOracleWmsDiscovery:
 
     def _generate_schemas_from_data(
         self, data_entities: Mapping[str, t.NormalizedValue]
-    ) -> dict[str, t.NormalizedValue]:
+    ) -> Mapping[str, t.NormalizedValue]:
         """Generate Singer schemas from entities with data."""
-        schemas: dict[str, dict[str, t.NormalizedValue]] = {}
+        schemas: Mapping[str, Mapping[str, t.NormalizedValue]] = {}
         for entity_name, entity_data in data_entities.items():
             schema = self._create_singer_schema(entity_name, entity_data)
             if schema:
@@ -227,9 +229,9 @@ class FocusedOracleWmsDiscovery:
 
     def _generate_schemas_from_structures(
         self, structure_entities: Mapping[str, t.NormalizedValue]
-    ) -> dict[str, t.NormalizedValue]:
+    ) -> Mapping[str, t.NormalizedValue]:
         """Generate Singer schemas from structures."""
-        schemas: dict[str, dict[str, t.NormalizedValue]] = {}
+        schemas: Mapping[str, Mapping[str, t.NormalizedValue]] = {}
         for entity_name, structure_data in structure_entities.items():
             schema = self._create_singer_schema(entity_name, structure_data)
             if schema:
@@ -238,7 +240,7 @@ class FocusedOracleWmsDiscovery:
 
     def _create_singer_schema(
         self, entity_name: str, entity_data: Mapping[str, t.NormalizedValue]
-    ) -> dict[str, t.NormalizedValue] | None:
+    ) -> Mapping[str, t.NormalizedValue] | None:
         """Create Singer schema with proper Oracle WMS typing."""
         try:
             fields = entity_data.get("sample_fields", entity_data.get("fields", []))
@@ -246,7 +248,7 @@ class FocusedOracleWmsDiscovery:
             sample_record = entity_data.get("sample_record", {})
             if not fields:
                 return None
-            properties: dict[str, dict[str, JsonValue]] = {}
+            properties: Mapping[str, Mapping[str, JsonValue]] = {}
             for field in fields:
                 python_type = field_types.get(field, "str")
                 sample_value = sample_record.get(field)
@@ -272,7 +274,7 @@ class FocusedOracleWmsDiscovery:
 
     def _oracle_field_to_singer_type(
         self, field_name: str, sample_value: t.NormalizedValue, entity_name: str
-    ) -> dict[str, t.NormalizedValue]:
+    ) -> Mapping[str, t.NormalizedValue]:
         """Convert Oracle WMS field to Singer type with context."""
         if sample_value is not None:
             if isinstance(sample_value, bool):
@@ -340,10 +342,10 @@ class FocusedOracleWmsDiscovery:
         )
 
     def _get_oracle_key_properties(
-        self, entity_name: str, fields: list[str]
-    ) -> list[str]:
+        self, entity_name: str, fields: Sequence[str]
+    ) -> Sequence[str]:
         """Get Oracle WMS key properties for entity."""
-        keys: list[str] = []
+        keys: Sequence[str] = []
         if "id" in fields:
             keys.append("id")
         entity_keys = {
@@ -398,16 +400,16 @@ class FocusedOracleWmsDiscovery:
             json.dump(summary, f, indent=2, default=str)
         return r[bool].ok(str(results_dir))
 
-    def _create_singer_catalog(self) -> dict[str, t.NormalizedValue]:
+    def _create_singer_catalog(self) -> Mapping[str, t.NormalizedValue]:
         """Create Singer catalog."""
-        streams: list[dict[str, t.NormalizedValue]] = []
+        streams: Sequence[Mapping[str, t.NormalizedValue]] = []
         for entity_name, schema in self.complete_schemas.items():
             key_properties = schema.get("key_properties", [])
             schema_without_keys = {
                 k: v for k, v in schema.items() if k != "key_properties"
             }
-            breadcrumb: list[str] = []
-            stream: dict[str, t.NormalizedValue] = {
+            breadcrumb: Sequence[str] = []
+            stream: Mapping[str, t.NormalizedValue] = {
                 "tap_stream_id": entity_name,
                 "stream": entity_name,
                 "schema": schema_without_keys,

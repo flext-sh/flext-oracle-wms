@@ -9,6 +9,7 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
+from collections.abc import Mapping, Sequence
 from typing import Annotated, ClassVar, Literal
 
 from flext_core import FlextModels, r
@@ -91,7 +92,7 @@ class FlextOracleWmsModels(FlextModels):
             """Oracle WMS API response model."""
 
             data: Annotated[
-                dict[str, t.ContainerValue],
+                Mapping[str, t.ContainerValue],
                 Field(default_factory=dict, description="Response data"),
             ]
             status_code: Annotated[
@@ -151,30 +152,30 @@ class FlextOracleWmsModels(FlextModels):
 
             model_config: ClassVar[ConfigDict] = ConfigDict(extra="ignore")
 
-            entities: Annotated[list[str], Field(default_factory=list)]
+            entities: Annotated[Sequence[str], Field(default_factory=list)]
 
         class ApiCategoryResponse(BaseModel):
             """Oracle WMS API category response."""
 
             model_config: ClassVar[ConfigDict] = ConfigDict(extra="ignore")
 
-            apis: Annotated[list[dict[str, str]], Field(default_factory=list)]
+            apis: Annotated[Sequence[Mapping[str, str]], Field(default_factory=list)]
 
         class EntityDataResponse(BaseModel):
             """Oracle WMS entity data response."""
 
             model_config: ClassVar[ConfigDict] = ConfigDict(extra="ignore")
 
-            data: Annotated[list[dict[str, str]], Field(default_factory=list)]
+            data: Annotated[Sequence[Mapping[str, str]], Field(default_factory=list)]
 
     # =========================================================================
     # TYPE ALIASES - Advanced composition for minimal declarations
     # =========================================================================
 
-    type TRecord = dict[str, t.ContainerValue]
-    type TRecordBatch = list[dict[str, t.ContainerValue]]
-    type TSchema = dict[str, dict[str, t.ContainerValue]]
-    type TApiResponse = dict[str, t.ContainerValue]
+    type TRecord = Mapping[str, t.ContainerValue]
+    type TRecordBatch = Sequence[Mapping[str, t.ContainerValue]]
+    type TSchema = Mapping[str, Mapping[str, t.ContainerValue]]
+    type TApiResponse = Mapping[str, t.ContainerValue]
     type TApiVersion = Literal["v2", "v1"]
     type TEntityId = Annotated[str, StringConstraints(min_length=1, max_length=100)]
     type TEntityName = Annotated[
@@ -182,8 +183,8 @@ class FlextOracleWmsModels(FlextModels):
         StringConstraints(min_length=1, max_length=50, pattern=r"^[a-z0-9_]+$"),
     ]
     type TFilterValue = t.Scalar | None
-    type TFilters = dict[str, t.Scalar | None]
-    type TPaginationInfo = dict[str, int]
+    type TFilters = Mapping[str, t.Scalar | None]
+    type TPaginationInfo = Mapping[str, int]
     type TTimeout = Annotated[int, Field(ge=1, le=300)]
 
     # =========================================================================
@@ -235,7 +236,7 @@ class FlextOracleWmsModels(FlextModels):
             ),
         ]
         items: Annotated[
-            list[dict[str, t.ContainerValue]],
+            Sequence[Mapping[str, t.ContainerValue]],
             Field(default_factory=list, description="Order items"),
         ]
 
@@ -263,7 +264,7 @@ class FlextOracleWmsModels(FlextModels):
         wave_id: Annotated[str, Field(default="", description="Wave identifier")]
         status: Annotated[str, Field(default="pending", description="Task status")]
         items: Annotated[
-            list[dict[str, t.ContainerValue]],
+            Sequence[Mapping[str, t.ContainerValue]],
             Field(default_factory=list, description="Task items"),
         ]
 
@@ -339,11 +340,11 @@ class FlextOracleWmsModels(FlextModels):
         id: str
         name: str
         locations: Annotated[
-            list[FlextOracleWmsModels.WarehouseLocation],
+            Sequence[FlextOracleWmsModels.WarehouseLocation],
             Field(default_factory=list),
         ]
         inventory: Annotated[
-            list[FlextOracleWmsModels.InventoryItem],
+            Sequence[FlextOracleWmsModels.InventoryItem],
             Field(default_factory=list),
         ]
 

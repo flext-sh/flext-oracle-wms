@@ -6,6 +6,7 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
+from collections.abc import Mapping
 from enum import StrEnum, unique
 from typing import ClassVar, Final, Literal
 
@@ -21,20 +22,20 @@ class FlextOracleWmsConstants(FlextConstants):
 
     FLEXT_WMS_VERSION: Final[str] = "1.0.0"
 
-    API_CONFIG: ClassVar[dict[str, str | int]] = {
+    API_CONFIG: ClassVar[Mapping[str, str | int]] = {
         "version_default": "v1",
         "base_url_default": "http://localhost:8080",
         "timeout_default": 30,
         "max_retries": 3,
     }
 
-    PROCESSING_CONFIG: ClassVar[dict[str, int]] = {
+    PROCESSING_CONFIG: ClassVar[Mapping[str, int]] = {
         "default_batch_size": FlextConstants.DEFAULT_SIZE,
         "max_batch_size": FlextConstants.MAX_ITEMS,
         "default_page_size": FlextConstants.DEFAULT_PAGE_SIZE,
     }
 
-    ENVIRONMENTS: ClassVar[dict[str, str]] = {
+    ENVIRONMENTS: ClassVar[Mapping[str, str]] = {
         "default": "http://localhost:8080",
         "test": "https://test-wms.example.com",
         "production": "https://prod-wms.example.com",
@@ -71,7 +72,7 @@ class FlextOracleWmsConstants(FlextConstants):
     class ErrorMessages:
         """Error messages - composed dict pattern."""
 
-        MESSAGES: ClassVar[dict[str, str]] = {
+        MESSAGES: ClassVar[Mapping[str, str]] = {
             "entity_validation_failed": "Entity validation failed",
             "discovery_failed": "Entity discovery failed",
             "invalid_response": "Invalid API response",
@@ -82,7 +83,7 @@ class FlextOracleWmsConstants(FlextConstants):
     class ResponseFields:
         """Response fields - composed pattern."""
 
-        FIELDS: ClassVar[dict[str, str]] = {
+        FIELDS: ClassVar[Mapping[str, str]] = {
             "result_count": "result_count",
             "results": "results",
             "data": "data",
@@ -107,7 +108,7 @@ class FlextOracleWmsConstants(FlextConstants):
     class Api:
         """API constants - composed."""
 
-        CONFIG: ClassVar[dict[str, int]] = {
+        CONFIG: ClassVar[Mapping[str, int]] = {
             "default_timeout": 60,
             "min_http_status_code": 200,
             "max_http_status_code": 599,
@@ -297,7 +298,7 @@ class FlextOracleWmsConstants(FlextConstants):
         API_KEY = "api_key"
         BEARER = "bearer"
 
-    AUTH_CONFIG: ClassVar[dict[str, str | OracleWMSAuthMethod]] = {
+    AUTH_CONFIG: ClassVar[Mapping[str, str | OracleWMSAuthMethod]] = {
         "basic": OracleWMSAuthMethod.BASIC,
         "oauth2": OracleWMSAuthMethod.OAUTH2,
         "api_key": OracleWMSAuthMethod.API_KEY,

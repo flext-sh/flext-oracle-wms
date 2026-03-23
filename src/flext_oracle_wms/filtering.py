@@ -6,7 +6,7 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from collections.abc import Mapping
+from collections.abc import Mapping, Sequence
 from enum import StrEnum, unique
 
 from flext_core import FlextExceptions, FlextLogger, r
@@ -75,14 +75,14 @@ class FlextOracleWmsFilter:
     @classmethod
     def filter_by_field(
         cls,
-        records: list[t.Core.FilterRecord],
+        records: Sequence[t.Core.FilterRecord],
         field: str,
         value: t.Core.FilterScalar,
         operator: FilterOperator | None = None,
-    ) -> r[list[t.Core.FilterRecord]]:
+    ) -> r[Sequence[t.Core.FilterRecord]]:
         """Filter records by one field using optional operator semantics."""
         engine = cls()
-        filters: dict[str, FilterEntry]
+        filters: Mapping[str, FilterEntry]
         if operator is None:
             filters = {field: value}
         else:
@@ -94,15 +94,15 @@ class FlextOracleWmsFilter:
     @classmethod
     def filter_by_id_range(
         cls,
-        records: list[t.Core.FilterRecord],
+        records: Sequence[t.Core.FilterRecord],
         id_field: str,
         min_id: t.Core.FilterScalar | None = None,
         max_id: t.Core.FilterScalar | None = None,
-    ) -> r[list[t.Core.FilterRecord]]:
+    ) -> r[Sequence[t.Core.FilterRecord]]:
         """Filter records by inclusive identifier range."""
         if not records:
-            return r[list[t.Core.FilterRecord]].ok([])
-        filtered: list[t.Core.FilterRecord] = []
+            return r[Sequence[t.Core.FilterRecord]].ok([])
+        filtered: Sequence[t.Core.FilterRecord] = []
         for record in records:
             field_value = record.get(id_field)
             if field_value is None:
@@ -112,7 +112,7 @@ class FlextOracleWmsFilter:
             if max_id is not None and (not cls._check_max(field_value, max_id)):
                 continue
             filtered.append(record)
-        return r[list[t.Core.FilterRecord]].ok(filtered)
+        return r[Sequence[t.Core.FilterRecord]].ok(filtered)
 
     @staticmethod
     def _check_max(
@@ -169,13 +169,13 @@ class FlextOracleWmsFilter:
 
     def filter_records(
         self,
-        records: list[t.Core.FilterRecord],
+        records: Sequence[t.Core.FilterRecord],
         filters: Mapping[str, FilterEntry],
         limit: int | None = None,
-    ) -> r[list[t.Core.FilterRecord]]:
+    ) -> r[Sequence[t.Core.FilterRecord]]:
         """Filter records against field conditions and optional limit."""
         if (result := self._validate_filters(filters)).is_failure:
-            return r[list[t.Core.FilterRecord]].fail(
+            return r[Sequence[t.Core.FilterRecord]].fail(
                 result.error or "Validation failed"
             )
         self.filters = filters
@@ -184,15 +184,15 @@ class FlextOracleWmsFilter:
         ]
         if limit is not None:
             filtered = filtered[:limit]
-        return r[list[t.Core.FilterRecord]].ok(filtered)
+        return r[Sequence[t.Core.FilterRecord]].ok(filtered)
 
     def sort_records(
         self,
-        records: list[t.Core.FilterRecord],
+        records: Sequence[t.Core.FilterRecord],
         sort_field: str,
         *,
         ascending: bool = True,
-    ) -> r[list[t.Core.FilterRecord]]:
+    ) -> r[Sequence[t.Core.FilterRecord]]:
         """Sort records by a dot-path field."""
         try:
 
@@ -200,12 +200,12 @@ class FlextOracleWmsFilter:
                 value = self._get_nested_value(record, sort_field)
                 return str(value if value is not None else "" if ascending else "zzz")
 
-            return r[list[t.Core.FilterRecord]].ok(
+            return r[Sequence[t.Core.FilterRecord]].ok(
                 sorted(records, key=key_func, reverse=not ascending)
             )
         except Exception as exc:
             self.logger.exception("Sort failed")
-            return r[list[t.Core.FilterRecord]].fail(f"Sort failed: {exc}")
+            return r[Sequence[t.Core.FilterRecord]].fail(f"Sort failed: {exc}")
 
     def _apply_operator(
         self,

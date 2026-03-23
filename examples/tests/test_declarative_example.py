@@ -5,6 +5,7 @@ This demonstrates the declarative approach with massive code reduction.
 
 from __future__ import annotations
 
+from collections.abc import Mapping, Sequence
 from pathlib import Path
 from urllib.parse import urlparse
 
@@ -21,12 +22,12 @@ from tests import t
 logger = FlextLogger(__name__)
 
 
-def load_env_config() -> dict[str, t.NormalizedValue] | None:
+def load_env_config() -> Mapping[str, t.NormalizedValue] | None:
     """Load configuration from .env file."""
     env_path = Path("flext-tap-oracle-wms/.env")
     if not env_path.exists():
         return None
-    config: dict[str, str] = {}
+    config: Mapping[str, str] = {}
     with env_path.open(encoding="utf-8") as f:
         for line in f:
             stripped_line = line.strip()
@@ -86,7 +87,7 @@ def main() -> None:
         start_result = client.start()
         if not start_result.is_success:
             return
-        categories: dict[str, list[str]] = {}
+        categories: Mapping[str, Sequence[str]] = {}
         for api in FLEXT_ORACLE_WMS_APIS.values():
             if api.category not in categories:
                 categories[api.category] = []

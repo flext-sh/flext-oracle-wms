@@ -8,7 +8,7 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from collections.abc import Mapping
+from collections.abc import Mapping, Sequence
 
 from flext_api import (
     FlextApiClient,
@@ -49,7 +49,7 @@ class FlextOracleWmsClient:
             "timeout": int(self.config.timeout),
         })
         self._client: FlextApiClient = FlextApiClient(config=api_config)
-        self._discovered_entities: list[str] = []
+        self._discovered_entities: Sequence[str] = []
 
     @staticmethod
     def _decode_response_model[T: BaseModel](
@@ -96,18 +96,18 @@ class FlextOracleWmsClient:
         """Make DELETE request to Oracle WMS API."""
         return self._request(FlextApiConstants.Api.Method.DELETE, path, headers=headers)
 
-    def discover_entities(self) -> r[list[str]]:
+    def discover_entities(self) -> r[Sequence[str]]:
         """Discover available Oracle WMS entities."""
         result = self.get("/entities")
         if result.is_failure:
-            return r[list[str]].fail(result.error)
+            return r[Sequence[str]].fail(result.error)
         payload_result = self._decode_response_model(
             result.value.body, m.OracleWms.EntitiesResponse
         )
         if payload_result.is_failure:
-            return r[list[str]].fail(payload_result.error)
+            return r[Sequence[str]].fail(payload_result.error)
         self._discovered_entities = payload_result.value.entities
-        return r[list[str]].ok(payload_result.value.entities)
+        return r[Sequence[str]].ok(payload_result.value.entities)
 
     def get(
         self,
@@ -121,24 +121,24 @@ class FlextOracleWmsClient:
             FlextApiConstants.Api.Method.GET, path, headers=headers, params=params
         )
 
-    def get_apis_by_category(self, category: str) -> r[list[dict[str, str]]]:
+    def get_apis_by_category(self, category: str) -> r[Sequence[Mapping[str, str]]]:
         """Get Oracle WMS APIs by category."""
         result = self.get(f"/apis/category/{category}")
         if result.is_failure:
-            return r[list[dict[str, str]]].fail(result.error)
+            return r[Sequence[Mapping[str, str]]].fail(result.error)
         payload_result = self._decode_response_model(
             result.value.body, m.OracleWms.ApiCategoryResponse
         )
         if payload_result.is_failure:
-            return r[list[dict[str, str]]].fail(payload_result.error)
-        return r[list[dict[str, str]]].ok(payload_result.value.apis)
+            return r[Sequence[Mapping[str, str]]].fail(payload_result.error)
+        return r[Sequence[Mapping[str, str]]].ok(payload_result.value.apis)
 
     def get_entity_data(
         self,
         entity_name: str,
         limit: int | None = None,
         filters: Mapping[str, t.Scalar] | None = None,
-    ) -> r[list[dict[str, str]]]:
+    ) -> r[Sequence[Mapping[str, str]]]:
         """Get data for a specific Oracle WMS entity."""
         params: FlextApiTypes.Api.WebParams = {}
         if limit is not None:
@@ -147,13 +147,13 @@ class FlextOracleWmsClient:
             params |= {key: str(value) for key, value in filters.items()}
         result = self.get(f"/entities/{entity_name}", params=params)
         if result.is_failure:
-            return r[list[dict[str, str]]].fail(result.error)
+            return r[Sequence[Mapping[str, str]]].fail(result.error)
         payload_result = self._decode_response_model(
             result.value.body, m.OracleWms.EntityDataResponse
         )
         if payload_result.is_failure:
-            return r[list[dict[str, str]]].fail(payload_result.error)
-        return r[list[dict[str, str]]].ok(payload_result.value.data)
+            return r[Sequence[Mapping[str, str]]].fail(payload_result.error)
+        return r[Sequence[Mapping[str, str]]].ok(payload_result.value.data)
 
     def health_check(self) -> r[FlextApiModels.HttpResponse]:
         """Check Oracle WMS API health."""

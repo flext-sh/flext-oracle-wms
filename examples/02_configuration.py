@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import contextlib
 import os
+from collections.abc import Mapping, Sequence
 from enum import StrEnum, unique
 from pathlib import Path
 from typing import ClassVar
@@ -50,7 +51,7 @@ class WmsEnvironmentConfig(BaseModel):
     max_retries: int = Field(ge=0, description="Maximum retry attempts")
 
 
-def get_environment_configs() -> dict[Environment, WmsEnvironmentConfig]:
+def get_environment_configs() -> Mapping[Environment, WmsEnvironmentConfig]:
     """Define environment-specific Oracle WMS configurations."""
     return {
         Environment.DEVELOPMENT: WmsEnvironmentConfig(
@@ -137,7 +138,7 @@ def create_demo_config() -> FlextOracleWmsClientSettings:
 
 def validate_configuration(
     config: FlextOracleWmsClientSettings,
-) -> dict[str, t.NormalizedValue]:
+) -> Mapping[str, t.NormalizedValue]:
     """Validate Oracle WMS client configuration.
 
     Args:
@@ -147,9 +148,9 @@ def validate_configuration(
       Dictionary containing validation results
 
     """
-    errors: list[str] = []
-    warnings: list[str] = []
-    config_summary: dict[str, t.NormalizedValue] = {}
+    errors: Sequence[str] = []
+    warnings: Sequence[str] = []
+    config_summary: Mapping[str, t.NormalizedValue] = {}
     if not config.base_url:
         errors.append("Base URL is required")
     elif not config.base_url.startswith("https://"):
@@ -177,7 +178,7 @@ def validate_configuration(
         "verify_ssl": config.enable_ssl_verification,
         "enable_logging": config.enable_audit_logging,
     }
-    validation_results: dict[str, t.NormalizedValue] = {
+    validation_results: Mapping[str, t.NormalizedValue] = {
         "valid": len(errors) == 0,
         "warnings": warnings,
         "errors": errors,
@@ -188,7 +189,7 @@ def validate_configuration(
 
 def test_configuration(
     config: FlextOracleWmsClientSettings,
-) -> dict[str, t.NormalizedValue]:
+) -> Mapping[str, t.NormalizedValue]:
     """Test Oracle WMS configuration by attempting connection.
 
     Args:
@@ -198,7 +199,7 @@ def test_configuration(
       Dictionary with test results
 
     """
-    test_results: dict[str, t.NormalizedValue] = {
+    test_results: Mapping[str, t.NormalizedValue] = {
         "connection_success": False,
         "health_check_success": False,
         "error": None,

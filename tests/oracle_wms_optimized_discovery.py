@@ -17,7 +17,7 @@ import asyncio
 import json
 import operator
 import time
-from collections.abc import Mapping
+from collections.abc import Mapping, Sequence
 from datetime import UTC, datetime
 from pathlib import Path
 from types import NoneType
@@ -34,7 +34,7 @@ from tests import t
 logger = FlextLogger(__name__)
 
 type JsonScalar = str | int | float | bool | None
-type JsonValue = JsonScalar | dict[str, JsonValue] | list[JsonValue]
+type JsonValue = JsonScalar | Mapping[str, JsonValue] | Sequence[JsonValue]
 
 
 class OptimizedOracleWmsDiscovery:
@@ -97,7 +97,7 @@ class OptimizedOracleWmsDiscovery:
 
     def discover_priority_entities_fast(
         self,
-    ) -> r[dict[str, t.NormalizedValue]]:
+    ) -> r[Mapping[str, t.NormalizedValue]]:
         """Fast discovery of priority entities with data."""
         entities_result = self.client.discover_entities()
         if not entities_result.is_success:
@@ -108,7 +108,7 @@ class OptimizedOracleWmsDiscovery:
         priority_results = self._process_entity_batch(
             available_priority, "PRIORITY", batch_size=10
         )
-        entities_with_data: list[str] = []
+        entities_with_data: Sequence[str] = []
         for entity_name, result in priority_results.items():
             if result.get("has_data", False):
                 entities_with_data.append(entity_name)
@@ -140,10 +140,10 @@ class OptimizedOracleWmsDiscovery:
         })
 
     def _process_entity_batch(
-        self, entities: list[str], batch_size: int = 10
-    ) -> dict[str, t.NormalizedValue]:
+        self, entities: Sequence[str], batch_size: int = 10
+    ) -> Mapping[str, t.NormalizedValue]:
         """Process entity batch with parallel requests."""
-        results: dict[str, dict[str, bool | str]] = {}
+        results: Mapping[str, Mapping[str, bool | str]] = {}
         for i in range(0, len(entities), batch_size):
             batch = entities[i : i + batch_size]
             i // batch_size + 1
@@ -151,7 +151,7 @@ class OptimizedOracleWmsDiscovery:
             batch_tasks = [
                 self._analyze_single_entity(entity_name) for entity_name in batch
             ]
-            batch_results: list[dict[str, t.NormalizedValue]] = []
+            batch_results: Sequence[Mapping[str, t.NormalizedValue]] = []
             for task in batch_tasks:
                 try:
                     result = task
@@ -177,7 +177,9 @@ class OptimizedOracleWmsDiscovery:
             time.sleep(0.1)
         return results
 
-    def _analyze_single_entity(self, entity_name: str) -> dict[str, t.NormalizedValue]:
+    def _analyze_single_entity(
+        self, entity_name: str
+    ) -> Mapping[str, t.NormalizedValue]:
         """Analyze single entity for data and structure."""
         try:
             data_result = self.client.get_entity_data(entity_name, limit=3, offset=0)
@@ -233,9 +235,9 @@ class OptimizedOracleWmsDiscovery:
 
     def _safe_sample_record(
         self, record: Mapping[str, t.NormalizedValue]
-    ) -> dict[str, t.NormalizedValue]:
+    ) -> Mapping[str, t.NormalizedValue]:
         """Create safe sample record for storage."""
-        safe_record: dict[str, NoneType | bool | float | int | str] = {}
+        safe_record: Mapping[str, NoneType | bool | float | int | str] = {}
         for k, v in record.items():
             if isinstance(v, (str, int, float, bool, type(None))):
                 if (isinstance(v, str) and len(v) < 100) or not isinstance(v, str):
@@ -248,7 +250,7 @@ class OptimizedOracleWmsDiscovery:
 
     def generate_complete_singer_schemas(
         self,
-    ) -> r[dict[str, t.NormalizedValue]]:
+    ) -> r[Mapping[str, t.NormalizedValue]]:
         """Generate complete Singer schemas for high-value entities."""
         if not self.high_value_entities:
             return r[bool].fail(
@@ -283,7 +285,7 @@ class OptimizedOracleWmsDiscovery:
 
     def _generate_singer_schema_from_entity_data(
         self, entity_name: str, entity_data: Mapping[str, t.NormalizedValue]
-    ) -> dict[str, t.NormalizedValue] | None:
+    ) -> Mapping[str, t.NormalizedValue] | None:
         """Generate Singer schema from entity data with proper typing."""
         try:
             fields = entity_data.get("fields", [])
@@ -291,7 +293,7 @@ class OptimizedOracleWmsDiscovery:
             sample_record = entity_data.get("sample_record", {})
             if not fields:
                 return None
-            properties: dict[str, dict[str, JsonValue]] = {}
+            properties: Mapping[str, Mapping[str, JsonValue]] = {}
             for field in fields:
                 python_type = field_types.get(field, "str")
                 sample_value = sample_record.get(field)
@@ -325,7 +327,7 @@ class OptimizedOracleWmsDiscovery:
 
     def _oracle_to_singer_type(
         self, field_name: str, python_type: str, sample_value: t.NormalizedValue
-    ) -> dict[str, t.NormalizedValue]:
+    ) -> Mapping[str, t.NormalizedValue]:
         """Convert Oracle field to Singer type with real data analysis."""
         if sample_value is not None:
             if isinstance(sample_value, bool):
@@ -415,10 +417,10 @@ class OptimizedOracleWmsDiscovery:
         return any(pattern in field_name.lower() for pattern in code_patterns)
 
     def _determine_key_properties(
-        self, entity_name: str, fields: list[str]
-    ) -> list[str]:
+        self, entity_name: str, fields: Sequence[str]
+    ) -> Sequence[str]:
         """Determine key properties for Oracle WMS entity."""
-        potential_keys: list[str] = []
+        potential_keys: Sequence[str] = []
         if "id" in fields:
             potential_keys.append("id")
         entity_key_patterns = {
@@ -447,13 +449,13 @@ class OptimizedOracleWmsDiscovery:
 
     def _generate_singer_catalog(
         self, schemas: Mapping[str, t.NormalizedValue]
-    ) -> dict[str, t.NormalizedValue]:
+    ) -> Mapping[str, t.NormalizedValue]:
         """Generate Singer catalog from schemas."""
-        streams: list[dict[str, t.NormalizedValue]] = []
+        streams: Sequence[Mapping[str, t.NormalizedValue]] = []
         for entity_name, schema in schemas.items():
             key_properties = schema.get("key_properties", ["id"])
-            breadcrumb: list[str] = []
-            stream: dict[str, t.NormalizedValue] = {
+            breadcrumb: Sequence[str] = []
+            stream: Mapping[str, t.NormalizedValue] = {
                 "tap_stream_id": entity_name,
                 "stream": entity_name,
                 "schema": {k: v for k, v in schema.items() if k != "key_properties"},

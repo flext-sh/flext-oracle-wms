@@ -6,7 +6,7 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from collections.abc import Mapping
+from collections.abc import Mapping, Sequence
 
 from flext_core import FlextTypes, t as _core_t
 
@@ -24,23 +24,23 @@ class FlextOracleWmsTypes(FlextTypes):
         """Oracle WMS-specific project types."""
 
         type ProjectType = c.ProjectType
-        type WmsProjectConfig = dict[str, FlextTypes.ContainerValue]
-        type WarehouseConfig = dict[str, str | int | bool | list[str]]
-        type InventoryConfig = dict[
+        type WmsProjectConfig = Mapping[str, FlextTypes.ContainerValue]
+        type WarehouseConfig = Mapping[str, str | int | bool | Sequence[str]]
+        type InventoryConfig = Mapping[
             str,
-            bool | str | dict[str, FlextTypes.ContainerValue],
+            bool | str | Mapping[str, FlextTypes.ContainerValue],
         ]
 
-    type WmsConfig = dict[
+    type WmsConfig = Mapping[
         str,
-        str | int | bool | dict[str, FlextTypes.ContainerValue],
+        str | int | bool | Mapping[str, FlextTypes.ContainerValue],
     ]
-    type WmsEntity = dict[
+    type WmsEntity = Mapping[
         str,
-        FlextTypes.ContainerValue | dict[str, FlextTypes.ContainerValue],
+        FlextTypes.ContainerValue | Mapping[str, FlextTypes.ContainerValue],
     ]
-    type WmsRecord = dict[str, FlextTypes.ContainerValue]
-    type WmsRecords = list[dict[str, FlextTypes.ContainerValue]]
+    type WmsRecord = Mapping[str, FlextTypes.ContainerValue]
+    type WmsRecords = Sequence[Mapping[str, FlextTypes.ContainerValue]]
 
     class Core:
         """Core convenience type aliases for common patterns.
@@ -50,10 +50,10 @@ class FlextOracleWmsTypes(FlextTypes):
         Access parent core types via inheritance from FlextOracleWmsTypes.
         """
 
-        type Dict = dict[str, FlextTypes.ContainerValue]
+        type Dict = Mapping[str, FlextTypes.ContainerValue]
         "Type alias for generic dictionary (attribute name to value mapping)."
         type FilterScalar = FlextTypes.Scalar | None
-        type FilterList = list[FlextOracleWmsTypes.Core.FilterScalar]
+        type FilterList = Sequence[FlextOracleWmsTypes.Core.FilterScalar]
         type FilterRecordValue = (
             FlextOracleWmsTypes.Core.FilterScalar
             | FlextOracleWmsTypes.Core.FilterList
@@ -92,13 +92,13 @@ class FlextOracleWmsTypes(FlextTypes):
                 ],
             ]
         )
-        type HttpJsonObject = dict[str, _core_t.ContainerValue]
+        type HttpJsonObject = Mapping[str, _core_t.ContainerValue]
         type FilterEntry = (
             FlextOracleWmsTypes.Core.FilterScalar | FlextOracleWmsTypes.Core.FilterList
         )
 
 
-type HttpJsonObject = dict[str, _core_t.ContainerValue]
+type HttpJsonObject = Mapping[str, _core_t.ContainerValue]
 
 t = FlextOracleWmsTypes
 __all__ = ["FlextOracleWmsTypes", "t"]
