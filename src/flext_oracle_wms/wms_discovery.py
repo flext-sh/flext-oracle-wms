@@ -12,7 +12,7 @@ from collections.abc import Mapping
 
 from flext_core import r
 
-from flext_oracle_wms.constants import FlextOracleWmsConstants as c
+from flext_oracle_wms.constants import c
 from flext_oracle_wms.protocols import p
 from flext_oracle_wms.typings import t
 

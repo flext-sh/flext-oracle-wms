@@ -11,7 +11,7 @@ from unittest.mock import MagicMock
 from flext_core import r
 
 from flext_oracle_wms import FlextOracleWmsEntityDiscovery
-from flext_oracle_wms.constants import FlextOracleWmsConstants as c
+from flext_oracle_wms.constants import c
 from flext_oracle_wms.wms_discovery import DISCOVERY_FAILURE, DISCOVERY_SUCCESS
 
 

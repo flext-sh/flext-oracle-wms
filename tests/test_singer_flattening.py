@@ -12,7 +12,7 @@ from __future__ import annotations
 import pytest
 from pydantic import ValidationError
 
-from flext_oracle_wms import FlextOracleWmsModels as m
+from flext_oracle_wms import m
 
 
 class TestFlextOracleWmsEntity:

@@ -9,7 +9,7 @@ from __future__ import annotations
 
 from typing import ClassVar
 
-from flext_oracle_wms.models import FlextOracleWmsModels as m
+from flext_oracle_wms.models import m
 
 
 class FlextOracleWmsApi:
