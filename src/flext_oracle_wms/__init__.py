@@ -14,6 +14,7 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
+from collections.abc import Mapping, MutableMapping, Sequence
 from typing import TYPE_CHECKING
 
 from flext_core.lazy import cleanup_submodule_namespace, lazy_getattr
@@ -91,7 +92,7 @@ if TYPE_CHECKING:
         FlextOracleWmsValidationError,
     )
 
-_LAZY_IMPORTS: dict[str, tuple[str, str]] = {
+_LAZY_IMPORTS: Mapping[str, tuple[str, str]] = {
     "DISCOVERY_FAILURE": ("flext_oracle_wms.wms_discovery", "DISCOVERY_FAILURE"),
     "DISCOVERY_SUCCESS": ("flext_oracle_wms.wms_discovery", "DISCOVERY_SUCCESS"),
     "FLEXT_ORACLE_WMS_APIS": ("flext_oracle_wms.wms_api", "FLEXT_ORACLE_WMS_APIS"),
@@ -286,7 +287,7 @@ __all__ = [
 ]
 
 
-_LAZY_CACHE: dict[str, FlextTypes.ModuleExport] = {}
+_LAZY_CACHE: MutableMapping[str, FlextTypes.ModuleExport] = {}
 
 
 def __getattr__(name: str) -> FlextTypes.ModuleExport:
@@ -313,7 +314,7 @@ def __getattr__(name: str) -> FlextTypes.ModuleExport:
     return value
 
 
-def __dir__() -> list[str]:
+def __dir__() -> Sequence[str]:
     """Return list of available attributes for dir() and autocomplete.
 
     Returns:
