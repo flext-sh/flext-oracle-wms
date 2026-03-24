@@ -29,7 +29,7 @@ def load_test_env() -> bool:
 
 
 @pytest.fixture(autouse=True)
-def _reset_settings_singleton() -> None:
+def reset_settings_singleton() -> None:
     """Reset FlextOracleWmsSettings singleton between tests.
 
     FlextSettings uses a singleton pattern via __new__. Without reset,

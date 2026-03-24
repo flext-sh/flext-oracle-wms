@@ -26,6 +26,32 @@ from tests import t
 logger = FlextLogger(__name__)
 
 
+def _extract_replication_methods(catalog: t.NormalizedValue) -> list[str]:
+    """Extract distinct replication methods from Singer catalog."""
+    if not isinstance(catalog, dict):
+        return []
+    streams_raw = catalog.get("streams", [])
+    if not isinstance(streams_raw, list):
+        return []
+    methods: set[str] = set()
+    for stream in streams_raw:
+        if not isinstance(stream, dict):
+            continue
+        metadata_list = stream.get("metadata")
+        if not isinstance(metadata_list, list) or not metadata_list:
+            continue
+        first_meta = metadata_list[0]
+        if not isinstance(first_meta, dict):
+            continue
+        inner = first_meta.get("metadata")
+        if not isinstance(inner, dict):
+            continue
+        method = inner.get("replication-method")
+        if isinstance(method, str):
+            methods.add(method)
+    return list(methods)
+
+
 class CompleteMockPipeline:
     """Complete Oracle WMS pipeline using realistic mock data."""
 
@@ -329,10 +355,10 @@ class CompleteMockPipeline:
     def _create_entity_properties(
         self,
         sample_data: t.ContainerMapping,
-    ) -> tuple[t.ContainerMapping, t.StrSequence]:
+    ) -> tuple[dict[str, t.NormalizedValue], list[str]]:
         """Create properties and key properties from sample data - SRP compliance."""
-        properties: t.ContainerMapping = {}
-        key_properties: t.StrSequence = []
+        properties: dict[str, t.NormalizedValue] = {}
+        key_properties: list[str] = []
         for field, value in sample_data.items():
             field_property = self._infer_field_type(field, value=value)
             properties[field] = field_property
@@ -394,7 +420,7 @@ class CompleteMockPipeline:
         """Determine if field should be a key property."""
         return field == "id" or (field.endswith("_code") and (not existing_keys))
 
-    def _add_singer_metadata(self, properties: t.ContainerMapping) -> None:
+    def _add_singer_metadata(self, properties: dict[str, t.NormalizedValue]) -> None:
         """Add Singer metadata properties - SRP compliance."""
         properties.update({
             "_sdc_extracted_at": {"type": "string", "format": "date-time"},
@@ -405,9 +431,9 @@ class CompleteMockPipeline:
 
     def _build_singer_schema(
         self,
-        properties: t.ContainerMapping,
-        key_properties: t.StrSequence,
-    ) -> t.ContainerMapping:
+        properties: dict[str, t.NormalizedValue],
+        key_properties: list[str],
+    ) -> dict[str, t.NormalizedValue]:
         """Build complete Singer schema - SRP compliance."""
         return {
             "type": "t.NormalizedValue",
@@ -421,7 +447,7 @@ class CompleteMockPipeline:
         schemas: t.ContainerMapping,
     ) -> t.ContainerMapping:
         """Create complete Singer catalog for Meltano integration."""
-        streams: Sequence[t.ContainerMapping] = []
+        streams: list[dict[str, t.NormalizedValue]] = []
         for entity_name, schema in schemas.items():
             if not isinstance(schema, dict):
                 continue
@@ -429,51 +455,50 @@ class CompleteMockPipeline:
             schema_without_keys = {
                 k: v for k, v in schema.items() if k != "key_properties"
             }
+            schema_props = schema.get("properties", {})
+            schema_props_dict = schema_props if isinstance(schema_props, dict) else {}
             replication_method = (
                 "INCREMENTAL"
                 if any(
-                    prop in schema.get("properties", {})
+                    prop in schema_props_dict
                     for prop in ["mod_ts", "create_ts", "updated_at"]
                 )
                 else "FULL_TABLE"
             )
-            replication_key = (
-                "mod_ts" if "mod_ts" in schema.get("properties", {}) else None
-            )
-            stream: t.ContainerMapping = {
+            replication_key = "mod_ts" if "mod_ts" in schema_props_dict else None
+            inner_metadata: dict[str, t.NormalizedValue] = {
+                "inclusion": "available",
+                "selected": True,
+                "replication-method": replication_method,
+                "forced-replication-method": replication_method,
+                "table-key-properties": key_properties,
+            }
+            if replication_key:
+                inner_metadata["replication-key"] = replication_key
+            stream: dict[str, t.NormalizedValue] = {
                 "tap_stream_id": entity_name,
                 "stream": entity_name,
                 "schema": schema_without_keys,
                 "key_properties": key_properties,
                 "metadata": [
                     {
-                        "breadcrumb": t.StrSequence(),
-                        "metadata": {
-                            "inclusion": "available",
-                            "selected": True,
-                            "replication-method": replication_method,
-                            "forced-replication-method": replication_method,
-                            "table-key-properties": key_properties,
-                        },
+                        "breadcrumb": [],
+                        "metadata": inner_metadata,
                     },
                 ],
             }
-            if replication_key:
-                metadata_list = cast("Sequence[t.ContainerMapping]", stream["metadata"])
-                metadata_dict = cast("t.ContainerMapping", metadata_list[0]["metadata"])
-                metadata_dict["replication-key"] = replication_key
             streams.append(stream)
         return {"version": 1, "streams": streams}
 
-    def _simulate_tap_extraction(self) -> Sequence[t.ContainerMapping]:
+    def _simulate_tap_extraction(self) -> list[dict[str, t.NormalizedValue]]:
         """Simulate TAP extraction process."""
-        tap_records: Sequence[t.ContainerMapping] = []
+        tap_records: list[dict[str, t.NormalizedValue]] = []
         for entity_name, entity_info in self.mock_entities.items():
             if not isinstance(entity_info, dict):
                 continue
             sample_data_raw = entity_info.get("sample_data", {})
-            sample_data: t.ContainerMapping = (
-                sample_data_raw.copy() if isinstance(sample_data_raw, dict) else {}
+            sample_data: dict[str, t.NormalizedValue] = (
+                dict(sample_data_raw) if isinstance(sample_data_raw, dict) else {}
             )
             sample_data["_sdc_extracted_at"] = datetime.now(UTC).isoformat()
             sample_data["_sdc_entity"] = entity_name
@@ -482,37 +507,38 @@ class CompleteMockPipeline:
             count_value = entity_info.get("count", 1)
             count = min(count_value if isinstance(count_value, int) else 1, 5)
             for i in range(count):
-                record = sample_data.copy()
-                if "id" in record:
-                    record["id"] = cast("int", record["id"]) + i
-                if "order_nbr" in record:
+                record: dict[str, t.NormalizedValue] = dict(sample_data)
+                if "id" in record and isinstance(record["id"], int):
+                    record["id"] += i
+                if "order_nbr" in record and isinstance(record["order_nbr"], str):
                     record["order_nbr"] = f"{record['order_nbr']}-{i + 1:03d}"
                 record["_sdc_sequence"] = i + 1
-                record_obj: t.ContainerMapping = record
-                tap_records.append({"entity": entity_name, "record": record_obj})
+                tap_records.append({"entity": entity_name, "record": record})
         return tap_records
 
     def _simulate_target_loading(
         self,
-        tap_records: Sequence[t.ContainerMapping],
-    ) -> t.ContainerMapping:
+        tap_records: list[dict[str, t.NormalizedValue]],
+    ) -> dict[str, t.NormalizedValue]:
         """Simulate TARGET loading process."""
-        target_results = {}
+        target_results: dict[str, t.NormalizedValue] = {}
         for entity_name in self.mock_entities:
-            entity_records = [r for r in tap_records if r["entity"] == entity_name]
+            entity_records = [
+                rec for rec in tap_records if rec.get("entity") == entity_name
+            ]
+            first_record = entity_records[0] if entity_records else None
+            first_inner = first_record.get("record") if first_record else None
+            columns: list[str] = (
+                list(first_inner.keys()) if isinstance(first_inner, dict) else []
+            )
             target_results[f"raw_oracle_wms_{entity_name}"] = {
                 "table_name": f"raw_oracle_wms_{entity_name}",
                 "records_loaded": len(entity_records),
                 "load_timestamp": datetime.now(UTC).isoformat(),
                 "status": "SUCCESS",
-                "columns": list(entity_records[0]["record"].keys())
-                if entity_records
-                and isinstance(entity_records[0], dict)
-                and isinstance(entity_records[0].get("record"), dict)
-                and hasattr(entity_records[0]["record"], "keys")
-                else t.StrSequence(),
+                "columns": columns,
             }
-        return cast("t.ContainerMapping", target_results)
+        return target_results
 
     def _simulate_dbt_transformations(
         self,
@@ -656,14 +682,7 @@ class CompleteMockPipeline:
                     else [],
                 ),
                 "tap_records_extracted": len(tap_records),
-                "replication_methods": list({
-                    stream["metadata"][0]["metadata"]["replication-method"]
-                    for stream in streams
-                    if isinstance(stream, dict)
-                })
-                if isinstance(catalog, dict)
-                and isinstance((streams := catalog.get("streams", [])), list)
-                else t.StrSequence(),
+                "replication_methods": _extract_replication_methods(catalog),
             },
             "target_loading": {
                 "tables_created": len(target_results),
@@ -676,7 +695,7 @@ class CompleteMockPipeline:
             "dbt_transformations": {
                 "models_created": len(dbt_results),
                 "model_types": list({
-                    result.get("model_type", "unknown")
+                    str(result.get("model_type", "unknown"))
                     for result in dbt_results.values()
                     if isinstance(result, dict)
                 }),

@@ -58,9 +58,14 @@ if TYPE_CHECKING:
         FlextOracleWmsUtilities,
         FlextOracleWmsUtilities as u,
     )
-    from flext_oracle_wms.wms_api import FLEXT_ORACLE_WMS_APIS
+    from flext_oracle_wms.wms_api import (
+        FLEXT_ORACLE_WMS_APIS,
+        FlextOracleWmsApiEndpoint,
+    )
     from flext_oracle_wms.wms_auth import (
         FlextOracleWmsAuthenticator,
+        FlextOracleWmsAuthSettings,
+        OracleWMSAuthMethod,
         create_oracle_wms_client,
     )
     from flext_oracle_wms.wms_client import FlextOracleWmsClient
@@ -93,9 +98,17 @@ _LAZY_IMPORTS: Mapping[str, tuple[str, str]] = {
     "FLEXT_ORACLE_WMS_APIS": ("flext_oracle_wms.wms_api", "FLEXT_ORACLE_WMS_APIS"),
     "FlextHttpClient": ("flext_oracle_wms.http_client", "FlextHttpClient"),
     "FlextOracleWmsApi": ("flext_oracle_wms.api", "FlextOracleWmsApi"),
+    "FlextOracleWmsApiEndpoint": (
+        "flext_oracle_wms.wms_api",
+        "FlextOracleWmsApiEndpoint",
+    ),
     "FlextOracleWmsApiError": (
         "flext_oracle_wms.wms_exceptions",
         "FlextOracleWmsApiError",
+    ),
+    "FlextOracleWmsAuthSettings": (
+        "flext_oracle_wms.wms_auth",
+        "FlextOracleWmsAuthSettings",
     ),
     "FlextOracleWmsAuthenticationError": (
         "flext_oracle_wms.wms_exceptions",
@@ -187,6 +200,7 @@ _LAZY_IMPORTS: Mapping[str, tuple[str, str]] = {
         "flext_oracle_wms.wms_exceptions",
         "FlextOracleWmsValidationError",
     ),
+    "OracleWMSAuthMethod": ("flext_oracle_wms.wms_auth", "OracleWMSAuthMethod"),
     "__all__": ("flext_oracle_wms.__version__", "__all__"),
     "__author__": ("flext_oracle_wms.__version__", "__author__"),
     "__author_email__": ("flext_oracle_wms.__version__", "__author_email__"),
@@ -223,7 +237,9 @@ __all__ = [
     "FLEXT_ORACLE_WMS_APIS",
     "FlextHttpClient",
     "FlextOracleWmsApi",
+    "FlextOracleWmsApiEndpoint",
     "FlextOracleWmsApiError",
+    "FlextOracleWmsAuthSettings",
     "FlextOracleWmsAuthenticationError",
     "FlextOracleWmsAuthenticator",
     "FlextOracleWmsClient",
@@ -251,6 +267,7 @@ __all__ = [
     "FlextOracleWmsTypes",
     "FlextOracleWmsUtilities",
     "FlextOracleWmsValidationError",
+    "OracleWMSAuthMethod",
     "__all__",
     "__author__",
     "__author_email__",

@@ -21,6 +21,7 @@ if TYPE_CHECKING:
         mock_config,
         pytest_configure,
         real_config,
+        reset_settings_singleton,
         sample_entities,
         sample_entity_data,
     )
@@ -267,6 +268,7 @@ _LAZY_IMPORTS: Mapping[str, tuple[str, str]] = {
     "pytestmark": ("tests.test_declarative", "pytestmark"),
     "r": ("flext_tests", "r"),
     "real_config": ("tests.conftest", "real_config"),
+    "reset_settings_singleton": ("tests.conftest", "reset_settings_singleton"),
     "run_complete_discovery": (
         "tests.oracle_wms_complete_discovery",
         "run_complete_discovery",
@@ -435,6 +437,7 @@ __all__ = [
     "pytestmark",
     "r",
     "real_config",
+    "reset_settings_singleton",
     "run_complete_discovery",
     "run_optimized_discovery",
     "s",

@@ -13,6 +13,8 @@ import base64
 from flext_core import r
 
 from flext_oracle_wms import c, m, t
+from flext_oracle_wms.constants import FlextOracleWmsConstants as _c
+from flext_oracle_wms.models import FlextOracleWmsModels as _m
 
 
 class FlextOracleWmsAuthenticator:
@@ -58,8 +60,12 @@ class FlextOracleWmsAuthenticator:
 
 
 create_oracle_wms_client = FlextOracleWmsAuthenticator.create_oracle_wms_client
+OracleWMSAuthMethod = _c.OracleWMSAuthMethod
+FlextOracleWmsAuthSettings = _m.OracleWms.AuthSettings
 
 __all__ = [
+    "FlextOracleWmsAuthSettings",
     "FlextOracleWmsAuthenticator",
+    "OracleWMSAuthMethod",
     "create_oracle_wms_client",
 ]

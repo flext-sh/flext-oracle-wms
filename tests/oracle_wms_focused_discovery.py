@@ -7,7 +7,6 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-import asyncio
 import json
 from collections.abc import Mapping, Sequence
 from datetime import UTC, datetime
@@ -17,7 +16,7 @@ from types import NoneType
 from flext_core import FlextLogger, r
 
 from flext_oracle_wms import (
-    FlextOracleWmsApiVersion,
+    FlextOracleWmsClient,
     FlextOracleWmsClientSettings,
     create_oracle_wms_client,
 )
@@ -27,6 +26,8 @@ logger = FlextLogger(__name__)
 
 type JsonScalar = str | int | float | bool | None
 type JsonValue = JsonScalar | Mapping[str, JsonValue] | Sequence[JsonValue]
+
+_API_VERSION_LGF_V10 = "LGF_V10"
 
 
 class FocusedOracleWmsDiscovery:
@@ -41,12 +42,14 @@ class FocusedOracleWmsDiscovery:
             environment="test",
             timeout=30.0,
             max_retries=2,
-            api_version=FlextOracleWmsApiVersion.LGF_V10,
+            api_version=_API_VERSION_LGF_V10,
             verify_ssl=True,
             enable_logging=True,
         )
-        self.client = create_oracle_wms_client(self.config, mock_mode=False)
-        self.quick_test_entities = [
+        self.client: FlextOracleWmsClient = create_oracle_wms_client(  # type: ignore[assignment]
+            self.config, mock_mode=False
+        )
+        self.quick_test_entities: list[str] = [
             "company",
             "facility",
             "item",
@@ -68,17 +71,19 @@ class FocusedOracleWmsDiscovery:
             "receipt",
             "manifest",
         ]
-        self.entities_with_data = {}
-        self.complete_schemas = {}
+        self.entities_with_data: dict[str, t.NormalizedValue] = {}
+        self.complete_schemas: dict[str, t.NormalizedValue] = {}
 
-    def execute_focused_discovery(self) -> r[t.ContainerMapping]:
+    def execute_focused_discovery(self) -> r[dict[str, t.NormalizedValue]]:
         """Execute complete focused discovery."""
         try:
             self.client.start()
             entities_result = self.client.discover_entities()
             if not entities_result.is_success:
-                return r[bool].fail(f"Entity discovery failed: {entities_result.error}")
-            all_entities = entities_result.data
+                return r[dict[str, t.NormalizedValue]].fail(
+                    f"Entity discovery failed: {entities_result.error}"
+                )
+            all_entities = entities_result.value
             available_quick = [e for e in self.quick_test_entities if e in all_entities]
             data_entities = self._quick_data_scan(available_quick)
             if data_entities and len(all_entities) > len(available_quick):
@@ -94,113 +99,110 @@ class FocusedOracleWmsDiscovery:
             self.complete_schemas = schemas
             save_result = self._save_focused_results()
             if data_entities:
+
+                def _entity_count(
+                    pair: tuple[str, t.NormalizedValue],
+                ) -> int:
+                    meta = pair[1]
+                    if isinstance(meta, dict):
+                        c = meta.get("count")
+                        if isinstance(c, int):
+                            return c
+                    return 0
+
                 sorted_entities = sorted(
                     data_entities.items(),
-                    key=lambda x: x[1].get("count", 0),
+                    key=_entity_count,
                     reverse=True,
                 )
-                for _entity_name, data in sorted_entities:
-                    data.get("count", 0)
-                    data.get("field_count", 0)
-                    sample_fields = data.get("sample_fields", [])[:5]
-                    if sample_fields:
-                        pass
+                for _entity_name, _data in sorted_entities:
+                    pass
             if schemas:
-                for schema in schemas.values():
-                    schema.get("properties", {})
-                    schema.get("key_properties", [])
-            return r[bool].ok({
+                for _schema in schemas.values():
+                    pass
+            return r[dict[str, t.NormalizedValue]].ok({
                 "total_entities": len(all_entities),
                 "entities_with_data": len(data_entities),
                 "schemas_generated": len(schemas),
-                "results_path": save_result.data if save_result.is_success else None,
+                "results_path": save_result.value if save_result.is_success else None,
                 "data_entities": data_entities,
                 "schemas": schemas,
             })
         except Exception as e:
             logger.exception("Focused discovery failed")
-            return r[bool].fail(f"Discovery failed: {e}")
+            return r[dict[str, t.NormalizedValue]].fail(f"Discovery failed: {e}")
         finally:
             self.client.stop()
 
-    def _quick_data_scan(self, entities: t.StrSequence) -> t.ContainerMapping:
+    def _quick_data_scan(self, entities: t.StrSequence) -> dict[str, t.NormalizedValue]:
         """Quick scan to find entities with actual data."""
-        data_entities = {}
+        data_entities: dict[str, t.NormalizedValue] = {}
         for entity_name in entities:
             try:
                 result = self.client.get_entity_data(entity_name, limit=1)
                 if result.is_success:
-                    data = result.data
-                    if isinstance(data, dict):
-                        count = data.get("count", 0)
-                        results = data.get("results", [])
-                        if count > 0 or (results and results):
-                            detailed_result = self.client.get_entity_data(
-                                entity_name,
-                                limit=3,
-                            )
-                            if detailed_result.is_success:
-                                detailed_data = detailed_result.data
-                                if isinstance(detailed_data, dict):
-                                    detailed_results = detailed_data.get("results", [])
-                                    entity_info = {
-                                        "count": detailed_data.get("count", 0),
-                                        "has_data": True,
-                                        "sample_size": len(detailed_results)
-                                        if isinstance(detailed_results, list)
-                                        else 0,
-                                    }
-                                    if (
-                                        detailed_results
-                                        and isinstance(detailed_results, list)
-                                        and (detailed_results)
-                                    ):
-                                        sample = detailed_results[0]
-                                        if isinstance(sample, dict):
-                                            entity_info.update({
-                                                "field_count": len(sample.keys()),
-                                                "sample_fields": list(sample.keys()),
-                                                "field_types": {
-                                                    k: type(v).__name__
-                                                    for k, v in sample.items()
-                                                },
-                                                "sample_record": self._safe_sample(
-                                                    sample,
-                                                ),
-                                            })
-                                    data_entities[entity_name] = entity_info
+                    records = result.value
+                    if records:
+                        detailed_result = self.client.get_entity_data(
+                            entity_name,
+                            limit=3,
+                        )
+                        if detailed_result.is_success:
+                            detailed_records = detailed_result.value
+                            entity_info: dict[str, t.NormalizedValue] = {
+                                "count": len(detailed_records),
+                                "has_data": True,
+                                "sample_size": len(detailed_records),
+                            }
+                            if detailed_records:
+                                sample = detailed_records[0]
+                                if isinstance(sample, dict):
+                                    entity_info.update({
+                                        "field_count": len(sample.keys()),
+                                        "sample_fields": list(sample.keys()),
+                                        "field_types": {
+                                            k: type(v).__name__
+                                            for k, v in sample.items()
+                                        },
+                                        "sample_record": self._safe_sample(
+                                            sample,
+                                        ),
+                                    })
+                            data_entities[entity_name] = entity_info
             except Exception:
                 logger.debug("Failed to process entity %s", entity_name)
         return data_entities
 
-    def _get_entity_structures(self, entities: t.StrSequence) -> t.ContainerMapping:
+    def _get_entity_structures(
+        self, entities: t.StrSequence
+    ) -> dict[str, t.NormalizedValue]:
         """Get entity structures even without data."""
-        structures = {}
+        structures: dict[str, t.NormalizedValue] = {}
         for entity_name in entities:
             try:
                 result = self.client.get_entity_data(entity_name, limit=1)
                 if result.is_success:
-                    data = result.data
-                    if isinstance(data, dict):
-                        results = data.get("results", [])
-                        if results and isinstance(results, list) and (results):
-                            sample = results[0]
-                            if isinstance(sample, dict):
-                                structures[entity_name] = {
-                                    "fields": list(sample.keys()),
-                                    "field_types": {
-                                        k: type(v).__name__ for k, v in sample.items()
-                                    },
-                                    "sample_record": self._safe_sample(sample),
-                                    "has_data": False,
-                                }
+                    records = result.value
+                    if records:
+                        sample = records[0]
+                        if isinstance(sample, dict):
+                            structures[entity_name] = {
+                                "fields": list(sample.keys()),
+                                "field_types": {
+                                    k: type(v).__name__ for k, v in sample.items()
+                                },
+                                "sample_record": self._safe_sample(sample),
+                                "has_data": False,
+                            }
             except Exception:
                 logger.debug("Failed to get structure for entity %s", entity_name)
         return structures
 
-    def _safe_sample(self, record: t.ContainerMapping) -> t.ContainerMapping:
+    def _safe_sample(
+        self, record: t.StrMapping
+    ) -> dict[str, NoneType | bool | float | int | str]:
         """Create safe sample record."""
-        safe: Mapping[str, NoneType | bool | float | int | str] = {}
+        safe: dict[str, NoneType | bool | float | int | str] = {}
         for k, v in list(record.items())[:10]:
             if isinstance(v, (str, int, float, bool, type(None))):
                 if (isinstance(v, str) and len(v) < 50) or not isinstance(v, str):
@@ -213,47 +215,59 @@ class FocusedOracleWmsDiscovery:
 
     def _generate_schemas_from_data(
         self,
-        data_entities: t.ContainerMapping,
-    ) -> t.ContainerMapping:
+        data_entities: dict[str, t.NormalizedValue],
+    ) -> dict[str, t.NormalizedValue]:
         """Generate Singer schemas from entities with data."""
-        schemas: Mapping[str, t.ContainerMapping] = {}
+        schemas: dict[str, t.NormalizedValue] = {}
         for entity_name, entity_data in data_entities.items():
-            schema = self._create_singer_schema(entity_name, entity_data)
-            if schema:
-                schemas[entity_name] = schema
+            if isinstance(entity_data, dict):
+                schema = self._create_singer_schema(entity_name, entity_data)
+                if schema:
+                    schemas[entity_name] = schema
         return schemas
 
     def _generate_schemas_from_structures(
         self,
-        structure_entities: t.ContainerMapping,
-    ) -> t.ContainerMapping:
+        structure_entities: dict[str, t.NormalizedValue],
+    ) -> dict[str, t.NormalizedValue]:
         """Generate Singer schemas from structures."""
-        schemas: Mapping[str, t.ContainerMapping] = {}
+        schemas: dict[str, t.NormalizedValue] = {}
         for entity_name, structure_data in structure_entities.items():
-            schema = self._create_singer_schema(entity_name, structure_data)
-            if schema:
-                schemas[entity_name] = schema
+            if isinstance(structure_data, dict):
+                schema = self._create_singer_schema(entity_name, structure_data)
+                if schema:
+                    schemas[entity_name] = schema
         return schemas
 
     def _create_singer_schema(
         self,
         entity_name: str,
-        entity_data: t.ContainerMapping,
-    ) -> t.ContainerMapping | None:
+        entity_data: dict[str, t.NormalizedValue],
+    ) -> dict[str, t.NormalizedValue] | None:
         """Create Singer schema with proper Oracle WMS typing."""
         try:
             fields = entity_data.get("sample_fields", entity_data.get("fields", []))
             field_types = entity_data.get("field_types", {})
             sample_record = entity_data.get("sample_record", {})
-            if not fields:
+            if not fields or not isinstance(fields, list):
                 return None
-            properties: Mapping[str, Mapping[str, JsonValue]] = {}
+            properties: dict[str, t.NormalizedValue] = {}
             for field in fields:
-                python_type = field_types.get(field, "str")
-                sample_value = sample_record.get(field)
+                if not isinstance(field, str):
+                    continue
+                python_type = (
+                    field_types[field]
+                    if isinstance(field_types, dict) and field in field_types
+                    else "str"
+                )
+                sample_value: t.NormalizedValue = (
+                    sample_record[field]
+                    if isinstance(sample_record, dict) and field in sample_record
+                    else None
+                )
                 singer_type = self._oracle_field_to_singer_type(
                     field,
-                    python_type,
+                    str(python_type),
                     sample_value,
                     entity_name,
                 )
@@ -261,14 +275,15 @@ class FocusedOracleWmsDiscovery:
             properties["_sdc_extracted_at"] = {"type": "string", "format": "date-time"}
             properties["_sdc_entity"] = {"type": "string"}
             properties["_sdc_record_hash"] = {"type": ["string", "null"]}
-            key_properties = self._get_oracle_key_properties(entity_name, fields)
+            str_fields: list[str] = [f for f in fields if isinstance(f, str)]
+            key_properties = self._get_oracle_key_properties(entity_name, str_fields)
             return {
-                "type": "t.NormalizedValue",
+                "type": "object",
                 "properties": properties,
                 "additionalProperties": False,
                 "key_properties": key_properties,
                 "oracle_wms_entity": entity_name,
-                "oracle_wms_environment": self.config.environment,
+                "oracle_wms_environment": str(self.config.environment),
             }
         except Exception:
             logger.exception("Schema creation failed for %s", entity_name)
@@ -277,9 +292,10 @@ class FocusedOracleWmsDiscovery:
     def _oracle_field_to_singer_type(
         self,
         field_name: str,
+        python_type: str,
         sample_value: t.NormalizedValue,
         entity_name: str,
-    ) -> t.ContainerMapping:
+    ) -> dict[str, t.NormalizedValue]:
         """Convert Oracle WMS field to Singer type with context."""
         if sample_value is not None:
             if isinstance(sample_value, bool):
@@ -313,9 +329,10 @@ class FocusedOracleWmsDiscovery:
                     }
                 return {"type": ["string", "null"]}
             if isinstance(sample_value, dict):
-                return {"type": ["t.NormalizedValue", "null"]}
+                return {"type": ["object", "null"]}
             if isinstance(sample_value, list):
                 return {"type": ["array", "null"]}
+        _ = python_type  # used for future type-based fallback
         return {"type": ["string", "null"]}
 
     def _is_oracle_id_field(self, field_name: str) -> bool:
@@ -349,13 +366,13 @@ class FocusedOracleWmsDiscovery:
     def _get_oracle_key_properties(
         self,
         entity_name: str,
-        fields: t.StrSequence,
-    ) -> t.StrSequence:
+        fields: list[str],
+    ) -> list[str]:
         """Get Oracle WMS key properties for entity."""
-        keys: t.StrSequence = []
+        keys: list[str] = []
         if "id" in fields:
             keys.append("id")
-        entity_keys = {
+        entity_keys: dict[str, list[str]] = {
             "company": ["code", "company_code"],
             "facility": ["code", "facility_code"],
             "item": ["code", "item_code"],
@@ -379,7 +396,7 @@ class FocusedOracleWmsDiscovery:
     def _save_focused_results(self) -> r[str]:
         """Save focused discovery results."""
         results_dir = Path("oracle_wms_focused_results")
-        asyncio.to_thread(results_dir.mkdir, exist_ok=True)
+        results_dir.mkdir(exist_ok=True)
         timestamp = datetime.now(UTC).strftime("%Y%m%d_%H%M%S")
         if self.entities_with_data:
             entities_file = results_dir / f"entities_with_data_{timestamp}.json"
@@ -405,18 +422,20 @@ class FocusedOracleWmsDiscovery:
         summary_file = results_dir / f"summary_{timestamp}.json"
         with summary_file.open("w", encoding="utf-8") as f:
             json.dump(summary, f, indent=2, default=str)
-        return r[bool].ok(str(results_dir))
+        return r[str].ok(str(results_dir))
 
-    def _create_singer_catalog(self) -> t.ContainerMapping:
+    def _create_singer_catalog(self) -> dict[str, t.NormalizedValue]:
         """Create Singer catalog."""
-        streams: Sequence[t.ContainerMapping] = []
+        streams: list[dict[str, t.NormalizedValue]] = []
         for entity_name, schema in self.complete_schemas.items():
+            if not isinstance(schema, dict):
+                continue
             key_properties = schema.get("key_properties", [])
-            schema_without_keys = {
+            schema_without_keys: dict[str, t.NormalizedValue] = {
                 k: v for k, v in schema.items() if k != "key_properties"
             }
-            breadcrumb: t.StrSequence = []
-            stream: t.ContainerMapping = {
+            breadcrumb: list[str] = []
+            stream: dict[str, t.NormalizedValue] = {
                 "tap_stream_id": entity_name,
                 "stream": entity_name,
                 "schema": schema_without_keys,
@@ -441,9 +460,7 @@ def main() -> None:
     discovery = FocusedOracleWmsDiscovery()
     result = discovery.execute_focused_discovery()
     if result.is_success:
-        data = result.data
-        if data["entities_with_data"] > 0:
-            pass
+        _data = result.value
 
 
 if __name__ == "__main__":

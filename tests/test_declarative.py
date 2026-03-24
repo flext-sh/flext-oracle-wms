@@ -11,7 +11,7 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from collections.abc import Generator, Mapping, Sequence
+from collections.abc import Generator, Sequence
 from pathlib import Path
 from urllib.parse import urlparse
 
@@ -145,7 +145,7 @@ def load_env_config() -> t.ContainerMapping | None:
             == "true",
         }
     except Exception as e:
-        logger.warning("Failed to load .env config: %s", e)
+        logger.warning("Failed to load .env config: %s", str(e))
         return None
 
 
@@ -218,9 +218,12 @@ class TestOracleWmsDeclarativeIntegration:
         """Test Oracle WMS API health check."""
         health_result = oracle_wms_client.health_check()
         assert health_result.is_success, f"Health check failed: {health_result.error}"
-        health_data = health_result.data
-        assert health_data["service"] == "FlextOracleWmsClient"
-        assert health_data["status"] in {"healthy", "unhealthy"}
+        health_response = health_result.value
+        health_data = (
+            health_response.body if isinstance(health_response.body, dict) else {}
+        )
+        assert health_data.get("service") == "FlextOracleWmsClient"
+        assert health_data.get("status") in {"healthy", "unhealthy"}
         assert "base_url" in health_data
         assert "api_version" in health_data
         assert "test_call_success" in health_data
@@ -259,24 +262,18 @@ class TestLgfApiV10Integration:
         """Test getting entity data using LGF API v10."""
         result = oracle_wms_client.get_entity_data(entity_name=entity_name, limit=5)
         if result.is_success:
-            data = result.data
-            assert isinstance(data, dict)
-            if "count" in data:
-                assert isinstance(data["count"], int)
-            if "results" in data:
-                assert isinstance(data["results"], list)
-            results = data.get("results", [])
-            if isinstance(results, list):
-                record_count = data.get("count", len(results))
-            else:
-                record_count = data.get("count", 0)
+            records = result.value
+            assert isinstance(records, (list, tuple))
+            record_count = len(records)
             logger.info(
                 "✅ Successfully retrieved %s data",
                 entity_name,
                 record_count=record_count,
             )
         else:
-            logger.warning("⚠️ Failed to get %s data: %s", entity_name, result.error)
+            logger.warning(
+                "⚠️ Failed to get %s data: %s", entity_name, str(result.error)
+            )
 
     def test_get_entity_data_with_filters(
         self,
@@ -286,14 +283,16 @@ class TestLgfApiV10Integration:
         result = oracle_wms_client.get_entity_data(
             entity_name="company",
             limit=10,
-            fields="company_code,company_name",
             filters={"active": "Y"},
         )
         if result.is_success:
-            data = result.data
-            logger.info("✅ Successfully retrieved filtered company data", data=data)
+            records = result.value
+            logger.info(
+                "✅ Successfully retrieved filtered company data: %d records",
+                len(records),
+            )
         else:
-            logger.warning("⚠️ Filtered query failed: %s", result.error)
+            logger.warning("⚠️ Filtered query failed: %s", str(result.error))
 
     def test_get_entity_by_id(self, oracle_wms_client: FlextOracleWmsClient) -> None:
         """Test getting specific entity record by ID."""
@@ -302,17 +301,11 @@ class TestLgfApiV10Integration:
             pytest.skip(
                 f"Cannot test get_entity_by_id - list failed: {list_result.error}",
             )
-        data = list_result.data
-        empty_results: t.ContainerList = []
-        results = (
-            data.get("results", empty_results)
-            if isinstance(data, dict)
-            else empty_results
-        )
-        if not results or not isinstance(results, list):
+        records = list_result.value
+        if not records:
             pytest.skip("No company records found for ID test")
-        first_record = results[0]
-        if not isinstance(first_record, Mapping):
+        first_record = records[0]
+        if not isinstance(first_record, dict):
             pytest.skip("Company record format is invalid")
         record_id = first_record.get("id") or first_record.get("company_code")
         if not record_id:
@@ -323,9 +316,9 @@ class TestLgfApiV10Integration:
             limit=1,
         )
         if result.is_success:
-            logger.info("✅ Successfully retrieved company by ID", record_id=record_id)
+            logger.info("✅ Successfully retrieved company by ID: %s", str(record_id))
         else:
-            logger.warning("⚠️ Get by ID failed: %s", result.error)
+            logger.warning("⚠️ Get by ID failed: %s", str(result.error))
 
 
 class TestAutomationApisIntegration:
@@ -335,12 +328,12 @@ class TestAutomationApisIntegration:
         """Test getting entity status."""
         result = oracle_wms_client.get_entity_data(
             entity_name="company",
-            params={"key": "test", "company_code": "DEFAULT"},
+            filters={"company_code": "DEFAULT"},
         )
         if result.is_success:
             logger.info("✅ Successfully got entity status")
         else:
-            logger.info("⚠️ Entity status call failed (expected): %s", result.error)
+            logger.info("⚠️ Entity status call failed (expected): %s", str(result.error))
             assert result.error is None or "Client not initialized" not in str(
                 result.error,
             )
@@ -351,14 +344,12 @@ class TestAutomationApisIntegration:
     ) -> None:
         """Test OBLPN tracking number update API structure."""
         result = oracle_wms_client.update_oblpn_tracking_number(
-            company_code="TEST",
-            facility_code="TEST",
-            oblpn_nbr="TEST123",
-            tracking_nbr="TRACK123",
+            oblpn_id="TEST123",
+            tracking_number="TRACK123",
         )
         assert not result.is_success
         assert result.error is None or "Client not initialized" not in str(result.error)
-        logger.info("⚠️ OBLPN update failed as expected: %s", result.error)
+        logger.info("⚠️ OBLPN update failed as expected: %s", str(result.error))
 
     def test_create_lpn_api_structure(
         self,
@@ -368,11 +359,10 @@ class TestAutomationApisIntegration:
         result = oracle_wms_client.create_lpn(
             lpn_nbr="TEST_LPN_001",
             qty=10,
-            item_barcode="TEST_ITEM",
         )
         assert not result.is_success
         assert result.error is None or "Client not initialized" not in str(result.error)
-        logger.info("⚠️ LPN creation failed as expected: %s", result.error)
+        logger.info("⚠️ LPN creation failed as expected: %s", str(result.error))
 
 
 class TestErrorHandlingIntegration:
@@ -413,7 +403,7 @@ class TestPerformanceIntegration:
         if not oracle_wms_client.config.use_mock:
             pytest.skip("Skipping concurrent test - requires mock server")
         entities = ["company", "facility", "item"]
-        results: Sequence[r[t.NormalizedValue] | Exception] = []
+        results: list[r[Sequence[t.StrMapping]] | Exception] = []
         for entity in entities:
             try:
                 result = oracle_wms_client.get_entity_data(entity, limit=3)
@@ -423,15 +413,17 @@ class TestPerformanceIntegration:
         successful_requests = 0
         for i, result_item in enumerate(results):
             if isinstance(result_item, Exception):
-                logger.warning("Request %d failed with exception: %s", i, result_item)
-            elif hasattr(result_item, "success") and result_item.is_success:
+                logger.warning(
+                    "Request %d failed with exception: %s", i, str(result_item)
+                )
+            elif isinstance(result_item, r) and result_item.is_success:
                 successful_requests += 1
                 logger.info("✅ Concurrent request %d succeeded", i)
             else:
                 logger.warning(
                     "Request %d failed: %s",
                     i,
-                    getattr(result_item, "error", "Unknown"),
+                    str(getattr(result_item, "error", "Unknown")),
                 )
         assert successful_requests > 0, "No concurrent requests succeeded"
         logger.info(
@@ -449,14 +441,8 @@ class TestPerformanceIntegration:
                 limit=page_size,
             )
             if result.is_success:
-                data = result.data
-                empty_results: t.ContainerList = []
-                results = (
-                    data.get("results", empty_results)
-                    if isinstance(data, dict)
-                    else empty_results
-                )
-                actual_count = len(results) if isinstance(results, list) else 0
+                records = result.value
+                actual_count = len(records)
                 logger.info(
                     "✅ Page size %d returned %d records",
                     page_size,
@@ -467,7 +453,7 @@ class TestPerformanceIntegration:
                 logger.warning(
                     "⚠️ Pagination test failed for size %d: %s",
                     page_size,
-                    result.error,
+                    str(result.error),
                 )
 
 

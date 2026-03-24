@@ -7,7 +7,6 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-import pytest
 from flext_core import FlextSettings
 
 from flext_oracle_wms.settings import FlextOracleWmsSettings
@@ -24,7 +23,7 @@ class TestFlextOracleWmsSettings:
         """Test default configuration initialization."""
         config = FlextOracleWmsSettings()
         assert config.base_url == "http://localhost:8080"
-        assert config.timeout == pytest.approx(30.0)
+        assert abs(config.timeout - 30.0) < 1e-9
         assert config.retry_attempts == 3
         assert config.use_mock is False
         assert config.username == ""

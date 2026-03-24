@@ -42,7 +42,7 @@ def test_config_defaults() -> None:
     """Test config default values."""
     config = FlextOracleWmsSettings()
     assert config.base_url == "http://localhost:8080"
-    assert config.timeout == pytest.approx(30.0)
+    assert abs(config.timeout - 30.0) < 1e-9
     assert config.retry_attempts == 3
 
 
