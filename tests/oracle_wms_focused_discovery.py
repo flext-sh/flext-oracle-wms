@@ -136,7 +136,7 @@ class FocusedOracleWmsDiscovery:
                     if isinstance(data, dict):
                         count = data.get("count", 0)
                         results = data.get("results", [])
-                        if count > 0 or (results and len(results) > 0):
+                        if count > 0 or (results and results):
                             detailed_result = self.client.get_entity_data(
                                 entity_name, limit=3
                             )
@@ -154,7 +154,7 @@ class FocusedOracleWmsDiscovery:
                                     if (
                                         detailed_results
                                         and isinstance(detailed_results, list)
-                                        and (len(detailed_results) > 0)
+                                        and (detailed_results)
                                     ):
                                         sample = detailed_results[0]
                                         if isinstance(sample, dict):
@@ -186,7 +186,7 @@ class FocusedOracleWmsDiscovery:
                     data = result.data
                     if isinstance(data, dict):
                         results = data.get("results", [])
-                        if results and isinstance(results, list) and (len(results) > 0):
+                        if results and isinstance(results, list) and (results):
                             sample = results[0]
                             if isinstance(sample, dict):
                                 structures[entity_name] = {

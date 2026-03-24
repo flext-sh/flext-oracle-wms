@@ -224,7 +224,7 @@ class OracleWmsCompleteDiscovery:
         if not isinstance(data, dict) or not data.get("results"):
             return None
         results = data["results"]
-        if not results or not isinstance(results, list) or len(results) == 0:
+        if not results or not isinstance(results, list) or not results:
             return None
         record = results[0]
         if not isinstance(record, dict) or "id" not in record:
@@ -267,7 +267,7 @@ class OracleWmsCompleteDiscovery:
                 data = list_result.data
                 if isinstance(data, dict) and data.get("results"):
                     results = data["results"]
-                    if results and isinstance(results, list) and (len(results) > 0):
+                    if results and isinstance(results, list) and (results):
                         record = results[0]
                         if isinstance(record, dict) and "id" in record:
                             entity_id = record["id"]
@@ -342,14 +342,14 @@ class OracleWmsCompleteDiscovery:
             "total_count": count,
             "sample_size": len(results) if isinstance(results, list) else 0,
             "has_data": count > 0,
-            "structure_available": len(results) > 0
+            "structure_available": results
             if isinstance(results, list)
             else False,
             "fields": fields,
             "field_types": field_types,
             "sample_data": sample_data,
         }
-        if not (results and isinstance(results, list) and (len(results) > 0)):
+        if not (results and isinstance(results, list) and (results)):
             return metadata_info
         sample_record = results[0]
         if not isinstance(sample_record, dict):

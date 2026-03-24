@@ -231,7 +231,7 @@ class TestOracleWmsDeclarativeIntegration:
         )
         entities = entities_result.value
         assert isinstance(entities, list)
-        assert len(entities) > 0
+        assert entities
         expected_entities = [
             "company",
             "facility",

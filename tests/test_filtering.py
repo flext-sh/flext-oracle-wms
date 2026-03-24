@@ -198,7 +198,7 @@ class TestRecordFiltering:
         filters: Mapping[str, t.NormalizedValue] = {"status": "nonexistent"}
         result = filter_engine.filter_records(self.sample_records, filters)
         assert result.is_success
-        assert len(result.value) == 0
+        assert not result.value
 
     def test_filter_records_case_insensitive(self) -> None:
         """Test filtering is case insensitive by default."""
@@ -214,7 +214,7 @@ class TestRecordFiltering:
         filters: Mapping[str, t.NormalizedValue] = {"status": "ACTIVE"}
         result = filter_engine.filter_records(self.sample_records, filters)
         assert result.is_success
-        assert len(result.value) == 0
+        assert not result.value
 
     def test_filter_records_with_operator_dict(self) -> None:
         """Test filtering with operator dict format."""
@@ -566,7 +566,7 @@ class TestConvenienceFunctions:
         """Test filter by ID range with empty records."""
         result = FlextOracleWmsFilter.filter_by_id_range([], "id", min_id=1)
         assert result.is_success
-        assert len(result.value) == 0
+        assert not result.value
 
 
 class TestMatchesCondition:

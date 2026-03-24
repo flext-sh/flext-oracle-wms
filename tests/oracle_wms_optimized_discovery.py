@@ -114,7 +114,7 @@ class OptimizedOracleWmsDiscovery:
                 entities_with_data.append(entity_name)
         if entities_with_data:
             pass
-        if entities_with_data and len(other_entities) > 0:
+        if entities_with_data and other_entities:
             additional_results = self._process_entity_batch(
                 other_entities[:50], "ADDITIONAL", batch_size=15
             )
@@ -200,7 +200,7 @@ class OptimizedOracleWmsDiscovery:
                         count > 0
                         and results
                         and isinstance(results, list)
-                        and (len(results) > 0)
+                        and (results)
                     ):
                         sample_record = results[0]
                         if isinstance(sample_record, dict):

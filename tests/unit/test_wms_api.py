@@ -21,7 +21,7 @@ class TestFlextOracleWmsApi:
         """Test that API catalog is properly defined."""
         assert hasattr(FlextOracleWmsApi, "FLEXT_ORACLE_WMS_APIS")
         assert isinstance(FlextOracleWmsApi.FLEXT_ORACLE_WMS_APIS, dict)
-        assert len(FlextOracleWmsApi.FLEXT_ORACLE_WMS_APIS) > 0
+        assert FlextOracleWmsApi.FLEXT_ORACLE_WMS_APIS
 
     def test_api_catalog_entries_are_endpoints(self) -> None:
         """Test that API catalog entries are FlextOracleWmsApiEndpoint instances."""
@@ -29,7 +29,7 @@ class TestFlextOracleWmsApi:
         for api_name, api_endpoint in apis.items():
             assert isinstance(api_endpoint, FlextOracleWmsApiEndpoint)
             assert isinstance(api_name, str)
-            assert len(api_name) > 0
+            assert api_name
 
     def test_test_endpoint_exists(self) -> None:
         """Test that the 'test' endpoint is defined in catalog."""

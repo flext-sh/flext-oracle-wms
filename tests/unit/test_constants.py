@@ -26,7 +26,7 @@ class TestFlextOracleWmsConstants:
     def test_flext_wms_version(self) -> None:
         """Test FLEXT_WMS_VERSION constant."""
         assert isinstance(FlextOracleWmsConstants.FLEXT_WMS_VERSION, str)
-        assert len(FlextOracleWmsConstants.FLEXT_WMS_VERSION) > 0
+        assert FlextOracleWmsConstants.FLEXT_WMS_VERSION
 
     def test_api_constants(self) -> None:
         """Test API-related constants via API_CONFIG dict."""

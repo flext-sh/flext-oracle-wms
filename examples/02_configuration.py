@@ -179,7 +179,7 @@ def validate_configuration(
         "enable_logging": config.enable_audit_logging,
     }
     validation_results: Mapping[str, t.NormalizedValue] = {
-        "valid": len(errors) == 0,
+        "valid": not errors,
         "warnings": warnings,
         "errors": errors,
         "configuration_summary": config_summary,

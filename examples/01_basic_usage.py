@@ -110,7 +110,7 @@ def query_entity_data(
     if result.is_success:
         data = result.value
         if data:
-            if isinstance(data, (list, tuple)) and len(data) > 0:
+            if isinstance(data, (list, tuple)) and data:
                 sample_record = data[0]
             elif isinstance(data, dict):
                 sample_record = data
