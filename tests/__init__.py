@@ -140,236 +140,236 @@ if TYPE_CHECKING:
         FlextOracleWmsTestUtilities as u,
     )
 
-_LAZY_IMPORTS: Mapping[str, tuple[str, str]] = {
-    "CompleteMockPipeline": ("tests.complete_mock_pipeline", "CompleteMockPipeline"),
-    "FlextOracleWmsApiCategory": (
+_LAZY_IMPORTS: Mapping[str, Sequence[str]] = {
+    "CompleteMockPipeline": ["tests.complete_mock_pipeline", "CompleteMockPipeline"],
+    "FlextOracleWmsApiCategory": [
         "tests.test_declarative",
         "FlextOracleWmsApiCategory",
-    ),
-    "FlextOracleWmsApiVersion": ("tests.test_declarative", "FlextOracleWmsApiVersion"),
-    "FlextOracleWmsTestConstants": ("tests.constants", "FlextOracleWmsTestConstants"),
-    "FlextOracleWmsTestModels": ("tests.models", "FlextOracleWmsTestModels"),
-    "FlextOracleWmsTestProtocols": ("tests.protocols", "FlextOracleWmsTestProtocols"),
-    "FlextOracleWmsTestTypes": ("tests.typings", "FlextOracleWmsTestTypes"),
-    "FlextOracleWmsTestUtilities": ("tests.utilities", "FlextOracleWmsTestUtilities"),
-    "FocusedOracleWmsDiscovery": (
+    ],
+    "FlextOracleWmsApiVersion": ["tests.test_declarative", "FlextOracleWmsApiVersion"],
+    "FlextOracleWmsTestConstants": ["tests.constants", "FlextOracleWmsTestConstants"],
+    "FlextOracleWmsTestModels": ["tests.models", "FlextOracleWmsTestModels"],
+    "FlextOracleWmsTestProtocols": ["tests.protocols", "FlextOracleWmsTestProtocols"],
+    "FlextOracleWmsTestTypes": ["tests.typings", "FlextOracleWmsTestTypes"],
+    "FlextOracleWmsTestUtilities": ["tests.utilities", "FlextOracleWmsTestUtilities"],
+    "FocusedOracleWmsDiscovery": [
         "tests.oracle_wms_focused_discovery",
         "FocusedOracleWmsDiscovery",
-    ),
-    "OptimizedOracleWmsDiscovery": (
+    ],
+    "OptimizedOracleWmsDiscovery": [
         "tests.oracle_wms_optimized_discovery",
         "OptimizedOracleWmsDiscovery",
-    ),
-    "OracleWmsCompleteDiscovery": (
+    ],
+    "OracleWmsCompleteDiscovery": [
         "tests.oracle_wms_complete_discovery",
         "OracleWmsCompleteDiscovery",
-    ),
-    "TestApplyOperator": ("tests.test_filtering", "TestApplyOperator"),
-    "TestAuthenticationConfig": (
+    ],
+    "TestApplyOperator": ["tests.test_filtering", "TestApplyOperator"],
+    "TestAuthenticationConfig": [
         "tests.test_authentication_core",
         "TestAuthenticationConfig",
-    ),
-    "TestAuthenticationMethod": (
+    ],
+    "TestAuthenticationMethod": [
         "tests.test_authentication_core",
         "TestAuthenticationMethod",
-    ),
-    "TestAuthenticator": ("tests.test_authentication_core", "TestAuthenticator"),
-    "TestAutomationApisIntegration": (
+    ],
+    "TestAuthenticator": ["tests.test_authentication_core", "TestAuthenticator"],
+    "TestAutomationApisIntegration": [
         "tests.test_declarative",
         "TestAutomationApisIntegration",
-    ),
-    "TestClientSimpleNew": ("tests.test_client", "TestClientSimpleNew"),
-    "TestConvenienceFunctions": ("tests.test_filtering", "TestConvenienceFunctions"),
-    "TestDiscoveryConstants": ("tests.test_discovery", "TestDiscoveryConstants"),
-    "TestEndpointDiscoveryStrategyEnum": (
+    ],
+    "TestClientSimpleNew": ["tests.test_client", "TestClientSimpleNew"],
+    "TestConvenienceFunctions": ["tests.test_filtering", "TestConvenienceFunctions"],
+    "TestDiscoveryConstants": ["tests.test_discovery", "TestDiscoveryConstants"],
+    "TestEndpointDiscoveryStrategyEnum": [
         "tests.test_discovery",
         "TestEndpointDiscoveryStrategyEnum",
-    ),
-    "TestErrorHandling": ("tests.test_filtering", "TestErrorHandling"),
-    "TestErrorHandlingIntegration": (
+    ],
+    "TestErrorHandling": ["tests.test_filtering", "TestErrorHandling"],
+    "TestErrorHandlingIntegration": [
         "tests.test_declarative",
         "TestErrorHandlingIntegration",
-    ),
-    "TestFactoryFunction": ("tests.test_filtering", "TestFactoryFunction"),
-    "TestFilterValidation": ("tests.test_filtering", "TestFilterValidation"),
-    "TestFlextOracleWmsApi": ("tests.unit.test_api", "TestFlextOracleWmsApi"),
-    "TestFlextOracleWmsApiResponse": (
+    ],
+    "TestFactoryFunction": ["tests.test_filtering", "TestFactoryFunction"],
+    "TestFilterValidation": ["tests.test_filtering", "TestFilterValidation"],
+    "TestFlextOracleWmsApi": ["tests.unit.test_api", "TestFlextOracleWmsApi"],
+    "TestFlextOracleWmsApiResponse": [
         "tests.test_singer_flattening",
         "TestFlextOracleWmsApiResponse",
-    ),
-    "TestFlextOracleWmsClient": (
+    ],
+    "TestFlextOracleWmsClient": [
         "tests.unit.test_wms_client",
         "TestFlextOracleWmsClient",
-    ),
-    "TestFlextOracleWmsClientCore": (
+    ],
+    "TestFlextOracleWmsClientCore": [
         "tests.test_client_core",
         "TestFlextOracleWmsClientCore",
-    ),
-    "TestFlextOracleWmsConstants": (
+    ],
+    "TestFlextOracleWmsConstants": [
         "tests.test_schema_dynamic",
         "TestFlextOracleWmsConstants",
-    ),
-    "TestFlextOracleWmsEntity": (
+    ],
+    "TestFlextOracleWmsEntity": [
         "tests.test_singer_flattening",
         "TestFlextOracleWmsEntity",
-    ),
-    "TestFlextOracleWmsEntityDiscovery": (
+    ],
+    "TestFlextOracleWmsEntityDiscovery": [
         "tests.test_discovery",
         "TestFlextOracleWmsEntityDiscovery",
-    ),
-    "TestFlextOracleWmsFilterConstruction": (
+    ],
+    "TestFlextOracleWmsFilterConstruction": [
         "tests.test_filtering",
         "TestFlextOracleWmsFilterConstruction",
-    ),
-    "TestFlextOracleWmsSettings": (
+    ],
+    "TestFlextOracleWmsSettings": [
         "tests.unit.test_config",
         "TestFlextOracleWmsSettings",
-    ),
-    "TestFlextOracleWmsUtilities": (
+    ],
+    "TestFlextOracleWmsUtilities": [
         "tests.test_helpers_core",
         "TestFlextOracleWmsUtilities",
-    ),
-    "TestGetLogger": ("tests.test_client_core", "TestGetLogger"),
-    "TestLgfApiV10Integration": ("tests.test_declarative", "TestLgfApiV10Integration"),
-    "TestMatchesCondition": ("tests.test_filtering", "TestMatchesCondition"),
-    "TestNestedConstants": ("tests.test_schema_dynamic", "TestNestedConstants"),
-    "TestNestedValueAccess": ("tests.test_filtering", "TestNestedValueAccess"),
-    "TestNormalize": ("tests.test_filtering", "TestNormalize"),
-    "TestOracleWmsDeclarativeIntegration": (
+    ],
+    "TestGetLogger": ["tests.test_client_core", "TestGetLogger"],
+    "TestLgfApiV10Integration": ["tests.test_declarative", "TestLgfApiV10Integration"],
+    "TestMatchesCondition": ["tests.test_filtering", "TestMatchesCondition"],
+    "TestNestedConstants": ["tests.test_schema_dynamic", "TestNestedConstants"],
+    "TestNestedValueAccess": ["tests.test_filtering", "TestNestedValueAccess"],
+    "TestNormalize": ["tests.test_filtering", "TestNormalize"],
+    "TestOracleWmsDeclarativeIntegration": [
         "tests.test_declarative",
         "TestOracleWmsDeclarativeIntegration",
-    ),
-    "TestPerformanceAndEdgeCases": (
+    ],
+    "TestPerformanceAndEdgeCases": [
         "tests.test_filtering",
         "TestPerformanceAndEdgeCases",
-    ),
-    "TestPerformanceIntegration": (
+    ],
+    "TestPerformanceIntegration": [
         "tests.test_declarative",
         "TestPerformanceIntegration",
-    ),
-    "TestRecordFiltering": ("tests.test_filtering", "TestRecordFiltering"),
-    "TestRecordSorting": ("tests.test_filtering", "TestRecordSorting"),
-    "TestWmsEnums": ("tests.test_schema_dynamic", "TestWmsEnums"),
-    "c": ("tests.constants", "FlextOracleWmsTestConstants"),
-    "d": ("flext_tests", "d"),
-    "e": ("flext_tests", "e"),
-    "env_config": ("tests.test_declarative", "env_config"),
-    "find_env_file": ("tests.test_declarative", "find_env_file"),
-    "h": ("flext_tests", "h"),
-    "load_env_config": ("tests.test_declarative", "load_env_config"),
-    "load_test_env": ("tests.conftest", "load_test_env"),
-    "logger": ("tests.test_declarative", "logger"),
-    "m": ("tests.models", "FlextOracleWmsTestModels"),
-    "main": ("tests.oracle_wms_focused_discovery", "main"),
-    "mock_config": ("tests.conftest", "mock_config"),
-    "oracle_wms_client": ("tests.test_declarative", "oracle_wms_client"),
-    "p": ("tests.protocols", "FlextOracleWmsTestProtocols"),
-    "pytest_configure": ("tests.conftest", "pytest_configure"),
-    "pytestmark": ("tests.test_declarative", "pytestmark"),
-    "r": ("flext_tests", "r"),
-    "real_config": ("tests.conftest", "real_config"),
-    "reset_settings_singleton": ("tests.conftest", "reset_settings_singleton"),
-    "run_complete_discovery": (
+    ],
+    "TestRecordFiltering": ["tests.test_filtering", "TestRecordFiltering"],
+    "TestRecordSorting": ["tests.test_filtering", "TestRecordSorting"],
+    "TestWmsEnums": ["tests.test_schema_dynamic", "TestWmsEnums"],
+    "c": ["tests.constants", "FlextOracleWmsTestConstants"],
+    "d": ["flext_tests", "d"],
+    "e": ["flext_tests", "e"],
+    "env_config": ["tests.test_declarative", "env_config"],
+    "find_env_file": ["tests.test_declarative", "find_env_file"],
+    "h": ["flext_tests", "h"],
+    "load_env_config": ["tests.test_declarative", "load_env_config"],
+    "load_test_env": ["tests.conftest", "load_test_env"],
+    "logger": ["tests.test_declarative", "logger"],
+    "m": ["tests.models", "FlextOracleWmsTestModels"],
+    "main": ["tests.oracle_wms_focused_discovery", "main"],
+    "mock_config": ["tests.conftest", "mock_config"],
+    "oracle_wms_client": ["tests.test_declarative", "oracle_wms_client"],
+    "p": ["tests.protocols", "FlextOracleWmsTestProtocols"],
+    "pytest_configure": ["tests.conftest", "pytest_configure"],
+    "pytestmark": ["tests.test_declarative", "pytestmark"],
+    "r": ["flext_tests", "r"],
+    "real_config": ["tests.conftest", "real_config"],
+    "reset_settings_singleton": ["tests.conftest", "reset_settings_singleton"],
+    "run_complete_discovery": [
         "tests.oracle_wms_complete_discovery",
         "run_complete_discovery",
-    ),
-    "run_optimized_discovery": (
+    ],
+    "run_optimized_discovery": [
         "tests.oracle_wms_optimized_discovery",
         "run_optimized_discovery",
-    ),
-    "s": ("flext_tests", "s"),
-    "sample_entities": ("tests.conftest", "sample_entities"),
-    "sample_entity_data": ("tests.conftest", "sample_entity_data"),
-    "t": ("tests.typings", "FlextOracleWmsTestTypes"),
-    "test_api_response_creation": ("tests.test_models", "test_api_response_creation"),
-    "test_api_response_defaults": ("tests.test_models", "test_api_response_defaults"),
-    "test_api_response_error": ("tests.test_models", "test_api_response_error"),
-    "test_api_response_validate_response_failure": (
+    ],
+    "s": ["flext_tests", "s"],
+    "sample_entities": ["tests.conftest", "sample_entities"],
+    "sample_entity_data": ["tests.conftest", "sample_entity_data"],
+    "t": ["tests.typings", "FlextOracleWmsTestTypes"],
+    "test_api_response_creation": ["tests.test_models", "test_api_response_creation"],
+    "test_api_response_defaults": ["tests.test_models", "test_api_response_defaults"],
+    "test_api_response_error": ["tests.test_models", "test_api_response_error"],
+    "test_api_response_validate_response_failure": [
         "tests.test_models",
         "test_api_response_validate_response_failure",
-    ),
-    "test_api_response_validate_response_success": (
+    ],
+    "test_api_response_validate_response_success": [
         "tests.test_models",
         "test_api_response_validate_response_success",
-    ),
-    "test_api_response_with_nested_data": (
+    ],
+    "test_api_response_with_nested_data": [
         "tests.test_models",
         "test_api_response_with_nested_data",
-    ),
-    "test_client_class_creation": (
+    ],
+    "test_client_class_creation": [
         "tests.test_client_class",
         "test_client_class_creation",
-    ),
-    "test_client_config_access": (
+    ],
+    "test_client_config_access": [
         "tests.test_client_class",
         "test_client_config_access",
-    ),
-    "test_client_has_discovery_methods": (
+    ],
+    "test_client_has_discovery_methods": [
         "tests.test_client_class",
         "test_client_has_discovery_methods",
-    ),
-    "test_client_has_http_methods": (
+    ],
+    "test_client_has_http_methods": [
         "tests.test_client_class",
         "test_client_has_http_methods",
-    ),
-    "test_client_has_lifecycle_methods": (
+    ],
+    "test_client_has_lifecycle_methods": [
         "tests.test_client_class",
         "test_client_has_lifecycle_methods",
-    ),
-    "test_client_has_wms_operations": (
+    ],
+    "test_client_has_wms_operations": [
         "tests.test_client_class",
         "test_client_has_wms_operations",
-    ),
-    "test_client_internal_state": (
+    ],
+    "test_client_internal_state": [
         "tests.test_client_class",
         "test_client_internal_state",
-    ),
-    "test_config_auth_fields_default_empty": (
+    ],
+    "test_config_auth_fields_default_empty": [
         "tests.test_config",
         "test_config_auth_fields_default_empty",
-    ),
-    "test_config_creation": ("tests.test_config_module", "test_config_creation"),
-    "test_config_creation_valid": ("tests.test_config", "test_config_creation_valid"),
-    "test_config_custom_values": (
+    ],
+    "test_config_creation": ["tests.test_config_module", "test_config_creation"],
+    "test_config_creation_valid": ["tests.test_config", "test_config_creation_valid"],
+    "test_config_custom_values": [
         "tests.test_config_module",
         "test_config_custom_values",
-    ),
-    "test_config_defaults": ("tests.test_config", "test_config_defaults"),
-    "test_config_reset_functionality": (
+    ],
+    "test_config_defaults": ["tests.test_config", "test_config_defaults"],
+    "test_config_reset_functionality": [
         "tests.test_config_module",
         "test_config_reset_functionality",
-    ),
-    "test_config_singleton_behavior": (
+    ],
+    "test_config_singleton_behavior": [
         "tests.test_config_module",
         "test_config_singleton_behavior",
-    ),
-    "test_config_testing_factory": (
+    ],
+    "test_config_testing_factory": [
         "tests.test_config_module",
         "test_config_testing_factory",
-    ),
-    "test_config_validate_config_success": (
+    ],
+    "test_config_validate_config_success": [
         "tests.test_config",
         "test_config_validate_config_success",
-    ),
-    "test_config_validation": ("tests.test_config_module", "test_config_validation"),
-    "test_entity_creation": ("tests.test_models", "test_entity_creation"),
-    "test_entity_defaults": ("tests.test_models", "test_entity_defaults"),
-    "test_entity_validate_entity_success": (
+    ],
+    "test_config_validation": ["tests.test_config_module", "test_config_validation"],
+    "test_entity_creation": ["tests.test_models", "test_entity_creation"],
+    "test_entity_defaults": ["tests.test_models", "test_entity_defaults"],
+    "test_entity_validate_entity_success": [
         "tests.test_models",
         "test_entity_validate_entity_success",
-    ),
-    "test_entity_validation_bad_endpoint_raises": (
+    ],
+    "test_entity_validation_bad_endpoint_raises": [
         "tests.test_models",
         "test_entity_validation_bad_endpoint_raises",
-    ),
-    "test_entity_validation_empty_name_raises": (
+    ],
+    "test_entity_validation_empty_name_raises": [
         "tests.test_models",
         "test_entity_validation_empty_name_raises",
-    ),
-    "test_real_connection": ("tests.test_connection", "test_real_connection"),
-    "u": ("tests.utilities", "FlextOracleWmsTestUtilities"),
-    "unit": ("tests.unit", ""),
-    "x": ("flext_tests", "x"),
+    ],
+    "test_real_connection": ["tests.test_connection", "test_real_connection"],
+    "u": ["tests.utilities", "FlextOracleWmsTestUtilities"],
+    "unit": ["tests.unit", ""],
+    "x": ["flext_tests", "x"],
 }
 
 __all__ = [

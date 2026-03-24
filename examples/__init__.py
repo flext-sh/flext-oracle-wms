@@ -16,11 +16,11 @@ if TYPE_CHECKING:
     from examples import tests
     from examples.tests.test_declarative_example import load_env_config, logger, main
 
-_LAZY_IMPORTS: Mapping[str, tuple[str, str]] = {
-    "load_env_config": ("examples.tests.test_declarative_example", "load_env_config"),
-    "logger": ("examples.tests.test_declarative_example", "logger"),
-    "main": ("examples.tests.test_declarative_example", "main"),
-    "tests": ("examples.tests", ""),
+_LAZY_IMPORTS: Mapping[str, Sequence[str]] = {
+    "load_env_config": ["examples.tests.test_declarative_example", "load_env_config"],
+    "logger": ["examples.tests.test_declarative_example", "logger"],
+    "main": ["examples.tests.test_declarative_example", "main"],
+    "tests": ["examples.tests", ""],
 }
 
 __all__ = [

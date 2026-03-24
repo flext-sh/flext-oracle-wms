@@ -26,20 +26,20 @@ if TYPE_CHECKING:
     from tests.unit.test_constants import TestFlextOracleWmsConstants
     from tests.unit.test_wms_client import TestFlextOracleWmsClient
 
-_LAZY_IMPORTS: Mapping[str, tuple[str, str]] = {
-    "TestFlextOracleWmsApi": ("tests.unit.test_api", "TestFlextOracleWmsApi"),
-    "TestFlextOracleWmsClient": (
+_LAZY_IMPORTS: Mapping[str, Sequence[str]] = {
+    "TestFlextOracleWmsApi": ["tests.unit.test_api", "TestFlextOracleWmsApi"],
+    "TestFlextOracleWmsClient": [
         "tests.unit.test_wms_client",
         "TestFlextOracleWmsClient",
-    ),
-    "TestFlextOracleWmsConstants": (
+    ],
+    "TestFlextOracleWmsConstants": [
         "tests.unit.test_constants",
         "TestFlextOracleWmsConstants",
-    ),
-    "TestFlextOracleWmsSettings": (
+    ],
+    "TestFlextOracleWmsSettings": [
         "tests.unit.test_config",
         "TestFlextOracleWmsSettings",
-    ),
+    ],
 }
 
 __all__ = [
