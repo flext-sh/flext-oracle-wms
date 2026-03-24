@@ -9,7 +9,7 @@ from __future__ import annotations
 
 import contextlib
 import os
-from collections.abc import Mapping, Sequence
+from collections.abc import Sequence, Mapping
 from enum import StrEnum, unique
 from pathlib import Path
 from typing import ClassVar

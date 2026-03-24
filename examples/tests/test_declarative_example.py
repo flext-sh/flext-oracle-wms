@@ -5,7 +5,7 @@ This demonstrates the declarative approach with massive code reduction.
 
 from __future__ import annotations
 
-from collections.abc import Mapping, Sequence
+from collections.abc import Sequence, Mapping
 from pathlib import Path
 from urllib.parse import urlparse
 

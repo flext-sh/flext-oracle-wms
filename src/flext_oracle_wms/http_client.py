@@ -6,7 +6,9 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from collections.abc import Mapping, MutableMapping
+from flext_oracle_wms import FlextOracleWmsTypes as t
+
+from collections.abc import MutableMapping
 from types import TracebackType
 from typing import Self
 
@@ -28,7 +30,7 @@ class FlextHttpClient:
         self,
         base_url: str,
         timeout: float = 30.0,
-        headers: Mapping[str, str] | None = None,
+        headers: t.StrMapping | None = None,
         *,
         verify_ssl: bool = True,
     ) -> None:
@@ -55,8 +57,8 @@ class FlextHttpClient:
 
     @staticmethod
     def _normalize_headers(
-        headers: Mapping[str, str] | FlextApiTypes.Api.WebHeaders | None,
-    ) -> Mapping[str, str]:
+        headers: t.StrMapping | FlextApiTypes.Api.WebHeaders | None,
+    ) -> t.StrMapping:
         if headers is None:
             return {}
         normalized: MutableMapping[str, str] = {}
@@ -88,7 +90,7 @@ class FlextHttpClient:
         self._client = None
 
     def delete(
-        self, path: str, headers: Mapping[str, str] | None = None
+        self, path: str, headers: t.StrMapping | None = None
     ) -> r[HttpJsonObject]:
         """Make DELETE request."""
         try:
@@ -121,7 +123,7 @@ class FlextHttpClient:
         self,
         path: str,
         params: FlextApiTypes.Api.WebParams | None = None,
-        headers: Mapping[str, str] | None = None,
+        headers: t.StrMapping | None = None,
     ) -> r[HttpJsonObject]:
         """Make GET request with railway-oriented error handling."""
         params_str: FlextApiTypes.Api.WebParams | None = (
@@ -134,7 +136,7 @@ class FlextHttpClient:
         path: str,
         data: HttpJsonObject | None = None,
         json_data: HttpJsonObject | None = None,
-        headers: Mapping[str, str] | None = None,
+        headers: t.StrMapping | None = None,
     ) -> r[HttpJsonObject]:
         """Make POST request with railway-oriented error handling."""
         body = json_data or data
@@ -145,7 +147,7 @@ class FlextHttpClient:
         path: str,
         data: HttpJsonObject | None = None,
         json_data: HttpJsonObject | None = None,
-        headers: Mapping[str, str] | None = None,
+        headers: t.StrMapping | None = None,
     ) -> r[HttpJsonObject]:
         """Make PUT request."""
         try:
@@ -199,7 +201,7 @@ class FlextHttpClient:
         method: str,
         path: str,
         params: FlextApiTypes.Api.WebParams | None = None,
-        headers: Mapping[str, str] | None = None,
+        headers: t.StrMapping | None = None,
         body: HttpJsonObject | None = None,
     ) -> r[HttpJsonObject]:
         """Execute HTTP request with FLEXT delegation."""
@@ -264,7 +266,7 @@ class FlextHttpClient:
 def create_flext_http_client(
     base_url: str,
     timeout: float = 30.0,
-    headers: Mapping[str, str] | None = None,
+    headers: t.StrMapping | None = None,
     *,
     verify_ssl: bool = True,
 ) -> FlextHttpClient:
