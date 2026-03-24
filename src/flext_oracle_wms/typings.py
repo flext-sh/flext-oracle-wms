@@ -25,7 +25,7 @@ class FlextOracleWmsTypes(FlextTypes):
 
         type ProjectType = c.ProjectType
         type WmsProjectConfig = Mapping[str, FlextTypes.ContainerValue]
-        type WarehouseConfig = Mapping[str, str | int | bool | Sequence[str]]
+        type WarehouseConfig = Mapping[str, t.Scalar | Sequence[str]]
         type InventoryConfig = Mapping[
             str,
             bool | str | Mapping[str, FlextTypes.ContainerValue],
@@ -33,7 +33,7 @@ class FlextOracleWmsTypes(FlextTypes):
 
     type WmsConfig = Mapping[
         str,
-        str | int | bool | Mapping[str, FlextTypes.ContainerValue],
+        t.Scalar | Mapping[str, FlextTypes.ContainerValue],
     ]
     type WmsEntity = Mapping[
         str,

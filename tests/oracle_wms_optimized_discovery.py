@@ -33,7 +33,7 @@ from tests import t
 
 logger = FlextLogger(__name__)
 
-type JsonScalar = str | int | float | bool | None
+type JsonScalar = t.Scalar | None
 type JsonValue = JsonScalar | Mapping[str, JsonValue] | Sequence[JsonValue]
 
 
