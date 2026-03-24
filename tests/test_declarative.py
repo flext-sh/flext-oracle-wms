@@ -101,7 +101,7 @@ def load_env_config() -> t.ContainerMapping | None:
     env_path = find_env_file()
     if not env_path:
         return None
-    config: Mapping[str, str] = {}
+    config: t.StrMapping = {}
     try:
         with Path(env_path).open(encoding="utf-8") as f:
             for raw_line in f:

@@ -96,7 +96,7 @@ class FlextOracleWmsModels(FlextModels):
                 Field(default_factory=dict, description="Response data"),
             ]
             status_code: Annotated[
-                int, Field(default=200, ge=200, le=599, description="HTTP status code")
+                t.HttpStatusCode, Field(default=200, description="HTTP status code")
             ]
             success: Annotated[
                 bool, Field(default=True, description="Whether request succeeded")
@@ -131,7 +131,7 @@ class FlextOracleWmsModels(FlextModels):
             oauth2_client_id: Annotated[str | None, Field(default=None)]
             oauth2_client_secret: Annotated[str | None, Field(default=None)]
             oauth2_scope: Annotated[str, Field(default="wms.read wms.write")]
-            token_refresh_threshold: Annotated[int, Field(default=300)]
+            token_refresh_threshold: Annotated[t.PositiveInt, Field(default=300)]
 
             def validate_business_rules(self) -> r[bool]:
                 """Validate authentication configuration business rules."""
@@ -152,21 +152,21 @@ class FlextOracleWmsModels(FlextModels):
 
             model_config: ClassVar[ConfigDict] = ConfigDict(extra="ignore")
 
-            entities: Annotated[Sequence[str], Field(default_factory=list)]
+            entities: Annotated[t.StrSequence, Field(default_factory=list)]
 
         class ApiCategoryResponse(BaseModel):
             """Oracle WMS API category response."""
 
             model_config: ClassVar[ConfigDict] = ConfigDict(extra="ignore")
 
-            apis: Annotated[Sequence[Mapping[str, str]], Field(default_factory=list)]
+            apis: Annotated[Sequence[t.StrMapping], Field(default_factory=list)]
 
         class EntityDataResponse(BaseModel):
             """Oracle WMS entity data response."""
 
             model_config: ClassVar[ConfigDict] = ConfigDict(extra="ignore")
 
-            data: Annotated[Sequence[Mapping[str, str]], Field(default_factory=list)]
+            data: Annotated[Sequence[t.StrMapping], Field(default_factory=list)]
 
     # =========================================================================
     # TYPE ALIASES - Advanced composition for minimal declarations
