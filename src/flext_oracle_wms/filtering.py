@@ -66,7 +66,10 @@ class FlextOracleWmsFilter:
 
     @classmethod
     def create_filter(
-        cls, *, case_sensitive: bool = False, max_conditions: int = 50
+        cls,
+        *,
+        case_sensitive: bool = False,
+        max_conditions: int = 50,
     ) -> FlextOracleWmsFilter:
         """Create a filter engine with explicit configuration."""
         return cls(case_sensitive=case_sensitive, max_conditions=max_conditions)
@@ -86,7 +89,7 @@ class FlextOracleWmsFilter:
             filters = {field: value}
         else:
             filters = {
-                field: FlextOracleWmsOperatorFilter(operator=operator, value=value)
+                field: FlextOracleWmsOperatorFilter(operator=operator, value=value),
             }
         return engine.filter_records(records, filters)
 
@@ -115,13 +118,15 @@ class FlextOracleWmsFilter:
 
     @staticmethod
     def _check_max(
-        field_value: t.Core.FilterRecordValue, max_val: t.Core.FilterScalar
+        field_value: t.Core.FilterRecordValue,
+        max_val: t.Core.FilterScalar,
     ) -> bool:
         return FlextOracleWmsFilter._compare(field_value, max_val, "<=")
 
     @staticmethod
     def _check_min(
-        field_value: t.Core.FilterRecordValue, min_val: t.Core.FilterScalar
+        field_value: t.Core.FilterRecordValue,
+        min_val: t.Core.FilterScalar,
     ) -> bool:
         return FlextOracleWmsFilter._compare(field_value, min_val, ">=")
 
@@ -175,7 +180,7 @@ class FlextOracleWmsFilter:
         """Filter records against field conditions and optional limit."""
         if (result := self._validate_filters(filters)).is_failure:
             return r[Sequence[t.Core.FilterRecord]].fail(
-                result.error or "Validation failed"
+                result.error or "Validation failed",
             )
         self.filters = filters
         filtered = [
@@ -200,7 +205,7 @@ class FlextOracleWmsFilter:
                 return str(value if value is not None else "" if ascending else "zzz")
 
             return r[Sequence[t.Core.FilterRecord]].ok(
-                sorted(records, key=key_func, reverse=not ascending)
+                sorted(records, key=key_func, reverse=not ascending),
             )
         except Exception as exc:
             self.logger.exception("Sort failed")
@@ -260,7 +265,9 @@ class FlextOracleWmsFilter:
                 return False
 
     def _get_nested_value(
-        self, record: t.Core.FilterRecord, field: str
+        self,
+        record: t.Core.FilterRecord,
+        field: str,
     ) -> t.Core.NestedFilterValue | None:
         keys = field.split(".")
         current: (
@@ -286,23 +293,30 @@ class FlextOracleWmsFilter:
         return current
 
     def _matches_all_filters(
-        self, record: t.Core.FilterRecord, filters: Mapping[str, FilterEntry]
+        self,
+        record: t.Core.FilterRecord,
+        filters: Mapping[str, FilterEntry],
     ) -> bool:
         return all(
             (
                 self._matches_condition(record, field, filter_value)
                 for field, filter_value in filters.items()
-            )
+            ),
         )
 
     def _matches_condition(
-        self, record: t.Core.FilterRecord, field: str, filter_value: FilterEntry
+        self,
+        record: t.Core.FilterRecord,
+        field: str,
+        filter_value: FilterEntry,
     ) -> bool:
         field_value = self._get_nested_value(record, field)
         match filter_value:
             case FlextOracleWmsOperatorFilter() as condition:
                 return self._apply_operator(
-                    field_value, condition.operator, condition.value
+                    field_value,
+                    condition.operator,
+                    condition.value,
                 )
             case list() as candidates:
                 return field_value in candidates if field_value is not None else False
@@ -310,7 +324,8 @@ class FlextOracleWmsFilter:
                 return self._normalize(field_value) == self._normalize(filter_value)
 
     def _normalize(
-        self, value: t.Core.FilterRecordValue | t.Core.FilterScalar
+        self,
+        value: t.Core.FilterRecordValue | t.Core.FilterScalar,
     ) -> t.Core.FilterRecordValue | str:
         match value:
             case None:
@@ -321,12 +336,13 @@ class FlextOracleWmsFilter:
                 return value
 
     def _validate_filter_conditions_total(
-        self, filters: Mapping[str, FilterEntry]
+        self,
+        filters: Mapping[str, FilterEntry],
     ) -> r[bool]:
         total = sum(self._condition_size(value) for value in filters.values())
         if total > self.max_conditions:
             return r[bool].fail(
-                f"Too many filter conditions: {total} > {self.max_conditions}"
+                f"Too many filter conditions: {total} > {self.max_conditions}",
             )
         return r[bool].ok(True)
 
@@ -334,7 +350,7 @@ class FlextOracleWmsFilter:
         total = sum(self._condition_size(value) for value in filters.values())
         if total > self.max_conditions:
             return r[bool].fail(
-                f"Too many conditions. Max: {self.max_conditions}, Got: {total}"
+                f"Too many conditions. Max: {self.max_conditions}, Got: {total}",
             )
         return r[bool].ok(True)
 

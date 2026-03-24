@@ -59,7 +59,10 @@ class FlextOracleWmsApi(FlextService[None]):
     ) -> FlextHttpClient:
         """Create FlextHttpClient instance."""
         return FlextHttpClient(
-            base_url=base_url, timeout=timeout, headers=headers, verify_ssl=verify_ssl
+            base_url=base_url,
+            timeout=timeout,
+            headers=headers,
+            verify_ssl=verify_ssl,
         )
 
     @staticmethod

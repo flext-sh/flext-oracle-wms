@@ -75,7 +75,7 @@ def demonstrate_singleton_config() -> None:
         logger.info("   ✅ Configuration validation passed")
     else:
         logger.error(
-            f"   ❌ Configuration validation failed: {validation_result.error}"
+            f"   ❌ Configuration validation failed: {validation_result.error}",
         )
     logger.info("8. Extracting environment from URL...")
     env_from_url = test_config.extract_environment_from_url()
@@ -115,7 +115,7 @@ def demonstrate_environment_variables() -> None:
         logger.info("   No Oracle WMS environment variables found")
     logger.info("\nTo set Oracle WMS environment variables:")
     logger.info(
-        "   export FLEXT_ORACLE_WMS_BASE_URL='https://your-wms.oraclecloud.com'"
+        "   export FLEXT_ORACLE_WMS_BASE_URL='https://your-wms.oraclecloud.com'",
     )
     logger.info("   export FLEXT_ORACLE_WMS_USERNAME='your_username'")
     logger.info("   export FLEXT_ORACLE_WMS_PASSWORD='your_password'")

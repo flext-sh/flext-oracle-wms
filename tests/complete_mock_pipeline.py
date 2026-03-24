@@ -280,7 +280,11 @@ class CompleteMockPipeline:
             target_results = self._simulate_target_loading(tap_records)
             dbt_results = self._simulate_dbt_transformations(target_results)
             save_result: r[str] = self._save_complete_pipeline_results(
-                schemas, catalog, tap_records, target_results, dbt_results
+                schemas,
+                catalog,
+                tap_records,
+                target_results,
+                dbt_results,
             )
             end_time = datetime.now(UTC)
             duration = (end_time - start_time).total_seconds()
@@ -296,7 +300,7 @@ class CompleteMockPipeline:
                     streams
                     if isinstance(catalog, dict)
                     and isinstance((streams := catalog.get("streams", [])), list)
-                    else []
+                    else [],
                 ),
                 "tap_records": len(tap_records),
                 "target_tables": len(target_results),
@@ -315,7 +319,7 @@ class CompleteMockPipeline:
                 sample_data = entity_info["sample_data"]
                 if isinstance(sample_data, dict):
                     properties, key_properties = self._create_entity_properties(
-                        sample_data
+                        sample_data,
                     )
                     self._add_singer_metadata(properties)
                     schema = self._build_singer_schema(properties, key_properties)
@@ -323,7 +327,8 @@ class CompleteMockPipeline:
         return schemas
 
     def _create_entity_properties(
-        self, sample_data: t.ContainerMapping
+        self,
+        sample_data: t.ContainerMapping,
     ) -> tuple[t.ContainerMapping, t.StrSequence]:
         """Create properties and key properties from sample data - SRP compliance."""
         properties: t.ContainerMapping = {}
@@ -336,7 +341,10 @@ class CompleteMockPipeline:
         return (properties, key_properties)
 
     def _infer_field_type(
-        self, field: str, *, value: t.NormalizedValue
+        self,
+        field: str,
+        *,
+        value: t.NormalizedValue,
     ) -> Mapping[str, str | t.StrSequence]:
         """Infer Singer type from field name and value - Strategy Pattern."""
         field_type = self._infer_type_from_field_name(field)
@@ -345,7 +353,8 @@ class CompleteMockPipeline:
         return self._infer_type_from_value(value=value)
 
     def _infer_type_from_field_name(
-        self, field: str
+        self,
+        field: str,
     ) -> Mapping[str, str | t.StrSequence] | None:
         """Infer type from field name patterns - Template Method Pattern."""
         field_type_mapping: Mapping[str, Mapping[str, str | t.StrSequence]] = {
@@ -366,7 +375,9 @@ class CompleteMockPipeline:
         return None
 
     def _infer_type_from_value(
-        self, *, value: t.NormalizedValue
+        self,
+        *,
+        value: t.NormalizedValue,
     ) -> Mapping[str, str | t.StrSequence]:
         """Infer type from Python value type - Template Method Pattern."""
         if isinstance(value, bool):
@@ -393,7 +404,9 @@ class CompleteMockPipeline:
         })
 
     def _build_singer_schema(
-        self, properties: t.ContainerMapping, key_properties: t.StrSequence
+        self,
+        properties: t.ContainerMapping,
+        key_properties: t.StrSequence,
     ) -> t.ContainerMapping:
         """Build complete Singer schema - SRP compliance."""
         return {
@@ -404,7 +417,8 @@ class CompleteMockPipeline:
         }
 
     def _create_complete_singer_catalog(
-        self, schemas: t.ContainerMapping
+        self,
+        schemas: t.ContainerMapping,
     ) -> t.ContainerMapping:
         """Create complete Singer catalog for Meltano integration."""
         streams: Sequence[t.ContainerMapping] = []
@@ -441,7 +455,7 @@ class CompleteMockPipeline:
                             "forced-replication-method": replication_method,
                             "table-key-properties": key_properties,
                         },
-                    }
+                    },
                 ],
             }
             if replication_key:
@@ -479,7 +493,8 @@ class CompleteMockPipeline:
         return tap_records
 
     def _simulate_target_loading(
-        self, tap_records: Sequence[t.ContainerMapping]
+        self,
+        tap_records: Sequence[t.ContainerMapping],
     ) -> t.ContainerMapping:
         """Simulate TARGET loading process."""
         target_results = {}
@@ -500,7 +515,8 @@ class CompleteMockPipeline:
         return cast("t.ContainerMapping", target_results)
 
     def _simulate_dbt_transformations(
-        self, target_results: t.ContainerMapping
+        self,
+        target_results: t.ContainerMapping,
     ) -> t.ContainerMapping:
         """Simulate DBT transformation process."""
         dbt_results: Mapping[str, Mapping[str, int | t.StrSequence | str]] = {}
@@ -577,7 +593,7 @@ class CompleteMockPipeline:
                             cast(
                                 "t.ContainerMapping",
                                 target_results.get(src, {}),
-                            ).get("records_loaded", 0)
+                            ).get("records_loaded", 0),
                         )
                         for src in available_sources
                         if src in target_results
@@ -637,7 +653,7 @@ class CompleteMockPipeline:
                     streams
                     if isinstance(catalog, dict)
                     and isinstance((streams := catalog.get("streams", [])), list)
-                    else []
+                    else [],
                 ),
                 "tap_records_extracted": len(tap_records),
                 "replication_methods": list({

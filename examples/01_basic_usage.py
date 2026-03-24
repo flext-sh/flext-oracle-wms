@@ -94,7 +94,8 @@ def discover_wms_entities(
 
 
 def query_entity_data(
-    client: FlextOracleWmsClient, entity_name: str
+    client: FlextOracleWmsClient,
+    entity_name: str,
 ) -> r[Sequence[t.ContainerMapping]]:
     """Query data from a specific Oracle WMS entity.
 
@@ -126,7 +127,7 @@ def query_entity_data(
                             else getattr(sample_record, field, "N/A")
                         )
                         str(value)[:MAX_VALUE_DISPLAY_LENGTH] + "..." if len(
-                            str(value)
+                            str(value),
                         ) > MAX_VALUE_DISPLAY_LENGTH else str(value)
                     except (KeyError, ValueError, TypeError) as e:
                         logger.debug("Display formatting failed: %s", e)

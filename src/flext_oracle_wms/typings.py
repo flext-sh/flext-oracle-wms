@@ -99,5 +99,4 @@ class FlextOracleWmsTypes(FlextTypes):
 
 
 t = FlextOracleWmsTypes
-HttpJsonObject = FlextOracleWmsTypes.Core.HttpJsonObject
-__all__ = ["FlextOracleWmsTypes", "HttpJsonObject", "t"]
+__all__ = ["FlextOracleWmsTypes", "t"]

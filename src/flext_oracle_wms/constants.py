@@ -156,7 +156,10 @@ class FlextOracleWmsConstants(FlextConstants):
         LEGACY = "legacy"
 
     type WmsApiVersionLiteral = Literal[
-        WmsApiVersion.V1, WmsApiVersion.V2, WmsApiVersion.V3, WmsApiVersion.LEGACY
+        WmsApiVersion.V1,
+        WmsApiVersion.V2,
+        WmsApiVersion.V3,
+        WmsApiVersion.LEGACY,
     ]
 
     @unique
@@ -174,7 +177,11 @@ class FlextOracleWmsConstants(FlextConstants):
         REPORTING = "reporting"
 
     type WmsApiCategoryLiteral = Literal[
-        "inventory", "orders", "shipping", "receiving", "reporting"
+        "inventory",
+        "orders",
+        "shipping",
+        "receiving",
+        "reporting",
     ]
 
     @unique
@@ -193,7 +200,12 @@ class FlextOracleWmsConstants(FlextConstants):
         CANCELLED = "cancelled"
 
     type WmsOperationStatusLiteral = Literal[
-        "pending", "running", "success", "error", "timeout", "cancelled"
+        "pending",
+        "running",
+        "success",
+        "error",
+        "timeout",
+        "cancelled",
     ]
 
     @unique

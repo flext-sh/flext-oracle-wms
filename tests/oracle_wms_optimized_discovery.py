@@ -106,7 +106,9 @@ class OptimizedOracleWmsDiscovery:
         available_priority = [e for e in all_entities if e in self.priority_entities]
         other_entities = [e for e in all_entities if e not in self.priority_entities]
         priority_results = self._process_entity_batch(
-            available_priority, "PRIORITY", batch_size=10
+            available_priority,
+            "PRIORITY",
+            batch_size=10,
         )
         entities_with_data: t.StrSequence = []
         for entity_name, result in priority_results.items():
@@ -116,7 +118,9 @@ class OptimizedOracleWmsDiscovery:
             pass
         if entities_with_data and other_entities:
             additional_results = self._process_entity_batch(
-                other_entities[:50], "ADDITIONAL", batch_size=15
+                other_entities[:50],
+                "ADDITIONAL",
+                batch_size=15,
             )
             all_results = {**priority_results, **additional_results}
             additional_with_data = [
@@ -140,7 +144,9 @@ class OptimizedOracleWmsDiscovery:
         })
 
     def _process_entity_batch(
-        self, entities: t.StrSequence, batch_size: int = 10
+        self,
+        entities: t.StrSequence,
+        batch_size: int = 10,
     ) -> t.ContainerMapping:
         """Process entity batch with parallel requests."""
         results: Mapping[str, Mapping[str, bool | str]] = {}
@@ -210,7 +216,7 @@ class OptimizedOracleWmsDiscovery:
                                     for k, v in sample_record.items()
                                 },
                                 "sample_record": self._safe_sample_record(
-                                    sample_record
+                                    sample_record,
                                 ),
                             })
                     return analysis
@@ -250,12 +256,13 @@ class OptimizedOracleWmsDiscovery:
         """Generate complete Singer schemas for high-value entities."""
         if not self.high_value_entities:
             return r[bool].fail(
-                "No high-value entities available for schema generation"
+                "No high-value entities available for schema generation",
             )
         singer_schemas = {}
         for entity_name, entity_data in self.high_value_entities.items():
             schema = self._generate_singer_schema_from_entity_data(
-                entity_name, entity_data
+                entity_name,
+                entity_data,
             )
             if schema:
                 singer_schemas[entity_name] = schema
@@ -280,7 +287,9 @@ class OptimizedOracleWmsDiscovery:
         })
 
     def _generate_singer_schema_from_entity_data(
-        self, entity_name: str, entity_data: t.ContainerMapping
+        self,
+        entity_name: str,
+        entity_data: t.ContainerMapping,
     ) -> t.ContainerMapping | None:
         """Generate Singer schema from entity data with proper typing."""
         try:
@@ -294,7 +303,9 @@ class OptimizedOracleWmsDiscovery:
                 python_type = field_types.get(field, "str")
                 sample_value = sample_record.get(field)
                 singer_type = self._oracle_to_singer_type(
-                    field, python_type, sample_value
+                    field,
+                    python_type,
+                    sample_value,
                 )
                 properties[field] = singer_type
             properties["_sdc_extracted_at"] = {
@@ -322,7 +333,10 @@ class OptimizedOracleWmsDiscovery:
             return None
 
     def _oracle_to_singer_type(
-        self, field_name: str, python_type: str, sample_value: t.NormalizedValue
+        self,
+        field_name: str,
+        python_type: str,
+        sample_value: t.NormalizedValue,
     ) -> t.ContainerMapping:
         """Convert Oracle field to Singer type with real data analysis."""
         if sample_value is not None:
@@ -413,7 +427,9 @@ class OptimizedOracleWmsDiscovery:
         return any(pattern in field_name.lower() for pattern in code_patterns)
 
     def _determine_key_properties(
-        self, entity_name: str, fields: t.StrSequence
+        self,
+        entity_name: str,
+        fields: t.StrSequence,
     ) -> t.StrSequence:
         """Determine key properties for Oracle WMS entity."""
         potential_keys: t.StrSequence = []
@@ -444,7 +460,8 @@ class OptimizedOracleWmsDiscovery:
         return potential_keys[:3]
 
     def _generate_singer_catalog(
-        self, schemas: t.ContainerMapping
+        self,
+        schemas: t.ContainerMapping,
     ) -> t.ContainerMapping:
         """Generate Singer catalog from schemas."""
         streams: Sequence[t.ContainerMapping] = []
@@ -466,7 +483,7 @@ class OptimizedOracleWmsDiscovery:
                             "forced-replication-method": "FULL_TABLE",
                             "table-key-properties": key_properties,
                         },
-                    }
+                    },
                 ],
             }
             streams.append(stream)

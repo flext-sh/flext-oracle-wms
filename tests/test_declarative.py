@@ -139,12 +139,13 @@ def load_env_config() -> t.ContainerMapping | None:
             "max_retries": int(config.get("ORACLE_WMS_MAX_RETRIES", "3")),
             "verify_ssl": config.get("ORACLE_WMS_VERIFY_SSL", "true").lower() == "true",
             "enable_logging": config.get(
-                "ORACLE_WMS_ENABLE_REQUEST_LOGGING", "true"
+                "ORACLE_WMS_ENABLE_REQUEST_LOGGING",
+                "true",
             ).lower()
             == "true",
         }
     except Exception as e:
-        logger.warning(f"Failed to load .env config: {e}")
+        logger.warning("Failed to load .env config: %s", e)
         return None
 
 
@@ -193,7 +194,8 @@ class TestOracleWmsDeclarativeIntegration:
         assert len(versions) >= 1
 
     def test_client_configuration_and_lifecycle(
-        self, env_config: t.ContainerMapping
+        self,
+        env_config: t.ContainerMapping,
     ) -> None:
         """Test client configuration and initialization."""
         config = _build_client_settings(env_config, FlextOracleWmsApiVersion.V1)
@@ -210,7 +212,8 @@ class TestOracleWmsDeclarativeIntegration:
         assert stop_result.is_success, f"Client stop failed: {stop_result.error}"
 
     def test_oracle_wms_health_check(
-        self, oracle_wms_client: FlextOracleWmsClient
+        self,
+        oracle_wms_client: FlextOracleWmsClient,
     ) -> None:
         """Test Oracle WMS API health check."""
         health_result = oracle_wms_client.health_check()
@@ -249,7 +252,9 @@ class TestLgfApiV10Integration:
 
     @pytest.mark.parametrize("entity_name", ["company", "facility", "item"])
     def test_get_entity_data(
-        self, oracle_wms_client: FlextOracleWmsClient, entity_name: str
+        self,
+        oracle_wms_client: FlextOracleWmsClient,
+        entity_name: str,
     ) -> None:
         """Test getting entity data using LGF API v10."""
         result = oracle_wms_client.get_entity_data(entity_name=entity_name, limit=5)
@@ -274,7 +279,8 @@ class TestLgfApiV10Integration:
             logger.warning("⚠️ Failed to get %s data: %s", entity_name, result.error)
 
     def test_get_entity_data_with_filters(
-        self, oracle_wms_client: FlextOracleWmsClient
+        self,
+        oracle_wms_client: FlextOracleWmsClient,
     ) -> None:
         """Test getting entity data with filters."""
         result = oracle_wms_client.get_entity_data(
@@ -294,7 +300,7 @@ class TestLgfApiV10Integration:
         list_result = oracle_wms_client.get_entity_data("company", limit=1)
         if not list_result.is_success:
             pytest.skip(
-                f"Cannot test get_entity_by_id - list failed: {list_result.error}"
+                f"Cannot test get_entity_by_id - list failed: {list_result.error}",
             )
         data = list_result.data
         empty_results: t.ContainerList = []
@@ -312,7 +318,9 @@ class TestLgfApiV10Integration:
         if not record_id:
             pytest.skip("No ID field found in company record")
         result = oracle_wms_client.get_entity_data(
-            entity_name="company", filters={"id": str(record_id)}, limit=1
+            entity_name="company",
+            filters={"id": str(record_id)},
+            limit=1,
         )
         if result.is_success:
             logger.info("✅ Successfully retrieved company by ID", record_id=record_id)
@@ -326,18 +334,20 @@ class TestAutomationApisIntegration:
     def test_get_entity_status(self, oracle_wms_client: FlextOracleWmsClient) -> None:
         """Test getting entity status."""
         result = oracle_wms_client.get_entity_data(
-            entity_name="company", params={"key": "test", "company_code": "DEFAULT"}
+            entity_name="company",
+            params={"key": "test", "company_code": "DEFAULT"},
         )
         if result.is_success:
             logger.info("✅ Successfully got entity status")
         else:
             logger.info("⚠️ Entity status call failed (expected): %s", result.error)
             assert result.error is None or "Client not initialized" not in str(
-                result.error
+                result.error,
             )
 
     def test_update_oblpn_tracking_number(
-        self, oracle_wms_client: FlextOracleWmsClient
+        self,
+        oracle_wms_client: FlextOracleWmsClient,
     ) -> None:
         """Test OBLPN tracking number update API structure."""
         result = oracle_wms_client.update_oblpn_tracking_number(
@@ -351,11 +361,14 @@ class TestAutomationApisIntegration:
         logger.info("⚠️ OBLPN update failed as expected: %s", result.error)
 
     def test_create_lpn_api_structure(
-        self, oracle_wms_client: FlextOracleWmsClient
+        self,
+        oracle_wms_client: FlextOracleWmsClient,
     ) -> None:
         """Test LPN creation API structure."""
         result = oracle_wms_client.create_lpn(
-            lpn_nbr="TEST_LPN_001", qty=10, item_barcode="TEST_ITEM"
+            lpn_nbr="TEST_LPN_001",
+            qty=10,
+            item_barcode="TEST_ITEM",
         )
         assert not result.is_success
         assert result.error is None or "Client not initialized" not in str(result.error)
@@ -393,7 +406,8 @@ class TestPerformanceIntegration:
     """Performance and stress tests for Oracle WMS client."""
 
     def test_concurrent_entity_requests(
-        self, oracle_wms_client: FlextOracleWmsClient
+        self,
+        oracle_wms_client: FlextOracleWmsClient,
     ) -> None:
         """Test concurrent requests to different entities."""
         if not oracle_wms_client.config.use_mock:
@@ -415,7 +429,9 @@ class TestPerformanceIntegration:
                 logger.info("✅ Concurrent request %d succeeded", i)
             else:
                 logger.warning(
-                    "Request %d failed: %s", i, getattr(result_item, "error", "Unknown")
+                    "Request %d failed: %s",
+                    i,
+                    getattr(result_item, "error", "Unknown"),
                 )
         assert successful_requests > 0, "No concurrent requests succeeded"
         logger.info(
@@ -429,7 +445,8 @@ class TestPerformanceIntegration:
         page_sizes = [1, 5, 10]
         for page_size in page_sizes:
             result = oracle_wms_client.get_entity_data(
-                entity_name="company", limit=page_size
+                entity_name="company",
+                limit=page_size,
             )
             if result.is_success:
                 data = result.data
@@ -441,12 +458,16 @@ class TestPerformanceIntegration:
                 )
                 actual_count = len(results) if isinstance(results, list) else 0
                 logger.info(
-                    "✅ Page size %d returned %d records", page_size, actual_count
+                    "✅ Page size %d returned %d records",
+                    page_size,
+                    actual_count,
                 )
                 assert actual_count <= page_size
             else:
                 logger.warning(
-                    "⚠️ Pagination test failed for size %d: %s", page_size, result.error
+                    "⚠️ Pagination test failed for size %d: %s",
+                    page_size,
+                    result.error,
                 )
 
 

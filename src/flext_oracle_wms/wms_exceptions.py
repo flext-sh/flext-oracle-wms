@@ -25,7 +25,10 @@ class FlextOracleWmsExceptions:
         """Base WMS exception with FLEXT context handling."""
 
         def __init__(
-            self, message: str, code: str = "WMS_ERROR", **context: t.Scalar
+            self,
+            message: str,
+            code: str = "WMS_ERROR",
+            **context: t.Scalar,
         ) -> None:
             """Initialize base WMS error with message and error code."""
             super().__init__(message)
@@ -139,7 +142,7 @@ class FlextOracleWmsSchemaError(FlextOracleWmsExceptions.SchemaError):
 
 
 class FlextOracleWmsSchemaFlatteningError(
-    FlextOracleWmsExceptions.SchemaFlatteningError
+    FlextOracleWmsExceptions.SchemaFlatteningError,
 ):
     """FlextOracleWmsSchemaFlatteningError - real inheritance from SchemaFlatteningError."""
 

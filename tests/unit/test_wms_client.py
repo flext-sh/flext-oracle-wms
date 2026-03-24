@@ -31,7 +31,8 @@ class TestFlextOracleWmsClient:
     def test_initialization_with_config(self) -> None:
         """Test initialization with explicit configuration."""
         config = FlextOracleWmsSettings(
-            base_url="https://custom-wms.example.com", timeout=60
+            base_url="https://custom-wms.example.com",
+            timeout=60,
         )
         client = FlextOracleWmsClient(config=config)
         assert client.config is config

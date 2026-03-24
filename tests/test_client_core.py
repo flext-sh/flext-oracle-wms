@@ -30,7 +30,8 @@ class TestFlextOracleWmsClientCore:
         assert hasattr(client, "_discovered_entities")
 
     def test_client_string_representation(
-        self, mock_config: FlextOracleWmsSettings
+        self,
+        mock_config: FlextOracleWmsSettings,
     ) -> None:
         client = FlextOracleWmsClient(mock_config)
         repr_str = repr(client)
@@ -39,7 +40,8 @@ class TestFlextOracleWmsClientCore:
         assert isinstance(str_str, str)
 
     def test_client_config_properties(
-        self, mock_config: FlextOracleWmsSettings
+        self,
+        mock_config: FlextOracleWmsSettings,
     ) -> None:
         client = FlextOracleWmsClient(mock_config)
         assert client.config.base_url == mock_config.base_url
@@ -52,7 +54,8 @@ class TestFlextOracleWmsClientCore:
         assert result.value is True
 
     def test_client_start_multiple_times(
-        self, mock_config: FlextOracleWmsSettings
+        self,
+        mock_config: FlextOracleWmsSettings,
     ) -> None:
         client = FlextOracleWmsClient(mock_config)
         result1 = client.start()
@@ -73,7 +76,8 @@ class TestFlextOracleWmsClientCore:
         assert result.is_success
 
     def test_client_has_expected_methods(
-        self, mock_config: FlextOracleWmsSettings
+        self,
+        mock_config: FlextOracleWmsSettings,
     ) -> None:
         client = FlextOracleWmsClient(mock_config)
         assert hasattr(client, "start")
@@ -103,7 +107,8 @@ class TestFlextOracleWmsClientCore:
         assert result.is_success
 
     def test_health_check_delegates_to_get(
-        self, mock_config: FlextOracleWmsSettings
+        self,
+        mock_config: FlextOracleWmsSettings,
     ) -> None:
         client = FlextOracleWmsClient(mock_config)
         mock_response = MagicMock()
@@ -115,7 +120,8 @@ class TestFlextOracleWmsClientCore:
         assert result.is_success
 
     def test_discover_entities_success(
-        self, mock_config: FlextOracleWmsSettings
+        self,
+        mock_config: FlextOracleWmsSettings,
     ) -> None:
         client = FlextOracleWmsClient(mock_config)
         mock_response = MagicMock()
@@ -129,7 +135,8 @@ class TestFlextOracleWmsClientCore:
         assert len(result.value) == 3
 
     def test_discover_entities_failure(
-        self, mock_config: FlextOracleWmsSettings
+        self,
+        mock_config: FlextOracleWmsSettings,
     ) -> None:
         client = FlextOracleWmsClient(mock_config)
         client._client = MagicMock()

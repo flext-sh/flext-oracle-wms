@@ -136,7 +136,8 @@ class FocusedOracleWmsDiscovery:
                         results = data.get("results", [])
                         if count > 0 or (results and results):
                             detailed_result = self.client.get_entity_data(
-                                entity_name, limit=3
+                                entity_name,
+                                limit=3,
                             )
                             if detailed_result.is_success:
                                 detailed_data = detailed_result.data
@@ -164,7 +165,7 @@ class FocusedOracleWmsDiscovery:
                                                     for k, v in sample.items()
                                                 },
                                                 "sample_record": self._safe_sample(
-                                                    sample
+                                                    sample,
                                                 ),
                                             })
                                     data_entities[entity_name] = entity_info
@@ -211,7 +212,8 @@ class FocusedOracleWmsDiscovery:
         return safe
 
     def _generate_schemas_from_data(
-        self, data_entities: t.ContainerMapping
+        self,
+        data_entities: t.ContainerMapping,
     ) -> t.ContainerMapping:
         """Generate Singer schemas from entities with data."""
         schemas: Mapping[str, t.ContainerMapping] = {}
@@ -222,7 +224,8 @@ class FocusedOracleWmsDiscovery:
         return schemas
 
     def _generate_schemas_from_structures(
-        self, structure_entities: t.ContainerMapping
+        self,
+        structure_entities: t.ContainerMapping,
     ) -> t.ContainerMapping:
         """Generate Singer schemas from structures."""
         schemas: Mapping[str, t.ContainerMapping] = {}
@@ -233,7 +236,9 @@ class FocusedOracleWmsDiscovery:
         return schemas
 
     def _create_singer_schema(
-        self, entity_name: str, entity_data: t.ContainerMapping
+        self,
+        entity_name: str,
+        entity_data: t.ContainerMapping,
     ) -> t.ContainerMapping | None:
         """Create Singer schema with proper Oracle WMS typing."""
         try:
@@ -247,7 +252,10 @@ class FocusedOracleWmsDiscovery:
                 python_type = field_types.get(field, "str")
                 sample_value = sample_record.get(field)
                 singer_type = self._oracle_field_to_singer_type(
-                    field, python_type, sample_value, entity_name
+                    field,
+                    python_type,
+                    sample_value,
+                    entity_name,
                 )
                 properties[field] = singer_type
             properties["_sdc_extracted_at"] = {"type": "string", "format": "date-time"}
@@ -267,7 +275,10 @@ class FocusedOracleWmsDiscovery:
             return None
 
     def _oracle_field_to_singer_type(
-        self, field_name: str, sample_value: t.NormalizedValue, entity_name: str
+        self,
+        field_name: str,
+        sample_value: t.NormalizedValue,
+        entity_name: str,
     ) -> t.ContainerMapping:
         """Convert Oracle WMS field to Singer type with context."""
         if sample_value is not None:
@@ -336,7 +347,9 @@ class FocusedOracleWmsDiscovery:
         )
 
     def _get_oracle_key_properties(
-        self, entity_name: str, fields: t.StrSequence
+        self,
+        entity_name: str,
+        fields: t.StrSequence,
     ) -> t.StrSequence:
         """Get Oracle WMS key properties for entity."""
         keys: t.StrSequence = []
@@ -416,7 +429,7 @@ class FocusedOracleWmsDiscovery:
                             "selected": True,
                             "replication-method": "FULL_TABLE",
                         },
-                    }
+                    },
                 ],
             }
             streams.append(stream)

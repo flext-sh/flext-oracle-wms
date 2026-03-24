@@ -51,16 +51,20 @@ class FlextOracleWmsModels(FlextModels):
 
             name: Annotated[str, Field(min_length=1, description="Entity name")]
             endpoint: Annotated[
-                str, Field(min_length=1, description="API endpoint path")
+                str,
+                Field(min_length=1, description="API endpoint path"),
             ]
             description: Annotated[
-                str | None, Field(default=None, description="Entity description")
+                str | None,
+                Field(default=None, description="Entity description"),
             ]
             primary_key: Annotated[
-                str | None, Field(default=None, description="Primary key field")
+                str | None,
+                Field(default=None, description="Primary key field"),
             ]
             replication_key: Annotated[
-                str | None, Field(default=None, description="Replication key field")
+                str | None,
+                Field(default=None, description="Replication key field"),
             ]
             supports_incremental: Annotated[
                 bool,
@@ -96,13 +100,16 @@ class FlextOracleWmsModels(FlextModels):
                 Field(default_factory=dict, description="Response data"),
             ]
             status_code: Annotated[
-                t.HttpStatusCode, Field(default=200, description="HTTP status code")
+                t.HttpStatusCode,
+                Field(default=200, description="HTTP status code"),
             ]
             success: Annotated[
-                bool, Field(default=True, description="Whether request succeeded")
+                bool,
+                Field(default=True, description="Whether request succeeded"),
             ]
             error_message: Annotated[
-                str | None, Field(default=None, description="Error message if any")
+                str | None,
+                Field(default=None, description="Error message if any"),
             ]
 
             def validate_response(self) -> r[bool]:
@@ -142,7 +149,7 @@ class FlextOracleWmsModels(FlextModels):
                 if self.method == c.OracleWMSAuthMethod.OAUTH2:
                     if not self.oauth2_client_id or not self.oauth2_client_secret:
                         return r[bool].fail(
-                            "OAuth2 requires client_id and client_secret"
+                            "OAuth2 requires client_id and client_secret",
                         )
                     return r[bool].ok(True)
                 return r[bool].fail(f"Unsupported auth method: {self.method}")
@@ -199,7 +206,8 @@ class FlextOracleWmsModels(FlextModels):
         id: Annotated[str, Field(default="", description="Entity identifier")]
         name: Annotated[str, Field(default="", description="Entity name")]
         created_at: Annotated[
-            str | None, Field(default=None, description="Creation timestamp")
+            str | None,
+            Field(default=None, description="Creation timestamp"),
         ]
         updated_at: Annotated[
             str | None,
@@ -214,10 +222,12 @@ class FlextOracleWmsModels(FlextModels):
 
         sku: Annotated[str, Field(default="", description="Stock keeping unit")]
         quantity: Annotated[
-            t.NonNegativeInt, Field(default=0, description="Item quantity")
+            t.NonNegativeInt,
+            Field(default=0, description="Item quantity"),
         ]
         location_id: Annotated[
-            str, Field(default="", description="Storage location identifier")
+            str,
+            Field(default="", description="Storage location identifier"),
         ]
         status: Annotated[str, Field(default="active", description="Item status")]
 
@@ -225,7 +235,8 @@ class FlextOracleWmsModels(FlextModels):
         """Order domain entity."""
 
         customer_id: Annotated[
-            str, Field(default="", description="Customer identifier")
+            str,
+            Field(default="", description="Customer identifier"),
         ]
         status: Annotated[str, Field(default="pending", description="Order status")]
         total_amount: Annotated[
@@ -244,11 +255,13 @@ class FlextOracleWmsModels(FlextModels):
         """Shipment domain entity."""
 
         order_id: Annotated[
-            str, Field(default="", description="Associated order identifier")
+            str,
+            Field(default="", description="Associated order identifier"),
         ]
         status: Annotated[str, Field(default="pending", description="Shipment status")]
         carrier: Annotated[
-            str | None, Field(default=None, description="Shipping carrier name")
+            str | None,
+            Field(default=None, description="Shipping carrier name"),
         ]
         tracking_number: Annotated[
             str | None,

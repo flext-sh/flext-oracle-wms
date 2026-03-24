@@ -28,7 +28,7 @@ class FlextOracleWmsApi:
             version="v1",
             category="test",
             description="Test endpoint",
-        )
+        ),
     }
 
     class OracleWmsMockServer:
@@ -45,8 +45,5 @@ class FlextOracleWmsApi:
         return cls.OracleWmsMockServer()
 
 
-# Backward-compatible alias
-FlextOracleWmsApiEndpoint = m.OracleWms.ApiEndpoint
-
 FLEXT_ORACLE_WMS_APIS = FlextOracleWmsApi.FLEXT_ORACLE_WMS_APIS
-__all__ = ["FLEXT_ORACLE_WMS_APIS", "FlextOracleWmsApi", "FlextOracleWmsApiEndpoint"]
+__all__ = ["FLEXT_ORACLE_WMS_APIS", "FlextOracleWmsApi"]

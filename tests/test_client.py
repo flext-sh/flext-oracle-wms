@@ -150,7 +150,10 @@ class TestClientSimpleNew:
     def test_client_initialization_edge_cases(self) -> None:
         """Test client initialization with edge cases."""
         minimal_config = FlextOracleWmsClientSettings(
-            base_url="https://test.com", username="user", password="pass", timeout=30
+            base_url="https://test.com",
+            username="user",
+            password="pass",
+            timeout=30,
         )
         client = FlextOracleWmsClient(minimal_config)
         assert "test.com" in str(client.config.base_url)

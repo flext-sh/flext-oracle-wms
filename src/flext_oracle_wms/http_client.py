@@ -14,7 +14,7 @@ from flext_api import FlextApiClient, FlextApiModels, FlextApiSettings, FlextApi
 from flext_core import FlextLogger, r
 from pydantic import TypeAdapter, ValidationError
 
-from flext_oracle_wms import HttpJsonObject, t
+from flext_oracle_wms import t
 
 HTTP_BAD_REQUEST_THRESHOLD = 400
 
@@ -72,10 +72,10 @@ class FlextHttpClient:
 
     @staticmethod
     def _normalize_request_body(
-        body: HttpJsonObject | None,
-    ) -> HttpJsonObject:
+        body: t.ContainerValueMapping | None,
+    ) -> t.ContainerValueMapping:
         if body is None:
-            empty_body: HttpJsonObject = {}
+            empty_body: t.ContainerValueMapping = {}
             return empty_body
         return body
 
@@ -88,13 +88,15 @@ class FlextHttpClient:
         self._client = None
 
     def delete(
-        self, path: str, headers: t.StrMapping | None = None
-    ) -> r[HttpJsonObject]:
+        self,
+        path: str,
+        headers: t.StrMapping | None = None,
+    ) -> r[t.ContainerValueMapping]:
         """Make DELETE request."""
         try:
             self._ensure_client()
             if self._client is None:
-                return r[HttpJsonObject].fail("Client not initialized")
+                return r[t.ContainerValueMapping].fail("Client not initialized")
             request_headers = dict(self.default_headers)
             request_headers.update(self._normalize_headers(headers))
             url = f"{self.base_url}/{path.lstrip('/')}"
@@ -108,21 +110,21 @@ class FlextHttpClient:
             )
             response_result = self._client.request(request)
             if response_result.is_failure:
-                return r[HttpJsonObject].fail(
-                    f"HTTP request failed: {response_result.error}"
+                return r[t.ContainerValueMapping].fail(
+                    f"HTTP request failed: {response_result.error}",
                 )
             response = response_result.value
-            return r[HttpJsonObject].ok(self._parse_response_body(response.body))
+            return r[t.ContainerValueMapping].ok(self._parse_response_body(response.body))
         except Exception as exc:
             FlextHttpClient.logger.exception(f"DELETE {path} error")
-            return r[HttpJsonObject].fail(f"Request error: {exc}")
+            return r[t.ContainerValueMapping].fail(f"Request error: {exc}")
 
     def get(
         self,
         path: str,
         params: FlextApiTypes.Api.WebParams | None = None,
         headers: t.StrMapping | None = None,
-    ) -> r[HttpJsonObject]:
+    ) -> r[t.ContainerValueMapping]:
         """Make GET request with railway-oriented error handling."""
         params_str: FlextApiTypes.Api.WebParams | None = (
             {str(k): str(v) for k, v in params.items()} if params else None
@@ -132,10 +134,10 @@ class FlextHttpClient:
     def post(
         self,
         path: str,
-        data: HttpJsonObject | None = None,
-        json_data: HttpJsonObject | None = None,
+        data: t.ContainerValueMapping | None = None,
+        json_data: t.ContainerValueMapping | None = None,
         headers: t.StrMapping | None = None,
-    ) -> r[HttpJsonObject]:
+    ) -> r[t.ContainerValueMapping]:
         """Make POST request with railway-oriented error handling."""
         body = json_data or data
         return self._execute_request("POST", path, headers=headers, body=body)
@@ -143,15 +145,15 @@ class FlextHttpClient:
     def put(
         self,
         path: str,
-        data: HttpJsonObject | None = None,
-        json_data: HttpJsonObject | None = None,
+        data: t.ContainerValueMapping | None = None,
+        json_data: t.ContainerValueMapping | None = None,
         headers: t.StrMapping | None = None,
-    ) -> r[HttpJsonObject]:
+    ) -> r[t.ContainerValueMapping]:
         """Make PUT request."""
         try:
             self._ensure_client()
             if self._client is None:
-                return r[HttpJsonObject].fail("Client not initialized")
+                return r[t.ContainerValueMapping].fail("Client not initialized")
             request_headers = dict(self.default_headers)
             request_headers.update(self._normalize_headers(headers))
             request_body = json_data or data
@@ -166,18 +168,18 @@ class FlextHttpClient:
             )
             response_result = self._client.request(request)
             if response_result.is_failure:
-                return r[HttpJsonObject].fail(
-                    f"HTTP request failed: {response_result.error}"
+                return r[t.ContainerValueMapping].fail(
+                    f"HTTP request failed: {response_result.error}",
                 )
             response = response_result.value
             if response.status_code >= HTTP_BAD_REQUEST_THRESHOLD:
-                return r[HttpJsonObject].fail(
-                    f"HTTP {response.status_code}: {response.body!r}"
+                return r[t.ContainerValueMapping].fail(
+                    f"HTTP {response.status_code}: {response.body!r}",
                 )
-            return r[HttpJsonObject].ok(self._parse_response_body(response.body))
+            return r[t.ContainerValueMapping].ok(self._parse_response_body(response.body))
         except Exception as exc:
             FlextHttpClient.logger.exception("Unexpected error")
-            return r[HttpJsonObject].fail(f"Unexpected error: {exc}")
+            return r[t.ContainerValueMapping].fail(f"Unexpected error: {exc}")
 
     def _ensure_client(self) -> None:
         """Ensure Oracle WMS HTTP client is initialized using FLEXT delegation."""
@@ -200,13 +202,13 @@ class FlextHttpClient:
         path: str,
         params: FlextApiTypes.Api.WebParams | None = None,
         headers: t.StrMapping | None = None,
-        body: HttpJsonObject | None = None,
-    ) -> r[HttpJsonObject]:
+        body: t.ContainerValueMapping | None = None,
+    ) -> r[t.ContainerValueMapping]:
         """Execute HTTP request with FLEXT delegation."""
         try:
             self._ensure_client()
             if self._client is None:
-                return r[HttpJsonObject].fail("Client not initialized")
+                return r[t.ContainerValueMapping].fail("Client not initialized")
             request_headers = dict(self.default_headers)
             request_headers.update(self._normalize_headers(headers))
             url = f"{self.base_url}/{path.lstrip('/')}" if path else self.base_url
@@ -223,22 +225,23 @@ class FlextHttpClient:
             )
             response_result = self._client.request(request)
             if response_result.is_failure:
-                return r[HttpJsonObject].fail(
-                    f"HTTP {method} failed: {response_result.error}"
+                return r[t.ContainerValueMapping].fail(
+                    f"HTTP {method} failed: {response_result.error}",
                 )
             response = response_result.value
             if response.status_code >= HTTP_BAD_REQUEST_THRESHOLD:
-                return r[HttpJsonObject].fail(
-                    f"HTTP {response.status_code}: {response.body!r}"
+                return r[t.ContainerValueMapping].fail(
+                    f"HTTP {response.status_code}: {response.body!r}",
                 )
-            return r[HttpJsonObject].ok(self._parse_response_body(response.body))
+            return r[t.ContainerValueMapping].ok(self._parse_response_body(response.body))
         except Exception as exc:
             FlextHttpClient.logger.exception(f"HTTP {method} error")
-            return r[HttpJsonObject].fail(f"Request error: {exc}")
+            return r[t.ContainerValueMapping].fail(f"Request error: {exc}")
 
     def _parse_response_body(
-        self, body: FlextApiTypes.Api.ResponseBody
-    ) -> HttpJsonObject:
+        self,
+        body: FlextApiTypes.Api.ResponseBody,
+    ) -> t.ContainerValueMapping:
         """Parse response body using strict model validation."""
         match body:
             case dict() as payload:
@@ -257,7 +260,7 @@ class FlextHttpClient:
                 except (ValidationError, ValueError):
                     return {"text": raw_bytes.decode("utf-8", errors="ignore")}
             case _:
-                empty_body: HttpJsonObject = {}
+                empty_body: t.ContainerValueMapping = {}
                 return empty_body
 
 
@@ -272,7 +275,10 @@ def create_flext_http_client(
     from flext_oracle_wms.api import FlextOracleWmsApi  # noqa: PLC0415
 
     return FlextOracleWmsApi.create_flext_http_client(
-        base_url=base_url, timeout=timeout, headers=headers, verify_ssl=verify_ssl
+        base_url=base_url,
+        timeout=timeout,
+        headers=headers,
+        verify_ssl=verify_ssl,
     )
 
 

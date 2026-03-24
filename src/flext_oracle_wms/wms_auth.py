@@ -57,10 +57,7 @@ def create_oracle_wms_client(config: m.OracleWms.AuthSettings) -> r[str]:
     return FlextOracleWmsApi.create_oracle_wms_client(config)
 
 
-FlextOracleWmsAuthSettings = m.OracleWms.AuthSettings
-
 __all__ = [
-    "FlextOracleWmsAuthSettings",
     "FlextOracleWmsAuthenticator",
     "create_oracle_wms_client",
 ]

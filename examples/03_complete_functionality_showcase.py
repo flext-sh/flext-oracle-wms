@@ -124,7 +124,8 @@ def showcase_2_entity_discovery(client: FlextOracleWmsClient) -> t.StrSequence:
 
 
 def showcase_3_data_retrieval(
-    client: FlextOracleWmsClient, entities: t.StrSequence
+    client: FlextOracleWmsClient,
+    entities: t.StrSequence,
 ) -> t.ContainerMapping:
     """Feature 3: Data Retrieval and Querying."""
     sample_data: t.ContainerMapping = {}
@@ -147,7 +148,9 @@ def showcase_3_data_retrieval(
                 sample_data[entity_name] = data
     if "company" in sample_data:
         filtered_result = client.get_entity_data(
-            entity_name="company", limit=3, filters={"active": "Y"}
+            entity_name="company",
+            limit=3,
+            filters={"active": "Y"},
         )
         if filtered_result.is_success:
             pass
@@ -234,7 +237,8 @@ def showcase_7_health_monitoring(
 
 
 def showcase_8_performance_tracking(
-    client: FlextOracleWmsClient, entities: t.StrSequence
+    client: FlextOracleWmsClient,
+    entities: t.StrSequence,
 ) -> None:
     """Feature 8: Performance Tracking."""
     min_entities_for_concurrent_test = (
@@ -284,7 +288,8 @@ def showcase_9_cache_management(client: FlextOracleWmsClient) -> None:
 
 
 def showcase_10_enterprise_features(
-    _client: FlextOracleWmsClient, config: FlextOracleWmsClientSettings
+    _client: FlextOracleWmsClient,
+    config: FlextOracleWmsClientSettings,
 ) -> None:
     """Feature 10: Enterprise Features."""
 

@@ -37,7 +37,7 @@ class FlextOracleWmsClient:
                 config_result = container.get("FlextOracleWmsSettings")
                 if config_result.is_success:
                     resolved_config = FlextOracleWmsSettings.model_validate(
-                        config_result.value
+                        config_result.value,
                     )
             except (ValueError, e.BaseError):
                 pass
@@ -91,7 +91,10 @@ class FlextOracleWmsClient:
         return self.post("/lpn", body=payload)
 
     def delete(
-        self, path: str, *, headers: t.StrMapping | None = None
+        self,
+        path: str,
+        *,
+        headers: t.StrMapping | None = None,
     ) -> r[FlextApiModels.HttpResponse]:
         """Make DELETE request to Oracle WMS API."""
         return self._request(FlextApiConstants.Api.Method.DELETE, path, headers=headers)
@@ -102,7 +105,8 @@ class FlextOracleWmsClient:
         if result.is_failure:
             return r[t.StrSequence].fail(result.error)
         payload_result = self._decode_response_model(
-            result.value.body, m.OracleWms.EntitiesResponse
+            result.value.body,
+            m.OracleWms.EntitiesResponse,
         )
         if payload_result.is_failure:
             return r[t.StrSequence].fail(payload_result.error)
@@ -118,7 +122,10 @@ class FlextOracleWmsClient:
     ) -> r[FlextApiModels.HttpResponse]:
         """Make GET request to Oracle WMS API."""
         return self._request(
-            FlextApiConstants.Api.Method.GET, path, headers=headers, params=params
+            FlextApiConstants.Api.Method.GET,
+            path,
+            headers=headers,
+            params=params,
         )
 
     def get_apis_by_category(self, category: str) -> r[Sequence[t.StrMapping]]:
@@ -127,7 +134,8 @@ class FlextOracleWmsClient:
         if result.is_failure:
             return r[Sequence[t.StrMapping]].fail(result.error)
         payload_result = self._decode_response_model(
-            result.value.body, m.OracleWms.ApiCategoryResponse
+            result.value.body,
+            m.OracleWms.ApiCategoryResponse,
         )
         if payload_result.is_failure:
             return r[Sequence[t.StrMapping]].fail(payload_result.error)
@@ -149,7 +157,8 @@ class FlextOracleWmsClient:
         if result.is_failure:
             return r[Sequence[t.StrMapping]].fail(result.error)
         payload_result = self._decode_response_model(
-            result.value.body, m.OracleWms.EntityDataResponse
+            result.value.body,
+            m.OracleWms.EntityDataResponse,
         )
         if payload_result.is_failure:
             return r[Sequence[t.StrMapping]].fail(payload_result.error)
@@ -168,7 +177,10 @@ class FlextOracleWmsClient:
     ) -> r[FlextApiModels.HttpResponse]:
         """Make POST request to Oracle WMS API."""
         return self._request(
-            FlextApiConstants.Api.Method.POST, path, headers=headers, body=body
+            FlextApiConstants.Api.Method.POST,
+            path,
+            headers=headers,
+            body=body,
         )
 
     def put(
@@ -180,7 +192,10 @@ class FlextOracleWmsClient:
     ) -> r[FlextApiModels.HttpResponse]:
         """Make PUT request to Oracle WMS API."""
         return self._request(
-            FlextApiConstants.Api.Method.PUT, path, headers=headers, body=body
+            FlextApiConstants.Api.Method.PUT,
+            path,
+            headers=headers,
+            body=body,
         )
 
     def start(self) -> r[bool]:
@@ -192,7 +207,9 @@ class FlextOracleWmsClient:
         return r[bool].ok(True)
 
     def update_oblpn_tracking_number(
-        self, oblpn_id: str, tracking_number: str
+        self,
+        oblpn_id: str,
+        tracking_number: str,
     ) -> r[FlextApiModels.HttpResponse]:
         """Update OBLPN tracking number."""
         payload: FlextApiTypes.Api.RequestBody = {"tracking_number": tracking_number}
@@ -218,12 +235,12 @@ class FlextOracleWmsClient:
         result = self._client.request(request)
         if result.is_failure:
             return r[FlextApiModels.HttpResponse].fail(
-                f"{method} {path} failed: {result.error}"
+                f"{method} {path} failed: {result.error}",
             )
         response = result.value
         if response.status_code >= HTTP_BAD_REQUEST_THRESHOLD:
             return r[FlextApiModels.HttpResponse].fail(
-                f"{method} {path} returned HTTP {response.status_code}"
+                f"{method} {path} returned HTTP {response.status_code}",
             )
         return r[FlextApiModels.HttpResponse].ok(response)
 

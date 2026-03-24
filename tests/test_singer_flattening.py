@@ -89,7 +89,10 @@ class TestFlextOracleWmsApiResponse:
     def test_response_custom_fields(self) -> None:
         """Test response creation with custom fields."""
         response = m.OracleWms.ApiResponse(
-            data={"key": "value"}, status_code=201, success=True, error_message=None
+            data={"key": "value"},
+            status_code=201,
+            success=True,
+            error_message=None,
         )
         assert response.data == {"key": "value"}
         assert response.status_code == 201
@@ -97,7 +100,9 @@ class TestFlextOracleWmsApiResponse:
     def test_response_error(self) -> None:
         """Test response with error."""
         response = m.OracleWms.ApiResponse(
-            success=False, error_message="Something went wrong", status_code=500
+            success=False,
+            error_message="Something went wrong",
+            status_code=500,
         )
         assert response.success is False
         assert response.error_message == "Something went wrong"
@@ -119,7 +124,8 @@ class TestFlextOracleWmsApiResponse:
     def test_response_validate_failure_with_message(self) -> None:
         """Test failed response with error message passes validation."""
         response = m.OracleWms.ApiResponse(
-            success=False, error_message="Error occurred"
+            success=False,
+            error_message="Error occurred",
         )
         result = response.validate_response()
         assert result.is_success
