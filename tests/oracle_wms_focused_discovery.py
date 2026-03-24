@@ -47,7 +47,7 @@ class FocusedOracleWmsDiscovery:
             enable_logging=True,
         )
         self.client: FlextOracleWmsClient = create_oracle_wms_client(  # type: ignore[assignment]
-            self.config, mock_mode=False
+            self.config, mock_mode=False,
         )
         self.quick_test_entities: list[str] = [
             "company",
@@ -81,7 +81,7 @@ class FocusedOracleWmsDiscovery:
             entities_result = self.client.discover_entities()
             if not entities_result.is_success:
                 return r[dict[str, t.NormalizedValue]].fail(
-                    f"Entity discovery failed: {entities_result.error}"
+                    f"Entity discovery failed: {entities_result.error}",
                 )
             all_entities = entities_result.value
             available_quick = [e for e in self.quick_test_entities if e in all_entities]
@@ -174,7 +174,7 @@ class FocusedOracleWmsDiscovery:
         return data_entities
 
     def _get_entity_structures(
-        self, entities: t.StrSequence
+        self, entities: t.StrSequence,
     ) -> dict[str, t.NormalizedValue]:
         """Get entity structures even without data."""
         structures: dict[str, t.NormalizedValue] = {}
@@ -199,7 +199,7 @@ class FocusedOracleWmsDiscovery:
         return structures
 
     def _safe_sample(
-        self, record: t.StrMapping
+        self, record: t.StrMapping,
     ) -> dict[str, NoneType | bool | float | int | str]:
         """Create safe sample record."""
         safe: dict[str, NoneType | bool | float | int | str] = {}

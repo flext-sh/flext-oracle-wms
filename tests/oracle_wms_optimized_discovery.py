@@ -54,7 +54,7 @@ class OptimizedOracleWmsDiscovery:
             enable_logging=True,
         )
         self.client: FlextOracleWmsClient = create_oracle_wms_client(  # type: ignore[assignment]
-            self.config, mock_mode=False
+            self.config, mock_mode=False,
         )
         self.priority_entities: set[str] = {
             "company",
@@ -104,7 +104,7 @@ class OptimizedOracleWmsDiscovery:
         entities_result = self.client.discover_entities()
         if not entities_result.is_success:
             return r[dict[str, t.NormalizedValue]].fail(
-                f"Entity discovery failed: {entities_result.error}"
+                f"Entity discovery failed: {entities_result.error}",
             )
         all_entities = entities_result.value
         available_priority = [e for e in all_entities if e in self.priority_entities]
@@ -218,7 +218,7 @@ class OptimizedOracleWmsDiscovery:
             }
 
     def _safe_sample_record(
-        self, record: t.StrMapping
+        self, record: t.StrMapping,
     ) -> dict[str, NoneType | bool | float | int | str]:
         """Create safe sample record for storage."""
         safe_record: dict[str, NoneType | bool | float | int | str] = {}

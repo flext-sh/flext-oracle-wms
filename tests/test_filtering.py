@@ -69,7 +69,7 @@ class TestFlextOracleWmsFilterConstruction:
     def test_filter_with_initial_filters(self) -> None:
         """Test filter creation with initial filters dict."""
         filters: Mapping[str, t.Core.FilterScalar | t.Core.FilterList] = {
-            "status": "active"
+            "status": "active",
         }
         filter_engine = FlextOracleWmsFilter(filters=filters, max_conditions=50)
         assert filter_engine.filters == filters
@@ -117,7 +117,7 @@ class TestFilterValidation:
         """Test that list filter values are counted by length."""
         filter_engine = FlextOracleWmsFilter(max_conditions=2)
         filters: Mapping[str, t.Core.FilterScalar | t.Core.FilterList] = {
-            "status": ["a", "b", "c"]
+            "status": ["a", "b", "c"],
         }
         result = filter_engine._validate_filters(filters)
         assert result.is_failure
@@ -169,7 +169,7 @@ class TestRecordFiltering:
         """Test filtering with single value condition."""
         filter_engine = FlextOracleWmsFilter(case_sensitive=False, max_conditions=50)
         filters: Mapping[str, t.Core.FilterScalar | t.Core.FilterList] = {
-            "status": "active"
+            "status": "active",
         }
         result = filter_engine.filter_records(self.sample_records, filters)
         assert result.is_success
@@ -180,7 +180,7 @@ class TestRecordFiltering:
         """Test filtering with list of values (IN operation)."""
         filter_engine = FlextOracleWmsFilter(case_sensitive=False, max_conditions=50)
         filters: Mapping[str, t.Core.FilterScalar | t.Core.FilterList] = {
-            "status": ["active", "pending"]
+            "status": ["active", "pending"],
         }
         result = filter_engine.filter_records(self.sample_records, filters)
         assert result.is_success
@@ -201,7 +201,7 @@ class TestRecordFiltering:
         """Test filtering with result limit."""
         filter_engine = FlextOracleWmsFilter(case_sensitive=False, max_conditions=50)
         filters: Mapping[str, t.Core.FilterScalar | t.Core.FilterList] = {
-            "status": "active"
+            "status": "active",
         }
         result = filter_engine.filter_records(self.sample_records, filters, limit=1)
         assert result.is_success
@@ -212,7 +212,7 @@ class TestRecordFiltering:
         """Test filtering with no matching records."""
         filter_engine = FlextOracleWmsFilter(case_sensitive=False, max_conditions=50)
         filters: Mapping[str, t.Core.FilterScalar | t.Core.FilterList] = {
-            "status": "nonexistent"
+            "status": "nonexistent",
         }
         result = filter_engine.filter_records(self.sample_records, filters)
         assert result.is_success
@@ -222,7 +222,7 @@ class TestRecordFiltering:
         """Test filtering is case insensitive by default."""
         filter_engine = FlextOracleWmsFilter(case_sensitive=False, max_conditions=50)
         filters: Mapping[str, t.Core.FilterScalar | t.Core.FilterList] = {
-            "status": "ACTIVE"
+            "status": "ACTIVE",
         }
         result = filter_engine.filter_records(self.sample_records, filters)
         assert result.is_success
@@ -232,7 +232,7 @@ class TestRecordFiltering:
         """Test filtering with case sensitivity enabled."""
         filter_engine = FlextOracleWmsFilter(case_sensitive=True, max_conditions=50)
         filters: Mapping[str, t.Core.FilterScalar | t.Core.FilterList] = {
-            "status": "ACTIVE"
+            "status": "ACTIVE",
         }
         result = filter_engine.filter_records(self.sample_records, filters)
         assert result.is_success
@@ -252,7 +252,7 @@ class TestRecordFiltering:
         """Test filtering fails when conditions exceed limit."""
         filter_engine = FlextOracleWmsFilter(max_conditions=2)
         filters: Mapping[str, t.Core.FilterScalar | t.Core.FilterList] = {
-            "status": ["a", "b", "c"]
+            "status": ["a", "b", "c"],
         }
         result = filter_engine.filter_records(self.sample_records, filters)
         assert result.is_failure

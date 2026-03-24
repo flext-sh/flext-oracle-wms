@@ -126,7 +126,7 @@ class OracleWmsCompleteDiscovery:
                     entity_name = self.discovered_entities[0]
                     return self.client.get(f"/entities/{entity_name}")
                 return r[FlextApiModels.HttpResponse].fail(
-                    "No entities available for testing"
+                    "No entities available for testing",
                 )
             if api_name == "lgf_entity_get":
                 return self._test_entity_get_with_discovery()
@@ -137,7 +137,7 @@ class OracleWmsCompleteDiscovery:
             return self.client.call_api(api_name)
         except Exception as e:
             return r[FlextApiModels.HttpResponse].fail(
-                f"Data extract API test failed: {e}"
+                f"Data extract API test failed: {e}",
             )
 
     def _test_entity_operations_api(
@@ -162,12 +162,12 @@ class OracleWmsCompleteDiscovery:
                         return self._test_entity_with_id(api_name, entity_name)
                     return self.client.get(f"/entities/{entity_name}")
                 return r[FlextApiModels.HttpResponse].fail(
-                    "No entities for entity operations test"
+                    "No entities for entity operations test",
                 )
             return self.client.call_api(api_name)
         except Exception as e:
             return r[FlextApiModels.HttpResponse].fail(
-                f"Entity operations API test failed: {e}"
+                f"Entity operations API test failed: {e}",
             )
 
     def _test_setup_api(
@@ -191,7 +191,7 @@ class OracleWmsCompleteDiscovery:
             return self.client.call_api(api_name)
         except Exception as e:
             return r[FlextApiModels.HttpResponse].fail(
-                f"Automation API test failed: {e}"
+                f"Automation API test failed: {e}",
             )
 
     def _test_entity_get_with_discovery(self) -> r[FlextApiModels.HttpResponse]:
@@ -201,7 +201,7 @@ class OracleWmsCompleteDiscovery:
             return self._find_and_get_entity_with_id()
         except Exception as e:
             return r[FlextApiModels.HttpResponse].fail(
-                f"Entity get discovery failed: {e}"
+                f"Entity get discovery failed: {e}",
             )
 
     def _ensure_discovered_entities(self) -> None:
@@ -222,11 +222,11 @@ class OracleWmsCompleteDiscovery:
             if entity_result is not None:
                 return entity_result
         return r[FlextApiModels.HttpResponse].fail(
-            "No entity with ID found for testing lgf_entity_get"
+            "No entity with ID found for testing lgf_entity_get",
         )
 
     def _get_entity_with_id(
-        self, entity_name: str
+        self, entity_name: str,
     ) -> r[FlextApiModels.HttpResponse] | None:
         """Get entity by ID if it has records."""
         list_result = self.client.get_entity_data(entity_name, limit=1)
@@ -247,7 +247,7 @@ class OracleWmsCompleteDiscovery:
             return self.client.call_api("lgf_data_extract")
         except Exception as e:
             return r[FlextApiModels.HttpResponse].fail(
-                f"Data extract to object store failed: {e}"
+                f"Data extract to object store failed: {e}",
             )
 
     def _test_task_status(self) -> r[FlextApiModels.HttpResponse]:
@@ -276,11 +276,11 @@ class OracleWmsCompleteDiscovery:
                         entity_id = record["id"]
                         return self.client.get(f"/entities/{entity_name}/{entity_id}")
             return r[FlextApiModels.HttpResponse].fail(
-                f"No valid ID found for entity {entity_name}"
+                f"No valid ID found for entity {entity_name}",
             )
         except Exception as e:
             return r[FlextApiModels.HttpResponse].fail(
-                f"Entity with ID test failed: {e}"
+                f"Entity with ID test failed: {e}",
             )
 
     def _summarize_api_response(self, data: t.NormalizedValue) -> str:
@@ -434,7 +434,7 @@ class OracleWmsCompleteDiscovery:
         """Generate Singer schemas with real data flattening based on Oracle metadata."""
         if not self.entity_metadata:
             return r[dict[str, t.NormalizedValue]].fail(
-                "No entity metadata available for schema generation"
+                "No entity metadata available for schema generation",
             )
         entities_with_data = [
             name
@@ -448,7 +448,7 @@ class OracleWmsCompleteDiscovery:
             metadata = self.entity_metadata[entity_name]
             if isinstance(metadata, dict):
                 schema = self._generate_singer_schema_from_metadata(
-                    entity_name, metadata
+                    entity_name, metadata,
                 )
                 if schema:
                     singer_schemas[entity_name] = schema
@@ -474,7 +474,7 @@ class OracleWmsCompleteDiscovery:
                         if isinstance(sample_data, dict):
                             sample_value = sample_data.get(field)
                         singer_type = self._map_to_singer_type(
-                            str(field_type), sample_value, field
+                            str(field_type), sample_value, field,
                         )
                         properties[field] = singer_type
             properties["_sdc_extracted_at"] = {"type": "string", "format": "date-time"}

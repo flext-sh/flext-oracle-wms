@@ -118,7 +118,7 @@ class FlextHttpClient:
                 )
             response = response_result.value
             return r[t.ContainerValueMapping].ok(
-                self._parse_response_body(response.body)
+                self._parse_response_body(response.body),
             )
         except Exception as exc:
             FlextHttpClient.logger.exception(f"DELETE {path} error")
@@ -182,7 +182,7 @@ class FlextHttpClient:
                     f"HTTP {response.status_code}: {response.body!r}",
                 )
             return r[t.ContainerValueMapping].ok(
-                self._parse_response_body(response.body)
+                self._parse_response_body(response.body),
             )
         except Exception as exc:
             FlextHttpClient.logger.exception("Unexpected error")
@@ -241,7 +241,7 @@ class FlextHttpClient:
                     f"HTTP {response.status_code}: {response.body!r}",
                 )
             return r[t.ContainerValueMapping].ok(
-                self._parse_response_body(response.body)
+                self._parse_response_body(response.body),
             )
         except Exception as exc:
             FlextHttpClient.logger.exception(f"HTTP {method} error")
@@ -279,7 +279,7 @@ class FlextHttpClient:
                     return validated_bytes
                 except (ValidationError, ValueError):
                     bytes_fallback: t.ContainerValueMapping = {
-                        "text": raw_bytes.decode("utf-8", errors="ignore")
+                        "text": raw_bytes.decode("utf-8", errors="ignore"),
                     }
                     return bytes_fallback
             case _:
