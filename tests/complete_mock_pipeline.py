@@ -324,10 +324,10 @@ class CompleteMockPipeline:
 
     def _create_entity_properties(
         self, sample_data: t.ContainerMapping
-    ) -> tuple[t.ContainerMapping, t.StrSequence]:
+    ) -> tuple[t.ContainerMapping, Sequence[str]]:
         """Create properties and key properties from sample data - SRP compliance."""
         properties: t.ContainerMapping = {}
-        key_properties: t.StrSequence = []
+        key_properties: Sequence[str] = []
         for field, value in sample_data.items():
             field_property = self._infer_field_type(field, value=value)
             properties[field] = field_property
@@ -337,7 +337,7 @@ class CompleteMockPipeline:
 
     def _infer_field_type(
         self, field: str, *, value: t.NormalizedValue
-    ) -> Mapping[str, str | t.StrSequence]:
+    ) -> Mapping[str, str | Sequence[str]]:
         """Infer Singer type from field name and value - Strategy Pattern."""
         field_type = self._infer_type_from_field_name(field)
         if field_type:
@@ -346,9 +346,9 @@ class CompleteMockPipeline:
 
     def _infer_type_from_field_name(
         self, field: str
-    ) -> Mapping[str, str | t.StrSequence] | None:
+    ) -> Mapping[str, str | Sequence[str]] | None:
         """Infer type from field name patterns - Template Method Pattern."""
-        field_type_mapping: Mapping[str, Mapping[str, str | t.StrSequence]] = {
+        field_type_mapping: Mapping[str, Mapping[str, str | Sequence[str]]] = {
             "id": {"type": "integer"},
             "_code": {"type": ["string", "null"]},
             "_ts": {"type": ["string", "null"], "format": "date-time"},
@@ -367,7 +367,7 @@ class CompleteMockPipeline:
 
     def _infer_type_from_value(
         self, *, value: t.NormalizedValue
-    ) -> Mapping[str, str | t.StrSequence]:
+    ) -> Mapping[str, str | Sequence[str]]:
         """Infer type from Python value type - Template Method Pattern."""
         if isinstance(value, bool):
             return {"type": ["boolean", "null"]}
@@ -379,7 +379,7 @@ class CompleteMockPipeline:
             return {"type": ["string", "null"]}
         return {"type": ["string", "null"]}
 
-    def _is_key_field(self, field: str, existing_keys: t.StrSequence) -> bool:
+    def _is_key_field(self, field: str, existing_keys: Sequence[str]) -> bool:
         """Determine if field should be a key property."""
         return field == "id" or (field.endswith("_code") and (not existing_keys))
 
@@ -393,7 +393,7 @@ class CompleteMockPipeline:
         })
 
     def _build_singer_schema(
-        self, properties: t.ContainerMapping, key_properties: t.StrSequence
+        self, properties: t.ContainerMapping, key_properties: Sequence[str]
     ) -> t.ContainerMapping:
         """Build complete Singer schema - SRP compliance."""
         return {
@@ -433,7 +433,7 @@ class CompleteMockPipeline:
                 "key_properties": key_properties,
                 "metadata": [
                     {
-                        "breadcrumb": t.StrSequence(),
+                        "breadcrumb": Sequence[str](),
                         "metadata": {
                             "inclusion": "available",
                             "selected": True,
@@ -495,7 +495,7 @@ class CompleteMockPipeline:
                 and isinstance(entity_records[0], dict)
                 and isinstance(entity_records[0].get("record"), dict)
                 and hasattr(entity_records[0]["record"], "keys")
-                else t.StrSequence(),
+                else Sequence[str](),
             }
         return cast("t.ContainerMapping", target_results)
 
@@ -503,7 +503,7 @@ class CompleteMockPipeline:
         self, target_results: t.ContainerMapping
     ) -> t.ContainerMapping:
         """Simulate DBT transformation process."""
-        dbt_results: Mapping[str, Mapping[str, int | t.StrSequence | str]] = {}
+        dbt_results: Mapping[str, Mapping[str, int | Sequence[str] | str]] = {}
         business_models = {
             "dim_company": {
                 "source_tables": ["raw_oracle_wms_company"],
@@ -647,7 +647,7 @@ class CompleteMockPipeline:
                 })
                 if isinstance(catalog, dict)
                 and isinstance((streams := catalog.get("streams", [])), list)
-                else t.StrSequence(),
+                else Sequence[str](),
             },
             "target_loading": {
                 "tables_created": len(target_results),

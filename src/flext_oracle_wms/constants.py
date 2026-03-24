@@ -35,7 +35,7 @@ class FlextOracleWmsConstants(FlextConstants):
         "default_page_size": FlextConstants.DEFAULT_PAGE_SIZE,
     }
 
-    ENVIRONMENTS: ClassVar[t.StrMapping] = {
+    ENVIRONMENTS: ClassVar[Mapping[str, str]] = {
         "default": "http://localhost:8080",
         "test": "https://test-wms.example.com",
         "production": "https://prod-wms.example.com",
@@ -72,7 +72,7 @@ class FlextOracleWmsConstants(FlextConstants):
     class ErrorMessages:
         """Error messages - composed dict pattern."""
 
-        MESSAGES: ClassVar[t.StrMapping] = {
+        MESSAGES: ClassVar[Mapping[str, str]] = {
             "entity_validation_failed": "Entity validation failed",
             "discovery_failed": "Entity discovery failed",
             "invalid_response": "Invalid API response",
@@ -83,7 +83,7 @@ class FlextOracleWmsConstants(FlextConstants):
     class ResponseFields:
         """Response fields - composed pattern."""
 
-        FIELDS: ClassVar[t.StrMapping] = {
+        FIELDS: ClassVar[Mapping[str, str]] = {
             "result_count": "result_count",
             "results": "results",
             "data": "data",

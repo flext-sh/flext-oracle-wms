@@ -9,7 +9,7 @@ from __future__ import annotations
 
 import contextlib
 import os
-from collections.abc import Mapping
+from collections.abc import Mapping, Sequence
 from enum import StrEnum, unique
 from pathlib import Path
 from typing import ClassVar
@@ -148,8 +148,8 @@ def validate_configuration(
       Dictionary containing validation results
 
     """
-    errors: t.StrSequence = []
-    warnings: t.StrSequence = []
+    errors: Sequence[str] = []
+    warnings: Sequence[str] = []
     config_summary: t.ContainerMapping = {}
     if not config.base_url:
         errors.append("Base URL is required")

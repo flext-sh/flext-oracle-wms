@@ -123,7 +123,7 @@ class FocusedOracleWmsDiscovery:
         finally:
             self.client.stop()
 
-    def _quick_data_scan(self, entities: t.StrSequence) -> t.ContainerMapping:
+    def _quick_data_scan(self, entities: Sequence[str]) -> t.ContainerMapping:
         """Quick scan to find entities with actual data."""
         data_entities = {}
         for entity_name in entities:
@@ -172,7 +172,7 @@ class FocusedOracleWmsDiscovery:
                 logger.debug("Failed to process entity %s", entity_name)
         return data_entities
 
-    def _get_entity_structures(self, entities: t.StrSequence) -> t.ContainerMapping:
+    def _get_entity_structures(self, entities: Sequence[str]) -> t.ContainerMapping:
         """Get entity structures even without data."""
         structures = {}
         for entity_name in entities:
@@ -336,10 +336,10 @@ class FocusedOracleWmsDiscovery:
         )
 
     def _get_oracle_key_properties(
-        self, entity_name: str, fields: t.StrSequence
-    ) -> t.StrSequence:
+        self, entity_name: str, fields: Sequence[str]
+    ) -> Sequence[str]:
         """Get Oracle WMS key properties for entity."""
-        keys: t.StrSequence = []
+        keys: Sequence[str] = []
         if "id" in fields:
             keys.append("id")
         entity_keys = {
@@ -402,7 +402,7 @@ class FocusedOracleWmsDiscovery:
             schema_without_keys = {
                 k: v for k, v in schema.items() if k != "key_properties"
             }
-            breadcrumb: t.StrSequence = []
+            breadcrumb: Sequence[str] = []
             stream: t.ContainerMapping = {
                 "tap_stream_id": entity_name,
                 "stream": entity_name,
