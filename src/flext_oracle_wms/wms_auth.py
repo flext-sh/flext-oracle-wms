@@ -54,7 +54,7 @@ class FlextOracleWmsAuthenticator:
     @staticmethod
     def create_oracle_wms_client(config: m.OracleWms.AuthSettings) -> r[str]:
         """Create authenticated Oracle WMS client. Delegates to FlextOracleWmsApi.create_oracle_wms_client."""
-        from flext_oracle_wms.api import FlextOracleWmsApi  # noqa: PLC0415
+        from flext_oracle_wms.api import FlextOracleWmsApi
 
         return FlextOracleWmsApi.create_oracle_wms_client(config)
 

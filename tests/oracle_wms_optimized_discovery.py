@@ -53,7 +53,7 @@ class OptimizedOracleWmsDiscovery:
             verify_ssl=True,
             enable_logging=True,
         )
-        self.client: FlextOracleWmsClient = create_oracle_wms_client(  # type: ignore[assignment]
+        self.client: FlextOracleWmsClient = create_oracle_wms_client(
             self.config,
             mock_mode=False,
         )
