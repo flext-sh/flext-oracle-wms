@@ -28,9 +28,18 @@ if TYPE_CHECKING:
 
 _LAZY_IMPORTS: Mapping[str, Sequence[str]] = {
     "TestFlextOracleWmsApi": ["tests.unit.test_api", "TestFlextOracleWmsApi"],
-    "TestFlextOracleWmsClient": ["tests.unit.test_wms_client", "TestFlextOracleWmsClient"],
-    "TestFlextOracleWmsConstants": ["tests.unit.test_constants", "TestFlextOracleWmsConstants"],
-    "TestFlextOracleWmsSettings": ["tests.unit.test_config", "TestFlextOracleWmsSettings"],
+    "TestFlextOracleWmsClient": [
+        "tests.unit.test_wms_client",
+        "TestFlextOracleWmsClient",
+    ],
+    "TestFlextOracleWmsConstants": [
+        "tests.unit.test_constants",
+        "TestFlextOracleWmsConstants",
+    ],
+    "TestFlextOracleWmsSettings": [
+        "tests.unit.test_config",
+        "TestFlextOracleWmsSettings",
+    ],
 }
 
 __all__ = [
