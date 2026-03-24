@@ -13,6 +13,9 @@ from typing import override
 
 from flext_core import FlextService, r
 
+from flext_oracle_wms import m, t
+from flext_oracle_wms.http_client import FlextHttpClient
+from flext_oracle_wms.wms_auth import FlextOracleWmsAuthenticator
 from flext_oracle_wms.wms_client import FlextOracleWmsClient
 
 
@@ -45,6 +48,28 @@ class FlextOracleWmsApi(FlextService[None]):
     def execute(self) -> r[None]:
         """Execute Oracle WMS operations."""
         return r[None].ok(None)
+
+    @staticmethod
+    def create_flext_http_client(
+        base_url: str,
+        timeout: float = 30.0,
+        headers: t.StrMapping | None = None,
+        *,
+        verify_ssl: bool = True,
+    ) -> FlextHttpClient:
+        """Create FlextHttpClient instance."""
+        return FlextHttpClient(
+            base_url=base_url, timeout=timeout, headers=headers, verify_ssl=verify_ssl
+        )
+
+    @staticmethod
+    def create_oracle_wms_client(config: m.OracleWms.AuthSettings) -> r[str]:
+        """Create authenticated Oracle WMS client."""
+        authenticator = FlextOracleWmsAuthenticator(config)
+        auth_result = authenticator.authenticate()
+        if auth_result.is_failure:
+            return r[str].fail(f"Authentication failed: {auth_result.error}")
+        return r[str].fail("Oracle WMS client creation not configured")
 
 
 __all__ = ["FlextOracleWmsApi"]

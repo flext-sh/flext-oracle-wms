@@ -25,7 +25,7 @@ class FlextOracleWmsDataValidationError(FlextExceptions.BaseError):
 
 
 @unique
-class FilterOperator(StrEnum):
+class FlextOracleWmsFilterOperator(StrEnum):
     """Supported filter operators."""
 
     EQ = "eq"
@@ -77,7 +77,7 @@ class FlextOracleWmsFilter:
         records: Sequence[t.Core.FilterRecord],
         field: str,
         value: t.Core.FilterScalar,
-        operator: FilterOperator | None = None,
+        operator: FlextOracleWmsFilterOperator | None = None,
     ) -> r[Sequence[t.Core.FilterRecord]]:
         """Filter records by one field using optional operator semantics."""
         engine = cls()
@@ -209,7 +209,7 @@ class FlextOracleWmsFilter:
     def _apply_operator(
         self,
         field_value: t.Core.FilterRecordValue | None,
-        operator: FilterOperator | str,
+        operator: FlextOracleWmsFilterOperator | str,
         filter_value: t.Core.FilterScalar | t.Core.FilterList,
     ) -> bool:
         if field_value is None and filter_value is not None:
@@ -218,41 +218,41 @@ class FlextOracleWmsFilter:
             return False
         if field_value is None and filter_value is None:
             return operator in {
-                FilterOperator.EQ,
-                FilterOperator.GTE,
-                FilterOperator.LTE,
+                FlextOracleWmsFilterOperator.EQ,
+                FlextOracleWmsFilterOperator.GTE,
+                FlextOracleWmsFilterOperator.LTE,
                 "eq",
                 "gte",
                 "lte",
             }
         match operator:
-            case FilterOperator.EQ | "eq":
+            case FlextOracleWmsFilterOperator.EQ | "eq":
                 return self._normalize(field_value) == self._normalize(filter_value)
-            case FilterOperator.NE | "ne":
+            case FlextOracleWmsFilterOperator.NE | "ne":
                 return self._normalize(field_value) != self._normalize(filter_value)
-            case FilterOperator.IN | "in":
+            case FlextOracleWmsFilterOperator.IN | "in":
                 match filter_value:
                     case list() as options:
                         return str(field_value) in [str(item) for item in options]
                     case _:
                         return False
-            case FilterOperator.CONTAINS | "contains":
+            case FlextOracleWmsFilterOperator.CONTAINS | "contains":
                 if not isinstance(field_value, str):
                     return False
                 return str(filter_value) in field_value
-            case FilterOperator.GT | "gt":
+            case FlextOracleWmsFilterOperator.GT | "gt":
                 if type(field_value) is not type(filter_value):
                     return False
                 return self._compare(field_value, filter_value, ">")
-            case FilterOperator.LT | "lt":
+            case FlextOracleWmsFilterOperator.LT | "lt":
                 if type(field_value) is not type(filter_value):
                     return False
                 return self._compare(field_value, filter_value, "<")
-            case FilterOperator.GTE | "gte":
+            case FlextOracleWmsFilterOperator.GTE | "gte":
                 if type(field_value) is not type(filter_value):
                     return False
                 return self._compare(field_value, filter_value, ">=")
-            case FilterOperator.LTE | "lte":
+            case FlextOracleWmsFilterOperator.LTE | "lte":
                 if type(field_value) is not type(filter_value):
                     return False
                 return self._compare(field_value, filter_value, "<=")
@@ -339,4 +339,4 @@ class FlextOracleWmsFilter:
         return r[bool].ok(True)
 
 
-__all__ = ["FilterOperator", "FlextOracleWmsFilter", "FlextOracleWmsOperatorFilter"]
+__all__ = ["FlextOracleWmsFilterOperator", "FlextOracleWmsFilter", "FlextOracleWmsOperatorFilter"]
