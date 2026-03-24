@@ -226,7 +226,8 @@ class OracleWmsCompleteDiscovery:
         )
 
     def _get_entity_with_id(
-        self, entity_name: str,
+        self,
+        entity_name: str,
     ) -> r[FlextApiModels.HttpResponse] | None:
         """Get entity by ID if it has records."""
         list_result = self.client.get_entity_data(entity_name, limit=1)
@@ -448,7 +449,8 @@ class OracleWmsCompleteDiscovery:
             metadata = self.entity_metadata[entity_name]
             if isinstance(metadata, dict):
                 schema = self._generate_singer_schema_from_metadata(
-                    entity_name, metadata,
+                    entity_name,
+                    metadata,
                 )
                 if schema:
                     singer_schemas[entity_name] = schema
@@ -474,7 +476,9 @@ class OracleWmsCompleteDiscovery:
                         if isinstance(sample_data, dict):
                             sample_value = sample_data.get(field)
                         singer_type = self._map_to_singer_type(
-                            str(field_type), sample_value, field,
+                            str(field_type),
+                            sample_value,
+                            field,
                         )
                         properties[field] = singer_type
             properties["_sdc_extracted_at"] = {"type": "string", "format": "date-time"}

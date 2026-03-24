@@ -272,7 +272,9 @@ class TestLgfApiV10Integration:
             )
         else:
             logger.warning(
-                "⚠️ Failed to get %s data: %s", entity_name, str(result.error),
+                "⚠️ Failed to get %s data: %s",
+                entity_name,
+                str(result.error),
             )
 
     def test_get_entity_data_with_filters(
@@ -414,7 +416,9 @@ class TestPerformanceIntegration:
         for i, result_item in enumerate(results):
             if isinstance(result_item, Exception):
                 logger.warning(
-                    "Request %d failed with exception: %s", i, str(result_item),
+                    "Request %d failed with exception: %s",
+                    i,
+                    str(result_item),
                 )
             elif isinstance(result_item, r) and result_item.is_success:
                 successful_requests += 1
