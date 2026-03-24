@@ -255,8 +255,8 @@ class FlextHttpClient:
         match body:
             case dict() as payload:
                 try:
-                    validated: Mapping[str, t.ContainerValue] = _CONTAINER_VALUE_MAP_ADAPTER.validate_python(
-                        payload
+                    validated: Mapping[str, t.ContainerValue] = (
+                        _CONTAINER_VALUE_MAP_ADAPTER.validate_python(payload)
                     )
                     return validated
                 except ValidationError:
