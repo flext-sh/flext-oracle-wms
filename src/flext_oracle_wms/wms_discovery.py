@@ -12,9 +12,7 @@ from collections.abc import Mapping, Sequence
 
 from flext_core import r
 
-from flext_oracle_wms.constants import c
-from flext_oracle_wms.protocols import p
-from flext_oracle_wms.typings import t
+from flext_oracle_wms import c, p, t
 
 
 class FlextOracleWmsEntityDiscovery:

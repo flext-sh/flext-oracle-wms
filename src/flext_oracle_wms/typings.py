@@ -8,7 +8,7 @@ from __future__ import annotations
 
 from collections.abc import Mapping, Sequence
 
-from flext_core import FlextTypes, t as _core_t
+from flext_core import FlextTypes
 
 from flext_oracle_wms.constants import c
 
@@ -25,7 +25,7 @@ class FlextOracleWmsTypes(FlextTypes):
 
         type ProjectType = c.ProjectType
         type WmsProjectConfig = Mapping[str, FlextTypes.ContainerValue]
-        type WarehouseConfig = Mapping[str, t.Scalar | t.StrSequence]
+        type WarehouseConfig = Mapping[str, FlextTypes.Scalar | FlextTypes.StrSequence]
         type InventoryConfig = Mapping[
             str,
             bool | str | Mapping[str, FlextTypes.ContainerValue],
@@ -33,7 +33,7 @@ class FlextOracleWmsTypes(FlextTypes):
 
     type WmsConfig = Mapping[
         str,
-        t.Scalar | Mapping[str, FlextTypes.ContainerValue],
+        FlextTypes.Scalar | Mapping[str, FlextTypes.ContainerValue],
     ]
     type WmsEntity = Mapping[
         str,
@@ -92,13 +92,12 @@ class FlextOracleWmsTypes(FlextTypes):
                 ],
             ]
         )
-        type HttpJsonObject = Mapping[str, _core_t.ContainerValue]
+        type HttpJsonObject = Mapping[str, FlextTypes.ContainerValue]
         type FilterEntry = (
             FlextOracleWmsTypes.Core.FilterScalar | FlextOracleWmsTypes.Core.FilterList
         )
 
 
-type HttpJsonObject = Mapping[str, _core_t.ContainerValue]
-
 t = FlextOracleWmsTypes
-__all__ = ["FlextOracleWmsTypes", "t"]
+HttpJsonObject = FlextOracleWmsTypes.Core.HttpJsonObject
+__all__ = ["FlextOracleWmsTypes", "HttpJsonObject", "t"]

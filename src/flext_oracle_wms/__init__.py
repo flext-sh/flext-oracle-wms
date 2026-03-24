@@ -37,12 +37,11 @@ if TYPE_CHECKING:
     from flext_oracle_wms.constants import (
         FlextOracleWmsConstants,
         FlextOracleWmsConstants as c,
-        OracleWMSAuthMethod,
     )
     from flext_oracle_wms.filtering import (
         FilterOperator,
         FlextOracleWmsFilter,
-        OperatorFilter,
+        FlextOracleWmsOperatorFilter,
     )
     from flext_oracle_wms.http_client import FlextHttpClient, create_flext_http_client
     from flext_oracle_wms.models import FlextOracleWmsModels, FlextOracleWmsModels as m
@@ -54,7 +53,11 @@ if TYPE_CHECKING:
         FlextOracleWmsClientSettings,
         FlextOracleWmsSettings,
     )
-    from flext_oracle_wms.typings import FlextOracleWmsTypes, FlextOracleWmsTypes as t
+    from flext_oracle_wms.typings import (
+        FlextOracleWmsTypes,
+        FlextOracleWmsTypes as t,
+        HttpJsonObject,
+    )
     from flext_oracle_wms.utilities import (
         FlextOracleWmsUtilities,
         FlextOracleWmsUtilities as u,
@@ -155,6 +158,10 @@ _LAZY_IMPORTS: Mapping[str, tuple[str, str]] = {
         "FlextOracleWmsInventoryError",
     ),
     "FlextOracleWmsModels": ("flext_oracle_wms.models", "FlextOracleWmsModels"),
+    "FlextOracleWmsOperatorFilter": (
+        "flext_oracle_wms.filtering",
+        "FlextOracleWmsOperatorFilter",
+    ),
     "FlextOracleWmsPickingError": (
         "flext_oracle_wms.wms_exceptions",
         "FlextOracleWmsPickingError",
@@ -193,8 +200,7 @@ _LAZY_IMPORTS: Mapping[str, tuple[str, str]] = {
         "flext_oracle_wms.wms_exceptions",
         "FlextOracleWmsValidationError",
     ),
-    "OperatorFilter": ("flext_oracle_wms.filtering", "OperatorFilter"),
-    "OracleWMSAuthMethod": ("flext_oracle_wms.constants", "OracleWMSAuthMethod"),
+    "HttpJsonObject": ("flext_oracle_wms.typings", "HttpJsonObject"),
     "__all__": ("flext_oracle_wms.__version__", "__all__"),
     "__author__": ("flext_oracle_wms.__version__", "__author__"),
     "__author_email__": ("flext_oracle_wms.__version__", "__author_email__"),
@@ -249,6 +255,7 @@ __all__ = [
     "FlextOracleWmsFilter",
     "FlextOracleWmsInventoryError",
     "FlextOracleWmsModels",
+    "FlextOracleWmsOperatorFilter",
     "FlextOracleWmsPickingError",
     "FlextOracleWmsProcessingError",
     "FlextOracleWmsProtocols",
@@ -260,8 +267,7 @@ __all__ = [
     "FlextOracleWmsTypes",
     "FlextOracleWmsUtilities",
     "FlextOracleWmsValidationError",
-    "OperatorFilter",
-    "OracleWMSAuthMethod",
+    "HttpJsonObject",
     "__all__",
     "__author__",
     "__author_email__",

@@ -10,9 +10,7 @@ from collections.abc import Mapping
 from enum import StrEnum, unique
 from typing import ClassVar, Final, Literal
 
-from flext_core import FlextConstants
-
-from flext_oracle_wms import t
+from flext_core import FlextConstants, FlextTypes as t
 
 
 class FlextOracleWmsConstants(FlextConstants):
@@ -339,6 +337,4 @@ class FlextOracleWmsConstants(FlextConstants):
 
 c = FlextOracleWmsConstants
 
-OracleWMSAuthMethod = FlextOracleWmsConstants.OracleWMSAuthMethod
-
-__all__ = ["FlextOracleWmsConstants", "OracleWMSAuthMethod", "c"]
+__all__ = ["FlextOracleWmsConstants", "c"]

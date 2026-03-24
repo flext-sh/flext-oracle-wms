@@ -10,7 +10,7 @@ from __future__ import annotations
 from collections.abc import Mapping
 from typing import ClassVar
 
-from flext_oracle_wms.models import m
+from flext_oracle_wms import m
 
 
 class FlextOracleWmsApi:

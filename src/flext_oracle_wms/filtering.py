@@ -11,9 +11,8 @@ from enum import StrEnum, unique
 
 from flext_core import FlextExceptions, FlextLogger, r
 
-from flext_oracle_wms.constants import c
+from flext_oracle_wms import c, t
 from flext_oracle_wms.models import FlextOracleWmsOperatorFilter
-from flext_oracle_wms.typings import t
 
 # Type alias for filter entries (can be scalar, list, or operator filter)
 FilterEntry: type = (
@@ -340,7 +339,4 @@ class FlextOracleWmsFilter:
         return r[bool].ok(True)
 
 
-# Backward compatibility alias
-OperatorFilter = FlextOracleWmsOperatorFilter
-
-__all__ = ["FilterOperator", "FlextOracleWmsFilter", "OperatorFilter"]
+__all__ = ["FilterOperator", "FlextOracleWmsFilter", "FlextOracleWmsOperatorFilter"]

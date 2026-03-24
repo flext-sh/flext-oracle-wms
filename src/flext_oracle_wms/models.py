@@ -15,7 +15,7 @@ from typing import Annotated, ClassVar, Literal
 from flext_core import FlextModels, r
 from pydantic import BaseModel, ConfigDict, Field, StringConstraints, field_validator
 
-from flext_oracle_wms import OracleWMSAuthMethod, c, t
+from flext_oracle_wms import c, t
 
 
 class FlextOracleWmsOperatorFilter(BaseModel):
@@ -125,7 +125,7 @@ class FlextOracleWmsModels(FlextModels):
         class AuthSettings(BaseModel):
             """Authentication configuration for Oracle WMS flows."""
 
-            method: Annotated[str, Field(default=OracleWMSAuthMethod.BASIC)]
+            method: Annotated[str, Field(default=c.OracleWMSAuthMethod.BASIC)]
             username: Annotated[str | None, Field(default=None)]
             password: Annotated[str | None, Field(default=None)]
             oauth2_client_id: Annotated[str | None, Field(default=None)]
@@ -135,11 +135,11 @@ class FlextOracleWmsModels(FlextModels):
 
             def validate_business_rules(self) -> r[bool]:
                 """Validate authentication configuration business rules."""
-                if self.method == OracleWMSAuthMethod.BASIC:
+                if self.method == c.OracleWMSAuthMethod.BASIC:
                     if not self.username or not self.password:
                         return r[bool].fail("Basic auth requires username and password")
                     return r[bool].ok(True)
-                if self.method == OracleWMSAuthMethod.OAUTH2:
+                if self.method == c.OracleWMSAuthMethod.OAUTH2:
                     if not self.oauth2_client_id or not self.oauth2_client_secret:
                         return r[bool].fail(
                             "OAuth2 requires client_id and client_secret"
