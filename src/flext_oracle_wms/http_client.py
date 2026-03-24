@@ -6,7 +6,7 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from collections.abc import MutableMapping
+from collections.abc import Mapping, MutableMapping
 from types import TracebackType
 from typing import Self
 
@@ -16,12 +16,11 @@ from pydantic import TypeAdapter, ValidationError
 
 from flext_oracle_wms import t
 
-HTTP_BAD_REQUEST_THRESHOLD = 400
-
 
 class FlextHttpClient:
     """Generic HTTP client using FLEXT delegation with railway-oriented programming."""
 
+    HTTP_BAD_REQUEST_THRESHOLD = 400
     logger = FlextLogger(__name__)
 
     def __init__(
@@ -174,7 +173,7 @@ class FlextHttpClient:
                     f"HTTP request failed: {response_result.error}",
                 )
             response = response_result.value
-            if response.status_code >= HTTP_BAD_REQUEST_THRESHOLD:
+            if response.status_code >= FlextHttpClient.HTTP_BAD_REQUEST_THRESHOLD:
                 return r[t.ContainerValueMapping].fail(
                     f"HTTP {response.status_code}: {response.body!r}",
                 )
@@ -233,7 +232,7 @@ class FlextHttpClient:
                     f"HTTP {method} failed: {response_result.error}",
                 )
             response = response_result.value
-            if response.status_code >= HTTP_BAD_REQUEST_THRESHOLD:
+            if response.status_code >= FlextHttpClient.HTTP_BAD_REQUEST_THRESHOLD:
                 return r[t.ContainerValueMapping].fail(
                     f"HTTP {response.status_code}: {response.body!r}",
                 )
@@ -249,43 +248,62 @@ class FlextHttpClient:
         body: FlextApiTypes.Api.ResponseBody,
     ) -> t.ContainerValueMapping:
         """Parse response body using strict model validation."""
+        adapter: TypeAdapter[Mapping[str, t.ContainerValue]] = TypeAdapter(
+            Mapping[str, t.ContainerValue]
+        )
         match body:
             case dict() as payload:
                 try:
-                    return TypeAdapter(t.ContainerValueMapping).validate_python(payload)
+                    validated: Mapping[str, t.ContainerValue] = adapter.validate_python(
+                        payload
+                    )
+                    return validated
                 except ValidationError:
-                    return {"text": str(payload)}
+                    fallback_dict: t.ContainerValueMapping = {"text": str(payload)}
+                    return fallback_dict
             case str() as raw if raw:
                 try:
-                    return TypeAdapter(t.ContainerValueMapping).validate_json(raw)
+                    validated_json: Mapping[str, t.ContainerValue] = (
+                        adapter.validate_json(raw)
+                    )
+                    return validated_json
                 except (ValidationError, ValueError):
-                    return {"text": raw}
+                    str_fallback: t.ContainerValueMapping = {"text": raw}
+                    return str_fallback
             case bytes() as raw_bytes:
                 try:
-                    return TypeAdapter(t.ContainerValueMapping).validate_json(raw_bytes)
+                    validated_bytes: Mapping[str, t.ContainerValue] = (
+                        adapter.validate_json(raw_bytes)
+                    )
+                    return validated_bytes
                 except (ValidationError, ValueError):
-                    return {"text": raw_bytes.decode("utf-8", errors="ignore")}
+                    bytes_fallback: t.ContainerValueMapping = {
+                        "text": raw_bytes.decode("utf-8", errors="ignore")
+                    }
+                    return bytes_fallback
             case _:
                 empty_body: t.ContainerValueMapping = {}
                 return empty_body
 
+    @staticmethod
+    def create_flext_http_client(
+        base_url: str,
+        timeout: float = 30.0,
+        headers: t.StrMapping | None = None,
+        *,
+        verify_ssl: bool = True,
+    ) -> FlextHttpClient:
+        """Create FlextHttpClient instance. Delegates to FlextOracleWmsApi.create_flext_http_client."""
+        from flext_oracle_wms.api import FlextOracleWmsApi  # noqa: PLC0415
 
-def create_flext_http_client(
-    base_url: str,
-    timeout: float = 30.0,
-    headers: t.StrMapping | None = None,
-    *,
-    verify_ssl: bool = True,
-) -> FlextHttpClient:
-    """Create FlextHttpClient instance. Delegates to FlextOracleWmsApi.create_flext_http_client."""
-    from flext_oracle_wms.api import FlextOracleWmsApi  # noqa: PLC0415
+        return FlextOracleWmsApi.create_flext_http_client(
+            base_url=base_url,
+            timeout=timeout,
+            headers=headers,
+            verify_ssl=verify_ssl,
+        )
 
-    return FlextOracleWmsApi.create_flext_http_client(
-        base_url=base_url,
-        timeout=timeout,
-        headers=headers,
-        verify_ssl=verify_ssl,
-    )
 
+create_flext_http_client = FlextHttpClient.create_flext_http_client
 
 __all__ = ["FlextHttpClient", "create_flext_http_client"]

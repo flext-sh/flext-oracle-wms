@@ -9,7 +9,7 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from collections.abc import Mapping, Sequence
+from collections.abc import Mapping, MutableSequence, Sequence
 from typing import Annotated, ClassVar, Literal
 
 from flext_core import FlextModels, r
@@ -357,7 +357,7 @@ class FlextOracleWmsModels(FlextModels):
             Field(default_factory=list),
         ]
         inventory: Annotated[
-            Sequence[FlextOracleWmsModels.InventoryItem],
+            MutableSequence[FlextOracleWmsModels.InventoryItem],
             Field(default_factory=list),
         ]
 
