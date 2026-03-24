@@ -261,7 +261,7 @@ class OptimizedOracleWmsDiscovery:
     def _generate_singer_schema_from_entity_data(
         self,
         entity_name: str,
-        entity_data: dict[str, t.NormalizedValue],
+        entity_data: Mapping[str, t.NormalizedValue],
     ) -> dict[str, t.NormalizedValue] | None:
         """Generate Singer schema from entity data with proper typing."""
         try:
@@ -412,7 +412,7 @@ class OptimizedOracleWmsDiscovery:
     def _determine_key_properties(
         self,
         entity_name: str,
-        fields: list[str],
+        fields: Sequence[str],
     ) -> list[str]:
         """Determine key properties for Oracle WMS entity."""
         potential_keys: list[str] = []
@@ -444,7 +444,7 @@ class OptimizedOracleWmsDiscovery:
 
     def _generate_singer_catalog(
         self,
-        schemas: dict[str, dict[str, t.NormalizedValue]],
+        schemas: Mapping[str, dict[str, t.NormalizedValue]],
     ) -> dict[str, t.NormalizedValue]:
         """Generate Singer catalog from schemas."""
         streams: list[dict[str, t.NormalizedValue]] = []

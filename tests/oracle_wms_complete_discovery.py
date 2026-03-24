@@ -13,7 +13,7 @@ NO FALLBACKS, NO ESTIMATIONS, NO BASIC LIMITS - FULL EXPLORATION
 from __future__ import annotations
 
 import json
-from collections.abc import Mapping, Sequence
+from collections.abc import Mapping, MutableMapping, MutableSequence, Sequence
 from datetime import UTC, datetime
 from pathlib import Path
 
@@ -306,10 +306,10 @@ class OracleWmsCompleteDiscovery:
     def _process_entity_metadata(
         self,
         entity_name: str,
-        entities_with_data: list[str],
-        entities_without_data: list[str],
-        entities_with_errors: list[tuple[str, str]],
-        metadata_results: dict[str, t.NormalizedValue],
+        entities_with_data: MutableSequence[str],
+        entities_without_data: MutableSequence[str],
+        entities_with_errors: MutableSequence[tuple[str, str]],
+        metadata_results: MutableMapping[str, t.NormalizedValue],
     ) -> None:
         """Process metadata for a single entity."""
         try:

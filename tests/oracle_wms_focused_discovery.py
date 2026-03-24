@@ -218,7 +218,7 @@ class FocusedOracleWmsDiscovery:
 
     def _generate_schemas_from_data(
         self,
-        data_entities: dict[str, t.NormalizedValue],
+        data_entities: Mapping[str, t.NormalizedValue],
     ) -> dict[str, t.NormalizedValue]:
         """Generate Singer schemas from entities with data."""
         schemas: dict[str, t.NormalizedValue] = {}
@@ -231,7 +231,7 @@ class FocusedOracleWmsDiscovery:
 
     def _generate_schemas_from_structures(
         self,
-        structure_entities: dict[str, t.NormalizedValue],
+        structure_entities: Mapping[str, t.NormalizedValue],
     ) -> dict[str, t.NormalizedValue]:
         """Generate Singer schemas from structures."""
         schemas: dict[str, t.NormalizedValue] = {}
@@ -245,7 +245,7 @@ class FocusedOracleWmsDiscovery:
     def _create_singer_schema(
         self,
         entity_name: str,
-        entity_data: dict[str, t.NormalizedValue],
+        entity_data: Mapping[str, t.NormalizedValue],
     ) -> dict[str, t.NormalizedValue] | None:
         """Create Singer schema with proper Oracle WMS typing."""
         try:
@@ -369,7 +369,7 @@ class FocusedOracleWmsDiscovery:
     def _get_oracle_key_properties(
         self,
         entity_name: str,
-        fields: list[str],
+        fields: Sequence[str],
     ) -> list[str]:
         """Get Oracle WMS key properties for entity."""
         keys: list[str] = []
