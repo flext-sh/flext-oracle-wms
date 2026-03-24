@@ -126,8 +126,8 @@ class FlextOracleWmsModels(FlextModels):
             path: Annotated[str, Field(min_length=1)]
             version: Annotated[str, Field(min_length=1)]
             category: Annotated[str, Field(min_length=1)]
-            description: str = Field(default="")
-            since_version: str = Field(default="6.1")
+            description: Annotated[str, Field(default="")]
+            since_version: Annotated[str, Field(default="6.1")]
 
         class AuthSettings(BaseModel):
             """Authentication configuration for Oracle WMS flows."""

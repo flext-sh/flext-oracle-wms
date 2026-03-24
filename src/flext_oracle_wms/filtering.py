@@ -15,7 +15,7 @@ from flext_oracle_wms import c, t
 from flext_oracle_wms.models import FlextOracleWmsOperatorFilter
 
 # Type alias for filter entries (can be scalar, list, or operator filter)
-FilterEntry: type = (
+type FilterEntry = (
     t.Core.FilterScalar | t.Core.FilterList | FlextOracleWmsOperatorFilter
 )
 
