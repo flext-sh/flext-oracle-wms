@@ -56,7 +56,7 @@ class OracleWmsCompleteDiscovery:
         self.client: FlextOracleWmsClient = create_oracle_wms_client(
             self.config, mock_mode=False
         )
-        self.discovered_entities: Sequence[str] = []
+        self.discovered_entities: t.StrSequence = []
         self.entity_metadata: t.ContainerMapping = {}
         self.complete_schemas: t.ContainerMapping = {}
 
@@ -304,8 +304,8 @@ class OracleWmsCompleteDiscovery:
     def _process_entity_metadata(
         self,
         entity_name: str,
-        entities_with_data: Sequence[str],
-        entities_without_data: Sequence[str],
+        entities_with_data: t.StrSequence,
+        entities_without_data: t.StrSequence,
         entities_with_errors: Sequence[tuple[str, str]],
         metadata_results: t.ContainerMapping,
     ) -> None:
@@ -334,8 +334,8 @@ class OracleWmsCompleteDiscovery:
         self, entity_name: str, count: int, results: t.ContainerList
     ) -> t.ContainerMapping:
         """Create metadata info dict for an entity."""
-        fields: Sequence[str] = []
-        field_types: Mapping[str, str] = {}
+        fields: t.StrSequence = []
+        field_types: t.StrMapping = {}
         sample_data: t.ContainerMapping | None = None
         metadata_info: t.ContainerMapping = {
             "entity_name": entity_name,
@@ -380,8 +380,8 @@ class OracleWmsCompleteDiscovery:
             else:
                 return r[bool].fail("Entity discovery failed")
         metadata_results: t.ContainerMapping = {}
-        entities_with_data: Sequence[str] = []
-        entities_without_data: Sequence[str] = []
+        entities_with_data: t.StrSequence = []
+        entities_without_data: t.StrSequence = []
         entities_with_errors: Sequence[tuple[str, str]] = []
         for i, entity_name in enumerate(self.discovered_entities):
             if i % 50 == 0:

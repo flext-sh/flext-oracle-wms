@@ -7,8 +7,6 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from collections.abc import Sequence
-
 import os
 from pathlib import Path
 
@@ -73,7 +71,7 @@ def real_config(load_test_env: bool) -> FlextOracleWmsSettings:
 
 
 @pytest.fixture
-def sample_entities() -> Sequence[str]:
+def sample_entities() -> t.StrSequence:
     """Sample entity names based on REAL discovery results."""
     return ["action_code", "company", "facility", "item", "order_hdr", "order_dtl"]
 

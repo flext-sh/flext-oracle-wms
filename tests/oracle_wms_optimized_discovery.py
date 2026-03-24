@@ -108,7 +108,7 @@ class OptimizedOracleWmsDiscovery:
         priority_results = self._process_entity_batch(
             available_priority, "PRIORITY", batch_size=10
         )
-        entities_with_data: Sequence[str] = []
+        entities_with_data: t.StrSequence = []
         for entity_name, result in priority_results.items():
             if result.get("has_data", False):
                 entities_with_data.append(entity_name)
@@ -140,7 +140,7 @@ class OptimizedOracleWmsDiscovery:
         })
 
     def _process_entity_batch(
-        self, entities: Sequence[str], batch_size: int = 10
+        self, entities: t.StrSequence, batch_size: int = 10
     ) -> t.ContainerMapping:
         """Process entity batch with parallel requests."""
         results: Mapping[str, Mapping[str, bool | str]] = {}
@@ -413,10 +413,10 @@ class OptimizedOracleWmsDiscovery:
         return any(pattern in field_name.lower() for pattern in code_patterns)
 
     def _determine_key_properties(
-        self, entity_name: str, fields: Sequence[str]
-    ) -> Sequence[str]:
+        self, entity_name: str, fields: t.StrSequence
+    ) -> t.StrSequence:
         """Determine key properties for Oracle WMS entity."""
-        potential_keys: Sequence[str] = []
+        potential_keys: t.StrSequence = []
         if "id" in fields:
             potential_keys.append("id")
         entity_key_patterns = {
@@ -450,7 +450,7 @@ class OptimizedOracleWmsDiscovery:
         streams: Sequence[t.ContainerMapping] = []
         for entity_name, schema in schemas.items():
             key_properties = schema.get("key_properties", ["id"])
-            breadcrumb: Sequence[str] = []
+            breadcrumb: t.StrSequence = []
             stream: t.ContainerMapping = {
                 "tap_stream_id": entity_name,
                 "stream": entity_name,

@@ -6,8 +6,6 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from flext_oracle_wms import FlextOracleWmsTypes as t
-
 from collections.abc import MutableMapping
 from types import TracebackType
 from typing import Self

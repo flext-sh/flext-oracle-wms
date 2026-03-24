@@ -94,13 +94,13 @@ def showcase_1_client_initialization(
     return client
 
 
-def showcase_2_entity_discovery(client: FlextOracleWmsClient) -> Sequence[str]:
+def showcase_2_entity_discovery(client: FlextOracleWmsClient) -> t.StrSequence:
     """Feature 2: Entity Discovery (320+ entities)."""
     entities_result = client.discover_entities()
     if not entities_result.is_success:
         return []
     entity_dicts = entities_result.value or []
-    entities: Sequence[str] = [
+    entities: t.StrSequence = [
         str(entity.get("name", "Unknown")) if isinstance(entity, dict) else str(entity)
         for entity in entity_dicts
     ]
@@ -124,7 +124,7 @@ def showcase_2_entity_discovery(client: FlextOracleWmsClient) -> Sequence[str]:
 
 
 def showcase_3_data_retrieval(
-    client: FlextOracleWmsClient, entities: Sequence[str]
+    client: FlextOracleWmsClient, entities: t.StrSequence
 ) -> t.ContainerMapping:
     """Feature 3: Data Retrieval and Querying."""
     sample_data: t.ContainerMapping = {}
@@ -174,7 +174,7 @@ def showcase_4_authentication(config: FlextOracleWmsClientSettings) -> None:
 
 def showcase_5_api_catalog(client: FlextOracleWmsClient) -> None:
     """Feature 5: API Catalog Management."""
-    categories: Mapping[str, Sequence[str]] = {}
+    categories: Mapping[str, t.StrSequence] = {}
     for api_name, api_info in FLEXT_ORACLE_WMS_APIS.items():
         category = api_info.category
         if category not in categories:
@@ -234,7 +234,7 @@ def showcase_7_health_monitoring(
 
 
 def showcase_8_performance_tracking(
-    client: FlextOracleWmsClient, entities: Sequence[str]
+    client: FlextOracleWmsClient, entities: t.StrSequence
 ) -> None:
     """Feature 8: Performance Tracking."""
     min_entities_for_concurrent_test = (
@@ -243,7 +243,7 @@ def showcase_8_performance_tracking(
     if len(entities) >= min_entities_for_concurrent_test:
         test_entities = entities[:min_entities_for_concurrent_test]
         start_time = time.time()
-        results: Sequence[r[Sequence[Mapping[str, str]]]] = []
+        results: Sequence[r[Sequence[t.StrMapping]]] = []
         for entity in test_entities:
             result = client.get_entity_data(entity, limit=2)
             results.append(result)

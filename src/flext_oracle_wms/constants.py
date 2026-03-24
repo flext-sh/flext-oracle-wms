@@ -12,6 +12,8 @@ from typing import ClassVar, Final, Literal
 
 from flext_core import FlextConstants
 
+from flext_oracle_wms import t
+
 
 class FlextOracleWmsConstants(FlextConstants):
     """Generic WMS constants class with composition patterns.
@@ -35,7 +37,7 @@ class FlextOracleWmsConstants(FlextConstants):
         "default_page_size": FlextConstants.DEFAULT_PAGE_SIZE,
     }
 
-    ENVIRONMENTS: ClassVar[Mapping[str, str]] = {
+    ENVIRONMENTS: ClassVar[t.StrMapping] = {
         "default": "http://localhost:8080",
         "test": "https://test-wms.example.com",
         "production": "https://prod-wms.example.com",
@@ -72,7 +74,7 @@ class FlextOracleWmsConstants(FlextConstants):
     class ErrorMessages:
         """Error messages - composed dict pattern."""
 
-        MESSAGES: ClassVar[Mapping[str, str]] = {
+        MESSAGES: ClassVar[t.StrMapping] = {
             "entity_validation_failed": "Entity validation failed",
             "discovery_failed": "Entity discovery failed",
             "invalid_response": "Invalid API response",
@@ -83,7 +85,7 @@ class FlextOracleWmsConstants(FlextConstants):
     class ResponseFields:
         """Response fields - composed pattern."""
 
-        FIELDS: ClassVar[Mapping[str, str]] = {
+        FIELDS: ClassVar[t.StrMapping] = {
             "result_count": "result_count",
             "results": "results",
             "data": "data",

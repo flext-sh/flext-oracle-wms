@@ -152,21 +152,21 @@ class FlextOracleWmsModels(FlextModels):
 
             model_config: ClassVar[ConfigDict] = ConfigDict(extra="ignore")
 
-            entities: Annotated[Sequence[str], Field(default_factory=list)]
+            entities: Annotated[t.StrSequence, Field(default_factory=list)]
 
         class ApiCategoryResponse(BaseModel):
             """Oracle WMS API category response."""
 
             model_config: ClassVar[ConfigDict] = ConfigDict(extra="ignore")
 
-            apis: Annotated[Sequence[Mapping[str, str]], Field(default_factory=list)]
+            apis: Annotated[Sequence[t.StrMapping], Field(default_factory=list)]
 
         class EntityDataResponse(BaseModel):
             """Oracle WMS entity data response."""
 
             model_config: ClassVar[ConfigDict] = ConfigDict(extra="ignore")
 
-            data: Annotated[Sequence[Mapping[str, str]], Field(default_factory=list)]
+            data: Annotated[Sequence[t.StrMapping], Field(default_factory=list)]
 
     # =========================================================================
     # TYPE ALIASES - Advanced composition for minimal declarations
