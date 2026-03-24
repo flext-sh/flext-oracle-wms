@@ -22,7 +22,7 @@ Usage:
 from __future__ import annotations
 
 import os
-from collections.abc import Mapping, Sequence
+from collections.abc import Sequence
 from pathlib import Path
 
 from dotenv import load_dotenv
@@ -61,7 +61,7 @@ def setup_client_config() -> None:
 
 def discover_wms_entities(
     client: FlextOracleWmsClient,
-) -> r[Sequence[Mapping[str, t.NormalizedValue]]]:
+) -> r[Sequence[t.ContainerMapping]]:
     """Discover available Oracle WMS entities.
 
     Args:
@@ -95,7 +95,7 @@ def discover_wms_entities(
 
 def query_entity_data(
     client: FlextOracleWmsClient, entity_name: str
-) -> r[Sequence[Mapping[str, t.NormalizedValue]]]:
+) -> r[Sequence[t.ContainerMapping]]:
     """Query data from a specific Oracle WMS entity.
 
     Args:

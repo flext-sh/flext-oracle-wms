@@ -125,9 +125,9 @@ def showcase_2_entity_discovery(client: FlextOracleWmsClient) -> Sequence[str]:
 
 def showcase_3_data_retrieval(
     client: FlextOracleWmsClient, entities: Sequence[str]
-) -> Mapping[str, t.NormalizedValue]:
+) -> t.ContainerMapping:
     """Feature 3: Data Retrieval and Querying."""
-    sample_data: Mapping[str, t.NormalizedValue] = {}
+    sample_data: t.ContainerMapping = {}
     test_entities = ["company", "facility", "item"]
     for entity_name in test_entities:
         if entity_name not in entities:
@@ -221,11 +221,11 @@ def showcase_6_error_handling(client: FlextOracleWmsClient) -> None:
 
 def showcase_7_health_monitoring(
     client: FlextOracleWmsClient,
-) -> Mapping[str, t.NormalizedValue]:
+) -> t.ContainerMapping:
     """Feature 7: Health Monitoring."""
     health_result = client.health_check()
     if health_result.is_success:
-        health_data: Mapping[str, t.NormalizedValue] = health_result.value or {}
+        health_data: t.ContainerMapping = health_result.value or {}
         for key in health_data:
             if key == "test_call_success":
                 pass

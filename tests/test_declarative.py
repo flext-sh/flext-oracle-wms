@@ -57,7 +57,7 @@ def _to_bool(value: t.NormalizedValue | None, default: bool) -> bool:
 
 
 def _build_client_settings(
-    env_config: Mapping[str, t.NormalizedValue],
+    env_config: t.ContainerMapping,
     api_version: str,
 ) -> FlextOracleWmsClientSettings:
     return FlextOracleWmsClientSettings(
@@ -96,7 +96,7 @@ def find_env_file() -> Path | None:
     return None
 
 
-def load_env_config() -> Mapping[str, t.NormalizedValue] | None:
+def load_env_config() -> t.ContainerMapping | None:
     """Load Oracle WMS configuration from .env file."""
     env_path = find_env_file()
     if not env_path:
@@ -149,7 +149,7 @@ def load_env_config() -> Mapping[str, t.NormalizedValue] | None:
 
 
 @pytest.fixture
-def env_config() -> Mapping[str, t.NormalizedValue]:
+def env_config() -> t.ContainerMapping:
     """Fixture that provides .env configuration or skips test."""
     config = load_env_config()
     if not config or not all([
@@ -163,7 +163,7 @@ def env_config() -> Mapping[str, t.NormalizedValue]:
 
 @pytest.fixture
 def oracle_wms_client(
-    env_config: Mapping[str, t.NormalizedValue],
+    env_config: t.ContainerMapping,
 ) -> Generator[FlextOracleWmsClient]:
     """Fixture that provides configured Oracle WMS client."""
     config = _build_client_settings(env_config, "LGF_V10")
@@ -193,7 +193,7 @@ class TestOracleWmsDeclarativeIntegration:
         assert len(versions) >= 1
 
     def test_client_configuration_and_lifecycle(
-        self, env_config: Mapping[str, t.NormalizedValue]
+        self, env_config: t.ContainerMapping
     ) -> None:
         """Test client configuration and initialization."""
         config = _build_client_settings(env_config, FlextOracleWmsApiVersion.V1)
@@ -297,7 +297,7 @@ class TestLgfApiV10Integration:
                 f"Cannot test get_entity_by_id - list failed: {list_result.error}"
             )
         data = list_result.data
-        empty_results: Sequence[t.NormalizedValue] = []
+        empty_results: t.ContainerList = []
         results = (
             data.get("results", empty_results)
             if isinstance(data, dict)
@@ -433,7 +433,7 @@ class TestPerformanceIntegration:
             )
             if result.is_success:
                 data = result.data
-                empty_results: Sequence[t.NormalizedValue] = []
+                empty_results: t.ContainerList = []
                 results = (
                     data.get("results", empty_results)
                     if isinstance(data, dict)

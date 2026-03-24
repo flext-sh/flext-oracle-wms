@@ -97,7 +97,7 @@ class OptimizedOracleWmsDiscovery:
 
     def discover_priority_entities_fast(
         self,
-    ) -> r[Mapping[str, t.NormalizedValue]]:
+    ) -> r[t.ContainerMapping]:
         """Fast discovery of priority entities with data."""
         entities_result = self.client.discover_entities()
         if not entities_result.is_success:
@@ -141,7 +141,7 @@ class OptimizedOracleWmsDiscovery:
 
     def _process_entity_batch(
         self, entities: Sequence[str], batch_size: int = 10
-    ) -> Mapping[str, t.NormalizedValue]:
+    ) -> t.ContainerMapping:
         """Process entity batch with parallel requests."""
         results: Mapping[str, Mapping[str, bool | str]] = {}
         for i in range(0, len(entities), batch_size):
@@ -151,7 +151,7 @@ class OptimizedOracleWmsDiscovery:
             batch_tasks = [
                 self._analyze_single_entity(entity_name) for entity_name in batch
             ]
-            batch_results: Sequence[Mapping[str, t.NormalizedValue]] = []
+            batch_results: Sequence[t.ContainerMapping] = []
             for task in batch_tasks:
                 try:
                     result = task
@@ -177,9 +177,7 @@ class OptimizedOracleWmsDiscovery:
             time.sleep(0.1)
         return results
 
-    def _analyze_single_entity(
-        self, entity_name: str
-    ) -> Mapping[str, t.NormalizedValue]:
+    def _analyze_single_entity(self, entity_name: str) -> t.ContainerMapping:
         """Analyze single entity for data and structure."""
         try:
             data_result = self.client.get_entity_data(entity_name, limit=3, offset=0)
@@ -233,9 +231,7 @@ class OptimizedOracleWmsDiscovery:
                 "processed_at": datetime.now(UTC).isoformat(),
             }
 
-    def _safe_sample_record(
-        self, record: Mapping[str, t.NormalizedValue]
-    ) -> Mapping[str, t.NormalizedValue]:
+    def _safe_sample_record(self, record: t.ContainerMapping) -> t.ContainerMapping:
         """Create safe sample record for storage."""
         safe_record: Mapping[str, NoneType | bool | float | int | str] = {}
         for k, v in record.items():
@@ -250,7 +246,7 @@ class OptimizedOracleWmsDiscovery:
 
     def generate_complete_singer_schemas(
         self,
-    ) -> r[Mapping[str, t.NormalizedValue]]:
+    ) -> r[t.ContainerMapping]:
         """Generate complete Singer schemas for high-value entities."""
         if not self.high_value_entities:
             return r[bool].fail(
@@ -284,8 +280,8 @@ class OptimizedOracleWmsDiscovery:
         })
 
     def _generate_singer_schema_from_entity_data(
-        self, entity_name: str, entity_data: Mapping[str, t.NormalizedValue]
-    ) -> Mapping[str, t.NormalizedValue] | None:
+        self, entity_name: str, entity_data: t.ContainerMapping
+    ) -> t.ContainerMapping | None:
         """Generate Singer schema from entity data with proper typing."""
         try:
             fields = entity_data.get("fields", [])
@@ -327,7 +323,7 @@ class OptimizedOracleWmsDiscovery:
 
     def _oracle_to_singer_type(
         self, field_name: str, python_type: str, sample_value: t.NormalizedValue
-    ) -> Mapping[str, t.NormalizedValue]:
+    ) -> t.ContainerMapping:
         """Convert Oracle field to Singer type with real data analysis."""
         if sample_value is not None:
             if isinstance(sample_value, bool):
@@ -448,14 +444,14 @@ class OptimizedOracleWmsDiscovery:
         return potential_keys[:3]
 
     def _generate_singer_catalog(
-        self, schemas: Mapping[str, t.NormalizedValue]
-    ) -> Mapping[str, t.NormalizedValue]:
+        self, schemas: t.ContainerMapping
+    ) -> t.ContainerMapping:
         """Generate Singer catalog from schemas."""
-        streams: Sequence[Mapping[str, t.NormalizedValue]] = []
+        streams: Sequence[t.ContainerMapping] = []
         for entity_name, schema in schemas.items():
             key_properties = schema.get("key_properties", ["id"])
             breadcrumb: Sequence[str] = []
-            stream: Mapping[str, t.NormalizedValue] = {
+            stream: t.ContainerMapping = {
                 "tap_stream_id": entity_name,
                 "stream": entity_name,
                 "schema": {k: v for k, v in schema.items() if k != "key_properties"},

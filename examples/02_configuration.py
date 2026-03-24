@@ -138,7 +138,7 @@ def create_demo_config() -> FlextOracleWmsClientSettings:
 
 def validate_configuration(
     config: FlextOracleWmsClientSettings,
-) -> Mapping[str, t.NormalizedValue]:
+) -> t.ContainerMapping:
     """Validate Oracle WMS client configuration.
 
     Args:
@@ -150,7 +150,7 @@ def validate_configuration(
     """
     errors: Sequence[str] = []
     warnings: Sequence[str] = []
-    config_summary: Mapping[str, t.NormalizedValue] = {}
+    config_summary: t.ContainerMapping = {}
     if not config.base_url:
         errors.append("Base URL is required")
     elif not config.base_url.startswith("https://"):
@@ -178,7 +178,7 @@ def validate_configuration(
         "verify_ssl": config.enable_ssl_verification,
         "enable_logging": config.enable_audit_logging,
     }
-    validation_results: Mapping[str, t.NormalizedValue] = {
+    validation_results: t.ContainerMapping = {
         "valid": not errors,
         "warnings": warnings,
         "errors": errors,
@@ -189,7 +189,7 @@ def validate_configuration(
 
 def test_configuration(
     config: FlextOracleWmsClientSettings,
-) -> Mapping[str, t.NormalizedValue]:
+) -> t.ContainerMapping:
     """Test Oracle WMS configuration by attempting connection.
 
     Args:
@@ -199,7 +199,7 @@ def test_configuration(
       Dictionary with test results
 
     """
-    test_results: Mapping[str, t.NormalizedValue] = {
+    test_results: t.ContainerMapping = {
         "connection_success": False,
         "health_check_success": False,
         "error": None,

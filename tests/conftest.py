@@ -8,7 +8,7 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 import os
-from collections.abc import Mapping, Sequence
+from collections.abc import Sequence
 from pathlib import Path
 
 import pytest
@@ -78,7 +78,7 @@ def sample_entities() -> Sequence[str]:
 
 
 @pytest.fixture
-def sample_entity_data() -> Mapping[str, t.NormalizedValue]:
+def sample_entity_data() -> t.ContainerMapping:
     """Sample entity response data based on REAL query results."""
     return {
         "result_count": 4,

@@ -40,7 +40,7 @@ class CompleteMockPipeline:
 
     def __init__(self) -> None:
         """Initialize with realistic Oracle WMS mock data."""
-        self.mock_entities: Mapping[str, t.NormalizedValue] = {
+        self.mock_entities: t.ContainerMapping = {
             "company": {
                 "count": 5,
                 "sample_data": {
@@ -268,9 +268,9 @@ class CompleteMockPipeline:
                 },
             },
         }
-        self.results: Mapping[str, t.NormalizedValue] = {}
+        self.results: t.ContainerMapping = {}
 
-    def run_complete_pipeline(self) -> r[Mapping[str, t.NormalizedValue]]:
+    def run_complete_pipeline(self) -> r[t.ContainerMapping]:
         """Run complete Oracle WMS pipeline with mock data."""
         start_time = datetime.now(UTC)
         try:
@@ -289,7 +289,7 @@ class CompleteMockPipeline:
                     sample_data = data["sample_data"]
                     if isinstance(sample_data, dict):
                         len(sample_data.keys())
-            return r[Mapping[str, t.NormalizedValue]].ok({
+            return r[t.ContainerMapping].ok({
                 "duration": duration,
                 "schemas_count": len(schemas),
                 "catalog_streams": len(
@@ -305,11 +305,11 @@ class CompleteMockPipeline:
             })
         except Exception as e:
             logger.exception("Complete pipeline failed")
-            return r[Mapping[str, t.NormalizedValue]].fail(f"Pipeline failed: {e}")
+            return r[t.ContainerMapping].fail(f"Pipeline failed: {e}")
 
-    def _generate_complete_singer_schemas(self) -> Mapping[str, t.NormalizedValue]:
+    def _generate_complete_singer_schemas(self) -> t.ContainerMapping:
         """Generate complete Singer schemas for all entities."""
-        schemas: Mapping[str, t.NormalizedValue] = {}
+        schemas: t.ContainerMapping = {}
         for entity_name, entity_info in self.mock_entities.items():
             if isinstance(entity_info, dict) and "sample_data" in entity_info:
                 sample_data = entity_info["sample_data"]
@@ -323,10 +323,10 @@ class CompleteMockPipeline:
         return schemas
 
     def _create_entity_properties(
-        self, sample_data: Mapping[str, t.NormalizedValue]
-    ) -> tuple[Mapping[str, t.NormalizedValue], Sequence[str]]:
+        self, sample_data: t.ContainerMapping
+    ) -> tuple[t.ContainerMapping, Sequence[str]]:
         """Create properties and key properties from sample data - SRP compliance."""
-        properties: Mapping[str, t.NormalizedValue] = {}
+        properties: t.ContainerMapping = {}
         key_properties: Sequence[str] = []
         for field, value in sample_data.items():
             field_property = self._infer_field_type(field, value=value)
@@ -383,7 +383,7 @@ class CompleteMockPipeline:
         """Determine if field should be a key property."""
         return field == "id" or (field.endswith("_code") and (not existing_keys))
 
-    def _add_singer_metadata(self, properties: Mapping[str, t.NormalizedValue]) -> None:
+    def _add_singer_metadata(self, properties: t.ContainerMapping) -> None:
         """Add Singer metadata properties - SRP compliance."""
         properties.update({
             "_sdc_extracted_at": {"type": "string", "format": "date-time"},
@@ -393,8 +393,8 @@ class CompleteMockPipeline:
         })
 
     def _build_singer_schema(
-        self, properties: Mapping[str, t.NormalizedValue], key_properties: Sequence[str]
-    ) -> Mapping[str, t.NormalizedValue]:
+        self, properties: t.ContainerMapping, key_properties: Sequence[str]
+    ) -> t.ContainerMapping:
         """Build complete Singer schema - SRP compliance."""
         return {
             "type": "t.NormalizedValue",
@@ -404,10 +404,10 @@ class CompleteMockPipeline:
         }
 
     def _create_complete_singer_catalog(
-        self, schemas: Mapping[str, t.NormalizedValue]
-    ) -> Mapping[str, t.NormalizedValue]:
+        self, schemas: t.ContainerMapping
+    ) -> t.ContainerMapping:
         """Create complete Singer catalog for Meltano integration."""
-        streams: Sequence[Mapping[str, t.NormalizedValue]] = []
+        streams: Sequence[t.ContainerMapping] = []
         for entity_name, schema in schemas.items():
             if not isinstance(schema, dict):
                 continue
@@ -426,7 +426,7 @@ class CompleteMockPipeline:
             replication_key = (
                 "mod_ts" if "mod_ts" in schema.get("properties", {}) else None
             )
-            stream: Mapping[str, t.NormalizedValue] = {
+            stream: t.ContainerMapping = {
                 "tap_stream_id": entity_name,
                 "stream": entity_name,
                 "schema": schema_without_keys,
@@ -445,24 +445,20 @@ class CompleteMockPipeline:
                 ],
             }
             if replication_key:
-                metadata_list = cast(
-                    "Sequence[Mapping[str, t.NormalizedValue]]", stream["metadata"]
-                )
-                metadata_dict = cast(
-                    "Mapping[str, t.NormalizedValue]", metadata_list[0]["metadata"]
-                )
+                metadata_list = cast("Sequence[t.ContainerMapping]", stream["metadata"])
+                metadata_dict = cast("t.ContainerMapping", metadata_list[0]["metadata"])
                 metadata_dict["replication-key"] = replication_key
             streams.append(stream)
         return {"version": 1, "streams": streams}
 
-    def _simulate_tap_extraction(self) -> Sequence[Mapping[str, t.NormalizedValue]]:
+    def _simulate_tap_extraction(self) -> Sequence[t.ContainerMapping]:
         """Simulate TAP extraction process."""
-        tap_records: Sequence[Mapping[str, t.NormalizedValue]] = []
+        tap_records: Sequence[t.ContainerMapping] = []
         for entity_name, entity_info in self.mock_entities.items():
             if not isinstance(entity_info, dict):
                 continue
             sample_data_raw = entity_info.get("sample_data", {})
-            sample_data: Mapping[str, t.NormalizedValue] = (
+            sample_data: t.ContainerMapping = (
                 sample_data_raw.copy() if isinstance(sample_data_raw, dict) else {}
             )
             sample_data["_sdc_extracted_at"] = datetime.now(UTC).isoformat()
@@ -478,13 +474,13 @@ class CompleteMockPipeline:
                 if "order_nbr" in record:
                     record["order_nbr"] = f"{record['order_nbr']}-{i + 1:03d}"
                 record["_sdc_sequence"] = i + 1
-                record_obj: Mapping[str, t.NormalizedValue] = record
+                record_obj: t.ContainerMapping = record
                 tap_records.append({"entity": entity_name, "record": record_obj})
         return tap_records
 
     def _simulate_target_loading(
-        self, tap_records: Sequence[Mapping[str, t.NormalizedValue]]
-    ) -> Mapping[str, t.NormalizedValue]:
+        self, tap_records: Sequence[t.ContainerMapping]
+    ) -> t.ContainerMapping:
         """Simulate TARGET loading process."""
         target_results = {}
         for entity_name in self.mock_entities:
@@ -501,11 +497,11 @@ class CompleteMockPipeline:
                 and hasattr(entity_records[0]["record"], "keys")
                 else Sequence[str](),
             }
-        return cast("Mapping[str, t.NormalizedValue]", target_results)
+        return cast("t.ContainerMapping", target_results)
 
     def _simulate_dbt_transformations(
-        self, target_results: Mapping[str, t.NormalizedValue]
-    ) -> Mapping[str, t.NormalizedValue]:
+        self, target_results: t.ContainerMapping
+    ) -> t.ContainerMapping:
         """Simulate DBT transformation process."""
         dbt_results: Mapping[str, Mapping[str, int | Sequence[str] | str]] = {}
         business_models = {
@@ -579,7 +575,7 @@ class CompleteMockPipeline:
                     "rows_processed": sum(
                         self._safe_int(
                             cast(
-                                "Mapping[str, t.NormalizedValue]",
+                                "t.ContainerMapping",
                                 target_results.get(src, {}),
                             ).get("records_loaded", 0)
                         )
@@ -590,15 +586,15 @@ class CompleteMockPipeline:
                     "transformation_timestamp": datetime.now(UTC).isoformat(),
                     "status": "SUCCESS",
                 }
-        return cast("Mapping[str, t.NormalizedValue]", dbt_results)
+        return cast("t.ContainerMapping", dbt_results)
 
     def _save_complete_pipeline_results(
         self,
-        schemas: Mapping[str, t.NormalizedValue],
-        catalog: Mapping[str, t.NormalizedValue],
-        tap_records: Sequence[Mapping[str, t.NormalizedValue]],
-        target_results: Mapping[str, t.NormalizedValue],
-        dbt_results: Mapping[str, t.NormalizedValue],
+        schemas: t.ContainerMapping,
+        catalog: t.ContainerMapping,
+        tap_records: Sequence[t.ContainerMapping],
+        target_results: t.ContainerMapping,
+        dbt_results: t.ContainerMapping,
     ) -> r[str]:
         """Save complete pipeline results."""
         results_dir = Path("complete_pipeline_results")
@@ -691,7 +687,7 @@ class CompleteMockPipeline:
 def main() -> None:
     """Main execution."""
     pipeline = CompleteMockPipeline()
-    result: r[Mapping[str, t.NormalizedValue]] = pipeline.run_complete_pipeline()
+    result: r[t.ContainerMapping] = pipeline.run_complete_pipeline()
     if result.is_success:
         pass
 
