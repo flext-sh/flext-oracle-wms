@@ -114,7 +114,9 @@ class FlextHttpClient:
                     f"HTTP request failed: {response_result.error}",
                 )
             response = response_result.value
-            return r[t.ContainerValueMapping].ok(self._parse_response_body(response.body))
+            return r[t.ContainerValueMapping].ok(
+                self._parse_response_body(response.body)
+            )
         except Exception as exc:
             FlextHttpClient.logger.exception(f"DELETE {path} error")
             return r[t.ContainerValueMapping].fail(f"Request error: {exc}")
@@ -176,7 +178,9 @@ class FlextHttpClient:
                 return r[t.ContainerValueMapping].fail(
                     f"HTTP {response.status_code}: {response.body!r}",
                 )
-            return r[t.ContainerValueMapping].ok(self._parse_response_body(response.body))
+            return r[t.ContainerValueMapping].ok(
+                self._parse_response_body(response.body)
+            )
         except Exception as exc:
             FlextHttpClient.logger.exception("Unexpected error")
             return r[t.ContainerValueMapping].fail(f"Unexpected error: {exc}")
@@ -233,7 +237,9 @@ class FlextHttpClient:
                 return r[t.ContainerValueMapping].fail(
                     f"HTTP {response.status_code}: {response.body!r}",
                 )
-            return r[t.ContainerValueMapping].ok(self._parse_response_body(response.body))
+            return r[t.ContainerValueMapping].ok(
+                self._parse_response_body(response.body)
+            )
         except Exception as exc:
             FlextHttpClient.logger.exception(f"HTTP {method} error")
             return r[t.ContainerValueMapping].fail(f"Request error: {exc}")
