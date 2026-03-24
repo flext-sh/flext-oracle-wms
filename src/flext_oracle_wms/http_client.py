@@ -16,6 +16,10 @@ from pydantic import TypeAdapter, ValidationError
 
 from flext_oracle_wms import t
 
+_CONTAINER_VALUE_MAP_ADAPTER: TypeAdapter[t.ContainerValueMapping] = TypeAdapter(
+    t.ContainerValueMapping,
+)
+
 
 class FlextHttpClient:
     """Generic HTTP client using FLEXT delegation with railway-oriented programming."""
@@ -248,13 +252,10 @@ class FlextHttpClient:
         body: FlextApiTypes.Api.ResponseBody,
     ) -> t.ContainerValueMapping:
         """Parse response body using strict model validation."""
-        adapter: TypeAdapter[Mapping[str, t.ContainerValue]] = TypeAdapter(
-            Mapping[str, t.ContainerValue]
-        )
         match body:
             case dict() as payload:
                 try:
-                    validated: Mapping[str, t.ContainerValue] = adapter.validate_python(
+                    validated: Mapping[str, t.ContainerValue] = _CONTAINER_VALUE_MAP_ADAPTER.validate_python(
                         payload
                     )
                     return validated
@@ -264,7 +265,7 @@ class FlextHttpClient:
             case str() as raw if raw:
                 try:
                     validated_json: Mapping[str, t.ContainerValue] = (
-                        adapter.validate_json(raw)
+                        _CONTAINER_VALUE_MAP_ADAPTER.validate_json(raw)
                     )
                     return validated_json
                 except (ValidationError, ValueError):
@@ -273,7 +274,7 @@ class FlextHttpClient:
             case bytes() as raw_bytes:
                 try:
                     validated_bytes: Mapping[str, t.ContainerValue] = (
-                        adapter.validate_json(raw_bytes)
+                        _CONTAINER_VALUE_MAP_ADAPTER.validate_json(raw_bytes)
                     )
                     return validated_bytes
                 except (ValidationError, ValueError):
