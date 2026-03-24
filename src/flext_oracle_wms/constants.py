@@ -8,7 +8,7 @@ from __future__ import annotations
 
 from collections.abc import Mapping
 from enum import StrEnum, unique
-from typing import ClassVar, Final, Literal
+from typing import ClassVar, Final
 
 from flext_core import FlextConstants, FlextTypes as t
 
@@ -131,17 +131,6 @@ class FlextOracleWmsConstants(FlextConstants):
         PRODUCTS = "products"
         WAREHOUSES = "warehouses"
 
-    type WmsEntityTypeLiteral = Literal[
-        "inventory",
-        "orders",
-        "shipments",
-        "picking",
-        "locations",
-        "items",
-        "products",
-        "warehouses",
-    ]
-
     @unique
     class WmsApiVersion(StrEnum):
         """API versions.
@@ -154,13 +143,6 @@ class FlextOracleWmsConstants(FlextConstants):
         V2 = "v2"
         V3 = "v3"
         LEGACY = "legacy"
-
-    type WmsApiVersionLiteral = Literal[
-        WmsApiVersion.V1,
-        WmsApiVersion.V2,
-        WmsApiVersion.V3,
-        WmsApiVersion.LEGACY,
-    ]
 
     @unique
     class WmsApiCategory(StrEnum):
@@ -175,14 +157,6 @@ class FlextOracleWmsConstants(FlextConstants):
         SHIPPING = "shipping"
         RECEIVING = "receiving"
         REPORTING = "reporting"
-
-    type WmsApiCategoryLiteral = Literal[
-        "inventory",
-        "orders",
-        "shipping",
-        "receiving",
-        "reporting",
-    ]
 
     @unique
     class WmsOperationStatus(StrEnum):
@@ -199,15 +173,6 @@ class FlextOracleWmsConstants(FlextConstants):
         TIMEOUT = "timeout"
         CANCELLED = "cancelled"
 
-    type WmsOperationStatusLiteral = Literal[
-        "pending",
-        "running",
-        "success",
-        "error",
-        "timeout",
-        "cancelled",
-    ]
-
     @unique
     class WmsDataQuality(StrEnum):
         """Data quality levels.
@@ -220,8 +185,6 @@ class FlextOracleWmsConstants(FlextConstants):
         MEDIUM = "medium"
         LOW = "low"
         UNKNOWN = "unknown"
-
-    type WmsDataQualityLiteral = Literal["high", "medium", "low", "unknown"]
 
     @unique
     class WmsFilterOperator(StrEnum):
@@ -243,20 +206,6 @@ class FlextOracleWmsConstants(FlextConstants):
         STARTS_WITH = "starts_with"
         ENDS_WITH = "ends_with"
 
-    type WmsFilterOperatorLiteral = Literal[
-        "eq",
-        "ne",
-        "gt",
-        "gte",
-        "lt",
-        "lte",
-        "in",
-        "not_in",
-        "contains",
-        "starts_with",
-        "ends_with",
-    ]
-
     @unique
     class WmsPageMode(StrEnum):
         """Page modes.
@@ -268,8 +217,6 @@ class FlextOracleWmsConstants(FlextConstants):
         APPEND = "append"
         REPLACE = "replace"
         MERGE = "merge"
-
-    type WmsPageModeLiteral = Literal["append", "replace", "merge"]
 
     @unique
     class WmsWriteMode(StrEnum):
@@ -283,8 +230,6 @@ class FlextOracleWmsConstants(FlextConstants):
         UPDATE = "update"
         UPSERT = "upsert"
         DELETE = "delete"
-
-    type WmsWriteModeLiteral = Literal["insert", "update", "upsert", "delete"]
 
     @unique
     class EndpointDiscoveryStrategy(StrEnum):
@@ -318,12 +263,6 @@ class FlextOracleWmsConstants(FlextConstants):
         "oauth2_token_endpoint": "/oauth2/token",
         "oauth2_scope_default": "read write",
     }
-    type OracleWMSAuthMethodLiteral = Literal[
-        OracleWMSAuthMethod.BASIC,
-        OracleWMSAuthMethod.OAUTH2,
-        OracleWMSAuthMethod.API_KEY,
-        OracleWMSAuthMethod.BEARER,
-    ]
 
     @unique
     class ProjectType(StrEnum):
