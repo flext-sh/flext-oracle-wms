@@ -458,7 +458,10 @@ class CompleteMockPipeline:
                 k: v for k, v in schema.items() if k != "key_properties"
             }
             schema_props = schema.get("properties", {})
-            schema_props_dict = schema_props if isinstance(schema_props, dict) else {}
+            empty_props: dict[str, t.NormalizedValue] = {}
+            schema_props_dict = (
+                schema_props if isinstance(schema_props, dict) else empty_props
+            )
             replication_method = (
                 "INCREMENTAL"
                 if any(
@@ -484,7 +487,7 @@ class CompleteMockPipeline:
                 "key_properties": key_properties,
                 "metadata": [
                     {
-                        "breadcrumb": [],
+                        "breadcrumb": list[str](),
                         "metadata": inner_metadata,
                     },
                 ],

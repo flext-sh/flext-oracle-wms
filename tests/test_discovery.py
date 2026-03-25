@@ -102,7 +102,7 @@ class TestFlextOracleWmsEntityDiscovery:
 
     def test_discover_entities_result_is_list(self) -> None:
         mock_client = MagicMock()
-        mock_client.discover_entities.return_value = r.ok([])
+        mock_client.discover_entities.return_value = r.ok(list[str]())
         discovery = FlextOracleWmsEntityDiscovery(client=mock_client)
         result = discovery.discover_entities()
         assert isinstance(result.value, list)

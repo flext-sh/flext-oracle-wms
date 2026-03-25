@@ -42,7 +42,7 @@ def load_env_config() -> dict[str, t.ContainerValue] | None:
             if path_parts and path_parts[-1]:
                 logger.debug(f"Environment detected in URL: {path_parts[-1]}")
         except (ValueError, AttributeError) as e:
-            logger.debug("Failed to parse environment from URL: %s", e)
+            logger.debug("Failed to parse environment from URL: %s", str(e))  # noqa: RUF065
     return {
         "oracle_wms_base_url": base_url,
         "oracle_wms_username": config.get("ORACLE_WMS_USERNAME", ""),
@@ -116,7 +116,7 @@ def main() -> None:
         if lpn_result.is_failure:
             logger.debug(f"LPN creation failed as expected: {lpn_result.error}")
     except Exception as exc:
-        logger.warning("Test execution encountered error: %s", exc)
+        logger.warning("Test execution encountered error: %s", str(exc))  # noqa: RUF065
         raise
     finally:
         client.stop()

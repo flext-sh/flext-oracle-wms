@@ -220,7 +220,9 @@ class TestOracleWmsDeclarativeIntegration:
         assert health_result.is_success, f"Health check failed: {health_result.error}"
         health_response = health_result.value
         health_data = (
-            health_response.body if isinstance(health_response.body, dict) else {}
+            health_response.body
+            if isinstance(health_response.body, dict)
+            else dict[str, t.NormalizedValue]()
         )
         assert health_data.get("service") == "FlextOracleWmsClient"
         assert health_data.get("status") in {"healthy", "unhealthy"}
