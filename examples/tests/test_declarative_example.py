@@ -5,29 +5,25 @@ This demonstrates the declarative approach with massive code reduction.
 
 from __future__ import annotations
 
-from collections.abc import Mapping
 from pathlib import Path
 from urllib.parse import urlparse
 
 from flext_core import FlextLogger
 
-from flext_oracle_wms import (
-    FlextOracleWmsApiVersion,
-    FlextOracleWmsClient,
-    FlextOracleWmsClientSettings,
-)
+from flext_oracle_wms.settings import FlextOracleWmsClientSettings
+from flext_oracle_wms.typings import FlextOracleWmsTypes as t
 from flext_oracle_wms.wms_api import FlextOracleWmsApi
-from tests import t
+from flext_oracle_wms.wms_client import FlextOracleWmsClient
 
 logger = FlextLogger(__name__)
 
 
-def load_env_config() -> t.ContainerMapping | None:
+def load_env_config() -> dict[str, t.ContainerValue] | None:
     """Load configuration from .env file."""
     env_path = Path("flext-tap-oracle-wms/.env")
     if not env_path.exists():
         return None
-    config: t.StrMapping = {}
+    config: dict[str, str] = {}
     with env_path.open(encoding="utf-8") as f:
         for line in f:
             stripped_line = line.strip()
@@ -46,12 +42,12 @@ def load_env_config() -> t.ContainerMapping | None:
             if path_parts and path_parts[-1]:
                 logger.debug(f"Environment detected in URL: {path_parts[-1]}")
         except (ValueError, AttributeError) as e:
-            logger.debug("Failed to parse environment from URL: %s", e)
+            logger.debug("Failed to parse environment from URL: %s", str(e))
     return {
         "oracle_wms_base_url": base_url,
-        "oracle_wms_username": config.get("ORACLE_WMS_USERNAME"),
-        "oracle_wms_password": config.get("ORACLE_WMS_PASSWORD"),
-        "api_version": FlextOracleWmsApiVersion.LGF_V10,
+        "oracle_wms_username": config.get("ORACLE_WMS_USERNAME", ""),
+        "oracle_wms_password": config.get("ORACLE_WMS_PASSWORD", ""),
+        "api_version": "LGF_V10",
         "oracle_wms_timeout": int(config.get("ORACLE_WMS_TIMEOUT", "30")),
         "oracle_wms_max_retries": int(config.get("ORACLE_WMS_MAX_RETRIES", "3")),
         "oracle_wms_verify_ssl": config.get("ORACLE_WMS_VERIFY_SSL", "true").lower()
@@ -73,22 +69,22 @@ def main() -> None:
         env_config.get("oracle_wms_password"),
     ]):
         return
-    config = FlextOracleWmsClientSettings({
+    config = FlextOracleWmsClientSettings.model_validate({
         "base_url": str(env_config["oracle_wms_base_url"]),
         "username": str(env_config["oracle_wms_username"]),
         "password": str(env_config["oracle_wms_password"]),
-        "api_version": env_config["api_version"],
+        "api_version": str(env_config["api_version"]),
         "timeout": int(str(env_config["oracle_wms_timeout"])),
-        "retry_attempts": int(str(env_config["oracle_wms_max_retries"])),
-        "enable_ssl_verification": bool(env_config["oracle_wms_verify_ssl"]),
-        "enable_audit_logging": bool(env_config["oracle_wms_enable_logging"]),
+        "max_retries": int(str(env_config["oracle_wms_max_retries"])),
+        "verify_ssl": bool(env_config["oracle_wms_verify_ssl"]),
+        "enable_logging": bool(env_config["oracle_wms_enable_logging"]),
     })
     client = FlextOracleWmsClient(config)
     try:
         start_result = client.start()
         if not start_result.is_success:
             return
-        categories: Mapping[str, t.StrSequence] = {}
+        categories: dict[str, list[str]] = {}
         for api in FlextOracleWmsApi.FLEXT_ORACLE_WMS_APIS.values():
             if api.category not in categories:
                 categories[api.category] = []
@@ -105,12 +101,10 @@ def main() -> None:
             result = client.get_entity_data(entity, limit=3)
             if result.is_success:
                 data = result.value
-                if isinstance(data, dict):
-                    results = data.get("results", [])
-                    if isinstance(results, list):
-                        data.get("count", len(results))
-                elif isinstance(data, list):
-                    len(data)
+                if isinstance(data, list):
+                    for record in data:
+                        if isinstance(record, dict):
+                            record.get("count", str(len(data)))
         health_result = client.health_check()
         if health_result.is_success:
             pass
@@ -121,8 +115,8 @@ def main() -> None:
         lpn_result = client.create_lpn(lpn_nbr="TEST_LPN", qty=10)
         if lpn_result.is_failure:
             logger.debug(f"LPN creation failed as expected: {lpn_result.error}")
-    except Exception as e:
-        logger.warning("Test execution encountered error: %s", e)
+    except Exception as exc:
+        logger.warning("Test execution encountered error: %s", str(exc))
         raise
     finally:
         client.stop()

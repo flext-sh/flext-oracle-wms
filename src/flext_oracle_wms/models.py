@@ -161,14 +161,14 @@ class FlextOracleWmsModels(FlextModels):
 
             model_config: ClassVar[ConfigDict] = ConfigDict(extra="ignore")
 
-            apis: Sequence[t.StrMapping] = Field(default_factory=list)
+            apis: Sequence[t.StrMapping] = Field(default_factory=lambda: list[Mapping[str, str]]())
 
         class EntityDataResponse(BaseModel):
             """Oracle WMS entity data response."""
 
             model_config: ClassVar[ConfigDict] = ConfigDict(extra="ignore")
 
-            data: Sequence[t.StrMapping] = Field(default_factory=list)
+            data: Sequence[t.StrMapping] = Field(default_factory=lambda: list[Mapping[str, str]]())
 
         # =====================================================================
         # DOMAIN ENTITIES - Composed DDD patterns
@@ -219,7 +219,7 @@ class FlextOracleWmsModels(FlextModels):
             items: Annotated[
                 Sequence[Mapping[str, t.ContainerValue]],
                 Field(description="Order items"),
-            ] = Field(default_factory=list)
+            ] = Field(default_factory=lambda: list[Mapping[str, t.ContainerValue]]())
 
         class Shipment(WmsEntity):
             """Shipment domain entity."""
@@ -248,7 +248,7 @@ class FlextOracleWmsModels(FlextModels):
             items: Annotated[
                 Sequence[Mapping[str, t.ContainerValue]],
                 Field(description="Task items"),
-            ] = Field(default_factory=list)
+            ] = Field(default_factory=lambda: list[Mapping[str, t.ContainerValue]]())
 
         class Location(WmsEntity):
             """Location domain entity."""
@@ -307,10 +307,10 @@ class FlextOracleWmsModels(FlextModels):
             id: str
             name: str
             locations: Sequence[FlextOracleWmsModels.OracleWms.WarehouseLocation] = (
-                Field(default_factory=list)
+                Field(default_factory=lambda: list[FlextOracleWmsModels.OracleWms.WarehouseLocation]())
             )
             inventory: MutableSequence[FlextOracleWmsModels.OracleWms.InventoryItem] = (
-                Field(default_factory=list)
+                Field(default_factory=lambda: list[FlextOracleWmsModels.OracleWms.InventoryItem]())
             )
 
             def add_inventory(

@@ -18,15 +18,16 @@ from dotenv import load_dotenv
 from flext_core import FlextLogger
 from pydantic import BaseModel, ConfigDict, Field
 
-from flext_oracle_wms import (
-    FlextOracleWmsClient,
-    FlextOracleWmsClientSettings,
-    FlextOracleWmsSettings,
-    t,
-)
 from flext_oracle_wms.constants import FlextOracleWmsConstants
+from flext_oracle_wms.settings import (
+    FlextOracleWmsClientSettings,
+)
+from flext_oracle_wms.typings import FlextOracleWmsTypes as t
+from flext_oracle_wms.wms_client import FlextOracleWmsClient
 
 logger = FlextLogger(__name__)
+
+c = FlextOracleWmsConstants
 
 
 @unique
@@ -58,20 +59,20 @@ def get_environment_configs() -> Mapping[Environment, WmsEnvironmentConfig]:
         Environment.DEVELOPMENT: WmsEnvironmentConfig(
             name="Development",
             base_url="https://dev-wms.oraclecloud.com/dev_env",
-            timeout=FlextOracleWmsConstants.Connection.DEFAULT_TIMEOUT,
-            max_retries=FlextOracleWmsConstants.Connection.DEFAULT_MAX_RETRIES,
+            timeout=c.OracleWms.DEFAULT_TIMEOUT,
+            max_retries=c.OracleWms.DEFAULT_MAX_RETRIES,
         ),
         Environment.STAGING: WmsEnvironmentConfig(
             name="Staging",
             base_url="https://staging-wms.oraclecloud.com/staging_env",
-            timeout=FlextOracleWmsConstants.Connection.DEFAULT_TIMEOUT,
-            max_retries=FlextOracleWmsConstants.Connection.DEFAULT_MAX_RETRIES,
+            timeout=c.OracleWms.DEFAULT_TIMEOUT,
+            max_retries=c.OracleWms.DEFAULT_MAX_RETRIES,
         ),
         Environment.PRODUCTION: WmsEnvironmentConfig(
             name="Production",
             base_url="https://prod-wms.oraclecloud.com/prod_env",
-            timeout=FlextOracleWmsConstants.Connection.DEFAULT_TIMEOUT,
-            max_retries=FlextOracleWmsConstants.Connection.DEFAULT_MAX_RETRIES,
+            timeout=c.OracleWms.DEFAULT_TIMEOUT,
+            max_retries=c.OracleWms.DEFAULT_MAX_RETRIES,
         ),
     }
 
@@ -112,7 +113,7 @@ def create_config_from_environment() -> FlextOracleWmsClientSettings:
     env_config = FlextOracleWmsClientSettings.get_global()
     if env_config.username and env_config.password:
         return env_config
-    return FlextOracleWmsSettings()
+    return FlextOracleWmsClientSettings()
 
 
 def create_demo_config() -> FlextOracleWmsClientSettings:
@@ -125,21 +126,21 @@ def create_demo_config() -> FlextOracleWmsClientSettings:
       This demonstrates how to use the global singleton with parameter overrides.
 
     """
-    return FlextOracleWmsClientSettings({
+    return FlextOracleWmsClientSettings.model_validate({
         "base_url": "https://demo-wms.oraclecloud.com/demo",
         "username": "demo_user",
         "password": "demo_password",
         "api_version": "LGF_V10",
-        "timeout": FlextOracleWmsConstants.Connection.DEFAULT_TIMEOUT,
-        "retry_attempts": FlextOracleWmsConstants.Connection.DEFAULT_MAX_RETRIES,
-        "enable_ssl_verification": True,
-        "enable_audit_logging": True,
+        "timeout": c.OracleWms.DEFAULT_TIMEOUT,
+        "max_retries": c.OracleWms.DEFAULT_MAX_RETRIES,
+        "verify_ssl": True,
+        "enable_logging": True,
     })
 
 
 def validate_configuration(
     config: FlextOracleWmsClientSettings,
-) -> t.ContainerMapping:
+) -> dict[str, t.NormalizedValue]:
     """Validate Oracle WMS client configuration.
 
     Args:
@@ -149,37 +150,36 @@ def validate_configuration(
       Dictionary containing validation results
 
     """
-    errors: t.StrSequence = []
-    warnings: t.StrSequence = []
-    config_summary: t.ContainerMapping = {}
+    errors: list[str] = []
+    warnings: list[str] = []
     if not config.base_url:
         errors.append("Base URL is required")
     elif not config.base_url.startswith("https://"):
         warnings.append("Base URL should use HTTPS for security")
     if not config.username or not config.password:
         errors.append("Username and password are required")
-    min_timeout_seconds = FlextOracleWmsConstants.Connection.DEFAULT_TIMEOUT // 3
+    min_timeout_seconds = c.OracleWms.DEFAULT_TIMEOUT // 3
     if config.timeout <= 0:
         errors.append("Timeout must be positive")
     elif config.timeout < min_timeout_seconds:
         warnings.append("Timeout less than 10 seconds may cause issues")
     max_retries_warning_threshold = (
-        FlextOracleWmsConstants.Connection.DEFAULT_MAX_RETRIES * 3
+        c.OracleWms.DEFAULT_MAX_RETRIES * 3
     )
-    if config.retry_attempts < 0:
+    if config.max_retries < 0:
         errors.append("Max retries cannot be negative")
-    elif config.retry_attempts > max_retries_warning_threshold:
+    elif config.max_retries > max_retries_warning_threshold:
         warnings.append("High retry count may cause delays")
-    config_summary = {
+    config_summary: dict[str, t.NormalizedValue] = {
         "base_url": config.base_url,
         "username": config.username,
         "api_version": config.api_version,
         "timeout": config.timeout,
-        "max_retries": config.retry_attempts,
-        "verify_ssl": config.enable_ssl_verification,
-        "enable_logging": config.enable_audit_logging,
+        "max_retries": config.max_retries,
+        "verify_ssl": config.verify_ssl,
+        "enable_logging": config.enable_logging,
     }
-    validation_results: t.ContainerMapping = {
+    validation_results: dict[str, t.NormalizedValue] = {
         "valid": not errors,
         "warnings": warnings,
         "errors": errors,
@@ -190,7 +190,7 @@ def validate_configuration(
 
 def test_configuration(
     config: FlextOracleWmsClientSettings,
-) -> t.ContainerMapping:
+) -> dict[str, t.NormalizedValue]:
     """Test Oracle WMS configuration by attempting connection.
 
     Args:
@@ -200,7 +200,7 @@ def test_configuration(
       Dictionary with test results
 
     """
-    test_results: t.ContainerMapping = {
+    test_results: dict[str, t.NormalizedValue] = {
         "connection_success": False,
         "health_check_success": False,
         "error": None,
@@ -216,8 +216,8 @@ def test_configuration(
         entities_result = client.discover_entities()
         if entities_result.is_success and entities_result.value:
             test_results["entities_discovered"] = len(entities_result.value)
-    except Exception as e:
-        test_results["error"] = str(e)
+    except Exception as exc:
+        test_results["error"] = str(exc)
     finally:
         client.stop()
     return test_results
@@ -248,8 +248,8 @@ def demonstrate_configuration_patterns() -> None:
         if warnings and isinstance(warnings, (list, tuple)):
             for _warning in warnings:
                 pass
-    except Exception as e:
-        logger.warning("Configuration validation failed: %s", e)
+    except Exception as exc:
+        logger.warning("Configuration validation failed: %s", str(exc))
     env_configs = get_environment_configs()
     for _config in env_configs.values():
         pass

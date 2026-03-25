@@ -11,12 +11,10 @@ import json
 from collections.abc import Mapping, MutableMapping, MutableSequence, Sequence
 from datetime import UTC, datetime
 from pathlib import Path
-from types import NoneType
 
 from flext_core import FlextLogger, r
 
-from flext_oracle_wms.settings import FlextOracleWmsClientSettings
-from flext_oracle_wms.wms_client import FlextOracleWmsClient
+from flext_oracle_wms import FlextOracleWmsClient, FlextOracleWmsClientSettings
 from tests import t
 
 logger = FlextLogger(__name__)
@@ -42,7 +40,7 @@ class FocusedOracleWmsDiscovery:
             verify_ssl=True,
             enable_logging=True,
         )
-        self.client = FlextOracleWmsClient(settings=self.config)
+        self.client = FlextOracleWmsClient(config=self.config)
         self.quick_test_entities: Sequence[str] = [
             "company",
             "facility",
@@ -198,9 +196,9 @@ class FocusedOracleWmsDiscovery:
     def _safe_sample(
         self,
         record: t.StrMapping,
-    ) -> MutableMapping[str, NoneType | bool | float | int | str]:
+    ) -> MutableMapping[str, bool | float | int | str | None]:
         """Create safe sample record."""
-        safe: MutableMapping[str, NoneType | bool | float | int | str] = {}
+        safe: MutableMapping[str, bool | float | int | str | None] = {}
         for k, v in list(record.items())[:10]:
             if isinstance(v, (str, int, float, bool, type(None))):
                 if (isinstance(v, str) and len(v) < 50) or not isinstance(v, str):
@@ -281,7 +279,7 @@ class FocusedOracleWmsDiscovery:
                 "additionalProperties": False,
                 "key_properties": key_properties,
                 "oracle_wms_entity": entity_name,
-                "oracle_wms_environment": str(self.config.environment),
+                "oracle_wms_environment": str(self.config.base_url),
             }
         except (RuntimeError, OSError, ValueError, KeyError):
             logger.exception("Schema creation failed for %s", entity_name)
@@ -411,7 +409,7 @@ class FocusedOracleWmsDiscovery:
         summary = {
             "timestamp": timestamp,
             "mode": "FOCUSED_ADMINISTRATOR_DISCOVERY",
-            "oracle_environment": self.config.environment,
+            "oracle_environment": self.config.base_url,
             "entities_with_data_count": len(self.entities_with_data),
             "schemas_generated_count": len(self.complete_schemas),
             "entities_with_data": list(self.entities_with_data.keys()),

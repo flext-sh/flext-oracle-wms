@@ -18,15 +18,10 @@ import time
 from collections.abc import Mapping, Sequence
 from datetime import UTC, datetime
 from pathlib import Path
-from types import NoneType
 
 from flext_core import FlextLogger, r
 
-from flext_oracle_wms import (
-    FlextOracleWmsClient,
-    FlextOracleWmsClientSettings,
-    create_oracle_wms_client,
-)
+from flext_oracle_wms import FlextOracleWmsClient, FlextOracleWmsClientSettings
 from tests import t
 
 logger = FlextLogger(__name__)
@@ -46,17 +41,13 @@ class OptimizedOracleWmsDiscovery:
             base_url="https://invalid.wms.ocs.oraclecloud.com",
             username="USER_WMS_INTEGRA",
             password="jmCyS7BK94YvhS@",
-            environment="test",
             timeout=60.0,
             max_retries=3,
             api_version=_API_VERSION_LGF_V10,
             verify_ssl=True,
             enable_logging=True,
         )
-        self.client: FlextOracleWmsClient = create_oracle_wms_client(
-            self.config,
-            mock_mode=False,
-        )
+        self.client = FlextOracleWmsClient(config=self.config)
         self.priority_entities: set[str] = {
             "company",
             "facility",
@@ -221,9 +212,9 @@ class OptimizedOracleWmsDiscovery:
     def _safe_sample_record(
         self,
         record: t.StrMapping,
-    ) -> dict[str, NoneType | bool | float | int | str]:
+    ) -> dict[str, bool | float | int | str | None]:
         """Create safe sample record for storage."""
-        safe_record: dict[str, NoneType | bool | float | int | str] = {}
+        safe_record: dict[str, bool | float | int | str | None] = {}
         for k, v in record.items():
             if isinstance(v, (str, int, float, bool, type(None))):
                 if (isinstance(v, str) and len(v) < 100) or not isinstance(v, str):
@@ -493,7 +484,7 @@ class OptimizedOracleWmsDiscovery:
             "discovery_mode": "OPTIMIZED_ADMINISTRATOR_MODE",
             "total_high_value_entities": len(self.high_value_entities),
             "schemas_generated": len(self.complete_schemas),
-            "oracle_wms_environment": str(self.config.environment),
+            "oracle_wms_environment": str(self.config.base_url),
             "oracle_wms_base_url": str(self.config.base_url),
             "api_version": str(self.config.api_version),
             "high_value_entities": list(self.high_value_entities.keys()),

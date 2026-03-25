@@ -28,12 +28,10 @@ from pathlib import Path
 from dotenv import load_dotenv
 from flext_core import FlextContainer, FlextLogger, r
 
-from flext_oracle_wms import (
-    FlextOracleWmsClient,
-    FlextOracleWmsExceptions,
-    FlextOracleWmsSettings,
-    t,
-)
+from flext_oracle_wms.settings import FlextOracleWmsSettings
+from flext_oracle_wms.typings import FlextOracleWmsTypes as t
+from flext_oracle_wms.wms_client import FlextOracleWmsClient
+from flext_oracle_wms.wms_exceptions import FlextOracleWmsExceptions
 
 MAX_ENTITIES_TO_SHOW = 5
 MAX_VALUE_DISPLAY_LENGTH = 50
@@ -53,15 +51,15 @@ def setup_client_config() -> None:
     container = FlextContainer.get_global()
     config = FlextOracleWmsSettings(
         base_url=os.getenv("FLEXT_ORACLE_WMS_BASE_URL", "https://wms.oraclecloud.com"),
-        username=os.getenv("FLEXT_ORACLE_WMS_USERNAME"),
-        password=os.getenv("FLEXT_ORACLE_WMS_PASSWORD"),
+        username=os.getenv("FLEXT_ORACLE_WMS_USERNAME", ""),
+        password=os.getenv("FLEXT_ORACLE_WMS_PASSWORD", ""),
     )
     _ = container.register("FlextOracleWmsSettings", config)
 
 
 def discover_wms_entities(
     client: FlextOracleWmsClient,
-) -> r[Sequence[t.ContainerMapping]]:
+) -> r[t.StrSequence]:
     """Discover available Oracle WMS entities.
 
     Args:
@@ -77,16 +75,7 @@ def discover_wms_entities(
         if entities is None:
             return result
         for entity in entities[:5]:
-            entity_display = (
-                entity.get("name", "Unknown")
-                if isinstance(entity, dict)
-                else str(entity)
-            )
-            logger.debug("Processing entity: %s", entity_display)
-            if hasattr(entity, "description") and getattr(entity, "description", None):
-                pass
-            if hasattr(entity, "entity_type"):
-                pass
+            logger.debug("Processing entity: %s", entity)
         if entities and len(entities) > MAX_ENTITIES_TO_SHOW:
             pass
         return result
@@ -96,7 +85,7 @@ def discover_wms_entities(
 def query_entity_data(
     client: FlextOracleWmsClient,
     entity_name: str,
-) -> r[Sequence[t.ContainerMapping]]:
+) -> r[Sequence[t.StrMapping]]:
     """Query data from a specific Oracle WMS entity.
 
     Args:
@@ -130,7 +119,7 @@ def query_entity_data(
                             str(value),
                         ) > MAX_VALUE_DISPLAY_LENGTH else str(value)
                     except (KeyError, ValueError, TypeError) as e:
-                        logger.debug("Display formatting failed: %s", e)
+                        logger.debug("Display formatting failed: %s", str(e))
         elif data is not None:
             pass
         return result
@@ -175,12 +164,7 @@ def main() -> None:
             entities = entities_result.value
             if entities:
                 first_entity = entities[0]
-                entity_name = (
-                    first_entity.get("name", "Unknown")
-                    if isinstance(first_entity, dict)
-                    else str(first_entity)
-                )
-                query_entity_data(client, str(entity_name))
+                query_entity_data(client, str(first_entity))
         demonstrate_error_handling(client)
     except FlextOracleWmsExceptions.BaseError:
         logger.exception("Oracle WMS error")

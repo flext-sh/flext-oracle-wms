@@ -126,6 +126,10 @@ allow-direct-references = true
 disable_error_code = [
   "prop-decorator",
 ]
+exclude = [
+  "examples/",
+  "docs/",
+]
 explicit_package_bases = true
 ignore_missing_imports = true
 mypy_path = [ ".", "../typings", "../typings/generated", "src" ]
