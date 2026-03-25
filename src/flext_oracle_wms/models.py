@@ -193,32 +193,29 @@ class FlextOracleWmsModels(FlextModels):
         class InventoryItem(WmsEntity):
             """Inventory domain entity."""
 
-            sku: Annotated[str, Field(default="", description="Stock keeping unit")]
+            sku: Annotated[str, Field(description="Stock keeping unit")] = ""
             quantity: Annotated[
                 t.NonNegativeInt,
-                Field(default=0, description="Item quantity"),
-            ]
+                Field(description="Item quantity"),
+            ] = 0
             location_id: Annotated[
                 str,
-                Field(default="", description="Storage location identifier"),
-            ]
-            status: Annotated[str, Field(default="active", description="Item status")]
+                Field(description="Storage location identifier"),
+            ] = ""
+            status: Annotated[str, Field(description="Item status")] = "active"
 
         class Order(WmsEntity):
             """Order domain entity."""
 
             customer_id: Annotated[
                 str,
-                Field(default="", description="Customer identifier"),
-            ]
-            status: Annotated[str, Field(default="pending", description="Order status")]
+                Field(description="Customer identifier"),
+            ] = ""
+            status: Annotated[str, Field(description="Order status")] = "pending"
             total_amount: Annotated[
                 t.NonNegativeFloat,
-                Field(
-                    default=0.0,
-                    description="Total order amount",
-                ),
-            ]
+                Field(description="Total order amount"),
+            ] = 0.0
             items: Annotated[
                 Sequence[Mapping[str, t.ContainerValue]],
                 Field(description="Order items"),
@@ -229,28 +226,25 @@ class FlextOracleWmsModels(FlextModels):
 
             order_id: Annotated[
                 str,
-                Field(default="", description="Associated order identifier"),
-            ]
+                Field(description="Associated order identifier"),
+            ] = ""
             status: Annotated[
-                str, Field(default="pending", description="Shipment status")
-            ]
+                str, Field(description="Shipment status")
+            ] = "pending"
             carrier: Annotated[
                 str | None,
-                Field(default=None, description="Shipping carrier name"),
-            ]
+                Field(description="Shipping carrier name"),
+            ] = None
             tracking_number: Annotated[
                 str | None,
-                Field(
-                    default=None,
-                    description="Shipment tracking number",
-                ),
-            ]
+                Field(description="Shipment tracking number"),
+            ] = None
 
         class PickingTask(WmsEntity):
             """Picking task domain entity."""
 
-            wave_id: Annotated[str, Field(default="", description="Wave identifier")]
-            status: Annotated[str, Field(default="pending", description="Task status")]
+            wave_id: Annotated[str, Field(description="Wave identifier")] = ""
+            status: Annotated[str, Field(description="Task status")] = "pending"
             items: Annotated[
                 Sequence[Mapping[str, t.ContainerValue]],
                 Field(description="Task items"),
@@ -259,10 +253,10 @@ class FlextOracleWmsModels(FlextModels):
         class Location(WmsEntity):
             """Location domain entity."""
 
-            aisle: Annotated[str, Field(default="", description="Aisle identifier")]
-            shelf: Annotated[str, Field(default="", description="Shelf identifier")]
-            bin_: Annotated[str, Field(default="", description="Bin identifier")]
-            zone: Annotated[str, Field(default="", description="Zone identifier")]
+            aisle: Annotated[str, Field(description="Aisle identifier")] = ""
+            shelf: Annotated[str, Field(description="Shelf identifier")] = ""
+            bin_: Annotated[str, Field(description="Bin identifier")] = ""
+            zone: Annotated[str, Field(description="Zone identifier")] = ""
 
         # =====================================================================
         # VALUE OBJECTS - Immutable domain values
@@ -276,7 +270,7 @@ class FlextOracleWmsModels(FlextModels):
             aisle: Annotated[str, Field(description="Aisle identifier")]
             shelf: Annotated[str, Field(description="Shelf identifier")]
             bin_: Annotated[str, Field(description="Bin identifier")]
-            zone: Annotated[str, Field(default="", description="Zone identifier")]
+            zone: Annotated[str, Field(description="Zone identifier")] = ""
 
             @property
             def full_location(self) -> str:
@@ -290,9 +284,9 @@ class FlextOracleWmsModels(FlextModels):
 
             username: Annotated[str, Field(description="API username")]
             password: Annotated[
-                str | None, Field(default=None, description="API password")
-            ]
-            token: Annotated[str | None, Field(default=None, description="API token")]
+                str | None, Field(description="API password")
+            ] = None
+            token: Annotated[str | None, Field(description="API token")] = None
 
         # =====================================================================
         # ENUMS - Aliases from constants.py (single source of truth)

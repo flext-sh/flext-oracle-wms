@@ -20,12 +20,12 @@ class FlextOracleWmsSettings(FlextSettings):
 
     model_config: ClassVar[SettingsConfigDict] = SettingsConfigDict(extra="ignore")
 
-    base_url: Annotated[str, Field(default="http://localhost:8080", min_length=1)]
-    timeout: Annotated[float, Field(default=30.0, ge=1.0, le=300.0)]
-    username: Annotated[str, Field(default="")]
-    password: Annotated[str, Field(default="")]
-    use_mock: Annotated[bool, Field(default=False)]
-    retry_attempts: Annotated[int, Field(default=3, ge=0)]
+    base_url: Annotated[str, Field(min_length=1)] = "http://localhost:8080"
+    timeout: Annotated[float, Field(ge=1.0, le=300.0)] = 30.0
+    username: str = ""
+    password: str = ""
+    use_mock: bool = False
+    retry_attempts: Annotated[int, Field(ge=0)] = 3
 
     def validate_config(self) -> r[bool]:
         """Validate configuration business rules."""
@@ -48,20 +48,20 @@ class FlextOracleWmsClientSettings(FlextOracleWmsSettings):
 
     model_config: ClassVar[SettingsConfigDict] = SettingsConfigDict(extra="ignore")
 
-    base_url: Annotated[str, Field(default="")]
-    username: Annotated[str, Field(default="")]
-    password: Annotated[str, Field(default="")]
-    api_version: Annotated[str, Field(default="LGF_V10")]
-    auth_method: Annotated[str, Field(default="BASIC")]
-    timeout: Annotated[float, Field(default=30.0, ge=1.0)]
-    max_retries: Annotated[int, Field(default=3, ge=0)]
-    verify_ssl: Annotated[bool, Field(default=True)]
-    enable_logging: Annotated[bool, Field(default=False)]
-    use_mock: Annotated[bool, Field(default=False)]
-    connection_pool_size: Annotated[int, Field(default=10, ge=1)]
-    cache_duration: Annotated[int, Field(default=300, ge=0)]
-    project_name: Annotated[str, Field(default="flext-oracle-wms")]
-    project_version: Annotated[str, Field(default="1.0.0")]
+    base_url: str = ""
+    username: str = ""
+    password: str = ""
+    api_version: str = "LGF_V10"
+    auth_method: str = "BASIC"
+    timeout: Annotated[float, Field(ge=1.0)] = 30.0
+    max_retries: Annotated[int, Field(ge=0)] = 3
+    verify_ssl: bool = True
+    enable_logging: bool = False
+    use_mock: bool = False
+    connection_pool_size: Annotated[int, Field(ge=1)] = 10
+    cache_duration: Annotated[int, Field(ge=0)] = 300
+    project_name: str = "flext-oracle-wms"
+    project_version: str = "1.0.0"
 
 
 __all__ = ["FlextOracleWmsClientSettings", "FlextOracleWmsSettings"]

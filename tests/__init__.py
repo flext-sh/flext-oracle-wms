@@ -75,8 +75,6 @@ if TYPE_CHECKING:
     )
     from tests.test_connection import test_real_connection
     from tests.test_declarative import (
-        FlextOracleWmsApiCategory,
-        FlextOracleWmsApiVersion,
         TestAutomationApisIntegration,
         TestErrorHandlingIntegration,
         TestLgfApiV10Integration,
@@ -142,11 +140,6 @@ if TYPE_CHECKING:
 
 _LAZY_IMPORTS: Mapping[str, Sequence[str]] = {
     "CompleteMockPipeline": ["tests.complete_mock_pipeline", "CompleteMockPipeline"],
-    "FlextOracleWmsApiCategory": [
-        "tests.test_declarative",
-        "FlextOracleWmsApiCategory",
-    ],
-    "FlextOracleWmsApiVersion": ["tests.test_declarative", "FlextOracleWmsApiVersion"],
     "FlextOracleWmsTestConstants": ["tests.constants", "FlextOracleWmsTestConstants"],
     "FlextOracleWmsTestModels": ["tests.models", "FlextOracleWmsTestModels"],
     "FlextOracleWmsTestProtocols": ["tests.protocols", "FlextOracleWmsTestProtocols"],
@@ -374,8 +367,6 @@ _LAZY_IMPORTS: Mapping[str, Sequence[str]] = {
 
 __all__ = [
     "CompleteMockPipeline",
-    "FlextOracleWmsApiCategory",
-    "FlextOracleWmsApiVersion",
     "FlextOracleWmsTestConstants",
     "FlextOracleWmsTestModels",
     "FlextOracleWmsTestProtocols",

@@ -9,7 +9,9 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from flext_oracle_wms import FlextOracleWmsConstants, OracleWMSAuthMethod
+from flext_oracle_wms.constants import FlextOracleWmsConstants
+
+OracleWMSAuthMethod = FlextOracleWmsConstants.OracleWms.OracleWMSAuthMethod
 
 
 class TestFlextOracleWmsConstants:
@@ -17,12 +19,12 @@ class TestFlextOracleWmsConstants:
 
     def test_version_constant(self) -> None:
         """Test WMS version is defined."""
-        assert isinstance(FlextOracleWmsConstants.FLEXT_WMS_VERSION, str)
-        assert FlextOracleWmsConstants.FLEXT_WMS_VERSION
+        assert isinstance(FlextOracleWmsConstants.OracleWms.FLEXT_WMS_VERSION, str)
+        assert FlextOracleWmsConstants.OracleWms.FLEXT_WMS_VERSION
 
     def test_api_config(self) -> None:
         """Test API config dict is populated."""
-        cfg = FlextOracleWmsConstants.API_CONFIG
+        cfg = FlextOracleWmsConstants.OracleWms.API_CONFIG
         assert "version_default" in cfg
         assert "base_url_default" in cfg
         assert "timeout_default" in cfg
@@ -30,14 +32,14 @@ class TestFlextOracleWmsConstants:
 
     def test_processing_config(self) -> None:
         """Test processing config dict is populated."""
-        cfg = FlextOracleWmsConstants.PROCESSING_CONFIG
+        cfg = FlextOracleWmsConstants.OracleWms.PROCESSING_CONFIG
         assert "default_batch_size" in cfg
         assert "max_batch_size" in cfg
         assert "default_page_size" in cfg
 
     def test_environments(self) -> None:
         """Test environment dict is populated."""
-        envs = FlextOracleWmsConstants.ENVIRONMENTS
+        envs = FlextOracleWmsConstants.OracleWms.ENVIRONMENTS
         assert "default" in envs
         assert "test" in envs
         assert "production" in envs
@@ -48,14 +50,14 @@ class TestWmsEnums:
 
     def test_wms_entity_type_values(self) -> None:
         """Test WmsEntityType has expected members."""
-        et = FlextOracleWmsConstants.WmsEntityType
+        et = FlextOracleWmsConstants.OracleWms.WmsEntityType
         assert et.INVENTORY == "inventory"
         assert et.ORDERS == "orders"
         assert et.SHIPMENTS == "shipments"
 
     def test_wms_api_version_values(self) -> None:
         """Test WmsApiVersion has expected members."""
-        av = FlextOracleWmsConstants.WmsApiVersion
+        av = FlextOracleWmsConstants.OracleWms.WmsApiVersion
         assert av.V1 == "v1"
         assert av.V2 == "v2"
         assert av.V3 == "v3"
@@ -63,7 +65,7 @@ class TestWmsEnums:
 
     def test_wms_api_category_values(self) -> None:
         """Test WmsApiCategory has expected members."""
-        ac = FlextOracleWmsConstants.WmsApiCategory
+        ac = FlextOracleWmsConstants.OracleWms.WmsApiCategory
         assert ac.INVENTORY == "inventory"
         assert ac.ORDERS == "orders"
         assert ac.SHIPPING == "shipping"
@@ -72,7 +74,7 @@ class TestWmsEnums:
 
     def test_wms_filter_operator_values(self) -> None:
         """Test WmsFilterOperator has expected members."""
-        fo = FlextOracleWmsConstants.WmsFilterOperator
+        fo = FlextOracleWmsConstants.OracleWms.WmsFilterOperator
         assert fo.EQ == "eq"
         assert fo.NE == "ne"
         assert fo.GT == "gt"
@@ -80,7 +82,7 @@ class TestWmsEnums:
 
     def test_wms_operation_status_values(self) -> None:
         """Test WmsOperationStatus has expected members."""
-        os_ = FlextOracleWmsConstants.WmsOperationStatus
+        os_ = FlextOracleWmsConstants.OracleWms.WmsOperationStatus
         assert os_.PENDING == "pending"
         assert os_.SUCCESS == "success"
         assert os_.ERROR == "error"
@@ -110,14 +112,14 @@ class TestNestedConstants:
 
     def test_entity_types_tuple(self) -> None:
         """Test ENTITY_TYPES generated from StrEnum."""
-        et = tuple(FlextOracleWmsConstants.WmsEntityType)
+        et = tuple(FlextOracleWmsConstants.OracleWms.WmsEntityType)
         assert isinstance(et, tuple)
         assert "inventory" in et
         assert "orders" in et
 
     def test_wms_entities_types_from_enum(self) -> None:
         """Test WmsEntities.TYPES generated from StrEnum names."""
-        types = tuple(member.name for member in FlextOracleWmsConstants.WmsEntityType)
+        types = tuple(member.name for member in FlextOracleWmsConstants.OracleWms.WmsEntityType)
         assert isinstance(types, tuple)
         assert "INVENTORY" in types
         assert "ORDERS" in types
