@@ -19,15 +19,14 @@ import pytest
 from flext_core import FlextLogger, r
 
 from flext_oracle_wms import (
-    FLEXT_ORACLE_WMS_APIS,
     FlextOracleWmsClient,
     FlextOracleWmsClientSettings,
     FlextOracleWmsConstants,
+    m,
 )
+from flext_oracle_wms.wms_api import FlextOracleWmsApi
 from tests import t
 
-FlextOracleWmsApiVersion = FlextOracleWmsConstants.WmsApiVersion
-FlextOracleWmsApiCategory = FlextOracleWmsConstants.WmsApiCategory
 logger = FlextLogger(__name__)
 
 
@@ -145,7 +144,7 @@ def load_env_config() -> t.ContainerMapping | None:
             == "true",
         }
     except Exception as e:
-        logger.warning("Failed to load .env config: %s", str(e))
+        logger.warning("Failed to load .env config: %s", e)
         return None
 
 
@@ -181,8 +180,8 @@ class TestOracleWmsDeclarativeIntegration:
 
     def test_api_catalog_completeness(self) -> None:
         """Test that API catalog contains entries."""
-        assert len(FLEXT_ORACLE_WMS_APIS) >= 1
-        for api in FLEXT_ORACLE_WMS_APIS.values():
+        assert len(FlextOracleWmsApi.FLEXT_ORACLE_WMS_APIS) >= 1
+        for api in FlextOracleWmsApi.FLEXT_ORACLE_WMS_APIS.values():
             assert api.name
             assert api.method
             assert api.path
@@ -190,7 +189,7 @@ class TestOracleWmsDeclarativeIntegration:
 
     def test_api_versions_coverage(self) -> None:
         """Test that API catalog entries have valid version strings."""
-        versions = {api.version for api in FLEXT_ORACLE_WMS_APIS.values()}
+        versions = {api.version for api in FlextOracleWmsApi.FLEXT_ORACLE_WMS_APIS.values()}
         assert len(versions) >= 1
 
     def test_client_configuration_and_lifecycle(
@@ -198,7 +197,7 @@ class TestOracleWmsDeclarativeIntegration:
         env_config: t.ContainerMapping,
     ) -> None:
         """Test client configuration and initialization."""
-        config = _build_client_settings(env_config, FlextOracleWmsApiVersion.V1)
+        config = _build_client_settings(env_config, FlextOracleWmsConstants.WmsApiVersion.V1)
         assert config.base_url.startswith("https://")
         assert config.username
         assert config.password
@@ -274,7 +273,7 @@ class TestLgfApiV10Integration:
             logger.warning(
                 "⚠️ Failed to get %s data: %s",
                 entity_name,
-                str(result.error),
+                result.error,
             )
 
     def test_get_entity_data_with_filters(
@@ -294,7 +293,7 @@ class TestLgfApiV10Integration:
                 len(records),
             )
         else:
-            logger.warning("⚠️ Filtered query failed: %s", str(result.error))
+            logger.warning("⚠️ Filtered query failed: %s", result.error)
 
     def test_get_entity_by_id(self, oracle_wms_client: FlextOracleWmsClient) -> None:
         """Test getting specific entity record by ID."""
@@ -318,9 +317,9 @@ class TestLgfApiV10Integration:
             limit=1,
         )
         if result.is_success:
-            logger.info("✅ Successfully retrieved company by ID: %s", str(record_id))
+            logger.info("✅ Successfully retrieved company by ID: %s", record_id)
         else:
-            logger.warning("⚠️ Get by ID failed: %s", str(result.error))
+            logger.warning("⚠️ Get by ID failed: %s", result.error)
 
 
 class TestAutomationApisIntegration:
@@ -335,7 +334,7 @@ class TestAutomationApisIntegration:
         if result.is_success:
             logger.info("✅ Successfully got entity status")
         else:
-            logger.info("⚠️ Entity status call failed (expected): %s", str(result.error))
+            logger.info("⚠️ Entity status call failed (expected): %s", result.error)
             assert result.error is None or "Client not initialized" not in str(
                 result.error,
             )
@@ -351,7 +350,7 @@ class TestAutomationApisIntegration:
         )
         assert not result.is_success
         assert result.error is None or "Client not initialized" not in str(result.error)
-        logger.info("⚠️ OBLPN update failed as expected: %s", str(result.error))
+        logger.info("⚠️ OBLPN update failed as expected: %s", result.error)
 
     def test_create_lpn_api_structure(
         self,
@@ -364,7 +363,7 @@ class TestAutomationApisIntegration:
         )
         assert not result.is_success
         assert result.error is None or "Client not initialized" not in str(result.error)
-        logger.info("⚠️ LPN creation failed as expected: %s", str(result.error))
+        logger.info("⚠️ LPN creation failed as expected: %s", result.error)
 
 
 class TestErrorHandlingIntegration:
@@ -418,7 +417,7 @@ class TestPerformanceIntegration:
                 logger.warning(
                     "Request %d failed with exception: %s",
                     i,
-                    str(result_item),
+                    result_item,
                 )
             elif isinstance(result_item, r) and result_item.is_success:
                 successful_requests += 1
@@ -427,7 +426,7 @@ class TestPerformanceIntegration:
                 logger.warning(
                     "Request %d failed: %s",
                     i,
-                    str(getattr(result_item, "error", "Unknown")),
+                    getattr(result_item, "error", "Unknown"),
                 )
         assert successful_requests > 0, "No concurrent requests succeeded"
         logger.info(
@@ -457,7 +456,7 @@ class TestPerformanceIntegration:
                 logger.warning(
                     "⚠️ Pagination test failed for size %d: %s",
                     page_size,
-                    str(result.error),
+                    result.error,
                 )
 
 

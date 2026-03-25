@@ -38,7 +38,6 @@ from dotenv import load_dotenv
 from flext_core import FlextLogger, r
 
 from flext_oracle_wms import (
-    FLEXT_ORACLE_WMS_APIS,
     FlextOracleWmsApiCategory,
     FlextOracleWmsApiVersion,
     FlextOracleWmsAuthenticator,
@@ -50,6 +49,7 @@ from flext_oracle_wms import (
     t,
 )
 from flext_oracle_wms.constants import FlextOracleWmsConstants
+from flext_oracle_wms.wms_api import FlextOracleWmsApi
 
 logger = FlextLogger(__name__)
 
@@ -178,7 +178,7 @@ def showcase_4_authentication(config: FlextOracleWmsClientSettings) -> None:
 def showcase_5_api_catalog(client: FlextOracleWmsClient) -> None:
     """Feature 5: API Catalog Management."""
     categories: Mapping[str, t.StrSequence] = {}
-    for api_name, api_info in FLEXT_ORACLE_WMS_APIS.items():
+    for api_name, api_info in FlextOracleWmsApi.FLEXT_ORACLE_WMS_APIS.items():
         category = api_info.category
         if category not in categories:
             categories[category] = []
@@ -189,7 +189,7 @@ def showcase_5_api_catalog(client: FlextOracleWmsClient) -> None:
             pass
         if len(apis) > max_apis_to_show:
             pass
-    {api.version for api in FLEXT_ORACLE_WMS_APIS.values()}
+    {api.version for api in FlextOracleWmsApi.FLEXT_ORACLE_WMS_APIS.values()}
     for category in FlextOracleWmsApiCategory.__members__.values():
         category_apis = client.get_apis_by_category(category)
         if category_apis:

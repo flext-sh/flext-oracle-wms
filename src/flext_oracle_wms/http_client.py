@@ -15,6 +15,7 @@ from flext_core import FlextLogger, r
 from pydantic import TypeAdapter, ValidationError
 
 from flext_oracle_wms import t
+from flext_oracle_wms.api import FlextOracleWmsApi
 
 _CONTAINER_VALUE_MAP_ADAPTER: TypeAdapter[t.ContainerValueMapping] = TypeAdapter(
     t.ContainerValueMapping,
@@ -295,8 +296,6 @@ class FlextHttpClient:
         verify_ssl: bool = True,
     ) -> FlextHttpClient:
         """Create FlextHttpClient instance. Delegates to FlextOracleWmsApi.create_flext_http_client."""
-        from flext_oracle_wms.api import FlextOracleWmsApi
-
         return FlextOracleWmsApi.create_flext_http_client(
             base_url=base_url,
             timeout=timeout,

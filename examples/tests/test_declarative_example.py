@@ -12,11 +12,11 @@ from urllib.parse import urlparse
 from flext_core import FlextLogger
 
 from flext_oracle_wms import (
-    FLEXT_ORACLE_WMS_APIS,
     FlextOracleWmsApiVersion,
     FlextOracleWmsClient,
     FlextOracleWmsClientSettings,
 )
+from flext_oracle_wms.wms_api import FlextOracleWmsApi
 from tests import t
 
 logger = FlextLogger(__name__)
@@ -89,7 +89,7 @@ def main() -> None:
         if not start_result.is_success:
             return
         categories: Mapping[str, t.StrSequence] = {}
-        for api in FLEXT_ORACLE_WMS_APIS.values():
+        for api in FlextOracleWmsApi.FLEXT_ORACLE_WMS_APIS.values():
             if api.category not in categories:
                 categories[api.category] = []
             categories[api.category].append(api.name)

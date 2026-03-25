@@ -7,11 +7,8 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from flext_oracle_wms.wms_api import (
-    FLEXT_ORACLE_WMS_APIS,
-    FlextOracleWmsApi,
-    FlextOracleWmsApiEndpoint,
-)
+from flext_oracle_wms import m
+from flext_oracle_wms.wms_api import FlextOracleWmsApi
 
 
 class TestFlextOracleWmsApi:
@@ -24,10 +21,10 @@ class TestFlextOracleWmsApi:
         assert FlextOracleWmsApi.FLEXT_ORACLE_WMS_APIS
 
     def test_api_catalog_entries_are_endpoints(self) -> None:
-        """Test that API catalog entries are FlextOracleWmsApiEndpoint instances."""
+        """Test that API catalog entries are m.OracleWms.ApiEndpoint instances."""
         apis = FlextOracleWmsApi.FLEXT_ORACLE_WMS_APIS
         for api_name, api_endpoint in apis.items():
-            assert isinstance(api_endpoint, FlextOracleWmsApiEndpoint)
+            assert isinstance(api_endpoint, m.OracleWms.ApiEndpoint)
             assert isinstance(api_name, str)
             assert api_name
 
@@ -47,13 +44,13 @@ class TestFlextOracleWmsApi:
         assert isinstance(endpoint.description, str)
         assert endpoint.since_version == "6.1"
 
-    def test_module_level_apis_alias(self) -> None:
-        """Test module-level FLEXT_ORACLE_WMS_APIS alias."""
-        assert FLEXT_ORACLE_WMS_APIS is FlextOracleWmsApi.FLEXT_ORACLE_WMS_APIS
+    def test_class_level_apis(self) -> None:
+        """Test class-level FLEXT_ORACLE_WMS_APIS."""
+        assert FlextOracleWmsApi.FLEXT_ORACLE_WMS_APIS
 
     def test_api_endpoint_model_fields(self) -> None:
-        """Test FlextOracleWmsApiEndpoint Pydantic model fields."""
-        ep = FlextOracleWmsApiEndpoint(
+        """Test m.OracleWms.ApiEndpoint Pydantic model fields."""
+        ep = m.OracleWms.ApiEndpoint(
             name="custom",
             method="POST",
             path="/custom/",
@@ -71,8 +68,8 @@ class TestFlextOracleWmsApi:
         assert ep.since_version == "7.0"
 
     def test_api_endpoint_default_since_version(self) -> None:
-        """Test FlextOracleWmsApiEndpoint default since_version."""
-        ep = FlextOracleWmsApiEndpoint(
+        """Test m.OracleWms.ApiEndpoint default since_version."""
+        ep = m.OracleWms.ApiEndpoint(
             name="x",
             method="GET",
             path="/x/",

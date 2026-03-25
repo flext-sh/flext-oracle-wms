@@ -11,7 +11,6 @@ from collections.abc import Mapping
 from typing import ClassVar
 
 from flext_oracle_wms import m
-from flext_oracle_wms.models import FlextOracleWmsModels as _m
 
 
 class FlextOracleWmsApi:
@@ -46,7 +45,4 @@ class FlextOracleWmsApi:
         return cls.OracleWmsMockServer()
 
 
-FlextOracleWmsApiEndpoint = _m.OracleWms.ApiEndpoint
-FLEXT_ORACLE_WMS_APIS = FlextOracleWmsApi.FLEXT_ORACLE_WMS_APIS
-
-__all__ = ["FLEXT_ORACLE_WMS_APIS", "FlextOracleWmsApi", "FlextOracleWmsApiEndpoint"]
+__all__ = ["FlextOracleWmsApi"]
