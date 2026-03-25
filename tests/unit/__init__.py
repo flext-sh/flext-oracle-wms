@@ -18,9 +18,9 @@ from typing import TYPE_CHECKING
 
 from flext_core.lazy import cleanup_submodule_namespace, lazy_getattr
 
-
 if TYPE_CHECKING:
     from flext_core import FlextTypes
+
     from tests.unit.test_api import TestFlextOracleWmsApi
     from tests.unit.test_config import TestFlextOracleWmsSettings
     from tests.unit.test_constants import TestFlextOracleWmsConstants
@@ -28,9 +28,18 @@ if TYPE_CHECKING:
 
 _LAZY_IMPORTS: Mapping[str, Sequence[str]] = {
     "TestFlextOracleWmsApi": ["tests.unit.test_api", "TestFlextOracleWmsApi"],
-    "TestFlextOracleWmsClient": ["tests.unit.test_wms_client", "TestFlextOracleWmsClient"],
-    "TestFlextOracleWmsConstants": ["tests.unit.test_constants", "TestFlextOracleWmsConstants"],
-    "TestFlextOracleWmsSettings": ["tests.unit.test_config", "TestFlextOracleWmsSettings"],
+    "TestFlextOracleWmsClient": [
+        "tests.unit.test_wms_client",
+        "TestFlextOracleWmsClient",
+    ],
+    "TestFlextOracleWmsConstants": [
+        "tests.unit.test_constants",
+        "TestFlextOracleWmsConstants",
+    ],
+    "TestFlextOracleWmsSettings": [
+        "tests.unit.test_config",
+        "TestFlextOracleWmsSettings",
+    ],
 }
 
 __all__ = [
@@ -58,6 +67,7 @@ def __getattr__(name: str) -> FlextTypes.ModuleExport:
 
     Raises:
         AttributeError: If attribute not registered.
+
     """
     if name in _LAZY_CACHE:
         return _LAZY_CACHE[name]
@@ -72,6 +82,7 @@ def __dir__() -> Sequence[str]:
 
     Returns:
         List of public names from module exports.
+
     """
     return sorted(__all__)
 

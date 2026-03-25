@@ -172,11 +172,7 @@ from flext_core import t
 from flext_core import u
 
 
-<<<<<<< Updated upstream
 def operation() -> r[ReturnType]:
-=======
-def operation() -> FlextResult[ReturnType]:
->>>>>>> Stashed changes
     try:
         # Operation logic
         return r.ok(result)
