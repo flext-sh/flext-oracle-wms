@@ -8,9 +8,12 @@ from __future__ import annotations
 
 from collections.abc import Mapping
 from enum import StrEnum, unique
-from typing import ClassVar, Final
+from typing import TYPE_CHECKING, ClassVar, Final
 
-from flext_core import FlextConstants, FlextTypes as t
+from flext_core import FlextConstants
+
+if TYPE_CHECKING:
+    from flext_oracle_wms import t
 
 
 class FlextOracleWmsConstants(FlextConstants):
