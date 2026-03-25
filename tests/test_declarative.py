@@ -22,7 +22,6 @@ from flext_oracle_wms import (
     FlextOracleWmsClient,
     FlextOracleWmsClientSettings,
     FlextOracleWmsConstants,
-    m,
 )
 from flext_oracle_wms.wms_api import FlextOracleWmsApi
 from tests import t
@@ -189,7 +188,9 @@ class TestOracleWmsDeclarativeIntegration:
 
     def test_api_versions_coverage(self) -> None:
         """Test that API catalog entries have valid version strings."""
-        versions = {api.version for api in FlextOracleWmsApi.FLEXT_ORACLE_WMS_APIS.values()}
+        versions = {
+            api.version for api in FlextOracleWmsApi.FLEXT_ORACLE_WMS_APIS.values()
+        }
         assert len(versions) >= 1
 
     def test_client_configuration_and_lifecycle(
@@ -197,7 +198,9 @@ class TestOracleWmsDeclarativeIntegration:
         env_config: t.ContainerMapping,
     ) -> None:
         """Test client configuration and initialization."""
-        config = _build_client_settings(env_config, FlextOracleWmsConstants.WmsApiVersion.V1)
+        config = _build_client_settings(
+            env_config, FlextOracleWmsConstants.WmsApiVersion.V1
+        )
         assert config.base_url.startswith("https://")
         assert config.username
         assert config.password

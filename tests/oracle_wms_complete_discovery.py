@@ -22,12 +22,12 @@ from flext_core import FlextLogger, r
 from pydantic import ConfigDict
 
 from flext_oracle_wms import (
-    FLEXT_ORACLE_WMS_APIS,
-    FlextOracleWmsApiEndpoint,
     FlextOracleWmsClient,
     FlextOracleWmsClientSettings,
     create_oracle_wms_client,
+    m,
 )
+from flext_oracle_wms.wms_api import FlextOracleWmsApi
 from tests import t
 
 logger = FlextLogger(__name__)
@@ -78,7 +78,9 @@ class OracleWmsCompleteDiscovery:
         self,
     ) -> r[bool]:
         """Discover and test ALL 22+ Oracle WMS APIs."""
-        all_apis: Mapping[str, FlextOracleWmsApiEndpoint] = FLEXT_ORACLE_WMS_APIS
+        all_apis: Mapping[str, m.OracleWms.ApiEndpoint] = (
+            FlextOracleWmsApi.FLEXT_ORACLE_WMS_APIS
+        )
         for api_name, api_endpoint in all_apis.items():
             try:
                 if api_endpoint.category == _CATEGORY_DATA_EXTRACT:
@@ -143,7 +145,7 @@ class OracleWmsCompleteDiscovery:
     def _test_entity_operations_api(
         self,
         api_name: str,
-        endpoint: FlextOracleWmsApiEndpoint,
+        endpoint: m.OracleWms.ApiEndpoint,
     ) -> r[FlextApiModels.HttpResponse]:
         """Test entity operations APIs."""
         try:
@@ -173,7 +175,7 @@ class OracleWmsCompleteDiscovery:
     def _test_setup_api(
         self,
         api_name: str,
-        endpoint: FlextOracleWmsApiEndpoint,
+        endpoint: m.OracleWms.ApiEndpoint,
     ) -> r[FlextApiModels.HttpResponse]:
         """Test setup and transactional APIs."""
         try:
@@ -184,7 +186,7 @@ class OracleWmsCompleteDiscovery:
     def _test_automation_api(
         self,
         api_name: str,
-        endpoint: FlextOracleWmsApiEndpoint,
+        endpoint: m.OracleWms.ApiEndpoint,
     ) -> r[FlextApiModels.HttpResponse]:
         """Test automation and operations APIs."""
         try:

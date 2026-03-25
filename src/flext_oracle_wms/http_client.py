@@ -104,7 +104,7 @@ class FlextHttpClient:
             request_headers = dict(self.default_headers)
             request_headers.update(self._normalize_headers(headers))
             url = f"{self.base_url}/{path.lstrip('/')}"
-            request = FlextApiModels.HttpRequest(
+            request = FlextApiModels.Api.HttpRequest(
                 method="DELETE",
                 url=url,
                 headers=request_headers,
@@ -164,7 +164,7 @@ class FlextHttpClient:
             request_headers.update(self._normalize_headers(headers))
             request_body = json_data or data
             url = f"{self.base_url}/{path.lstrip('/')}"
-            request = FlextApiModels.HttpRequest(
+            request = FlextApiModels.Api.HttpRequest(
                 method="PUT",
                 url=url,
                 headers=request_headers,
@@ -223,7 +223,7 @@ class FlextHttpClient:
             if params:
                 query = "&".join((f"{k}={v}" for k, v in params.items()))
                 url = f"{url}?{query}"
-            request = FlextApiModels.HttpRequest(
+            request = FlextApiModels.Api.HttpRequest(
                 method=method,
                 url=url,
                 headers=request_headers,

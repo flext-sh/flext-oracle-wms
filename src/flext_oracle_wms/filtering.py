@@ -6,13 +6,17 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from collections.abc import Mapping, Sequence
+from collections.abc import Mapping, MutableSequence, Sequence
 from enum import StrEnum, unique
 
 from flext_core import FlextExceptions, FlextLogger, r
 
 from flext_oracle_wms import c, t
-from flext_oracle_wms.models import FlextOracleWmsOperatorFilter
+from flext_oracle_wms.models import FlextOracleWmsModels
+
+FlextOracleWmsOperatorFilter = (
+    FlextOracleWmsModels.OracleWms.FlextOracleWmsOperatorFilter
+)
 
 # Type alias for filter entries (can be scalar, list, or operator filter)
 type FilterEntry = (
@@ -106,7 +110,7 @@ class FlextOracleWmsFilter:
         """Filter records by inclusive identifier range."""
         if not records:
             return r[Sequence[t.OracleWms.Core.FilterRecord]].ok([])
-        filtered: Sequence[t.OracleWms.Core.FilterRecord] = []
+        filtered: MutableSequence[t.OracleWms.Core.FilterRecord] = []
         for record in records:
             field_value = record.get(id_field)
             if field_value is None:

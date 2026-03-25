@@ -28,6 +28,7 @@ class FlextOracleWmsApi:
             version="v1",
             category="test",
             description="Test endpoint",
+            since_version="6.1",
         ),
     }
 

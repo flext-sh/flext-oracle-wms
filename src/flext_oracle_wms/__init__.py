@@ -58,15 +58,8 @@ if TYPE_CHECKING:
         FlextOracleWmsUtilities,
         FlextOracleWmsUtilities as u,
     )
-    from flext_oracle_wms.wms_api import (
-        FLEXT_ORACLE_WMS_APIS,
-        FlextOracleWmsApiEndpoint,
-    )
     from flext_oracle_wms.wms_auth import (
         FlextOracleWmsAuthenticator,
-        FlextOracleWmsAuthSettings,
-        OracleWMSAuthMethod,
-        create_oracle_wms_client,
     )
     from flext_oracle_wms.wms_client import FlextOracleWmsClient
     from flext_oracle_wms.wms_discovery import (
@@ -95,13 +88,8 @@ if TYPE_CHECKING:
 _LAZY_IMPORTS: Mapping[str, Sequence[str]] = {
     "DISCOVERY_FAILURE": ["flext_oracle_wms.wms_discovery", "DISCOVERY_FAILURE"],
     "DISCOVERY_SUCCESS": ["flext_oracle_wms.wms_discovery", "DISCOVERY_SUCCESS"],
-    "FLEXT_ORACLE_WMS_APIS": ["flext_oracle_wms.wms_api", "FLEXT_ORACLE_WMS_APIS"],
     "FlextHttpClient": ["flext_oracle_wms.http_client", "FlextHttpClient"],
     "FlextOracleWmsApi": ["flext_oracle_wms.api", "FlextOracleWmsApi"],
-    "FlextOracleWmsApiEndpoint": [
-        "flext_oracle_wms.wms_api",
-        "FlextOracleWmsApiEndpoint",
-    ],
     "FlextOracleWmsApiError": [
         "flext_oracle_wms.wms_exceptions",
         "FlextOracleWmsApiError",
@@ -234,10 +222,8 @@ _LAZY_IMPORTS: Mapping[str, Sequence[str]] = {
 __all__ = [
     "DISCOVERY_FAILURE",
     "DISCOVERY_SUCCESS",
-    "FLEXT_ORACLE_WMS_APIS",
     "FlextHttpClient",
     "FlextOracleWmsApi",
-    "FlextOracleWmsApiEndpoint",
     "FlextOracleWmsApiError",
     "FlextOracleWmsAuthSettings",
     "FlextOracleWmsAuthenticationError",

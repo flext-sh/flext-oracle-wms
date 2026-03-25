@@ -367,7 +367,10 @@ class FlextOracleWmsModels(FlextModels):
         @staticmethod
         def validate_entity_name(name: str) -> r[str]:
             """Validate entity name using domain rules."""
-            if not name or len(name) > FlextOracleWmsModels.MAX_ENTITY_NAME_LENGTH:
+            if (
+                not name
+                or len(name) > FlextOracleWmsModels.OracleWms.MAX_ENTITY_NAME_LENGTH
+            ):
                 return r[str].fail("Invalid entity name")
             return r[str].ok(name)
 
