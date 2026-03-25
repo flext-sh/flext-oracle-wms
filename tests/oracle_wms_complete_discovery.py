@@ -490,7 +490,7 @@ class OracleWmsCompleteDiscovery:
                 "properties": properties,
                 "additionalProperties": False,
             }
-        except Exception:
+        except (RuntimeError, OSError, ValueError, KeyError):
             logger.exception("Schema generation failed for %s", entity_name)
             return None
 
@@ -643,7 +643,7 @@ def run_complete_discovery() -> None:
                 )
                 for _name, _meta in entities_with_counts[:15]:
                     pass
-    except Exception:
+    except (RuntimeError, OSError, ValueError, KeyError):
         logger.exception("Complete discovery failed")
     finally:
         discovery.cleanup()

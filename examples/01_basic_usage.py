@@ -186,7 +186,7 @@ def main() -> None:
         logger.exception("Oracle WMS error")
     except ValueError:
         logger.exception("Configuration error")
-    except Exception:
+    except (RuntimeError, OSError):
         if os.getenv("FLEXT_DEBUG_MODE", "").lower() in {"true", "1", "yes"}:
             raise
 

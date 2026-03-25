@@ -309,7 +309,7 @@ def main() -> int:
         showcase_9_cache_management(client)
         showcase_10_enterprise_features(client, config)
         client.stop()
-    except Exception:
+    except (RuntimeError, OSError, ValueError):
         traceback.print_exc()
         return 1
     return 0

@@ -311,7 +311,7 @@ class OptimizedOracleWmsDiscovery:
                 "additionalProperties": False,
                 "key_properties": key_properties,
             }
-        except Exception:
+        except (RuntimeError, OSError, ValueError, KeyError):
             logger.exception("Schema generation failed for %s", entity_name)
             return None
 
@@ -543,7 +543,7 @@ def run_optimized_discovery() -> None:
             )
             for _entity_name, _data in sorted_entities[:15]:
                 pass
-    except Exception:
+    except (RuntimeError, OSError, ValueError, KeyError):
         logger.exception("Optimized discovery failed")
     finally:
         discovery.cleanup()

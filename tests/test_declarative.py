@@ -127,7 +127,7 @@ def load_env_config() -> t.ContainerMapping | None:
                         environment = "local"
                     else:
                         environment = "development"
-            except Exception:
+            except (KeyError, ValueError, TypeError):
                 environment = "development"
         return {
             "base_url": base_url,

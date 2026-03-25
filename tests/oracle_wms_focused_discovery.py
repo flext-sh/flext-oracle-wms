@@ -172,7 +172,7 @@ class FocusedOracleWmsDiscovery:
                                         ),
                                     })
                             data_entities[entity_name] = entity_info
-            except Exception:
+            except (RuntimeError, OSError, ValueError, KeyError):
                 logger.debug("Failed to process entity %s", entity_name)
         return data_entities
 
@@ -198,7 +198,7 @@ class FocusedOracleWmsDiscovery:
                                 "sample_record": self._safe_sample(sample),
                                 "has_data": False,
                             }
-            except Exception:
+            except (RuntimeError, OSError, ValueError, KeyError):
                 logger.debug("Failed to get structure for entity %s", entity_name)
         return structures
 
@@ -290,7 +290,7 @@ class FocusedOracleWmsDiscovery:
                 "oracle_wms_entity": entity_name,
                 "oracle_wms_environment": str(self.config.environment),
             }
-        except Exception:
+        except (RuntimeError, OSError, ValueError, KeyError):
             logger.exception("Schema creation failed for %s", entity_name)
             return None
 

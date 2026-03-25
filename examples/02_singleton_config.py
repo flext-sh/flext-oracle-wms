@@ -91,7 +91,7 @@ def demonstrate_singleton_config() -> None:
             logger.info(f"   Service: {health_result.value.get('service', 'Unknown')}")
         else:
             logger.error(f"   ❌ Health check failed: {health_result.error}")
-    except Exception:
+    except (RuntimeError, OSError, ValueError):
         logger.exception("   ❌ Failed to create client")
     logger.info("=== Demo Complete ===")
 
@@ -128,7 +128,7 @@ def main() -> None:
     try:
         demonstrate_singleton_config()
         demonstrate_environment_variables()
-    except Exception:
+    except (RuntimeError, OSError, ValueError):
         logger.exception("Demo failed")
         raise
 
