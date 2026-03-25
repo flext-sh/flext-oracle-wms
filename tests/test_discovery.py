@@ -29,13 +29,13 @@ class TestEndpointDiscoveryStrategyEnum:
     """Test suite for EndpointDiscoveryStrategy enum."""
 
     def test_api_based_value(self) -> None:
-        assert c.EndpointDiscoveryStrategy.API_BASED == "api_based"
+        assert c.OracleWms.EndpointDiscoveryStrategy.API_BASED == "api_based"
 
     def test_schema_based_value(self) -> None:
-        assert c.EndpointDiscoveryStrategy.SCHEMA_BASED == "schema_based"
+        assert c.OracleWms.EndpointDiscoveryStrategy.SCHEMA_BASED == "schema_based"
 
     def test_is_str_enum(self) -> None:
-        assert isinstance(c.EndpointDiscoveryStrategy.API_BASED, str)
+        assert isinstance(c.OracleWms.EndpointDiscoveryStrategy.API_BASED, str)
 
 
 class TestFlextOracleWmsEntityDiscovery:
@@ -60,12 +60,12 @@ class TestFlextOracleWmsEntityDiscovery:
             {
                 "name": "inventory",
                 "path": "/entities/inventory",
-                "strategy": c.EndpointDiscoveryStrategy.API_BASED,
+                "strategy": c.OracleWms.EndpointDiscoveryStrategy.API_BASED,
             },
             {
                 "name": "orders",
                 "path": "/entities/orders",
-                "strategy": c.EndpointDiscoveryStrategy.API_BASED,
+                "strategy": c.OracleWms.EndpointDiscoveryStrategy.API_BASED,
             },
         ]
 
@@ -83,12 +83,12 @@ class TestFlextOracleWmsEntityDiscovery:
             {
                 "name": "inventory",
                 "path": "/entities/inventory",
-                "strategy": c.EndpointDiscoveryStrategy.API_BASED,
+                "strategy": c.OracleWms.EndpointDiscoveryStrategy.API_BASED,
             },
             {
                 "name": "orders",
                 "path": "/entities/orders",
-                "strategy": c.EndpointDiscoveryStrategy.API_BASED,
+                "strategy": c.OracleWms.EndpointDiscoveryStrategy.API_BASED,
             },
         ]
 

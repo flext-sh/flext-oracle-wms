@@ -68,7 +68,9 @@ class TestFlextOracleWmsFilterConstruction:
 
     def test_filter_with_initial_filters(self) -> None:
         """Test filter creation with initial filters dict."""
-        filters: Mapping[str, t.Core.FilterScalar | t.Core.FilterList] = {
+        filters: Mapping[
+            str, t.OracleWms.Core.FilterScalar | t.OracleWms.Core.FilterList
+        ] = {
             "status": "active",
         }
         filter_engine = FlextOracleWmsFilter(filters=filters, max_conditions=50)
@@ -76,7 +78,7 @@ class TestFlextOracleWmsFilterConstruction:
 
     def test_filter_with_too_many_initial_filters(self) -> None:
         """Test filter creation raises when initial filters exceed max_conditions."""
-        filters: Mapping[str, t.Core.FilterScalar] = {
+        filters: Mapping[str, t.OracleWms.Core.FilterScalar] = {
             "field1": "v1",
             "field2": "v2",
             "field3": "v3",
@@ -104,7 +106,9 @@ class TestFilterValidation:
     def test_validate_filter_conditions_exceeds_limit(self) -> None:
         """Test validation fails when conditions exceed limit."""
         filter_engine = FlextOracleWmsFilter(max_conditions=2)
-        filters: Mapping[str, t.Core.FilterScalar | t.Core.FilterList] = {
+        filters: Mapping[
+            str, t.OracleWms.Core.FilterScalar | t.OracleWms.Core.FilterList
+        ] = {
             "field1": "value1",
             "field2": "value2",
             "field3": "value3",
@@ -116,7 +120,9 @@ class TestFilterValidation:
     def test_validate_filter_list_values_count_correctly(self) -> None:
         """Test that list filter values are counted by length."""
         filter_engine = FlextOracleWmsFilter(max_conditions=2)
-        filters: Mapping[str, t.Core.FilterScalar | t.Core.FilterList] = {
+        filters: Mapping[
+            str, t.OracleWms.Core.FilterScalar | t.OracleWms.Core.FilterList
+        ] = {
             "status": ["a", "b", "c"],
         }
         result = filter_engine._validate_filters(filters)
@@ -127,7 +133,7 @@ class TestRecordFiltering:
     """Test record filtering functionality."""
 
     @property
-    def sample_records(self) -> Sequence[t.Core.FilterRecord]:
+    def sample_records(self) -> Sequence[t.OracleWms.Core.FilterRecord]:
         """Sample records for testing."""
         return [
             {"id": 1, "name": "Company A", "status": "active", "score": 85.5},
@@ -137,9 +143,9 @@ class TestRecordFiltering:
         ]
 
     @property
-    def nested_records(self) -> Sequence[t.Core.FilterRecord]:
+    def nested_records(self) -> Sequence[t.OracleWms.Core.FilterRecord]:
         """Nested records for testing dot notation."""
-        records: list[t.Core.FilterRecord] = [
+        records: list[t.OracleWms.Core.FilterRecord] = [
             {
                 "id": 1,
                 "company_name": "Test Corp",
@@ -168,7 +174,9 @@ class TestRecordFiltering:
     def test_filter_records_single_value(self) -> None:
         """Test filtering with single value condition."""
         filter_engine = FlextOracleWmsFilter(case_sensitive=False, max_conditions=50)
-        filters: Mapping[str, t.Core.FilterScalar | t.Core.FilterList] = {
+        filters: Mapping[
+            str, t.OracleWms.Core.FilterScalar | t.OracleWms.Core.FilterList
+        ] = {
             "status": "active",
         }
         result = filter_engine.filter_records(self.sample_records, filters)
@@ -179,7 +187,9 @@ class TestRecordFiltering:
     def test_filter_records_list_values(self) -> None:
         """Test filtering with list of values (IN operation)."""
         filter_engine = FlextOracleWmsFilter(case_sensitive=False, max_conditions=50)
-        filters: Mapping[str, t.Core.FilterScalar | t.Core.FilterList] = {
+        filters: Mapping[
+            str, t.OracleWms.Core.FilterScalar | t.OracleWms.Core.FilterList
+        ] = {
             "status": ["active", "pending"],
         }
         result = filter_engine.filter_records(self.sample_records, filters)
@@ -190,7 +200,9 @@ class TestRecordFiltering:
     def test_filter_records_numeric_values(self) -> None:
         """Test filtering with numeric values."""
         filter_engine = FlextOracleWmsFilter(case_sensitive=False, max_conditions=50)
-        filters: Mapping[str, t.Core.FilterScalar | t.Core.FilterList] = {"id": 2}
+        filters: Mapping[
+            str, t.OracleWms.Core.FilterScalar | t.OracleWms.Core.FilterList
+        ] = {"id": 2}
         result = filter_engine.filter_records(self.sample_records, filters)
         assert result.is_success
         assert result.is_success
@@ -200,7 +212,9 @@ class TestRecordFiltering:
     def test_filter_records_with_limit(self) -> None:
         """Test filtering with result limit."""
         filter_engine = FlextOracleWmsFilter(case_sensitive=False, max_conditions=50)
-        filters: Mapping[str, t.Core.FilterScalar | t.Core.FilterList] = {
+        filters: Mapping[
+            str, t.OracleWms.Core.FilterScalar | t.OracleWms.Core.FilterList
+        ] = {
             "status": "active",
         }
         result = filter_engine.filter_records(self.sample_records, filters, limit=1)
@@ -211,7 +225,9 @@ class TestRecordFiltering:
     def test_filter_records_no_matches(self) -> None:
         """Test filtering with no matching records."""
         filter_engine = FlextOracleWmsFilter(case_sensitive=False, max_conditions=50)
-        filters: Mapping[str, t.Core.FilterScalar | t.Core.FilterList] = {
+        filters: Mapping[
+            str, t.OracleWms.Core.FilterScalar | t.OracleWms.Core.FilterList
+        ] = {
             "status": "nonexistent",
         }
         result = filter_engine.filter_records(self.sample_records, filters)
@@ -221,7 +237,9 @@ class TestRecordFiltering:
     def test_filter_records_case_insensitive(self) -> None:
         """Test filtering is case insensitive by default."""
         filter_engine = FlextOracleWmsFilter(case_sensitive=False, max_conditions=50)
-        filters: Mapping[str, t.Core.FilterScalar | t.Core.FilterList] = {
+        filters: Mapping[
+            str, t.OracleWms.Core.FilterScalar | t.OracleWms.Core.FilterList
+        ] = {
             "status": "ACTIVE",
         }
         result = filter_engine.filter_records(self.sample_records, filters)
@@ -231,7 +249,9 @@ class TestRecordFiltering:
     def test_filter_records_case_sensitive(self) -> None:
         """Test filtering with case sensitivity enabled."""
         filter_engine = FlextOracleWmsFilter(case_sensitive=True, max_conditions=50)
-        filters: Mapping[str, t.Core.FilterScalar | t.Core.FilterList] = {
+        filters: Mapping[
+            str, t.OracleWms.Core.FilterScalar | t.OracleWms.Core.FilterList
+        ] = {
             "status": "ACTIVE",
         }
         result = filter_engine.filter_records(self.sample_records, filters)
@@ -251,7 +271,9 @@ class TestRecordFiltering:
     def test_filter_records_exceeds_condition_limit(self) -> None:
         """Test filtering fails when conditions exceed limit."""
         filter_engine = FlextOracleWmsFilter(max_conditions=2)
-        filters: Mapping[str, t.Core.FilterScalar | t.Core.FilterList] = {
+        filters: Mapping[
+            str, t.OracleWms.Core.FilterScalar | t.OracleWms.Core.FilterList
+        ] = {
             "status": ["a", "b", "c"],
         }
         result = filter_engine.filter_records(self.sample_records, filters)
@@ -263,7 +285,7 @@ class TestRecordSorting:
     """Test record sorting functionality."""
 
     @property
-    def unsorted_records(self) -> Sequence[t.Core.FilterRecord]:
+    def unsorted_records(self) -> Sequence[t.OracleWms.Core.FilterRecord]:
         """Unsorted records for testing."""
         return [
             {"id": 3, "name": "Charlie", "score": 75.5},
@@ -310,7 +332,7 @@ class TestRecordSorting:
 
     def test_sort_records_with_none_values(self) -> None:
         """Test sorting records with None values."""
-        records_with_none: Sequence[t.Core.FilterRecord] = [
+        records_with_none: Sequence[t.OracleWms.Core.FilterRecord] = [
             {"id": 1, "name": "Alice", "score": None},
             {"id": 2, "name": "Bob", "score": 85.0},
             {"id": 3, "name": None, "score": 90.0},
@@ -331,9 +353,9 @@ class TestNestedValueAccess:
     """Test nested value access with dot notation."""
 
     @property
-    def nested_record(self) -> t.Core.FilterRecord:
+    def nested_record(self) -> t.OracleWms.Core.FilterRecord:
         """Nested record for testing."""
-        record: t.Core.FilterRecord = {
+        record: t.OracleWms.Core.FilterRecord = {
             "id": 1,
             "company_name": "Test Corp",
             "company_address_city": "New York",
@@ -518,7 +540,7 @@ class TestConvenienceFunctions:
     """Test convenience filtering functions."""
 
     @property
-    def sample_records(self) -> Sequence[t.Core.FilterRecord]:
+    def sample_records(self) -> Sequence[t.OracleWms.Core.FilterRecord]:
         """Sample records for testing."""
         return [
             {"id": 1, "name": "Company A", "status": "active"},
@@ -621,13 +643,13 @@ class TestMatchesCondition:
 
     def test_matches_condition_simple_equality(self) -> None:
         filter_engine = FlextOracleWmsFilter(case_sensitive=False, max_conditions=50)
-        record: t.Core.FilterRecord = {"status": "active"}
+        record: t.OracleWms.Core.FilterRecord = {"status": "active"}
         assert filter_engine._matches_condition(record, "status", "active") is True
         assert filter_engine._matches_condition(record, "status", "inactive") is False
 
     def test_matches_condition_list_match(self) -> None:
         filter_engine = FlextOracleWmsFilter(case_sensitive=False, max_conditions=50)
-        record: t.Core.FilterRecord = {"status": "active"}
+        record: t.OracleWms.Core.FilterRecord = {"status": "active"}
         assert (
             filter_engine._matches_condition(record, "status", ["active", "pending"])
             is True
@@ -639,7 +661,7 @@ class TestMatchesCondition:
 
     def test_matches_condition_operator_filter(self) -> None:
         filter_engine = FlextOracleWmsFilter(case_sensitive=False, max_conditions=50)
-        record: t.Core.FilterRecord = {"score": 85}
+        record: t.OracleWms.Core.FilterRecord = {"score": 85}
         assert (
             filter_engine._matches_condition(
                 record,
@@ -659,13 +681,13 @@ class TestMatchesCondition:
 
     def test_matches_condition_scalar_mismatch(self) -> None:
         filter_engine = FlextOracleWmsFilter(case_sensitive=False, max_conditions=50)
-        record: t.Core.FilterRecord = {"field": "value"}
+        record: t.OracleWms.Core.FilterRecord = {"field": "value"}
         result = filter_engine._matches_condition(record, "field", "other_value")
         assert result is False
 
     def test_matches_condition_none_field_value_with_list(self) -> None:
         filter_engine = FlextOracleWmsFilter(case_sensitive=False, max_conditions=50)
-        record: t.Core.FilterRecord = {"field": None}
+        record: t.OracleWms.Core.FilterRecord = {"field": None}
         assert filter_engine._matches_condition(record, "field", ["a", "b"]) is False
 
 
@@ -679,7 +701,9 @@ class TestErrorHandling:
 
     def test_filter_records_validation_failure(self) -> None:
         filter_engine = FlextOracleWmsFilter(max_conditions=1)
-        filters: Mapping[str, t.Core.FilterScalar | t.Core.FilterList] = {
+        filters: Mapping[
+            str, t.OracleWms.Core.FilterScalar | t.OracleWms.Core.FilterList
+        ] = {
             "a": "1",
             "b": "2",
         }
@@ -698,7 +722,7 @@ class TestPerformanceAndEdgeCases:
 
     def test_filter_large_record_set(self) -> None:
         """Test filtering with large record set."""
-        large_records: Sequence[t.Core.FilterRecord] = [
+        large_records: Sequence[t.OracleWms.Core.FilterRecord] = [
             {"id": i, "status": "active" if i % 2 == 0 else "inactive"}
             for i in range(1000)
         ]
@@ -714,7 +738,7 @@ class TestPerformanceAndEdgeCases:
 
     def test_filter_with_complex_nested_data(self) -> None:
         """Test filtering with nested data structures."""
-        complex_records: Sequence[t.Core.FilterRecord] = [
+        complex_records: Sequence[t.OracleWms.Core.FilterRecord] = [
             {"id": 1, "category": "target", "subcategory": "A"},
             {"id": 2, "category": "other", "subcategory": "B"},
         ]
@@ -736,11 +760,11 @@ class TestPerformanceAndEdgeCases:
         """Test nested value access with edge cases."""
         filter_engine = FlextOracleWmsFilter(case_sensitive=False, max_conditions=50)
         assert filter_engine._get_nested_value({}, "field") is None
-        record_with_none: t.Core.FilterRecord = {"level1": None}
+        record_with_none: t.OracleWms.Core.FilterRecord = {"level1": None}
         assert (
             filter_engine._get_nested_value(record_with_none, "level1.level2") is None
         )
-        record_with_scalar: t.Core.FilterRecord = {"level1": "string_value"}
+        record_with_scalar: t.OracleWms.Core.FilterRecord = {"level1": "string_value"}
         assert (
             filter_engine._get_nested_value(record_with_scalar, "level1.level2") is None
         )

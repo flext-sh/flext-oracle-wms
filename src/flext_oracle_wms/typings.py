@@ -7,8 +7,10 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 from collections.abc import Mapping, Sequence
+from typing import Annotated, Literal
 
 from flext_core import FlextTypes
+from pydantic import Field, StringConstraints
 
 from flext_oracle_wms.constants import c
 
@@ -23,7 +25,26 @@ class FlextOracleWmsTypes(FlextTypes):
     class OracleWms:
         """Oracle WMS-specific project types."""
 
-        type ProjectType = c.ProjectType
+        # =========================================================================
+        # TYPE ALIASES - Advanced composition for minimal declarations
+        # =========================================================================
+
+        type TRecord = Mapping[str, FlextTypes.ContainerValue]
+        type TRecordBatch = Sequence[Mapping[str, FlextTypes.ContainerValue]]
+        type TSchema = Mapping[str, Mapping[str, FlextTypes.ContainerValue]]
+        type TApiResponse = Mapping[str, FlextTypes.ContainerValue]
+        type TApiVersion = Literal["v2", "v1"]
+        type TEntityId = Annotated[str, StringConstraints(min_length=1, max_length=100)]
+        type TEntityName = Annotated[
+            str,
+            StringConstraints(min_length=1, max_length=50, pattern=r"^[a-z0-9_]+$"),
+        ]
+        type TFilterValue = FlextTypes.Scalar | None
+        type TFilters = Mapping[str, FlextTypes.Scalar | None]
+        type TPaginationInfo = Mapping[str, int]
+        type TTimeout = Annotated[int, Field(ge=1, le=300)]
+
+        type ProjectType = c.OracleWms.ProjectType
         type WmsProjectConfig = Mapping[str, FlextTypes.ContainerValue]
         type WarehouseConfig = Mapping[str, FlextTypes.Scalar | FlextTypes.StrSequence]
         type InventoryConfig = Mapping[
@@ -31,71 +52,72 @@ class FlextOracleWmsTypes(FlextTypes):
             bool | str | Mapping[str, FlextTypes.ContainerValue],
         ]
 
-    type WmsConfig = Mapping[
-        str,
-        FlextTypes.Scalar | Mapping[str, FlextTypes.ContainerValue],
-    ]
-    type WmsEntity = Mapping[
-        str,
-        FlextTypes.ContainerValue | Mapping[str, FlextTypes.ContainerValue],
-    ]
-    type WmsRecord = Mapping[str, FlextTypes.ContainerValue]
-    type WmsRecords = Sequence[Mapping[str, FlextTypes.ContainerValue]]
-
-    class Core:
-        """Core convenience type aliases for common patterns.
-
-        Provides commonly used type aliases for consistency across the codebase.
-        These are simple aliases but are used extensively, so provided for convenience.
-        Access parent core types via inheritance from FlextOracleWmsTypes.
-        """
-
-        type Dict = Mapping[str, FlextTypes.ContainerValue]
-        "Type alias for generic dictionary (attribute name to value mapping)."
-        type FilterScalar = FlextTypes.Scalar | None
-        type FilterList = Sequence[FlextOracleWmsTypes.Core.FilterScalar]
-        type FilterRecordValue = (
-            FlextOracleWmsTypes.Core.FilterScalar
-            | FlextOracleWmsTypes.Core.FilterList
-            | Mapping[
-                str,
-                FlextOracleWmsTypes.Core.FilterScalar
-                | FlextOracleWmsTypes.Core.FilterList
-                | Mapping[
-                    str,
-                    FlextOracleWmsTypes.Core.FilterScalar
-                    | FlextOracleWmsTypes.Core.FilterList,
-                ],
-            ]
-        )
-        type FilterRecord = Mapping[
+        type WmsConfig = Mapping[
             str,
-            FlextOracleWmsTypes.Core.FilterScalar
-            | FlextOracleWmsTypes.Core.FilterList
-            | Mapping[
-                str,
-                FlextOracleWmsTypes.Core.FilterScalar
-                | FlextOracleWmsTypes.Core.FilterList,
-            ],
+            FlextTypes.Scalar | Mapping[str, FlextTypes.ContainerValue],
         ]
-        type NestedFilterValue = (
-            FlextOracleWmsTypes.Core.FilterScalar
-            | FlextOracleWmsTypes.Core.FilterList
-            | Mapping[
-                str,
-                FlextOracleWmsTypes.Core.FilterScalar
-                | FlextOracleWmsTypes.Core.FilterList
+        type WmsEntity = Mapping[
+            str,
+            FlextTypes.ContainerValue | Mapping[str, FlextTypes.ContainerValue],
+        ]
+        type WmsRecord = Mapping[str, FlextTypes.ContainerValue]
+        type WmsRecords = Sequence[Mapping[str, FlextTypes.ContainerValue]]
+
+        class Core:
+            """Core convenience type aliases for common patterns.
+
+            Provides commonly used type aliases for consistency across the codebase.
+            These are simple aliases but are used extensively, so provided for convenience.
+            Access parent core types via inheritance from FlextOracleWmsTypes.
+            """
+
+            type Dict = Mapping[str, FlextTypes.ContainerValue]
+            "Type alias for generic dictionary (attribute name to value mapping)."
+            type FilterScalar = FlextTypes.Scalar | None
+            type FilterList = Sequence[FlextOracleWmsTypes.OracleWms.Core.FilterScalar]
+            type FilterRecordValue = (
+                FlextOracleWmsTypes.OracleWms.Core.FilterScalar
+                | FlextOracleWmsTypes.OracleWms.Core.FilterList
                 | Mapping[
                     str,
-                    FlextOracleWmsTypes.Core.FilterScalar
-                    | FlextOracleWmsTypes.Core.FilterList,
+                    FlextOracleWmsTypes.OracleWms.Core.FilterScalar
+                    | FlextOracleWmsTypes.OracleWms.Core.FilterList
+                    | Mapping[
+                        str,
+                        FlextOracleWmsTypes.OracleWms.Core.FilterScalar
+                        | FlextOracleWmsTypes.OracleWms.Core.FilterList,
+                    ],
+                ]
+            )
+            type FilterRecord = Mapping[
+                str,
+                FlextOracleWmsTypes.OracleWms.Core.FilterScalar
+                | FlextOracleWmsTypes.OracleWms.Core.FilterList
+                | Mapping[
+                    str,
+                    FlextOracleWmsTypes.OracleWms.Core.FilterScalar
+                    | FlextOracleWmsTypes.OracleWms.Core.FilterList,
                 ],
             ]
-        )
-        type HttpJsonObject = Mapping[str, FlextTypes.ContainerValue]
-        type FilterEntry = (
-            FlextOracleWmsTypes.Core.FilterScalar | FlextOracleWmsTypes.Core.FilterList
-        )
+            type NestedFilterValue = (
+                FlextOracleWmsTypes.OracleWms.Core.FilterScalar
+                | FlextOracleWmsTypes.OracleWms.Core.FilterList
+                | Mapping[
+                    str,
+                    FlextOracleWmsTypes.OracleWms.Core.FilterScalar
+                    | FlextOracleWmsTypes.OracleWms.Core.FilterList
+                    | Mapping[
+                        str,
+                        FlextOracleWmsTypes.OracleWms.Core.FilterScalar
+                        | FlextOracleWmsTypes.OracleWms.Core.FilterList,
+                    ],
+                ]
+            )
+            type HttpJsonObject = Mapping[str, FlextTypes.ContainerValue]
+            type FilterEntry = (
+                FlextOracleWmsTypes.OracleWms.Core.FilterScalar
+                | FlextOracleWmsTypes.OracleWms.Core.FilterList
+            )
 
 
 t = FlextOracleWmsTypes

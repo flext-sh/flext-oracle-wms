@@ -27,7 +27,7 @@ class FlextOracleWmsEntityDiscovery:
         return {
             "name": entity_name,
             "path": f"/entities/{entity_name}",
-            "strategy": c.EndpointDiscoveryStrategy.API_BASED,
+            "strategy": c.OracleWms.EndpointDiscoveryStrategy.API_BASED,
         }
 
     def discover_entities(self) -> r[Sequence[Mapping[str, t.ContainerValue]]]:
