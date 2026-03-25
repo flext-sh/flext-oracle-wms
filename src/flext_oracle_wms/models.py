@@ -97,8 +97,8 @@ class FlextOracleWmsModels(FlextModels):
 
             data: Annotated[
                 Mapping[str, t.ContainerValue],
-                Field(default_factory=dict, description="Response data"),
-            ]
+                Field(description="Response data"),
+            ] = Field(default_factory=dict)
             status_code: Annotated[
                 t.HttpStatusCode,
                 Field(default=200, description="HTTP status code"),
@@ -159,21 +159,21 @@ class FlextOracleWmsModels(FlextModels):
 
             model_config: ClassVar[ConfigDict] = ConfigDict(extra="ignore")
 
-            entities: Annotated[t.StrSequence, Field(default_factory=list)]
+            entities: t.StrSequence = Field(default_factory=list)
 
         class ApiCategoryResponse(BaseModel):
             """Oracle WMS API category response."""
 
             model_config: ClassVar[ConfigDict] = ConfigDict(extra="ignore")
 
-            apis: Annotated[Sequence[t.StrMapping], Field(default_factory=list)]
+            apis: Sequence[t.StrMapping] = Field(default_factory=list)
 
         class EntityDataResponse(BaseModel):
             """Oracle WMS entity data response."""
 
             model_config: ClassVar[ConfigDict] = ConfigDict(extra="ignore")
 
-            data: Annotated[Sequence[t.StrMapping], Field(default_factory=list)]
+            data: Sequence[t.StrMapping] = Field(default_factory=list)
 
     # =========================================================================
     # TYPE ALIASES - Advanced composition for minimal declarations
@@ -248,8 +248,8 @@ class FlextOracleWmsModels(FlextModels):
         ]
         items: Annotated[
             Sequence[Mapping[str, t.ContainerValue]],
-            Field(default_factory=list, description="Order items"),
-        ]
+            Field(description="Order items"),
+        ] = Field(default_factory=list)
 
     class Shipment(WmsEntity):
         """Shipment domain entity."""
@@ -278,8 +278,8 @@ class FlextOracleWmsModels(FlextModels):
         status: Annotated[str, Field(default="pending", description="Task status")]
         items: Annotated[
             Sequence[Mapping[str, t.ContainerValue]],
-            Field(default_factory=list, description="Task items"),
-        ]
+            Field(description="Task items"),
+        ] = Field(default_factory=list)
 
     class Location(WmsEntity):
         """Location domain entity."""
@@ -352,14 +352,12 @@ class FlextOracleWmsModels(FlextModels):
 
         id: str
         name: str
-        locations: Annotated[
-            Sequence[FlextOracleWmsModels.WarehouseLocation],
-            Field(default_factory=list),
-        ]
-        inventory: Annotated[
-            MutableSequence[FlextOracleWmsModels.InventoryItem],
-            Field(default_factory=list),
-        ]
+        locations: Sequence[FlextOracleWmsModels.WarehouseLocation] = Field(
+            default_factory=list
+        )
+        inventory: MutableSequence[FlextOracleWmsModels.InventoryItem] = Field(
+            default_factory=list
+        )
 
         def add_inventory(self, item: FlextOracleWmsModels.InventoryItem) -> r[bool]:
             """Add inventory to warehouse."""

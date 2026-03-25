@@ -135,7 +135,9 @@ class FocusedOracleWmsDiscovery:
         finally:
             self.client.stop()
 
-    def _quick_data_scan(self, entities: t.StrSequence) -> MutableMapping[str, t.NormalizedValue]:
+    def _quick_data_scan(
+        self, entities: t.StrSequence
+    ) -> MutableMapping[str, t.NormalizedValue]:
         """Quick scan to find entities with actual data."""
         data_entities: MutableMapping[str, t.NormalizedValue] = {}
         for entity_name in entities:

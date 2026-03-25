@@ -384,7 +384,9 @@ class OracleWmsCompleteDiscovery:
                         str(v) for v in value if isinstance(v, str)
                     ]
             else:
-                return r[Mapping[str, t.NormalizedValue]].fail("Entity discovery failed")
+                return r[Mapping[str, t.NormalizedValue]].fail(
+                    "Entity discovery failed"
+                )
         metadata_results: MutableMapping[str, t.NormalizedValue] = {}
         entities_with_data: MutableSequence[str] = []
         entities_without_data: MutableSequence[str] = []
