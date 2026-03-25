@@ -23,12 +23,12 @@ class TestFlextOracleWmsConstants:
 
     def test_flext_wms_version(self) -> None:
         """Test FLEXT_WMS_VERSION constant."""
-        assert isinstance(FlextOracleWmsConstants.FLEXT_WMS_VERSION, str)
-        assert FlextOracleWmsConstants.FLEXT_WMS_VERSION
+        assert isinstance(FlextOracleWmsConstants.OracleWms.FLEXT_WMS_VERSION, str)
+        assert FlextOracleWmsConstants.OracleWms.FLEXT_WMS_VERSION
 
     def test_api_constants(self) -> None:
         """Test API-related constants via API_CONFIG dict."""
-        api = FlextOracleWmsConstants.API_CONFIG
+        api = FlextOracleWmsConstants.OracleWms.API_CONFIG
         assert api["version_default"] == "v1"
         assert isinstance(api["base_url_default"], str)
         assert isinstance(api["timeout_default"], int)
@@ -36,28 +36,28 @@ class TestFlextOracleWmsConstants:
 
     def test_processing_config(self) -> None:
         """Test processing config dict is populated."""
-        proc = FlextOracleWmsConstants.PROCESSING_CONFIG
+        proc = FlextOracleWmsConstants.OracleWms.PROCESSING_CONFIG
         assert "default_batch_size" in proc
         assert "max_batch_size" in proc
         assert "default_page_size" in proc
 
     def test_environments(self) -> None:
         """Test environment dict is populated."""
-        envs = FlextOracleWmsConstants.ENVIRONMENTS
+        envs = FlextOracleWmsConstants.OracleWms.ENVIRONMENTS
         assert "default" in envs
         assert "test" in envs
         assert "production" in envs
 
     def test_authentication_constants(self) -> None:
         """Test authentication constants via AUTH_CONFIG dict."""
-        auth = FlextOracleWmsConstants.AUTH_CONFIG
-        assert auth["basic"] == FlextOracleWmsConstants.OracleWMSAuthMethod.BASIC
-        assert auth["oauth2"] == FlextOracleWmsConstants.OracleWMSAuthMethod.OAUTH2
-        assert auth["api_key"] == FlextOracleWmsConstants.OracleWMSAuthMethod.API_KEY
+        auth = FlextOracleWmsConstants.OracleWms.AUTH_CONFIG
+        assert auth["basic"] == FlextOracleWmsConstants.OracleWms.OracleWMSAuthMethod.BASIC
+        assert auth["oauth2"] == FlextOracleWmsConstants.OracleWms.OracleWMSAuthMethod.OAUTH2
+        assert auth["api_key"] == FlextOracleWmsConstants.OracleWms.OracleWMSAuthMethod.API_KEY
 
     def test_entity_type_constants(self) -> None:
         """Test ENTITY_TYPES tuple derived from WmsEntityType enum."""
-        entity_types = tuple(FlextOracleWmsConstants.WmsEntityType)
+        entity_types = tuple(FlextOracleWmsConstants.OracleWms.WmsEntityType)
         assert isinstance(entity_types, tuple)
         assert "inventory" in entity_types
         assert "orders" in entity_types
@@ -119,7 +119,7 @@ class TestFlextOracleWmsConstants:
 
     def test_entity_type_enum(self) -> None:
         """Test WmsEntityType enum."""
-        entity_type = FlextOracleWmsConstants.WmsEntityType
+        entity_type = FlextOracleWmsConstants.OracleWms.WmsEntityType
         assert entity_type.INVENTORY == "inventory"
         assert entity_type.ORDERS == "orders"
         assert entity_type.SHIPMENTS == "shipments"
@@ -129,7 +129,7 @@ class TestFlextOracleWmsConstants:
 
     def test_api_version_enum(self) -> None:
         """Test WmsApiVersion enum."""
-        api_version = FlextOracleWmsConstants.WmsApiVersion
+        api_version = FlextOracleWmsConstants.OracleWms.WmsApiVersion
         assert api_version.V1 == "v1"
         assert api_version.V2 == "v2"
         assert api_version.V3 == "v3"
@@ -137,7 +137,7 @@ class TestFlextOracleWmsConstants:
 
     def test_operation_status_enum(self) -> None:
         """Test WmsOperationStatus enum."""
-        status = FlextOracleWmsConstants.WmsOperationStatus
+        status = FlextOracleWmsConstants.OracleWms.WmsOperationStatus
         assert status.PENDING == "pending"
         assert status.RUNNING == "running"
         assert status.SUCCESS == "success"
@@ -147,7 +147,7 @@ class TestFlextOracleWmsConstants:
 
     def test_data_quality_enum(self) -> None:
         """Test WmsDataQuality enum."""
-        quality = FlextOracleWmsConstants.WmsDataQuality
+        quality = FlextOracleWmsConstants.OracleWms.WmsDataQuality
         assert quality.HIGH == "high"
         assert quality.MEDIUM == "medium"
         assert quality.LOW == "low"
@@ -155,7 +155,7 @@ class TestFlextOracleWmsConstants:
 
     def test_filter_operator_enum(self) -> None:
         """Test WmsFilterOperator enum."""
-        operator = FlextOracleWmsConstants.WmsFilterOperator
+        operator = FlextOracleWmsConstants.OracleWms.WmsFilterOperator
         assert operator.EQ == "eq"
         assert operator.NE == "ne"
         assert operator.GT == "gt"
@@ -168,14 +168,14 @@ class TestFlextOracleWmsConstants:
 
     def test_page_mode_enum(self) -> None:
         """Test WmsPageMode enum."""
-        mode = FlextOracleWmsConstants.WmsPageMode
+        mode = FlextOracleWmsConstants.OracleWms.WmsPageMode
         assert mode.APPEND == "append"
         assert mode.REPLACE == "replace"
         assert mode.MERGE == "merge"
 
     def test_write_mode_enum(self) -> None:
         """Test WmsWriteMode enum."""
-        mode = FlextOracleWmsConstants.WmsWriteMode
+        mode = FlextOracleWmsConstants.OracleWms.WmsWriteMode
         assert mode.INSERT == "insert"
         assert mode.UPDATE == "update"
         assert mode.UPSERT == "upsert"
@@ -183,14 +183,14 @@ class TestFlextOracleWmsConstants:
 
     def test_module_level_auth_method_enum(self) -> None:
         """Test module-level OracleWMSAuthMethod enum."""
-        assert FlextOracleWmsConstants.OracleWMSAuthMethod.BASIC == "basic"
-        assert FlextOracleWmsConstants.OracleWMSAuthMethod.OAUTH2 == "oauth2"
-        assert FlextOracleWmsConstants.OracleWMSAuthMethod.API_KEY == "api_key"
-        assert FlextOracleWmsConstants.OracleWMSAuthMethod.BEARER == "bearer"
+        assert FlextOracleWmsConstants.OracleWms.OracleWMSAuthMethod.BASIC == "basic"
+        assert FlextOracleWmsConstants.OracleWms.OracleWMSAuthMethod.OAUTH2 == "oauth2"
+        assert FlextOracleWmsConstants.OracleWms.OracleWMSAuthMethod.API_KEY == "api_key"
+        assert FlextOracleWmsConstants.OracleWms.OracleWMSAuthMethod.BEARER == "bearer"
 
     def test_endpoint_discovery_strategy_enum(self) -> None:
         """Test EndpointDiscoveryStrategy enum."""
-        strategy = FlextOracleWmsConstants.EndpointDiscoveryStrategy
+        strategy = FlextOracleWmsConstants.OracleWms.EndpointDiscoveryStrategy
         assert strategy.API_BASED == "api_based"
         assert strategy.SCHEMA_BASED == "schema_based"
 

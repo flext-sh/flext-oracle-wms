@@ -18,12 +18,10 @@ from urllib.parse import urlparse
 import pytest
 from flext_core import FlextLogger, r
 
-from flext_oracle_wms import (
-    FlextOracleWmsClient,
-    FlextOracleWmsClientSettings,
-    FlextOracleWmsConstants,
-)
+from flext_oracle_wms.constants import FlextOracleWmsConstants
+from flext_oracle_wms.settings import FlextOracleWmsClientSettings
 from flext_oracle_wms.wms_api import FlextOracleWmsApi
+from flext_oracle_wms.wms_client import FlextOracleWmsClient
 from tests import t
 
 logger = FlextLogger(__name__)
@@ -99,7 +97,7 @@ def load_env_config() -> t.ContainerMapping | None:
     env_path = find_env_file()
     if not env_path:
         return None
-    config: t.StrMapping = {}
+    config: dict[str, str] = {}
     try:
         with Path(env_path).open(encoding="utf-8") as f:
             for raw_line in f:
@@ -143,7 +141,7 @@ def load_env_config() -> t.ContainerMapping | None:
             == "true",
         }
     except Exception as e:
-        logger.warning("Failed to load .env config: %s", e)
+        logger.warning(f"Failed to load .env config: {e}")
         return None
 
 
@@ -199,7 +197,7 @@ class TestOracleWmsDeclarativeIntegration:
     ) -> None:
         """Test client configuration and initialization."""
         config = _build_client_settings(
-            env_config, FlextOracleWmsConstants.WmsApiVersion.V1
+            env_config, FlextOracleWmsConstants.OracleWms.WmsApiVersion.V1
         )
         assert config.base_url.startswith("https://")
         assert config.username
@@ -418,9 +416,7 @@ class TestPerformanceIntegration:
         for i, result_item in enumerate(results):
             if isinstance(result_item, Exception):
                 logger.warning(
-                    "Request %d failed with exception: %s",
-                    i,
-                    result_item,
+                    f"Request {i} failed with exception: {result_item}"
                 )
             elif isinstance(result_item, r) and result_item.is_success:
                 successful_requests += 1

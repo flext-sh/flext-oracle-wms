@@ -17,17 +17,13 @@ from collections.abc import Mapping, MutableMapping, MutableSequence, Sequence
 from datetime import UTC, datetime
 from pathlib import Path
 
-from flext_api import FlextApiModels
 from flext_core import FlextLogger, r
-from pydantic import ConfigDict
 
-from flext_oracle_wms import (
-    FlextOracleWmsClient,
-    FlextOracleWmsClientSettings,
-    create_oracle_wms_client,
-    m,
-)
+from flext_oracle_wms.models import FlextOracleWmsModels as m
+from flext_oracle_wms.settings import FlextOracleWmsClientSettings
 from flext_oracle_wms.wms_api import FlextOracleWmsApi
+from flext_oracle_wms.wms_auth import FlextOracleWmsAuthenticator
+from flext_oracle_wms.wms_client import FlextOracleWmsClient
 from tests import t
 
 logger = FlextLogger(__name__)
@@ -51,18 +47,18 @@ class OracleWmsCompleteDiscovery:
             base_url="https://invalid.wms.ocs.oraclecloud.com",
             username="USER_WMS_INTEGRA",
             password="jmCyS7BK94YvhS@",
-            environment="test",
             timeout=120.0,
             max_retries=5,
             api_version=_API_VERSION_LGF_V10,
             verify_ssl=True,
             enable_logging=True,
-            model_config=ConfigDict(strict=True),
         )
-        self.client: FlextOracleWmsClient = create_oracle_wms_client(
-            self.config,
-            mock_mode=False,
+        auth_settings = m.OracleWms.AuthSettings(
+            username=self.config.username,
+            password=self.config.password,
         )
+        _auth_result = FlextOracleWmsAuthenticator.create_oracle_wms_client(auth_settings)
+        self.client = FlextOracleWmsClient(settings=self.config)
         self.discovered_entities: MutableSequence[str] = []
         self.entity_metadata: MutableMapping[str, t.NormalizedValue] = {}
         self.complete_schemas: MutableMapping[str, t.NormalizedValue] = {}
@@ -84,7 +80,7 @@ class OracleWmsCompleteDiscovery:
         for api_name, api_endpoint in all_apis.items():
             try:
                 if api_endpoint.category == _CATEGORY_DATA_EXTRACT:
-                    result: r[FlextApiModels.HttpResponse] = (
+                    result: r[t.ContainerMapping] = (
                         self._test_data_extract_api(api_name)
                     )
                 elif api_endpoint.category == _CATEGORY_ENTITY_OPERATIONS:
@@ -103,14 +99,14 @@ class OracleWmsCompleteDiscovery:
                         api_endpoint,
                     )
                 else:
-                    result = r[FlextApiModels.HttpResponse].fail("Unknown API category")
+                    result = r[t.ContainerMapping].fail("Unknown API category")
                 if result.is_success and result.value:
                     pass
             except Exception as e:
-                r[FlextApiModels.HttpResponse].fail(f"Exception: {e}")
+                r[t.ContainerMapping].fail(f"Exception: {e}")
         return r[bool].ok(value=True)
 
-    def _test_data_extract_api(self, api_name: str) -> r[FlextApiModels.HttpResponse]:
+    def _test_data_extract_api(self, api_name: str) -> r[t.ContainerMapping]:
         """Test data extraction APIs."""
         try:
             if api_name == "lgf_entity_discovery":
@@ -127,7 +123,7 @@ class OracleWmsCompleteDiscovery:
                 if self.discovered_entities:
                     entity_name = self.discovered_entities[0]
                     return self.client.get(f"/entities/{entity_name}")
-                return r[FlextApiModels.HttpResponse].fail(
+                return r[t.ContainerMapping].fail(
                     "No entities available for testing",
                 )
             if api_name == "lgf_entity_get":
@@ -138,7 +134,7 @@ class OracleWmsCompleteDiscovery:
                 return self._test_task_status()
             return self.client.call_api(api_name)
         except Exception as e:
-            return r[FlextApiModels.HttpResponse].fail(
+            return r[t.ContainerMapping].fail(
                 f"Data extract API test failed: {e}",
             )
 
@@ -146,7 +142,7 @@ class OracleWmsCompleteDiscovery:
         self,
         api_name: str,
         endpoint: m.OracleWms.ApiEndpoint,
-    ) -> r[FlextApiModels.HttpResponse]:
+    ) -> r[t.ContainerMapping]:
         """Test entity operations APIs."""
         try:
             if "entity" in endpoint.path and "{entity_name}" in endpoint.path:
@@ -163,12 +159,12 @@ class OracleWmsCompleteDiscovery:
                     if "{id}" in endpoint.path:
                         return self._test_entity_with_id(api_name, entity_name)
                     return self.client.get(f"/entities/{entity_name}")
-                return r[FlextApiModels.HttpResponse].fail(
+                return r[t.ContainerMapping].fail(
                     "No entities for entity operations test",
                 )
             return self.client.call_api(api_name)
         except Exception as e:
-            return r[FlextApiModels.HttpResponse].fail(
+            return r[t.ContainerMapping].fail(
                 f"Entity operations API test failed: {e}",
             )
 
@@ -176,33 +172,33 @@ class OracleWmsCompleteDiscovery:
         self,
         api_name: str,
         endpoint: m.OracleWms.ApiEndpoint,
-    ) -> r[FlextApiModels.HttpResponse]:
+    ) -> r[t.ContainerMapping]:
         """Test setup and transactional APIs."""
         try:
             return self.client.call_api(api_name)
         except Exception as e:
-            return r[FlextApiModels.HttpResponse].fail(f"Setup API test failed: {e}")
+            return r[t.ContainerMapping].fail(f"Setup API test failed: {e}")
 
     def _test_automation_api(
         self,
         api_name: str,
         endpoint: m.OracleWms.ApiEndpoint,
-    ) -> r[FlextApiModels.HttpResponse]:
+    ) -> r[t.ContainerMapping]:
         """Test automation and operations APIs."""
         try:
             return self.client.call_api(api_name)
         except Exception as e:
-            return r[FlextApiModels.HttpResponse].fail(
+            return r[t.ContainerMapping].fail(
                 f"Automation API test failed: {e}",
             )
 
-    def _test_entity_get_with_discovery(self) -> r[FlextApiModels.HttpResponse]:
+    def _test_entity_get_with_discovery(self) -> r[t.ContainerMapping]:
         """Test entity get by discovering entity with data first."""
         try:
             self._ensure_discovered_entities()
             return self._find_and_get_entity_with_id()
         except Exception as e:
-            return r[FlextApiModels.HttpResponse].fail(
+            return r[t.ContainerMapping].fail(
                 f"Entity get discovery failed: {e}",
             )
 
@@ -217,20 +213,20 @@ class OracleWmsCompleteDiscovery:
                         str(v) for v in value if isinstance(v, str)
                     ]
 
-    def _find_and_get_entity_with_id(self) -> r[FlextApiModels.HttpResponse]:
+    def _find_and_get_entity_with_id(self) -> r[t.ContainerMapping]:
         """Find an entity with records and get it by ID."""
         for entity_name in self.discovered_entities[:10]:
             entity_result = self._get_entity_with_id(entity_name)
             if entity_result is not None:
                 return entity_result
-        return r[FlextApiModels.HttpResponse].fail(
+        return r[t.ContainerMapping].fail(
             "No entity with ID found for testing lgf_entity_get",
         )
 
     def _get_entity_with_id(
         self,
         entity_name: str,
-    ) -> r[FlextApiModels.HttpResponse] | None:
+    ) -> r[t.ContainerMapping] | None:
         """Get entity by ID if it has records."""
         list_result = self.client.get_entity_data(entity_name, limit=1)
         if not list_result.is_success:
@@ -244,16 +240,16 @@ class OracleWmsCompleteDiscovery:
         entity_id = record["id"]
         return self.client.get(f"/entities/{entity_name}/{entity_id}")
 
-    def _test_data_extract_to_object_store(self) -> r[FlextApiModels.HttpResponse]:
+    def _test_data_extract_to_object_store(self) -> r[t.ContainerMapping]:
         """Test data extract to object store API."""
         try:
             return self.client.call_api("lgf_data_extract")
         except Exception as e:
-            return r[FlextApiModels.HttpResponse].fail(
+            return r[t.ContainerMapping].fail(
                 f"Data extract to object store failed: {e}",
             )
 
-    def _test_task_status(self) -> r[FlextApiModels.HttpResponse]:
+    def _test_task_status(self) -> r[t.ContainerMapping]:
         """Test task status API."""
         try:
             return self.client.call_api(
@@ -261,13 +257,13 @@ class OracleWmsCompleteDiscovery:
                 params={"status": "COMPLETED", "limit": "5"},
             )
         except Exception as e:
-            return r[FlextApiModels.HttpResponse].fail(f"task status test failed: {e}")
+            return r[t.ContainerMapping].fail(f"task status test failed: {e}")
 
     def _test_entity_with_id(
         self,
         api_name: str,
         entity_name: str,
-    ) -> r[FlextApiModels.HttpResponse]:
+    ) -> r[t.ContainerMapping]:
         """Test entity API that requires ID parameter."""
         try:
             list_result = self.client.get_entity_data(entity_name, limit=1)
@@ -278,11 +274,11 @@ class OracleWmsCompleteDiscovery:
                     if isinstance(record, dict) and "id" in record:
                         entity_id = record["id"]
                         return self.client.get(f"/entities/{entity_name}/{entity_id}")
-            return r[FlextApiModels.HttpResponse].fail(
+            return r[t.ContainerMapping].fail(
                 f"No valid ID found for entity {entity_name}",
             )
         except Exception as e:
-            return r[FlextApiModels.HttpResponse].fail(
+            return r[t.ContainerMapping].fail(
                 f"Entity with ID test failed: {e}",
             )
 
@@ -471,7 +467,7 @@ class OracleWmsCompleteDiscovery:
             fields = metadata.get("fields", [])
             field_types = metadata.get("field_types", {})
             sample_data = metadata.get("sample_data", {})
-            properties: MutableMapping[str, MutableMapping[str, t.NormalizedValue]] = {}
+            properties: dict[str, Mapping[str, t.NormalizedValue]] = {}
             if isinstance(fields, list) and isinstance(field_types, dict):
                 for field in fields:
                     if isinstance(field, str):
@@ -622,7 +618,7 @@ def run_complete_discovery() -> None:
         if isinstance(metadata_data, dict):
             entities_with_data = metadata_data.get("entities_with_data")
             if isinstance(entities_with_data, list) and entities_with_data:
-                entities_with_counts: MutableSequence[tuple[str, t.NormalizedValue]] = [
+                entities_with_counts: list[tuple[str, t.NormalizedValue]] = [
                     (
                         name,
                         discovery.entity_metadata.get(name, None),

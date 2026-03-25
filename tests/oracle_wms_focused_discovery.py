@@ -15,11 +15,8 @@ from types import NoneType
 
 from flext_core import FlextLogger, r
 
-from flext_oracle_wms import (
-    FlextOracleWmsClient,
-    FlextOracleWmsClientSettings,
-    create_oracle_wms_client,
-)
+from flext_oracle_wms.settings import FlextOracleWmsClientSettings
+from flext_oracle_wms.wms_client import FlextOracleWmsClient
 from tests import t
 
 logger = FlextLogger(__name__)
@@ -39,17 +36,13 @@ class FocusedOracleWmsDiscovery:
             base_url="https://invalid.wms.ocs.oraclecloud.com",
             username="USER_WMS_INTEGRA",
             password="jmCyS7BK94YvhS@",
-            environment="test",
             timeout=30.0,
             max_retries=2,
             api_version=_API_VERSION_LGF_V10,
             verify_ssl=True,
             enable_logging=True,
         )
-        self.client: FlextOracleWmsClient = create_oracle_wms_client(
-            self.config,
-            mock_mode=False,
-        )
+        self.client = FlextOracleWmsClient(settings=self.config)
         self.quick_test_entities: Sequence[str] = [
             "company",
             "facility",

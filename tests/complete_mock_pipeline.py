@@ -339,7 +339,7 @@ class CompleteMockPipeline:
 
     def _generate_complete_singer_schemas(self) -> t.ContainerMapping:
         """Generate complete Singer schemas for all entities."""
-        schemas: t.ContainerMapping = {}
+        schemas: dict[str, t.NormalizedValue] = {}
         for entity_name, entity_info in self.mock_entities.items():
             if isinstance(entity_info, dict) and "sample_data" in entity_info:
                 sample_data = entity_info["sample_data"]
@@ -547,7 +547,7 @@ class CompleteMockPipeline:
         target_results: t.ContainerMapping,
     ) -> t.ContainerMapping:
         """Simulate DBT transformation process."""
-        dbt_results: Mapping[str, Mapping[str, int | t.StrSequence | str]] = {}
+        dbt_results: dict[str, Mapping[str, int | t.StrSequence | str]] = {}
         business_models = {
             "dim_company": {
                 "source_tables": ["raw_oracle_wms_company"],
