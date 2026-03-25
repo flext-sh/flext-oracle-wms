@@ -12,7 +12,7 @@ import base64
 
 from flext_core import r
 
-from flext_oracle_wms import c, m, t
+from flext_oracle_wms import FlextOracleWmsApi, c, m, t
 
 
 class FlextOracleWmsAuthenticator:
@@ -54,8 +54,6 @@ class FlextOracleWmsAuthenticator:
     @staticmethod
     def create_oracle_wms_client(config: m.OracleWms.AuthSettings) -> r[str]:
         """Create authenticated Oracle WMS client. Delegates to FlextOracleWmsApi.create_oracle_wms_client."""
-        from flext_oracle_wms.api import FlextOracleWmsApi
-
         return FlextOracleWmsApi.create_oracle_wms_client(config)
 
 
