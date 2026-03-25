@@ -58,9 +58,7 @@ if TYPE_CHECKING:
         FlextOracleWmsUtilities,
         FlextOracleWmsUtilities as u,
     )
-    from flext_oracle_wms.wms_auth import (
-        FlextOracleWmsAuthenticator,
-    )
+    from flext_oracle_wms.wms_auth import FlextOracleWmsAuthenticator
     from flext_oracle_wms.wms_client import FlextOracleWmsClient
     from flext_oracle_wms.wms_discovery import (
         DISCOVERY_FAILURE,
@@ -93,10 +91,6 @@ _LAZY_IMPORTS: Mapping[str, Sequence[str]] = {
     "FlextOracleWmsApiError": [
         "flext_oracle_wms.wms_exceptions",
         "FlextOracleWmsApiError",
-    ],
-    "FlextOracleWmsAuthSettings": [
-        "flext_oracle_wms.wms_auth",
-        "FlextOracleWmsAuthSettings",
     ],
     "FlextOracleWmsAuthenticationError": [
         "flext_oracle_wms.wms_exceptions",
@@ -188,7 +182,6 @@ _LAZY_IMPORTS: Mapping[str, Sequence[str]] = {
         "flext_oracle_wms.wms_exceptions",
         "FlextOracleWmsValidationError",
     ],
-    "OracleWMSAuthMethod": ["flext_oracle_wms.wms_auth", "OracleWMSAuthMethod"],
     "__all__": ["flext_oracle_wms.__version__", "__all__"],
     "__author__": ["flext_oracle_wms.__version__", "__author__"],
     "__author_email__": ["flext_oracle_wms.__version__", "__author_email__"],
@@ -202,10 +195,6 @@ _LAZY_IMPORTS: Mapping[str, Sequence[str]] = {
     "create_flext_http_client": [
         "flext_oracle_wms.http_client",
         "create_flext_http_client",
-    ],
-    "create_oracle_wms_client": [
-        "flext_oracle_wms.wms_auth",
-        "create_oracle_wms_client",
     ],
     "d": ["flext_core", "d"],
     "e": ["flext_core", "e"],
@@ -225,7 +214,6 @@ __all__ = [
     "FlextHttpClient",
     "FlextOracleWmsApi",
     "FlextOracleWmsApiError",
-    "FlextOracleWmsAuthSettings",
     "FlextOracleWmsAuthenticationError",
     "FlextOracleWmsAuthenticator",
     "FlextOracleWmsClient",
@@ -253,7 +241,6 @@ __all__ = [
     "FlextOracleWmsTypes",
     "FlextOracleWmsUtilities",
     "FlextOracleWmsValidationError",
-    "OracleWMSAuthMethod",
     "__all__",
     "__author__",
     "__author_email__",
@@ -265,7 +252,6 @@ __all__ = [
     "__version_info__",
     "c",
     "create_flext_http_client",
-    "create_oracle_wms_client",
     "d",
     "e",
     "h",

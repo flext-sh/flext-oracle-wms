@@ -44,9 +44,11 @@ if TYPE_CHECKING:
         FlextOracleWmsTestProtocols as p,
     )
     from tests.test_authentication_core import (
+        FlextOracleWmsAuthSettings,
         TestAuthenticationConfig,
         TestAuthenticationMethod,
         TestAuthenticator,
+        create_oracle_wms_client,
     )
     from tests.test_client import TestClientSimpleNew
     from tests.test_client_class import (
@@ -121,6 +123,7 @@ if TYPE_CHECKING:
         test_entity_validation_empty_name_raises,
     )
     from tests.test_schema_dynamic import (
+        OracleWMSAuthMethod,
         TestFlextOracleWmsConstants,
         TestNestedConstants,
         TestWmsEnums,
@@ -140,6 +143,10 @@ if TYPE_CHECKING:
 
 _LAZY_IMPORTS: Mapping[str, Sequence[str]] = {
     "CompleteMockPipeline": ["tests.complete_mock_pipeline", "CompleteMockPipeline"],
+    "FlextOracleWmsAuthSettings": [
+        "tests.test_authentication_core",
+        "FlextOracleWmsAuthSettings",
+    ],
     "FlextOracleWmsTestConstants": ["tests.constants", "FlextOracleWmsTestConstants"],
     "FlextOracleWmsTestModels": ["tests.models", "FlextOracleWmsTestModels"],
     "FlextOracleWmsTestProtocols": ["tests.protocols", "FlextOracleWmsTestProtocols"],
@@ -153,6 +160,7 @@ _LAZY_IMPORTS: Mapping[str, Sequence[str]] = {
         "tests.oracle_wms_optimized_discovery",
         "OptimizedOracleWmsDiscovery",
     ],
+    "OracleWMSAuthMethod": ["tests.test_schema_dynamic", "OracleWMSAuthMethod"],
     "OracleWmsCompleteDiscovery": [
         "tests.oracle_wms_complete_discovery",
         "OracleWmsCompleteDiscovery",
@@ -244,6 +252,10 @@ _LAZY_IMPORTS: Mapping[str, Sequence[str]] = {
     "TestRecordSorting": ["tests.test_filtering", "TestRecordSorting"],
     "TestWmsEnums": ["tests.test_schema_dynamic", "TestWmsEnums"],
     "c": ["tests.constants", "FlextOracleWmsTestConstants"],
+    "create_oracle_wms_client": [
+        "tests.test_authentication_core",
+        "create_oracle_wms_client",
+    ],
     "d": ["flext_tests", "d"],
     "e": ["flext_tests", "e"],
     "env_config": ["tests.test_declarative", "env_config"],
@@ -367,6 +379,7 @@ _LAZY_IMPORTS: Mapping[str, Sequence[str]] = {
 
 __all__ = [
     "CompleteMockPipeline",
+    "FlextOracleWmsAuthSettings",
     "FlextOracleWmsTestConstants",
     "FlextOracleWmsTestModels",
     "FlextOracleWmsTestProtocols",
@@ -374,6 +387,7 @@ __all__ = [
     "FlextOracleWmsTestUtilities",
     "FocusedOracleWmsDiscovery",
     "OptimizedOracleWmsDiscovery",
+    "OracleWMSAuthMethod",
     "OracleWmsCompleteDiscovery",
     "TestApplyOperator",
     "TestAuthenticationConfig",
@@ -411,6 +425,7 @@ __all__ = [
     "TestRecordSorting",
     "TestWmsEnums",
     "c",
+    "create_oracle_wms_client",
     "d",
     "e",
     "env_config",

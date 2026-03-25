@@ -73,7 +73,9 @@ def demonstrate_singleton_config() -> None:
     if validation_result.is_success:
         logger.info("   Configuration validation passed")
     else:
-        logger.error("   Configuration validation failed: %s", str(validation_result.error))
+        logger.error(
+            "   Configuration validation failed: %s", str(validation_result.error)
+        )
     logger.info("8. Creating client with configuration...")
     try:
         client = FlextOracleWmsClient(config=test_config)

@@ -58,7 +58,9 @@ class OracleWmsCompleteDiscovery:
             username=self.config.username,
             password=self.config.password,
         )
-        _auth_result = FlextOracleWmsAuthenticator.create_oracle_wms_client(auth_settings)
+        _auth_result = FlextOracleWmsAuthenticator.create_oracle_wms_client(
+            auth_settings
+        )
         self.client = FlextOracleWmsClient(config=self.config)
         self.discovered_entities: MutableSequence[str] = []
         self.entity_metadata: MutableMapping[str, t.NormalizedValue] = {}
@@ -100,14 +102,18 @@ class OracleWmsCompleteDiscovery:
                         api_endpoint,
                     )
                 else:
-                    result = r[FlextApiModels.Api.HttpResponse].fail("Unknown API category")
+                    result = r[FlextApiModels.Api.HttpResponse].fail(
+                        "Unknown API category"
+                    )
                 if result.is_success and result.value:
                     pass
             except Exception as e:
                 r[FlextApiModels.Api.HttpResponse].fail(f"Exception: {e}")
         return r[bool].ok(value=True)
 
-    def _test_data_extract_api(self, api_name: str) -> r[FlextApiModels.Api.HttpResponse]:
+    def _test_data_extract_api(
+        self, api_name: str
+    ) -> r[FlextApiModels.Api.HttpResponse]:
         """Test data extraction APIs."""
         try:
             if api_name == "lgf_entity_discovery":
@@ -178,7 +184,9 @@ class OracleWmsCompleteDiscovery:
         try:
             return self.client.call_api(api_name)
         except Exception as e:
-            return r[FlextApiModels.Api.HttpResponse].fail(f"Setup API test failed: {e}")
+            return r[FlextApiModels.Api.HttpResponse].fail(
+                f"Setup API test failed: {e}"
+            )
 
     def _test_automation_api(
         self,
@@ -258,7 +266,9 @@ class OracleWmsCompleteDiscovery:
                 params={"status": "COMPLETED", "limit": "5"},
             )
         except Exception as e:
-            return r[FlextApiModels.Api.HttpResponse].fail(f"task status test failed: {e}")
+            return r[FlextApiModels.Api.HttpResponse].fail(
+                f"task status test failed: {e}"
+            )
 
     def _test_entity_with_id(
         self,

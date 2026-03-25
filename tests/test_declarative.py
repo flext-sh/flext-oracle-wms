@@ -415,9 +415,7 @@ class TestPerformanceIntegration:
         successful_requests = 0
         for i, result_item in enumerate(results):
             if isinstance(result_item, Exception):
-                logger.warning(
-                    f"Request {i} failed with exception: {result_item}"
-                )
+                logger.warning(f"Request {i} failed with exception: {result_item}")
             elif isinstance(result_item, r) and result_item.is_success:
                 successful_requests += 1
                 logger.info("✅ Concurrent request %d succeeded", i)

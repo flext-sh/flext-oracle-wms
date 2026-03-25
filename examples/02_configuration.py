@@ -163,9 +163,7 @@ def validate_configuration(
         errors.append("Timeout must be positive")
     elif config.timeout < min_timeout_seconds:
         warnings.append("Timeout less than 10 seconds may cause issues")
-    max_retries_warning_threshold = (
-        c.OracleWms.DEFAULT_MAX_RETRIES * 3
-    )
+    max_retries_warning_threshold = c.OracleWms.DEFAULT_MAX_RETRIES * 3
     if config.max_retries < 0:
         errors.append("Max retries cannot be negative")
     elif config.max_retries > max_retries_warning_threshold:

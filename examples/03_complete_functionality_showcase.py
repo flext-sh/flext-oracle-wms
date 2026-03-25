@@ -99,7 +99,9 @@ def showcase_2_entity_discovery(client: FlextOracleWmsClient) -> list[str]:
         for entity in entity_dicts
     ]
     batch_size_val = c.OracleWms.PROCESSING_CONFIG.get("default_batch_size", 100)
-    max_entities_to_show = int(batch_size_val) // 5 if isinstance(batch_size_val, int) else 20
+    max_entities_to_show = (
+        int(batch_size_val) // 5 if isinstance(batch_size_val, int) else 20
+    )
     for _i, _entity in enumerate(entities[:max_entities_to_show]):
         pass
     if len(entities) > max_entities_to_show:

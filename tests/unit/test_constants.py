@@ -51,9 +51,17 @@ class TestFlextOracleWmsConstants:
     def test_authentication_constants(self) -> None:
         """Test authentication constants via AUTH_CONFIG dict."""
         auth = FlextOracleWmsConstants.OracleWms.AUTH_CONFIG
-        assert auth["basic"] == FlextOracleWmsConstants.OracleWms.OracleWMSAuthMethod.BASIC
-        assert auth["oauth2"] == FlextOracleWmsConstants.OracleWms.OracleWMSAuthMethod.OAUTH2
-        assert auth["api_key"] == FlextOracleWmsConstants.OracleWms.OracleWMSAuthMethod.API_KEY
+        assert (
+            auth["basic"] == FlextOracleWmsConstants.OracleWms.OracleWMSAuthMethod.BASIC
+        )
+        assert (
+            auth["oauth2"]
+            == FlextOracleWmsConstants.OracleWms.OracleWMSAuthMethod.OAUTH2
+        )
+        assert (
+            auth["api_key"]
+            == FlextOracleWmsConstants.OracleWms.OracleWMSAuthMethod.API_KEY
+        )
 
     def test_entity_type_constants(self) -> None:
         """Test ENTITY_TYPES tuple derived from WmsEntityType enum."""
@@ -185,7 +193,9 @@ class TestFlextOracleWmsConstants:
         """Test module-level OracleWMSAuthMethod enum."""
         assert FlextOracleWmsConstants.OracleWms.OracleWMSAuthMethod.BASIC == "basic"
         assert FlextOracleWmsConstants.OracleWms.OracleWMSAuthMethod.OAUTH2 == "oauth2"
-        assert FlextOracleWmsConstants.OracleWms.OracleWMSAuthMethod.API_KEY == "api_key"
+        assert (
+            FlextOracleWmsConstants.OracleWms.OracleWMSAuthMethod.API_KEY == "api_key"
+        )
         assert FlextOracleWmsConstants.OracleWms.OracleWMSAuthMethod.BEARER == "bearer"
 
     def test_endpoint_discovery_strategy_enum(self) -> None:

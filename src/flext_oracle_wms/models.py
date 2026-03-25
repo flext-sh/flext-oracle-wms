@@ -161,14 +161,18 @@ class FlextOracleWmsModels(FlextModels):
 
             model_config: ClassVar[ConfigDict] = ConfigDict(extra="ignore")
 
-            apis: Sequence[t.StrMapping] = Field(default_factory=lambda: list[Mapping[str, str]]())
+            apis: Sequence[t.StrMapping] = Field(
+                default_factory=lambda: list[Mapping[str, str]]()
+            )
 
         class EntityDataResponse(BaseModel):
             """Oracle WMS entity data response."""
 
             model_config: ClassVar[ConfigDict] = ConfigDict(extra="ignore")
 
-            data: Sequence[t.StrMapping] = Field(default_factory=lambda: list[Mapping[str, str]]())
+            data: Sequence[t.StrMapping] = Field(
+                default_factory=lambda: list[Mapping[str, str]]()
+            )
 
         # =====================================================================
         # DOMAIN ENTITIES - Composed DDD patterns
@@ -228,9 +232,7 @@ class FlextOracleWmsModels(FlextModels):
                 str,
                 Field(description="Associated order identifier"),
             ] = ""
-            status: Annotated[
-                str, Field(description="Shipment status")
-            ] = "pending"
+            status: Annotated[str, Field(description="Shipment status")] = "pending"
             carrier: Annotated[
                 str | None,
                 Field(description="Shipping carrier name"),
@@ -283,9 +285,7 @@ class FlextOracleWmsModels(FlextModels):
             model_config: ClassVar[ConfigDict] = ConfigDict(frozen=True, extra="forbid")
 
             username: Annotated[str, Field(description="API username")]
-            password: Annotated[
-                str | None, Field(description="API password")
-            ] = None
+            password: Annotated[str | None, Field(description="API password")] = None
             token: Annotated[str | None, Field(description="API token")] = None
 
         # =====================================================================
@@ -307,10 +307,18 @@ class FlextOracleWmsModels(FlextModels):
             id: str
             name: str
             locations: Sequence[FlextOracleWmsModels.OracleWms.WarehouseLocation] = (
-                Field(default_factory=lambda: list[FlextOracleWmsModels.OracleWms.WarehouseLocation]())
+                Field(
+                    default_factory=lambda: list[
+                        FlextOracleWmsModels.OracleWms.WarehouseLocation
+                    ]()
+                )
             )
             inventory: MutableSequence[FlextOracleWmsModels.OracleWms.InventoryItem] = (
-                Field(default_factory=lambda: list[FlextOracleWmsModels.OracleWms.InventoryItem]())
+                Field(
+                    default_factory=lambda: list[
+                        FlextOracleWmsModels.OracleWms.InventoryItem
+                    ]()
+                )
             )
 
             def add_inventory(
