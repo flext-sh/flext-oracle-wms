@@ -55,10 +55,12 @@ class FlextOracleWmsAuthenticator:
 
     @staticmethod
     def create_oracle_wms_client(config: m.OracleWms.AuthSettings) -> r[str]:
-        """Create authenticated Oracle WMS client. Delegates to FlextOracleWmsApi.create_oracle_wms_client."""
-        from flext_oracle_wms.api import FlextOracleWmsApi
-
-        return FlextOracleWmsApi.create_oracle_wms_client(config)
+        """Create authenticated Oracle WMS client."""
+        authenticator = FlextOracleWmsAuthenticator(config)
+        auth_result = authenticator.authenticate()
+        if auth_result.is_failure:
+            return r[str].fail(f"Authentication failed: {auth_result.error}")
+        return r[str].fail("Oracle WMS client creation not configured")
 
 
 __all__ = [

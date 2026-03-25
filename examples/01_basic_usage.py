@@ -119,7 +119,7 @@ def query_entity_data(
                             str(value),
                         ) > MAX_VALUE_DISPLAY_LENGTH else str(value)
                     except (KeyError, ValueError, TypeError) as e:
-                        logger.debug("Display formatting failed: %s", str(e))
+                        logger.debug("Display formatting failed: %s", e)
         elif data is not None:
             pass
         return result

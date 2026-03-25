@@ -32,16 +32,16 @@ def demonstrate_singleton_config() -> None:
     logger.info("   Config Type: %s", type(config).__name__)
     logger.info("2. Updating global singleton with new parameters...")
     updated_config = FlextOracleWmsSettings(timeout=60, retry_attempts=5)
-    logger.info("   Updated Timeout: %s", str(updated_config.timeout))
-    logger.info("   Updated Max Retries: %s", str(updated_config.retry_attempts))
-    logger.info("   Same instance? %s", str(config is updated_config))
+    logger.info("   Updated Timeout: %s", updated_config.timeout)
+    logger.info("   Updated Max Retries: %s", updated_config.retry_attempts)
+    logger.info("   Same instance? %s", config is updated_config)
     logger.info("3. Creating from environment with overrides...")
     env_config = FlextOracleWmsSettings(
         timeout=float(FlextOracleWmsConstants.OracleWms.DEFAULT_TIMEOUT * 3),
     )
     logger.info("   Oracle WMS URL: %s", env_config.base_url)
     logger.info("   Username: %s", env_config.username)
-    logger.info("   Timeout: %s", str(env_config.timeout))
+    logger.info("   Timeout: %s", env_config.timeout)
     logger.info("4. Creating configuration for different environment...")
     new_config = FlextOracleWmsSettings(
         base_url="https://new-environment.wms.oraclecloud.com/test",
@@ -52,7 +52,7 @@ def demonstrate_singleton_config() -> None:
     if new_config:
         logger.info("   New Base URL: %s", new_config.base_url)
         logger.info("   New Username: %s", new_config.username)
-        logger.info("   New Timeout: %s", str(new_config.timeout))
+        logger.info("   New Timeout: %s", new_config.timeout)
     else:
         logger.error("   Failed to create new configuration")
     logger.info("5. Resetting global instance...")
@@ -67,15 +67,13 @@ def demonstrate_singleton_config() -> None:
     test_config = FlextOracleWmsSettings(use_mock=True)
     logger.info("   Test URL: %s", test_config.base_url)
     logger.info("   Test Username: %s", test_config.username)
-    logger.info("   Use Mock: %s", str(test_config.use_mock))
+    logger.info("   Use Mock: %s", test_config.use_mock)
     logger.info("7. Validating configuration...")
     validation_result = test_config.validate_config()
     if validation_result.is_success:
         logger.info("   Configuration validation passed")
     else:
-        logger.error(
-            "   Configuration validation failed: %s", str(validation_result.error)
-        )
+        logger.error("   Configuration validation failed: %s", validation_result.error)
     logger.info("8. Creating client with configuration...")
     try:
         client = FlextOracleWmsClient(config=test_config)
