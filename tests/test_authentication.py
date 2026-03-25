@@ -11,10 +11,13 @@ import pytest
 
 from flext_oracle_wms import (
     FlextOracleWmsAuthenticator,
-    FlextOracleWmsAuthSettings,
-    OracleWMSAuthMethod,
-    create_oracle_wms_client,
+    c,
+    m,
 )
+
+FlextOracleWmsAuthSettings = m.OracleWms.AuthSettings
+OracleWMSAuthMethod = c.OracleWms.OracleWMSAuthMethod
+create_oracle_wms_client = FlextOracleWmsAuthenticator.create_oracle_wms_client
 
 
 @pytest.mark.unit
