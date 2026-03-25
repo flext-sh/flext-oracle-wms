@@ -13,8 +13,9 @@ from typing import override
 
 from flext_core import FlextService, r
 
-from flext_oracle_wms import m, t
 from flext_oracle_wms.http_client import FlextHttpClient
+from flext_oracle_wms.models import FlextOracleWmsModels as m
+from flext_oracle_wms.typings import FlextOracleWmsTypes as t
 from flext_oracle_wms.wms_auth import FlextOracleWmsAuthenticator
 from flext_oracle_wms.wms_client import FlextOracleWmsClient
 

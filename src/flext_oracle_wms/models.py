@@ -15,7 +15,8 @@ from typing import Annotated, ClassVar, Literal
 from flext_core import FlextModels, r
 from pydantic import BaseModel, ConfigDict, Field, StringConstraints, field_validator
 
-from flext_oracle_wms import c, t
+from flext_oracle_wms.constants import FlextOracleWmsConstants as c
+from flext_oracle_wms.typings import FlextOracleWmsTypes as t
 
 
 class FlextOracleWmsModels(FlextModels):
@@ -51,23 +52,22 @@ class FlextOracleWmsModels(FlextModels):
             ]
             description: Annotated[
                 str | None,
-                Field(default=None, description="Entity description"),
-            ]
+                Field(description="Entity description"),
+            ] = None
             primary_key: Annotated[
                 str | None,
-                Field(default=None, description="Primary key field"),
-            ]
+                Field(description="Primary key field"),
+            ] = None
             replication_key: Annotated[
                 str | None,
-                Field(default=None, description="Replication key field"),
-            ]
+                Field(description="Replication key field"),
+            ] = None
             supports_incremental: Annotated[
                 bool,
                 Field(
-                    default=False,
                     description="Whether entity supports incremental sync",
                 ),
-            ]
+            ] = False
 
             @field_validator("endpoint")
             @classmethod
@@ -96,16 +96,16 @@ class FlextOracleWmsModels(FlextModels):
             ] = Field(default_factory=dict)
             status_code: Annotated[
                 t.HttpStatusCode,
-                Field(default=200, description="HTTP status code"),
-            ]
+                Field(description="HTTP status code"),
+            ] = 200
             success: Annotated[
                 bool,
-                Field(default=True, description="Whether request succeeded"),
-            ]
+                Field(description="Whether request succeeded"),
+            ] = True
             error_message: Annotated[
                 str | None,
-                Field(default=None, description="Error message if any"),
-            ]
+                Field(description="Error message if any"),
+            ] = None
 
             def validate_response(self) -> r[bool]:
                 """Validate response state."""
@@ -121,19 +121,19 @@ class FlextOracleWmsModels(FlextModels):
             path: Annotated[str, Field(min_length=1)]
             version: Annotated[str, Field(min_length=1)]
             category: Annotated[str, Field(min_length=1)]
-            description: Annotated[str, Field(default="")]
-            since_version: Annotated[str, Field(default="6.1")]
+            description: str = ""
+            since_version: str = "6.1"
 
         class AuthSettings(BaseModel):
             """Authentication configuration for Oracle WMS flows."""
 
-            method: Annotated[str, Field(default=c.OracleWms.OracleWMSAuthMethod.BASIC)]
-            username: Annotated[str | None, Field(default=None)]
-            password: Annotated[str | None, Field(default=None)]
-            oauth2_client_id: Annotated[str | None, Field(default=None)]
-            oauth2_client_secret: Annotated[str | None, Field(default=None)]
-            oauth2_scope: Annotated[str, Field(default="wms.read wms.write")]
-            token_refresh_threshold: Annotated[t.PositiveInt, Field(default=300)]
+            method: str = c.OracleWms.OracleWMSAuthMethod.BASIC
+            username: str | None = None
+            password: str | None = None
+            oauth2_client_id: str | None = None
+            oauth2_client_secret: str | None = None
+            oauth2_scope: str = "wms.read wms.write"
+            token_refresh_threshold: t.PositiveInt = 300
 
             def validate_business_rules(self) -> r[bool]:
                 """Validate authentication configuration business rules."""
@@ -179,19 +179,16 @@ class FlextOracleWmsModels(FlextModels):
 
             model_config: ClassVar[ConfigDict] = ConfigDict(extra="forbid")
 
-            id: Annotated[str, Field(default="", description="Entity identifier")]
-            name: Annotated[str, Field(default="", description="Entity name")]
+            id: Annotated[str, Field(description="Entity identifier")] = ""
+            name: Annotated[str, Field(description="Entity name")] = ""
             created_at: Annotated[
                 str | None,
-                Field(default=None, description="Creation timestamp"),
-            ]
+                Field(description="Creation timestamp"),
+            ] = None
             updated_at: Annotated[
                 str | None,
-                Field(
-                    default=None,
-                    description="Last update timestamp",
-                ),
-            ]
+                Field(description="Last update timestamp"),
+            ] = None
 
         class InventoryItem(WmsEntity):
             """Inventory domain entity."""

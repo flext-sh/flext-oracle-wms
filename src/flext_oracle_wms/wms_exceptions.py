@@ -9,7 +9,7 @@ from __future__ import annotations
 from flext_core import FlextLogger
 from flext_db_oracle.exceptions import e
 
-from flext_oracle_wms import t
+from flext_oracle_wms.typings import FlextOracleWmsTypes as t
 
 
 class FlextOracleWmsExceptions:

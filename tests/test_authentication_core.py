@@ -9,12 +9,13 @@ from __future__ import annotations
 
 import pytest
 
-from flext_oracle_wms import (
-    FlextOracleWmsAuthenticator,
-    FlextOracleWmsAuthSettings,
-    OracleWMSAuthMethod,
-    create_oracle_wms_client,
-)
+from flext_oracle_wms.constants import FlextOracleWmsConstants as c
+from flext_oracle_wms.models import FlextOracleWmsModels as m
+from flext_oracle_wms.wms_auth import FlextOracleWmsAuthenticator
+
+OracleWMSAuthMethod = c.OracleWms.OracleWMSAuthMethod
+FlextOracleWmsAuthSettings = m.OracleWms.AuthSettings
+create_oracle_wms_client = FlextOracleWmsAuthenticator.create_oracle_wms_client
 
 
 @pytest.mark.unit
