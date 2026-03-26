@@ -214,9 +214,7 @@ class OracleWmsCompleteDiscovery:
             if entities_result.is_success:
                 value = entities_result.value
                 if isinstance(value, list):
-                    self.discovered_entities = [
-                        str(v) for v in value if isinstance(v, str)
-                    ]
+                    self.discovered_entities = [v for v in value if isinstance(v, str)]
 
     def _find_and_get_entity_with_id(self) -> r[FlextApiModels.Api.HttpResponse]:
         """Find an entity with records and get it by ID."""

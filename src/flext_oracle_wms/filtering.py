@@ -279,6 +279,7 @@ class FlextOracleWmsFilter:
         field: str,
     ) -> t.OracleWms.Core.NestedFilterValue | None:
         keys = field.split(".")
+        # Try nested dict traversal first
         current: (
             t.OracleWms.Core.NestedFilterValue
             | Mapping[
@@ -295,13 +296,21 @@ class FlextOracleWmsFilter:
                 case dict() as mapping:
                     next_value = mapping.get(key)
                     if next_value is None:
-                        return None
+                        break
                     current = next_value
                 case _:
-                    return None
-        if isinstance(current, dict):
+                    break
+        else:
+            if not isinstance(current, dict):
+                return current
             return None
-        return current
+        # Fallback: try underscore-joined flat key (e.g. "company.name" -> "company_name")
+        if len(keys) > 1:
+            flat_key = "_".join(keys)
+            flat_value = record.get(flat_key)
+            if flat_value is not None:
+                return flat_value if not isinstance(flat_value, dict) else None
+        return None
 
     def _matches_all_filters(
         self,

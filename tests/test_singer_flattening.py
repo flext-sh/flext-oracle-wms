@@ -131,9 +131,9 @@ class TestFlextOracleWmsApiResponse:
         assert result.is_success
 
     def test_response_status_code_bounds(self) -> None:
-        """Test status code validation bounds."""
+        """Test status code validation bounds (HttpStatusCode: 100-599)."""
         with pytest.raises(ValidationError):
-            m.OracleWms.ApiResponse(status_code=199)
+            m.OracleWms.ApiResponse(status_code=99)
         with pytest.raises(ValidationError):
             m.OracleWms.ApiResponse(status_code=600)
 

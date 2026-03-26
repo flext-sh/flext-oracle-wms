@@ -96,9 +96,7 @@ def showcase_2_entity_discovery(client: FlextOracleWmsClient) -> list[str]:
     entity_dicts = entities_result.value or []
     entities: list[str] = [str(entity) for entity in entity_dicts]
     batch_size_val = c.OracleWms.PROCESSING_CONFIG.get("default_batch_size", 100)
-    max_entities_to_show = (
-        int(batch_size_val) // 5 if batch_size_val is not None else 20
-    )
+    max_entities_to_show = int(batch_size_val) // 5
     for _i, _entity in enumerate(entities[:max_entities_to_show]):
         pass
     if len(entities) > max_entities_to_show:
@@ -237,7 +235,7 @@ def showcase_8_performance_tracking(
             result = client.get_entity_data(entity, limit=2)
             results.append(result)
         end_time = time.time()
-        end_time - start_time
+        _ = end_time - start_time
         successful_requests = sum(
             1
             for result in results
