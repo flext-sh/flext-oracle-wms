@@ -47,7 +47,7 @@ class TestFlextOracleWmsClient:
         mock_response.status_code = 200
         mock_response.body = {"data": "test"}
         client._client = MagicMock()
-        client._client.request.return_value = r.ok(mock_response)
+        client._client.request.return_value = r[MagicMock].ok(mock_response)
         result = client.get("/test-endpoint")
         assert result.is_success
         assert result.value.body == {"data": "test"}
@@ -57,7 +57,7 @@ class TestFlextOracleWmsClient:
         config = FlextOracleWmsSettings.testing_config()
         client = FlextOracleWmsClient(config)
         client._client = MagicMock()
-        client._client.request.return_value = r.fail("Network error")
+        client._client.request.return_value = r[MagicMock].fail("Network error")
         result = client.get("/test-endpoint")
         assert result.is_failure
         assert result.error is not None
@@ -71,7 +71,7 @@ class TestFlextOracleWmsClient:
         mock_response.status_code = 201
         mock_response.body = {"created": True}
         client._client = MagicMock()
-        client._client.request.return_value = r.ok(mock_response)
+        client._client.request.return_value = r[MagicMock].ok(mock_response)
         result = client.post("/test-endpoint", body={"key": "value"})
         assert result.is_success
 
@@ -83,7 +83,7 @@ class TestFlextOracleWmsClient:
         mock_response.status_code = 200
         mock_response.body = {"updated": True}
         client._client = MagicMock()
-        client._client.request.return_value = r.ok(mock_response)
+        client._client.request.return_value = r[MagicMock].ok(mock_response)
         result = client.put("/test-endpoint", body={"key": "value"})
         assert result.is_success
 
@@ -95,7 +95,7 @@ class TestFlextOracleWmsClient:
         mock_response.status_code = 200
         mock_response.body = {"deleted": True}
         client._client = MagicMock()
-        client._client.request.return_value = r.ok(mock_response)
+        client._client.request.return_value = r[MagicMock].ok(mock_response)
         result = client.delete("/test-endpoint")
         assert result.is_success
 
@@ -107,7 +107,7 @@ class TestFlextOracleWmsClient:
         mock_response.status_code = 200
         mock_response.body = {"status": "healthy"}
         client._client = MagicMock()
-        client._client.request.return_value = r.ok(mock_response)
+        client._client.request.return_value = r[MagicMock].ok(mock_response)
         result = client.health_check()
         assert result.is_success
 
@@ -135,7 +135,7 @@ class TestFlextOracleWmsClient:
         mock_response.status_code = 200
         mock_response.body = {"entities": ["entity1", "entity2"]}
         client._client = MagicMock()
-        client._client.request.return_value = r.ok(mock_response)
+        client._client.request.return_value = r[MagicMock].ok(mock_response)
         result = client.discover_entities()
         assert result.is_success
         assert result.value == ["entity1", "entity2"]
@@ -148,7 +148,7 @@ class TestFlextOracleWmsClient:
         mock_response.status_code = 200
         mock_response.body = {"data": [{"id": "1"}, {"id": "2"}]}
         client._client = MagicMock()
-        client._client.request.return_value = r.ok(mock_response)
+        client._client.request.return_value = r[MagicMock].ok(mock_response)
         result = client.get_entity_data("test_entity", limit=10)
         assert result.is_success
         assert result.value == [{"id": "1"}, {"id": "2"}]
@@ -161,7 +161,7 @@ class TestFlextOracleWmsClient:
         mock_response.status_code = 200
         mock_response.body = {"apis": [{"name": "api1"}, {"name": "api2"}]}
         client._client = MagicMock()
-        client._client.request.return_value = r.ok(mock_response)
+        client._client.request.return_value = r[MagicMock].ok(mock_response)
         result = client.get_apis_by_category("inventory")
         assert result.is_success
         assert len(result.value) == 2
@@ -174,7 +174,7 @@ class TestFlextOracleWmsClient:
         mock_response.status_code = 200
         mock_response.body = {"result": "success"}
         client._client = MagicMock()
-        client._client.request.return_value = r.ok(mock_response)
+        client._client.request.return_value = r[MagicMock].ok(mock_response)
         result = client.call_api("test_api")
         assert result.is_success
 
@@ -186,7 +186,7 @@ class TestFlextOracleWmsClient:
         mock_response.status_code = 200
         mock_response.body = {"updated": True}
         client._client = MagicMock()
-        client._client.request.return_value = r.ok(mock_response)
+        client._client.request.return_value = r[MagicMock].ok(mock_response)
         result = client.update_oblpn_tracking_number("oblpn123", "track456")
         assert result.is_success
 
@@ -198,7 +198,7 @@ class TestFlextOracleWmsClient:
         mock_response.status_code = 201
         mock_response.body = {"created": True}
         client._client = MagicMock()
-        client._client.request.return_value = r.ok(mock_response)
+        client._client.request.return_value = r[MagicMock].ok(mock_response)
         result = client.create_lpn("lpn123", 5)
         assert result.is_success
 

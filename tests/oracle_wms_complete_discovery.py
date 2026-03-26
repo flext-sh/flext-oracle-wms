@@ -124,9 +124,7 @@ class OracleWmsCompleteDiscovery:
                     if entities_result.is_success:
                         value = entities_result.value
                         if isinstance(value, list):
-                            self.discovered_entities = [
-                                str(v) for v in value if isinstance(v, str)
-                            ]
+                            self.discovered_entities = [str(v) for v in value]
                 if self.discovered_entities:
                     entity_name = self.discovered_entities[0]
                     return self.client.get(f"/entities/{entity_name}")
@@ -158,9 +156,7 @@ class OracleWmsCompleteDiscovery:
                     if entities_result.is_success:
                         value = entities_result.value
                         if isinstance(value, list):
-                            self.discovered_entities = [
-                                str(v) for v in value if isinstance(v, str)
-                            ]
+                            self.discovered_entities = [str(v) for v in value]
                 if self.discovered_entities:
                     entity_name = self.discovered_entities[0]
                     if "{id}" in endpoint.path:
@@ -370,13 +366,10 @@ class OracleWmsCompleteDiscovery:
         safe_sample: MutableMapping[str, t.NormalizedValue] = {}
         max_string_length = 200
         for k, v in sample_record.items():
-            if isinstance(v, str | int | float | bool | type(None)):
-                if isinstance(v, str) and len(v) >= max_string_length:
-                    safe_sample[k] = f"<string:{len(v)}chars>"
-                else:
-                    safe_sample[k] = v
+            if len(v) >= max_string_length:
+                safe_sample[k] = f"<string:{len(v)}chars>"
             else:
-                safe_sample[k] = f"<{type(v).__name__}>"
+                safe_sample[k] = v
         metadata_info["sample_data"] = safe_sample
         return metadata_info
 

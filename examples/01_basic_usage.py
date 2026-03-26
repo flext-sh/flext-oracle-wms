@@ -72,8 +72,6 @@ def discover_wms_entities(
     result = client.discover_entities()
     if result.is_success:
         entities = result.value
-        if entities is None:
-            return result
         for entity in entities[:5]:
             logger.debug("Processing entity: %s", entity)
         if entities and len(entities) > MAX_ENTITIES_TO_SHOW:
@@ -100,28 +98,17 @@ def query_entity_data(
     if result.is_success:
         data = result.value
         if data:
-            if isinstance(data, (list, tuple)) and data:
-                sample_record = data[0]
-            elif isinstance(data, dict):
-                sample_record = data
-            else:
-                return result
-            if hasattr(sample_record, "keys") or isinstance(sample_record, dict):
-                field_names = list(sample_record.keys())[:5]
-                for field in field_names:
-                    try:
-                        value = (
-                            sample_record.get(field, "N/A")
-                            if hasattr(sample_record, "get")
-                            else getattr(sample_record, field, "N/A")
-                        )
-                        str(value)[:MAX_VALUE_DISPLAY_LENGTH] + "..." if len(
-                            str(value),
-                        ) > MAX_VALUE_DISPLAY_LENGTH else str(value)
-                    except (KeyError, ValueError, TypeError) as e:
-                        logger.debug("Display formatting failed: %s", str(e))
-        elif data is not None:
-            pass
+            sample_record: t.StrMapping = data[0]
+            field_names: list[str] = list(sample_record.keys())[:5]
+            for field in field_names:
+                try:
+                    value_str = str(sample_record.get(field, "N/A"))
+                    if len(value_str) > MAX_VALUE_DISPLAY_LENGTH:
+                        _ = value_str[:MAX_VALUE_DISPLAY_LENGTH] + "..."
+                    else:
+                        _ = value_str
+                except (KeyError, ValueError, TypeError) as e:
+                    logger.debug(f"Display formatting failed: {e}")
         return result
     return result
 

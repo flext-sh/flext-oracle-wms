@@ -48,7 +48,7 @@ class TestFlextOracleWmsEntityDiscovery:
 
     def test_discover_entities_returns_normalized_entities(self) -> None:
         mock_client = MagicMock()
-        mock_client.discover_entities.return_value = r.ok([
+        mock_client.discover_entities.return_value = r[list[str]].ok([
             "inventory",
             "orders",
         ])
@@ -71,7 +71,7 @@ class TestFlextOracleWmsEntityDiscovery:
 
     def test_discover_entities_filters_empty_names(self) -> None:
         mock_client = MagicMock()
-        mock_client.discover_entities.return_value = r.ok([
+        mock_client.discover_entities.return_value = r[list[str]].ok([
             "inventory",
             "",
             "orders",
@@ -94,7 +94,7 @@ class TestFlextOracleWmsEntityDiscovery:
 
     def test_discover_entities_propagates_client_failure(self) -> None:
         mock_client = MagicMock()
-        mock_client.discover_entities.return_value = r.fail("upstream error")
+        mock_client.discover_entities.return_value = r[list[str]].fail("upstream error")
         discovery = FlextOracleWmsEntityDiscovery(client=mock_client)
         result = discovery.discover_entities()
         assert result.is_failure
@@ -102,7 +102,7 @@ class TestFlextOracleWmsEntityDiscovery:
 
     def test_discover_entities_result_is_list(self) -> None:
         mock_client = MagicMock()
-        mock_client.discover_entities.return_value = r.ok(list[str]())
+        mock_client.discover_entities.return_value = r[list[str]].ok(list[str]())
         discovery = FlextOracleWmsEntityDiscovery(client=mock_client)
         result = discovery.discover_entities()
         assert isinstance(result.value, list)

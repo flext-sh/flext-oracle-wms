@@ -94,13 +94,10 @@ def showcase_2_entity_discovery(client: FlextOracleWmsClient) -> list[str]:
     if not entities_result.is_success:
         return []
     entity_dicts = entities_result.value or []
-    entities: list[str] = [
-        str(entity.get("name", "Unknown")) if isinstance(entity, dict) else str(entity)
-        for entity in entity_dicts
-    ]
+    entities: list[str] = [str(entity) for entity in entity_dicts]
     batch_size_val = c.OracleWms.PROCESSING_CONFIG.get("default_batch_size", 100)
     max_entities_to_show = (
-        int(batch_size_val) // 5 if isinstance(batch_size_val, int) else 20
+        int(batch_size_val) // 5 if batch_size_val is not None else 20
     )
     for _i, _entity in enumerate(entities[:max_entities_to_show]):
         pass
@@ -181,7 +178,7 @@ def showcase_5_api_catalog(client: FlextOracleWmsClient) -> None:
             pass
         if len(apis) > max_apis_to_show:
             pass
-    {api.version for api in FlextOracleWmsApi.FLEXT_ORACLE_WMS_APIS.values()}
+    _ = {api.version for api in FlextOracleWmsApi.FLEXT_ORACLE_WMS_APIS.values()}
     for category in c.OracleWms.WmsApiCategory.__members__.values():
         category_apis = client.get_apis_by_category(category)
         if category_apis:
@@ -211,7 +208,7 @@ def showcase_6_error_handling(client: FlextOracleWmsClient) -> None:
         if not validation.is_success:
             logger.info(f"Expected validation failure: {validation.error}")
     except Exception as exc:
-        logger.warning("Error handling demonstration: %s", str(exc))
+        logger.warning(f"Error handling demonstration: {exc}")
 
 
 def showcase_7_health_monitoring(
