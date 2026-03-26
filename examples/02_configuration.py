@@ -247,7 +247,7 @@ def demonstrate_configuration_patterns() -> None:
             for _warning in warnings:
                 pass
     except Exception as exc:
-        logger.warning("Configuration validation failed: %s", str(exc))  # noqa: RUF065
+        logger.warning("Configuration validation failed: %s", str(exc))
     env_configs = get_environment_configs()
     for _config in env_configs.values():
         pass
