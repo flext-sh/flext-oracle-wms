@@ -68,6 +68,7 @@ if TYPE_CHECKING:
     from flext_oracle_wms.wms_exceptions import (
         FlextOracleWmsApiError,
         FlextOracleWmsAuthenticationError,
+        FlextOracleWmsConfigurationError,
         FlextOracleWmsConnectionError,
         FlextOracleWmsDataValidationError,
         FlextOracleWmsEntityNotFoundError,
@@ -78,7 +79,6 @@ if TYPE_CHECKING:
         FlextOracleWmsProcessingError,
         FlextOracleWmsSchemaError,
         FlextOracleWmsSchemaFlatteningError,
-        FlextOracleWmsSettingsurationError,
         FlextOracleWmsShipmentError,
         FlextOracleWmsValidationError,
     )
@@ -165,9 +165,9 @@ _LAZY_IMPORTS: Mapping[str, Sequence[str]] = {
         "FlextOracleWmsSchemaFlatteningError",
     ],
     "FlextOracleWmsSettings": ["flext_oracle_wms.settings", "FlextOracleWmsSettings"],
-    "FlextOracleWmsSettingsurationError": [
+    "FlextOracleWmsConfigurationError": [
         "flext_oracle_wms.wms_exceptions",
-        "FlextOracleWmsSettingsurationError",
+        "FlextOracleWmsConfigurationError",
     ],
     "FlextOracleWmsShipmentError": [
         "flext_oracle_wms.wms_exceptions",
@@ -218,6 +218,7 @@ __all__ = [
     "FlextOracleWmsAuthenticator",
     "FlextOracleWmsClient",
     "FlextOracleWmsClientSettings",
+    "FlextOracleWmsConfigurationError",
     "FlextOracleWmsConnectionError",
     "FlextOracleWmsConstants",
     "FlextOracleWmsDataValidationError",
@@ -236,7 +237,6 @@ __all__ = [
     "FlextOracleWmsSchemaError",
     "FlextOracleWmsSchemaFlatteningError",
     "FlextOracleWmsSettings",
-    "FlextOracleWmsSettingsurationError",
     "FlextOracleWmsShipmentError",
     "FlextOracleWmsTypes",
     "FlextOracleWmsUtilities",
