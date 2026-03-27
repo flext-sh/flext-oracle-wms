@@ -200,13 +200,7 @@ class FocusedOracleWmsDiscovery:
         """Create safe sample record."""
         safe: MutableMapping[str, bool | float | int | str | None] = {}
         for k, v in list(record.items())[:10]:
-            if isinstance(v, (str, int, float, bool, type(None))):
-                if (isinstance(v, str) and len(v) < 50) or not isinstance(v, str):
-                    safe[k] = v
-                else:
-                    safe[k] = f"<{len(v)}chars>"
-            else:
-                safe[k] = f"<{type(v).__name__}>"
+            safe[k] = v if len(v) < 50 else f"<{len(v)}chars>"
         return safe
 
     def _generate_schemas_from_data(
@@ -339,12 +333,10 @@ class FocusedOracleWmsDiscovery:
         """Check if field is Oracle timestamp."""
         ts_indicators = ["_ts", "timestamp", "_time", "_at"]
         name_check = any(indicator in field_name.lower() for indicator in ts_indicators)
-        if isinstance(value, str):
-            value_check = (
-                "T" in value and ":" in value and ("+" in value or "-" in value[-6:])
-            )
-            return name_check or value_check
-        return name_check
+        value_check = (
+            "T" in value and ":" in value and ("+" in value or "-" in value[-6:])
+        )
+        return name_check or value_check
 
     def _is_oracle_code(self, field_name: str) -> bool:
         """Check if field is Oracle code."""
@@ -353,11 +345,7 @@ class FocusedOracleWmsDiscovery:
 
     def _is_oracle_url(self, field_name: str, value: str) -> bool:
         """Check if field is Oracle URL."""
-        return (
-            field_name.lower() == "url"
-            and isinstance(value, str)
-            and value.startswith("http")
-        )
+        return field_name.lower() == "url" and value.startswith("http")
 
     def _get_oracle_key_properties(
         self,

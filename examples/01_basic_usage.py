@@ -74,8 +74,7 @@ def discover_wms_entities(
         entities = result.value
         for entity in entities[:5]:
             logger.debug("Processing entity: %s", entity)
-        if entities and len(entities) > MAX_ENTITIES_TO_SHOW:
-            pass
+        entities and len(entities) > MAX_ENTITIES_TO_SHOW
         return result
     return result
 

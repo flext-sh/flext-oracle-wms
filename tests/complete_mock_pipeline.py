@@ -727,9 +727,7 @@ class CompleteMockPipeline:
 def main() -> None:
     """Main execution."""
     pipeline = CompleteMockPipeline()
-    result: r[t.ContainerMapping] = pipeline.run_complete_pipeline()
-    if result.is_success:
-        pass
+    pipeline.run_complete_pipeline()
 
 
 if __name__ == "__main__":

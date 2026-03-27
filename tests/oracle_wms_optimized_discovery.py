@@ -159,14 +159,8 @@ class OptimizedOracleWmsDiscovery:
                         "error": str(result),
                         "processed_at": datetime.now(UTC).isoformat(),
                     }
-                elif isinstance(result, dict):
-                    results[entity_name] = result
                 else:
-                    results[entity_name] = {
-                        "has_data": False,
-                        "error": "Invalid result type",
-                        "processed_at": datetime.now(UTC).isoformat(),
-                    }
+                    results[entity_name] = result
             time.sleep(0.1)
         return results
 
@@ -216,13 +210,7 @@ class OptimizedOracleWmsDiscovery:
         """Create safe sample record for storage."""
         safe_record: dict[str, bool | float | int | str | None] = {}
         for k, v in record.items():
-            if isinstance(v, (str, int, float, bool, type(None))):
-                if (isinstance(v, str) and len(v) < 100) or not isinstance(v, str):
-                    safe_record[k] = v
-                else:
-                    safe_record[k] = f"<string:{len(v)}chars>"
-            else:
-                safe_record[k] = f"<{type(v).__name__}>"
+            safe_record[k] = v if len(v) < 100 else f"<string:{len(v)}chars>"
         return safe_record
 
     def generate_complete_singer_schemas(
@@ -373,12 +361,10 @@ class OptimizedOracleWmsDiscovery:
             or pattern.replace("$", "").replace("_", "") in field_name.lower()
             for pattern in datetime_patterns
         )
-        if isinstance(value, str):
-            oracle_datetime_check = (
-                "T" in value and ":" in value and ("+" in value or "-" in value[-6:])
-            )
-            return name_match or oracle_datetime_check
-        return name_match
+        oracle_datetime_check = (
+            "T" in value and ":" in value and ("+" in value or "-" in value[-6:])
+        )
+        return name_match or oracle_datetime_check
 
     def _is_oracle_date(self, field_name: str, value: str) -> bool:
         """Check if field is Oracle date."""
@@ -386,7 +372,7 @@ class OptimizedOracleWmsDiscovery:
         name_match = any(
             pattern.replace("$", "") in field_name.lower() for pattern in date_patterns
         )
-        if isinstance(value, str) and (not self._is_oracle_datetime(field_name, value)):
+        if not self._is_oracle_datetime(field_name, value):
             oracle_date_check = value.count("-") == 2 and "T" not in value
             return name_match or oracle_date_check
         return name_match

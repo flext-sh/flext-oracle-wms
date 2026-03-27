@@ -83,30 +83,24 @@ class OracleWmsCompleteDiscovery:
         for api_name, api_endpoint in all_apis.items():
             try:
                 if api_endpoint.category == _CATEGORY_DATA_EXTRACT:
-                    result: r[FlextApiModels.Api.HttpResponse] = (
-                        self._test_data_extract_api(api_name)
-                    )
+                    (self._test_data_extract_api(api_name))
                 elif api_endpoint.category == _CATEGORY_ENTITY_OPERATIONS:
-                    result = self._test_entity_operations_api(
+                    self._test_entity_operations_api(
                         api_name,
                         api_endpoint,
                     )
                 elif api_endpoint.category == _CATEGORY_SETUP_TRANSACTIONAL:
-                    result = self._test_setup_api(
+                    self._test_setup_api(
                         api_name,
                         api_endpoint,
                     )
                 elif api_endpoint.category == _CATEGORY_AUTOMATION_OPERATIONS:
-                    result = self._test_automation_api(
+                    self._test_automation_api(
                         api_name,
                         api_endpoint,
                     )
                 else:
-                    result = r[FlextApiModels.Api.HttpResponse].fail(
-                        "Unknown API category"
-                    )
-                if result.is_success and result.value:
-                    pass
+                    r[FlextApiModels.Api.HttpResponse].fail("Unknown API category")
             except Exception as e:
                 r[FlextApiModels.Api.HttpResponse].fail(f"Exception: {e}")
         return r[bool].ok(value=True)
@@ -214,7 +208,7 @@ class OracleWmsCompleteDiscovery:
             if entities_result.is_success:
                 value = entities_result.value
                 if isinstance(value, list):
-                    self.discovered_entities = [v for v in value if isinstance(v, str)]
+                    self.discovered_entities = list(value)
 
     def _find_and_get_entity_with_id(self) -> r[FlextApiModels.Api.HttpResponse]:
         """Find an entity with records and get it by ID."""
@@ -380,9 +374,7 @@ class OracleWmsCompleteDiscovery:
             if entities_result.is_success:
                 value = entities_result.value
                 if isinstance(value, list):
-                    self.discovered_entities = [
-                        str(v) for v in value if isinstance(v, str)
-                    ]
+                    self.discovered_entities = list(value)
             else:
                 return r[Mapping[str, t.NormalizedValue]].fail(
                     "Entity discovery failed"
@@ -391,9 +383,7 @@ class OracleWmsCompleteDiscovery:
         entities_with_data: MutableSequence[str] = []
         entities_without_data: MutableSequence[str] = []
         entities_with_errors: MutableSequence[tuple[str, str]] = []
-        for i, entity_name in enumerate(self.discovered_entities):
-            if i % 50 == 0:
-                pass
+        for entity_name in self.discovered_entities:
             self._process_entity_metadata(
                 entity_name,
                 entities_with_data,
@@ -542,10 +532,8 @@ class OracleWmsCompleteDiscovery:
         name_check = any(
             indicator in field_name.lower() for indicator in datetime_indicators
         )
-        if isinstance(value, str):
-            value_check = ("T" in value and ":" in value) or value.count("-") >= 2
-            return name_check or value_check
-        return name_check
+        value_check = ("T" in value and ":" in value) or value.count("-") >= 2
+        return name_check or value_check
 
     def _is_date_field(self, field_name: str, value: str) -> bool:
         """Check if field is date based on name and value."""
@@ -553,7 +541,7 @@ class OracleWmsCompleteDiscovery:
         name_check = any(
             indicator in field_name.lower() for indicator in date_indicators
         )
-        if isinstance(value, str) and (not self._is_datetime_field(field_name, value)):
+        if not self._is_datetime_field(field_name, value):
             value_check = value.count("-") == 2 and "T" not in value
             return name_check or value_check
         return name_check

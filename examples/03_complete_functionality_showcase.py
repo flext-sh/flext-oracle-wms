@@ -97,10 +97,7 @@ def showcase_2_entity_discovery(client: FlextOracleWmsClient) -> list[str]:
     entities: list[str] = [str(entity) for entity in entity_dicts]
     batch_size_val = c.OracleWms.PROCESSING_CONFIG.get("default_batch_size", 100)
     max_entities_to_show = int(batch_size_val) // 5
-    for _i, _entity in enumerate(entities[:max_entities_to_show]):
-        pass
-    if len(entities) > max_entities_to_show:
-        pass
+    _entity_preview = entities[:max_entities_to_show]
     sample_entities = {
         "Core Entities": ["company", "facility", "item", "location"],
         "Inventory": ["inventory", "inventory_status", "inventory_txn"],
@@ -109,9 +106,7 @@ def showcase_2_entity_discovery(client: FlextOracleWmsClient) -> list[str]:
         "Shipping": ["shipment", "container", "manifest", "carrier"],
     }
     for category_entities in sample_entities.values():
-        available = [e_name for e_name in category_entities if e_name in entities]
-        if available:
-            pass
+        [e_name for e_name in category_entities if e_name in entities]
     return entities
 
 
@@ -134,13 +129,11 @@ def showcase_3_data_retrieval(
                     len(first_record)
                 sample_data[entity_name] = str(len(data))
     if "company" in sample_data:
-        filtered_result = client.get_entity_data(
+        client.get_entity_data(
             entity_name="company",
             limit=3,
             filters={"active": "Y"},
         )
-        if filtered_result.is_success:
-            pass
     return sample_data
 
 
@@ -151,15 +144,9 @@ def showcase_4_authentication(config: FlextOracleWmsClientSettings) -> None:
         username=getattr(config, "username", "invalid"),
         password=getattr(config, "password", "invalid"),
     )
-    validation_result = auth_config.validate_business_rules()
-    if validation_result.is_success:
-        pass
+    auth_config.validate_business_rules()
     authenticator = FlextOracleWmsAuthenticator(auth_config)
-    headers_result = authenticator.get_auth_headers()
-    if hasattr(headers_result, "is_success") and headers_result.is_success:
-        pass
-    for _method in c.OracleWms.OracleWMSAuthMethod.__members__.values():
-        pass
+    _headers_result = authenticator.get_auth_headers()
 
 
 def showcase_5_api_catalog(client: FlextOracleWmsClient) -> None:
@@ -172,25 +159,16 @@ def showcase_5_api_catalog(client: FlextOracleWmsClient) -> None:
         categories[category].append(api_name)
     for apis in categories.values():
         max_apis_to_show = c.OracleWms.DEFAULT_MAX_RETRIES
-        for _api in apis[:max_apis_to_show]:
-            pass
-        if len(apis) > max_apis_to_show:
-            pass
+        _api_preview = apis[:max_apis_to_show]
     _ = {api.version for api in FlextOracleWmsApi.FLEXT_ORACLE_WMS_APIS.values()}
     for category in c.OracleWms.WmsApiCategory.__members__.values():
-        category_apis = client.get_apis_by_category(category)
-        if category_apis:
-            pass
+        client.get_apis_by_category(category)
 
 
 def showcase_6_error_handling(client: FlextOracleWmsClient) -> None:
     """Feature 6: Error Handling and Recovery."""
-    invalid_result = client.get_entity_data("invalid_entity_xyz123")
-    if not invalid_result.is_success:
-        pass
-    api_result = client.call_api("non_existent_api_xyz")
-    if not api_result.is_success:
-        pass
+    client.get_entity_data("invalid_entity_xyz123")
+    client.call_api("non_existent_api_xyz")
     try:
         invalid_config = FlextOracleWmsClientSettings.model_validate({
             "base_url": "invalid-url",
@@ -235,39 +213,31 @@ def showcase_8_performance_tracking(
             result = client.get_entity_data(entity, limit=2)
             results.append(result)
         end_time = time.time()
-        _ = end_time - start_time
-        successful_requests = sum(
+        _elapsed = end_time - start_time
+        _successful_requests = sum(
             1
             for result in results
             if hasattr(result, "is_success") and result.is_success
         )
-        if successful_requests > 0:
-            pass
     if "company" in entities:
         page_sizes = [1, 5, 10]
         for page_size in page_sizes:
             start_time = time.time()
-            result = client.get_entity_data("company", limit=page_size)
-            end_time = time.time()
-            if result.is_success:
-                pass
+            _result = client.get_entity_data("company", limit=page_size)
+            _elapsed = time.time() - start_time
 
 
 def showcase_9_cache_management(client: FlextOracleWmsClient) -> None:
     """Feature 9: Cache Management."""
     start_time = time.time()
     first_result = client.discover_entities()
-    first_time = time.time() - start_time
+    _first_elapsed = time.time() - start_time
     start_time = time.time()
     second_result = client.discover_entities()
-    second_time = time.time() - start_time
+    _second_elapsed = time.time() - start_time
     if first_result.is_success and second_result.is_success:
-        first_count = len(first_result.value or [])
-        second_count = len(second_result.value or [])
-        if second_time < first_time:
-            pass
-        if first_count == second_count:
-            pass
+        _first_count = len(first_result.value or [])
+        _second_count = len(second_result.value or [])
 
 
 def showcase_10_enterprise_features(

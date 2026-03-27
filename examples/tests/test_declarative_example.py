@@ -91,12 +91,8 @@ def main() -> None:
             categories[api.category].append(api.name)
         for _category, _apis in categories.items():
             pass
-        health_result = client.health_check()
-        if health_result.is_success:
-            pass
-        entities_result = client.discover_entities()
-        if entities_result.is_success:
-            pass
+        client.health_check()
+        client.discover_entities()
         for entity in ["company", "facility", "item"]:
             result = client.get_entity_data(entity, limit=3)
             if result.is_success:
@@ -105,9 +101,7 @@ def main() -> None:
                     for record in data:
                         if isinstance(record, dict):
                             record.get("count", str(len(data)))
-        health_result = client.health_check()
-        if health_result.is_success:
-            pass
+        client.health_check()
         client.update_oblpn_tracking_number(
             oblpn_id="TEST123",
             tracking_number="TRACK123",
