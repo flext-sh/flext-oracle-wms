@@ -43,12 +43,14 @@ if TYPE_CHECKING:
         FlextOracleWmsTestProtocols,
         FlextOracleWmsTestProtocols as p,
     )
-    from tests.test_authentication_core import (
+    from tests.test_authentication import (
         FlextOracleWmsAuthSettings,
+        create_oracle_wms_client,
+    )
+    from tests.test_authentication_core import (
         TestAuthenticationConfig,
         TestAuthenticationMethod,
         TestAuthenticator,
-        create_oracle_wms_client,
     )
     from tests.test_client import TestClientSimpleNew
     from tests.test_client_class import (
@@ -144,7 +146,7 @@ if TYPE_CHECKING:
 _LAZY_IMPORTS: Mapping[str, Sequence[str]] = {
     "CompleteMockPipeline": ["tests.complete_mock_pipeline", "CompleteMockPipeline"],
     "FlextOracleWmsAuthSettings": [
-        "tests.test_authentication_core",
+        "tests.test_authentication",
         "FlextOracleWmsAuthSettings",
     ],
     "FlextOracleWmsTestConstants": ["tests.constants", "FlextOracleWmsTestConstants"],
@@ -253,7 +255,7 @@ _LAZY_IMPORTS: Mapping[str, Sequence[str]] = {
     "TestWmsEnums": ["tests.test_schema_dynamic", "TestWmsEnums"],
     "c": ["tests.constants", "FlextOracleWmsTestConstants"],
     "create_oracle_wms_client": [
-        "tests.test_authentication_core",
+        "tests.test_authentication",
         "create_oracle_wms_client",
     ],
     "d": ["flext_tests", "d"],

@@ -11,6 +11,12 @@ from __future__ import annotations
 
 from flext_core import FlextUtilities
 
+from flext_oracle_wms._utilities.auth import FlextOracleWmsUtilitiesAuth
+from flext_oracle_wms._utilities.client import FlextOracleWmsUtilitiesClient
+from flext_oracle_wms._utilities.discovery import FlextOracleWmsUtilitiesDiscovery
+from flext_oracle_wms._utilities.filtering import FlextOracleWmsUtilitiesFiltering
+from flext_oracle_wms._utilities.http_client import FlextOracleWmsUtilitiesHttpClient
+
 
 class FlextOracleWmsUtilities(FlextUtilities):
     """Oracle WMS utilities extending FlextUtilities with domain-specific helpers.
@@ -20,7 +26,13 @@ class FlextOracleWmsUtilities(FlextUtilities):
     """
 
     class OracleWms:
-        """OracleWms domain namespace."""
+        """OracleWms domain namespace -- u.OracleWms.*."""
+
+        Auth = FlextOracleWmsUtilitiesAuth
+        Client = FlextOracleWmsUtilitiesClient
+        Discovery = FlextOracleWmsUtilitiesDiscovery
+        Filtering = FlextOracleWmsUtilitiesFiltering
+        HttpClient = FlextOracleWmsUtilitiesHttpClient
 
 
 __all__ = ["FlextOracleWmsUtilities", "u"]

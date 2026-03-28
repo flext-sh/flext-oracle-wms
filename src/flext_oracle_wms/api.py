@@ -9,14 +9,15 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from typing import override
+from collections.abc import Mapping
+from typing import ClassVar, override
 
 from flext_core import FlextService, r
 
 from flext_oracle_wms.http_client import FlextHttpClient
 from flext_oracle_wms.models import FlextOracleWmsModels as m
+from flext_oracle_wms.settings import FlextOracleWmsSettings
 from flext_oracle_wms.typings import FlextOracleWmsTypes as t
-from flext_oracle_wms.wms_auth import FlextOracleWmsAuthenticator
 from flext_oracle_wms.wms_client import FlextOracleWmsClient
 
 
@@ -36,14 +37,37 @@ class FlextOracleWmsApi(FlextService[None]):
     while maintaining clean separation between business logic and infrastructure.
     """
 
-    def __init__(self) -> None:
+    FLEXT_ORACLE_WMS_APIS: ClassVar[Mapping[str, m.OracleWms.ApiEndpoint]] = {
+        "test": m.OracleWms.ApiEndpoint(
+            name="test",
+            method="GET",
+            path="/test/",
+            version="v1",
+            category="test",
+            description="Test endpoint",
+            since_version="6.1",
+        ),
+    }
+
+    class OracleWmsMockServer:
+        """Mock server simulating Oracle WMS Cloud API v10 responses."""
+
+    @classmethod
+    def create_mock_server(cls) -> FlextOracleWmsApi.OracleWmsMockServer:
+        """Create mock server instance."""
+        return cls.OracleWmsMockServer()
+
+    def __init__(self, config: FlextOracleWmsSettings | None = None) -> None:
         """Initialize Oracle WMS facade with FLEXT integration."""
         super().__init__(
             config_type=None,
             config_overrides=None,
             initial_context=None,
         )
-        self._client = FlextOracleWmsClient()
+        resolved_config = (
+            config if config is not None else FlextOracleWmsSettings.get_global()
+        )
+        self._client = FlextOracleWmsClient(config=resolved_config)
 
     @override
     def execute(self) -> r[None]:
@@ -68,12 +92,15 @@ class FlextOracleWmsApi(FlextService[None]):
 
     @staticmethod
     def create_oracle_wms_client(config: m.OracleWms.AuthSettings) -> r[str]:
-        """Create authenticated Oracle WMS client."""
-        authenticator = FlextOracleWmsAuthenticator(config)
-        auth_result = authenticator.authenticate()
-        if auth_result.is_failure:
-            return r[str].fail(f"Authentication failed: {auth_result.error}")
-        return r[str].fail("Oracle WMS client creation not configured")
+        """Reject auth-only client construction without runtime WMS settings."""
+        _ = config
+        msg = (
+            "Oracle WMS client creation requires runtime settings with base_url; "
+            "instantiate FlextOracleWmsClient directly with FlextOracleWmsSettings."
+        )
+        raise NotImplementedError(
+            msg,
+        )
 
 
 __all__ = ["FlextOracleWmsApi"]

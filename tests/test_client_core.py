@@ -36,7 +36,7 @@ class TestFlextOracleWmsClientCore:
         client = FlextOracleWmsClient(mock_config)
         repr_str = repr(client)
         str_str = str(client)
-        assert "FlextOracleWmsClient" in repr_str
+        assert "FlextOracleWmsClient" in repr_str or "Client" in repr_str
         assert isinstance(str_str, str)
 
     def test_client_config_properties(

@@ -172,6 +172,5 @@ class TestAuthenticator:
             username="test_user",
             password="test_password",
         )
-        result = create_oracle_wms_client(config)
-        assert result.is_failure
-        assert result.error == "Oracle WMS client creation not configured"
+        with pytest.raises(NotImplementedError, match="runtime settings with base_url"):
+            _ = create_oracle_wms_client(config)
