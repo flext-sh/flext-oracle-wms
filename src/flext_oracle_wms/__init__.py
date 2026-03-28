@@ -22,6 +22,7 @@ from flext_core.lazy import cleanup_submodule_namespace, lazy_getattr
 if TYPE_CHECKING:
     from flext_core import FlextTypes, d, e, h, r, s, x
 
+    from flext_oracle_wms import _utilities
     from flext_oracle_wms.__version__ import (
         __all__,
         __author__,
@@ -33,16 +34,44 @@ if TYPE_CHECKING:
         __version__,
         __version_info__,
     )
+    from flext_oracle_wms._utilities.auth import FlextOracleWmsUtilitiesAuth
+    from flext_oracle_wms._utilities.client import FlextOracleWmsUtilitiesClient
+    from flext_oracle_wms._utilities.discovery import (
+        DISCOVERY_FAILURE,
+        DISCOVERY_SUCCESS,
+        FlextOracleWmsUtilitiesDiscovery,
+    )
+    from flext_oracle_wms._utilities.filtering import (
+        FlextOracleWmsDataValidationError,
+        FlextOracleWmsFilterOperator,
+        FlextOracleWmsOperatorFilter,
+        FlextOracleWmsUtilitiesFiltering,
+    )
+    from flext_oracle_wms._utilities.http_client import (
+        FlextOracleWmsUtilitiesHttpClient,
+    )
     from flext_oracle_wms.api import FlextOracleWmsApi
     from flext_oracle_wms.constants import (
         FlextOracleWmsConstants,
         FlextOracleWmsConstants as c,
     )
-    from flext_oracle_wms.filtering import (
-        FlextOracleWmsFilter,
-        FlextOracleWmsFilterOperator,
-        FlextOracleWmsOperatorFilter,
+    from flext_oracle_wms.errors import (
+        FlextOracleWmsApiError,
+        FlextOracleWmsAuthenticationError,
+        FlextOracleWmsConfigurationError,
+        FlextOracleWmsConnectionError,
+        FlextOracleWmsEntityNotFoundError,
+        FlextOracleWmsError,
+        FlextOracleWmsExceptions,
+        FlextOracleWmsInventoryError,
+        FlextOracleWmsPickingError,
+        FlextOracleWmsProcessingError,
+        FlextOracleWmsSchemaError,
+        FlextOracleWmsSchemaFlatteningError,
+        FlextOracleWmsShipmentError,
+        FlextOracleWmsValidationError,
     )
+    from flext_oracle_wms.filtering import FlextOracleWmsFilter
     from flext_oracle_wms.http_client import FlextHttpClient, create_flext_http_client
     from flext_oracle_wms.models import FlextOracleWmsModels, FlextOracleWmsModels as m
     from flext_oracle_wms.protocols import (
@@ -60,40 +89,16 @@ if TYPE_CHECKING:
     )
     from flext_oracle_wms.wms_auth import FlextOracleWmsAuthenticator
     from flext_oracle_wms.wms_client import FlextOracleWmsClient
-    from flext_oracle_wms.wms_discovery import (
-        DISCOVERY_FAILURE,
-        DISCOVERY_SUCCESS,
-        FlextOracleWmsEntityDiscovery,
-    )
-    from flext_oracle_wms.wms_exceptions import (
-        FlextOracleWmsApiError,
-        FlextOracleWmsAuthenticationError,
-        FlextOracleWmsConfigurationError,
-        FlextOracleWmsConnectionError,
-        FlextOracleWmsDataValidationError,
-        FlextOracleWmsEntityNotFoundError,
-        FlextOracleWmsError,
-        FlextOracleWmsExceptions,
-        FlextOracleWmsInventoryError,
-        FlextOracleWmsPickingError,
-        FlextOracleWmsProcessingError,
-        FlextOracleWmsSchemaError,
-        FlextOracleWmsSchemaFlatteningError,
-        FlextOracleWmsShipmentError,
-        FlextOracleWmsValidationError,
-    )
+    from flext_oracle_wms.wms_discovery import FlextOracleWmsEntityDiscovery
 
 _LAZY_IMPORTS: Mapping[str, Sequence[str]] = {
-    "DISCOVERY_FAILURE": ["flext_oracle_wms.wms_discovery", "DISCOVERY_FAILURE"],
-    "DISCOVERY_SUCCESS": ["flext_oracle_wms.wms_discovery", "DISCOVERY_SUCCESS"],
+    "DISCOVERY_FAILURE": ["flext_oracle_wms._utilities.discovery", "DISCOVERY_FAILURE"],
+    "DISCOVERY_SUCCESS": ["flext_oracle_wms._utilities.discovery", "DISCOVERY_SUCCESS"],
     "FlextHttpClient": ["flext_oracle_wms.http_client", "FlextHttpClient"],
     "FlextOracleWmsApi": ["flext_oracle_wms.api", "FlextOracleWmsApi"],
-    "FlextOracleWmsApiError": [
-        "flext_oracle_wms.wms_exceptions",
-        "FlextOracleWmsApiError",
-    ],
+    "FlextOracleWmsApiError": ["flext_oracle_wms.errors", "FlextOracleWmsApiError"],
     "FlextOracleWmsAuthenticationError": [
-        "flext_oracle_wms.wms_exceptions",
+        "flext_oracle_wms.errors",
         "FlextOracleWmsAuthenticationError",
     ],
     "FlextOracleWmsAuthenticator": [
@@ -106,11 +111,11 @@ _LAZY_IMPORTS: Mapping[str, Sequence[str]] = {
         "FlextOracleWmsClientSettings",
     ],
     "FlextOracleWmsConfigurationError": [
-        "flext_oracle_wms.wms_exceptions",
+        "flext_oracle_wms.errors",
         "FlextOracleWmsConfigurationError",
     ],
     "FlextOracleWmsConnectionError": [
-        "flext_oracle_wms.wms_exceptions",
+        "flext_oracle_wms.errors",
         "FlextOracleWmsConnectionError",
     ],
     "FlextOracleWmsConstants": [
@@ -118,7 +123,7 @@ _LAZY_IMPORTS: Mapping[str, Sequence[str]] = {
         "FlextOracleWmsConstants",
     ],
     "FlextOracleWmsDataValidationError": [
-        "flext_oracle_wms.wms_exceptions",
+        "flext_oracle_wms._utilities.filtering",
         "FlextOracleWmsDataValidationError",
     ],
     "FlextOracleWmsEntityDiscovery": [
@@ -126,34 +131,31 @@ _LAZY_IMPORTS: Mapping[str, Sequence[str]] = {
         "FlextOracleWmsEntityDiscovery",
     ],
     "FlextOracleWmsEntityNotFoundError": [
-        "flext_oracle_wms.wms_exceptions",
+        "flext_oracle_wms.errors",
         "FlextOracleWmsEntityNotFoundError",
     ],
-    "FlextOracleWmsError": ["flext_oracle_wms.wms_exceptions", "FlextOracleWmsError"],
-    "FlextOracleWmsExceptions": [
-        "flext_oracle_wms.wms_exceptions",
-        "FlextOracleWmsExceptions",
-    ],
+    "FlextOracleWmsError": ["flext_oracle_wms.errors", "FlextOracleWmsError"],
+    "FlextOracleWmsExceptions": ["flext_oracle_wms.errors", "FlextOracleWmsExceptions"],
     "FlextOracleWmsFilter": ["flext_oracle_wms.filtering", "FlextOracleWmsFilter"],
     "FlextOracleWmsFilterOperator": [
-        "flext_oracle_wms.filtering",
+        "flext_oracle_wms._utilities.filtering",
         "FlextOracleWmsFilterOperator",
     ],
     "FlextOracleWmsInventoryError": [
-        "flext_oracle_wms.wms_exceptions",
+        "flext_oracle_wms.errors",
         "FlextOracleWmsInventoryError",
     ],
     "FlextOracleWmsModels": ["flext_oracle_wms.models", "FlextOracleWmsModels"],
     "FlextOracleWmsOperatorFilter": [
-        "flext_oracle_wms.filtering",
+        "flext_oracle_wms._utilities.filtering",
         "FlextOracleWmsOperatorFilter",
     ],
     "FlextOracleWmsPickingError": [
-        "flext_oracle_wms.wms_exceptions",
+        "flext_oracle_wms.errors",
         "FlextOracleWmsPickingError",
     ],
     "FlextOracleWmsProcessingError": [
-        "flext_oracle_wms.wms_exceptions",
+        "flext_oracle_wms.errors",
         "FlextOracleWmsProcessingError",
     ],
     "FlextOracleWmsProtocols": [
@@ -161,16 +163,16 @@ _LAZY_IMPORTS: Mapping[str, Sequence[str]] = {
         "FlextOracleWmsProtocols",
     ],
     "FlextOracleWmsSchemaError": [
-        "flext_oracle_wms.wms_exceptions",
+        "flext_oracle_wms.errors",
         "FlextOracleWmsSchemaError",
     ],
     "FlextOracleWmsSchemaFlatteningError": [
-        "flext_oracle_wms.wms_exceptions",
+        "flext_oracle_wms.errors",
         "FlextOracleWmsSchemaFlatteningError",
     ],
     "FlextOracleWmsSettings": ["flext_oracle_wms.settings", "FlextOracleWmsSettings"],
     "FlextOracleWmsShipmentError": [
-        "flext_oracle_wms.wms_exceptions",
+        "flext_oracle_wms.errors",
         "FlextOracleWmsShipmentError",
     ],
     "FlextOracleWmsTypes": ["flext_oracle_wms.typings", "FlextOracleWmsTypes"],
@@ -178,8 +180,28 @@ _LAZY_IMPORTS: Mapping[str, Sequence[str]] = {
         "flext_oracle_wms.utilities",
         "FlextOracleWmsUtilities",
     ],
+    "FlextOracleWmsUtilitiesAuth": [
+        "flext_oracle_wms._utilities.auth",
+        "FlextOracleWmsUtilitiesAuth",
+    ],
+    "FlextOracleWmsUtilitiesClient": [
+        "flext_oracle_wms._utilities.client",
+        "FlextOracleWmsUtilitiesClient",
+    ],
+    "FlextOracleWmsUtilitiesDiscovery": [
+        "flext_oracle_wms._utilities.discovery",
+        "FlextOracleWmsUtilitiesDiscovery",
+    ],
+    "FlextOracleWmsUtilitiesFiltering": [
+        "flext_oracle_wms._utilities.filtering",
+        "FlextOracleWmsUtilitiesFiltering",
+    ],
+    "FlextOracleWmsUtilitiesHttpClient": [
+        "flext_oracle_wms._utilities.http_client",
+        "FlextOracleWmsUtilitiesHttpClient",
+    ],
     "FlextOracleWmsValidationError": [
-        "flext_oracle_wms.wms_exceptions",
+        "flext_oracle_wms.errors",
         "FlextOracleWmsValidationError",
     ],
     "__all__": ["flext_oracle_wms.__version__", "__all__"],
@@ -191,6 +213,7 @@ _LAZY_IMPORTS: Mapping[str, Sequence[str]] = {
     "__url__": ["flext_oracle_wms.__version__", "__url__"],
     "__version__": ["flext_oracle_wms.__version__", "__version__"],
     "__version_info__": ["flext_oracle_wms.__version__", "__version_info__"],
+    "_utilities": ["flext_oracle_wms._utilities", ""],
     "c": ["flext_oracle_wms.constants", "FlextOracleWmsConstants"],
     "create_flext_http_client": [
         "flext_oracle_wms.http_client",
@@ -240,6 +263,11 @@ __all__ = [
     "FlextOracleWmsShipmentError",
     "FlextOracleWmsTypes",
     "FlextOracleWmsUtilities",
+    "FlextOracleWmsUtilitiesAuth",
+    "FlextOracleWmsUtilitiesClient",
+    "FlextOracleWmsUtilitiesDiscovery",
+    "FlextOracleWmsUtilitiesFiltering",
+    "FlextOracleWmsUtilitiesHttpClient",
     "FlextOracleWmsValidationError",
     "__all__",
     "__author__",
@@ -250,6 +278,7 @@ __all__ = [
     "__url__",
     "__version__",
     "__version_info__",
+    "_utilities",
     "c",
     "create_flext_http_client",
     "d",
