@@ -50,7 +50,7 @@ class FlextOracleWmsConstants(FlextConstants):
         DEFAULT_TIMEOUT: Final[int] = FlextConstants.DEFAULT_TIMEOUT_SECONDS
         DEFAULT_MAX_RETRIES: Final[int] = FlextConstants.MAX_RETRY_ATTEMPTS
         DEFAULT_RETRY_DELAY: Final[int] = FlextConstants.DEFAULT_RETRY_DELAY_SECONDS
-        MAX_POOL_SIZE: Final[int] = FlextConstants.MAX_CONNECTION_POOL_SIZE
+        MAX_POOL_SIZE: Final[int] = FlextConstants.HTTP_STATUS_MIN
 
         @unique
         class WmsEntityType(StrEnum):
