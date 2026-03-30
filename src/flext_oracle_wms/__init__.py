@@ -19,20 +19,21 @@ from typing import TYPE_CHECKING
 
 from flext_core.lazy import cleanup_submodule_namespace, lazy_getattr
 
+from flext_oracle_wms.__version__ import (
+    __author__,
+    __author_email__,
+    __description__,
+    __license__,
+    __title__,
+    __url__,
+    __version__,
+    __version_info__,
+)
+
 if TYPE_CHECKING:
     from flext_core import FlextTypes, d, e, h, r, s, x
 
     from flext_oracle_wms import _utilities
-    from flext_oracle_wms.__version__ import (
-        __author__,
-        __author_email__,
-        __description__,
-        __license__,
-        __title__,
-        __url__,
-        __version__,
-        __version_info__,
-    )
     from flext_oracle_wms._utilities.auth import FlextOracleWmsUtilitiesAuth
     from flext_oracle_wms._utilities.client import FlextOracleWmsUtilitiesClient
     from flext_oracle_wms._utilities.discovery import (
@@ -203,14 +204,6 @@ _LAZY_IMPORTS: Mapping[str, Sequence[str]] = {
         "flext_oracle_wms.errors",
         "FlextOracleWmsValidationError",
     ],
-    "__author__": ["flext_oracle_wms.__version__", "__author__"],
-    "__author_email__": ["flext_oracle_wms.__version__", "__author_email__"],
-    "__description__": ["flext_oracle_wms.__version__", "__description__"],
-    "__license__": ["flext_oracle_wms.__version__", "__license__"],
-    "__title__": ["flext_oracle_wms.__version__", "__title__"],
-    "__url__": ["flext_oracle_wms.__version__", "__url__"],
-    "__version__": ["flext_oracle_wms.__version__", "__version__"],
-    "__version_info__": ["flext_oracle_wms.__version__", "__version_info__"],
     "_utilities": ["flext_oracle_wms._utilities", ""],
     "c": ["flext_oracle_wms.constants", "FlextOracleWmsConstants"],
     "create_flext_http_client": [
