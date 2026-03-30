@@ -11,14 +11,14 @@ from typing import TYPE_CHECKING
 from flext_core.lazy import install_lazy_exports
 
 if TYPE_CHECKING:
-    from examples import tests
-    from examples.tests import conftest_project, test_declarative_example
-    from examples.tests.test_declarative_example import *
-
-from examples.tests import _LAZY_IMPORTS as _TESTS_LAZY
+    from examples.tests import *
 
 _LAZY_IMPORTS: Mapping[str, str | Sequence[str]] = {
-    **_TESTS_LAZY,
+    "conftest_project": "examples.tests.conftest_project",
+    "load_env_config": "examples.tests.test_declarative_example",
+    "logger": "examples.tests.test_declarative_example",
+    "main": "examples.tests.test_declarative_example",
+    "test_declarative_example": "examples.tests.test_declarative_example",
     "tests": "examples.tests",
 }
 
