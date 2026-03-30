@@ -11,7 +11,7 @@ from __future__ import annotations
 import pytest
 from flext_core import FlextUtilities
 
-from flext_oracle_wms.utilities import FlextOracleWmsUtilities, u
+from flext_oracle_wms import FlextOracleWmsUtilities, u
 
 
 @pytest.mark.unit

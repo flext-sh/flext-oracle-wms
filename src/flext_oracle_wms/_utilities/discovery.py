@@ -10,9 +10,11 @@ from collections.abc import Mapping, Sequence
 
 from flext_core import r
 
-from flext_oracle_wms.constants import FlextOracleWmsConstants as c
-from flext_oracle_wms.protocols import FlextOracleWmsProtocols as p
-from flext_oracle_wms.typings import FlextOracleWmsTypes as t
+from flext_oracle_wms import (
+    FlextOracleWmsConstants as c,
+    FlextOracleWmsProtocols as p,
+    FlextOracleWmsTypes as t,
+)
 
 DISCOVERY_SUCCESS = "discovery_success"
 DISCOVERY_FAILURE = "discovery_failure"

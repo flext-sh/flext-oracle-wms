@@ -182,7 +182,7 @@ from flext_core import u
 ### Error Handling with r
 
 ```python
-from flext_oracle_wms.exceptions import FlextOracleWmsConnectionError
+from flext_oracle_wms import FlextOracleWmsConnectionError
 
 try:
     result = client.get_entity_data("inventory")

@@ -14,7 +14,7 @@ from flext_api import FlextApiClient, FlextApiModels, FlextApiSettings, FlextApi
 from flext_core import FlextLogger, r
 from pydantic import TypeAdapter, ValidationError
 
-from flext_oracle_wms.typings import FlextOracleWmsTypes as t
+from flext_oracle_wms import FlextOracleWmsTypes as t
 
 _CONTAINER_VALUE_MAP_ADAPTER: TypeAdapter[t.ContainerValueMapping] = TypeAdapter(
     t.ContainerValueMapping,

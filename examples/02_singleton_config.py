@@ -14,11 +14,11 @@ import os
 
 from flext_core import FlextLogger
 
-from flext_oracle_wms.constants import FlextOracleWmsConstants
-from flext_oracle_wms.settings import (
+from flext_oracle_wms import (
+    FlextOracleWmsClient,
+    FlextOracleWmsConstants,
     FlextOracleWmsSettings,
 )
-from flext_oracle_wms.wms_client import FlextOracleWmsClient
 
 logger = FlextLogger(__name__)
 

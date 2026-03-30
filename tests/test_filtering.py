@@ -23,8 +23,8 @@ from collections.abc import Mapping, Sequence
 import pytest
 from flext_core import FlextExceptions
 
-from flext_oracle_wms import FlextOracleWmsConstants
-from flext_oracle_wms.filtering import (
+from flext_oracle_wms import (
+    FlextOracleWmsConstants,
     FlextOracleWmsDataValidationError,
     FlextOracleWmsFilter,
     FlextOracleWmsFilterOperator,

@@ -12,7 +12,7 @@ from typing import Annotated, Literal
 from flext_core import FlextTypes
 from pydantic import Field, StringConstraints
 
-from flext_oracle_wms.constants import c
+from flext_oracle_wms import c
 
 
 class FlextOracleWmsTypes(FlextTypes):

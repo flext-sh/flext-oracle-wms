@@ -10,7 +10,7 @@ from __future__ import annotations
 
 from collections.abc import Mapping
 
-from flext_oracle_wms._utilities.http_client import FlextOracleWmsUtilitiesHttpClient
+from flext_oracle_wms import FlextOracleWmsUtilitiesHttpClient
 
 FlextHttpClient = FlextOracleWmsUtilitiesHttpClient.HttpClient
 

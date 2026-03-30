@@ -14,8 +14,7 @@ from unittest.mock import MagicMock
 
 from flext_core import r
 
-from flext_oracle_wms.settings import FlextOracleWmsSettings
-from flext_oracle_wms.wms_client import FlextOracleWmsClient
+from flext_oracle_wms import FlextOracleWmsClient, FlextOracleWmsSettings
 
 
 class TestFlextOracleWmsClient:

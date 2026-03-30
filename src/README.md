@@ -132,7 +132,7 @@ config = FlextOracleWmsClientSettings(
 ### Error Handling
 
 ```python
-from flext_oracle_wms.exceptions import (
+from flext_oracle_wms import (
     FlextOracleWmsError,
     FlextOracleWmsConnectionError,
     FlextOracleWmsAuthenticationError,

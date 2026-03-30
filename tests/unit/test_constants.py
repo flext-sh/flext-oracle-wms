@@ -11,7 +11,7 @@ from __future__ import annotations
 
 from flext_core import FlextConstants
 
-from flext_oracle_wms.constants import FlextOracleWmsConstants
+from flext_oracle_wms import FlextOracleWmsConstants
 
 
 class TestFlextOracleWmsConstants:

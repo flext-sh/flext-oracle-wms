@@ -118,7 +118,7 @@ Based on Oracle WMS best practices research:
 ### Exception Hierarchy
 
 ```python
-from flext_oracle_wms.wms_exceptions import (
+from flext_oracle_wms import (
     FlextOracleWmsError,  # Base exception
     FlextOracleWmsConnectionError,  # Connection issues
     FlextOracleWmsAuthenticationError,  # Auth failures
@@ -147,7 +147,7 @@ else:
 Represents Oracle WMS entity with metadata.
 
 ```python
-from flext_oracle_wms.wms_models import FlextOracleWmsEntity
+from flext_oracle_wms import FlextOracleWmsEntity
 
 entity = FlextOracleWmsEntity(
     name="inventory_item",

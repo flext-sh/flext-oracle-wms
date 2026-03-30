@@ -14,11 +14,13 @@ from typing import ClassVar, override
 
 from flext_core import FlextService, r
 
-from flext_oracle_wms.http_client import FlextHttpClient
-from flext_oracle_wms.models import FlextOracleWmsModels as m
-from flext_oracle_wms.settings import FlextOracleWmsSettings
-from flext_oracle_wms.typings import FlextOracleWmsTypes as t
-from flext_oracle_wms.wms_client import FlextOracleWmsClient
+from flext_oracle_wms import (
+    FlextHttpClient,
+    FlextOracleWmsClient,
+    FlextOracleWmsModels as m,
+    FlextOracleWmsSettings,
+    FlextOracleWmsTypes as t,
+)
 
 
 class FlextOracleWmsApi(FlextService[None]):

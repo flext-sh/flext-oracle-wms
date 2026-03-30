@@ -11,8 +11,7 @@ from typing import override
 
 from flext_core import FlextService, r
 
-from flext_oracle_wms.api import FlextOracleWmsApi
-from flext_oracle_wms.wms_client import FlextOracleWmsClient
+from flext_oracle_wms import FlextOracleWmsApi, FlextOracleWmsClient
 
 
 class _ConcreteWmsApi(FlextOracleWmsApi):

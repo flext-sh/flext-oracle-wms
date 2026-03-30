@@ -11,7 +11,7 @@ from typing import Protocol, runtime_checkable
 
 from flext_core import FlextProtocols
 
-from flext_oracle_wms.typings import t
+from flext_oracle_wms import t
 
 
 class FlextOracleWmsProtocols(FlextProtocols):
@@ -26,7 +26,7 @@ class FlextOracleWmsProtocols(FlextProtocols):
     - PROVIDES: Root-level alias `p` for convenient access
 
     Usage:
-    from flext_oracle_wms.protocols import p
+    from flext_oracle_wms import p
 
     # Foundation protocols (inherited)
     result: p.Result[str]

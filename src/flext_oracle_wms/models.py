@@ -15,8 +15,7 @@ from typing import Annotated, ClassVar, Literal
 from flext_core import FlextModels, r
 from pydantic import BaseModel, ConfigDict, Field, StringConstraints, field_validator
 
-from flext_oracle_wms.constants import FlextOracleWmsConstants as c
-from flext_oracle_wms.typings import FlextOracleWmsTypes as t
+from flext_oracle_wms import FlextOracleWmsConstants as c, FlextOracleWmsTypes as t
 
 
 class FlextOracleWmsModels(FlextModels):
