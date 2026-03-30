@@ -17,6 +17,13 @@ from flext_core.lazy import cleanup_submodule_namespace, lazy_getattr
 if TYPE_CHECKING:
     from flext_core import FlextTypes
 
+    from flext_oracle_wms._utilities import (
+        auth,
+        client,
+        discovery,
+        filtering,
+        http_client,
+    )
     from flext_oracle_wms._utilities.auth import FlextOracleWmsUtilitiesAuth
     from flext_oracle_wms._utilities.client import FlextOracleWmsUtilitiesClient
     from flext_oracle_wms._utilities.discovery import (
@@ -69,6 +76,11 @@ _LAZY_IMPORTS: Mapping[str, Sequence[str]] = {
         "flext_oracle_wms._utilities.http_client",
         "FlextOracleWmsUtilitiesHttpClient",
     ],
+    "auth": ["flext_oracle_wms._utilities.auth", ""],
+    "client": ["flext_oracle_wms._utilities.client", ""],
+    "discovery": ["flext_oracle_wms._utilities.discovery", ""],
+    "filtering": ["flext_oracle_wms._utilities.filtering", ""],
+    "http_client": ["flext_oracle_wms._utilities.http_client", ""],
 }
 
 __all__ = [
@@ -82,6 +94,11 @@ __all__ = [
     "FlextOracleWmsUtilitiesDiscovery",
     "FlextOracleWmsUtilitiesFiltering",
     "FlextOracleWmsUtilitiesHttpClient",
+    "auth",
+    "client",
+    "discovery",
+    "filtering",
+    "http_client",
 ]
 
 

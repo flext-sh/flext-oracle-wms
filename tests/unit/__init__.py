@@ -21,6 +21,13 @@ from flext_core.lazy import cleanup_submodule_namespace, lazy_getattr
 if TYPE_CHECKING:
     from flext_core import FlextTypes
 
+    from tests.unit import (
+        test_api,
+        test_config,
+        test_constants,
+        test_wms_api,
+        test_wms_client,
+    )
     from tests.unit.test_api import TestFlextOracleWmsApi
     from tests.unit.test_config import TestFlextOracleWmsSettings
     from tests.unit.test_constants import TestFlextOracleWmsConstants
@@ -40,6 +47,11 @@ _LAZY_IMPORTS: Mapping[str, Sequence[str]] = {
         "tests.unit.test_config",
         "TestFlextOracleWmsSettings",
     ],
+    "test_api": ["tests.unit.test_api", ""],
+    "test_config": ["tests.unit.test_config", ""],
+    "test_constants": ["tests.unit.test_constants", ""],
+    "test_wms_api": ["tests.unit.test_wms_api", ""],
+    "test_wms_client": ["tests.unit.test_wms_client", ""],
 }
 
 __all__ = [
@@ -47,6 +59,11 @@ __all__ = [
     "TestFlextOracleWmsClient",
     "TestFlextOracleWmsConstants",
     "TestFlextOracleWmsSettings",
+    "test_api",
+    "test_config",
+    "test_constants",
+    "test_wms_api",
+    "test_wms_client",
 ]
 
 
