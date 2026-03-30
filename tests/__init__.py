@@ -5,172 +5,194 @@
 
 from __future__ import annotations
 
-from collections.abc import Mapping, MutableMapping, Sequence
+from collections.abc import Mapping, Sequence
 from typing import TYPE_CHECKING
 
-from flext_core.lazy import cleanup_submodule_namespace, lazy_getattr
+from flext_core.lazy import install_lazy_exports
 
 if TYPE_CHECKING:
-    from flext_core import FlextTypes
-    from flext_tests import d, e, h, r, s, x
-
     from tests import (
-        complete_mock_pipeline,
-        conftest,
-        constants,
-        models,
-        oracle_wms_complete_discovery,
-        oracle_wms_focused_discovery,
-        oracle_wms_optimized_discovery,
-        protocols,
-        sitecustomize,
-        test_authentication,
-        test_authentication_core,
-        test_client,
-        test_client_class,
-        test_client_core,
-        test_config,
-        test_config_module,
-        test_connection,
-        test_declarative,
-        test_discovery,
-        test_filtering,
-        test_helpers,
-        test_helpers_core,
-        test_models,
-        test_schema_dynamic,
-        test_singer_flattening,
-        test_unified_config,
-        typings,
-        unit,
-        utilities,
+        complete_mock_pipeline as complete_mock_pipeline,
+        conftest as conftest,
+        constants as constants,
+        models as models,
+        oracle_wms_complete_discovery as oracle_wms_complete_discovery,
+        oracle_wms_focused_discovery as oracle_wms_focused_discovery,
+        oracle_wms_optimized_discovery as oracle_wms_optimized_discovery,
+        protocols as protocols,
+        sitecustomize as sitecustomize,
+        test_authentication as test_authentication,
+        test_authentication_core as test_authentication_core,
+        test_client as test_client,
+        test_client_class as test_client_class,
+        test_client_core as test_client_core,
+        test_config as test_config,
+        test_config_module as test_config_module,
+        test_connection as test_connection,
+        test_declarative as test_declarative,
+        test_discovery as test_discovery,
+        test_filtering as test_filtering,
+        test_helpers as test_helpers,
+        test_helpers_core as test_helpers_core,
+        test_models as test_models,
+        test_schema_dynamic as test_schema_dynamic,
+        test_singer_flattening as test_singer_flattening,
+        test_unified_config as test_unified_config,
+        typings as typings,
+        unit as unit,
+        utilities as utilities,
     )
-    from tests.complete_mock_pipeline import CompleteMockPipeline
+    from tests.complete_mock_pipeline import (
+        CompleteMockPipeline as CompleteMockPipeline,
+    )
     from tests.conftest import (
-        load_test_env,
-        mock_config,
-        pytest_configure,
-        real_config,
-        reset_settings_singleton,
-        sample_entities,
-        sample_entity_data,
+        load_test_env as load_test_env,
+        mock_config as mock_config,
+        pytest_configure as pytest_configure,
+        real_config as real_config,
+        reset_settings_singleton as reset_settings_singleton,
+        sample_entities as sample_entities,
+        sample_entity_data as sample_entity_data,
     )
     from tests.constants import (
-        FlextOracleWmsTestConstants,
+        FlextOracleWmsTestConstants as FlextOracleWmsTestConstants,
         FlextOracleWmsTestConstants as c,
     )
-    from tests.models import FlextOracleWmsTestModels, FlextOracleWmsTestModels as m
-    from tests.oracle_wms_complete_discovery import (
-        OracleWmsCompleteDiscovery,
-        run_complete_discovery,
+    from tests.models import (
+        FlextOracleWmsTestModels as FlextOracleWmsTestModels,
+        FlextOracleWmsTestModels as m,
     )
-    from tests.oracle_wms_focused_discovery import FocusedOracleWmsDiscovery, main
+    from tests.oracle_wms_complete_discovery import (
+        OracleWmsCompleteDiscovery as OracleWmsCompleteDiscovery,
+        run_complete_discovery as run_complete_discovery,
+    )
+    from tests.oracle_wms_focused_discovery import (
+        FocusedOracleWmsDiscovery as FocusedOracleWmsDiscovery,
+        main as main,
+    )
     from tests.oracle_wms_optimized_discovery import (
-        OptimizedOracleWmsDiscovery,
-        run_optimized_discovery,
+        OptimizedOracleWmsDiscovery as OptimizedOracleWmsDiscovery,
+        run_optimized_discovery as run_optimized_discovery,
     )
     from tests.protocols import (
-        FlextOracleWmsTestProtocols,
+        FlextOracleWmsTestProtocols as FlextOracleWmsTestProtocols,
         FlextOracleWmsTestProtocols as p,
     )
     from tests.test_authentication import (
-        FlextOracleWmsAuthSettings,
-        create_oracle_wms_client,
+        FlextOracleWmsAuthSettings as FlextOracleWmsAuthSettings,
+        create_oracle_wms_client as create_oracle_wms_client,
     )
     from tests.test_authentication_core import (
-        TestAuthenticationConfig,
-        TestAuthenticationMethod,
-        TestAuthenticator,
+        TestAuthenticationConfig as TestAuthenticationConfig,
+        TestAuthenticationMethod as TestAuthenticationMethod,
+        TestAuthenticator as TestAuthenticator,
     )
-    from tests.test_client import TestClientSimpleNew
+    from tests.test_client import TestClientSimpleNew as TestClientSimpleNew
     from tests.test_client_class import (
-        test_client_class_creation,
-        test_client_config_access,
-        test_client_has_discovery_methods,
-        test_client_has_http_methods,
-        test_client_has_lifecycle_methods,
-        test_client_has_wms_operations,
-        test_client_internal_state,
+        test_client_class_creation as test_client_class_creation,
+        test_client_config_access as test_client_config_access,
+        test_client_has_discovery_methods as test_client_has_discovery_methods,
+        test_client_has_http_methods as test_client_has_http_methods,
+        test_client_has_lifecycle_methods as test_client_has_lifecycle_methods,
+        test_client_has_wms_operations as test_client_has_wms_operations,
+        test_client_internal_state as test_client_internal_state,
     )
-    from tests.test_client_core import TestFlextOracleWmsClientCore, TestGetLogger
+    from tests.test_client_core import (
+        TestFlextOracleWmsClientCore as TestFlextOracleWmsClientCore,
+        TestGetLogger as TestGetLogger,
+    )
     from tests.test_config import (
-        test_config_auth_fields_default_empty,
-        test_config_creation_valid,
-        test_config_defaults,
-        test_config_validate_config_success,
+        test_config_auth_fields_default_empty as test_config_auth_fields_default_empty,
+        test_config_creation_valid as test_config_creation_valid,
+        test_config_defaults as test_config_defaults,
+        test_config_validate_config_success as test_config_validate_config_success,
     )
     from tests.test_config_module import (
-        test_config_creation,
-        test_config_custom_values,
-        test_config_reset_functionality,
-        test_config_singleton_behavior,
-        test_config_testing_factory,
-        test_config_validation,
+        test_config_creation as test_config_creation,
+        test_config_custom_values as test_config_custom_values,
+        test_config_reset_functionality as test_config_reset_functionality,
+        test_config_singleton_behavior as test_config_singleton_behavior,
+        test_config_testing_factory as test_config_testing_factory,
+        test_config_validation as test_config_validation,
     )
-    from tests.test_connection import test_real_connection
+    from tests.test_connection import test_real_connection as test_real_connection
     from tests.test_declarative import (
-        TestAutomationApisIntegration,
-        TestErrorHandlingIntegration,
-        TestLgfApiV10Integration,
-        TestOracleWmsDeclarativeIntegration,
-        TestPerformanceIntegration,
-        env_config,
-        find_env_file,
-        load_env_config,
-        logger,
-        oracle_wms_client,
-        pytestmark,
+        TestAutomationApisIntegration as TestAutomationApisIntegration,
+        TestErrorHandlingIntegration as TestErrorHandlingIntegration,
+        TestLgfApiV10Integration as TestLgfApiV10Integration,
+        TestOracleWmsDeclarativeIntegration as TestOracleWmsDeclarativeIntegration,
+        TestPerformanceIntegration as TestPerformanceIntegration,
+        env_config as env_config,
+        find_env_file as find_env_file,
+        load_env_config as load_env_config,
+        logger as logger,
+        oracle_wms_client as oracle_wms_client,
+        pytestmark as pytestmark,
     )
     from tests.test_discovery import (
-        TestDiscoveryConstants,
-        TestEndpointDiscoveryStrategyEnum,
-        TestFlextOracleWmsEntityDiscovery,
+        TestDiscoveryConstants as TestDiscoveryConstants,
+        TestEndpointDiscoveryStrategyEnum as TestEndpointDiscoveryStrategyEnum,
+        TestFlextOracleWmsEntityDiscovery as TestFlextOracleWmsEntityDiscovery,
     )
     from tests.test_filtering import (
-        TestApplyOperator,
-        TestConvenienceFunctions,
-        TestErrorHandling,
-        TestFactoryFunction,
-        TestFilterValidation,
-        TestFlextOracleWmsFilterConstruction,
-        TestMatchesCondition,
-        TestNestedValueAccess,
-        TestNormalize,
-        TestPerformanceAndEdgeCases,
-        TestRecordFiltering,
-        TestRecordSorting,
+        TestApplyOperator as TestApplyOperator,
+        TestConvenienceFunctions as TestConvenienceFunctions,
+        TestErrorHandling as TestErrorHandling,
+        TestFactoryFunction as TestFactoryFunction,
+        TestFilterValidation as TestFilterValidation,
+        TestFlextOracleWmsFilterConstruction as TestFlextOracleWmsFilterConstruction,
+        TestMatchesCondition as TestMatchesCondition,
+        TestNestedValueAccess as TestNestedValueAccess,
+        TestNormalize as TestNormalize,
+        TestPerformanceAndEdgeCases as TestPerformanceAndEdgeCases,
+        TestRecordFiltering as TestRecordFiltering,
+        TestRecordSorting as TestRecordSorting,
     )
-    from tests.test_helpers_core import TestFlextOracleWmsUtilities
+    from tests.test_helpers_core import (
+        TestFlextOracleWmsUtilities as TestFlextOracleWmsUtilities,
+    )
     from tests.test_models import (
-        test_api_response_creation,
-        test_api_response_defaults,
-        test_api_response_error,
-        test_api_response_validate_response_failure,
-        test_api_response_validate_response_success,
-        test_api_response_with_nested_data,
-        test_entity_creation,
-        test_entity_defaults,
-        test_entity_validate_entity_success,
-        test_entity_validation_bad_endpoint_raises,
-        test_entity_validation_empty_name_raises,
+        test_api_response_creation as test_api_response_creation,
+        test_api_response_defaults as test_api_response_defaults,
+        test_api_response_error as test_api_response_error,
+        test_api_response_validate_response_failure as test_api_response_validate_response_failure,
+        test_api_response_validate_response_success as test_api_response_validate_response_success,
+        test_api_response_with_nested_data as test_api_response_with_nested_data,
+        test_entity_creation as test_entity_creation,
+        test_entity_defaults as test_entity_defaults,
+        test_entity_validate_entity_success as test_entity_validate_entity_success,
+        test_entity_validation_bad_endpoint_raises as test_entity_validation_bad_endpoint_raises,
+        test_entity_validation_empty_name_raises as test_entity_validation_empty_name_raises,
     )
     from tests.test_schema_dynamic import (
-        OracleWMSAuthMethod,
-        TestFlextOracleWmsConstants,
-        TestNestedConstants,
-        TestWmsEnums,
+        OracleWMSAuthMethod as OracleWMSAuthMethod,
+        TestFlextOracleWmsConstants as TestFlextOracleWmsConstants,
+        TestNestedConstants as TestNestedConstants,
+        TestWmsEnums as TestWmsEnums,
     )
     from tests.test_singer_flattening import (
-        TestFlextOracleWmsApiResponse,
-        TestFlextOracleWmsEntity,
+        TestFlextOracleWmsApiResponse as TestFlextOracleWmsApiResponse,
+        TestFlextOracleWmsEntity as TestFlextOracleWmsEntity,
     )
-    from tests.typings import FlextOracleWmsTestTypes, FlextOracleWmsTestTypes as t
-    from tests.unit import test_api, test_constants, test_wms_api, test_wms_client
-    from tests.unit.test_api import TestFlextOracleWmsApi
-    from tests.unit.test_config import TestFlextOracleWmsSettings
-    from tests.unit.test_wms_client import TestFlextOracleWmsClient
+    from tests.typings import (
+        FlextOracleWmsTestTypes as FlextOracleWmsTestTypes,
+        FlextOracleWmsTestTypes as t,
+    )
+    from tests.unit import (
+        test_api as test_api,
+        test_constants as test_constants,
+        test_wms_api as test_wms_api,
+        test_wms_client as test_wms_client,
+    )
+    from tests.unit.test_api import TestFlextOracleWmsApi as TestFlextOracleWmsApi
+    from tests.unit.test_config import (
+        TestFlextOracleWmsSettings as TestFlextOracleWmsSettings,
+    )
+    from tests.unit.test_wms_client import (
+        TestFlextOracleWmsClient as TestFlextOracleWmsClient,
+    )
     from tests.utilities import (
-        FlextOracleWmsTestUtilities,
+        FlextOracleWmsTestUtilities as FlextOracleWmsTestUtilities,
         FlextOracleWmsTestUtilities as u,
     )
 
@@ -442,7 +464,7 @@ _LAZY_IMPORTS: Mapping[str, Sequence[str]] = {
     "x": ["flext_tests", "x"],
 }
 
-__all__ = [
+_EXPORTS: Sequence[str] = [
     "CompleteMockPipeline",
     "FlextOracleWmsAuthSettings",
     "FlextOracleWmsTestConstants",
@@ -582,41 +604,4 @@ __all__ = [
 ]
 
 
-_LAZY_CACHE: MutableMapping[str, FlextTypes.ModuleExport] = {}
-
-
-def __getattr__(name: str) -> FlextTypes.ModuleExport:
-    """Lazy-load module attributes on first access (PEP 562).
-
-    A local cache ``_LAZY_CACHE`` persists resolved objects across repeated
-    accesses during process lifetime.
-
-    Args:
-        name: Attribute name requested by dir()/import.
-
-    Returns:
-        Lazy-loaded module export type.
-
-    Raises:
-        AttributeError: If attribute not registered.
-
-    """
-    if name in _LAZY_CACHE:
-        return _LAZY_CACHE[name]
-
-    value = lazy_getattr(name, _LAZY_IMPORTS, globals(), __name__)
-    _LAZY_CACHE[name] = value
-    return value
-
-
-def __dir__() -> Sequence[str]:
-    """Return list of available attributes for dir() and autocomplete.
-
-    Returns:
-        List of public names from module exports.
-
-    """
-    return sorted(__all__)
-
-
-cleanup_submodule_namespace(__name__, _LAZY_IMPORTS)
+install_lazy_exports(__name__, globals(), _LAZY_IMPORTS, _EXPORTS)

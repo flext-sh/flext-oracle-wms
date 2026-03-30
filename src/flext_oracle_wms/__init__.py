@@ -14,100 +14,119 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from collections.abc import Mapping, MutableMapping, Sequence
+from collections.abc import Mapping, Sequence
 from typing import TYPE_CHECKING
 
-from flext_core.lazy import cleanup_submodule_namespace, lazy_getattr
+from flext_core.lazy import install_lazy_exports
 
 from flext_oracle_wms.__version__ import (
-    __author__,
-    __author_email__,
-    __description__,
-    __license__,
-    __title__,
-    __url__,
-    __version__,
-    __version_info__,
+    __author__ as __author__,
+    __author_email__ as __author_email__,
+    __description__ as __description__,
+    __license__ as __license__,
+    __title__ as __title__,
+    __url__ as __url__,
+    __version__ as __version__,
+    __version_info__ as __version_info__,
 )
 
 if TYPE_CHECKING:
-    from flext_core import FlextTypes, d, e, h, r, s, x
-
     from flext_oracle_wms import (
-        _utilities,
-        api,
-        constants,
-        errors,
-        filtering,
-        http_client,
-        models,
-        protocols,
-        settings,
-        typings,
-        utilities,
-        wms_api,
-        wms_auth,
-        wms_client,
-        wms_discovery,
-        wms_exceptions,
+        _utilities as _utilities,
+        api as api,
+        constants as constants,
+        errors as errors,
+        filtering as filtering,
+        http_client as http_client,
+        models as models,
+        protocols as protocols,
+        settings as settings,
+        typings as typings,
+        utilities as utilities,
+        wms_api as wms_api,
+        wms_auth as wms_auth,
+        wms_client as wms_client,
+        wms_discovery as wms_discovery,
+        wms_exceptions as wms_exceptions,
     )
-    from flext_oracle_wms._utilities import auth, client, discovery
-    from flext_oracle_wms._utilities.auth import FlextOracleWmsUtilitiesAuth
-    from flext_oracle_wms._utilities.client import FlextOracleWmsUtilitiesClient
+    from flext_oracle_wms._utilities import (
+        auth as auth,
+        client as client,
+        discovery as discovery,
+    )
+    from flext_oracle_wms._utilities.auth import (
+        FlextOracleWmsUtilitiesAuth as FlextOracleWmsUtilitiesAuth,
+    )
+    from flext_oracle_wms._utilities.client import (
+        FlextOracleWmsUtilitiesClient as FlextOracleWmsUtilitiesClient,
+    )
     from flext_oracle_wms._utilities.discovery import (
-        DISCOVERY_FAILURE,
-        DISCOVERY_SUCCESS,
-        FlextOracleWmsUtilitiesDiscovery,
+        DISCOVERY_FAILURE as DISCOVERY_FAILURE,
+        DISCOVERY_SUCCESS as DISCOVERY_SUCCESS,
+        FlextOracleWmsUtilitiesDiscovery as FlextOracleWmsUtilitiesDiscovery,
     )
     from flext_oracle_wms._utilities.filtering import (
-        FlextOracleWmsDataValidationError,
-        FlextOracleWmsFilterOperator,
-        FlextOracleWmsOperatorFilter,
-        FlextOracleWmsUtilitiesFiltering,
+        FlextOracleWmsDataValidationError as FlextOracleWmsDataValidationError,
+        FlextOracleWmsFilterOperator as FlextOracleWmsFilterOperator,
+        FlextOracleWmsOperatorFilter as FlextOracleWmsOperatorFilter,
+        FlextOracleWmsUtilitiesFiltering as FlextOracleWmsUtilitiesFiltering,
     )
     from flext_oracle_wms._utilities.http_client import (
-        FlextOracleWmsUtilitiesHttpClient,
+        FlextOracleWmsUtilitiesHttpClient as FlextOracleWmsUtilitiesHttpClient,
     )
-    from flext_oracle_wms.api import FlextOracleWmsApi
+    from flext_oracle_wms.api import FlextOracleWmsApi as FlextOracleWmsApi
     from flext_oracle_wms.constants import (
-        FlextOracleWmsConstants,
+        FlextOracleWmsConstants as FlextOracleWmsConstants,
         FlextOracleWmsConstants as c,
     )
     from flext_oracle_wms.errors import (
-        FlextOracleWmsApiError,
-        FlextOracleWmsAuthenticationError,
-        FlextOracleWmsConfigurationError,
-        FlextOracleWmsConnectionError,
-        FlextOracleWmsEntityNotFoundError,
-        FlextOracleWmsError,
-        FlextOracleWmsExceptions,
-        FlextOracleWmsInventoryError,
-        FlextOracleWmsPickingError,
-        FlextOracleWmsProcessingError,
-        FlextOracleWmsSchemaError,
-        FlextOracleWmsSchemaFlatteningError,
-        FlextOracleWmsShipmentError,
-        FlextOracleWmsValidationError,
+        FlextOracleWmsApiError as FlextOracleWmsApiError,
+        FlextOracleWmsAuthenticationError as FlextOracleWmsAuthenticationError,
+        FlextOracleWmsConfigurationError as FlextOracleWmsConfigurationError,
+        FlextOracleWmsConnectionError as FlextOracleWmsConnectionError,
+        FlextOracleWmsEntityNotFoundError as FlextOracleWmsEntityNotFoundError,
+        FlextOracleWmsError as FlextOracleWmsError,
+        FlextOracleWmsExceptions as FlextOracleWmsExceptions,
+        FlextOracleWmsInventoryError as FlextOracleWmsInventoryError,
+        FlextOracleWmsPickingError as FlextOracleWmsPickingError,
+        FlextOracleWmsProcessingError as FlextOracleWmsProcessingError,
+        FlextOracleWmsSchemaError as FlextOracleWmsSchemaError,
+        FlextOracleWmsSchemaFlatteningError as FlextOracleWmsSchemaFlatteningError,
+        FlextOracleWmsShipmentError as FlextOracleWmsShipmentError,
+        FlextOracleWmsValidationError as FlextOracleWmsValidationError,
     )
-    from flext_oracle_wms.filtering import FlextOracleWmsFilter
-    from flext_oracle_wms.http_client import FlextHttpClient, create_flext_http_client
-    from flext_oracle_wms.models import FlextOracleWmsModels, FlextOracleWmsModels as m
+    from flext_oracle_wms.filtering import FlextOracleWmsFilter as FlextOracleWmsFilter
+    from flext_oracle_wms.http_client import (
+        FlextHttpClient as FlextHttpClient,
+        create_flext_http_client as create_flext_http_client,
+    )
+    from flext_oracle_wms.models import (
+        FlextOracleWmsModels as FlextOracleWmsModels,
+        FlextOracleWmsModels as m,
+    )
     from flext_oracle_wms.protocols import (
-        FlextOracleWmsProtocols,
+        FlextOracleWmsProtocols as FlextOracleWmsProtocols,
         FlextOracleWmsProtocols as p,
     )
     from flext_oracle_wms.settings import (
-        FlextOracleWmsClientSettings,
-        FlextOracleWmsSettings,
+        FlextOracleWmsClientSettings as FlextOracleWmsClientSettings,
+        FlextOracleWmsSettings as FlextOracleWmsSettings,
     )
-    from flext_oracle_wms.typings import FlextOracleWmsTypes, FlextOracleWmsTypes as t
+    from flext_oracle_wms.typings import (
+        FlextOracleWmsTypes as FlextOracleWmsTypes,
+        FlextOracleWmsTypes as t,
+    )
     from flext_oracle_wms.utilities import (
-        FlextOracleWmsUtilities,
+        FlextOracleWmsUtilities as FlextOracleWmsUtilities,
         FlextOracleWmsUtilities as u,
     )
-    from flext_oracle_wms.wms_auth import FlextOracleWmsAuthenticator
-    from flext_oracle_wms.wms_client import FlextOracleWmsClient
-    from flext_oracle_wms.wms_discovery import FlextOracleWmsEntityDiscovery
+    from flext_oracle_wms.wms_auth import (
+        FlextOracleWmsAuthenticator as FlextOracleWmsAuthenticator,
+    )
+    from flext_oracle_wms.wms_client import FlextOracleWmsClient as FlextOracleWmsClient
+    from flext_oracle_wms.wms_discovery import (
+        FlextOracleWmsEntityDiscovery as FlextOracleWmsEntityDiscovery,
+    )
 
 _LAZY_IMPORTS: Mapping[str, Sequence[str]] = {
     "DISCOVERY_FAILURE": ["flext_oracle_wms._utilities.discovery", "DISCOVERY_FAILURE"],
@@ -258,7 +277,7 @@ _LAZY_IMPORTS: Mapping[str, Sequence[str]] = {
     "x": ["flext_core", "x"],
 }
 
-__all__ = [
+_EXPORTS: Sequence[str] = [
     "DISCOVERY_FAILURE",
     "DISCOVERY_SUCCESS",
     "FlextHttpClient",
@@ -338,41 +357,4 @@ __all__ = [
 ]
 
 
-_LAZY_CACHE: MutableMapping[str, FlextTypes.ModuleExport] = {}
-
-
-def __getattr__(name: str) -> FlextTypes.ModuleExport:
-    """Lazy-load module attributes on first access (PEP 562).
-
-    A local cache ``_LAZY_CACHE`` persists resolved objects across repeated
-    accesses during process lifetime.
-
-    Args:
-        name: Attribute name requested by dir()/import.
-
-    Returns:
-        Lazy-loaded module export type.
-
-    Raises:
-        AttributeError: If attribute not registered.
-
-    """
-    if name in _LAZY_CACHE:
-        return _LAZY_CACHE[name]
-
-    value = lazy_getattr(name, _LAZY_IMPORTS, globals(), __name__)
-    _LAZY_CACHE[name] = value
-    return value
-
-
-def __dir__() -> Sequence[str]:
-    """Return list of available attributes for dir() and autocomplete.
-
-    Returns:
-        List of public names from module exports.
-
-    """
-    return sorted(__all__)
-
-
-cleanup_submodule_namespace(__name__, _LAZY_IMPORTS)
+install_lazy_exports(__name__, globals(), _LAZY_IMPORTS, _EXPORTS)
