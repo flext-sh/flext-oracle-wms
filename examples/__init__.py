@@ -10,17 +10,15 @@ from typing import TYPE_CHECKING
 
 from flext_core.lazy import install_lazy_exports
 
+from examples.tests import _LAZY_IMPORTS as _CHILD_LAZY_0
+
 if TYPE_CHECKING:
     from examples.tests import *
 
 _LAZY_IMPORTS: Mapping[str, str | Sequence[str]] = {
-    "conftest_project": "examples.tests.conftest_project",
-    "load_env_config": "examples.tests.test_declarative_example",
-    "logger": "examples.tests.test_declarative_example",
-    "main": "examples.tests.test_declarative_example",
-    "test_declarative_example": "examples.tests.test_declarative_example",
+    **_CHILD_LAZY_0,
     "tests": "examples.tests",
 }
 
 
-install_lazy_exports(__name__, globals(), _LAZY_IMPORTS, sorted(_LAZY_IMPORTS))
+install_lazy_exports(__name__, globals(), _LAZY_IMPORTS)

@@ -10,39 +10,9 @@ from typing import TYPE_CHECKING
 
 from flext_core.lazy import install_lazy_exports
 
-if TYPE_CHECKING:
-    from flext_tests import *
+from tests.unit import _LAZY_IMPORTS as _CHILD_LAZY_0
 
-    from tests import (
-        complete_mock_pipeline,
-        conftest,
-        constants,
-        models,
-        oracle_wms_complete_discovery,
-        oracle_wms_focused_discovery,
-        oracle_wms_optimized_discovery,
-        protocols,
-        sitecustomize,
-        test_authentication,
-        test_authentication_core,
-        test_client,
-        test_client_class,
-        test_client_core,
-        test_config,
-        test_config_module,
-        test_connection,
-        test_declarative,
-        test_discovery,
-        test_filtering,
-        test_helpers,
-        test_helpers_core,
-        test_models,
-        test_schema_dynamic,
-        test_singer_flattening,
-        test_unified_config,
-        typings,
-        utilities,
-    )
+if TYPE_CHECKING:
     from tests.complete_mock_pipeline import *
     from tests.conftest import *
     from tests.constants import *
@@ -71,6 +41,7 @@ if TYPE_CHECKING:
     from tests.utilities import *
 
 _LAZY_IMPORTS: Mapping[str, str | Sequence[str]] = {
+    **_CHILD_LAZY_0,
     "CompleteMockPipeline": "tests.complete_mock_pipeline",
     "FlextOracleWmsAuthSettings": "tests.test_authentication",
     "FlextOracleWmsTestConstants": "tests.constants",
@@ -95,15 +66,12 @@ _LAZY_IMPORTS: Mapping[str, str | Sequence[str]] = {
     "TestErrorHandlingIntegration": "tests.test_declarative",
     "TestFactoryFunction": "tests.test_filtering",
     "TestFilterValidation": "tests.test_filtering",
-    "TestFlextOracleWmsApi": "tests.unit.test_api",
     "TestFlextOracleWmsApiResponse": "tests.test_singer_flattening",
-    "TestFlextOracleWmsClient": "tests.unit.test_wms_client",
     "TestFlextOracleWmsClientCore": "tests.test_client_core",
     "TestFlextOracleWmsConstants": "tests.test_schema_dynamic",
     "TestFlextOracleWmsEntity": "tests.test_singer_flattening",
     "TestFlextOracleWmsEntityDiscovery": "tests.test_discovery",
     "TestFlextOracleWmsFilterConstruction": "tests.test_filtering",
-    "TestFlextOracleWmsSettings": "tests.unit.test_config",
     "TestFlextOracleWmsUtilities": "tests.test_helpers_core",
     "TestGetLogger": "tests.test_client_core",
     "TestLgfApiV10Integration": "tests.test_declarative",
@@ -152,7 +120,6 @@ _LAZY_IMPORTS: Mapping[str, str | Sequence[str]] = {
     "sample_entity_data": "tests.conftest",
     "sitecustomize": "tests.sitecustomize",
     "t": ["tests.typings", "FlextOracleWmsTestTypes"],
-    "test_api": "tests.unit.test_api",
     "test_api_response_creation": "tests.test_models",
     "test_api_response_defaults": "tests.test_models",
     "test_api_response_error": "tests.test_models",
@@ -184,7 +151,6 @@ _LAZY_IMPORTS: Mapping[str, str | Sequence[str]] = {
     "test_config_validate_config_success": "tests.test_config",
     "test_config_validation": "tests.test_config_module",
     "test_connection": "tests.test_connection",
-    "test_constants": "tests.unit.test_constants",
     "test_declarative": "tests.test_declarative",
     "test_discovery": "tests.test_discovery",
     "test_entity_creation": "tests.test_models",
@@ -200,8 +166,6 @@ _LAZY_IMPORTS: Mapping[str, str | Sequence[str]] = {
     "test_schema_dynamic": "tests.test_schema_dynamic",
     "test_singer_flattening": "tests.test_singer_flattening",
     "test_unified_config": "tests.test_unified_config",
-    "test_wms_api": "tests.unit.test_wms_api",
-    "test_wms_client": "tests.unit.test_wms_client",
     "typings": "tests.typings",
     "u": ["tests.utilities", "FlextOracleWmsTestUtilities"],
     "unit": "tests.unit",
@@ -210,4 +174,4 @@ _LAZY_IMPORTS: Mapping[str, str | Sequence[str]] = {
 }
 
 
-install_lazy_exports(__name__, globals(), _LAZY_IMPORTS, sorted(_LAZY_IMPORTS))
+install_lazy_exports(__name__, globals(), _LAZY_IMPORTS)
