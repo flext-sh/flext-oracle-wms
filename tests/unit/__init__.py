@@ -20,55 +20,28 @@ from flext_core.lazy import install_lazy_exports
 
 if TYPE_CHECKING:
     from tests.unit import (
-        test_api as test_api,
-        test_config as test_config,
-        test_constants as test_constants,
-        test_wms_api as test_wms_api,
-        test_wms_client as test_wms_client,
+        test_api,
+        test_config,
+        test_constants,
+        test_wms_api,
+        test_wms_client,
     )
-    from tests.unit.test_api import TestFlextOracleWmsApi as TestFlextOracleWmsApi
-    from tests.unit.test_config import (
-        TestFlextOracleWmsSettings as TestFlextOracleWmsSettings,
-    )
-    from tests.unit.test_constants import (
-        TestFlextOracleWmsConstants as TestFlextOracleWmsConstants,
-    )
-    from tests.unit.test_wms_client import (
-        TestFlextOracleWmsClient as TestFlextOracleWmsClient,
-    )
+    from tests.unit.test_api import *
+    from tests.unit.test_config import *
+    from tests.unit.test_constants import *
+    from tests.unit.test_wms_client import *
 
-_LAZY_IMPORTS: Mapping[str, Sequence[str]] = {
-    "TestFlextOracleWmsApi": ["tests.unit.test_api", "TestFlextOracleWmsApi"],
-    "TestFlextOracleWmsClient": [
-        "tests.unit.test_wms_client",
-        "TestFlextOracleWmsClient",
-    ],
-    "TestFlextOracleWmsConstants": [
-        "tests.unit.test_constants",
-        "TestFlextOracleWmsConstants",
-    ],
-    "TestFlextOracleWmsSettings": [
-        "tests.unit.test_config",
-        "TestFlextOracleWmsSettings",
-    ],
-    "test_api": ["tests.unit.test_api", ""],
-    "test_config": ["tests.unit.test_config", ""],
-    "test_constants": ["tests.unit.test_constants", ""],
-    "test_wms_api": ["tests.unit.test_wms_api", ""],
-    "test_wms_client": ["tests.unit.test_wms_client", ""],
+_LAZY_IMPORTS: Mapping[str, str | Sequence[str]] = {
+    "TestFlextOracleWmsApi": "tests.unit.test_api",
+    "TestFlextOracleWmsClient": "tests.unit.test_wms_client",
+    "TestFlextOracleWmsConstants": "tests.unit.test_constants",
+    "TestFlextOracleWmsSettings": "tests.unit.test_config",
+    "test_api": "tests.unit.test_api",
+    "test_config": "tests.unit.test_config",
+    "test_constants": "tests.unit.test_constants",
+    "test_wms_api": "tests.unit.test_wms_api",
+    "test_wms_client": "tests.unit.test_wms_client",
 }
 
-_EXPORTS: Sequence[str] = [
-    "TestFlextOracleWmsApi",
-    "TestFlextOracleWmsClient",
-    "TestFlextOracleWmsConstants",
-    "TestFlextOracleWmsSettings",
-    "test_api",
-    "test_config",
-    "test_constants",
-    "test_wms_api",
-    "test_wms_client",
-]
 
-
-install_lazy_exports(__name__, globals(), _LAZY_IMPORTS, _EXPORTS)
+install_lazy_exports(__name__, globals(), _LAZY_IMPORTS, sorted(_LAZY_IMPORTS))

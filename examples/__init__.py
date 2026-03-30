@@ -11,34 +11,16 @@ from typing import TYPE_CHECKING
 from flext_core.lazy import install_lazy_exports
 
 if TYPE_CHECKING:
-    from examples import tests as tests
-    from examples.tests import (
-        conftest_project as conftest_project,
-        test_declarative_example as test_declarative_example,
-    )
-    from examples.tests.test_declarative_example import (
-        load_env_config as load_env_config,
-        logger as logger,
-        main as main,
-    )
+    from examples import tests
+    from examples.tests import conftest_project, test_declarative_example
+    from examples.tests.test_declarative_example import *
 
-_LAZY_IMPORTS: Mapping[str, Sequence[str]] = {
-    "conftest_project": ["examples.tests.conftest_project", ""],
-    "load_env_config": ["examples.tests.test_declarative_example", "load_env_config"],
-    "logger": ["examples.tests.test_declarative_example", "logger"],
-    "main": ["examples.tests.test_declarative_example", "main"],
-    "test_declarative_example": ["examples.tests.test_declarative_example", ""],
-    "tests": ["examples.tests", ""],
+from examples.tests import _LAZY_IMPORTS as _TESTS_LAZY
+
+_LAZY_IMPORTS: Mapping[str, str | Sequence[str]] = {
+    **_TESTS_LAZY,
+    "tests": "examples.tests",
 }
 
-_EXPORTS: Sequence[str] = [
-    "conftest_project",
-    "load_env_config",
-    "logger",
-    "main",
-    "test_declarative_example",
-    "tests",
-]
 
-
-install_lazy_exports(__name__, globals(), _LAZY_IMPORTS, _EXPORTS)
+install_lazy_exports(__name__, globals(), _LAZY_IMPORTS, sorted(_LAZY_IMPORTS))
