@@ -22,21 +22,97 @@ if _TYPE_CHECKING:
     from tests.oracle_wms_focused_discovery import *
     from tests.oracle_wms_optimized_discovery import *
     from tests.protocols import *
-    from tests.test_authentication import *
-    from tests.test_authentication_core import *
-    from tests.test_client import *
-    from tests.test_client_class import *
-    from tests.test_client_core import *
-    from tests.test_config import *
-    from tests.test_config_module import *
-    from tests.test_connection import *
-    from tests.test_declarative import *
-    from tests.test_discovery import *
-    from tests.test_filtering import *
-    from tests.test_helpers_core import *
-    from tests.test_models import *
-    from tests.test_schema_dynamic import *
-    from tests.test_singer_flattening import *
+    from tests.test_authentication import (
+        FlextOracleWmsAuthSettings,
+        create_oracle_wms_client,
+    )
+    from tests.test_authentication_core import (
+        TestAuthenticationConfig,
+        TestAuthenticationMethod,
+        TestAuthenticator,
+    )
+    from tests.test_client import TestClientSimpleNew
+    from tests.test_client_class import (
+        test_client_class_creation,
+        test_client_config_access,
+        test_client_has_discovery_methods,
+        test_client_has_http_methods,
+        test_client_has_lifecycle_methods,
+        test_client_has_wms_operations,
+        test_client_internal_state,
+    )
+    from tests.test_client_core import TestFlextOracleWmsClientCore, TestGetLogger
+    from tests.test_config import (
+        test_config_auth_fields_default_empty,
+        test_config_creation_valid,
+        test_config_defaults,
+        test_config_validate_config_success,
+    )
+    from tests.test_config_module import (
+        test_config_creation,
+        test_config_custom_values,
+        test_config_reset_functionality,
+        test_config_singleton_behavior,
+        test_config_testing_factory,
+        test_config_validation,
+    )
+    from tests.test_connection import test_real_connection
+    from tests.test_declarative import (
+        TestAutomationApisIntegration,
+        TestErrorHandlingIntegration,
+        TestLgfApiV10Integration,
+        TestOracleWmsDeclarativeIntegration,
+        TestPerformanceIntegration,
+        env_config,
+        find_env_file,
+        load_env_config,
+        logger,
+        oracle_wms_client,
+        pytestmark,
+    )
+    from tests.test_discovery import (
+        TestDiscoveryConstants,
+        TestEndpointDiscoveryStrategyEnum,
+        TestFlextOracleWmsEntityDiscovery,
+    )
+    from tests.test_filtering import (
+        TestApplyOperator,
+        TestConvenienceFunctions,
+        TestErrorHandling,
+        TestFactoryFunction,
+        TestFilterValidation,
+        TestFlextOracleWmsFilterConstruction,
+        TestMatchesCondition,
+        TestNestedValueAccess,
+        TestNormalize,
+        TestPerformanceAndEdgeCases,
+        TestRecordFiltering,
+        TestRecordSorting,
+    )
+    from tests.test_helpers_core import TestFlextOracleWmsUtilities
+    from tests.test_models import (
+        test_api_response_creation,
+        test_api_response_defaults,
+        test_api_response_error,
+        test_api_response_validate_response_failure,
+        test_api_response_validate_response_success,
+        test_api_response_with_nested_data,
+        test_entity_creation,
+        test_entity_defaults,
+        test_entity_validate_entity_success,
+        test_entity_validation_bad_endpoint_raises,
+        test_entity_validation_empty_name_raises,
+    )
+    from tests.test_schema_dynamic import (
+        OracleWMSAuthMethod,
+        TestFlextOracleWmsConstants,
+        TestNestedConstants,
+        TestWmsEnums,
+    )
+    from tests.test_singer_flattening import (
+        TestFlextOracleWmsApiResponse,
+        TestFlextOracleWmsEntity,
+    )
     from tests.typings import *
     from tests.unit import *
     from tests.utilities import *
