@@ -19,10 +19,20 @@ from typing import TYPE_CHECKING as _TYPE_CHECKING
 
 from flext_core.lazy import install_lazy_exports, merge_lazy_imports
 
-if _TYPE_CHECKING:
-    from flext_core import d, e, h, r, s, x
+from flext_oracle_wms.__version__ import (
+    __author__,
+    __author_email__,
+    __description__,
+    __license__,
+    __title__,
+    __url__,
+    __version__,
+    __version_info__,
+)
 
-    from flext_oracle_wms.__version__ import *
+if _TYPE_CHECKING:
+    from flext_core import FlextTypes, d, e, h, r, s, x
+
     from flext_oracle_wms._utilities import *
     from flext_oracle_wms.api import *
     from flext_oracle_wms.constants import *
@@ -68,14 +78,6 @@ _LAZY_IMPORTS: Mapping[str, str | Sequence[str]] = merge_lazy_imports(
         "FlextOracleWmsTypes": "flext_oracle_wms.typings",
         "FlextOracleWmsUtilities": "flext_oracle_wms.utilities",
         "FlextOracleWmsValidationError": "flext_oracle_wms.errors",
-        "__author__": "flext_oracle_wms.__version__",
-        "__author_email__": "flext_oracle_wms.__version__",
-        "__description__": "flext_oracle_wms.__version__",
-        "__license__": "flext_oracle_wms.__version__",
-        "__title__": "flext_oracle_wms.__version__",
-        "__url__": "flext_oracle_wms.__version__",
-        "__version__": "flext_oracle_wms.__version__",
-        "__version_info__": "flext_oracle_wms.__version__",
         "_utilities": "flext_oracle_wms._utilities",
         "api": "flext_oracle_wms.api",
         "c": ("flext_oracle_wms.constants", "FlextOracleWmsConstants"),
@@ -108,4 +110,18 @@ _LAZY_IMPORTS: Mapping[str, str | Sequence[str]] = merge_lazy_imports(
 )
 
 
-install_lazy_exports(__name__, globals(), _LAZY_IMPORTS)
+install_lazy_exports(
+    __name__,
+    globals(),
+    _LAZY_IMPORTS,
+    [
+        "__author__",
+        "__author_email__",
+        "__description__",
+        "__license__",
+        "__title__",
+        "__url__",
+        "__version__",
+        "__version_info__",
+    ],
+)
