@@ -17,11 +17,29 @@ from flext_core.lazy import install_lazy_exports
 if _TYPE_CHECKING:
     from flext_core import FlextTypes
 
-    from flext_oracle_wms._utilities.auth import *
-    from flext_oracle_wms._utilities.client import *
-    from flext_oracle_wms._utilities.discovery import *
-    from flext_oracle_wms._utilities.filtering import *
-    from flext_oracle_wms._utilities.http_client import *
+    from flext_oracle_wms._utilities import (
+        auth,
+        client,
+        discovery,
+        filtering,
+        http_client,
+    )
+    from flext_oracle_wms._utilities.auth import FlextOracleWmsUtilitiesAuth
+    from flext_oracle_wms._utilities.client import FlextOracleWmsUtilitiesClient
+    from flext_oracle_wms._utilities.discovery import (
+        DISCOVERY_FAILURE,
+        DISCOVERY_SUCCESS,
+        FlextOracleWmsUtilitiesDiscovery,
+    )
+    from flext_oracle_wms._utilities.filtering import (
+        FlextOracleWmsDataValidationError,
+        FlextOracleWmsFilterOperator,
+        FlextOracleWmsOperatorFilter,
+        FlextOracleWmsUtilitiesFiltering,
+    )
+    from flext_oracle_wms._utilities.http_client import (
+        FlextOracleWmsUtilitiesHttpClient,
+    )
 
 _LAZY_IMPORTS: Mapping[str, str | Sequence[str]] = {
     "DISCOVERY_FAILURE": "flext_oracle_wms._utilities.discovery",

@@ -13,7 +13,14 @@ from flext_core.lazy import install_lazy_exports, merge_lazy_imports
 if _TYPE_CHECKING:
     from flext_core import FlextTypes
 
-    from examples.tests import *
+    from examples import tests
+    from examples.tests import (
+        conftest_project,
+        load_env_config,
+        logger,
+        main,
+        test_declarative_example,
+    )
 
 _LAZY_IMPORTS: Mapping[str, str | Sequence[str]] = merge_lazy_imports(
     ("examples.tests",),

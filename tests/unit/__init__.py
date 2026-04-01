@@ -21,6 +21,13 @@ from flext_core.lazy import install_lazy_exports
 if _TYPE_CHECKING:
     from flext_core import FlextTypes
 
+    from tests.unit import (
+        test_api,
+        test_config,
+        test_constants,
+        test_wms_api,
+        test_wms_client,
+    )
     from tests.unit.test_api import TestFlextOracleWmsApi
     from tests.unit.test_config import TestFlextOracleWmsSettings
     from tests.unit.test_constants import TestFlextOracleWmsConstants

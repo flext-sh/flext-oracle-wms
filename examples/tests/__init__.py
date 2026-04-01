@@ -16,6 +16,7 @@ from flext_core.lazy import install_lazy_exports
 if _TYPE_CHECKING:
     from flext_core import FlextTypes
 
+    from examples.tests import conftest_project, test_declarative_example
     from examples.tests.test_declarative_example import load_env_config, logger, main
 
 _LAZY_IMPORTS: Mapping[str, str | Sequence[str]] = {

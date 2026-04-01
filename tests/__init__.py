@@ -14,14 +14,65 @@ if _TYPE_CHECKING:
     from flext_core import FlextTypes
     from flext_tests import d, e, h, r, s, x
 
-    from tests.complete_mock_pipeline import *
-    from tests.conftest import *
-    from tests.constants import *
-    from tests.models import *
-    from tests.oracle_wms_complete_discovery import *
-    from tests.oracle_wms_focused_discovery import *
-    from tests.oracle_wms_optimized_discovery import *
-    from tests.protocols import *
+    from tests import (
+        complete_mock_pipeline,
+        conftest,
+        constants,
+        models,
+        oracle_wms_complete_discovery,
+        oracle_wms_focused_discovery,
+        oracle_wms_optimized_discovery,
+        protocols,
+        sitecustomize,
+        test_authentication,
+        test_authentication_core,
+        test_client,
+        test_client_class,
+        test_client_core,
+        test_config,
+        test_config_module,
+        test_connection,
+        test_declarative,
+        test_discovery,
+        test_filtering,
+        test_helpers,
+        test_helpers_core,
+        test_models,
+        test_schema_dynamic,
+        test_singer_flattening,
+        test_unified_config,
+        typings,
+        unit,
+        utilities,
+    )
+    from tests.complete_mock_pipeline import CompleteMockPipeline
+    from tests.conftest import (
+        load_test_env,
+        mock_config,
+        pytest_configure,
+        real_config,
+        reset_settings_singleton,
+        sample_entities,
+        sample_entity_data,
+    )
+    from tests.constants import (
+        FlextOracleWmsTestConstants,
+        FlextOracleWmsTestConstants as c,
+    )
+    from tests.models import FlextOracleWmsTestModels, FlextOracleWmsTestModels as m
+    from tests.oracle_wms_complete_discovery import (
+        OracleWmsCompleteDiscovery,
+        run_complete_discovery,
+    )
+    from tests.oracle_wms_focused_discovery import FocusedOracleWmsDiscovery, main
+    from tests.oracle_wms_optimized_discovery import (
+        OptimizedOracleWmsDiscovery,
+        run_optimized_discovery,
+    )
+    from tests.protocols import (
+        FlextOracleWmsTestProtocols,
+        FlextOracleWmsTestProtocols as p,
+    )
     from tests.test_authentication import (
         FlextOracleWmsAuthSettings,
         create_oracle_wms_client,
@@ -113,9 +164,20 @@ if _TYPE_CHECKING:
         TestFlextOracleWmsApiResponse,
         TestFlextOracleWmsEntity,
     )
-    from tests.typings import *
-    from tests.unit import *
-    from tests.utilities import *
+    from tests.typings import FlextOracleWmsTestTypes, FlextOracleWmsTestTypes as t
+    from tests.unit import (
+        TestFlextOracleWmsApi,
+        TestFlextOracleWmsClient,
+        TestFlextOracleWmsSettings,
+        test_api,
+        test_constants,
+        test_wms_api,
+        test_wms_client,
+    )
+    from tests.utilities import (
+        FlextOracleWmsTestUtilities,
+        FlextOracleWmsTestUtilities as u,
+    )
 
 _LAZY_IMPORTS: Mapping[str, str | Sequence[str]] = merge_lazy_imports(
     ("tests.unit",),
