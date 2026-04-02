@@ -9,7 +9,6 @@ from __future__ import annotations
 from unittest.mock import MagicMock
 
 from flext_core import r
-
 from flext_oracle_wms import (
     DISCOVERY_FAILURE,
     DISCOVERY_SUCCESS,

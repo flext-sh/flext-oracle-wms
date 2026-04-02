@@ -15,9 +15,9 @@ from pathlib import Path
 from typing import ClassVar
 
 from dotenv import load_dotenv
-from flext_core import FlextLogger
 from pydantic import BaseModel, ConfigDict, Field
 
+from flext_core import FlextLogger
 from flext_oracle_wms import (
     FlextOracleWmsClient,
     FlextOracleWmsClientSettings,

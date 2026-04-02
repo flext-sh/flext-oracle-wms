@@ -9,8 +9,9 @@ from __future__ import annotations
 from collections.abc import Mapping, MutableSequence, Sequence
 from enum import StrEnum, unique
 
-from flext_core import FlextExceptions, FlextLogger, r
+from pydantic import ValidationError
 
+from flext_core import FlextExceptions, FlextLogger, r
 from flext_oracle_wms import (
     FlextOracleWmsConstants as c,
     FlextOracleWmsModels,
@@ -158,8 +159,8 @@ class FlextOracleWmsUtilitiesFiltering:
             op: str,
         ) -> bool:
             try:
-                left_num = float(str(left))
-                right_num = float(str(right))
+                left_num = t.OracleWms.FLOAT_ADAPTER.validate_python(left)
+                right_num = t.OracleWms.FLOAT_ADAPTER.validate_python(right)
                 if op == ">":
                     return left_num > right_num
                 if op == "<":
@@ -167,7 +168,7 @@ class FlextOracleWmsUtilitiesFiltering:
                 if op == ">=":
                     return left_num >= right_num
                 return left_num <= right_num
-            except ValueError:
+            except ValidationError:
                 left_str = str(left)
                 right_str = str(right)
                 if op == ">":

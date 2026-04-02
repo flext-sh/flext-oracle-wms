@@ -12,8 +12,8 @@ from __future__ import annotations
 from unittest.mock import MagicMock
 
 import pytest
-from flext_core import FlextLogger, r
 
+from flext_core import FlextLogger, r
 from flext_oracle_wms import FlextOracleWmsClient, FlextOracleWmsSettings
 
 

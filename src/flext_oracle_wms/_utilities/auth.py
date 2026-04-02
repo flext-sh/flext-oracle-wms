@@ -9,7 +9,6 @@ from __future__ import annotations
 import base64
 
 from flext_core import r
-
 from flext_oracle_wms import (
     FlextOracleWmsConstants as c,
     FlextOracleWmsModels as m,

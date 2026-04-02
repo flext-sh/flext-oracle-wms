@@ -21,8 +21,8 @@ from __future__ import annotations
 from collections.abc import Mapping, Sequence
 
 import pytest
-from flext_core import FlextExceptions
 
+from flext_core import FlextExceptions
 from flext_oracle_wms import (
     FlextOracleWmsDataValidationError,
     FlextOracleWmsFilter,

@@ -28,7 +28,7 @@ class FlextOracleWmsConstants(FlextConstants):
 
         FLEXT_WMS_VERSION: Final[str] = "1.0.0"
 
-        API_CONFIG: ClassVar[Mapping[str, str | int]] = {
+        API_CONFIG: ClassVar[t.HeaderMapping] = {
             "version_default": "v1",
             "base_url_default": "http://localhost:8080",
             "timeout_default": 30,

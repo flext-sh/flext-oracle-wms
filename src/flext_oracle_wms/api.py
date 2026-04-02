@@ -13,7 +13,6 @@ from collections.abc import Mapping
 from typing import ClassVar, override
 
 from flext_core import FlextService, r
-
 from flext_oracle_wms import (
     FlextHttpClient,
     FlextOracleWmsClient,

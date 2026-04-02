@@ -20,7 +20,6 @@ from flext_core.lazy import install_lazy_exports
 
 if _TYPE_CHECKING:
     from flext_core import FlextTypes
-
     from tests.unit import (
         test_api,
         test_config,
@@ -33,7 +32,7 @@ if _TYPE_CHECKING:
     from tests.unit.test_constants import Testc
     from tests.unit.test_wms_client import TestFlextOracleWmsClient
 
-_LAZY_IMPORTS: Mapping[str, str | Sequence[str]] = {
+_LAZY_IMPORTS: FlextTypes.LazyImportIndex = {
     "TestFlextOracleWmsApi": "tests.unit.test_api",
     "TestFlextOracleWmsClient": "tests.unit.test_wms_client",
     "TestFlextOracleWmsSettings": "tests.unit.test_config",

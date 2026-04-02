@@ -13,7 +13,6 @@ from __future__ import annotations
 import os
 
 from flext_core import FlextLogger
-
 from flext_oracle_wms import (
     FlextOracleWmsClient,
     FlextOracleWmsConstants,

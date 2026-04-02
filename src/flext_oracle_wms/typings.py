@@ -9,9 +9,9 @@ from __future__ import annotations
 from collections.abc import Mapping, Sequence
 from typing import Annotated, Literal
 
-from flext_core import FlextTypes
-from pydantic import Field, StringConstraints
+from pydantic import Field, StringConstraints, TypeAdapter
 
+from flext_core import FlextTypes
 from flext_oracle_wms import c
 
 
@@ -24,6 +24,8 @@ class FlextOracleWmsTypes(FlextTypes):
 
     class OracleWms:
         """Oracle WMS-specific project types."""
+
+        FLOAT_ADAPTER: TypeAdapter[float] = TypeAdapter(float)
 
         # =========================================================================
         # TYPE ALIASES - Advanced composition for minimal declarations

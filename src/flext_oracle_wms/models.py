@@ -12,9 +12,9 @@ from __future__ import annotations
 from collections.abc import Mapping, MutableSequence, Sequence
 from typing import Annotated, ClassVar, Literal
 
-from flext_core import FlextModels, r
 from pydantic import BaseModel, ConfigDict, Field, StringConstraints, field_validator
 
+from flext_core import FlextModels, r
 from flext_oracle_wms import FlextOracleWmsConstants as c, FlextOracleWmsTypes as t
 
 

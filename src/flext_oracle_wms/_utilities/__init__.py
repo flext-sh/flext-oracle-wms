@@ -16,7 +16,6 @@ from flext_core.lazy import install_lazy_exports
 
 if _TYPE_CHECKING:
     from flext_core import FlextTypes
-
     from flext_oracle_wms._utilities import (
         auth,
         client,
@@ -41,7 +40,7 @@ if _TYPE_CHECKING:
         FlextOracleWmsUtilitiesHttpClient,
     )
 
-_LAZY_IMPORTS: Mapping[str, str | Sequence[str]] = {
+_LAZY_IMPORTS: FlextTypes.LazyImportIndex = {
     "DISCOVERY_FAILURE": "flext_oracle_wms._utilities.discovery",
     "DISCOVERY_SUCCESS": "flext_oracle_wms._utilities.discovery",
     "FlextOracleWmsDataValidationError": "flext_oracle_wms._utilities.filtering",

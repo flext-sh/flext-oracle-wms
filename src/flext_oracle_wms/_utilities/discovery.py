@@ -9,7 +9,6 @@ from __future__ import annotations
 from collections.abc import Mapping, Sequence
 
 from flext_core import r
-
 from flext_oracle_wms import (
     FlextOracleWmsConstants as c,
     FlextOracleWmsProtocols as p,

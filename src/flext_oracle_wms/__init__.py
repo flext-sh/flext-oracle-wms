@@ -18,7 +18,6 @@ from collections.abc import Mapping, Sequence
 from typing import TYPE_CHECKING as _TYPE_CHECKING
 
 from flext_core.lazy import install_lazy_exports, merge_lazy_imports
-
 from flext_oracle_wms.__version__ import (
     __author__,
     __author_email__,
@@ -32,7 +31,6 @@ from flext_oracle_wms.__version__ import (
 
 if _TYPE_CHECKING:
     from flext_core import FlextTypes, d, e, h, r, s, x
-
     from flext_oracle_wms import (
         _utilities,
         api,
@@ -107,7 +105,7 @@ if _TYPE_CHECKING:
     from flext_oracle_wms.wms_client import FlextOracleWmsClient
     from flext_oracle_wms.wms_discovery import FlextOracleWmsEntityDiscovery
 
-_LAZY_IMPORTS: Mapping[str, str | Sequence[str]] = merge_lazy_imports(
+_LAZY_IMPORTS: FlextTypes.LazyImportIndex = merge_lazy_imports(
     ("flext_oracle_wms._utilities",),
     {
         "FlextHttpClient": "flext_oracle_wms.http_client",

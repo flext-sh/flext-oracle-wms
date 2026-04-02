@@ -15,9 +15,9 @@ from typing import override
 from urllib.parse import urlparse
 
 from dotenv import load_dotenv
-from flext_core import r
 from flext_tests import FlextTestsUtilities
 
+from flext_core import r
 from flext_oracle_wms import (
     FlextOracleWmsApi,
     FlextOracleWmsClientSettings,

@@ -15,9 +15,9 @@ from flext_api import (
     FlextApiSettings,
     FlextApiTypes,
 )
-from flext_core import FlextUtilities, r
 from pydantic import BaseModel, ValidationError
 
+from flext_core import FlextUtilities, r
 from flext_oracle_wms import (
     FlextOracleWmsModels as m,
     FlextOracleWmsSettings,

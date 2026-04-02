@@ -20,7 +20,6 @@ from pathlib import Path
 from typing import cast
 
 from flext_core import FlextLogger, r
-
 from tests import t
 
 logger = FlextLogger(__name__)
@@ -371,7 +370,7 @@ class CompleteMockPipeline:
         field: str,
         *,
         value: t.NormalizedValue,
-    ) -> Mapping[str, str | t.StrSequence]:
+    ) -> t.AttributeMapping:
         """Infer Singer type from field name and value - Strategy Pattern."""
         field_type = self._infer_type_from_field_name(field)
         if field_type:
@@ -381,9 +380,9 @@ class CompleteMockPipeline:
     def _infer_type_from_field_name(
         self,
         field: str,
-    ) -> Mapping[str, str | t.StrSequence] | None:
+    ) -> t.AttributeMapping | None:
         """Infer type from field name patterns - Template Method Pattern."""
-        field_type_mapping: Mapping[str, Mapping[str, str | t.StrSequence]] = {
+        field_type_mapping: Mapping[str, t.AttributeMapping] = {
             "id": {"type": "integer"},
             "_code": {"type": ["string", "null"]},
             "_ts": {"type": ["string", "null"], "format": "date-time"},
@@ -404,7 +403,7 @@ class CompleteMockPipeline:
         self,
         *,
         value: t.NormalizedValue,
-    ) -> Mapping[str, str | t.StrSequence]:
+    ) -> t.AttributeMapping:
         """Infer type from Python value type - Template Method Pattern."""
         if isinstance(value, bool):
             return {"type": ["boolean", "null"]}

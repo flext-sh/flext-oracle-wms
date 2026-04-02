@@ -26,8 +26,8 @@ from collections.abc import Sequence
 from pathlib import Path
 
 from dotenv import load_dotenv
-from flext_core import FlextContainer, FlextLogger, r
 
+from flext_core import FlextContainer, FlextLogger, r
 from flext_oracle_wms import (
     FlextOracleWmsClient,
     FlextOracleWmsExceptions,

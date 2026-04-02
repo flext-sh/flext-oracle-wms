@@ -13,7 +13,6 @@ from datetime import UTC, datetime
 from pathlib import Path
 
 from flext_core import FlextLogger, r
-
 from flext_oracle_wms import FlextOracleWmsClient, FlextOracleWmsClientSettings
 from tests import t
 

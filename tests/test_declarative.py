@@ -15,8 +15,8 @@ from collections.abc import Generator, Sequence
 from pathlib import Path
 
 import pytest
-from flext_core import FlextLogger, r
 
+from flext_core import FlextLogger, r
 from flext_oracle_wms import (
     FlextOracleWmsApi,
     FlextOracleWmsClient,

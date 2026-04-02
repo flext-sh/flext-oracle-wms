@@ -18,8 +18,8 @@ from datetime import UTC, datetime
 from pathlib import Path
 
 from flext_api import FlextApiModels
-from flext_core import FlextLogger, r
 
+from flext_core import FlextLogger, r
 from flext_oracle_wms import (
     FlextOracleWmsApi,
     FlextOracleWmsAuthenticator,

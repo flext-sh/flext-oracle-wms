@@ -34,8 +34,8 @@ from collections.abc import Sequence
 from pathlib import Path
 
 from dotenv import load_dotenv
-from flext_core import FlextLogger, r
 
+from flext_core import FlextLogger, r
 from flext_oracle_wms import (
     FlextOracleWmsApi,
     FlextOracleWmsAuthenticator,
