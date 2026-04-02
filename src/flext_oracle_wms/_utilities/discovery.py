@@ -6,7 +6,7 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from collections.abc import Mapping, Sequence
+from collections.abc import Sequence
 
 from flext_core import r
 from flext_oracle_wms import (
@@ -33,14 +33,14 @@ class FlextOracleWmsUtilitiesDiscovery:
             self.client = client
 
         @staticmethod
-        def _to_discovered_entity(entity_name: str) -> Mapping[str, t.ContainerValue]:
+        def _to_discovered_entity(entity_name: str) -> t.ContainerValueMapping:
             return {
                 "name": entity_name,
                 "path": f"/entities/{entity_name}",
                 "strategy": c.OracleWms.EndpointDiscoveryStrategy.API_BASED,
             }
 
-        def discover_entities(self) -> r[Sequence[Mapping[str, t.ContainerValue]]]:
+        def discover_entities(self) -> r[Sequence[t.ContainerValueMapping]]:
             """Discover entities from Oracle WMS API."""
             entities_result = self.client.discover_entities()
             if entities_result.is_failure:

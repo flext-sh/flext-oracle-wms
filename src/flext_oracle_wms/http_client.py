@@ -8,9 +8,7 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from collections.abc import Mapping
-
-from flext_oracle_wms import FlextOracleWmsUtilitiesHttpClient
+from flext_oracle_wms import FlextOracleWmsUtilitiesHttpClient, t
 
 FlextHttpClient = FlextOracleWmsUtilitiesHttpClient.HttpClient
 
@@ -18,7 +16,7 @@ FlextHttpClient = FlextOracleWmsUtilitiesHttpClient.HttpClient
 def create_flext_http_client(
     base_url: str,
     timeout: float = 30.0,
-    headers: Mapping[str, str] | None = None,
+    headers: t.StrMapping | None = None,
     *,
     verify_ssl: bool = True,
 ) -> FlextHttpClient:

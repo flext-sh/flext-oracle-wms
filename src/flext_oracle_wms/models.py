@@ -90,7 +90,7 @@ class FlextOracleWmsModels(FlextModels):
             """Oracle WMS API response model."""
 
             data: Annotated[
-                Mapping[str, t.ContainerValue],
+                t.ContainerValueMapping,
                 Field(description="Response data"),
             ] = Field(default_factory=dict)
             status_code: Annotated[
@@ -161,7 +161,7 @@ class FlextOracleWmsModels(FlextModels):
             model_config: ClassVar[ConfigDict] = ConfigDict(extra="ignore")
 
             apis: Sequence[t.StrMapping] = Field(
-                default_factory=lambda: list[Mapping[str, str]]()
+                default_factory=lambda: list[t.StrMapping]()
             )
 
         class EntityDataResponse(BaseModel):
@@ -170,7 +170,7 @@ class FlextOracleWmsModels(FlextModels):
             model_config: ClassVar[ConfigDict] = ConfigDict(extra="ignore")
 
             data: Sequence[t.StrMapping] = Field(
-                default_factory=lambda: list[Mapping[str, str]]()
+                default_factory=lambda: list[t.StrMapping]()
             )
 
         # =====================================================================
@@ -220,9 +220,9 @@ class FlextOracleWmsModels(FlextModels):
                 Field(description="Total order amount"),
             ] = 0.0
             items: Annotated[
-                Sequence[Mapping[str, t.ContainerValue]],
+                Sequence[t.ContainerValueMapping],
                 Field(description="Order items"),
-            ] = Field(default_factory=lambda: list[Mapping[str, t.ContainerValue]]())
+            ] = Field(default_factory=lambda: list[t.ContainerValueMapping]())
 
         class Shipment(WmsEntity):
             """Shipment domain entity."""
@@ -247,9 +247,9 @@ class FlextOracleWmsModels(FlextModels):
             wave_id: Annotated[str, Field(description="Wave identifier")] = ""
             status: Annotated[str, Field(description="Task status")] = "pending"
             items: Annotated[
-                Sequence[Mapping[str, t.ContainerValue]],
+                Sequence[t.ContainerValueMapping],
                 Field(description="Task items"),
-            ] = Field(default_factory=lambda: list[Mapping[str, t.ContainerValue]]())
+            ] = Field(default_factory=lambda: list[t.ContainerValueMapping]())
 
         class Location(WmsEntity):
             """Location domain entity."""
@@ -333,10 +333,10 @@ class FlextOracleWmsModels(FlextModels):
         # TYPE ALIASES - Advanced composition for minimal declarations
         # =========================================================================
 
-        type TRecord = Mapping[str, t.ContainerValue]
-        type TRecordBatch = Sequence[Mapping[str, t.ContainerValue]]
-        type TSchema = Mapping[str, Mapping[str, t.ContainerValue]]
-        type TApiResponse = Mapping[str, t.ContainerValue]
+        type TRecord = t.ContainerValueMapping
+        type TRecordBatch = Sequence[t.ContainerValueMapping]
+        type TSchema = Mapping[str, t.ContainerValueMapping]
+        type TApiResponse = t.ContainerValueMapping
         type TApiVersion = Literal["v2", "v1"]
         type TEntityId = Annotated[str, StringConstraints(min_length=1, max_length=100)]
         type TEntityName = Annotated[
@@ -345,7 +345,6 @@ class FlextOracleWmsModels(FlextModels):
         ]
         type TFilterValue = t.Scalar | None
         type TFilters = Mapping[str, t.Scalar | None]
-        type TPaginationInfo = Mapping[str, int]
         type TTimeout = Annotated[int, Field(ge=1, le=300)]
 
         # =========================================================================

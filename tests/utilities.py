@@ -51,7 +51,7 @@ class FlextOracleWmsTestUtilities(FlextTestsUtilities, FlextOracleWmsUtilities):
                 """Normalize a scalar-like value into a string."""
                 if isinstance(value, str):
                     return value
-                if isinstance(value, int | float):
+                if isinstance(value, (int, float)):
                     return str(value)
                 return default
 
@@ -60,7 +60,7 @@ class FlextOracleWmsTestUtilities(FlextTestsUtilities, FlextOracleWmsUtilities):
                 value: FlextOracleWmsTestTypes.NormalizedValue, default: int
             ) -> int:
                 """Normalize a scalar-like value into an integer."""
-                if isinstance(value, int | float):
+                if isinstance(value, (int, float)):
                     return int(value)
                 if isinstance(value, str):
                     try:

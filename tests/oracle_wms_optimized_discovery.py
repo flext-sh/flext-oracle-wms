@@ -25,7 +25,7 @@ from tests import t
 
 logger = FlextLogger(__name__)
 
-type JsonScalar = str | int | float | bool | None
+type JsonScalar = t.Primitives | None
 type JsonValue = JsonScalar | Mapping[str, JsonValue] | Sequence[JsonValue]
 
 _API_VERSION_LGF_V10 = "LGF_V10"
@@ -239,7 +239,7 @@ class OptimizedOracleWmsDiscovery:
     def _generate_singer_schema_from_entity_data(
         self,
         entity_name: str,
-        entity_data: Mapping[str, t.NormalizedValue],
+        entity_data: t.ContainerMapping,
     ) -> dict[str, t.NormalizedValue] | None:
         """Generate Singer schema from entity data with proper typing."""
         try:
@@ -388,7 +388,7 @@ class OptimizedOracleWmsDiscovery:
     def _determine_key_properties(
         self,
         entity_name: str,
-        fields: Sequence[str],
+        fields: t.StrSequence,
     ) -> list[str]:
         """Determine key properties for Oracle WMS entity."""
         potential_keys: list[str] = []

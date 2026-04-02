@@ -6,7 +6,6 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from collections.abc import Mapping, MutableMapping
 from types import TracebackType
 from typing import Self
 
@@ -65,7 +64,7 @@ class FlextOracleWmsUtilitiesHttpClient:
         ) -> t.StrMapping:
             if headers is None:
                 return {}
-            normalized: MutableMapping[str, str] = {}
+            normalized: t.MutableStrMapping = {}
             for key, value in headers.items():
                 match value:
                     case str() as str_value:
@@ -262,7 +261,7 @@ class FlextOracleWmsUtilitiesHttpClient:
             match body:
                 case dict() as payload:
                     try:
-                        validated: Mapping[str, t.ContainerValue] = (
+                        validated: t.ContainerValueMapping = (
                             _CONTAINER_VALUE_MAP_ADAPTER.validate_python(payload)
                         )
                         return validated
@@ -271,7 +270,7 @@ class FlextOracleWmsUtilitiesHttpClient:
                         return fallback_dict
                 case str() as raw if raw:
                     try:
-                        validated_json: Mapping[str, t.ContainerValue] = (
+                        validated_json: t.ContainerValueMapping = (
                             _CONTAINER_VALUE_MAP_ADAPTER.validate_json(raw)
                         )
                         return validated_json
@@ -280,7 +279,7 @@ class FlextOracleWmsUtilitiesHttpClient:
                         return str_fallback
                 case bytes() as raw_bytes:
                     try:
-                        validated_bytes: Mapping[str, t.ContainerValue] = (
+                        validated_bytes: t.ContainerValueMapping = (
                             _CONTAINER_VALUE_MAP_ADAPTER.validate_json(raw_bytes)
                         )
                         return validated_bytes

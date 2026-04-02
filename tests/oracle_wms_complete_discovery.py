@@ -13,7 +13,7 @@ NO FALLBACKS, NO ESTIMATIONS, NO BASIC LIMITS - FULL EXPLORATION
 from __future__ import annotations
 
 import json
-from collections.abc import Mapping, MutableMapping, MutableSequence, Sequence
+from collections.abc import Mapping, MutableSequence, Sequence
 from datetime import UTC, datetime
 from pathlib import Path
 
@@ -64,8 +64,8 @@ class OracleWmsCompleteDiscovery:
         )
         self.client = FlextOracleWmsClient(config=self.config)
         self.discovered_entities: MutableSequence[str] = []
-        self.entity_metadata: MutableMapping[str, t.NormalizedValue] = {}
-        self.complete_schemas: MutableMapping[str, t.NormalizedValue] = {}
+        self.entity_metadata: t.MutableContainerMapping = {}
+        self.complete_schemas: t.MutableContainerMapping = {}
 
     def start_discovery(self) -> r[bool]:
         """Start complete discovery process."""
@@ -307,7 +307,7 @@ class OracleWmsCompleteDiscovery:
         entities_with_data: MutableSequence[str],
         entities_without_data: MutableSequence[str],
         entities_with_errors: MutableSequence[tuple[str, str]],
-        metadata_results: MutableMapping[str, t.NormalizedValue],
+        metadata_results: t.MutableContainerMapping,
     ) -> None:
         """Process metadata for a single entity."""
         try:
@@ -331,13 +331,13 @@ class OracleWmsCompleteDiscovery:
         entity_name: str,
         count: int,
         results: Sequence[t.StrMapping],
-    ) -> MutableMapping[str, t.NormalizedValue]:
+    ) -> t.MutableContainerMapping:
         """Create metadata info dict for an entity."""
         fields: MutableSequence[str] = []
-        field_types: MutableMapping[str, str] = {}
-        sample_data: MutableMapping[str, t.NormalizedValue] | None = None
+        field_types: t.MutableStrMapping = {}
+        sample_data: t.MutableContainerMapping | None = None
         sample_size = len(results)
-        metadata_info: MutableMapping[str, t.NormalizedValue] = {
+        metadata_info: t.MutableContainerMapping = {
             "entity_name": entity_name,
             "total_count": count,
             "sample_size": sample_size,
@@ -356,7 +356,7 @@ class OracleWmsCompleteDiscovery:
         metadata_info["field_types"] = {
             k: type(v).__name__ for k, v in sample_record.items()
         }
-        safe_sample: MutableMapping[str, t.NormalizedValue] = {}
+        safe_sample: t.MutableContainerMapping = {}
         max_string_length = 200
         for k, v in sample_record.items():
             if len(v) >= max_string_length:
@@ -368,7 +368,7 @@ class OracleWmsCompleteDiscovery:
 
     def discover_complete_entity_metadata(
         self,
-    ) -> r[Mapping[str, t.NormalizedValue]]:
+    ) -> r[t.ContainerMapping]:
         """Discover complete metadata for all entities using Oracle WMS APIs."""
         if not self.discovered_entities:
             entities_result = self.client.discover_entities()
@@ -377,10 +377,8 @@ class OracleWmsCompleteDiscovery:
                 if isinstance(value, list):
                     self.discovered_entities = list(value)
             else:
-                return r[Mapping[str, t.NormalizedValue]].fail(
-                    "Entity discovery failed"
-                )
-        metadata_results: MutableMapping[str, t.NormalizedValue] = {}
+                return r[t.ContainerMapping].fail("Entity discovery failed")
+        metadata_results: t.MutableContainerMapping = {}
         entities_with_data: MutableSequence[str] = []
         entities_without_data: MutableSequence[str] = []
         entities_with_errors: MutableSequence[tuple[str, str]] = []
@@ -414,7 +412,7 @@ class OracleWmsCompleteDiscovery:
             )
             for _name, _meta in sorted_entities[:10]:
                 pass
-        return r[Mapping[str, t.NormalizedValue]].ok({
+        return r[t.ContainerMapping].ok({
             "total_entities": len(self.discovered_entities),
             "entities_with_data": entities_with_data,
             "entities_without_data": entities_without_data,
@@ -424,10 +422,10 @@ class OracleWmsCompleteDiscovery:
 
     def generate_singer_schemas_with_flattening(
         self,
-    ) -> r[Mapping[str, t.NormalizedValue]]:
+    ) -> r[t.ContainerMapping]:
         """Generate Singer schemas with real data flattening based on Oracle metadata."""
         if not self.entity_metadata:
-            return r[Mapping[str, t.NormalizedValue]].fail(
+            return r[t.ContainerMapping].fail(
                 "No entity metadata available for schema generation",
             )
         entities_with_data = [
@@ -437,7 +435,7 @@ class OracleWmsCompleteDiscovery:
             and meta.get("has_data")
             and meta.get("structure_available")
         ]
-        singer_schemas: MutableMapping[str, t.NormalizedValue] = {}
+        singer_schemas: t.MutableContainerMapping = {}
         for entity_name in entities_with_data:
             metadata = self.entity_metadata[entity_name]
             if isinstance(metadata, dict):
@@ -448,19 +446,19 @@ class OracleWmsCompleteDiscovery:
                 if schema:
                     singer_schemas[entity_name] = schema
         self.complete_schemas = singer_schemas
-        return r[Mapping[str, t.NormalizedValue]].ok(singer_schemas)
+        return r[t.ContainerMapping].ok(singer_schemas)
 
     def _generate_singer_schema_from_metadata(
         self,
         entity_name: str,
         metadata: dict[str, t.NormalizedValue],
-    ) -> Mapping[str, t.NormalizedValue] | None:
+    ) -> t.ContainerMapping | None:
         """Generate Singer schema from Oracle WMS metadata with flattening."""
         try:
             fields = metadata.get("fields", [])
             field_types = metadata.get("field_types", {})
             sample_data = metadata.get("sample_data", {})
-            properties: dict[str, Mapping[str, t.NormalizedValue]] = {}
+            properties: dict[str, t.ContainerMapping] = {}
             if isinstance(fields, list) and isinstance(field_types, dict):
                 for field in fields:
                     if isinstance(field, str):
@@ -490,7 +488,7 @@ class OracleWmsCompleteDiscovery:
         python_type: str,
         sample_value: t.NormalizedValue,
         field_name: str,
-    ) -> Mapping[str, t.NormalizedValue]:
+    ) -> t.ContainerMapping:
         """Map Oracle/Python types to Singer types based on real data."""
         if sample_value is not None:
             if isinstance(sample_value, bool):
@@ -509,7 +507,7 @@ class OracleWmsCompleteDiscovery:
                 return {"type": ["object", "null"]}
             if isinstance(sample_value, list):
                 return {"type": ["array", "null"]}
-        type_mapping: Mapping[str, Mapping[str, t.NormalizedValue]] = {
+        type_mapping: Mapping[str, t.ContainerMapping] = {
             "int": {"type": ["integer", "null"]},
             "float": {"type": ["number", "null"]},
             "str": {"type": ["string", "null"]},

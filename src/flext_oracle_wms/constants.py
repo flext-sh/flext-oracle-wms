@@ -35,7 +35,7 @@ class FlextOracleWmsConstants(FlextConstants):
             "max_retries": 3,
         }
 
-        PROCESSING_CONFIG: ClassVar[Mapping[str, int]] = {
+        PROCESSING_CONFIG: ClassVar[t.IntMapping] = {
             "default_batch_size": FlextConstants.DEFAULT_SIZE,
             "max_batch_size": FlextConstants.MAX_ITEMS,
             "default_page_size": FlextConstants.DEFAULT_PAGE_SIZE,
@@ -282,7 +282,7 @@ class FlextOracleWmsConstants(FlextConstants):
     class Api:
         """API constants - composed."""
 
-        CONFIG: ClassVar[Mapping[str, int]] = {
+        CONFIG: ClassVar[t.IntMapping] = {
             "default_timeout": 60,
             "min_http_status_code": 200,
             "max_http_status_code": 599,

@@ -31,10 +31,10 @@ class FlextOracleWmsTypes(FlextTypes):
         # TYPE ALIASES - Advanced composition for minimal declarations
         # =========================================================================
 
-        type TRecord = Mapping[str, FlextTypes.ContainerValue]
-        type TRecordBatch = Sequence[Mapping[str, FlextTypes.ContainerValue]]
-        type TSchema = Mapping[str, Mapping[str, FlextTypes.ContainerValue]]
-        type TApiResponse = Mapping[str, FlextTypes.ContainerValue]
+        type TRecord = FlextTypes.ContainerValueMapping
+        type TRecordBatch = Sequence[FlextTypes.ContainerValueMapping]
+        type TSchema = Mapping[str, FlextTypes.ContainerValueMapping]
+        type TApiResponse = FlextTypes.ContainerValueMapping
         type TApiVersion = Literal["v2", "v1"]
         type TEntityId = Annotated[str, StringConstraints(min_length=1, max_length=100)]
         type TEntityName = Annotated[
@@ -43,27 +43,26 @@ class FlextOracleWmsTypes(FlextTypes):
         ]
         type TFilterValue = FlextTypes.OptionalScalar
         type TFilters = Mapping[str, FlextTypes.OptionalScalar]
-        type TPaginationInfo = Mapping[str, int]
         type TTimeout = Annotated[int, Field(ge=1, le=300)]
 
         type ProjectType = c.OracleWms.ProjectType
-        type WmsProjectConfig = Mapping[str, FlextTypes.ContainerValue]
+        type WmsProjectConfig = FlextTypes.ContainerValueMapping
         type WarehouseConfig = Mapping[str, FlextTypes.Scalar | FlextTypes.StrSequence]
         type InventoryConfig = Mapping[
             str,
-            bool | str | Mapping[str, FlextTypes.ContainerValue],
+            bool | str | FlextTypes.ContainerValueMapping,
         ]
 
         type WmsConfig = Mapping[
             str,
-            FlextTypes.Scalar | Mapping[str, FlextTypes.ContainerValue],
+            FlextTypes.Scalar | FlextTypes.ContainerValueMapping,
         ]
         type WmsEntity = Mapping[
             str,
-            FlextTypes.ContainerValue | Mapping[str, FlextTypes.ContainerValue],
+            FlextTypes.ContainerValue | FlextTypes.ContainerValueMapping,
         ]
-        type WmsRecord = Mapping[str, FlextTypes.ContainerValue]
-        type WmsRecords = Sequence[Mapping[str, FlextTypes.ContainerValue]]
+        type WmsRecord = FlextTypes.ContainerValueMapping
+        type WmsRecords = Sequence[FlextTypes.ContainerValueMapping]
 
         class Core:
             """Core convenience type aliases for common patterns.
@@ -73,7 +72,7 @@ class FlextOracleWmsTypes(FlextTypes):
             Access parent core types via inheritance from FlextOracleWmsTypes.
             """
 
-            type Dict = Mapping[str, FlextTypes.ContainerValue]
+            type Dict = FlextTypes.ContainerValueMapping
             "Type alias for generic dictionary (attribute name to value mapping)."
             type FilterScalar = FlextTypes.OptionalScalar
             type FilterList = Sequence[FlextOracleWmsTypes.OracleWms.Core.FilterScalar]
@@ -115,7 +114,7 @@ class FlextOracleWmsTypes(FlextTypes):
                     ],
                 ]
             )
-            type HttpJsonObject = Mapping[str, FlextTypes.ContainerValue]
+            type HttpJsonObject = FlextTypes.ContainerValueMapping
             type FilterEntry = (
                 FlextOracleWmsTypes.OracleWms.Core.FilterScalar
                 | FlextOracleWmsTypes.OracleWms.Core.FilterList

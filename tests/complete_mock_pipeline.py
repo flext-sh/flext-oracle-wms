@@ -14,7 +14,7 @@ from __future__ import annotations
 
 import json
 import uuid
-from collections.abc import Mapping, MutableMapping, Sequence
+from collections.abc import Mapping, Sequence
 from datetime import UTC, datetime
 from pathlib import Path
 from typing import cast
@@ -419,9 +419,7 @@ class CompleteMockPipeline:
         """Determine if field should be a key property."""
         return field == "id" or (field.endswith("_code") and (not existing_keys))
 
-    def _add_singer_metadata(
-        self, properties: MutableMapping[str, t.NormalizedValue]
-    ) -> None:
+    def _add_singer_metadata(self, properties: t.MutableContainerMapping) -> None:
         """Add Singer metadata properties - SRP compliance."""
         properties.update({
             "_sdc_extracted_at": {"type": "string", "format": "date-time"},
@@ -432,8 +430,8 @@ class CompleteMockPipeline:
 
     def _build_singer_schema(
         self,
-        properties: Mapping[str, t.NormalizedValue],
-        key_properties: Sequence[str],
+        properties: t.ContainerMapping,
+        key_properties: t.StrSequence,
     ) -> dict[str, t.NormalizedValue]:
         """Build complete Singer schema - SRP compliance."""
         return {
