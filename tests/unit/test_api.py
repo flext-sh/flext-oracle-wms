@@ -7,20 +7,10 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from typing import override
-
-from flext_core import FlextService, r
+from flext_core import FlextService
 
 from flext_oracle_wms import FlextOracleWmsApi, FlextOracleWmsClient
-
-
-class _ConcreteWmsApi(FlextOracleWmsApi):
-    """Concrete subclass for testing (FlextService.execute is abstract)."""
-
-    @override
-    def execute(self) -> r[None]:
-        """No-op execute for tests."""
-        return r[None].ok(None)
+from tests import u
 
 
 class TestFlextOracleWmsApi:
@@ -32,18 +22,18 @@ class TestFlextOracleWmsApi:
 
     def test_initialization(self) -> None:
         """Test initialization creates WMS client."""
-        api = _ConcreteWmsApi()
+        api = u.OracleWms.Tests.ConcreteApi()
         assert hasattr(api, "_client")
         assert isinstance(api._client, FlextOracleWmsClient)
 
     def test_has_logger(self) -> None:
         """Test facade has logger from FlextService."""
-        api = _ConcreteWmsApi()
+        api = u.OracleWms.Tests.ConcreteApi()
         assert hasattr(api, "logger")
 
     def test_no_business_methods_exposed(self) -> None:
         """Test facade has no public business methods (all commented out)."""
-        api = _ConcreteWmsApi()
+        api = u.OracleWms.Tests.ConcreteApi()
         public_methods = [m for m in dir(api) if not m.startswith("_")]
         business_methods = [
             "discover_entities",

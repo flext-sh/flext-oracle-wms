@@ -13,7 +13,6 @@ from __future__ import annotations
 
 from collections.abc import Generator, Sequence
 from pathlib import Path
-from urllib.parse import urlparse
 
 import pytest
 from flext_core import FlextLogger, r
@@ -21,142 +20,19 @@ from flext_core import FlextLogger, r
 from flext_oracle_wms import (
     FlextOracleWmsApi,
     FlextOracleWmsClient,
-    FlextOracleWmsClientSettings,
 )
-from tests import c, t
+from tests import c, t, u
 
 logger = FlextLogger(__name__)
-
-
-def _to_str(value: t.NormalizedValue, default: str) -> str:
-    if isinstance(value, str):
-        return value
-    if isinstance(value, int | float):
-        return str(value)
-    return default
-
-
-def _to_int(value: t.NormalizedValue, default: int) -> int:
-    if isinstance(value, int | float):
-        return int(value)
-    if isinstance(value, str):
-        try:
-            return int(value)
-        except ValueError:
-            return default
-    return default
-
-
-def _to_bool(value: t.NormalizedValue | None, default: bool) -> bool:
-    if value is None:
-        return default
-    return bool(value)
-
-
-def _build_client_settings(
-    env_config: t.ContainerMapping,
-    api_version: str,
-) -> FlextOracleWmsClientSettings:
-    return FlextOracleWmsClientSettings(
-        base_url=_to_str(env_config.get("base_url", ""), ""),
-        username=_to_str(env_config.get("username", ""), ""),
-        password=_to_str(env_config.get("password", ""), ""),
-        api_version=api_version,
-        auth_method=_to_str(env_config.get("auth_method", "BASIC"), "BASIC"),
-        timeout=_to_int(env_config.get("timeout", 30), 30),
-        max_retries=_to_int(env_config.get("max_retries", 3), 3),
-        verify_ssl=_to_bool(env_config.get("verify_ssl", True), True),
-        enable_logging=_to_bool(env_config.get("enable_logging", True), True),
-        use_mock=_to_bool(env_config.get("use_mock"), False),
-        connection_pool_size=_to_int(env_config.get("connection_pool_size", 20), 20),
-        cache_duration=_to_int(env_config.get("cache_duration", 3600), 3600),
-        project_name=_to_str(
-            env_config.get("project_name", "flext-oracle-wms"),
-            "flext-oracle-wms",
-        ),
-        project_version=_to_str(env_config.get("project_version", "0.9.0"), "0.9.0"),
-    )
-
-
-def find_env_file() -> Path | None:
-    """Find .env file in project hierarchy."""
-    current_dir = Path(__file__).parent
-    for _ in range(4):
-        env_path = current_dir / ".env"
-        if env_path.exists():
-            return env_path
-        current_dir = current_dir.parent
-    project_root = Path(__file__).parent.parent
-    env_path = project_root / ".env"
-    if env_path.exists():
-        return env_path
-    return None
-
-
-def load_env_config() -> t.ContainerMapping | None:
-    """Load Oracle WMS configuration from .env file."""
-    env_path = find_env_file()
-    if not env_path:
-        return None
-    config: dict[str, str] = {}
-    try:
-        with Path(env_path).open(encoding="utf-8") as f:
-            for raw_line in f:
-                line = raw_line.strip()
-                if line and (not line.startswith("#")) and ("=" in line):
-                    key, value = line.split("=", 1)
-                    config[key.strip()] = value.strip()
-        base_url = config.get("ORACLE_WMS_BASE_URL", "")
-        environment = "development"
-        if base_url:
-            try:
-                parsed = urlparse(base_url)
-                path_parts = parsed.path.strip("/").split("/")
-                if path_parts and path_parts[-1]:
-                    env_name = path_parts[-1].lower()
-                    if env_name in {"prod", "production"}:
-                        environment = "production"
-                    elif env_name in {"stage", "staging"}:
-                        environment = "staging"
-                    elif env_name in {"test", "testing", "company_unknow"}:
-                        environment = "test"
-                    elif env_name == "local":
-                        environment = "local"
-                    else:
-                        environment = "development"
-            except (KeyError, ValueError, TypeError):
-                environment = "development"
-        return {
-            "base_url": base_url,
-            "username": config.get("ORACLE_WMS_USERNAME"),
-            "password": config.get("ORACLE_WMS_PASSWORD"),
-            "environment": environment,
-            "api_version": "LGF_V10",
-            "timeout": float(config.get("ORACLE_WMS_TIMEOUT", "30")),
-            "max_retries": int(config.get("ORACLE_WMS_MAX_RETRIES", "3")),
-            "verify_ssl": config.get("ORACLE_WMS_VERIFY_SSL", "true").lower() == "true",
-            "enable_logging": config.get(
-                "ORACLE_WMS_ENABLE_REQUEST_LOGGING",
-                "true",
-            ).lower()
-            == "true",
-        }
-    except Exception as e:
-        logger.warning(f"Failed to load .env config: {e}")
-        return None
 
 
 @pytest.fixture
 def env_config() -> t.ContainerMapping:
     """Fixture that provides .env configuration or skips test."""
-    config = load_env_config()
-    if not config or not all([
-        config.get("base_url"),
-        config.get("username"),
-        config.get("password"),
-    ]):
-        pytest.skip("No valid .env configuration found - skipping integration tests")
-    return config
+    config_result = u.OracleWms.Tests.load_env_config(Path(__file__))
+    if config_result.is_failure:
+        pytest.skip(config_result.error or "No valid .env configuration found")
+    return config_result.value
 
 
 @pytest.fixture
@@ -164,7 +40,7 @@ def oracle_wms_client(
     env_config: t.ContainerMapping,
 ) -> Generator[FlextOracleWmsClient]:
     """Fixture that provides configured Oracle WMS client."""
-    config = _build_client_settings(env_config, "LGF_V10")
+    config = u.OracleWms.Tests.build_client_settings(env_config, "LGF_V10")
     client = FlextOracleWmsClient(config)
     start_result = client.start()
     if not start_result.is_success:
@@ -197,7 +73,10 @@ class TestOracleWmsDeclarativeIntegration:
         env_config: t.ContainerMapping,
     ) -> None:
         """Test client configuration and initialization."""
-        config = _build_client_settings(env_config, c.OracleWms.WmsApiVersion.V1)
+        config = u.OracleWms.Tests.build_client_settings(
+            env_config,
+            c.OracleWms.WmsApiVersion.V1,
+        )
         assert config.base_url.startswith("https://")
         assert config.username
         assert config.password

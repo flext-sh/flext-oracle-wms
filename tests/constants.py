@@ -17,6 +17,12 @@ from flext_oracle_wms import FlextOracleWmsConstants
 class FlextOracleWmsTestConstants(FlextTestsConstants, FlextOracleWmsConstants):
     """Test constants for flext-oracle-wms."""
 
+    class OracleWms(FlextOracleWmsConstants.OracleWms):
+        """Oracle WMS domain test constants namespace."""
+
+        class Tests(FlextTestsConstants.Tests):
+            """Oracle WMS-specific test constants."""
+
 
 c = FlextOracleWmsTestConstants
 __all__ = ["FlextOracleWmsTestConstants", "c"]

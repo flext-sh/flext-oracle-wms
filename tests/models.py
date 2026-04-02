@@ -17,10 +17,10 @@ from flext_oracle_wms import FlextOracleWmsModels
 class FlextOracleWmsTestModels(FlextTestsModels, FlextOracleWmsModels):
     """Test models combining FlextTestsModels with flext-oracle-wms models."""
 
-    class Tests(FlextTestsModels.Tests):
-        """Project-specific test fixtures namespace."""
+    class OracleWms(FlextOracleWmsModels.OracleWms):
+        """Oracle WMS domain test models namespace."""
 
-        class OracleWms:
+        class Tests(FlextTestsModels.Tests):
             """Oracle WMS-specific test fixtures."""
 
 

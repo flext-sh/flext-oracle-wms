@@ -7,25 +7,18 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-import os
 from pathlib import Path
 
 import pytest
-from dotenv import load_dotenv
 
 from flext_oracle_wms import FlextOracleWmsSettings
-from tests import t
+from tests import t, u
 
 
 @pytest.fixture(scope="session")
 def load_test_env() -> bool:
     """Load test environment - EXACTLY like working basic_usage.py example."""
-    project_root = Path(__file__).parent.parent
-    env_file = project_root / ".env"
-    if env_file.exists():
-        load_dotenv(env_file)
-        return True
-    return False
+    return u.OracleWms.Tests.load_test_env(Path(__file__).parent.parent)
 
 
 @pytest.fixture(autouse=True)
@@ -47,49 +40,23 @@ def mock_config() -> FlextOracleWmsSettings:
 @pytest.fixture
 def real_config(load_test_env: bool) -> FlextOracleWmsSettings:
     """Real config from .env - EXACTLY like working basic_usage.py example."""
-    base_url = os.getenv("ORACLE_WMS_BASE_URL") or os.getenv(
-        "FLEXT_ORACLE_WMS_BASE_URL",
-    )
-    username = os.getenv("ORACLE_WMS_USERNAME") or os.getenv(
-        "FLEXT_ORACLE_WMS_USERNAME",
-    )
-    password = os.getenv("ORACLE_WMS_PASSWORD") or os.getenv(
-        "FLEXT_ORACLE_WMS_PASSWORD",
-    )
-    if not all([base_url, username, password]):
-        pytest.skip("Real Oracle WMS credentials not available in .env")
-    assert base_url is not None
-    assert username is not None
-    assert password is not None
-    return FlextOracleWmsSettings(
-        base_url=base_url,
-        username=username,
-        password=password,
-        timeout=int(os.getenv("ORACLE_WMS_TIMEOUT", "30")),
-        retry_attempts=int(os.getenv("ORACLE_WMS_MAX_RETRIES", "3")),
-    )
+    _ = load_test_env
+    settings_result = u.OracleWms.Tests.create_real_settings()
+    if settings_result.is_failure:
+        pytest.skip(settings_result.error or "Real Oracle WMS credentials unavailable")
+    return settings_result.value
 
 
 @pytest.fixture
 def sample_entities() -> t.StrSequence:
     """Sample entity names based on REAL discovery results."""
-    return ["action_code", "company", "facility", "item", "order_hdr", "order_dtl"]
+    return u.OracleWms.Tests.sample_entities()
 
 
 @pytest.fixture
 def sample_entity_data() -> t.ContainerMapping:
     """Sample entity response data based on REAL query results."""
-    return {
-        "result_count": 4,
-        "page_count": 1,
-        "page_nbr": 1,
-        "next_page": None,
-        "previous_page": None,
-        "results": [
-            {"id": 1, "code": "TEST_CODE", "description": "Test Record"},
-            {"id": 2, "code": "TEST_CODE_2", "description": "Test Record 2"},
-        ],
-    }
+    return u.OracleWms.Tests.sample_entity_data()
 
 
 def pytest_configure(config: pytest.Config) -> None:

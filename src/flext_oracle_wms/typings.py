@@ -39,8 +39,8 @@ class FlextOracleWmsTypes(FlextTypes):
             str,
             StringConstraints(min_length=1, max_length=50, pattern=r"^[a-z0-9_]+$"),
         ]
-        type TFilterValue = FlextTypes.Scalar | None
-        type TFilters = Mapping[str, FlextTypes.Scalar | None]
+        type TFilterValue = FlextTypes.OptionalScalar
+        type TFilters = Mapping[str, FlextTypes.OptionalScalar]
         type TPaginationInfo = Mapping[str, int]
         type TTimeout = Annotated[int, Field(ge=1, le=300)]
 
@@ -73,7 +73,7 @@ class FlextOracleWmsTypes(FlextTypes):
 
             type Dict = Mapping[str, FlextTypes.ContainerValue]
             "Type alias for generic dictionary (attribute name to value mapping)."
-            type FilterScalar = FlextTypes.Scalar | None
+            type FilterScalar = FlextTypes.OptionalScalar
             type FilterList = Sequence[FlextOracleWmsTypes.OracleWms.Core.FilterScalar]
             type FilterRecordValue = (
                 FlextOracleWmsTypes.OracleWms.Core.FilterScalar

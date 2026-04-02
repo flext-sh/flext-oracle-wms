@@ -17,6 +17,14 @@ from flext_oracle_wms import FlextOracleWmsTypes
 class FlextOracleWmsTestTypes(FlextTestsTypes, FlextOracleWmsTypes):
     """Test types combining FlextTestsTypes with flext-oracle-wms types."""
 
+    class OracleWms(FlextOracleWmsTypes.OracleWms):
+        """Oracle WMS domain test type aliases."""
+
+        class Tests(FlextTestsTypes.Tests):
+            """Oracle WMS-specific test type aliases."""
+
+            type EnvConfig = FlextOracleWmsTypes.ContainerMapping
+
 
 t = FlextOracleWmsTestTypes
 __all__ = ["FlextOracleWmsTestTypes", "t"]
