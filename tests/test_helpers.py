@@ -10,7 +10,7 @@ from __future__ import annotations
 import pytest
 from flext_core import FlextUtilities
 
-from flext_oracle_wms import FlextOracleWmsUtilities
+from tests import u
 
 
 @pytest.mark.unit
@@ -18,13 +18,13 @@ class TestFlextOracleWmsUtilities:
     """Test FlextOracleWmsUtilities class."""
 
     def test_utilities_class_exists(self) -> None:
-        """Test that FlextOracleWmsUtilities is importable."""
-        assert FlextOracleWmsUtilities is not None
+        """Test that u is importable."""
+        assert u is not None
 
     def test_utilities_has_oracle_wms_namespace(self) -> None:
         """Test OracleWms namespace class exists."""
-        assert hasattr(FlextOracleWmsUtilities, "OracleWms")
+        assert hasattr(u, "OracleWms")
 
     def test_utilities_inherits_flext_utilities(self) -> None:
         """Test inheritance from FlextUtilities."""
-        assert issubclass(FlextOracleWmsUtilities, FlextUtilities)
+        assert issubclass(u, FlextUtilities)

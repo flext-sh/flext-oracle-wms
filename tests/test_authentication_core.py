@@ -9,7 +9,8 @@ from __future__ import annotations
 
 import pytest
 
-from flext_oracle_wms import FlextOracleWmsAuthenticator, c, m
+from flext_oracle_wms import FlextOracleWmsAuthenticator
+from tests import c, m
 
 
 @pytest.mark.unit

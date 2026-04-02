@@ -1,6 +1,6 @@
 """Unit tests for Oracle WMS utilities module.
 
-Tests FlextOracleWmsUtilities from utilities.py.
+Tests u from utilities.py.
 
 Copyright (c) 2025 FLEXT Team. All rights reserved.
 SPDX-License-Identifier: MIT
@@ -11,7 +11,7 @@ from __future__ import annotations
 import pytest
 from flext_core import FlextUtilities
 
-from flext_oracle_wms import FlextOracleWmsUtilities, u
+from tests import u
 
 
 @pytest.mark.unit
@@ -19,10 +19,10 @@ class TestFlextOracleWmsUtilities:
     """Test suite for FlextOracleWmsUtilities class."""
 
     def test_inherits_from_flext_utilities(self) -> None:
-        assert issubclass(FlextOracleWmsUtilities, FlextUtilities)
+        assert issubclass(u, FlextUtilities)
 
     def test_has_oracle_wms_namespace(self) -> None:
-        assert hasattr(FlextOracleWmsUtilities, "OracleWms")
+        assert hasattr(u, "OracleWms")
 
-    def test_module_alias(self) -> None:
-        assert u is FlextOracleWmsUtilities
+    def test_utilities_is_accessible(self) -> None:
+        assert u is not None

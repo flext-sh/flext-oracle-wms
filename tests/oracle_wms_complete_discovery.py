@@ -25,9 +25,8 @@ from flext_oracle_wms import (
     FlextOracleWmsAuthenticator,
     FlextOracleWmsClient,
     FlextOracleWmsClientSettings,
-    FlextOracleWmsModels as m,
-    FlextOracleWmsTypes as t,
 )
+from tests import m, t
 
 logger = FlextLogger(__name__)
 

@@ -24,13 +24,12 @@ import pytest
 from flext_core import FlextExceptions
 
 from flext_oracle_wms import (
-    FlextOracleWmsConstants,
     FlextOracleWmsDataValidationError,
     FlextOracleWmsFilter,
     FlextOracleWmsFilterOperator,
     FlextOracleWmsOperatorFilter as OperatorFilter,
 )
-from tests import t
+from tests import c, t
 
 
 class TestFlextOracleWmsFilterConstruction:
@@ -40,10 +39,7 @@ class TestFlextOracleWmsFilterConstruction:
         """Test filter creation with default parameters."""
         filter_engine = FlextOracleWmsFilter(case_sensitive=False, max_conditions=50)
         assert filter_engine.case_sensitive is False
-        assert (
-            filter_engine.max_conditions
-            == FlextOracleWmsConstants.Filtering.MAX_FILTER_CONDITIONS
-        )
+        assert filter_engine.max_conditions == c.Filtering.MAX_FILTER_CONDITIONS
 
     def test_filter_custom_construction(self) -> None:
         """Test filter creation with custom parameters."""
@@ -62,8 +58,7 @@ class TestFlextOracleWmsFilterConstruction:
     def test_filter_max_conditions_limit_exceeded(self) -> None:
         with pytest.raises(FlextExceptions.BaseError, match="Invalid max_conditions"):
             FlextOracleWmsFilter(
-                max_conditions=FlextOracleWmsConstants.Filtering.MAX_FILTER_CONDITIONS
-                + 1,
+                max_conditions=c.Filtering.MAX_FILTER_CONDITIONS + 1,
             )
 
     def test_filter_with_initial_filters(self) -> None:
@@ -510,10 +505,7 @@ class TestFactoryFunction:
         """Test creating filter with default parameters."""
         filter_engine = FlextOracleWmsFilter.create_filter()
         assert filter_engine.case_sensitive is False
-        assert (
-            filter_engine.max_conditions
-            == FlextOracleWmsConstants.Filtering.MAX_FILTER_CONDITIONS
-        )
+        assert filter_engine.max_conditions == c.Filtering.MAX_FILTER_CONDITIONS
 
     def test_create_filter_custom(self) -> None:
         """Test creating filter with custom parameters."""
@@ -531,8 +523,7 @@ class TestFactoryFunction:
     def test_create_filter_exceeds_limit(self) -> None:
         with pytest.raises(FlextExceptions.BaseError, match="Invalid max_conditions"):
             FlextOracleWmsFilter.create_filter(
-                max_conditions=FlextOracleWmsConstants.Filtering.MAX_FILTER_CONDITIONS
-                + 1,
+                max_conditions=c.Filtering.MAX_FILTER_CONDITIONS + 1,
             )
 
 

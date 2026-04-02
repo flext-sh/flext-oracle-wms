@@ -22,9 +22,8 @@ from flext_oracle_wms import (
     FlextOracleWmsApi,
     FlextOracleWmsClient,
     FlextOracleWmsClientSettings,
-    FlextOracleWmsConstants,
 )
-from tests import t
+from tests import c, t
 
 logger = FlextLogger(__name__)
 
@@ -198,9 +197,7 @@ class TestOracleWmsDeclarativeIntegration:
         env_config: t.ContainerMapping,
     ) -> None:
         """Test client configuration and initialization."""
-        config = _build_client_settings(
-            env_config, FlextOracleWmsConstants.OracleWms.WmsApiVersion.V1
-        )
+        config = _build_client_settings(env_config, c.OracleWms.WmsApiVersion.V1)
         assert config.base_url.startswith("https://")
         assert config.username
         assert config.password

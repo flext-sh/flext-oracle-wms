@@ -73,10 +73,6 @@ if _TYPE_CHECKING:
         FlextOracleWmsTestProtocols,
         FlextOracleWmsTestProtocols as p,
     )
-    from tests.test_authentication import (
-        FlextOracleWmsAuthSettings,
-        create_oracle_wms_client,
-    )
     from tests.test_authentication_core import (
         TestAuthenticationConfig,
         TestAuthenticationMethod,
@@ -154,12 +150,7 @@ if _TYPE_CHECKING:
         test_entity_validation_bad_endpoint_raises,
         test_entity_validation_empty_name_raises,
     )
-    from tests.test_schema_dynamic import (
-        OracleWMSAuthMethod,
-        TestFlextOracleWmsConstants,
-        TestNestedConstants,
-        TestWmsEnums,
-    )
+    from tests.test_schema_dynamic import Testc, TestNestedConstants, TestWmsEnums
     from tests.test_singer_flattening import (
         TestFlextOracleWmsApiResponse,
         TestFlextOracleWmsEntity,
@@ -183,7 +174,6 @@ _LAZY_IMPORTS: Mapping[str, str | Sequence[str]] = merge_lazy_imports(
     ("tests.unit",),
     {
         "CompleteMockPipeline": "tests.complete_mock_pipeline",
-        "FlextOracleWmsAuthSettings": "tests.test_authentication",
         "FlextOracleWmsTestConstants": "tests.constants",
         "FlextOracleWmsTestModels": "tests.models",
         "FlextOracleWmsTestProtocols": "tests.protocols",
@@ -191,7 +181,6 @@ _LAZY_IMPORTS: Mapping[str, str | Sequence[str]] = merge_lazy_imports(
         "FlextOracleWmsTestUtilities": "tests.utilities",
         "FocusedOracleWmsDiscovery": "tests.oracle_wms_focused_discovery",
         "OptimizedOracleWmsDiscovery": "tests.oracle_wms_optimized_discovery",
-        "OracleWMSAuthMethod": "tests.test_schema_dynamic",
         "OracleWmsCompleteDiscovery": "tests.oracle_wms_complete_discovery",
         "TestApplyOperator": "tests.test_filtering",
         "TestAuthenticationConfig": "tests.test_authentication_core",
@@ -208,7 +197,6 @@ _LAZY_IMPORTS: Mapping[str, str | Sequence[str]] = merge_lazy_imports(
         "TestFilterValidation": "tests.test_filtering",
         "TestFlextOracleWmsApiResponse": "tests.test_singer_flattening",
         "TestFlextOracleWmsClientCore": "tests.test_client_core",
-        "TestFlextOracleWmsConstants": "tests.test_schema_dynamic",
         "TestFlextOracleWmsEntity": "tests.test_singer_flattening",
         "TestFlextOracleWmsEntityDiscovery": "tests.test_discovery",
         "TestFlextOracleWmsFilterConstruction": "tests.test_filtering",
@@ -225,11 +213,11 @@ _LAZY_IMPORTS: Mapping[str, str | Sequence[str]] = merge_lazy_imports(
         "TestRecordFiltering": "tests.test_filtering",
         "TestRecordSorting": "tests.test_filtering",
         "TestWmsEnums": "tests.test_schema_dynamic",
+        "Testc": "tests.test_schema_dynamic",
         "c": ("tests.constants", "FlextOracleWmsTestConstants"),
         "complete_mock_pipeline": "tests.complete_mock_pipeline",
         "conftest": "tests.conftest",
         "constants": "tests.constants",
-        "create_oracle_wms_client": "tests.test_authentication",
         "d": "flext_tests",
         "e": "flext_tests",
         "env_config": "tests.test_declarative",

@@ -30,14 +30,14 @@ if _TYPE_CHECKING:
     )
     from tests.unit.test_api import TestFlextOracleWmsApi
     from tests.unit.test_config import TestFlextOracleWmsSettings
-    from tests.unit.test_constants import TestFlextOracleWmsConstants
+    from tests.unit.test_constants import Testc
     from tests.unit.test_wms_client import TestFlextOracleWmsClient
 
 _LAZY_IMPORTS: Mapping[str, str | Sequence[str]] = {
     "TestFlextOracleWmsApi": "tests.unit.test_api",
     "TestFlextOracleWmsClient": "tests.unit.test_wms_client",
-    "TestFlextOracleWmsConstants": "tests.unit.test_constants",
     "TestFlextOracleWmsSettings": "tests.unit.test_config",
+    "Testc": "tests.unit.test_constants",
     "test_api": "tests.unit.test_api",
     "test_config": "tests.unit.test_config",
     "test_constants": "tests.unit.test_constants",

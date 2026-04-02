@@ -14,8 +14,8 @@ from flext_oracle_wms import (
     DISCOVERY_FAILURE,
     DISCOVERY_SUCCESS,
     FlextOracleWmsEntityDiscovery,
-    c,
 )
+from tests import c
 
 
 class TestDiscoveryConstants:
