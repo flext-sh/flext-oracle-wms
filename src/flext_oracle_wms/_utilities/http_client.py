@@ -10,14 +10,10 @@ from types import TracebackType
 from typing import Self
 
 from flext_api import FlextApiClient, FlextApiModels, FlextApiSettings, FlextApiTypes
-from pydantic import TypeAdapter, ValidationError
+from pydantic import ValidationError
 
-from flext_core import FlextLogger, r
-from flext_oracle_wms import FlextOracleWmsTypes as t
-
-_CONTAINER_VALUE_MAP_ADAPTER: TypeAdapter[t.ContainerValueMapping] = TypeAdapter(
-    t.ContainerValueMapping,
-)
+from flext_core import FlextLogger
+from flext_oracle_wms import r, t
 
 
 class FlextOracleWmsUtilitiesHttpClient:
@@ -262,7 +258,9 @@ class FlextOracleWmsUtilitiesHttpClient:
                 case dict() as payload:
                     try:
                         validated: t.ContainerValueMapping = (
-                            _CONTAINER_VALUE_MAP_ADAPTER.validate_python(payload)
+                            t.OracleWms.CONTAINER_VALUE_MAPPING_ADAPTER.validate_python(
+                                payload
+                            )
                         )
                         return validated
                     except ValidationError:
@@ -271,7 +269,9 @@ class FlextOracleWmsUtilitiesHttpClient:
                 case str() as raw if raw:
                     try:
                         validated_json: t.ContainerValueMapping = (
-                            _CONTAINER_VALUE_MAP_ADAPTER.validate_json(raw)
+                            t.OracleWms.CONTAINER_VALUE_MAPPING_ADAPTER.validate_json(
+                                raw
+                            )
                         )
                         return validated_json
                     except (ValidationError, ValueError):
@@ -280,7 +280,9 @@ class FlextOracleWmsUtilitiesHttpClient:
                 case bytes() as raw_bytes:
                     try:
                         validated_bytes: t.ContainerValueMapping = (
-                            _CONTAINER_VALUE_MAP_ADAPTER.validate_json(raw_bytes)
+                            t.OracleWms.CONTAINER_VALUE_MAPPING_ADAPTER.validate_json(
+                                raw_bytes
+                            )
                         )
                         return validated_bytes
                     except (ValidationError, ValueError):

@@ -26,6 +26,9 @@ class FlextOracleWmsTypes(FlextTypes):
         """Oracle WMS-specific project types."""
 
         FLOAT_ADAPTER: TypeAdapter[float] = TypeAdapter(float)
+        CONTAINER_VALUE_MAPPING_ADAPTER: TypeAdapter[
+            FlextTypes.ContainerValueMapping
+        ] = TypeAdapter(FlextTypes.ContainerValueMapping)
 
         # =========================================================================
         # TYPE ALIASES - Advanced composition for minimal declarations

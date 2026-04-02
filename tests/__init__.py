@@ -11,9 +11,13 @@ from typing import TYPE_CHECKING as _TYPE_CHECKING
 from flext_core.lazy import install_lazy_exports, merge_lazy_imports
 
 if _TYPE_CHECKING:
-    from flext_tests import d, e, h, r, s, x
-
     from flext_core import FlextTypes
+    from flext_core.decorators import FlextDecorators as d
+    from flext_core.exceptions import FlextExceptions as e
+    from flext_core.handlers import FlextHandlers as h
+    from flext_core.mixins import FlextMixins as x
+    from flext_core.result import FlextResult as r
+    from flext_core.service import FlextService as s
     from tests import (
         complete_mock_pipeline,
         conftest,
@@ -216,10 +220,10 @@ _LAZY_IMPORTS: FlextTypes.LazyImportIndex = merge_lazy_imports(
         "complete_mock_pipeline": "tests.complete_mock_pipeline",
         "conftest": "tests.conftest",
         "constants": "tests.constants",
-        "d": "flext_tests",
-        "e": "flext_tests",
+        "d": ("flext_core.decorators", "FlextDecorators"),
+        "e": ("flext_core.exceptions", "FlextExceptions"),
         "env_config": "tests.test_declarative",
-        "h": "flext_tests",
+        "h": ("flext_core.handlers", "FlextHandlers"),
         "load_test_env": "tests.conftest",
         "logger": "tests.test_declarative",
         "m": ("tests.models", "FlextOracleWmsTestModels"),
@@ -234,12 +238,12 @@ _LAZY_IMPORTS: FlextTypes.LazyImportIndex = merge_lazy_imports(
         "protocols": "tests.protocols",
         "pytest_configure": "tests.conftest",
         "pytestmark": "tests.test_declarative",
-        "r": "flext_tests",
+        "r": ("flext_core.result", "FlextResult"),
         "real_config": "tests.conftest",
         "reset_settings_singleton": "tests.conftest",
         "run_complete_discovery": "tests.oracle_wms_complete_discovery",
         "run_optimized_discovery": "tests.oracle_wms_optimized_discovery",
-        "s": "flext_tests",
+        "s": ("flext_core.service", "FlextService"),
         "sample_entities": "tests.conftest",
         "sample_entity_data": "tests.conftest",
         "sitecustomize": "tests.sitecustomize",
@@ -294,7 +298,7 @@ _LAZY_IMPORTS: FlextTypes.LazyImportIndex = merge_lazy_imports(
         "u": ("tests.utilities", "FlextOracleWmsTestUtilities"),
         "unit": "tests.unit",
         "utilities": "tests.utilities",
-        "x": "flext_tests",
+        "x": ("flext_core.mixins", "FlextMixins"),
     },
 )
 

@@ -30,7 +30,13 @@ from flext_oracle_wms.__version__ import (
 )
 
 if _TYPE_CHECKING:
-    from flext_core import FlextTypes, d, e, h, r, s, x
+    from flext_core import FlextTypes
+    from flext_core.decorators import FlextDecorators as d
+    from flext_core.exceptions import FlextExceptions as e
+    from flext_core.handlers import FlextHandlers as h
+    from flext_core.mixins import FlextMixins as x
+    from flext_core.result import FlextResult as r
+    from flext_core.service import FlextService as s
     from flext_oracle_wms import (
         _utilities,
         api,
@@ -140,18 +146,18 @@ _LAZY_IMPORTS: FlextTypes.LazyImportIndex = merge_lazy_imports(
         "c": ("flext_oracle_wms.constants", "FlextOracleWmsConstants"),
         "constants": "flext_oracle_wms.constants",
         "create_flext_http_client": "flext_oracle_wms.http_client",
-        "d": "flext_core",
-        "e": "flext_core",
+        "d": ("flext_core.decorators", "FlextDecorators"),
+        "e": ("flext_core.exceptions", "FlextExceptions"),
         "errors": "flext_oracle_wms.errors",
         "filtering": "flext_oracle_wms.filtering",
-        "h": "flext_core",
+        "h": ("flext_core.handlers", "FlextHandlers"),
         "http_client": "flext_oracle_wms.http_client",
         "m": ("flext_oracle_wms.models", "FlextOracleWmsModels"),
         "models": "flext_oracle_wms.models",
         "p": ("flext_oracle_wms.protocols", "FlextOracleWmsProtocols"),
         "protocols": "flext_oracle_wms.protocols",
-        "r": "flext_core",
-        "s": "flext_core",
+        "r": ("flext_core.result", "FlextResult"),
+        "s": ("flext_core.service", "FlextService"),
         "settings": "flext_oracle_wms.settings",
         "t": ("flext_oracle_wms.typings", "FlextOracleWmsTypes"),
         "typings": "flext_oracle_wms.typings",
@@ -162,7 +168,7 @@ _LAZY_IMPORTS: FlextTypes.LazyImportIndex = merge_lazy_imports(
         "wms_client": "flext_oracle_wms.wms_client",
         "wms_discovery": "flext_oracle_wms.wms_discovery",
         "wms_exceptions": "flext_oracle_wms.wms_exceptions",
-        "x": "flext_core",
+        "x": ("flext_core.mixins", "FlextMixins"),
     },
 )
 
