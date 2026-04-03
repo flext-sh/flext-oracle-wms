@@ -1,10 +1,7 @@
 # AUTO-GENERATED FILE — DO NOT EDIT MANUALLY.
 # Regenerate with: make gen
 #
-"""Init module.
-
-This module is part of the FLEXT ecosystem. Docstrings follow PEP 257 and Google style.
-"""
+"""Tests package."""
 
 from __future__ import annotations
 
@@ -14,16 +11,37 @@ from typing import TYPE_CHECKING as _TYPE_CHECKING
 from flext_core.lazy import install_lazy_exports
 
 if _TYPE_CHECKING:
-    from examples.tests import conftest_project, test_declarative_example
-    from examples.tests.test_declarative_example import load_env_config, logger, main
     from flext_core import FlextTypes
+    from flext_core.constants import FlextConstants as c
+    from flext_core.decorators import FlextDecorators as d
+    from flext_core.exceptions import FlextExceptions as e
+    from flext_core.handlers import FlextHandlers as h
+    from flext_core.mixins import FlextMixins as x
+    from flext_core.models import FlextModels as m
+    from flext_core.protocols import FlextProtocols as p
+    from flext_core.result import FlextResult as r
+    from flext_core.service import FlextService as s
+    from flext_core.typings import FlextTypes as t
+    from flext_core.utilities import FlextUtilities as u
+    from flext_oracle_wms import conftest_project, test_declarative_example
+    from flext_oracle_wms.test_declarative_example import load_env_config, logger
 
 _LAZY_IMPORTS: FlextTypes.LazyImportIndex = {
-    "conftest_project": "examples.tests.conftest_project",
-    "load_env_config": "examples.tests.test_declarative_example",
-    "logger": "examples.tests.test_declarative_example",
-    "main": "examples.tests.test_declarative_example",
-    "test_declarative_example": "examples.tests.test_declarative_example",
+    "c": ("flext_core.constants", "FlextConstants"),
+    "conftest_project": "flext_oracle_wms.conftest_project",
+    "d": ("flext_core.decorators", "FlextDecorators"),
+    "e": ("flext_core.exceptions", "FlextExceptions"),
+    "h": ("flext_core.handlers", "FlextHandlers"),
+    "load_env_config": "flext_oracle_wms.test_declarative_example",
+    "logger": "flext_oracle_wms.test_declarative_example",
+    "m": ("flext_core.models", "FlextModels"),
+    "p": ("flext_core.protocols", "FlextProtocols"),
+    "r": ("flext_core.result", "FlextResult"),
+    "s": ("flext_core.service", "FlextService"),
+    "t": ("flext_core.typings", "FlextTypes"),
+    "test_declarative_example": "flext_oracle_wms.test_declarative_example",
+    "u": ("flext_core.utilities", "FlextUtilities"),
+    "x": ("flext_core.mixins", "FlextMixins"),
 }
 
 

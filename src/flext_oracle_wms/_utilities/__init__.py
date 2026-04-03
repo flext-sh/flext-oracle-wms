@@ -1,11 +1,7 @@
 # AUTO-GENERATED FILE — DO NOT EDIT MANUALLY.
 # Regenerate with: make gen
 #
-"""Oracle WMS utilities subpackage.
-
-Copyright (c) 2025 FLEXT Team. All rights reserved.
-SPDX-License-Identifier: MIT
-"""
+"""Utilities package."""
 
 from __future__ import annotations
 
@@ -16,46 +12,36 @@ from flext_core.lazy import install_lazy_exports
 
 if _TYPE_CHECKING:
     from flext_core import FlextTypes
-    from flext_oracle_wms._utilities import (
-        auth,
-        client,
-        discovery,
-        filtering,
-        http_client,
-    )
-    from flext_oracle_wms._utilities.auth import FlextOracleWmsUtilitiesAuth
-    from flext_oracle_wms._utilities.client import FlextOracleWmsUtilitiesClient
-    from flext_oracle_wms._utilities.discovery import (
+    from flext_oracle_wms import auth, client, discovery, filtering, http_client
+    from flext_oracle_wms.auth import FlextOracleWmsUtilitiesAuth
+    from flext_oracle_wms.client import FlextOracleWmsUtilitiesClient
+    from flext_oracle_wms.discovery import (
         DISCOVERY_FAILURE,
         DISCOVERY_SUCCESS,
         FlextOracleWmsUtilitiesDiscovery,
     )
-    from flext_oracle_wms._utilities.filtering import (
+    from flext_oracle_wms.filtering import (
         FlextOracleWmsDataValidationError,
         FlextOracleWmsFilterOperator,
         FlextOracleWmsOperatorFilter,
-        FlextOracleWmsUtilitiesFiltering,
     )
-    from flext_oracle_wms._utilities.http_client import (
-        FlextOracleWmsUtilitiesHttpClient,
-    )
+    from flext_oracle_wms.http_client import FlextOracleWmsUtilitiesHttpClient
 
 _LAZY_IMPORTS: FlextTypes.LazyImportIndex = {
-    "DISCOVERY_FAILURE": "flext_oracle_wms._utilities.discovery",
-    "DISCOVERY_SUCCESS": "flext_oracle_wms._utilities.discovery",
-    "FlextOracleWmsDataValidationError": "flext_oracle_wms._utilities.filtering",
-    "FlextOracleWmsFilterOperator": "flext_oracle_wms._utilities.filtering",
-    "FlextOracleWmsOperatorFilter": "flext_oracle_wms._utilities.filtering",
-    "FlextOracleWmsUtilitiesAuth": "flext_oracle_wms._utilities.auth",
-    "FlextOracleWmsUtilitiesClient": "flext_oracle_wms._utilities.client",
-    "FlextOracleWmsUtilitiesDiscovery": "flext_oracle_wms._utilities.discovery",
-    "FlextOracleWmsUtilitiesFiltering": "flext_oracle_wms._utilities.filtering",
-    "FlextOracleWmsUtilitiesHttpClient": "flext_oracle_wms._utilities.http_client",
-    "auth": "flext_oracle_wms._utilities.auth",
-    "client": "flext_oracle_wms._utilities.client",
-    "discovery": "flext_oracle_wms._utilities.discovery",
-    "filtering": "flext_oracle_wms._utilities.filtering",
-    "http_client": "flext_oracle_wms._utilities.http_client",
+    "DISCOVERY_FAILURE": "flext_oracle_wms.discovery",
+    "DISCOVERY_SUCCESS": "flext_oracle_wms.discovery",
+    "FlextOracleWmsDataValidationError": "flext_oracle_wms.filtering",
+    "FlextOracleWmsFilterOperator": "flext_oracle_wms.filtering",
+    "FlextOracleWmsOperatorFilter": "flext_oracle_wms.filtering",
+    "FlextOracleWmsUtilitiesAuth": "flext_oracle_wms.auth",
+    "FlextOracleWmsUtilitiesClient": "flext_oracle_wms.client",
+    "FlextOracleWmsUtilitiesDiscovery": "flext_oracle_wms.discovery",
+    "FlextOracleWmsUtilitiesHttpClient": "flext_oracle_wms.http_client",
+    "auth": "flext_oracle_wms.auth",
+    "client": "flext_oracle_wms.client",
+    "discovery": "flext_oracle_wms.discovery",
+    "filtering": "flext_oracle_wms.filtering",
+    "http_client": "flext_oracle_wms.http_client",
 }
 
 
