@@ -11,6 +11,8 @@ from typing import TYPE_CHECKING as _TYPE_CHECKING
 from flext_core.lazy import install_lazy_exports
 
 if _TYPE_CHECKING:
+    from examples.tests import conftest_project, test_declarative_example
+    from examples.tests.test_declarative_example import load_env_config, logger, main
     from flext_core import FlextTypes
     from flext_core.constants import FlextConstants as c
     from flext_core.decorators import FlextDecorators as d
@@ -23,23 +25,22 @@ if _TYPE_CHECKING:
     from flext_core.service import FlextService as s
     from flext_core.typings import FlextTypes as t
     from flext_core.utilities import FlextUtilities as u
-    from flext_oracle_wms import conftest_project, test_declarative_example
-    from flext_oracle_wms.test_declarative_example import load_env_config, logger
 
 _LAZY_IMPORTS: FlextTypes.LazyImportIndex = {
     "c": ("flext_core.constants", "FlextConstants"),
-    "conftest_project": "flext_oracle_wms.conftest_project",
+    "conftest_project": "examples.tests.conftest_project",
     "d": ("flext_core.decorators", "FlextDecorators"),
     "e": ("flext_core.exceptions", "FlextExceptions"),
     "h": ("flext_core.handlers", "FlextHandlers"),
-    "load_env_config": "flext_oracle_wms.test_declarative_example",
-    "logger": "flext_oracle_wms.test_declarative_example",
+    "load_env_config": "examples.tests.test_declarative_example",
+    "logger": "examples.tests.test_declarative_example",
     "m": ("flext_core.models", "FlextModels"),
+    "main": "examples.tests.test_declarative_example",
     "p": ("flext_core.protocols", "FlextProtocols"),
     "r": ("flext_core.result", "FlextResult"),
     "s": ("flext_core.service", "FlextService"),
     "t": ("flext_core.typings", "FlextTypes"),
-    "test_declarative_example": "flext_oracle_wms.test_declarative_example",
+    "test_declarative_example": "examples.tests.test_declarative_example",
     "u": ("flext_core.utilities", "FlextUtilities"),
     "x": ("flext_core.mixins", "FlextMixins"),
 }

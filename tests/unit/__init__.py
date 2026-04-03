@@ -23,23 +23,23 @@ if _TYPE_CHECKING:
     from flext_core.service import FlextService as s
     from flext_core.typings import FlextTypes as t
     from flext_core.utilities import FlextUtilities as u
-    from flext_oracle_wms import (
+    from tests.unit import (
         test_api,
         test_config,
         test_constants,
         test_wms_api,
         test_wms_client,
     )
-    from flext_oracle_wms.test_api import TestFlextOracleWmsApi
-    from flext_oracle_wms.test_config import TestFlextOracleWmsSettings
-    from flext_oracle_wms.test_constants import Testc
-    from flext_oracle_wms.test_wms_client import TestFlextOracleWmsClient
+    from tests.unit.test_api import TestFlextOracleWmsApi
+    from tests.unit.test_config import TestFlextOracleWmsSettings
+    from tests.unit.test_constants import Testc
+    from tests.unit.test_wms_client import TestFlextOracleWmsClient
 
 _LAZY_IMPORTS: FlextTypes.LazyImportIndex = {
-    "TestFlextOracleWmsApi": "flext_oracle_wms.test_api",
-    "TestFlextOracleWmsClient": "flext_oracle_wms.test_wms_client",
-    "TestFlextOracleWmsSettings": "flext_oracle_wms.test_config",
-    "Testc": "flext_oracle_wms.test_constants",
+    "TestFlextOracleWmsApi": "tests.unit.test_api",
+    "TestFlextOracleWmsClient": "tests.unit.test_wms_client",
+    "TestFlextOracleWmsSettings": "tests.unit.test_config",
+    "Testc": "tests.unit.test_constants",
     "c": ("flext_core.constants", "FlextConstants"),
     "d": ("flext_core.decorators", "FlextDecorators"),
     "e": ("flext_core.exceptions", "FlextExceptions"),
@@ -49,11 +49,11 @@ _LAZY_IMPORTS: FlextTypes.LazyImportIndex = {
     "r": ("flext_core.result", "FlextResult"),
     "s": ("flext_core.service", "FlextService"),
     "t": ("flext_core.typings", "FlextTypes"),
-    "test_api": "flext_oracle_wms.test_api",
-    "test_config": "flext_oracle_wms.test_config",
-    "test_constants": "flext_oracle_wms.test_constants",
-    "test_wms_api": "flext_oracle_wms.test_wms_api",
-    "test_wms_client": "flext_oracle_wms.test_wms_client",
+    "test_api": "tests.unit.test_api",
+    "test_config": "tests.unit.test_config",
+    "test_constants": "tests.unit.test_constants",
+    "test_wms_api": "tests.unit.test_wms_api",
+    "test_wms_client": "tests.unit.test_wms_client",
     "u": ("flext_core.utilities", "FlextUtilities"),
     "x": ("flext_core.mixins", "FlextMixins"),
 }
