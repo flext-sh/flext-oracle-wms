@@ -32,7 +32,11 @@ def env_config() -> t.ContainerMapping:
     config_result = u.OracleWms.Tests.load_env_config(Path(__file__))
     if config_result.is_failure:
         pytest.skip(config_result.error or "No valid .env configuration found")
-    return config_result.value
+    config = config_result.value
+    # Skip if the config has no meaningful base_url (no .env present)
+    if not config.get("base_url"):
+        pytest.skip("No Oracle WMS base_url configured in .env")
+    return config
 
 
 @pytest.fixture
