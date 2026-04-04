@@ -13,7 +13,7 @@ from flext_oracle_wms import (
     FlextOracleWmsApi,
     FlextOracleWmsClient,
     FlextOracleWmsClientSettings,
-    FlextOracleWmsTypes as t,
+    t,
 )
 
 logger = FlextLogger(__name__)

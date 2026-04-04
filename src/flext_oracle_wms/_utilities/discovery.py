@@ -10,9 +10,9 @@ from collections.abc import Sequence
 
 from flext_core import r
 from flext_oracle_wms import (
-    FlextOracleWmsConstants as c,
     FlextOracleWmsProtocols as p,
-    FlextOracleWmsTypes as t,
+    c,
+    t,
 )
 
 DISCOVERY_SUCCESS = "discovery_success"

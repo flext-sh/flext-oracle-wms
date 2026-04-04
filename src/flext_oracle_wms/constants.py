@@ -14,7 +14,7 @@ from typing import TYPE_CHECKING, ClassVar, Final
 from flext_core import FlextConstants
 
 if TYPE_CHECKING:
-    from flext_oracle_wms import FlextOracleWmsTypes as t
+    from flext_oracle_wms import t
 
 
 class FlextOracleWmsConstants(FlextConstants):

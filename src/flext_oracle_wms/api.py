@@ -16,9 +16,9 @@ from flext_core import FlextService, r
 from flext_oracle_wms import (
     FlextHttpClient,
     FlextOracleWmsClient,
-    FlextOracleWmsModels as m,
     FlextOracleWmsSettings,
-    FlextOracleWmsTypes as t,
+    m,
+    t,
 )
 
 

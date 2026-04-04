@@ -10,9 +10,9 @@ import base64
 
 from flext_core import r
 from flext_oracle_wms import (
-    FlextOracleWmsConstants as c,
-    FlextOracleWmsModels as m,
-    FlextOracleWmsTypes as t,
+    c,
+    m,
+    t,
 )
 
 

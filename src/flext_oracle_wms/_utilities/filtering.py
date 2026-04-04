@@ -12,9 +12,9 @@ from pydantic import ValidationError
 
 from flext_core import FlextExceptions, FlextLogger, r
 from flext_oracle_wms import (
-    FlextOracleWmsConstants as c,
     FlextOracleWmsModels,
-    FlextOracleWmsTypes as t,
+    c,
+    t,
 )
 
 FlextOracleWmsOperatorFilter = (

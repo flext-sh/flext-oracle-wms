@@ -32,7 +32,7 @@ from flext_oracle_wms import (
     FlextOracleWmsClient,
     FlextOracleWmsExceptions,
     FlextOracleWmsSettings,
-    FlextOracleWmsTypes as t,
+    t,
 )
 
 MAX_ENTITIES_TO_SHOW = 5
