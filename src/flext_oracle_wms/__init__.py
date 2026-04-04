@@ -24,31 +24,21 @@ if _t.TYPE_CHECKING:
     )
 
     _utilities = _flext_oracle_wms__utilities
-    import flext_oracle_wms._utilities.auth as _flext_oracle_wms__utilities_auth
-
-    auth = _flext_oracle_wms__utilities_auth
-    import flext_oracle_wms._utilities.client as _flext_oracle_wms__utilities_client
-    from flext_oracle_wms._utilities.auth import FlextOracleWmsUtilitiesAuth
-
-    client = _flext_oracle_wms__utilities_client
-    import flext_oracle_wms._utilities.discovery as _flext_oracle_wms__utilities_discovery
-    from flext_oracle_wms._utilities.client import FlextOracleWmsUtilitiesClient
-
-    discovery = _flext_oracle_wms__utilities_discovery
     import flext_oracle_wms.api as _flext_oracle_wms_api
-    from flext_oracle_wms._utilities.discovery import (
+    from flext_oracle_wms._utilities import (
         DISCOVERY_FAILURE,
         DISCOVERY_SUCCESS,
-        FlextOracleWmsUtilitiesDiscovery,
-    )
-    from flext_oracle_wms._utilities.filtering import (
         FlextOracleWmsDataValidationError,
         FlextOracleWmsFilterOperator,
         FlextOracleWmsOperatorFilter,
+        FlextOracleWmsUtilitiesAuth,
+        FlextOracleWmsUtilitiesClient,
+        FlextOracleWmsUtilitiesDiscovery,
         FlextOracleWmsUtilitiesFiltering,
-    )
-    from flext_oracle_wms._utilities.http_client import (
         FlextOracleWmsUtilitiesHttpClient,
+        auth,
+        client,
+        discovery,
     )
 
     api = _flext_oracle_wms_api

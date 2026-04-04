@@ -9,10 +9,10 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from collections.abc import Mapping, MutableSequence, Sequence
-from typing import Annotated, ClassVar, Literal
+from collections.abc import MutableSequence, Sequence
+from typing import Annotated, ClassVar
 
-from pydantic import BaseModel, ConfigDict, Field, StringConstraints, field_validator
+from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 from flext_core import FlextModels, r
 from flext_oracle_wms import FlextOracleWmsConstants as c, FlextOracleWmsTypes as t
@@ -328,24 +328,6 @@ class FlextOracleWmsModels(FlextModels):
                     return r[bool].fail("SKU already exists")
                 self.inventory.append(item)
                 return r[bool].ok(True)
-
-        # =========================================================================
-        # TYPE ALIASES - Advanced composition for minimal declarations
-        # =========================================================================
-
-        type TRecord = t.ContainerValueMapping
-        type TRecordBatch = Sequence[t.ContainerValueMapping]
-        type TSchema = Mapping[str, t.ContainerValueMapping]
-        type TApiResponse = t.ContainerValueMapping
-        type TApiVersion = Literal["v2", "v1"]
-        type TEntityId = Annotated[str, StringConstraints(min_length=1, max_length=100)]
-        type TEntityName = Annotated[
-            str,
-            StringConstraints(min_length=1, max_length=50, pattern=r"^[a-z0-9_]+$"),
-        ]
-        type TFilterValue = t.Scalar | None
-        type TFilters = Mapping[str, t.Scalar | None]
-        type TTimeout = Annotated[int, Field(ge=1, le=300)]
 
         # =========================================================================
         # DOMAIN SERVICES - Business logic composition

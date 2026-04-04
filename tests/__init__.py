@@ -203,22 +203,16 @@ if _t.TYPE_CHECKING:
     from tests.typings import FlextOracleWmsTestTypes, FlextOracleWmsTestTypes as t
 
     unit = _tests_unit
-    import tests.unit.test_api as _tests_unit_test_api
-
-    test_api = _tests_unit_test_api
-    import tests.unit.test_constants as _tests_unit_test_constants
-    from tests.unit.test_api import TestFlextOracleWmsApi
-    from tests.unit.test_config import TestFlextOracleWmsSettings
-
-    test_constants = _tests_unit_test_constants
-    import tests.unit.test_wms_api as _tests_unit_test_wms_api
-
-    test_wms_api = _tests_unit_test_wms_api
-    import tests.unit.test_wms_client as _tests_unit_test_wms_client
-
-    test_wms_client = _tests_unit_test_wms_client
     import tests.utilities as _tests_utilities
-    from tests.unit.test_wms_client import TestFlextOracleWmsClient
+    from tests.unit import (
+        TestFlextOracleWmsApi,
+        TestFlextOracleWmsClient,
+        TestFlextOracleWmsSettings,
+        test_api,
+        test_constants,
+        test_wms_api,
+        test_wms_client,
+    )
 
     utilities = _tests_utilities
     from flext_core.decorators import FlextDecorators as d

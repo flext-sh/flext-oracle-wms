@@ -13,13 +13,13 @@ if _t.TYPE_CHECKING:
     import examples.tests as _examples_tests
 
     tests = _examples_tests
-    import examples.tests.conftest_project as _examples_tests_conftest_project
-
-    conftest_project = _examples_tests_conftest_project
-    import examples.tests.test_declarative_example as _examples_tests_test_declarative_example
-
-    test_declarative_example = _examples_tests_test_declarative_example
-    from examples.tests.test_declarative_example import load_env_config, logger, main
+    from examples.tests import (
+        conftest_project,
+        load_env_config,
+        logger,
+        main,
+        test_declarative_example,
+    )
     from flext_core.constants import FlextConstants as c
     from flext_core.decorators import FlextDecorators as d
     from flext_core.exceptions import FlextExceptions as e

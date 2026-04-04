@@ -15,7 +15,7 @@ from __future__ import annotations
 
 import json
 import time
-from collections.abc import Mapping, Sequence
+from collections.abc import Mapping
 from datetime import UTC, datetime
 from pathlib import Path
 
@@ -24,9 +24,6 @@ from flext_oracle_wms import FlextOracleWmsClient, FlextOracleWmsClientSettings
 from tests import t
 
 logger = FlextLogger(__name__)
-
-type JsonScalar = t.Primitives | None
-type JsonValue = JsonScalar | Mapping[str, JsonValue] | Sequence[JsonValue]
 
 _API_VERSION_LGF_V10 = "LGF_V10"
 
