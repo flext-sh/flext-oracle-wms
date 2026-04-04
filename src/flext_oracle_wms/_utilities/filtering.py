@@ -7,7 +7,6 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 from collections.abc import Mapping, MutableSequence, Sequence
-from enum import StrEnum, unique
 
 from pydantic import ValidationError
 
@@ -22,6 +21,9 @@ FlextOracleWmsOperatorFilter = (
     FlextOracleWmsModels.OracleWms.FlextOracleWmsOperatorFilter
 )
 
+# Canonical alias -- single source of truth lives in c.OracleWms.WmsFilterOperator
+FlextOracleWmsFilterOperator = c.OracleWms.WmsFilterOperator
+
 # Type alias for filter entries (can be scalar, list, or operator filter)
 type FilterEntry = (
     t.OracleWms.Core.FilterScalar
@@ -32,20 +34,6 @@ type FilterEntry = (
 
 class FlextOracleWmsDataValidationError(FlextExceptions.BaseError):
     """Data validation error for Oracle WMS filtering."""
-
-
-@unique
-class FlextOracleWmsFilterOperator(StrEnum):
-    """Supported filter operators."""
-
-    EQ = "eq"
-    NE = "ne"
-    IN = "in"
-    CONTAINS = "contains"
-    GT = "gt"
-    LT = "lt"
-    GTE = "gte"
-    LTE = "lte"
 
 
 class FlextOracleWmsUtilitiesFiltering:
