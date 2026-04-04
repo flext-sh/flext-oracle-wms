@@ -8,6 +8,7 @@ from __future__ import annotations
 
 from collections.abc import Mapping
 from enum import StrEnum, unique
+from types import MappingProxyType
 from typing import TYPE_CHECKING, ClassVar, Final
 
 from flext_core import FlextConstants
@@ -28,24 +29,24 @@ class FlextOracleWmsConstants(FlextConstants):
 
         FLEXT_WMS_VERSION: Final[str] = "1.0.0"
 
-        API_CONFIG: ClassVar[t.HeaderMapping] = {
+        API_CONFIG: ClassVar[t.HeaderMapping] = MappingProxyType({
             "version_default": "v1",
             "base_url_default": "http://localhost:8080",
             "timeout_default": 30,
             "max_retries": 3,
-        }
+        })
 
-        PROCESSING_CONFIG: ClassVar[t.IntMapping] = {
+        PROCESSING_CONFIG: ClassVar[t.IntMapping] = MappingProxyType({
             "default_batch_size": FlextConstants.DEFAULT_SIZE,
             "max_batch_size": FlextConstants.MAX_ITEMS,
             "default_page_size": FlextConstants.DEFAULT_PAGE_SIZE,
-        }
+        })
 
-        ENVIRONMENTS: ClassVar[t.StrMapping] = {
+        ENVIRONMENTS: ClassVar[t.StrMapping] = MappingProxyType({
             "default": "http://localhost:8080",
             "test": "https://test-wms.example.com",
             "production": "https://prod-wms.example.com",
-        }
+        })
 
         DEFAULT_TIMEOUT: Final[int] = FlextConstants.DEFAULT_TIMEOUT_SECONDS
         DEFAULT_MAX_RETRIES: Final[int] = FlextConstants.MAX_RETRY_ATTEMPTS
@@ -193,14 +194,16 @@ class FlextOracleWmsConstants(FlextConstants):
             API_KEY = "api_key"
             BEARER = "bearer"
 
-        AUTH_CONFIG: ClassVar[Mapping[str, str | OracleWMSAuthMethod]] = {
-            "basic": OracleWMSAuthMethod.BASIC,
-            "oauth2": OracleWMSAuthMethod.OAUTH2,
-            "api_key": OracleWMSAuthMethod.API_KEY,
-            "bearer": OracleWMSAuthMethod.BEARER,
-            "oauth2_token_endpoint": "/oauth2/token",
-            "oauth2_scope_default": "read write",
-        }
+        AUTH_CONFIG: ClassVar[Mapping[str, str | OracleWMSAuthMethod]] = (
+            MappingProxyType({
+                "basic": OracleWMSAuthMethod.BASIC,
+                "oauth2": OracleWMSAuthMethod.OAUTH2,
+                "api_key": OracleWMSAuthMethod.API_KEY,
+                "bearer": OracleWMSAuthMethod.BEARER,
+                "oauth2_token_endpoint": "/oauth2/token",
+                "oauth2_scope_default": "read write",
+            })
+        )
 
         @unique
         class ProjectType(StrEnum):
@@ -246,18 +249,18 @@ class FlextOracleWmsConstants(FlextConstants):
     class ErrorMessages:
         """Error messages - composed dict pattern."""
 
-        MESSAGES: ClassVar[t.StrMapping] = {
+        MESSAGES: ClassVar[t.StrMapping] = MappingProxyType({
             "entity_validation_failed": "Entity validation failed",
             "discovery_failed": "Entity discovery failed",
             "invalid_response": "Invalid API response",
             "connection_failed": "Connection to WMS failed",
             "authentication_failed": "Authentication failed",
-        }
+        })
 
     class ResponseFields:
         """Response fields - composed pattern."""
 
-        FIELDS: ClassVar[t.StrMapping] = {
+        FIELDS: ClassVar[t.StrMapping] = MappingProxyType({
             "result_count": "result_count",
             "results": "results",
             "data": "data",
@@ -266,7 +269,7 @@ class FlextOracleWmsConstants(FlextConstants):
             "page_count": "page_count",
             "next_page": "next_page",
             "previous_page": "previous_page",
-        }
+        })
 
     class Authentication:
         """Auth constants - minimal."""
@@ -282,11 +285,11 @@ class FlextOracleWmsConstants(FlextConstants):
     class Api:
         """API constants - composed."""
 
-        CONFIG: ClassVar[t.IntMapping] = {
+        CONFIG: ClassVar[t.IntMapping] = MappingProxyType({
             "default_timeout": 60,
             "min_http_status_code": 200,
             "max_http_status_code": 599,
-        }
+        })
 
 
 c = FlextOracleWmsConstants
