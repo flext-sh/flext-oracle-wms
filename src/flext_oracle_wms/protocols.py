@@ -34,7 +34,8 @@ class FlextOracleWmsProtocols(FlextProtocols):
     wms_service: p.OracleWms.WmsService
     """
 
-    class OracleWms:
+    @runtime_checkable
+    class OracleWms(Protocol):
         """Oracle WMS domain-specific protocols."""
 
         @runtime_checkable
