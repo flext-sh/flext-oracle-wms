@@ -14,21 +14,13 @@ import pytest
 from flext_oracle_wms import FlextOracleWmsSettings
 from tests import t, u
 
+pytest_plugins = ["flext_tests.conftest_plugin"]
+
 
 @pytest.fixture(scope="session")
 def load_test_env() -> bool:
     """Load test environment - EXACTLY like working basic_usage.py example."""
     return u.OracleWms.Tests.load_test_env(Path(__file__).parent.parent)
-
-
-@pytest.fixture(autouse=True)
-def reset_settings_singleton() -> None:
-    """Reset FlextOracleWmsSettings singleton between tests.
-
-    FlextSettings uses a singleton pattern via __new__. Without reset,
-    state leaks between tests (e.g. enable_metrics=True persists).
-    """
-    FlextOracleWmsSettings._reset_instance()
 
 
 @pytest.fixture

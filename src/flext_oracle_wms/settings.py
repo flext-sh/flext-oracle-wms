@@ -16,6 +16,7 @@ from pydantic_settings import SettingsConfigDict
 from flext_core import FlextSettings, r
 
 
+@FlextSettings.auto_register("oracle-wms")
 class FlextOracleWmsSettings(FlextSettings):
     """Runtime settings for Oracle WMS client."""
 
