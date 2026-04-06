@@ -22,7 +22,7 @@ FlextOracleWmsOperatorFilter = (
 )
 
 # Canonical alias -- single source of truth lives in c.OracleWms.WmsFilterOperator
-# FlextOracleWmsFilterOperator = c.OracleWms.WmsFilterOperator
+# c.OracleWms.WmsFilterOperator = c.OracleWms.WmsFilterOperator
 
 # Type alias for filter entries (can be scalar, list, or operator filter)
 type FilterEntry = (
@@ -40,7 +40,7 @@ class FlextOracleWmsUtilitiesFiltering:
     """Filtering utilities for Oracle WMS -- u.OracleWms.Filtering.*."""
 
     DataValidationError = FlextOracleWmsDataValidationError
-    FilterOperator = FlextOracleWmsFilterOperator
+    FilterOperator = c.OracleWms.WmsFilterOperator
     OperatorFilter = FlextOracleWmsOperatorFilter
 
     class Filter:
@@ -88,7 +88,7 @@ class FlextOracleWmsUtilitiesFiltering:
             records: Sequence[t.OracleWms.Core.FilterRecord],
             field: str,
             value: t.OracleWms.Core.FilterScalar,
-            operator: FlextOracleWmsFilterOperator | None = None,
+            operator: c.OracleWms.WmsFilterOperator | None = None,
         ) -> r[Sequence[t.OracleWms.Core.FilterRecord]]:
             """Filter records by one field using optional operator semantics."""
             engine = cls()
@@ -230,7 +230,7 @@ class FlextOracleWmsUtilitiesFiltering:
         def _apply_operator(
             self,
             field_value: t.OracleWms.Core.FilterRecordValue | None,
-            operator: FlextOracleWmsFilterOperator | str,
+            operator: c.OracleWms.WmsFilterOperator | str,
             filter_value: (t.OracleWms.Core.FilterScalar | t.OracleWms.Core.FilterList),
         ) -> bool:
             if field_value is None and filter_value is not None:
@@ -239,41 +239,41 @@ class FlextOracleWmsUtilitiesFiltering:
                 return False
             if field_value is None and filter_value is None:
                 return operator in {
-                    FlextOracleWmsFilterOperator.EQ,
-                    FlextOracleWmsFilterOperator.GTE,
-                    FlextOracleWmsFilterOperator.LTE,
+                    c.OracleWms.WmsFilterOperator.EQ,
+                    c.OracleWms.WmsFilterOperator.GTE,
+                    c.OracleWms.WmsFilterOperator.LTE,
                     "eq",
                     "gte",
                     "lte",
                 }
             match operator:
-                case FlextOracleWmsFilterOperator.EQ | "eq":
+                case c.OracleWms.WmsFilterOperator.EQ | "eq":
                     return self._normalize(field_value) == self._normalize(filter_value)
-                case FlextOracleWmsFilterOperator.NE | "ne":
+                case c.OracleWms.WmsFilterOperator.NE | "ne":
                     return self._normalize(field_value) != self._normalize(filter_value)
-                case FlextOracleWmsFilterOperator.IN | "in":
+                case c.OracleWms.WmsFilterOperator.IN | "in":
                     match filter_value:
                         case list() as options:
                             return str(field_value) in [str(item) for item in options]
                         case _:
                             return False
-                case FlextOracleWmsFilterOperator.CONTAINS | "contains":
+                case c.OracleWms.WmsFilterOperator.CONTAINS | "contains":
                     if not isinstance(field_value, str):
                         return False
                     return str(filter_value) in field_value
-                case FlextOracleWmsFilterOperator.GT | "gt":
+                case c.OracleWms.WmsFilterOperator.GT | "gt":
                     if type(field_value) is not type(filter_value):
                         return False
                     return self._compare(field_value, filter_value, ">")
-                case FlextOracleWmsFilterOperator.LT | "lt":
+                case c.OracleWms.WmsFilterOperator.LT | "lt":
                     if type(field_value) is not type(filter_value):
                         return False
                     return self._compare(field_value, filter_value, "<")
-                case FlextOracleWmsFilterOperator.GTE | "gte":
+                case c.OracleWms.WmsFilterOperator.GTE | "gte":
                     if type(field_value) is not type(filter_value):
                         return False
                     return self._compare(field_value, filter_value, ">=")
-                case FlextOracleWmsFilterOperator.LTE | "lte":
+                case c.OracleWms.WmsFilterOperator.LTE | "lte":
                     if type(field_value) is not type(filter_value):
                         return False
                     return self._compare(field_value, filter_value, "<=")
@@ -387,7 +387,6 @@ class FlextOracleWmsUtilitiesFiltering:
 
 __all__ = [
     "FlextOracleWmsDataValidationError",
-    "FlextOracleWmsFilterOperator",
     "FlextOracleWmsOperatorFilter",
     "FlextOracleWmsUtilitiesFiltering",
 ]

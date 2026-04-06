@@ -41,10 +41,16 @@ if _t.TYPE_CHECKING:
     from flext_core.utilities import FlextUtilities as u
     from tests.unit.test_wms_client import TestFlextOracleWmsClient
 _LAZY_IMPORTS = {
-    "TestFlextOracleWmsApi": "tests.unit.test_api",
-    "TestFlextOracleWmsClient": "tests.unit.test_wms_client",
-    "TestFlextOracleWmsSettings": "tests.unit.test_config",
-    "Testc": "tests.unit.test_constants",
+    "TestFlextOracleWmsApi": ("tests.unit.test_api", "TestFlextOracleWmsApi"),
+    "TestFlextOracleWmsClient": (
+        "tests.unit.test_wms_client",
+        "TestFlextOracleWmsClient",
+    ),
+    "TestFlextOracleWmsSettings": (
+        "tests.unit.test_config",
+        "TestFlextOracleWmsSettings",
+    ),
+    "Testc": ("tests.unit.test_constants", "Testc"),
     "c": ("flext_core.constants", "FlextConstants"),
     "d": ("flext_core.decorators", "FlextDecorators"),
     "e": ("flext_core.exceptions", "FlextExceptions"),
