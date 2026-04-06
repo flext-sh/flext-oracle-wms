@@ -20,7 +20,7 @@ from datetime import UTC, datetime
 from pathlib import Path
 
 from flext_core import FlextLogger, r
-from flext_oracle_wms import FlextOracleWmsClient, FlextOracleWmsClientSettings
+from flext_oracle_wms import FlextOracleWmsClientSettings, FlextOracleWmsUtilitiesClient
 from tests import t
 
 logger = FlextLogger(__name__)
@@ -43,7 +43,7 @@ class OptimizedOracleWmsDiscovery:
             verify_ssl=True,
             enable_logging=True,
         )
-        self.client = FlextOracleWmsClient(config=self.config)
+        self.client = FlextOracleWmsUtilitiesClient.Client(config=self.config)
         self.priority_entities: set[str] = {
             "company",
             "facility",

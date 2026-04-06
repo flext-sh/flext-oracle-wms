@@ -14,12 +14,15 @@ from typing import ClassVar, override
 
 from flext_core import FlextService, r
 from flext_oracle_wms import (
-    FlextHttpClient,
-    FlextOracleWmsClient,
     FlextOracleWmsSettings,
+    FlextOracleWmsUtilitiesClient,
+    FlextOracleWmsUtilitiesHttpClient,
     m,
     t,
 )
+
+FlextOracleWmsClient = FlextOracleWmsUtilitiesClient.Client
+FlextHttpClient = FlextOracleWmsUtilitiesHttpClient.HttpClient
 
 
 class FlextOracleWmsApi(FlextService[None]):

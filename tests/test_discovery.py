@@ -12,9 +12,11 @@ from flext_core import r
 from flext_oracle_wms import (
     DISCOVERY_FAILURE,
     DISCOVERY_SUCCESS,
-    FlextOracleWmsEntityDiscovery,
+    FlextOracleWmsUtilitiesDiscovery,
 )
 from tests import c
+
+FlextOracleWmsEntityDiscovery = FlextOracleWmsUtilitiesDiscovery.EntityDiscovery
 
 
 class TestDiscoveryConstants:

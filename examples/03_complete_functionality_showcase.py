@@ -38,14 +38,17 @@ from dotenv import load_dotenv
 from flext_core import FlextLogger, r
 from flext_oracle_wms import (
     FlextOracleWmsApi,
-    FlextOracleWmsAuthenticator,
-    FlextOracleWmsClient,
     FlextOracleWmsClientSettings,
     FlextOracleWmsError,
+    FlextOracleWmsUtilitiesAuth,
+    FlextOracleWmsUtilitiesClient,
     c,
     m,
     t,
 )
+
+FlextOracleWmsAuthenticator = FlextOracleWmsUtilitiesAuth.Authenticator
+FlextOracleWmsClient = FlextOracleWmsUtilitiesClient.Client
 
 logger = FlextLogger(__name__)
 

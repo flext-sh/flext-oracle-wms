@@ -22,14 +22,12 @@ from collections.abc import Mapping, Sequence
 
 import pytest
 
-from flext_core import FlextExceptions
-from flext_oracle_wms import (
-    FlextOracleWmsDataValidationError,
-    FlextOracleWmsFilter,
-    FlextOracleWmsFilterOperator,
-    FlextOracleWmsOperatorFilter as OperatorFilter,
-)
-from tests import c, t
+from flext_oracle_wms import FlextOracleWmsUtilitiesFiltering, c, e, m
+from tests import t
+
+FlextOracleWmsFilter = FlextOracleWmsUtilitiesFiltering.Filter
+FlextOracleWmsFilterOperator = c.OracleWms.WmsFilterOperator
+FlextOracleWmsDataValidationError = FlextOracleWmsUtilitiesFiltering.DataValidationError
 
 
 class TestFlextOracleWmsFilterConstruction:
@@ -48,15 +46,15 @@ class TestFlextOracleWmsFilterConstruction:
         assert filter_engine.max_conditions == 50
 
     def test_filter_invalid_max_conditions_zero(self) -> None:
-        with pytest.raises(FlextExceptions.BaseError, match="Invalid max_conditions"):
+        with pytest.raises(e.BaseError, match="Invalid max_conditions"):
             FlextOracleWmsFilter(max_conditions=0)
 
     def test_filter_invalid_max_conditions_negative(self) -> None:
-        with pytest.raises(FlextExceptions.BaseError, match="Invalid max_conditions"):
+        with pytest.raises(e.BaseError, match="Invalid max_conditions"):
             FlextOracleWmsFilter(max_conditions=-1)
 
     def test_filter_max_conditions_limit_exceeded(self) -> None:
-        with pytest.raises(FlextExceptions.BaseError, match="Invalid max_conditions"):
+        with pytest.raises(e.BaseError, match="Invalid max_conditions"):
             FlextOracleWmsFilter(
                 max_conditions=c.Filtering.MAX_FILTER_CONDITIONS + 1,
             )
@@ -256,8 +254,10 @@ class TestRecordFiltering:
     def test_filter_records_with_operator_dict(self) -> None:
         """Test filtering with operator dict format."""
         filter_engine = FlextOracleWmsFilter(case_sensitive=False, max_conditions=50)
-        filters: Mapping[str, OperatorFilter] = {
-            "status": OperatorFilter(operator="ne", value="inactive"),
+        filters: Mapping[str, m.OracleWms.FlextOracleWmsOperatorFilter] = {
+            "status": m.OracleWms.FlextOracleWmsOperatorFilter(
+                operator="ne", value="inactive"
+            ),
         }
         result = filter_engine.filter_records(self.sample_records, filters)
         assert result.is_success
@@ -517,11 +517,11 @@ class TestFactoryFunction:
         assert filter_engine.max_conditions == 50
 
     def test_create_filter_invalid_max_conditions(self) -> None:
-        with pytest.raises(FlextExceptions.BaseError, match="Invalid max_conditions"):
+        with pytest.raises(e.BaseError, match="Invalid max_conditions"):
             FlextOracleWmsFilter.create_filter(max_conditions=0)
 
     def test_create_filter_exceeds_limit(self) -> None:
-        with pytest.raises(FlextExceptions.BaseError, match="Invalid max_conditions"):
+        with pytest.raises(e.BaseError, match="Invalid max_conditions"):
             FlextOracleWmsFilter.create_filter(
                 max_conditions=c.Filtering.MAX_FILTER_CONDITIONS + 1,
             )
@@ -657,7 +657,7 @@ class TestMatchesCondition:
             filter_engine._matches_condition(
                 record,
                 "score",
-                OperatorFilter(operator="gt", value=80),
+                m.OracleWms.FlextOracleWmsOperatorFilter(operator="gt", value=80),
             )
             is True
         )
@@ -665,7 +665,7 @@ class TestMatchesCondition:
             filter_engine._matches_condition(
                 record,
                 "score",
-                OperatorFilter(operator="gt", value=90),
+                m.OracleWms.FlextOracleWmsOperatorFilter(operator="gt", value=90),
             )
             is False
         )

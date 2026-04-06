@@ -288,36 +288,29 @@ class FlextOracleWmsModels(FlextModels):
             token: Annotated[str | None, Field(description="API token")] = None
 
         # =====================================================================
-        # ENUMS - Aliases from constants.py (single source of truth)
-        # =====================================================================
-
-        EntityType: type[c.OracleWms.WmsEntityType] = c.OracleWms.WmsEntityType
-        OperationStatus: type[c.OracleWms.WmsOperationStatus] = (
-            c.OracleWms.WmsOperationStatus
-        )
-
-        # =====================================================================
         # AGGREGATE ROOTS - Consistency boundaries
         # =====================================================================
 
         class WarehouseAggregate(FlextModels.AggregateRoot):
             """Warehouse aggregate root."""
 
-            id: str
-            name: str
-            locations: Sequence[FlextOracleWmsModels.OracleWms.WarehouseLocation] = (
-                Field(
-                    default_factory=lambda: list[
-                        FlextOracleWmsModels.OracleWms.WarehouseLocation
-                    ]()
-                )
+            id: Annotated[str, Field(description="Warehouse identifier")]
+            name: Annotated[str, Field(description="Warehouse name")]
+            locations: Annotated[
+                Sequence[FlextOracleWmsModels.OracleWms.WarehouseLocation],
+                Field(description="Warehouse locations"),
+            ] = Field(
+                default_factory=lambda: list[
+                    FlextOracleWmsModels.OracleWms.WarehouseLocation
+                ]()
             )
-            inventory: MutableSequence[FlextOracleWmsModels.OracleWms.InventoryItem] = (
-                Field(
-                    default_factory=lambda: list[
-                        FlextOracleWmsModels.OracleWms.InventoryItem
-                    ]()
-                )
+            inventory: Annotated[
+                MutableSequence[FlextOracleWmsModels.OracleWms.InventoryItem],
+                Field(description="Warehouse inventory items"),
+            ] = Field(
+                default_factory=lambda: list[
+                    FlextOracleWmsModels.OracleWms.InventoryItem
+                ]()
             )
 
             def add_inventory(

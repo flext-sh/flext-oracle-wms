@@ -32,7 +32,6 @@ if _t.TYPE_CHECKING:
     import flext_oracle_wms._utilities.http_client as _flext_oracle_wms__utilities_http_client
     from flext_oracle_wms._utilities.filtering import (
         FlextOracleWmsDataValidationError,
-        FlextOracleWmsFilterOperator,
         FlextOracleWmsOperatorFilter,
         FlextOracleWmsUtilitiesFiltering,
     )
@@ -47,10 +46,6 @@ _LAZY_IMPORTS = {
     "FlextOracleWmsDataValidationError": (
         "flext_oracle_wms._utilities.filtering",
         "FlextOracleWmsDataValidationError",
-    ),
-    "FlextOracleWmsFilterOperator": (
-        "flext_oracle_wms._utilities.filtering",
-        "FlextOracleWmsFilterOperator",
     ),
     "FlextOracleWmsOperatorFilter": (
         "flext_oracle_wms._utilities.filtering",
@@ -87,7 +82,6 @@ __all__ = [
     "DISCOVERY_FAILURE",
     "DISCOVERY_SUCCESS",
     "FlextOracleWmsDataValidationError",
-    "FlextOracleWmsFilterOperator",
     "FlextOracleWmsOperatorFilter",
     "FlextOracleWmsUtilitiesAuth",
     "FlextOracleWmsUtilitiesClient",

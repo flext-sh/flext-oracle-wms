@@ -389,6 +389,11 @@ root = "examples"
 addopts = [
   "--strict-markers",
 ]
+filterwarnings = [
+  "error",
+  "ignore::UserWarning:flext_web",
+  "ignore::UserWarning:flext_api",
+]
 markers = [
   "docker: tests requiring Docker",
   "e2e: end-to-end integration tests",

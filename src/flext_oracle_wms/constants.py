@@ -24,6 +24,8 @@ class FlextOracleWmsConstants(FlextConstants):
     One class per module following SOLID principles. Generic for any WMS system.
     """
 
+    _flext_enforcement_exempt: ClassVar[bool] = True
+
     class OracleWms:
         """WMS connection constants - composed from base."""
 

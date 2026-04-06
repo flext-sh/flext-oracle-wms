@@ -22,11 +22,15 @@ from flext_api import FlextApiModels
 from flext_core import FlextLogger, r
 from flext_oracle_wms import (
     FlextOracleWmsApi,
-    FlextOracleWmsAuthenticator,
-    FlextOracleWmsClient,
     FlextOracleWmsClientSettings,
+    FlextOracleWmsUtilitiesAuth,
+    FlextOracleWmsUtilitiesClient,
 )
+
 from tests import m, t
+
+FlextOracleWmsAuthenticator = FlextOracleWmsUtilitiesAuth.Authenticator
+FlextOracleWmsClient = FlextOracleWmsUtilitiesClient.Client
 
 logger = FlextLogger(__name__)
 

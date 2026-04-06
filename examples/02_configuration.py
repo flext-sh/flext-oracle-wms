@@ -19,11 +19,13 @@ from pydantic import BaseModel, ConfigDict, Field
 
 from flext_core import FlextLogger
 from flext_oracle_wms import (
-    FlextOracleWmsClient,
     FlextOracleWmsClientSettings,
     FlextOracleWmsConstants,
+    FlextOracleWmsUtilitiesClient,
     t,
 )
+
+FlextOracleWmsClient = FlextOracleWmsUtilitiesClient.Client
 
 logger = FlextLogger(__name__)
 

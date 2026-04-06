@@ -40,7 +40,6 @@ class FlextOracleWmsUtilitiesFiltering:
     """Filtering utilities for Oracle WMS -- u.OracleWms.Filtering.*."""
 
     DataValidationError = FlextOracleWmsDataValidationError
-    FilterOperator = c.OracleWms.WmsFilterOperator
     OperatorFilter = FlextOracleWmsOperatorFilter
 
     class Filter:

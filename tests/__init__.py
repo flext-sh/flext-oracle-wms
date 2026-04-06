@@ -73,6 +73,7 @@ if _t.TYPE_CHECKING:
     test_authentication_core = _tests_test_authentication_core
     import tests.test_client as _tests_test_client
     from tests.test_authentication_core import (
+        FlextOracleWmsAuthenticator,
         TestAuthenticationConfig,
         TestAuthenticationMethod,
         TestAuthenticator,
@@ -125,6 +126,7 @@ if _t.TYPE_CHECKING:
     test_declarative = _tests_test_declarative
     import tests.test_discovery as _tests_test_discovery
     from tests.test_declarative import (
+        FlextOracleWmsClient,
         TestAutomationApisIntegration,
         TestErrorHandlingIntegration,
         TestLgfApiV10Integration,
@@ -139,6 +141,7 @@ if _t.TYPE_CHECKING:
     test_discovery = _tests_test_discovery
     import tests.test_filtering as _tests_test_filtering
     from tests.test_discovery import (
+        FlextOracleWmsEntityDiscovery,
         TestDiscoveryConstants,
         TestEndpointDiscoveryStrategyEnum,
         TestFlextOracleWmsEntityDiscovery,
@@ -147,6 +150,9 @@ if _t.TYPE_CHECKING:
     test_filtering = _tests_test_filtering
     import tests.test_helpers as _tests_test_helpers
     from tests.test_filtering import (
+        FlextOracleWmsDataValidationError,
+        FlextOracleWmsFilter,
+        FlextOracleWmsFilterOperator,
         TestApplyOperator,
         TestConvenienceFunctions,
         TestErrorHandling,
@@ -231,6 +237,24 @@ _LAZY_IMPORTS = merge_lazy_imports(
         "CompleteMockPipeline": (
             "tests.complete_mock_pipeline",
             "CompleteMockPipeline",
+        ),
+        "FlextOracleWmsAuthenticator": (
+            "tests.test_authentication_core",
+            "FlextOracleWmsAuthenticator",
+        ),
+        "FlextOracleWmsClient": ("tests.test_declarative", "FlextOracleWmsClient"),
+        "FlextOracleWmsDataValidationError": (
+            "tests.test_filtering",
+            "FlextOracleWmsDataValidationError",
+        ),
+        "FlextOracleWmsEntityDiscovery": (
+            "tests.test_discovery",
+            "FlextOracleWmsEntityDiscovery",
+        ),
+        "FlextOracleWmsFilter": ("tests.test_filtering", "FlextOracleWmsFilter"),
+        "FlextOracleWmsFilterOperator": (
+            "tests.test_filtering",
+            "FlextOracleWmsFilterOperator",
         ),
         "FlextOracleWmsTestConstants": (
             "tests.constants",
@@ -507,6 +531,12 @@ _ = _LAZY_IMPORTS.pop("output_reporting", None)
 
 __all__ = [
     "CompleteMockPipeline",
+    "FlextOracleWmsAuthenticator",
+    "FlextOracleWmsClient",
+    "FlextOracleWmsDataValidationError",
+    "FlextOracleWmsEntityDiscovery",
+    "FlextOracleWmsFilter",
+    "FlextOracleWmsFilterOperator",
     "FlextOracleWmsTestConstants",
     "FlextOracleWmsTestModels",
     "FlextOracleWmsTestProtocols",

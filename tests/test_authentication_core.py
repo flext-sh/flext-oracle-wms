@@ -9,7 +9,9 @@ from __future__ import annotations
 
 import pytest
 
-from flext_oracle_wms import FlextOracleWmsAuthenticator
+from flext_oracle_wms import FlextOracleWmsUtilitiesAuth
+
+FlextOracleWmsAuthenticator = FlextOracleWmsUtilitiesAuth.Authenticator
 from tests import c, m
 
 

@@ -13,7 +13,9 @@ from __future__ import annotations
 from unittest.mock import MagicMock
 
 from flext_core import r
-from flext_oracle_wms import FlextOracleWmsClient, FlextOracleWmsSettings
+from flext_oracle_wms import FlextOracleWmsSettings, FlextOracleWmsUtilitiesClient
+
+FlextOracleWmsClient = FlextOracleWmsUtilitiesClient.Client
 
 
 class TestFlextOracleWmsClient:
