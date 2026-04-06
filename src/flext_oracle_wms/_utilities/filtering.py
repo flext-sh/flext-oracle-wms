@@ -22,7 +22,7 @@ FlextOracleWmsOperatorFilter = (
 )
 
 # Canonical alias -- single source of truth lives in c.OracleWms.WmsFilterOperator
-FlextOracleWmsFilterOperator = c.OracleWms.WmsFilterOperator
+# FlextOracleWmsFilterOperator = c.OracleWms.WmsFilterOperator
 
 # Type alias for filter entries (can be scalar, list, or operator filter)
 type FilterEntry = (
