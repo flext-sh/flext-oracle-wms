@@ -1,0 +1,67 @@
+tests/test_filtering.py
+  a47ee9c33c2a5631 25-30
+tests/test_client_core.py
+  a47ee9c33c2a5631 17-19
+tests/unit/test_wms_client.py
+  a47ee9c33c2a5631 16-18
+examples/01_basic_usage.py
+  a47ee9c33c2a5631 34,38
+examples/02_configuration.py
+  a47ee9c33c2a5631 24,28
+tests/test_discovery.py
+  a47ee9c33c2a5631 15,19
+tests/test_declarative.py
+  a47ee9c33c2a5631 22-23,27,34,36-45,53-57,110,112-123,126,128-133,183,185,187-188,190-192,194,200,251,254,257,260,276,283-288
+tests/oracle_wms_optimized_discovery.py
+  a47ee9c33c2a5631 23
+tests/test_authentication_core.py
+  a47ee9c33c2a5631 12-14
+pyproject.toml
+  a47ee9c33c2a5631 392-396
+examples/02_singleton_config.py
+  a47ee9c33c2a5631 19,22
+tests/unit/test_api.py
+  a47ee9c33c2a5631 11-13
+examples/03_complete_functionality_showcase.py
+  a47ee9c33c2a5631 43-44,50-51
+src/flext_oracle_wms/__version__.py
+  a47ee9c33c2a5631 22-23
+tests/test_authentication.py
+  a47ee9c33c2a5631 12-14
+src/flext_oracle_wms/models.py
+  a47ee9c33c2a5631 297-305,307-313
+tests/oracle_wms_focused_discovery.py
+  a47ee9c33c2a5631 16-18
+tests/test_connection.py
+  a47ee9c33c2a5631 10-12
+tests/test_client.py
+  a47ee9c33c2a5631 10-12
+src/flext_oracle_wms/api.py
+  a47ee9c33c2a5631 18-19,24-25
+tests/test_client_class.py
+  a47ee9c33c2a5631 10-12
+src/flext_oracle_wms/constants.py
+  a47ee9c33c2a5631 27-28
+tests/oracle_wms_complete_discovery.py
+  a47ee9c33c2a5631 26-27,29,32-33
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.2.5",
+  "base_commit_sha": "16ee805261caaa73b6d8046a25e28d9d1b3b15e7",
+  "prompts": {
+    "a47ee9c33c2a5631": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "66e4e489-6769-4d5d-9802-7c8727b157bd",
+        "model": "claude-opus-4-6"
+      },
+      "human_author": "FLEXT Bot",
+      "messages": [],
+      "total_additions": 166,
+      "total_deletions": 218,
+      "accepted_lines": 152,
+      "overriden_lines": 0
+    }
+  }
+}
