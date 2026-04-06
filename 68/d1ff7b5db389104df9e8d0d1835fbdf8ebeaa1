@@ -1,0 +1,23 @@
+src/flext_oracle_wms/settings.py
+  d3ada1e5d497edb1 11,39
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.2.5",
+  "base_commit_sha": "68d1ff7b5db389104df9e8d0d1835fbdf8ebeaa1",
+  "prompts": {
+    "d3ada1e5d497edb1": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "7a3e077c-5cc8-4cbe-b4df-b55506e62047",
+        "model": "claude-opus-4-6"
+      },
+      "human_author": "FLEXT Bot",
+      "messages": [],
+      "total_additions": 2,
+      "total_deletions": 2,
+      "accepted_lines": 2,
+      "overriden_lines": 0
+    }
+  }
+}
