@@ -10,8 +10,6 @@ from __future__ import annotations
 import pytest
 
 from flext_oracle_wms import FlextOracleWmsUtilitiesAuth
-
-FlextOracleWmsAuthenticator = FlextOracleWmsUtilitiesAuth.Authenticator
 from tests import c, m
 
 
@@ -111,7 +109,7 @@ class TestAuthenticator:
             username="test_user",
             password="test_password",
         )
-        authenticator = FlextOracleWmsAuthenticator(config)
+        authenticator = FlextOracleWmsUtilitiesAuth.Authenticator(config)
         assert authenticator.config == config
 
     def test_authenticate_basic_success(self) -> None:
@@ -121,7 +119,7 @@ class TestAuthenticator:
             username="test_user",
             password="test_password",
         )
-        authenticator = FlextOracleWmsAuthenticator(config)
+        authenticator = FlextOracleWmsUtilitiesAuth.Authenticator(config)
         result = authenticator.authenticate()
         assert result.is_success
         assert result.value == "dGVzdF91c2VyOnRlc3RfcGFzc3dvcmQ="
@@ -132,7 +130,7 @@ class TestAuthenticator:
             oauth2_client_id="id",
             oauth2_client_secret="secret",
         )
-        authenticator = FlextOracleWmsAuthenticator(config)
+        authenticator = FlextOracleWmsUtilitiesAuth.Authenticator(config)
         result = authenticator.authenticate()
         assert result.is_failure
         assert result.error == "OAuth2 not configured"
@@ -142,7 +140,7 @@ class TestAuthenticator:
         config = m.OracleWms.AuthSettings(
             method=c.OracleWms.OracleWMSAuthMethod.BASIC,
         )
-        authenticator = FlextOracleWmsAuthenticator(config)
+        authenticator = FlextOracleWmsUtilitiesAuth.Authenticator(config)
         result = authenticator.authenticate()
         assert result.is_failure
 
@@ -153,7 +151,7 @@ class TestAuthenticator:
             username="test_user",
             password="test_password",
         )
-        authenticator = FlextOracleWmsAuthenticator(config)
+        authenticator = FlextOracleWmsUtilitiesAuth.Authenticator(config)
         result = authenticator.get_auth_headers()
         assert result.is_success
         headers = result.value
@@ -165,7 +163,7 @@ class TestAuthenticator:
         config = m.OracleWms.AuthSettings(
             method=c.OracleWms.OracleWMSAuthMethod.BASIC,
         )
-        authenticator = FlextOracleWmsAuthenticator(config)
+        authenticator = FlextOracleWmsUtilitiesAuth.Authenticator(config)
         result = authenticator.get_auth_headers()
         assert result.is_failure
 
@@ -176,4 +174,6 @@ class TestAuthenticator:
             password="test_password",
         )
         with pytest.raises(NotImplementedError, match="runtime settings with base_url"):
-            _ = FlextOracleWmsAuthenticator.create_oracle_wms_client(config)
+            _ = FlextOracleWmsUtilitiesAuth.Authenticator.create_oracle_wms_client(
+                config
+            )

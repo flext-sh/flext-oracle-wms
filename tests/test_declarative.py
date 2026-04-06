@@ -24,8 +24,6 @@ from flext_oracle_wms import (
 )
 from tests import c, t, u
 
-FlextOracleWmsClient = FlextOracleWmsUtilitiesClient.Client
-
 logger = FlextLogger(__name__)
 
 
@@ -48,14 +46,14 @@ def env_config() -> t.ContainerMapping:
 @pytest.fixture
 def oracle_wms_client(
     env_config: t.ContainerMapping,
-) -> Generator[FlextOracleWmsClient]:
+) -> Generator[FlextOracleWmsUtilitiesClient.Client]:
     """Fixture that provides configured Oracle WMS client."""
     config = FlextOracleWmsClientSettings.model_validate({
         **env_config,
         "use_mock": env_config.get("use_mock", False),
         "api_version": "LGF_V10",
     })
-    client = FlextOracleWmsClient(config)
+    client = FlextOracleWmsUtilitiesClient.Client(config)
     start_result = client.start()
     if not start_result.is_success:
         pytest.fail(f"Failed to start Oracle WMS client: {start_result.error}")
@@ -96,7 +94,7 @@ class TestOracleWmsDeclarativeIntegration:
         assert config.password
         assert config.timeout > 0
         assert config.max_retries > 0
-        client = FlextOracleWmsClient(config)
+        client = FlextOracleWmsUtilitiesClient.Client(config)
         assert client.config == config
         start_result = client.start()
         assert start_result.is_success, f"Client start failed: {start_result.error}"
@@ -105,7 +103,7 @@ class TestOracleWmsDeclarativeIntegration:
 
     def test_oracle_wms_health_check(
         self,
-        oracle_wms_client: FlextOracleWmsClient,
+        oracle_wms_client: FlextOracleWmsUtilitiesClient.Client,
     ) -> None:
         """Test Oracle WMS API health check returns valid result."""
         health_result = oracle_wms_client.health_check()
@@ -122,7 +120,9 @@ class TestOracleWmsDeclarativeIntegration:
         else:
             assert health_result.error is not None
 
-    def test_get_all_entities(self, oracle_wms_client: FlextOracleWmsClient) -> None:
+    def test_get_all_entities(
+        self, oracle_wms_client: FlextOracleWmsUtilitiesClient.Client
+    ) -> None:
         """Test getting list of all Oracle WMS entities returns valid result."""
         entities_result = oracle_wms_client.discover_entities()
         assert isinstance(entities_result, r)
@@ -139,7 +139,7 @@ class TestLgfApiV10Integration:
     @pytest.mark.parametrize("entity_name", ["company", "facility", "item"])
     def test_get_entity_data(
         self,
-        oracle_wms_client: FlextOracleWmsClient,
+        oracle_wms_client: FlextOracleWmsUtilitiesClient.Client,
         entity_name: str,
     ) -> None:
         """Test getting entity data using LGF API v10."""
@@ -162,7 +162,7 @@ class TestLgfApiV10Integration:
 
     def test_get_entity_data_with_filters(
         self,
-        oracle_wms_client: FlextOracleWmsClient,
+        oracle_wms_client: FlextOracleWmsUtilitiesClient.Client,
     ) -> None:
         """Test getting entity data with filters."""
         result = oracle_wms_client.get_entity_data(
@@ -179,7 +179,9 @@ class TestLgfApiV10Integration:
         else:
             logger.warning("⚠️ Filtered query failed: %s", result.error)
 
-    def test_get_entity_by_id(self, oracle_wms_client: FlextOracleWmsClient) -> None:
+    def test_get_entity_by_id(
+        self, oracle_wms_client: FlextOracleWmsUtilitiesClient.Client
+    ) -> None:
         """Test getting specific entity record by ID returns valid result."""
         list_result = oracle_wms_client.get_entity_data("company", limit=1)
         assert isinstance(list_result, r)
@@ -203,7 +205,9 @@ class TestLgfApiV10Integration:
 class TestAutomationApisIntegration:
     """Integration tests for automation and operations APIs."""
 
-    def test_get_entity_status(self, oracle_wms_client: FlextOracleWmsClient) -> None:
+    def test_get_entity_status(
+        self, oracle_wms_client: FlextOracleWmsUtilitiesClient.Client
+    ) -> None:
         """Test getting entity status."""
         result = oracle_wms_client.get_entity_data(
             entity_name="company",
@@ -219,7 +223,7 @@ class TestAutomationApisIntegration:
 
     def test_update_oblpn_tracking_number(
         self,
-        oracle_wms_client: FlextOracleWmsClient,
+        oracle_wms_client: FlextOracleWmsUtilitiesClient.Client,
     ) -> None:
         """Test OBLPN tracking number update API structure."""
         result = oracle_wms_client.update_oblpn_tracking_number(
@@ -232,7 +236,7 @@ class TestAutomationApisIntegration:
 
     def test_create_lpn_api_structure(
         self,
-        oracle_wms_client: FlextOracleWmsClient,
+        oracle_wms_client: FlextOracleWmsUtilitiesClient.Client,
     ) -> None:
         """Test LPN creation API structure."""
         result = oracle_wms_client.create_lpn(
@@ -247,19 +251,25 @@ class TestAutomationApisIntegration:
 class TestErrorHandlingIntegration:
     """Integration tests for error handling and edge cases."""
 
-    def test_invalid_entity_name(self, oracle_wms_client: FlextOracleWmsClient) -> None:
+    def test_invalid_entity_name(
+        self, oracle_wms_client: FlextOracleWmsUtilitiesClient.Client
+    ) -> None:
         """Test handling of invalid entity names returns failure result."""
         result = oracle_wms_client.get_entity_data("invalid_entity_xyz")
         assert not result.is_success
         assert result.error is not None
 
-    def test_unknown_api_call(self, oracle_wms_client: FlextOracleWmsClient) -> None:
+    def test_unknown_api_call(
+        self, oracle_wms_client: FlextOracleWmsUtilitiesClient.Client
+    ) -> None:
         """Test handling of unknown API calls returns failure result."""
         result = oracle_wms_client.call_api("unknown_api_xyz")
         assert not result.is_success
         assert result.error is not None
 
-    def test_malformed_lgf_call(self, oracle_wms_client: FlextOracleWmsClient) -> None:
+    def test_malformed_lgf_call(
+        self, oracle_wms_client: FlextOracleWmsUtilitiesClient.Client
+    ) -> None:
         """Test handling of malformed LGF API calls."""
         result = oracle_wms_client.call_api("invalid_api_name")
         assert not result.is_success
@@ -271,7 +281,7 @@ class TestPerformanceIntegration:
 
     def test_concurrent_entity_requests(
         self,
-        oracle_wms_client: FlextOracleWmsClient,
+        oracle_wms_client: FlextOracleWmsUtilitiesClient.Client,
     ) -> None:
         """Test concurrent requests to different entities return results."""
         entities = ["company", "facility", "item"]
@@ -287,7 +297,9 @@ class TestPerformanceIntegration:
             if not isinstance(result_item, Exception):
                 assert isinstance(result_item, r)
 
-    def test_pagination_handling(self, oracle_wms_client: FlextOracleWmsClient) -> None:
+    def test_pagination_handling(
+        self, oracle_wms_client: FlextOracleWmsUtilitiesClient.Client
+    ) -> None:
         """Test pagination with different page sizes."""
         page_sizes = [1, 5, 10]
         for page_size in page_sizes:

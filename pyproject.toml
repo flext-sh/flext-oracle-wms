@@ -391,8 +391,8 @@ addopts = [
 ]
 filterwarnings = [
   "error",
-  "ignore::UserWarning:flext_web",
   "ignore::UserWarning:flext_api",
+  "ignore::UserWarning:flext_web",
 ]
 markers = [
   "docker: tests requiring Docker",

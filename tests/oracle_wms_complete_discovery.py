@@ -26,11 +26,7 @@ from flext_oracle_wms import (
     FlextOracleWmsUtilitiesAuth,
     FlextOracleWmsUtilitiesClient,
 )
-
 from tests import m, t
-
-FlextOracleWmsAuthenticator = FlextOracleWmsUtilitiesAuth.Authenticator
-FlextOracleWmsClient = FlextOracleWmsUtilitiesClient.Client
 
 logger = FlextLogger(__name__)
 
@@ -49,24 +45,28 @@ class OracleWmsCompleteDiscovery:
 
     def __init__(self) -> None:
         """Initialize with ADMINISTRATOR credentials."""
-        self.config: FlextOracleWmsClientSettings = FlextOracleWmsClientSettings(
-            base_url="https://invalid.wms.ocs.oraclecloud.com",
-            username="USER_WMS_INTEGRA",
-            password="jmCyS7BK94YvhS@",
-            timeout=120.0,
-            max_retries=5,
-            api_version=_API_VERSION_LGF_V10,
-            verify_ssl=True,
-            enable_logging=True,
+        self.config: FlextOracleWmsUtilitiesClient.ClientSettings = (
+            FlextOracleWmsClientSettings(
+                base_url="https://invalid.wms.ocs.oraclecloud.com",
+                username="USER_WMS_INTEGRA",
+                password="jmCyS7BK94YvhS@",
+                timeout=120.0,
+                max_retries=5,
+                api_version=_API_VERSION_LGF_V10,
+                verify_ssl=True,
+                enable_logging=True,
+            )
         )
         auth_settings = m.OracleWms.AuthSettings(
             username=self.config.username,
             password=self.config.password,
         )
-        _auth_result = FlextOracleWmsAuthenticator.create_oracle_wms_client(
-            auth_settings
+        _auth_result = (
+            FlextOracleWmsUtilitiesAuth.Authenticator.create_oracle_wms_client(
+                auth_settings
+            )
         )
-        self.client = FlextOracleWmsClient(config=self.config)
+        self.client = FlextOracleWmsUtilitiesClient.Client(config=self.config)
         self.discovered_entities: MutableSequence[str] = []
         self.entity_metadata: t.MutableContainerMapping = {}
         self.complete_schemas: t.MutableContainerMapping = {}

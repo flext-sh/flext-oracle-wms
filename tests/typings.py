@@ -27,4 +27,5 @@ class FlextOracleWmsTestTypes(FlextTestsTypes, FlextOracleWmsTypes):
 
 
 t = FlextOracleWmsTestTypes
+
 __all__ = ["FlextOracleWmsTestTypes", "t"]

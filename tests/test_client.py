@@ -9,13 +9,11 @@ from __future__ import annotations
 
 from flext_oracle_wms import FlextOracleWmsClientSettings, FlextOracleWmsUtilitiesClient
 
-FlextOracleWmsClient = FlextOracleWmsUtilitiesClient.Client
-
 
 class TestClientSimpleNew:
     """Simple tests for client functionality."""
 
-    config: FlextOracleWmsClientSettings
+    config: FlextOracleWmsUtilitiesClient.ClientSettings
 
     def setup_method(self) -> None:
         """Set up test fixtures."""
@@ -28,14 +26,14 @@ class TestClientSimpleNew:
 
     def test_client_creation(self) -> None:
         """Test basic client creation."""
-        client = FlextOracleWmsClient(self.config)
+        client = FlextOracleWmsUtilitiesClient.Client(self.config)
         assert client.config == self.config
         assert hasattr(client, "_client")
         assert hasattr(client, "_discovered_entities")
 
     def test_client_repr(self) -> None:
         """Test client string representation."""
-        client = FlextOracleWmsClient(self.config)
+        client = FlextOracleWmsUtilitiesClient.Client(self.config)
         repr_str = str(client)
         assert (
             "FlextOracleWmsClient" in repr_str
@@ -46,13 +44,13 @@ class TestClientSimpleNew:
 
     def test_client_creation_extended(self) -> None:
         """Test client creation and basic properties (extended)."""
-        client = FlextOracleWmsClient(self.config)
-        assert isinstance(client, FlextOracleWmsClient)
+        client = FlextOracleWmsUtilitiesClient.Client(self.config)
+        assert isinstance(client, FlextOracleWmsUtilitiesClient.Client)
         assert client.config is not None
 
     def test_client_basic_operations(self) -> None:
         """Test client basic operations don't raise errors."""
-        client = FlextOracleWmsClient(self.config)
+        client = FlextOracleWmsUtilitiesClient.Client(self.config)
         assert hasattr(client, "start")
         assert hasattr(client, "stop")
         assert callable(client.start)
@@ -60,37 +58,37 @@ class TestClientSimpleNew:
 
     def test_client_stop_method(self) -> None:
         """Test client stop method exists."""
-        client = FlextOracleWmsClient(self.config)
+        client = FlextOracleWmsUtilitiesClient.Client(self.config)
         assert hasattr(client, "stop")
         assert callable(client.stop)
 
     def test_health_check_method_exists(self) -> None:
         """Test health check method exists."""
-        client = FlextOracleWmsClient(self.config)
+        client = FlextOracleWmsUtilitiesClient.Client(self.config)
         assert hasattr(client, "health_check")
         assert callable(client.health_check)
 
     def test_discover_entities_method_exists(self) -> None:
         """Test entity discovery method exists."""
-        client = FlextOracleWmsClient(self.config)
+        client = FlextOracleWmsUtilitiesClient.Client(self.config)
         assert hasattr(client, "discover_entities")
         assert callable(client.discover_entities)
 
     def test_client_specialized_methods(self) -> None:
         """Test client specialized method interface."""
-        client = FlextOracleWmsClient(self.config)
+        client = FlextOracleWmsUtilitiesClient.Client(self.config)
         assert hasattr(client, "create_lpn")
         assert callable(client.create_lpn)
 
     def test_client_properties(self) -> None:
         """Test client property access."""
-        client = FlextOracleWmsClient(self.config)
+        client = FlextOracleWmsUtilitiesClient.Client(self.config)
         assert hasattr(client, "config")
         assert client.config is not None
 
     def test_client_methods_exist(self) -> None:
         """Test that actual client methods exist."""
-        client = FlextOracleWmsClient(self.config)
+        client = FlextOracleWmsUtilitiesClient.Client(self.config)
         assert hasattr(client, "start")
         assert hasattr(client, "stop")
         assert hasattr(client, "discover_entities")
@@ -106,44 +104,44 @@ class TestClientSimpleNew:
             timeout=60,
             max_retries=3,
         )
-        client = FlextOracleWmsClient(config)
+        client = FlextOracleWmsUtilitiesClient.Client(config)
         assert client.config.timeout == 60
         assert client.config.max_retries == 3
 
     def test_discover_entities_method_validation(self) -> None:
         """Test that discover_entities method exists and is callable."""
-        client = FlextOracleWmsClient(self.config)
+        client = FlextOracleWmsUtilitiesClient.Client(self.config)
         assert hasattr(client, "discover_entities")
         assert callable(client.discover_entities)
 
     def test_client_create_lpn_method_exists(self) -> None:
         """Test create_lpn method exists."""
-        client = FlextOracleWmsClient(self.config)
+        client = FlextOracleWmsUtilitiesClient.Client(self.config)
         assert hasattr(client, "create_lpn")
         assert callable(client.create_lpn)
 
     def test_client_health_check_sync(self) -> None:
         """Test client health check (sync version)."""
-        client = FlextOracleWmsClient(self.config)
+        client = FlextOracleWmsUtilitiesClient.Client(self.config)
         assert hasattr(client, "health_check")
         assert callable(client.health_check)
 
     def test_client_config_access(self) -> None:
         """Test client configuration access."""
-        client = FlextOracleWmsClient(self.config)
+        client = FlextOracleWmsUtilitiesClient.Client(self.config)
         assert client.config is not None
         assert hasattr(client.config, "base_url")
         assert hasattr(client.config, "username")
 
     def test_client_internal_properties(self) -> None:
         """Test client internal properties exist."""
-        client = FlextOracleWmsClient(self.config)
+        client = FlextOracleWmsUtilitiesClient.Client(self.config)
         assert hasattr(client, "_client")
         assert hasattr(client, "_discovered_entities")
 
     def test_client_properties_access(self) -> None:
         """Test client properties are accessible."""
-        client = FlextOracleWmsClient(self.config)
+        client = FlextOracleWmsUtilitiesClient.Client(self.config)
         assert hasattr(client, "config")
         config = client.config
         assert config is not None
@@ -158,11 +156,11 @@ class TestClientSimpleNew:
             password="pass",
             timeout=30,
         )
-        client = FlextOracleWmsClient(minimal_config)
+        client = FlextOracleWmsUtilitiesClient.Client(minimal_config)
         assert "test.com" in str(client.config.base_url)
 
     def test_client_configuration_access(self) -> None:
         """Test access to client configuration."""
-        client = FlextOracleWmsClient(self.config)
+        client = FlextOracleWmsUtilitiesClient.Client(self.config)
         assert client.config.username == "test_user"
         assert "test.wms.com" in str(client.config.base_url)

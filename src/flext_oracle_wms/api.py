@@ -21,9 +21,6 @@ from flext_oracle_wms import (
     t,
 )
 
-FlextOracleWmsClient = FlextOracleWmsUtilitiesClient.Client
-FlextHttpClient = FlextOracleWmsUtilitiesHttpClient.HttpClient
-
 
 class FlextOracleWmsApi(FlextService[None]):
     """Thin facade for Oracle WMS operations with complete FLEXT integration.
@@ -71,7 +68,7 @@ class FlextOracleWmsApi(FlextService[None]):
         resolved_config = (
             config if config is not None else FlextOracleWmsSettings.get_global()
         )
-        self._client = FlextOracleWmsClient(config=resolved_config)
+        self._client = FlextOracleWmsUtilitiesClient.Client(config=resolved_config)
 
     @override
     def execute(self) -> r[None]:
@@ -85,9 +82,9 @@ class FlextOracleWmsApi(FlextService[None]):
         headers: t.StrMapping | None = None,
         *,
         verify_ssl: bool = True,
-    ) -> FlextHttpClient:
+    ) -> FlextOracleWmsUtilitiesHttpClient.HttpClient:
         """Create FlextHttpClient instance."""
-        return FlextHttpClient(
+        return FlextOracleWmsUtilitiesHttpClient.HttpClient(
             base_url=base_url,
             timeout=timeout,
             headers=headers,

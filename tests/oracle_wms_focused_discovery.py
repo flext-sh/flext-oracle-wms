@@ -14,8 +14,6 @@ from pathlib import Path
 
 from flext_core import FlextLogger, r
 from flext_oracle_wms import FlextOracleWmsClientSettings, FlextOracleWmsUtilitiesClient
-
-FlextOracleWmsClient = FlextOracleWmsUtilitiesClient.Client
 from tests import t
 
 logger = FlextLogger(__name__)
@@ -38,7 +36,7 @@ class FocusedOracleWmsDiscovery:
             verify_ssl=True,
             enable_logging=True,
         )
-        self.client = FlextOracleWmsClient(config=self.config)
+        self.client = FlextOracleWmsUtilitiesClient.Client(config=self.config)
         self.quick_test_entities: t.StrSequence = [
             "company",
             "facility",

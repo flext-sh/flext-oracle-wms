@@ -9,13 +9,11 @@ from __future__ import annotations
 
 from flext_oracle_wms import FlextOracleWmsSettings, FlextOracleWmsUtilitiesClient
 
-FlextOracleWmsClient = FlextOracleWmsUtilitiesClient.Client
-
 
 def test_real_connection() -> None:
     """Test client structural setup with testing_config."""
     config = FlextOracleWmsSettings.testing_config()
-    client = FlextOracleWmsClient(config)
+    client = FlextOracleWmsUtilitiesClient.Client(config)
     assert hasattr(client, "config")
     assert client.config is config
     discovery = client.discover_entities()
