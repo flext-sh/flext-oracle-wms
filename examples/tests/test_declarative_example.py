@@ -11,12 +11,14 @@ from urllib.parse import urlparse
 from flext_core import FlextLogger
 from flext_oracle_wms import (
     FlextOracleWmsApi,
-    FlextOracleWmsClient,
     FlextOracleWmsClientSettings,
+    FlextOracleWmsUtilitiesClient,
     t,
 )
 
 logger = FlextLogger(__name__)
+
+FlextOracleWmsClient = FlextOracleWmsUtilitiesClient.Client
 
 
 def load_env_config() -> dict[str, t.ContainerValue] | None:

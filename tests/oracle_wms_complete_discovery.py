@@ -45,17 +45,15 @@ class OracleWmsCompleteDiscovery:
 
     def __init__(self) -> None:
         """Initialize with ADMINISTRATOR credentials."""
-        self.config: FlextOracleWmsUtilitiesClient.ClientSettings = (
-            FlextOracleWmsClientSettings(
-                base_url="https://invalid.wms.ocs.oraclecloud.com",
-                username="USER_WMS_INTEGRA",
-                password="jmCyS7BK94YvhS@",
-                timeout=120.0,
-                max_retries=5,
-                api_version=_API_VERSION_LGF_V10,
-                verify_ssl=True,
-                enable_logging=True,
-            )
+        self.config: FlextOracleWmsClientSettings = FlextOracleWmsClientSettings(
+            base_url="https://invalid.wms.ocs.oraclecloud.com",
+            username="USER_WMS_INTEGRA",
+            password="jmCyS7BK94YvhS@",
+            timeout=120.0,
+            max_retries=5,
+            api_version=_API_VERSION_LGF_V10,
+            verify_ssl=True,
+            enable_logging=True,
         )
         auth_settings = m.OracleWms.AuthSettings(
             username=self.config.username,

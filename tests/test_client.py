@@ -13,7 +13,7 @@ from flext_oracle_wms import FlextOracleWmsClientSettings, FlextOracleWmsUtiliti
 class TestClientSimpleNew:
     """Simple tests for client functionality."""
 
-    config: FlextOracleWmsUtilitiesClient.ClientSettings
+    config: FlextOracleWmsClientSettings
 
     def setup_method(self) -> None:
         """Set up test fixtures."""
