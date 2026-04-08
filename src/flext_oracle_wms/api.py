@@ -12,7 +12,7 @@ from __future__ import annotations
 from collections.abc import Mapping
 from typing import ClassVar, override
 
-from flext_core import FlextService, r
+from flext_core import r, s
 from flext_oracle_wms import (
     FlextOracleWmsSettings,
     FlextOracleWmsUtilitiesClient,
@@ -22,7 +22,7 @@ from flext_oracle_wms import (
 )
 
 
-class FlextOracleWmsApi(FlextService[None]):
+class FlextOracleWmsApi(s[None]):
     """Thin facade for Oracle WMS operations with complete FLEXT integration.
 
     Integrates:

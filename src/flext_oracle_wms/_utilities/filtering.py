@@ -10,7 +10,7 @@ from collections.abc import Mapping, MutableSequence, Sequence
 
 from pydantic import ValidationError
 
-from flext_core import FlextExceptions, FlextLogger, r
+from flext_core import FlextLogger, e, r
 from flext_oracle_wms import (
     FlextOracleWmsModels,
     c,
@@ -32,7 +32,7 @@ type FilterEntry = (
 )
 
 
-class FlextOracleWmsDataValidationError(FlextExceptions.BaseError):
+class FlextOracleWmsDataValidationError(e.BaseError):
     """Data validation error for Oracle WMS filtering."""
 
 
@@ -60,7 +60,7 @@ class FlextOracleWmsUtilitiesFiltering:
                 or max_conditions > c.Filtering.MAX_FILTER_CONDITIONS
             ):
                 error_message = "Invalid max_conditions"
-                raise FlextExceptions.BaseError(error_message)
+                raise e.BaseError(error_message)
             self.max_conditions: int = max_conditions
             self.case_sensitive: bool = case_sensitive
             self.filters: Mapping[str, FilterEntry] = filters or {}

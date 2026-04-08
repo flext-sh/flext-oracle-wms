@@ -7,7 +7,7 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from flext_core import FlextService
+from flext_core import s
 from flext_oracle_wms import FlextOracleWmsApi, FlextOracleWmsUtilitiesClient
 from tests import u
 
@@ -16,8 +16,8 @@ class TestFlextOracleWmsApi:
     """Test cases for FlextOracleWmsApi facade class."""
 
     def test_class_inheritance(self) -> None:
-        """Test FlextOracleWmsApi inherits from FlextService."""
-        assert issubclass(FlextOracleWmsApi, FlextService)
+        """Test FlextOracleWmsApi inherits from s."""
+        assert issubclass(FlextOracleWmsApi, s)
 
     def test_initialization(self) -> None:
         """Test initialization creates WMS client."""
@@ -26,7 +26,7 @@ class TestFlextOracleWmsApi:
         assert isinstance(api._client, FlextOracleWmsUtilitiesClient.Client)
 
     def test_has_logger(self) -> None:
-        """Test facade has logger from FlextService."""
+        """Test facade has logger from s."""
         api = u.OracleWms.Tests.ConcreteApi()
         assert hasattr(api, "logger")
 
