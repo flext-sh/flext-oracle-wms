@@ -17,17 +17,16 @@ from flext_api import (
 )
 from pydantic import BaseModel, ValidationError
 
-from flext_core import FlextUtilities, r
+from flext_core import u
 from flext_oracle_wms import (
     FlextOracleWmsClientSettings,
     FlextOracleWmsSettings,
     FlextOracleWmsUtilitiesAuth,
     c,
     m,
+    r,
     t,
 )
-
-_u = FlextUtilities
 
 HTTP_BAD_REQUEST_THRESHOLD = 400
 
@@ -114,17 +113,17 @@ class FlextOracleWmsUtilitiesClient:
             model_type: type[T],
         ) -> r[T]:
             if isinstance(payload, dict):
-                return _u.try_(
+                return u.try_(
                     lambda: model_type.model_validate(payload),
                     catch=ValidationError,
                 ).map_error(lambda exc: f"Invalid response payload: {exc}")
             if isinstance(payload, str):
-                return _u.try_(
+                return u.try_(
                     lambda: model_type.model_validate_json(payload),
                     catch=ValidationError,
                 ).map_error(lambda exc: f"Invalid JSON payload: {exc}")
             if isinstance(payload, bytes):
-                return _u.try_(
+                return u.try_(
                     lambda: model_type.model_validate_json(payload),
                     catch=ValidationError,
                 ).map_error(lambda exc: f"Invalid JSON payload: {exc}")
