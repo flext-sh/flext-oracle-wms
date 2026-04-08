@@ -3,19 +3,25 @@
 
 from __future__ import annotations
 
-from flext_core.lazy import install_lazy_exports
+from flext_core.lazy import build_lazy_import_map, install_lazy_exports
 
-_LAZY_IMPORTS = {
-    "DISCOVERY_FAILURE": ".discovery",
-    "DISCOVERY_SUCCESS": ".discovery",
-    "FlextOracleWmsDataValidationError": ".filtering",
-    "FlextOracleWmsOperatorFilter": ".filtering",
-    "FlextOracleWmsUtilitiesAuth": ".auth",
-    "FlextOracleWmsUtilitiesClient": ".client",
-    "FlextOracleWmsUtilitiesDiscovery": ".discovery",
-    "FlextOracleWmsUtilitiesFiltering": ".filtering",
-    "FlextOracleWmsUtilitiesHttpClient": ".http_client",
-}
+_LAZY_IMPORTS = build_lazy_import_map(
+    {
+        ".auth": ("FlextOracleWmsUtilitiesAuth",),
+        ".client": ("FlextOracleWmsUtilitiesClient",),
+        ".discovery": (
+            "DISCOVERY_FAILURE",
+            "DISCOVERY_SUCCESS",
+            "FlextOracleWmsUtilitiesDiscovery",
+        ),
+        ".filtering": (
+            "FlextOracleWmsDataValidationError",
+            "FlextOracleWmsOperatorFilter",
+            "FlextOracleWmsUtilitiesFiltering",
+        ),
+        ".http_client": ("FlextOracleWmsUtilitiesHttpClient",),
+    },
+)
 
 
 install_lazy_exports(__name__, globals(), _LAZY_IMPORTS, publish_all=False)
