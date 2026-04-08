@@ -7,7 +7,7 @@ from __future__ import annotations
 
 import typing as _t
 
-from flext_core.lazy import install_lazy_exports, merge_lazy_imports
+from flext_core.lazy import install_lazy_exports
 
 if _t.TYPE_CHECKING:
     from flext_core.constants import FlextConstants as c
@@ -21,30 +21,19 @@ if _t.TYPE_CHECKING:
     from flext_core.service import FlextService as s
     from flext_core.typings import FlextTypes as t
     from flext_core.utilities import FlextUtilities as u
-_LAZY_IMPORTS = merge_lazy_imports(
-    ("examples.tests",),
-    {
-        "c": ("flext_core.constants", "FlextConstants"),
-        "d": ("flext_core.decorators", "FlextDecorators"),
-        "e": ("flext_core.exceptions", "FlextExceptions"),
-        "h": ("flext_core.handlers", "FlextHandlers"),
-        "m": ("flext_core.models", "FlextModels"),
-        "p": ("flext_core.protocols", "FlextProtocols"),
-        "r": ("flext_core.result", "FlextResult"),
-        "s": ("flext_core.service", "FlextService"),
-        "t": ("flext_core.typings", "FlextTypes"),
-        "tests": "examples.tests",
-        "u": ("flext_core.utilities", "FlextUtilities"),
-        "x": ("flext_core.mixins", "FlextMixins"),
-    },
-)
-_ = _LAZY_IMPORTS.pop("cleanup_submodule_namespace", None)
-_ = _LAZY_IMPORTS.pop("install_lazy_exports", None)
-_ = _LAZY_IMPORTS.pop("lazy_getattr", None)
-_ = _LAZY_IMPORTS.pop("logger", None)
-_ = _LAZY_IMPORTS.pop("merge_lazy_imports", None)
-_ = _LAZY_IMPORTS.pop("output", None)
-_ = _LAZY_IMPORTS.pop("output_reporting", None)
+_LAZY_IMPORTS = {
+    "c": ("flext_core.constants", "FlextConstants"),
+    "d": ("flext_core.decorators", "FlextDecorators"),
+    "e": ("flext_core.exceptions", "FlextExceptions"),
+    "h": ("flext_core.handlers", "FlextHandlers"),
+    "m": ("flext_core.models", "FlextModels"),
+    "p": ("flext_core.protocols", "FlextProtocols"),
+    "r": ("flext_core.result", "FlextResult"),
+    "s": ("flext_core.service", "FlextService"),
+    "t": ("flext_core.typings", "FlextTypes"),
+    "u": ("flext_core.utilities", "FlextUtilities"),
+    "x": ("flext_core.mixins", "FlextMixins"),
+}
 
 __all__ = [
     "c",
@@ -56,7 +45,6 @@ __all__ = [
     "r",
     "s",
     "t",
-    "tests",
     "u",
     "x",
 ]
