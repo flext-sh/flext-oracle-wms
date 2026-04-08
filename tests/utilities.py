@@ -24,7 +24,7 @@ from flext_oracle_wms import (
     FlextOracleWmsSettings,
     FlextOracleWmsUtilities,
 )
-from tests.typings import FlextOracleWmsTestTypes
+from tests import FlextOracleWmsTestTypes
 
 
 class FlextOracleWmsTestUtilities(FlextTestsUtilities, FlextOracleWmsUtilities):
