@@ -1,6 +1,6 @@
 """Test type definitions for flext-oracle-wms.
 
-Provides FlextOracleWmsTestTypes, combining FlextTestsTypes with
+Provides TestsFlextOracleWmsTypes, combining TestsFlextTypes with
 FlextOracleWmsTypes for test-specific type definitions.
 
 Copyright (c) 2025 FLEXT Team. All rights reserved.
@@ -14,8 +14,8 @@ from flext_tests import FlextTestsTypes
 from flext_oracle_wms import FlextOracleWmsTypes
 
 
-class FlextOracleWmsTestTypes(FlextTestsTypes, FlextOracleWmsTypes):
-    """Test types combining FlextTestsTypes with flext-oracle-wms types."""
+class TestsFlextOracleWmsTypes(FlextTestsTypes, FlextOracleWmsTypes):
+    """Test types combining TestsFlextTypes with flext-oracle-wms types."""
 
     class OracleWms(FlextOracleWmsTypes.OracleWms):
         """Oracle WMS domain test type aliases."""
@@ -26,6 +26,6 @@ class FlextOracleWmsTestTypes(FlextTestsTypes, FlextOracleWmsTypes):
             type EnvConfig = FlextOracleWmsTypes.ContainerMapping
 
 
-t = FlextOracleWmsTestTypes
+t = TestsFlextOracleWmsTypes
 
-__all__ = ["FlextOracleWmsTestTypes", "t"]
+__all__ = ["TestsFlextOracleWmsTypes", "t"]

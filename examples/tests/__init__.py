@@ -16,12 +16,7 @@ if _t.TYPE_CHECKING:
     import examples.tests.test_declarative_example as _examples_tests_test_declarative_example
 
     test_declarative_example = _examples_tests_test_declarative_example
-    from examples.tests.test_declarative_example import (
-        FlextOracleWmsClient,
-        load_env_config,
-        logger,
-        main,
-    )
+
     from flext_core.constants import FlextConstants as c
     from flext_core.decorators import FlextDecorators as d
     from flext_core.exceptions import FlextExceptions as e
@@ -34,19 +29,12 @@ if _t.TYPE_CHECKING:
     from flext_core.typings import FlextTypes as t
     from flext_core.utilities import FlextUtilities as u
 _LAZY_IMPORTS = {
-    "FlextOracleWmsClient": (
-        "examples.tests.test_declarative_example",
-        "FlextOracleWmsClient",
-    ),
     "c": ("flext_core.constants", "FlextConstants"),
     "conftest_project": "examples.tests.conftest_project",
     "d": ("flext_core.decorators", "FlextDecorators"),
     "e": ("flext_core.exceptions", "FlextExceptions"),
     "h": ("flext_core.handlers", "FlextHandlers"),
-    "load_env_config": ("examples.tests.test_declarative_example", "load_env_config"),
-    "logger": ("examples.tests.test_declarative_example", "logger"),
     "m": ("flext_core.models", "FlextModels"),
-    "main": ("examples.tests.test_declarative_example", "main"),
     "p": ("flext_core.protocols", "FlextProtocols"),
     "r": ("flext_core.result", "FlextResult"),
     "s": ("flext_core.service", "FlextService"),
@@ -57,16 +45,12 @@ _LAZY_IMPORTS = {
 }
 
 __all__ = [
-    "FlextOracleWmsClient",
     "c",
     "conftest_project",
     "d",
     "e",
     "h",
-    "load_env_config",
-    "logger",
     "m",
-    "main",
     "p",
     "r",
     "s",

@@ -1,6 +1,6 @@
 """Test utilities for flext-oracle-wms.
 
-Provides FlextOracleWmsTestUtilities, combining FlextTestsUtilities with
+Provides TestsFlextOracleWmsUtilities, combining TestsFlextUtilities with
 FlextOracleWmsUtilities for test-specific utility definitions.
 
 Copyright (c) 2025 FLEXT Team. All rights reserved.
@@ -24,11 +24,11 @@ from flext_oracle_wms import (
     FlextOracleWmsSettings,
     FlextOracleWmsUtilities,
 )
-from tests import FlextOracleWmsTestTypes
+from tests import TestsFlextOracleWmsTypes
 
 
-class FlextOracleWmsTestUtilities(FlextTestsUtilities, FlextOracleWmsUtilities):
-    """Test utilities combining FlextTestsUtilities with flext-oracle-wms utilities."""
+class TestsFlextOracleWmsUtilities(FlextTestsUtilities, FlextOracleWmsUtilities):
+    """Test utilities combining TestsFlextUtilities with flext-oracle-wms utilities."""
 
     class OracleWms(FlextOracleWmsUtilities.OracleWms):
         """OracleWms test utilities namespace."""
@@ -46,7 +46,7 @@ class FlextOracleWmsTestUtilities(FlextTestsUtilities, FlextOracleWmsUtilities):
 
             @staticmethod
             def to_str(
-                value: FlextOracleWmsTestTypes.NormalizedValue, default: str
+                value: TestsFlextOracleWmsTypes.NormalizedValue, default: str
             ) -> str:
                 """Normalize a scalar-like value into a string."""
                 if isinstance(value, str):
@@ -57,7 +57,7 @@ class FlextOracleWmsTestUtilities(FlextTestsUtilities, FlextOracleWmsUtilities):
 
             @staticmethod
             def to_int(
-                value: FlextOracleWmsTestTypes.NormalizedValue, default: int
+                value: TestsFlextOracleWmsTypes.NormalizedValue, default: int
             ) -> int:
                 """Normalize a scalar-like value into an integer."""
                 if isinstance(value, (int, float)):
@@ -71,7 +71,7 @@ class FlextOracleWmsTestUtilities(FlextTestsUtilities, FlextOracleWmsUtilities):
 
             @staticmethod
             def to_bool(
-                value: FlextOracleWmsTestTypes.NormalizedValue | None,
+                value: TestsFlextOracleWmsTypes.NormalizedValue | None,
                 default: bool,
             ) -> bool:
                 """Normalize a scalar-like value into a boolean."""
@@ -82,7 +82,7 @@ class FlextOracleWmsTestUtilities(FlextTestsUtilities, FlextOracleWmsUtilities):
             @classmethod
             def build_client_settings(
                 cls,
-                env_config: FlextOracleWmsTestTypes.OracleWms.Tests.EnvConfig,
+                env_config: TestsFlextOracleWmsTypes.OracleWms.Tests.EnvConfig,
                 api_version: str,
             ) -> FlextOracleWmsClientSettings:
                 """Build client settings from normalized test environment data."""
@@ -159,11 +159,11 @@ class FlextOracleWmsTestUtilities(FlextTestsUtilities, FlextOracleWmsUtilities):
             def load_env_config(
                 cls,
                 start_path: Path,
-            ) -> r[FlextOracleWmsTestTypes.OracleWms.Tests.EnvConfig]:
+            ) -> r[TestsFlextOracleWmsTypes.OracleWms.Tests.EnvConfig]:
                 """Load declarative integration config from the nearest `.env` file."""
                 env_path = cls.find_env_file(start_path)
                 if env_path is None:
-                    return r[FlextOracleWmsTestTypes.OracleWms.Tests.EnvConfig].fail(
+                    return r[TestsFlextOracleWmsTypes.OracleWms.Tests.EnvConfig].fail(
                         "No .env file found for Oracle WMS integration tests",
                     )
                 config: dict[str, str] = {}
@@ -175,11 +175,11 @@ class FlextOracleWmsTestUtilities(FlextTestsUtilities, FlextOracleWmsUtilities):
                                 key, value = line.split("=", 1)
                                 config[key.strip()] = value.strip()
                 except (OSError, ValueError, TypeError) as exc:
-                    return r[FlextOracleWmsTestTypes.OracleWms.Tests.EnvConfig].fail(
+                    return r[TestsFlextOracleWmsTypes.OracleWms.Tests.EnvConfig].fail(
                         f"Failed to load .env config: {exc}",
                     )
                 base_url = config.get("ORACLE_WMS_BASE_URL", "")
-                return r[FlextOracleWmsTestTypes.OracleWms.Tests.EnvConfig].ok({
+                return r[TestsFlextOracleWmsTypes.OracleWms.Tests.EnvConfig].ok({
                     "base_url": base_url,
                     "username": config.get("ORACLE_WMS_USERNAME"),
                     "password": config.get("ORACLE_WMS_PASSWORD"),
@@ -240,7 +240,7 @@ class FlextOracleWmsTestUtilities(FlextTestsUtilities, FlextOracleWmsUtilities):
                 )
 
             @staticmethod
-            def sample_entities() -> FlextOracleWmsTestTypes.StrSequence:
+            def sample_entities() -> TestsFlextOracleWmsTypes.StrSequence:
                 """Return the canonical sample entity list for tests."""
                 return [
                     "action_code",
@@ -252,7 +252,7 @@ class FlextOracleWmsTestUtilities(FlextTestsUtilities, FlextOracleWmsUtilities):
                 ]
 
             @staticmethod
-            def sample_entity_data() -> FlextOracleWmsTestTypes.ContainerMapping:
+            def sample_entity_data() -> TestsFlextOracleWmsTypes.ContainerMapping:
                 """Return canonical sample entity payload data for tests."""
                 return {
                     "result_count": 4,
@@ -271,5 +271,5 @@ class FlextOracleWmsTestUtilities(FlextTestsUtilities, FlextOracleWmsUtilities):
                 }
 
 
-u = FlextOracleWmsTestUtilities
-__all__ = ["FlextOracleWmsTestUtilities", "u"]
+u = TestsFlextOracleWmsUtilities
+__all__ = ["TestsFlextOracleWmsUtilities", "u"]

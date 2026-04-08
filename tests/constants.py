@@ -1,6 +1,6 @@
 """Test constants for flext-oracle-wms tests.
 
-Provides FlextOracleWmsTestConstants, extending FlextTestsConstants with
+Provides TestsFlextOracleWmsConstants, extending FlextTestsConstants with
 flext-oracle-wms-specific constants.
 
 Copyright (c) 2025 FLEXT Team. All rights reserved.
@@ -14,7 +14,7 @@ from flext_tests import FlextTestsConstants
 from flext_oracle_wms import FlextOracleWmsConstants
 
 
-class FlextOracleWmsTestConstants(FlextTestsConstants, FlextOracleWmsConstants):
+class TestsFlextOracleWmsConstants(FlextTestsConstants, FlextOracleWmsConstants):
     """Test constants for flext-oracle-wms."""
 
     class OracleWms(FlextOracleWmsConstants.OracleWms):
@@ -24,5 +24,5 @@ class FlextOracleWmsTestConstants(FlextTestsConstants, FlextOracleWmsConstants):
             """Oracle WMS-specific test constants."""
 
 
-c = FlextOracleWmsTestConstants
-__all__ = ["FlextOracleWmsTestConstants", "c"]
+c = TestsFlextOracleWmsConstants
+__all__ = ["TestsFlextOracleWmsConstants", "c"]

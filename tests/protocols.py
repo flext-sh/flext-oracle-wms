@@ -1,6 +1,6 @@
 """Test protocol definitions for flext-oracle-wms.
 
-Provides FlextOracleWmsTestProtocols, combining FlextTestsProtocols with
+Provides TestsFlextOracleWmsProtocols, combining TestsFlextProtocols with
 FlextOracleWmsProtocols for test-specific protocol definitions.
 
 Copyright (c) 2025 FLEXT Team. All rights reserved.
@@ -14,8 +14,8 @@ from flext_tests import FlextTestsProtocols
 from flext_oracle_wms import FlextOracleWmsProtocols
 
 
-class FlextOracleWmsTestProtocols(FlextTestsProtocols, FlextOracleWmsProtocols):
-    """Test protocols combining FlextTestsProtocols and FlextOracleWmsProtocols."""
+class TestsFlextOracleWmsProtocols(FlextTestsProtocols, FlextOracleWmsProtocols):
+    """Test protocols combining TestsFlextProtocols and FlextOracleWmsProtocols."""
 
     class OracleWms(FlextOracleWmsProtocols.OracleWms):
         """OracleWms test protocols namespace."""
@@ -24,5 +24,5 @@ class FlextOracleWmsTestProtocols(FlextTestsProtocols, FlextOracleWmsProtocols):
             """OracleWms-specific test protocols."""
 
 
-p = FlextOracleWmsTestProtocols
-__all__ = ["FlextOracleWmsTestProtocols", "p"]
+p = TestsFlextOracleWmsProtocols
+__all__ = ["TestsFlextOracleWmsProtocols", "p"]

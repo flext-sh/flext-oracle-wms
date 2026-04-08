@@ -14,15 +14,12 @@ if _t.TYPE_CHECKING:
 
     test_api = _tests_unit_test_api
     import tests.unit.test_config as _tests_unit_test_config
-    from tests.unit.test_api import TestFlextOracleWmsApi
 
     test_config = _tests_unit_test_config
     import tests.unit.test_constants as _tests_unit_test_constants
-    from tests.unit.test_config import TestFlextOracleWmsSettings
 
     test_constants = _tests_unit_test_constants
     import tests.unit.test_wms_api as _tests_unit_test_wms_api
-    from tests.unit.test_constants import Testc
 
     test_wms_api = _tests_unit_test_wms_api
     import tests.unit.test_wms_client as _tests_unit_test_wms_client
@@ -39,18 +36,7 @@ if _t.TYPE_CHECKING:
     from flext_core.service import FlextService as s
     from flext_core.typings import FlextTypes as t
     from flext_core.utilities import FlextUtilities as u
-    from tests.unit.test_wms_client import TestFlextOracleWmsClient
 _LAZY_IMPORTS = {
-    "TestFlextOracleWmsApi": ("tests.unit.test_api", "TestFlextOracleWmsApi"),
-    "TestFlextOracleWmsClient": (
-        "tests.unit.test_wms_client",
-        "TestFlextOracleWmsClient",
-    ),
-    "TestFlextOracleWmsSettings": (
-        "tests.unit.test_config",
-        "TestFlextOracleWmsSettings",
-    ),
-    "Testc": ("tests.unit.test_constants", "Testc"),
     "c": ("flext_core.constants", "FlextConstants"),
     "d": ("flext_core.decorators", "FlextDecorators"),
     "e": ("flext_core.exceptions", "FlextExceptions"),
@@ -70,10 +56,6 @@ _LAZY_IMPORTS = {
 }
 
 __all__ = [
-    "TestFlextOracleWmsApi",
-    "TestFlextOracleWmsClient",
-    "TestFlextOracleWmsSettings",
-    "Testc",
     "c",
     "d",
     "e",

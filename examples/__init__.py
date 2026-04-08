@@ -13,14 +13,7 @@ if _t.TYPE_CHECKING:
     import examples.tests as _examples_tests
 
     tests = _examples_tests
-    from examples.tests import (
-        FlextOracleWmsClient,
-        conftest_project,
-        load_env_config,
-        logger,
-        main,
-        test_declarative_example,
-    )
+
     from flext_core.constants import FlextConstants as c
     from flext_core.decorators import FlextDecorators as d
     from flext_core.exceptions import FlextExceptions as e
@@ -52,26 +45,21 @@ _LAZY_IMPORTS = merge_lazy_imports(
 _ = _LAZY_IMPORTS.pop("cleanup_submodule_namespace", None)
 _ = _LAZY_IMPORTS.pop("install_lazy_exports", None)
 _ = _LAZY_IMPORTS.pop("lazy_getattr", None)
+_ = _LAZY_IMPORTS.pop("logger", None)
 _ = _LAZY_IMPORTS.pop("merge_lazy_imports", None)
 _ = _LAZY_IMPORTS.pop("output", None)
 _ = _LAZY_IMPORTS.pop("output_reporting", None)
 
 __all__ = [
-    "FlextOracleWmsClient",
     "c",
-    "conftest_project",
     "d",
     "e",
     "h",
-    "load_env_config",
-    "logger",
     "m",
-    "main",
     "p",
     "r",
     "s",
     "t",
-    "test_declarative_example",
     "tests",
     "u",
     "x",
