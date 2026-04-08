@@ -16,37 +16,6 @@ if _t.TYPE_CHECKING:
     from flext_core.mixins import FlextMixins as x
     from flext_core.result import FlextResult as r
     from flext_core.service import FlextService as s
-    from tests import (
-        complete_mock_pipeline,
-        conftest,
-        constants,
-        models,
-        oracle_wms_complete_discovery,
-        oracle_wms_focused_discovery,
-        oracle_wms_optimized_discovery,
-        protocols,
-        sitecustomize,
-        test_authentication,
-        test_authentication_core,
-        test_client,
-        test_client_class,
-        test_client_core,
-        test_config,
-        test_config_module,
-        test_connection,
-        test_declarative,
-        test_discovery,
-        test_filtering,
-        test_helpers,
-        test_helpers_core,
-        test_models,
-        test_schema_dynamic,
-        test_singer_flattening,
-        test_unified_config,
-        typings,
-        unit,
-        utilities,
-    )
     from tests.constants import (
         TestsFlextOracleWmsConstants,
         TestsFlextOracleWmsConstants as c,
