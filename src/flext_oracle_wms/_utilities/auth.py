@@ -60,17 +60,5 @@ class FlextOracleWmsUtilitiesAuth:
             )
             return r[t.StrMapping].ok({"Authorization": f"{auth_scheme} {token}"})
 
-        @staticmethod
-        def create_oracle_wms_client(config: m.OracleWms.AuthSettings) -> r[str]:
-            """Reject auth-only client construction without runtime WMS settings."""
-            _ = config
-            msg = (
-                "Oracle WMS client creation requires runtime settings with base_url; "
-                "instantiate FlextOracleWmsClient directly with FlextOracleWmsSettings."
-            )
-            raise NotImplementedError(
-                msg,
-            )
-
 
 __all__ = ["FlextOracleWmsUtilitiesAuth"]

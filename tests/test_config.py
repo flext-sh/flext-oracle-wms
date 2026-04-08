@@ -17,13 +17,13 @@ def test_config_creation_valid() -> None:
     """Test config creation with valid parameters."""
     config = FlextOracleWmsSettings(
         base_url="https://wms.oraclecloud.com/test",
-        username="USER_WMS_INTEGRA",
+        username="user",
         password="test_password",
         timeout=30,
         retry_attempts=3,
     )
     assert config.base_url == "https://wms.oraclecloud.com/test"
-    assert config.username == "USER_WMS_INTEGRA"
+    assert config.username == "user"
     assert config.password == "test_password"
     assert config.timeout == 30
     assert config.retry_attempts == 3
@@ -50,8 +50,8 @@ def test_config_defaults() -> None:
 def test_config_testing_factory() -> None:
     """Test testing_config factory method."""
     config = FlextOracleWmsSettings.testing_config()
-    assert config.use_mock is True
     assert config.base_url == "https://test-wms.example.com"
+    assert config.username == "test_user"
 
 
 @pytest.mark.unit

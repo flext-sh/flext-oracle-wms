@@ -102,7 +102,6 @@ class FlextOracleWmsTestUtilities(FlextTestsUtilities, FlextOracleWmsUtilities):
                         env_config.get("enable_logging", True),
                         True,
                     ),
-                    use_mock=cls.to_bool(env_config.get("use_mock"), False),
                     connection_pool_size=cls.to_int(
                         env_config.get("connection_pool_size", 20),
                         20,

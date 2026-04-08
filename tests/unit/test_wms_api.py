@@ -7,7 +7,7 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from flext_oracle_wms import FlextOracleWmsApi
+from flext_oracle_wms import FlextOracleWmsApi, FlextOracleWmsUtilitiesClient
 from tests import m
 
 
@@ -79,14 +79,16 @@ class TestFlextOracleWmsApi:
         )
         assert ep.since_version == "6.1"
 
-    def test_mock_server_inner_class_exists(self) -> None:
-        """Test OracleWmsMockServer inner class exists."""
-        assert hasattr(FlextOracleWmsApi, "OracleWmsMockServer")
-
-    def test_create_mock_server(self) -> None:
-        """Test create_mock_server classmethod."""
-        mock = FlextOracleWmsApi.create_mock_server()
-        assert isinstance(mock, FlextOracleWmsApi.OracleWmsMockServer)
+    def test_create_runtime_client(self) -> None:
+        """Test runtime client creation from auth settings."""
+        result = FlextOracleWmsApi.create_oracle_wms_client(
+            m.OracleWms.AuthSettings(
+                username="test_user",
+                password="test_password",
+            )
+        )
+        assert result.is_success
+        assert isinstance(result.value, FlextOracleWmsUtilitiesClient.Client)
 
 
 __all__ = ["TestFlextOracleWmsApi"]

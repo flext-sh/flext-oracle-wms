@@ -65,10 +65,9 @@ def demonstrate_singleton_config() -> None:
     logger.info("   Fresh Base URL: %s", fresh_config.base_url)
     logger.info("   Fresh Username: %s", fresh_config.username)
     logger.info("6. Creating testing configuration...")
-    test_config = FlextOracleWmsSettings(use_mock=True)
+    test_config = FlextOracleWmsSettings.testing_config()
     logger.info("   Test URL: %s", test_config.base_url)
     logger.info("   Test Username: %s", test_config.username)
-    logger.info("   Use Mock: %s", test_config.use_mock)
     logger.info("7. Validating configuration...")
     validation_result = test_config.validate_config()
     if validation_result.is_success:

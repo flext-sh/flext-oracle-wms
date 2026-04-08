@@ -29,7 +29,7 @@ logger = FlextLogger(__name__)
 
 @pytest.fixture
 def env_config() -> t.ContainerMapping:
-    """Fixture that provides .env configuration or mock fallback."""
+    """Fixture that provides .env configuration or deterministic test defaults."""
     config_result = u.OracleWms.Tests.load_env_config(Path(__file__))
     if config_result.is_success and config_result.value.get("base_url"):
         return config_result.value
@@ -39,7 +39,6 @@ def env_config() -> t.ContainerMapping:
         "password": "test_pass",
         "timeout": 30,
         "max_retries": 3,
-        "use_mock": True,
     }
 
 
@@ -50,7 +49,6 @@ def oracle_wms_client(
     """Fixture that provides configured Oracle WMS client."""
     config = FlextOracleWmsClientSettings.model_validate({
         **env_config,
-        "use_mock": env_config.get("use_mock", False),
         "api_version": "LGF_V10",
     })
     client = FlextOracleWmsUtilitiesClient.Client(config)

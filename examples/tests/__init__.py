@@ -16,7 +16,12 @@ if _t.TYPE_CHECKING:
     import examples.tests.test_declarative_example as _examples_tests_test_declarative_example
 
     test_declarative_example = _examples_tests_test_declarative_example
-    from examples.tests.test_declarative_example import load_env_config, logger, main
+    from examples.tests.test_declarative_example import (
+        FlextOracleWmsClient,
+        load_env_config,
+        logger,
+        main,
+    )
     from flext_core.constants import FlextConstants as c
     from flext_core.decorators import FlextDecorators as d
     from flext_core.exceptions import FlextExceptions as e
@@ -29,6 +34,10 @@ if _t.TYPE_CHECKING:
     from flext_core.typings import FlextTypes as t
     from flext_core.utilities import FlextUtilities as u
 _LAZY_IMPORTS = {
+    "FlextOracleWmsClient": (
+        "examples.tests.test_declarative_example",
+        "FlextOracleWmsClient",
+    ),
     "c": ("flext_core.constants", "FlextConstants"),
     "conftest_project": "examples.tests.conftest_project",
     "d": ("flext_core.decorators", "FlextDecorators"),
@@ -48,6 +57,7 @@ _LAZY_IMPORTS = {
 }
 
 __all__ = [
+    "FlextOracleWmsClient",
     "c",
     "conftest_project",
     "d",

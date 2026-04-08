@@ -14,6 +14,7 @@ if _t.TYPE_CHECKING:
 
     tests = _examples_tests
     from examples.tests import (
+        FlextOracleWmsClient,
         conftest_project,
         load_env_config,
         logger,
@@ -56,6 +57,7 @@ _ = _LAZY_IMPORTS.pop("output", None)
 _ = _LAZY_IMPORTS.pop("output_reporting", None)
 
 __all__ = [
+    "FlextOracleWmsClient",
     "c",
     "conftest_project",
     "d",

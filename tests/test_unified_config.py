@@ -21,7 +21,6 @@ class TestFlextOracleWmsSettings:
         assert config.base_url == "http://localhost:8080"
         assert config.username == ""
         assert config.password == ""
-        assert config.use_mock is False
 
     def test_config_creation_custom(self) -> None:
         """Test config creation with custom values."""
@@ -59,5 +58,5 @@ class TestFlextOracleWmsSettings:
     def test_testing_config_factory(self) -> None:
         """Test testing_config factory method."""
         config = FlextOracleWmsSettings.testing_config()
-        assert config.use_mock is True
         assert config.base_url == "https://test-wms.example.com"
+        assert config.username == "test_user"

@@ -24,7 +24,6 @@ class TestFlextOracleWmsSettings:
         assert config.base_url == "http://localhost:8080"
         assert abs(config.timeout - 30.0) < 1e-9
         assert config.retry_attempts == 3
-        assert config.use_mock is False
         assert config.username == ""
         assert config.password == ""
 
@@ -49,8 +48,8 @@ class TestFlextOracleWmsSettings:
         """Test testing_config classmethod."""
         config = FlextOracleWmsSettings.testing_config()
         assert isinstance(config, FlextOracleWmsSettings)
-        assert config.use_mock is True
         assert config.base_url == "https://test-wms.example.com"
+        assert config.username == "test_user"
 
     def test_validate_config(self) -> None:
         """Test validate_config returns success for valid config."""

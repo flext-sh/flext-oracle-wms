@@ -19,8 +19,10 @@ from pydantic import BaseModel, ValidationError
 
 from flext_core import FlextUtilities, r
 from flext_oracle_wms import (
+    FlextOracleWmsClientSettings,
     FlextOracleWmsSettings,
     FlextOracleWmsUtilitiesAuth,
+    c,
     m,
     t,
 )
@@ -35,6 +37,30 @@ class FlextOracleWmsUtilitiesClient:
 
     class Client:
         """Oracle WMS client with strict request/response typing."""
+
+        @classmethod
+        def from_auth_settings(
+            cls,
+            auth_settings: m.OracleWms.AuthSettings,
+        ) -> r[FlextOracleWmsUtilitiesClient.Client]:
+            """Create a concrete client by merging auth settings with runtime WMS settings."""
+            validation_result = auth_settings.validate_business_rules()
+            if validation_result.is_failure:
+                return r[FlextOracleWmsUtilitiesClient.Client].fail(
+                    validation_result.error or "Invalid Oracle WMS auth settings"
+                )
+            if auth_settings.method != c.OracleWms.OracleWMSAuthMethod.BASIC:
+                return r[FlextOracleWmsUtilitiesClient.Client].fail(
+                    "Oracle WMS runtime client currently supports BASIC auth only"
+                )
+            base_settings = FlextOracleWmsSettings.get_global()
+            resolved_settings = FlextOracleWmsClientSettings.model_validate({
+                **base_settings.model_dump(),
+                "username": auth_settings.username or base_settings.username,
+                "password": auth_settings.password or base_settings.password,
+                "auth_method": auth_settings.method,
+            })
+            return r[FlextOracleWmsUtilitiesClient.Client].ok(cls(resolved_settings))
 
         def __init__(self, config: FlextOracleWmsSettings | None = None) -> None:
             """Initialize client with strict settings resolution."""
@@ -59,8 +85,17 @@ class FlextOracleWmsUtilitiesClient:
             if not config.username and not config.password:
                 return {}
             auth_settings = m.OracleWms.AuthSettings(
+                method=str(
+                    getattr(
+                        config,
+                        "auth_method",
+                        c.OracleWms.OracleWMSAuthMethod.BASIC,
+                    )
+                ),
                 username=config.username or None,
                 password=config.password or None,
+                oauth2_client_id=getattr(config, "oauth2_client_id", None),
+                oauth2_client_secret=getattr(config, "oauth2_client_secret", None),
             )
             authenticator = FlextOracleWmsUtilitiesAuth.Authenticator(auth_settings)
             auth_headers = authenticator.get_auth_headers()

@@ -28,8 +28,8 @@ class FocusedOracleWmsDiscovery:
         """Initialize with ADMINISTRATOR credentials."""
         self.config = FlextOracleWmsClientSettings(
             base_url="https://invalid.wms.ocs.oraclecloud.com",
-            username="USER_WMS_INTEGRA",
-            password="jmCyS7BK94YvhS@",
+            username="user",
+            password="xyz",
             timeout=30.0,
             max_retries=2,
             api_version=_API_VERSION_LGF_V10,

@@ -26,7 +26,6 @@ class FlextOracleWmsSettings(FlextSettings):
     timeout: Annotated[float, Field(ge=1.0, le=300.0)] = 30.0
     username: str = ""
     password: str = ""
-    use_mock: bool = False
     retry_attempts: Annotated[int, Field(ge=0)] = 3
 
     def validate_config(self) -> r[bool]:
@@ -41,7 +40,8 @@ class FlextOracleWmsSettings(FlextSettings):
         return cls.model_validate({
             "base_url": "https://test-wms.example.com",
             "timeout": 30.0,
-            "use_mock": True,
+            "username": "test_user",
+            "password": "test_password",
         })
 
 
@@ -59,7 +59,6 @@ class FlextOracleWmsClientSettings(FlextOracleWmsSettings):
     max_retries: Annotated[int, Field(ge=0)] = 3
     verify_ssl: bool = True
     enable_logging: bool = False
-    use_mock: bool = False
     connection_pool_size: Annotated[int, Field(ge=1)] = 10
     cache_duration: Annotated[int, Field(ge=0)] = 300
     project_name: str = "flext-oracle-wms"

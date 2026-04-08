@@ -23,7 +23,6 @@ from flext_core import FlextLogger, r
 from flext_oracle_wms import (
     FlextOracleWmsApi,
     FlextOracleWmsClientSettings,
-    FlextOracleWmsUtilitiesAuth,
     FlextOracleWmsUtilitiesClient,
 )
 from tests import m, t
@@ -47,8 +46,8 @@ class OracleWmsCompleteDiscovery:
         """Initialize with ADMINISTRATOR credentials."""
         self.config: FlextOracleWmsClientSettings = FlextOracleWmsClientSettings(
             base_url="https://invalid.wms.ocs.oraclecloud.com",
-            username="USER_WMS_INTEGRA",
-            password="jmCyS7BK94YvhS@",
+            username="user",
+            password="xyz",
             timeout=120.0,
             max_retries=5,
             api_version=_API_VERSION_LGF_V10,
@@ -59,10 +58,8 @@ class OracleWmsCompleteDiscovery:
             username=self.config.username,
             password=self.config.password,
         )
-        _auth_result = (
-            FlextOracleWmsUtilitiesAuth.Authenticator.create_oracle_wms_client(
-                auth_settings
-            )
+        _auth_result = FlextOracleWmsUtilitiesClient.Client.from_auth_settings(
+            auth_settings
         )
         self.client = FlextOracleWmsUtilitiesClient.Client(config=self.config)
         self.discovered_entities: MutableSequence[str] = []

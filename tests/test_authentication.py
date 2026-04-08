@@ -9,7 +9,7 @@ from __future__ import annotations
 
 import pytest
 
-from flext_oracle_wms import FlextOracleWmsUtilitiesAuth
+from flext_oracle_wms import FlextOracleWmsUtilitiesAuth, FlextOracleWmsUtilitiesClient
 from tests import c, m
 
 
@@ -167,13 +167,12 @@ class TestAuthenticator:
         result = authenticator.get_auth_headers()
         assert result.is_failure
 
-    def test_create_oracle_wms_client_not_configured(self) -> None:
+    def test_create_oracle_wms_client(self) -> None:
         config = m.OracleWms.AuthSettings(
             method=c.OracleWms.OracleWMSAuthMethod.BASIC,
             username="test_user",
             password="test_password",
         )
-        with pytest.raises(NotImplementedError, match="runtime settings with base_url"):
-            _ = FlextOracleWmsUtilitiesAuth.Authenticator.create_oracle_wms_client(
-                config
-            )
+        result = FlextOracleWmsUtilitiesClient.Client.from_auth_settings(config)
+        assert result.is_success
+        assert isinstance(result.value, FlextOracleWmsUtilitiesClient.Client)

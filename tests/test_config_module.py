@@ -47,8 +47,8 @@ def test_config_testing_factory() -> None:
     """Test testing_config factory method."""
     config = FlextOracleWmsSettings.testing_config()
     assert isinstance(config, FlextOracleWmsSettings)
-    assert config.use_mock is True
     assert config.base_url == "https://test-wms.example.com"
+    assert config.username == "test_user"
 
 
 def test_config_reset_functionality() -> None:

@@ -50,14 +50,6 @@ class FlextOracleWmsApi(FlextService[None]):
         ),
     }
 
-    class OracleWmsMockServer:
-        """Mock server simulating Oracle WMS Cloud API v10 responses."""
-
-    @classmethod
-    def create_mock_server(cls) -> FlextOracleWmsApi.OracleWmsMockServer:
-        """Create mock server instance."""
-        return cls.OracleWmsMockServer()
-
     def __init__(self, config: FlextOracleWmsSettings | None = None) -> None:
         """Initialize Oracle WMS facade with FLEXT integration."""
         super().__init__(
@@ -92,16 +84,11 @@ class FlextOracleWmsApi(FlextService[None]):
         )
 
     @staticmethod
-    def create_oracle_wms_client(config: m.OracleWms.AuthSettings) -> r[str]:
-        """Reject auth-only client construction without runtime WMS settings."""
-        _ = config
-        msg = (
-            "Oracle WMS client creation requires runtime settings with base_url; "
-            "instantiate FlextOracleWmsClient directly with FlextOracleWmsSettings."
-        )
-        raise NotImplementedError(
-            msg,
-        )
+    def create_oracle_wms_client(
+        config: m.OracleWms.AuthSettings,
+    ) -> r[FlextOracleWmsUtilitiesClient.Client]:
+        """Create a runtime Oracle WMS client from auth settings."""
+        return FlextOracleWmsUtilitiesClient.Client.from_auth_settings(config)
 
 
 __all__ = ["FlextOracleWmsApi"]
