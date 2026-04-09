@@ -16,7 +16,6 @@ class TestFlextOracleWmsApi:
 
     def test_api_catalog_exists(self) -> None:
         """Test that API catalog is properly defined."""
-        assert hasattr(FlextOracleWmsApi, "FLEXT_ORACLE_WMS_APIS")
         assert isinstance(FlextOracleWmsApi.FLEXT_ORACLE_WMS_APIS, dict)
         assert FlextOracleWmsApi.FLEXT_ORACLE_WMS_APIS
 

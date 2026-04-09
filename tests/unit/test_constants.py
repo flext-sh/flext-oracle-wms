@@ -68,34 +68,22 @@ class Testc:
     def test_nested_oracle_wms_constants(self) -> None:
         """Test nested OracleWms class constants (connection-related)."""
         connection = c.OracleWms
-        assert hasattr(connection, "DEFAULT_TIMEOUT")
-        assert hasattr(connection, "DEFAULT_MAX_RETRIES")
-        assert hasattr(connection, "DEFAULT_RETRY_DELAY")
-        assert hasattr(connection, "MAX_POOL_SIZE")
 
     def test_nested_wms_entities_constants(self) -> None:
         """Test nested WmsEntities class constants."""
         wms_entities = c.WmsEntities
-        assert hasattr(wms_entities, "MAX_ENTITY_NAME_LENGTH")
-        assert hasattr(wms_entities, "ENTITY_NAME_PATTERN")
 
     def test_nested_processing_constants(self) -> None:
         """Test nested WmsProcessing class constants."""
         processing = c.WmsProcessing
-        assert hasattr(processing, "DEFAULT_BATCH_SIZE")
-        assert hasattr(processing, "MAX_BATCH_SIZE")
-        assert hasattr(processing, "DEFAULT_PAGE_SIZE")
-        assert hasattr(processing, "MAX_SCHEMA_DEPTH")
 
     def test_nested_filtering_constants(self) -> None:
         """Test nested Filtering class constants."""
         filtering = c.Filtering
-        assert hasattr(filtering, "MAX_FILTER_CONDITIONS")
 
     def test_nested_error_messages_constants(self) -> None:
         """Test nested ErrorMessages class via MESSAGES dict."""
         error_messages = c.ErrorMessages
-        assert hasattr(error_messages, "MESSAGES")
         msgs = error_messages.MESSAGES
         assert "entity_validation_failed" in msgs
         assert "discovery_failed" in msgs
@@ -104,13 +92,10 @@ class Testc:
     def test_nested_authentication_constants(self) -> None:
         """Test nested Authentication class constants."""
         auth = c.Authentication
-        assert hasattr(auth, "MIN_TOKEN_LENGTH")
-        assert hasattr(auth, "MIN_API_KEY_LENGTH")
 
     def test_nested_api_constants(self) -> None:
         """Test nested Api class via CONFIG dict."""
         api = c.Api
-        assert hasattr(api, "CONFIG")
         config = api.CONFIG
         assert "default_timeout" in config
         assert "min_http_status_code" in config

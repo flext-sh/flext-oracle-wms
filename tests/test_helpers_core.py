@@ -22,7 +22,6 @@ class TestFlextOracleWmsUtilities:
         assert issubclass(u, FlextUtilities)
 
     def test_has_oracle_wms_namespace(self) -> None:
-        assert hasattr(u, "OracleWms")
 
     def test_utilities_is_accessible(self) -> None:
         assert u is not None

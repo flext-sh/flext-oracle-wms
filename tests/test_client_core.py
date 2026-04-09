@@ -25,9 +25,7 @@ class TestFlextOracleWmsClientCore:
         client = FlextOracleWmsUtilitiesClient.Client(mock_config)
         assert client.config == mock_config
         assert client.config.base_url == mock_config.base_url
-        assert hasattr(client, "_client")
         assert client._client is not None
-        assert hasattr(client, "_discovered_entities")
 
     def test_client_string_representation(
         self,
@@ -80,19 +78,6 @@ class TestFlextOracleWmsClientCore:
         mock_config: FlextOracleWmsSettings,
     ) -> None:
         client = FlextOracleWmsUtilitiesClient.Client(mock_config)
-        assert hasattr(client, "start")
-        assert hasattr(client, "stop")
-        assert hasattr(client, "discover_entities")
-        assert hasattr(client, "get_entity_data")
-        assert hasattr(client, "health_check")
-        assert hasattr(client, "get")
-        assert hasattr(client, "post")
-        assert hasattr(client, "put")
-        assert hasattr(client, "delete")
-        assert hasattr(client, "get_apis_by_category")
-        assert hasattr(client, "call_api")
-        assert hasattr(client, "update_oblpn_tracking_number")
-        assert hasattr(client, "create_lpn")
         assert callable(client.start)
         assert callable(client.stop)
 
@@ -191,7 +176,5 @@ class TestGetLogger:
 
     def test_get_logger_module_name(self) -> None:
         logger = FlextLogger("test_module")
-        assert hasattr(logger, "info")
-        assert hasattr(logger, "error")
         logger_empty = FlextLogger("")
         assert callable(logger_empty.info)

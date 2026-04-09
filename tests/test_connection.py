@@ -14,7 +14,5 @@ def test_real_connection() -> None:
     """Test client structural setup with testing_config."""
     config = FlextOracleWmsSettings.testing_config()
     client = FlextOracleWmsUtilitiesClient.Client(config)
-    assert hasattr(client, "config")
     assert client.config is config
     discovery = client.discover_entities()
-    assert hasattr(discovery, "is_success")

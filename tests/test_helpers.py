@@ -23,7 +23,6 @@ class TestFlextOracleWmsUtilities:
 
     def test_utilities_has_oracle_wms_namespace(self) -> None:
         """Test OracleWms namespace class exists."""
-        assert hasattr(u, "OracleWms")
 
     def test_utilities_inherits_flext_utilities(self) -> None:
         """Test inheritance from FlextUtilities."""

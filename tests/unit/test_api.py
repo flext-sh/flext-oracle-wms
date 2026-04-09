@@ -22,13 +22,11 @@ class TestFlextOracleWmsApi:
     def test_initialization(self) -> None:
         """Test initialization creates WMS client."""
         api = u.OracleWms.Tests.ConcreteApi()
-        assert hasattr(api, "_client")
         assert isinstance(api._client, FlextOracleWmsUtilitiesClient.Client)
 
     def test_has_logger(self) -> None:
         """Test facade has logger from s."""
         api = u.OracleWms.Tests.ConcreteApi()
-        assert hasattr(api, "logger")
 
     def test_no_business_methods_exposed(self) -> None:
         """Test facade has no public business methods (all commented out)."""

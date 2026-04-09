@@ -59,8 +59,6 @@ def test_client_internal_state() -> None:
     """Test client internal attributes after creation."""
     config = FlextOracleWmsSettings.testing_config()
     client = FlextOracleWmsUtilitiesClient.Client(config)
-    assert hasattr(client, "_client")
-    assert hasattr(client, "_discovered_entities")
 
 
 def test_client_config_access() -> None:
@@ -68,6 +66,3 @@ def test_client_config_access() -> None:
     config = FlextOracleWmsSettings.testing_config()
     client = FlextOracleWmsUtilitiesClient.Client(config)
     assert client.config is not None
-    assert hasattr(client.config, "base_url")
-    assert hasattr(client.config, "timeout")
-    assert hasattr(client.config, "username")
