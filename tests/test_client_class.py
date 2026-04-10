@@ -58,7 +58,7 @@ def test_client_has_wms_operations() -> None:
 def test_client_internal_state() -> None:
     """Test client internal attributes after creation."""
     config = FlextOracleWmsSettings.testing_config()
-    client = FlextOracleWmsUtilitiesClient.Client(config)
+    FlextOracleWmsUtilitiesClient.Client(config)
 
 
 def test_client_config_access() -> None:

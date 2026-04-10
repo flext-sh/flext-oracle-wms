@@ -12,6 +12,7 @@ from pydantic import ValidationError
 
 from flext_core import FlextLogger, e, r
 from flext_oracle_wms import (
+    FlextOracleWmsDataValidationError as _FlextOracleWmsDataValidationError,
     FlextOracleWmsModels,
     c,
     t,
@@ -32,14 +33,10 @@ type FilterEntry = (
 )
 
 
-class FlextOracleWmsDataValidationError(e.BaseError):
-    """Data validation error for Oracle WMS filtering."""
-
-
 class FlextOracleWmsUtilitiesFiltering:
     """Filtering utilities for Oracle WMS -- u.OracleWms.Filtering.*."""
 
-    DataValidationError = FlextOracleWmsDataValidationError
+    DataValidationError = _FlextOracleWmsDataValidationError
     OperatorFilter = FlextOracleWmsOperatorFilter
 
     class Filter:
@@ -69,7 +66,7 @@ class FlextOracleWmsUtilitiesFiltering:
                 and self._validate_filter_conditions_total(self.filters).is_failure
             ):
                 error_message = "Filter validation failed"
-                raise FlextOracleWmsDataValidationError(error_message)
+                raise _FlextOracleWmsDataValidationError(error_message)
 
         @classmethod
         def create_filter(
@@ -385,7 +382,6 @@ class FlextOracleWmsUtilitiesFiltering:
 
 
 __all__ = [
-    "FlextOracleWmsDataValidationError",
     "FlextOracleWmsOperatorFilter",
     "FlextOracleWmsUtilitiesFiltering",
 ]

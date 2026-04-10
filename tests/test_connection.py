@@ -15,4 +15,4 @@ def test_real_connection() -> None:
     config = FlextOracleWmsSettings.testing_config()
     client = FlextOracleWmsUtilitiesClient.Client(config)
     assert client.config is config
-    discovery = client.discover_entities()
+    client.discover_entities()

@@ -79,7 +79,7 @@ class TestClientSimpleNew:
 
     def test_client_methods_exist(self) -> None:
         """Test that actual client methods exist."""
-        client = FlextOracleWmsUtilitiesClient.Client(self.config)
+        FlextOracleWmsUtilitiesClient.Client(self.config)
 
     def test_client_with_custom_config(self) -> None:
         """Test client with custom configuration."""
@@ -116,7 +116,7 @@ class TestClientSimpleNew:
 
     def test_client_internal_properties(self) -> None:
         """Test client internal properties exist."""
-        client = FlextOracleWmsUtilitiesClient.Client(self.config)
+        FlextOracleWmsUtilitiesClient.Client(self.config)
 
     def test_client_properties_access(self) -> None:
         """Test client properties are accessible."""

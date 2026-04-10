@@ -1,10 +1,4 @@
-"""FLEXT WMS Configuration - Generic WMS integration with composition.
-
-Uses Python 3.13+ syntax, reduces declarations through patterns.
-One class per module following SOLID principles. Generic WMS configuration.
-Copyright (c) 2025 FLEXT Team. All rights reserved.
-SPDX-License-Identifier: MIT
-"""
+"""Oracle WMS runtime settings."""
 
 from __future__ import annotations
 
@@ -43,26 +37,3 @@ class FlextOracleWmsSettings(FlextSettings):
             "username": "test_user",
             "password": "test_password",
         })
-
-
-class FlextOracleWmsClientSettings(FlextOracleWmsSettings):
-    """Settings contract consumed by FlextOracleWmsClient."""
-
-    model_config: ClassVar[SettingsConfigDict] = SettingsConfigDict(extra="ignore")
-
-    base_url: str = ""
-    username: str = ""
-    password: str = ""
-    api_version: str = "LGF_V10"
-    auth_method: str = "BASIC"
-    timeout: Annotated[float, Field(ge=1.0)] = 30.0
-    max_retries: Annotated[int, Field(ge=0)] = 3
-    verify_ssl: bool = True
-    enable_logging: bool = False
-    connection_pool_size: Annotated[int, Field(ge=1)] = 10
-    cache_duration: Annotated[int, Field(ge=0)] = 300
-    project_name: str = "flext-oracle-wms"
-    project_version: str = "1.0.0"
-
-
-__all__ = ["FlextOracleWmsClientSettings", "FlextOracleWmsSettings"]

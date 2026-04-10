@@ -9,11 +9,7 @@ from __future__ import annotations
 from unittest.mock import MagicMock
 
 from flext_core import r
-from flext_oracle_wms import (
-    DISCOVERY_FAILURE,
-    DISCOVERY_SUCCESS,
-    FlextOracleWmsUtilitiesDiscovery,
-)
+from flext_oracle_wms import FlextOracleWmsUtilitiesDiscovery, u
 from tests import c
 
 
@@ -21,10 +17,10 @@ class TestDiscoveryConstants:
     """Test suite for discovery constants."""
 
     def test_discovery_success_constant(self) -> None:
-        assert DISCOVERY_SUCCESS == "discovery_success"
+        assert u.OracleWms.Discovery.DISCOVERY_SUCCESS == "discovery_success"
 
     def test_discovery_failure_constant(self) -> None:
-        assert DISCOVERY_FAILURE == "discovery_failure"
+        assert u.OracleWms.Discovery.DISCOVERY_FAILURE == "discovery_failure"
 
 
 class TestEndpointDiscoveryStrategyEnum:

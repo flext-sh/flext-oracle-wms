@@ -26,7 +26,7 @@ class TestFlextOracleWmsApi:
 
     def test_has_logger(self) -> None:
         """Test facade has logger from s."""
-        api = u.OracleWms.Tests.ConcreteApi()
+        u.OracleWms.Tests.ConcreteApi()
 
     def test_no_business_methods_exposed(self) -> None:
         """Test facade has no public business methods (all commented out)."""

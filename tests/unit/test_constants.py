@@ -67,19 +67,15 @@ class Testc:
 
     def test_nested_oracle_wms_constants(self) -> None:
         """Test nested OracleWms class constants (connection-related)."""
-        connection = c.OracleWms
 
     def test_nested_wms_entities_constants(self) -> None:
         """Test nested WmsEntities class constants."""
-        wms_entities = c.WmsEntities
 
     def test_nested_processing_constants(self) -> None:
         """Test nested WmsProcessing class constants."""
-        processing = c.WmsProcessing
 
     def test_nested_filtering_constants(self) -> None:
         """Test nested Filtering class constants."""
-        filtering = c.Filtering
 
     def test_nested_error_messages_constants(self) -> None:
         """Test nested ErrorMessages class via MESSAGES dict."""
@@ -91,7 +87,6 @@ class Testc:
 
     def test_nested_authentication_constants(self) -> None:
         """Test nested Authentication class constants."""
-        auth = c.Authentication
 
     def test_nested_api_constants(self) -> None:
         """Test nested Api class via CONFIG dict."""

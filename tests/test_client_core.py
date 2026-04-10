@@ -175,6 +175,6 @@ class TestGetLogger:
     """Tests for FlextLogger utility within WMS package."""
 
     def test_get_logger_module_name(self) -> None:
-        logger = FlextLogger("test_module")
+        FlextLogger("test_module")
         logger_empty = FlextLogger("")
         assert callable(logger_empty.info)
