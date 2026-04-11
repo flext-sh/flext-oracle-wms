@@ -13,6 +13,15 @@ from flext_core.lazy import (
 from flext_oracle_wms.__version__ import *
 
 if _t.TYPE_CHECKING:
+    from _utilities.auth import FlextOracleWmsUtilitiesAuth
+    from _utilities.client import FlextOracleWmsUtilitiesClient
+    from _utilities.discovery import FlextOracleWmsUtilitiesDiscovery
+    from _utilities.filtering import (
+        FlextOracleWmsOperatorFilter,
+        FlextOracleWmsUtilitiesFiltering,
+    )
+    from _utilities.http_client import FlextOracleWmsUtilitiesHttpClient
+
     from flext_core.decorators import d
     from flext_core.exceptions import e
     from flext_core.handlers import h
@@ -20,16 +29,6 @@ if _t.TYPE_CHECKING:
     from flext_core.models import m
     from flext_core.result import r
     from flext_core.service import s
-    from flext_oracle_wms._utilities.auth import FlextOracleWmsUtilitiesAuth
-    from flext_oracle_wms._utilities.client import FlextOracleWmsUtilitiesClient
-    from flext_oracle_wms._utilities.discovery import FlextOracleWmsUtilitiesDiscovery
-    from flext_oracle_wms._utilities.filtering import (
-        FlextOracleWmsOperatorFilter,
-        FlextOracleWmsUtilitiesFiltering,
-    )
-    from flext_oracle_wms._utilities.http_client import (
-        FlextOracleWmsUtilitiesHttpClient,
-    )
     from flext_oracle_wms.api import FlextOracleWmsApi
     from flext_oracle_wms.client_settings import FlextOracleWmsClientSettings
     from flext_oracle_wms.constants import FlextOracleWmsConstants, c
@@ -106,6 +105,14 @@ _LAZY_IMPORTS = merge_lazy_imports(
                 "FlextOracleWmsUtilities",
                 "u",
             ),
+            "_utilities.auth": ("FlextOracleWmsUtilitiesAuth",),
+            "_utilities.client": ("FlextOracleWmsUtilitiesClient",),
+            "_utilities.discovery": ("FlextOracleWmsUtilitiesDiscovery",),
+            "_utilities.filtering": (
+                "FlextOracleWmsOperatorFilter",
+                "FlextOracleWmsUtilitiesFiltering",
+            ),
+            "_utilities.http_client": ("FlextOracleWmsUtilitiesHttpClient",),
             "flext_core.decorators": ("d",),
             "flext_core.exceptions": ("e",),
             "flext_core.handlers": ("h",),
