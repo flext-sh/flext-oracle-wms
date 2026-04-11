@@ -32,7 +32,7 @@ class FlextOracleWmsApi(s[None]):
     - FlextCqrs: CQRS pattern for WMS commands/queries
     - FlextDispatcher: Message routing for WMS operations
     - FlextRegistry: Component registration for WMS plugins
-    - FlextLogger: Structured logging for WMS operations
+    - `u.fetch_logger(...)` / `p.Logger`: Structured logging for WMS operations
 
     This facade provides easy access to all Oracle WMS functionality
     while maintaining clean separation between business logic and infrastructure.
