@@ -85,7 +85,7 @@ def main() -> None:
     client = FlextOracleWmsClient(config)
     try:
         start_result = client.start()
-        if not start_result.is_success:
+        if not start_result.success:
             return
         categories: dict[str, list[str]] = {}
         for api in FlextOracleWmsApi.FLEXT_ORACLE_WMS_APIS.values():
@@ -98,7 +98,7 @@ def main() -> None:
         client.discover_entities()
         for entity in ["company", "facility", "item"]:
             result = client.get_entity_data(entity, limit=3)
-            if result.is_success:
+            if result.success:
                 data = result.value
                 if isinstance(data, list):
                     for record in data:
@@ -110,7 +110,7 @@ def main() -> None:
             tracking_number="TRACK123",
         )
         lpn_result = client.create_lpn(lpn_nbr="TEST_LPN", qty=10)
-        if lpn_result.is_failure:
+        if lpn_result.failure:
             logger.debug(f"LPN creation failed as expected: {lpn_result.error}")
     except Exception as exc:
         logger.warning(f"Test execution encountered error: {exc}")

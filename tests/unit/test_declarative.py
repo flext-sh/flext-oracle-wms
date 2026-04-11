@@ -31,7 +31,7 @@ logger = FlextLogger(__name__)
 def env_config() -> t.ContainerMapping:
     """Fixture that provides .env configuration or deterministic test defaults."""
     config_result = u.OracleWms.Tests.load_env_config(Path(__file__))
-    if config_result.is_success and config_result.value.get("base_url"):
+    if config_result.success and config_result.value.get("base_url"):
         return config_result.value
     return {
         "base_url": "https://test-wms.example.com",
@@ -53,7 +53,7 @@ def oracle_wms_client(
     })
     client = FlextOracleWmsUtilitiesClient.Client(config)
     start_result = client.start()
-    if not start_result.is_success:
+    if not start_result.success:
         pytest.fail(f"Failed to start Oracle WMS client: {start_result.error}")
     yield client
     client.stop()
@@ -95,9 +95,9 @@ class TestOracleWmsDeclarativeIntegration:
         client = FlextOracleWmsUtilitiesClient.Client(config)
         assert client.config == config
         start_result = client.start()
-        assert start_result.is_success, f"Client start failed: {start_result.error}"
+        assert start_result.success, f"Client start failed: {start_result.error}"
         stop_result = client.stop()
-        assert stop_result.is_success, f"Client stop failed: {stop_result.error}"
+        assert stop_result.success, f"Client stop failed: {stop_result.error}"
 
     def test_oracle_wms_health_check(
         self,
@@ -106,7 +106,7 @@ class TestOracleWmsDeclarativeIntegration:
         """Test Oracle WMS API health check returns valid result."""
         health_result = oracle_wms_client.health_check()
         assert isinstance(health_result, r)
-        if health_result.is_success:
+        if health_result.success:
             health_response = health_result.value
             health_data = (
                 health_response.body
@@ -124,7 +124,7 @@ class TestOracleWmsDeclarativeIntegration:
         """Test getting list of all Oracle WMS entities returns valid result."""
         entities_result = oracle_wms_client.discover_entities()
         assert isinstance(entities_result, r)
-        if entities_result.is_success:
+        if entities_result.success:
             entities = entities_result.value
             assert isinstance(entities, list)
         else:
@@ -142,7 +142,7 @@ class TestLgfApiV10Integration:
     ) -> None:
         """Test getting entity data using LGF API v10."""
         result = oracle_wms_client.get_entity_data(entity_name=entity_name, limit=5)
-        if result.is_success:
+        if result.success:
             records = result.value
             assert isinstance(records, (list, tuple))
             record_count = len(records)
@@ -168,7 +168,7 @@ class TestLgfApiV10Integration:
             limit=10,
             filters={"active": "Y"},
         )
-        if result.is_success:
+        if result.success:
             records = result.value
             logger.info(
                 "✅ Successfully retrieved filtered company data: %d records",
@@ -183,7 +183,7 @@ class TestLgfApiV10Integration:
         """Test getting specific entity record by ID returns valid result."""
         list_result = oracle_wms_client.get_entity_data("company", limit=1)
         assert isinstance(list_result, r)
-        if not list_result.is_success:
+        if not list_result.success:
             assert list_result.error is not None
             return
         records = list_result.value
@@ -211,7 +211,7 @@ class TestAutomationApisIntegration:
             entity_name="company",
             filters={"company_code": "DEFAULT"},
         )
-        if result.is_success:
+        if result.success:
             logger.info("✅ Successfully got entity status")
         else:
             logger.info("⚠️ Entity status call failed (expected): %s", result.error)
@@ -228,7 +228,7 @@ class TestAutomationApisIntegration:
             oblpn_id="TEST123",
             tracking_number="TRACK123",
         )
-        assert not result.is_success
+        assert not result.success
         assert result.error is None or "Client not initialized" not in str(result.error)
         logger.info("⚠️ OBLPN update failed as expected: %s", result.error)
 
@@ -241,7 +241,7 @@ class TestAutomationApisIntegration:
             lpn_nbr="TEST_LPN_001",
             qty=10,
         )
-        assert not result.is_success
+        assert not result.success
         assert result.error is None or "Client not initialized" not in str(result.error)
         logger.info("⚠️ LPN creation failed as expected: %s", result.error)
 
@@ -254,7 +254,7 @@ class TestErrorHandlingIntegration:
     ) -> None:
         """Test handling of invalid entity names returns failure result."""
         result = oracle_wms_client.get_entity_data("invalid_entity_xyz")
-        assert not result.is_success
+        assert not result.success
         assert result.error is not None
 
     def test_unknown_api_call(
@@ -262,7 +262,7 @@ class TestErrorHandlingIntegration:
     ) -> None:
         """Test handling of unknown API calls returns failure result."""
         result = oracle_wms_client.call_api("unknown_api_xyz")
-        assert not result.is_success
+        assert not result.success
         assert result.error is not None
 
     def test_malformed_lgf_call(
@@ -270,7 +270,7 @@ class TestErrorHandlingIntegration:
     ) -> None:
         """Test handling of malformed LGF API calls."""
         result = oracle_wms_client.call_api("invalid_api_name")
-        assert not result.is_success
+        assert not result.success
         logger.info("✅ Properly handled malformed LGF call: %s", result.error)
 
 
@@ -305,7 +305,7 @@ class TestPerformanceIntegration:
                 entity_name="company",
                 limit=page_size,
             )
-            if result.is_success:
+            if result.success:
                 records = result.value
                 actual_count = len(records)
                 logger.info(

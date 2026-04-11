@@ -59,13 +59,13 @@ class TestFlextOracleWmsEntity:
         """Test entity validation success."""
         entity = m.OracleWms.Entity(name="inventory", endpoint="/inventory")
         result = entity.validate_entity()
-        assert result.is_success
+        assert result.success
 
     def test_entity_validate_entity_name_too_long(self) -> None:
         """Test entity validation fails for long name."""
         entity = m.OracleWms.Entity(name="x" * 101, endpoint="/test")
         result = entity.validate_entity()
-        assert result.is_failure
+        assert result.failure
         assert result.error is not None
         assert "too long" in result.error
 
@@ -111,13 +111,13 @@ class TestFlextOracleWmsApiResponse:
         """Test response validation success."""
         response = m.OracleWms.ApiResponse(success=True)
         result = response.validate_response()
-        assert result.is_success
+        assert result.success
 
     def test_response_validate_failure_needs_message(self) -> None:
         """Test failed response without error message fails validation."""
         response = m.OracleWms.ApiResponse(success=False, error_message=None)
         result = response.validate_response()
-        assert result.is_failure
+        assert result.failure
         assert result.error is not None
         assert "error message" in result.error
 
@@ -128,7 +128,7 @@ class TestFlextOracleWmsApiResponse:
             error_message="Error occurred",
         )
         result = response.validate_response()
-        assert result.is_success
+        assert result.success
 
     def test_response_status_code_bounds(self) -> None:
         """Test status code validation bounds (HttpStatusCode: 100-599)."""

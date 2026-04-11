@@ -47,7 +47,7 @@ class TestFlextOracleWmsClient:
         client._client = MagicMock()
         client._client.request.return_value = r[MagicMock].ok(mock_response)
         result = client.get("/test-endpoint")
-        assert result.is_success
+        assert result.success
         assert result.value.body == {"data": "test"}
 
     def test_get_method_failure(self) -> None:
@@ -57,7 +57,7 @@ class TestFlextOracleWmsClient:
         client._client = MagicMock()
         client._client.request.return_value = r[MagicMock].fail("Network error")
         result = client.get("/test-endpoint")
-        assert result.is_failure
+        assert result.failure
         assert result.error is not None
         assert "GET /test-endpoint failed" in str(result.error)
 
@@ -71,7 +71,7 @@ class TestFlextOracleWmsClient:
         client._client = MagicMock()
         client._client.request.return_value = r[MagicMock].ok(mock_response)
         result = client.post("/test-endpoint", body={"key": "value"})
-        assert result.is_success
+        assert result.success
 
     def test_put_method_success(self) -> None:
         """Test successful PUT request."""
@@ -83,7 +83,7 @@ class TestFlextOracleWmsClient:
         client._client = MagicMock()
         client._client.request.return_value = r[MagicMock].ok(mock_response)
         result = client.put("/test-endpoint", body={"key": "value"})
-        assert result.is_success
+        assert result.success
 
     def test_delete_method_success(self) -> None:
         """Test successful DELETE request."""
@@ -95,7 +95,7 @@ class TestFlextOracleWmsClient:
         client._client = MagicMock()
         client._client.request.return_value = r[MagicMock].ok(mock_response)
         result = client.delete("/test-endpoint")
-        assert result.is_success
+        assert result.success
 
     def test_health_check(self) -> None:
         """Test health check delegates to self.get('/health')."""
@@ -107,14 +107,14 @@ class TestFlextOracleWmsClient:
         client._client = MagicMock()
         client._client.request.return_value = r[MagicMock].ok(mock_response)
         result = client.health_check()
-        assert result.is_success
+        assert result.success
 
     def test_start_method(self) -> None:
         """Test client start method returns ok(True)."""
         config = FlextOracleWmsSettings.testing_config()
         client = FlextOracleWmsUtilitiesClient.Client(config)
         result = client.start()
-        assert result.is_success
+        assert result.success
         assert result.value is True
 
     def test_stop_method(self) -> None:
@@ -122,7 +122,7 @@ class TestFlextOracleWmsClient:
         config = FlextOracleWmsSettings.testing_config()
         client = FlextOracleWmsUtilitiesClient.Client(config)
         result = client.stop()
-        assert result.is_success
+        assert result.success
         assert result.value is True
 
     def test_discover_entities_success(self) -> None:
@@ -135,7 +135,7 @@ class TestFlextOracleWmsClient:
         client._client = MagicMock()
         client._client.request.return_value = r[MagicMock].ok(mock_response)
         result = client.discover_entities()
-        assert result.is_success
+        assert result.success
         assert result.value == ["entity1", "entity2"]
 
     def test_get_entity_data_success(self) -> None:
@@ -148,7 +148,7 @@ class TestFlextOracleWmsClient:
         client._client = MagicMock()
         client._client.request.return_value = r[MagicMock].ok(mock_response)
         result = client.get_entity_data("test_entity", limit=10)
-        assert result.is_success
+        assert result.success
         assert result.value == [{"id": "1"}, {"id": "2"}]
 
     def test_get_apis_by_category_success(self) -> None:
@@ -161,7 +161,7 @@ class TestFlextOracleWmsClient:
         client._client = MagicMock()
         client._client.request.return_value = r[MagicMock].ok(mock_response)
         result = client.get_apis_by_category("inventory")
-        assert result.is_success
+        assert result.success
         assert len(result.value) == 2
 
     def test_call_api_success(self) -> None:
@@ -174,7 +174,7 @@ class TestFlextOracleWmsClient:
         client._client = MagicMock()
         client._client.request.return_value = r[MagicMock].ok(mock_response)
         result = client.call_api("test_api")
-        assert result.is_success
+        assert result.success
 
     def test_update_oblpn_tracking_number(self) -> None:
         """Test OBLPN tracking number update via PUT."""
@@ -186,7 +186,7 @@ class TestFlextOracleWmsClient:
         client._client = MagicMock()
         client._client.request.return_value = r[MagicMock].ok(mock_response)
         result = client.update_oblpn_tracking_number("oblpn123", "track456")
-        assert result.is_success
+        assert result.success
 
     def test_create_lpn(self) -> None:
         """Test LPN creation via POST."""
@@ -198,7 +198,7 @@ class TestFlextOracleWmsClient:
         client._client = MagicMock()
         client._client.request.return_value = r[MagicMock].ok(mock_response)
         result = client.create_lpn("lpn123", 5)
-        assert result.is_success
+        assert result.success
 
 
 __all__ = ["TestFlextOracleWmsClient"]

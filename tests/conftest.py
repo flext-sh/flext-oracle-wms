@@ -34,7 +34,7 @@ def real_config(load_test_env: bool) -> FlextOracleWmsSettings:
     """Real config from .env - EXACTLY like working basic_usage.py example."""
     _ = load_test_env
     settings_result = u.OracleWms.Tests.create_real_settings()
-    if settings_result.is_failure:
+    if settings_result.failure:
         pytest.skip(settings_result.error or "Real Oracle WMS credentials unavailable")
     return settings_result.value
 

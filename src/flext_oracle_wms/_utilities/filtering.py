@@ -63,7 +63,7 @@ class FlextOracleWmsUtilitiesFiltering:
             self.filters: Mapping[str, FilterEntry] = filters or {}
             if (
                 self.filters
-                and self._validate_filter_conditions_total(self.filters).is_failure
+                and self._validate_filter_conditions_total(self.filters).failure
             ):
                 error_message = "Filter validation failed"
                 raise _FlextOracleWmsDataValidationError(error_message)
@@ -184,7 +184,7 @@ class FlextOracleWmsUtilitiesFiltering:
             limit: int | None = None,
         ) -> r[Sequence[t.OracleWms.Core.FilterRecord]]:
             """Filter records against field conditions and optional limit."""
-            if (result := self._validate_filters(filters)).is_failure:
+            if (result := self._validate_filters(filters)).failure:
                 return r[Sequence[t.OracleWms.Core.FilterRecord]].fail(
                     result.error or "Validation failed",
                 )

@@ -85,7 +85,7 @@ def showcase_1_client_initialization(
     """Feature 1: Client Configuration and Initialization."""
     client = FlextOracleWmsClient(config)
     start_result = client.start()
-    if start_result.is_success:
+    if start_result.success:
         pass
     else:
         msg = f"Failed to start client: {start_result.error}"
@@ -96,7 +96,7 @@ def showcase_1_client_initialization(
 def showcase_2_entity_discovery(client: FlextOracleWmsClient) -> list[str]:
     """Feature 2: Entity Discovery (320+ entities)."""
     entities_result = client.discover_entities()
-    if not entities_result.is_success:
+    if not entities_result.success:
         return []
     entity_dicts = entities_result.value or []
     entities: list[str] = [str(entity) for entity in entity_dicts]
@@ -126,7 +126,7 @@ def showcase_3_data_retrieval(
         if entity_name not in entities:
             continue
         data_result = client.get_entity_data(entity_name, limit=5)
-        if data_result.is_success:
+        if data_result.success:
             data = data_result.value
             if isinstance(data, list) and data:
                 first_record = data[0]
@@ -186,7 +186,7 @@ def showcase_6_error_handling(client: FlextOracleWmsClient) -> None:
             "enable_logging": True,
         })
         validation = invalid_config.validate_config()
-        if not validation.is_success:
+        if not validation.success:
             logger.info(f"Expected validation failure: {validation.error}")
     except Exception as exc:
         logger.warning(f"Error handling demonstration: {exc}")
@@ -197,7 +197,7 @@ def showcase_7_health_monitoring(
 ) -> dict[str, t.ContainerValue]:
     """Feature 7: Health Monitoring."""
     health_result = client.health_check()
-    if health_result.is_success:
+    if health_result.success:
         response = health_result.value
         health_data: dict[str, t.ContainerValue] = {"status_code": response.status_code}
         return health_data
@@ -220,9 +220,7 @@ def showcase_8_performance_tracking(
         end_time = time.time()
         _elapsed = end_time - start_time
         _successful_requests = sum(
-            1
-            for result in results
-            if hasattr(result, "is_success") and result.is_success
+            1 for result in results if hasattr(result, "success") and result.success
         )
     if "company" in entities:
         page_sizes = [1, 5, 10]
@@ -240,7 +238,7 @@ def showcase_9_cache_management(client: FlextOracleWmsClient) -> None:
     start_time = time.time()
     second_result = client.discover_entities()
     _second_elapsed = time.time() - start_time
-    if first_result.is_success and second_result.is_success:
+    if first_result.success and second_result.success:
         _first_count = len(first_result.value or [])
         _second_count = len(second_result.value or [])
 

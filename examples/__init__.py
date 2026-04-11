@@ -12,32 +12,24 @@ from flext_core.lazy import (
 )
 
 if _t.TYPE_CHECKING:
-    from flext_core.decorators import d
-    from flext_core.exceptions import e
-    from flext_core.handlers import h
-    from flext_core.mixins import x
-    from flext_core.models import m
-    from flext_core.result import r
-    from flext_core.service import s
-    from flext_oracle_wms.constants import c
-    from flext_oracle_wms.protocols import p
-    from flext_oracle_wms.typings import t
-    from flext_oracle_wms.utilities import u
+    from flext_oracle_wms import c, d, e, h, m, p, r, s, t, u, x
 _LAZY_IMPORTS = merge_lazy_imports(
     (".tests",),
     build_lazy_import_map(
         {
-            "flext_core.decorators": ("d",),
-            "flext_core.exceptions": ("e",),
-            "flext_core.handlers": ("h",),
-            "flext_core.mixins": ("x",),
-            "flext_core.models": ("m",),
-            "flext_core.result": ("r",),
-            "flext_core.service": ("s",),
-            "flext_oracle_wms.constants": ("c",),
-            "flext_oracle_wms.protocols": ("p",),
-            "flext_oracle_wms.typings": ("t",),
-            "flext_oracle_wms.utilities": ("u",),
+            "flext_oracle_wms": (
+                "c",
+                "d",
+                "e",
+                "h",
+                "m",
+                "p",
+                "r",
+                "s",
+                "t",
+                "u",
+                "x",
+            ),
         },
     ),
     exclude_names=(

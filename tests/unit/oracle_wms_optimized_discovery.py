@@ -81,7 +81,7 @@ class OptimizedOracleWmsDiscovery:
     def start_discovery(self) -> r[bool]:
         """Start optimized discovery."""
         start_result = self.client.start()
-        if not start_result.is_success:
+        if not start_result.success:
             return r[bool].fail(f"Client start failed: {start_result.error}")
         return r[bool].ok(value=True)
 
@@ -90,7 +90,7 @@ class OptimizedOracleWmsDiscovery:
     ) -> r[dict[str, t.NormalizedValue]]:
         """Fast discovery of priority entities with data."""
         entities_result = self.client.discover_entities()
-        if not entities_result.is_success:
+        if not entities_result.success:
             return r[dict[str, t.NormalizedValue]].fail(
                 f"Entity discovery failed: {entities_result.error}",
             )
@@ -164,7 +164,7 @@ class OptimizedOracleWmsDiscovery:
         """Analyze single entity for data and structure."""
         try:
             data_result = self.client.get_entity_data(entity_name, limit=3)
-            if data_result.is_success:
+            if data_result.success:
                 records = data_result.value
                 count = len(records)
                 analysis: dict[str, t.NormalizedValue] = {
@@ -490,16 +490,16 @@ def run_optimized_discovery() -> None:
     discovery = OptimizedOracleWmsDiscovery()
     try:
         start_result = discovery.start_discovery()
-        if not start_result.is_success:
+        if not start_result.success:
             return
         entities_result = discovery.discover_priority_entities_fast()
-        if not entities_result.is_success:
+        if not entities_result.success:
             return
         schemas_result = discovery.generate_complete_singer_schemas()
-        if not schemas_result.is_success:
+        if not schemas_result.success:
             return
         save_result = discovery.save_optimized_results()
-        if not save_result.is_success:
+        if not save_result.success:
             return
         if discovery.high_value_entities:
 

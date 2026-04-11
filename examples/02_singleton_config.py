@@ -70,7 +70,7 @@ def demonstrate_singleton_config() -> None:
     logger.info("   Test Username: %s", test_config.username)
     logger.info("7. Validating configuration...")
     validation_result = test_config.validate_config()
-    if validation_result.is_success:
+    if validation_result.success:
         logger.info("   Configuration validation passed")
     else:
         logger.error("   Configuration validation failed: %s", validation_result.error)

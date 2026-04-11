@@ -86,7 +86,7 @@ class TestFlextOracleWmsApi:
                 password="test_password",
             )
         )
-        assert result.is_success
+        assert result.success
         assert isinstance(result.value, FlextOracleWmsUtilitiesClient.Client)
 
 

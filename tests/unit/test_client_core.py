@@ -48,7 +48,7 @@ class TestFlextOracleWmsClientCore:
     def test_client_start_success(self, mock_config: FlextOracleWmsSettings) -> None:
         client = FlextOracleWmsUtilitiesClient.Client(mock_config)
         result = client.start()
-        assert result.is_success
+        assert result.success
         assert result.value is True
 
     def test_client_start_multiple_times(
@@ -57,21 +57,21 @@ class TestFlextOracleWmsClientCore:
     ) -> None:
         client = FlextOracleWmsUtilitiesClient.Client(mock_config)
         result1 = client.start()
-        assert result1.is_success
+        assert result1.success
         result2 = client.start()
-        assert result2.is_success
+        assert result2.success
 
     def test_client_stop_success(self, mock_config: FlextOracleWmsSettings) -> None:
         client = FlextOracleWmsUtilitiesClient.Client(mock_config)
         client.start()
         result = client.stop()
-        assert result.is_success
+        assert result.success
         assert result.value is True
 
     def test_client_stop_not_started(self, mock_config: FlextOracleWmsSettings) -> None:
         client = FlextOracleWmsUtilitiesClient.Client(mock_config)
         result = client.stop()
-        assert result.is_success
+        assert result.success
 
     def test_client_has_expected_methods(
         self,
@@ -89,7 +89,7 @@ class TestFlextOracleWmsClientCore:
         client._client = MagicMock()
         client._client.request.return_value = r[MagicMock].ok(mock_response)
         result = client.get_apis_by_category("inventory")
-        assert result.is_success
+        assert result.success
 
     def test_health_check_delegates_to_get(
         self,
@@ -102,7 +102,7 @@ class TestFlextOracleWmsClientCore:
         client._client = MagicMock()
         client._client.request.return_value = r[MagicMock].ok(mock_response)
         result = client.health_check()
-        assert result.is_success
+        assert result.success
 
     def test_discover_entities_success(
         self,
@@ -115,7 +115,7 @@ class TestFlextOracleWmsClientCore:
         client._client = MagicMock()
         client._client.request.return_value = r[MagicMock].ok(mock_response)
         result = client.discover_entities()
-        assert result.is_success
+        assert result.success
         assert isinstance(result.value, list)
         assert len(result.value) == 3
 
@@ -127,7 +127,7 @@ class TestFlextOracleWmsClientCore:
         client._client = MagicMock()
         client._client.request.return_value = r[MagicMock].fail("Connection refused")
         result = client.discover_entities()
-        assert result.is_failure
+        assert result.failure
 
     def test_get_entity_data_success(self, mock_config: FlextOracleWmsSettings) -> None:
         client = FlextOracleWmsUtilitiesClient.Client(mock_config)
@@ -137,7 +137,7 @@ class TestFlextOracleWmsClientCore:
         client._client = MagicMock()
         client._client.request.return_value = r[MagicMock].ok(mock_response)
         result = client.get_entity_data("test_entity", limit=10)
-        assert result.is_success
+        assert result.success
         assert result.value == [{"id": "1"}, {"id": "2"}]
 
     def test_get_entity_data_failure(self, mock_config: FlextOracleWmsSettings) -> None:
@@ -145,7 +145,7 @@ class TestFlextOracleWmsClientCore:
         client._client = MagicMock()
         client._client.request.return_value = r[MagicMock].fail("Not found")
         result = client.get_entity_data("test_entity")
-        assert result.is_failure
+        assert result.failure
 
     def test_call_api_success(self, mock_config: FlextOracleWmsSettings) -> None:
         client = FlextOracleWmsUtilitiesClient.Client(mock_config)
@@ -155,14 +155,14 @@ class TestFlextOracleWmsClientCore:
         client._client = MagicMock()
         client._client.request.return_value = r[MagicMock].ok(mock_response)
         result = client.call_api("test_api")
-        assert result.is_success
+        assert result.success
 
     def test_call_api_failure(self, mock_config: FlextOracleWmsSettings) -> None:
         client = FlextOracleWmsUtilitiesClient.Client(mock_config)
         client._client = MagicMock()
         client._client.request.return_value = r[MagicMock].fail("API error")
         result = client.call_api("test_api")
-        assert result.is_failure
+        assert result.failure
 
     def test_client_error_handling_none_config(self) -> None:
         client = FlextOracleWmsUtilitiesClient.Client(None)

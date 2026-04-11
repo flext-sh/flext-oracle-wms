@@ -53,7 +53,7 @@ class TestFlextOracleWmsEntityDiscovery:
         discovery = FlextOracleWmsUtilitiesDiscovery.EntityDiscovery(client=mock_client)
         result = discovery.discover_entities()
         assert isinstance(result, r)
-        assert result.is_success
+        assert result.success
         assert result.value == [
             {
                 "name": "inventory",
@@ -76,7 +76,7 @@ class TestFlextOracleWmsEntityDiscovery:
         ])
         discovery = FlextOracleWmsUtilitiesDiscovery.EntityDiscovery(client=mock_client)
         result = discovery.discover_entities()
-        assert result.is_success
+        assert result.success
         assert result.value == [
             {
                 "name": "inventory",
@@ -95,7 +95,7 @@ class TestFlextOracleWmsEntityDiscovery:
         mock_client.discover_entities.return_value = r[list[str]].fail("upstream error")
         discovery = FlextOracleWmsUtilitiesDiscovery.EntityDiscovery(client=mock_client)
         result = discovery.discover_entities()
-        assert result.is_failure
+        assert result.failure
         assert result.error == "upstream error"
 
     def test_discover_entities_result_is_list(self) -> None:

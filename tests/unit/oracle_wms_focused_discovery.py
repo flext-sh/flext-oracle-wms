@@ -67,7 +67,7 @@ class FocusedOracleWmsDiscovery:
         try:
             self.client.start()
             entities_result = self.client.discover_entities()
-            if not entities_result.is_success:
+            if not entities_result.success:
                 return r[t.ContainerMapping].fail(
                     f"Entity discovery failed: {entities_result.error}",
                 )
@@ -112,7 +112,7 @@ class FocusedOracleWmsDiscovery:
                 "total_entities": len(all_entities),
                 "entities_with_data": len(data_entities),
                 "schemas_generated": len(schemas),
-                "results_path": save_result.value if save_result.is_success else None,
+                "results_path": save_result.value if save_result.success else None,
                 "data_entities": data_entities,
                 "schemas": schemas,
             })
@@ -128,14 +128,14 @@ class FocusedOracleWmsDiscovery:
         for entity_name in entities:
             try:
                 result = self.client.get_entity_data(entity_name, limit=1)
-                if result.is_success:
+                if result.success:
                     records = result.value
                     if records:
                         detailed_result = self.client.get_entity_data(
                             entity_name,
                             limit=3,
                         )
-                        if detailed_result.is_success:
+                        if detailed_result.success:
                             detailed_records = detailed_result.value
                             entity_info: t.MutableContainerMapping = {
                                 "count": len(detailed_records),
@@ -170,7 +170,7 @@ class FocusedOracleWmsDiscovery:
         for entity_name in entities:
             try:
                 result = self.client.get_entity_data(entity_name, limit=1)
-                if result.is_success:
+                if result.success:
                     records = result.value
                     if records:
                         sample = records[0]
@@ -437,7 +437,7 @@ def main() -> None:
     """Main execution."""
     discovery = FocusedOracleWmsDiscovery()
     result = discovery.execute_focused_discovery()
-    if result.is_success:
+    if result.success:
         _data = result.value
 
 

@@ -69,7 +69,7 @@ class OracleWmsCompleteDiscovery:
     def start_discovery(self) -> r[bool]:
         """Start complete discovery process."""
         start_result = self.client.start()
-        if not start_result.is_success:
+        if not start_result.success:
             return r[bool].fail(f"Client start failed: {start_result.error}")
         return r[bool].ok(value=True)
 
@@ -115,7 +115,7 @@ class OracleWmsCompleteDiscovery:
             if api_name == "lgf_entity_list":
                 if not self.discovered_entities:
                     entities_result = self.client.discover_entities()
-                    if entities_result.is_success:
+                    if entities_result.success:
                         value = entities_result.value
                         if isinstance(value, list):
                             self.discovered_entities = [str(v) for v in value]
@@ -147,7 +147,7 @@ class OracleWmsCompleteDiscovery:
             if "entity" in endpoint.path and "{entity_name}" in endpoint.path:
                 if not self.discovered_entities:
                     entities_result = self.client.discover_entities()
-                    if entities_result.is_success:
+                    if entities_result.success:
                         value = entities_result.value
                         if isinstance(value, list):
                             self.discovered_entities = [str(v) for v in value]
@@ -205,7 +205,7 @@ class OracleWmsCompleteDiscovery:
         """Ensure discovered_entities list is populated."""
         if not self.discovered_entities:
             entities_result = self.client.discover_entities()
-            if entities_result.is_success:
+            if entities_result.success:
                 value = entities_result.value
                 if isinstance(value, list):
                     self.discovered_entities = list(value)
@@ -226,7 +226,7 @@ class OracleWmsCompleteDiscovery:
     ) -> r[FlextApiModels.Api.HttpResponse] | None:
         """Get entity by ID if it has records."""
         list_result = self.client.get_entity_data(entity_name, limit=1)
-        if not list_result.is_success:
+        if not list_result.success:
             return None
         records = list_result.value
         if not records or not isinstance(records, list):
@@ -266,7 +266,7 @@ class OracleWmsCompleteDiscovery:
         """Test entity API that requires ID parameter."""
         try:
             list_result = self.client.get_entity_data(entity_name, limit=1)
-            if list_result.is_success:
+            if list_result.success:
                 records = list_result.value
                 if records and isinstance(records, list):
                     record = records[0]
@@ -311,7 +311,7 @@ class OracleWmsCompleteDiscovery:
         """Process metadata for a single entity."""
         try:
             entity_result = self.client.get_entity_data(entity_name, limit=5)
-            if not entity_result.is_success:
+            if not entity_result.success:
                 entities_with_errors.append((entity_name, str(entity_result.error)))
                 return
             records: Sequence[t.StrMapping] = entity_result.value
@@ -371,7 +371,7 @@ class OracleWmsCompleteDiscovery:
         """Discover complete metadata for all entities using Oracle WMS APIs."""
         if not self.discovered_entities:
             entities_result = self.client.discover_entities()
-            if entities_result.is_success:
+            if entities_result.success:
                 value = entities_result.value
                 if isinstance(value, list):
                     self.discovered_entities = list(value)
@@ -587,19 +587,19 @@ def run_complete_discovery() -> None:
     discovery = OracleWmsCompleteDiscovery()
     try:
         start_result = discovery.start_discovery()
-        if not start_result.is_success:
+        if not start_result.success:
             return
         api_result = discovery.discover_all_apis()
-        if not api_result.is_success:
+        if not api_result.success:
             return
         metadata_result = discovery.discover_complete_entity_metadata()
-        if not metadata_result.is_success:
+        if not metadata_result.success:
             return
         schema_result = discovery.generate_singer_schemas_with_flattening()
-        if not schema_result.is_success:
+        if not schema_result.success:
             return
         save_result = discovery.save_complete_discovery_results()
-        if not save_result.is_success:
+        if not save_result.success:
             return
         metadata_data = metadata_result.value
         if isinstance(metadata_data, dict):

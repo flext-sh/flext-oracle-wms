@@ -211,10 +211,10 @@ def test_configuration(
         client.start()
         test_results["connection_success"] = True
         health_result = client.health_check()
-        if health_result.is_success:
+        if health_result.success:
             test_results["health_check_success"] = True
         entities_result = client.discover_entities()
-        if entities_result.is_success and entities_result.value:
+        if entities_result.success and entities_result.value:
             test_results["entities_discovered"] = len(entities_result.value)
     except Exception as exc:
         test_results["error"] = str(exc)

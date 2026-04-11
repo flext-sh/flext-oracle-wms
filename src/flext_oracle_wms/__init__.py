@@ -13,20 +13,11 @@ from flext_core.lazy import (
 from flext_oracle_wms.__version__ import *
 
 if _t.TYPE_CHECKING:
-    from flext_core.decorators import d
-    from flext_core.exceptions import e
-    from flext_core.handlers import h
-    from flext_core.mixins import x
-    from flext_core.models import m
-    from flext_core.result import r
-    from flext_core.service import s
+    from flext_core import d, e, h, r, s, x
     from flext_oracle_wms._utilities.auth import FlextOracleWmsUtilitiesAuth
     from flext_oracle_wms._utilities.client import FlextOracleWmsUtilitiesClient
     from flext_oracle_wms._utilities.discovery import FlextOracleWmsUtilitiesDiscovery
-    from flext_oracle_wms._utilities.filtering import (
-        FlextOracleWmsOperatorFilter,
-        FlextOracleWmsUtilitiesFiltering,
-    )
+    from flext_oracle_wms._utilities.filtering import FlextOracleWmsUtilitiesFiltering
     from flext_oracle_wms._utilities.http_client import (
         FlextOracleWmsUtilitiesHttpClient,
     )
@@ -50,7 +41,7 @@ if _t.TYPE_CHECKING:
         FlextOracleWmsShipmentError,
         FlextOracleWmsValidationError,
     )
-    from flext_oracle_wms.models import FlextOracleWmsModels
+    from flext_oracle_wms.models import FlextOracleWmsModels, m
     from flext_oracle_wms.protocols import FlextOracleWmsProtocols, p
     from flext_oracle_wms.settings import FlextOracleWmsSettings
     from flext_oracle_wms.typings import FlextOracleWmsTypes, t
@@ -92,7 +83,10 @@ _LAZY_IMPORTS = merge_lazy_imports(
                 "FlextOracleWmsShipmentError",
                 "FlextOracleWmsValidationError",
             ),
-            ".models": ("FlextOracleWmsModels",),
+            ".models": (
+                "FlextOracleWmsModels",
+                "m",
+            ),
             ".protocols": (
                 "FlextOracleWmsProtocols",
                 "p",
@@ -106,13 +100,14 @@ _LAZY_IMPORTS = merge_lazy_imports(
                 "FlextOracleWmsUtilities",
                 "u",
             ),
-            "flext_core.decorators": ("d",),
-            "flext_core.exceptions": ("e",),
-            "flext_core.handlers": ("h",),
-            "flext_core.mixins": ("x",),
-            "flext_core.models": ("m",),
-            "flext_core.result": ("r",),
-            "flext_core.service": ("s",),
+            "flext_core": (
+                "d",
+                "e",
+                "h",
+                "r",
+                "s",
+                "x",
+            ),
         },
     ),
     exclude_names=(
@@ -144,7 +139,6 @@ __all__ = [
     "FlextOracleWmsExceptions",
     "FlextOracleWmsInventoryError",
     "FlextOracleWmsModels",
-    "FlextOracleWmsOperatorFilter",
     "FlextOracleWmsPickingError",
     "FlextOracleWmsProcessingError",
     "FlextOracleWmsProtocols",

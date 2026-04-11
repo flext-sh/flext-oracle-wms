@@ -9,15 +9,8 @@ _LAZY_IMPORTS = build_lazy_import_map(
     {
         ".auth": ("FlextOracleWmsUtilitiesAuth",),
         ".client": ("FlextOracleWmsUtilitiesClient",),
-        ".discovery": (
-            "DISCOVERY_FAILURE",
-            "DISCOVERY_SUCCESS",
-            "FlextOracleWmsUtilitiesDiscovery",
-        ),
-        ".filtering": (
-            "FlextOracleWmsOperatorFilter",
-            "FlextOracleWmsUtilitiesFiltering",
-        ),
+        ".discovery": ("FlextOracleWmsUtilitiesDiscovery",),
+        ".filtering": ("FlextOracleWmsUtilitiesFiltering",),
         ".http_client": ("FlextOracleWmsUtilitiesHttpClient",),
     },
 )

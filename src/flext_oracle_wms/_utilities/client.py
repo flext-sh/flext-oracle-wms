@@ -44,7 +44,7 @@ class FlextOracleWmsUtilitiesClient:
         ) -> r[FlextOracleWmsUtilitiesClient.Client]:
             """Create a concrete client by merging auth settings with runtime WMS settings."""
             validation_result = auth_settings.validate_business_rules()
-            if validation_result.is_failure:
+            if validation_result.failure:
                 return r[FlextOracleWmsUtilitiesClient.Client].fail(
                     validation_result.error or "Invalid Oracle WMS auth settings"
                 )
@@ -98,7 +98,7 @@ class FlextOracleWmsUtilitiesClient:
             )
             authenticator = FlextOracleWmsUtilitiesAuth.Authenticator(auth_settings)
             auth_headers = authenticator.get_auth_headers()
-            if auth_headers.is_failure:
+            if auth_headers.failure:
                 error_message = auth_headers.error or "Invalid Oracle WMS credentials"
                 raise ValueError(error_message)
             return auth_headers.value
@@ -162,13 +162,13 @@ class FlextOracleWmsUtilitiesClient:
         def discover_entities(self) -> r[t.StrSequence]:
             """Discover available Oracle WMS entities."""
             result = self.get("/entities")
-            if result.is_failure:
+            if result.failure:
                 return r[t.StrSequence].fail(result.error)
             payload_result = self._decode_response_model(
                 result.value.body,
                 m.OracleWms.EntitiesResponse,
             )
-            if payload_result.is_failure:
+            if payload_result.failure:
                 return r[t.StrSequence].fail(payload_result.error)
             self._discovered_entities = payload_result.value.entities
             return r[t.StrSequence].ok(payload_result.value.entities)
@@ -191,13 +191,13 @@ class FlextOracleWmsUtilitiesClient:
         def get_apis_by_category(self, category: str) -> r[Sequence[t.StrMapping]]:
             """Get Oracle WMS APIs by category."""
             result = self.get(f"/apis/category/{category}")
-            if result.is_failure:
+            if result.failure:
                 return r[Sequence[t.StrMapping]].fail(result.error)
             payload_result = self._decode_response_model(
                 result.value.body,
                 m.OracleWms.ApiCategoryResponse,
             )
-            if payload_result.is_failure:
+            if payload_result.failure:
                 return r[Sequence[t.StrMapping]].fail(payload_result.error)
             return r[Sequence[t.StrMapping]].ok(payload_result.value.apis)
 
@@ -215,13 +215,13 @@ class FlextOracleWmsUtilitiesClient:
                 params_dict |= {key: str(value) for key, value in filters.items()}
             params: FlextApiTypes.Api.WebParams = params_dict
             result = self.get(f"/entities/{entity_name}", params=params)
-            if result.is_failure:
+            if result.failure:
                 return r[Sequence[t.StrMapping]].fail(result.error)
             payload_result = self._decode_response_model(
                 result.value.body,
                 m.OracleWms.EntityDataResponse,
             )
-            if payload_result.is_failure:
+            if payload_result.failure:
                 return r[Sequence[t.StrMapping]].fail(payload_result.error)
             return r[Sequence[t.StrMapping]].ok(payload_result.value.data)
 
@@ -262,7 +262,7 @@ class FlextOracleWmsUtilitiesClient:
         def start(self) -> r[bool]:
             """Start the Oracle WMS client after validating runtime settings."""
             validation_result = self.config.validate_config()
-            if validation_result.is_failure:
+            if validation_result.failure:
                 return r[bool].fail(
                     validation_result.error or "Oracle WMS settings are invalid",
                 )
@@ -312,7 +312,7 @@ class FlextOracleWmsUtilitiesClient:
                 body=body or {},
             )
             result = self._client.request(request)
-            if result.is_failure:
+            if result.failure:
                 return r[FlextApiModels.Api.HttpResponse].fail(
                     f"{method} {path} failed: {result.error}",
                 )

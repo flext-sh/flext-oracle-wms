@@ -78,20 +78,20 @@ class TestAuthenticationConfig:
             password="test_password",
         )
         result = config.validate_business_rules()
-        assert result.is_success
+        assert result.success
 
     def test_config_validation_failure_basic_no_credentials(self) -> None:
         """Test validate_business_rules fails for basic auth without credentials."""
         config = m.OracleWms.AuthSettings(method=c.OracleWms.OracleWMSAuthMethod.BASIC)
         result = config.validate_business_rules()
-        assert result.is_failure
+        assert result.failure
         assert result.error is not None
 
     def test_config_validation_failure_oauth2_no_credentials(self) -> None:
         """Test validate_business_rules fails for oauth2 without credentials."""
         config = m.OracleWms.AuthSettings(method=c.OracleWms.OracleWMSAuthMethod.OAUTH2)
         result = config.validate_business_rules()
-        assert result.is_failure
+        assert result.failure
         assert result.error is not None
 
     def test_config_validation_success_oauth2(self) -> None:
@@ -102,7 +102,7 @@ class TestAuthenticationConfig:
             oauth2_client_secret="secret",
         )
         result = config.validate_business_rules()
-        assert result.is_success
+        assert result.success
 
 
 @pytest.mark.unit
@@ -128,7 +128,7 @@ class TestAuthenticator:
         )
         authenticator = FlextOracleWmsUtilitiesAuth.Authenticator(config)
         result = authenticator.authenticate()
-        assert result.is_success
+        assert result.success
         assert result.value == "dGVzdF91c2VyOnRlc3RfcGFzc3dvcmQ="
 
     def test_authenticate_basic_failure(self) -> None:
@@ -136,7 +136,7 @@ class TestAuthenticator:
         config = m.OracleWms.AuthSettings(method=c.OracleWms.OracleWMSAuthMethod.BASIC)
         authenticator = FlextOracleWmsUtilitiesAuth.Authenticator(config)
         result = authenticator.authenticate()
-        assert result.is_failure
+        assert result.failure
 
     def test_authenticate_oauth2_not_configured(self) -> None:
         config = m.OracleWms.AuthSettings(
@@ -146,7 +146,7 @@ class TestAuthenticator:
         )
         authenticator = FlextOracleWmsUtilitiesAuth.Authenticator(config)
         result = authenticator.authenticate()
-        assert result.is_failure
+        assert result.failure
         assert result.error == "OAuth2 not configured"
 
     def test_authenticate_oauth2_failure(self) -> None:
@@ -154,7 +154,7 @@ class TestAuthenticator:
         config = m.OracleWms.AuthSettings(method=c.OracleWms.OracleWMSAuthMethod.OAUTH2)
         authenticator = FlextOracleWmsUtilitiesAuth.Authenticator(config)
         result = authenticator.authenticate()
-        assert result.is_failure
+        assert result.failure
 
     def test_get_auth_headers_success(self) -> None:
         config = m.OracleWms.AuthSettings(
@@ -164,7 +164,7 @@ class TestAuthenticator:
         )
         authenticator = FlextOracleWmsUtilitiesAuth.Authenticator(config)
         result = authenticator.get_auth_headers()
-        assert result.is_success
+        assert result.success
         headers = result.value
         assert "Authorization" in headers
         assert headers["Authorization"].startswith("Basic ")
@@ -176,7 +176,7 @@ class TestAuthenticator:
             password="test_password",
         )
         result = FlextOracleWmsUtilitiesClient.Client.from_auth_settings(config)
-        assert result.is_success
+        assert result.success
         assert isinstance(result.value, FlextOracleWmsUtilitiesClient.Client)
 
     def test_get_auth_headers_failure(self) -> None:
@@ -184,11 +184,11 @@ class TestAuthenticator:
         config = m.OracleWms.AuthSettings(method=c.OracleWms.OracleWMSAuthMethod.BASIC)
         authenticator = FlextOracleWmsUtilitiesAuth.Authenticator(config)
         result = authenticator.get_auth_headers()
-        assert result.is_failure
+        assert result.failure
 
     def test_unsupported_auth_method(self) -> None:
         """Test authenticate fails with unsupported method."""
         config = m.OracleWms.AuthSettings(method=c.OracleWms.OracleWMSAuthMethod.BEARER)
         authenticator = FlextOracleWmsUtilitiesAuth.Authenticator(config)
         result = authenticator.authenticate()
-        assert result.is_failure
+        assert result.failure

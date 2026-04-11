@@ -54,7 +54,7 @@ def test_entity_validate_entity_success() -> None:
     """Test validate_entity returns success for valid entity."""
     entity = m.OracleWms.Entity(name="item_master", endpoint="/api/items")
     result = entity.validate_entity()
-    assert result.is_success
+    assert result.success
 
 
 def test_api_response_creation() -> None:
@@ -96,14 +96,14 @@ def test_api_response_validate_response_success() -> None:
     """Test validate_response returns success for valid response."""
     response = m.OracleWms.ApiResponse(success=True, data={"test": "data"})
     result = response.validate_response()
-    assert result.is_success
+    assert result.success
 
 
 def test_api_response_validate_response_failure() -> None:
     """Test validate_response fails when success=False with no error_message."""
     response = m.OracleWms.ApiResponse(success=False)
     result = response.validate_response()
-    assert result.is_failure
+    assert result.failure
 
 
 def test_api_response_with_nested_data() -> None:

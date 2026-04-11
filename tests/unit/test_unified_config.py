@@ -53,7 +53,7 @@ class TestFlextOracleWmsSettings:
         """Test validate_config returns success for valid config."""
         config = FlextOracleWmsSettings(timeout=30, retry_attempts=3)
         result = config.validate_config()
-        assert result.is_success
+        assert result.success
 
     def test_testing_config_factory(self) -> None:
         """Test testing_config factory method."""

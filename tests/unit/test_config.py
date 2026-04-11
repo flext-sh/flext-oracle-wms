@@ -34,7 +34,7 @@ def test_config_validate_config_success() -> None:
     """Test validate_config returns success for valid config."""
     config = FlextOracleWmsSettings(timeout=30, retry_attempts=3)
     result = config.validate_config()
-    assert result.is_success
+    assert result.success
 
 
 @pytest.mark.unit

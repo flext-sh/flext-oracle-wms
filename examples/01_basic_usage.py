@@ -74,7 +74,7 @@ def discover_wms_entities(
 
     """
     result = client.discover_entities()
-    if result.is_success:
+    if result.success:
         entities = result.value
         for entity in entities[:5]:
             logger.debug("Processing entity: %s", entity)
@@ -102,7 +102,7 @@ def query_entity_data(
 
     """
     result = client.get_entity_data(entity_name=entity_name, limit=10)
-    if result.is_success:
+    if result.success:
         data = result.value
         if data:
             sample_record: t.StrMapping = data[0]
@@ -124,7 +124,7 @@ def demonstrate_error_handling(client: FlextOracleWmsClient) -> None:
     """Demonstrate proper error handling patterns with r."""
     result = client.get_entity_data("NON_EXISTENT_ENTITY")
     if (
-        result.is_failure
+        result.failure
         and result.error
         and (
             "not found" in result.error.lower()
@@ -149,12 +149,12 @@ def main() -> None:
         setup_client_config()
         client = FlextOracleWmsClient()
         start_result = client.start()
-        if start_result.is_success:
+        if start_result.success:
             pass
         else:
             return
         entities_result = discover_wms_entities(client)
-        if entities_result.is_success:
+        if entities_result.success:
             entities = entities_result.value
             if entities:
                 first_entity = entities[0]

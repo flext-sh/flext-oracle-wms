@@ -112,7 +112,7 @@ class FlextOracleWmsUtilitiesHttpClient:
                     timeout=self.timeout,
                 )
                 response_result = self._client.request(request)
-                if response_result.is_failure:
+                if response_result.failure:
                     return r[t.ContainerValueMapping].fail(
                         f"HTTP request failed: {response_result.error}",
                     )
@@ -174,7 +174,7 @@ class FlextOracleWmsUtilitiesHttpClient:
                     timeout=self.timeout,
                 )
                 response_result = self._client.request(request)
-                if response_result.is_failure:
+                if response_result.failure:
                     return r[t.ContainerValueMapping].fail(
                         f"HTTP request failed: {response_result.error}",
                     )
@@ -233,7 +233,7 @@ class FlextOracleWmsUtilitiesHttpClient:
                     timeout=self.timeout,
                 )
                 response_result = self._client.request(request)
-                if response_result.is_failure:
+                if response_result.failure:
                     return r[t.ContainerValueMapping].fail(
                         f"HTTP {method} failed: {response_result.error}",
                     )
