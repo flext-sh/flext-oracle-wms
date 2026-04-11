@@ -33,6 +33,7 @@ from flext_oracle_wms import (
     FlextOracleWmsSettings,
     FlextOracleWmsUtilitiesClient,
     t,
+    u,
 )
 
 FlextOracleWmsClient = FlextOracleWmsUtilitiesClient.Client

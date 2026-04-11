@@ -15,6 +15,7 @@ import pytest
 
 from flext_core import r
 from flext_oracle_wms import FlextOracleWmsSettings, FlextOracleWmsUtilitiesClient
+from tests import u
 
 
 @pytest.mark.unit

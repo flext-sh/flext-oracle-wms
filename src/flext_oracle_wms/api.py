@@ -91,4 +91,6 @@ class FlextOracleWmsApi(s[None]):
         return FlextOracleWmsUtilitiesClient.Client.from_auth_settings(config)
 
 
-__all__ = ["FlextOracleWmsApi"]
+oracle_wms = FlextOracleWmsApi
+
+__all__ = ["FlextOracleWmsApi", "oracle_wms"]

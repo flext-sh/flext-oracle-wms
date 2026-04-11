@@ -8,7 +8,7 @@ from __future__ import annotations
 
 from flext_db_oracle import e
 
-from flext_oracle_wms import t
+from flext_oracle_wms import t, u
 
 
 class FlextOracleWmsExceptions:

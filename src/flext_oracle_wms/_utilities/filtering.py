@@ -16,6 +16,7 @@ from flext_oracle_wms import (
     FlextOracleWmsModels,
     c,
     t,
+    u,
 )
 
 FlextOracleWmsOperatorFilter = (

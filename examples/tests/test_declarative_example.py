@@ -13,6 +13,7 @@ from flext_oracle_wms import (
     FlextOracleWmsClientSettings,
     FlextOracleWmsUtilitiesClient,
     t,
+    u,
 )
 
 logger = u.fetch_logger(__name__)

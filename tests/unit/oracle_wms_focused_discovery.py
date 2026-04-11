@@ -14,7 +14,7 @@ from pathlib import Path
 
 from flext_core import r
 from flext_oracle_wms import FlextOracleWmsClientSettings, FlextOracleWmsUtilitiesClient
-from tests import t
+from tests import t, u
 
 logger = u.fetch_logger(__name__)
 

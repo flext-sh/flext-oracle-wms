@@ -12,7 +12,7 @@ from typing import Self
 from flext_api import FlextApiClient, FlextApiModels, FlextApiSettings, FlextApiTypes
 from pydantic import ValidationError
 
-from flext_oracle_wms import r, t
+from flext_oracle_wms import r, t, u
 
 
 class FlextOracleWmsUtilitiesHttpClient:

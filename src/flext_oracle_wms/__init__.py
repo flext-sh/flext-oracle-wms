@@ -16,7 +16,11 @@ if _t.TYPE_CHECKING:
     from flext_core import d, e, h, r, s, x
     from flext_oracle_wms._utilities.auth import FlextOracleWmsUtilitiesAuth
     from flext_oracle_wms._utilities.client import FlextOracleWmsUtilitiesClient
-    from flext_oracle_wms._utilities.discovery import FlextOracleWmsUtilitiesDiscovery
+    from flext_oracle_wms._utilities.discovery import (
+        DISCOVERY_FAILURE,
+        DISCOVERY_SUCCESS,
+        FlextOracleWmsUtilitiesDiscovery,
+    )
     from flext_oracle_wms._utilities.filtering import (
         FlextOracleWmsOperatorFilter,
         FlextOracleWmsUtilitiesFiltering,
@@ -132,6 +136,8 @@ _LAZY_IMPORTS = merge_lazy_imports(
 install_lazy_exports(__name__, globals(), _LAZY_IMPORTS)
 
 __all__ = [
+    "DISCOVERY_FAILURE",
+    "DISCOVERY_SUCCESS",
     "FlextOracleWmsApi",
     "FlextOracleWmsApiError",
     "FlextOracleWmsAuthenticationError",

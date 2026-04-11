@@ -45,6 +45,7 @@ from flext_oracle_wms import (
     c,
     m,
     t,
+    u,
 )
 
 FlextOracleWmsAuthenticator = FlextOracleWmsUtilitiesAuth.Authenticator

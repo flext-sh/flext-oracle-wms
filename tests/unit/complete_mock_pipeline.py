@@ -20,7 +20,7 @@ from pathlib import Path
 from typing import cast
 
 from flext_core import r
-from tests import t
+from tests import t, u
 
 logger = u.fetch_logger(__name__)
 
