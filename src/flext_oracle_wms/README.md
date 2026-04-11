@@ -40,7 +40,7 @@ This directory contains the core implementation of the **flext-oracle-wms** libr
 
 - **[**init**.py](**init**.py)** - Public API gateway with comprehensive exports and version information
 - **[client.py](client.py)** - Primary FlextOracleWmsClient interface for Oracle WMS operations
-- **[config.py](config.py)** - Type-safe configuration management with Pydantic validation
+- **[settings.py](settings.py)** - Type-safe configuration management with Pydantic validation
 
 ### 🔧 **Infrastructure Components**
 
@@ -102,7 +102,7 @@ This directory contains the core implementation of the **flext-oracle-wms** libr
 from flext_oracle_wms import FlextOracleWmsClient, FlextOracleWmsClientSettings
 
 # Create configuration
-config = FlextOracleWmsClientSettings(
+settings = FlextOracleWmsClientSettings(
     base_url="https://your-wms.oraclecloud.com",
     username="your_username",
     password="your_password",
@@ -110,7 +110,7 @@ config = FlextOracleWmsClientSettings(
 )
 
 # Initialize client
-client = FlextOracleWmsClient(config)
+client = FlextOracleWmsClient(settings)
 client.start()
 
 # Discover entities

@@ -81,10 +81,10 @@ def load_config_from_environment() -> FlextOracleWmsClientSettings:
 
 
 def showcase_1_client_initialization(
-    config: FlextOracleWmsClientSettings,
+    settings: FlextOracleWmsClientSettings,
 ) -> FlextOracleWmsClient:
     """Feature 1: Client Configuration and Initialization."""
-    client = FlextOracleWmsClient(config)
+    client = FlextOracleWmsClient(settings)
     start_result = client.start()
     if start_result.success:
         pass
@@ -143,12 +143,12 @@ def showcase_3_data_retrieval(
     return sample_data
 
 
-def showcase_4_authentication(config: FlextOracleWmsClientSettings) -> None:
+def showcase_4_authentication(settings: FlextOracleWmsClientSettings) -> None:
     """Feature 4: Authentication Methods."""
     auth_config = m.OracleWms.AuthSettings(
         method=c.OracleWms.OracleWMSAuthMethod.BASIC,
-        username=getattr(config, "username", "invalid"),
-        password=getattr(config, "password", "invalid"),
+        username=getattr(settings, "username", "invalid"),
+        password=getattr(settings, "password", "invalid"),
     )
     auth_config.validate_business_rules()
     authenticator = FlextOracleWmsAuthenticator(auth_config)
@@ -246,7 +246,7 @@ def showcase_9_cache_management(client: FlextOracleWmsClient) -> None:
 
 def showcase_10_enterprise_features(
     _client: FlextOracleWmsClient,
-    config: FlextOracleWmsClientSettings,
+    settings: FlextOracleWmsClientSettings,
 ) -> None:
     """Feature 10: Enterprise Features."""
 
@@ -254,17 +254,17 @@ def showcase_10_enterprise_features(
 def main() -> int:
     """Main showcase execution."""
     try:
-        config = load_config_from_environment()
-        client = showcase_1_client_initialization(config)
+        settings = load_config_from_environment()
+        client = showcase_1_client_initialization(settings)
         entities = showcase_2_entity_discovery(client)
         showcase_3_data_retrieval(client, entities)
-        showcase_4_authentication(config)
+        showcase_4_authentication(settings)
         showcase_5_api_catalog(client)
         showcase_6_error_handling(client)
         showcase_7_health_monitoring(client)
         showcase_8_performance_tracking(client, entities)
         showcase_9_cache_management(client)
-        showcase_10_enterprise_features(client, config)
+        showcase_10_enterprise_features(client, settings)
         client.stop()
     except (RuntimeError, OSError, ValueError):
         traceback.print_exc()

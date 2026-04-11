@@ -12,7 +12,7 @@ from flext_oracle_wms import FlextOracleWmsSettings, FlextOracleWmsUtilitiesClie
 
 def test_real_connection() -> None:
     """Test client structural setup with testing_config."""
-    config = FlextOracleWmsSettings.testing_config()
-    client = FlextOracleWmsUtilitiesClient.Client(config)
-    assert client.config is config
+    settings = FlextOracleWmsSettings.testing_config()
+    client = FlextOracleWmsUtilitiesClient.Client(settings)
+    assert client.settings is settings
     client.discover_entities()

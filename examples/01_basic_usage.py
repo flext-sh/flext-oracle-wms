@@ -54,12 +54,12 @@ def setup_client_config() -> None:
     with environment variables and parameter overrides.
     """
     container = FlextContainer.fetch_global()
-    config = FlextOracleWmsSettings(
+    settings = FlextOracleWmsSettings(
         base_url=os.getenv("FLEXT_ORACLE_WMS_BASE_URL", "https://wms.oraclecloud.com"),
         username=os.getenv("FLEXT_ORACLE_WMS_USERNAME", ""),
         password=os.getenv("FLEXT_ORACLE_WMS_PASSWORD", ""),
     )
-    _ = container.register("FlextOracleWmsSettings", config)
+    _ = container.register("FlextOracleWmsSettings", settings)
 
 
 def discover_wms_entities(
@@ -141,7 +141,7 @@ def main() -> None:
 
     This function demonstrates:
     1. Configuration using singleton pattern
-    2. Client initialization with global config
+    2. Client initialization with global settings
     3. Entity discovery
     4. Data querying
     5. Error handling patterns

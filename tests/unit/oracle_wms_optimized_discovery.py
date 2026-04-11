@@ -33,7 +33,7 @@ class OptimizedOracleWmsDiscovery:
 
     def __init__(self) -> None:
         """Initialize with ADMINISTRATOR credentials."""
-        self.config = FlextOracleWmsClientSettings(
+        self.settings = FlextOracleWmsClientSettings(
             base_url="https://invalid.wms.ocs.oraclecloud.com",
             username="user",
             password="xyz",
@@ -43,7 +43,7 @@ class OptimizedOracleWmsDiscovery:
             verify_ssl=True,
             enable_logging=True,
         )
-        self.client = FlextOracleWmsUtilitiesClient.Client(config=self.config)
+        self.client = FlextOracleWmsUtilitiesClient.Client(settings=self.settings)
         self.priority_entities: set[str] = {
             "company",
             "facility",
@@ -466,9 +466,9 @@ class OptimizedOracleWmsDiscovery:
             "discovery_mode": "OPTIMIZED_ADMINISTRATOR_MODE",
             "total_high_value_entities": len(self.high_value_entities),
             "schemas_generated": len(self.complete_schemas),
-            "oracle_wms_environment": str(self.config.base_url),
-            "oracle_wms_base_url": str(self.config.base_url),
-            "api_version": str(self.config.api_version),
+            "oracle_wms_environment": str(self.settings.base_url),
+            "oracle_wms_base_url": str(self.settings.base_url),
+            "api_version": str(self.settings.api_version),
             "high_value_entities": list(self.high_value_entities.keys()),
         }
         summary_file = results_dir / f"discovery_summary_{timestamp}.json"

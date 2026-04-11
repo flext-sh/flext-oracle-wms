@@ -28,14 +28,14 @@ def demonstrate_singleton_config() -> None:
     """Demonstrate Oracle WMS configuration singleton usage with dynamic parameters."""
     logger.info("=== Oracle WMS Configuration Singleton Demo ===")
     logger.info("1. Using global singleton instance with defaults...")
-    config = FlextOracleWmsSettings()
-    logger.info("   Base URL: %s", config.base_url)
-    logger.info("   Config Type: %s", type(config).__name__)
+    settings = FlextOracleWmsSettings()
+    logger.info("   Base URL: %s", settings.base_url)
+    logger.info("   Config Type: %s", type(settings).__name__)
     logger.info("2. Updating global singleton with new parameters...")
     updated_config = FlextOracleWmsSettings(timeout=60, retry_attempts=5)
     logger.info("   Updated Timeout: %s", updated_config.timeout)
     logger.info("   Updated Max Retries: %s", updated_config.retry_attempts)
-    logger.info("   Same instance? %s", config is updated_config)
+    logger.info("   Same instance? %s", settings is updated_config)
     logger.info("3. Creating from environment with overrides...")
     env_config = FlextOracleWmsSettings(
         timeout=float(FlextOracleWmsConstants.OracleWms.DEFAULT_TIMEOUT * 3),
@@ -76,9 +76,9 @@ def demonstrate_singleton_config() -> None:
         logger.error("   Configuration validation failed: %s", validation_result.error)
     logger.info("8. Creating client with configuration...")
     try:
-        client = FlextOracleWmsClient(config=test_config)
-        logger.info("   Client created successfully with config")
-        logger.info("   Client config URL: %s", client.config.base_url)
+        client = FlextOracleWmsClient(settings=test_config)
+        logger.info("   Client created successfully with settings")
+        logger.info("   Client settings URL: %s", client.settings.base_url)
     except (RuntimeError, OSError, ValueError):
         logger.exception("   Failed to create client")
     logger.info("=== Demo Complete ===")

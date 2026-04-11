@@ -16,26 +16,26 @@ class TestFlextOracleWmsSettings:
     """Test Oracle WMS settings configuration."""
 
     def test_config_creation_defaults(self) -> None:
-        """Test config creation with defaults."""
-        config = FlextOracleWmsSettings()
-        assert config.base_url == "http://localhost:8080"
-        assert config.username == ""
-        assert config.password == ""
+        """Test settings creation with defaults."""
+        settings = FlextOracleWmsSettings()
+        assert settings.base_url == "http://localhost:8080"
+        assert settings.username == ""
+        assert settings.password == ""
 
     def test_config_creation_custom(self) -> None:
-        """Test config creation with custom values."""
-        config = FlextOracleWmsSettings(
+        """Test settings creation with custom values."""
+        settings = FlextOracleWmsSettings(
             base_url="https://test.wms.oraclecloud.com",
             username="test_user",
             password="test_password",
             timeout=30,
             retry_attempts=5,
         )
-        assert config.base_url == "https://test.wms.oraclecloud.com"
-        assert config.username == "test_user"
-        assert config.password == "test_password"
-        assert config.timeout == 30
-        assert config.retry_attempts == 5
+        assert settings.base_url == "https://test.wms.oraclecloud.com"
+        assert settings.username == "test_user"
+        assert settings.password == "test_password"
+        assert settings.timeout == 30
+        assert settings.retry_attempts == 5
 
     def test_config_timeout_bounds(self) -> None:
         """Test timeout validation bounds."""
@@ -50,13 +50,13 @@ class TestFlextOracleWmsSettings:
             FlextOracleWmsSettings(retry_attempts=-1)
 
     def test_validate_config_success(self) -> None:
-        """Test validate_config returns success for valid config."""
-        config = FlextOracleWmsSettings(timeout=30, retry_attempts=3)
-        result = config.validate_config()
+        """Test validate_config returns success for valid settings."""
+        settings = FlextOracleWmsSettings(timeout=30, retry_attempts=3)
+        result = settings.validate_config()
         assert result.success
 
     def test_testing_config_factory(self) -> None:
         """Test testing_config factory method."""
-        config = FlextOracleWmsSettings.testing_config()
-        assert config.base_url == "https://test-wms.example.com"
-        assert config.username == "test_user"
+        settings = FlextOracleWmsSettings.testing_config()
+        assert settings.base_url == "https://test-wms.example.com"
+        assert settings.username == "test_user"

@@ -259,7 +259,7 @@ class TestComponentName:
     def test_basic_functionality(self):
         """Test basic functionality with clear assertions."""
         # Arrange
-        config = FlextOracleWmsClientSettings(...)
+        settings = FlextOracleWmsClientSettings(...)
 
         # Act
         result = component.operation()

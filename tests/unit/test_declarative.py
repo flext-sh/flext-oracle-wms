@@ -47,11 +47,11 @@ def oracle_wms_client(
     env_config: t.ContainerMapping,
 ) -> Generator[FlextOracleWmsUtilitiesClient.Client]:
     """Fixture that provides configured Oracle WMS client."""
-    config = FlextOracleWmsClientSettings.model_validate({
+    settings = FlextOracleWmsClientSettings.model_validate({
         **env_config,
         "api_version": "LGF_V10",
     })
-    client = FlextOracleWmsUtilitiesClient.Client(config)
+    client = FlextOracleWmsUtilitiesClient.Client(settings)
     start_result = client.start()
     if not start_result.success:
         pytest.fail(f"Failed to start Oracle WMS client: {start_result.error}")
@@ -83,17 +83,17 @@ class TestOracleWmsDeclarativeIntegration:
         env_config: t.ContainerMapping,
     ) -> None:
         """Test client configuration and initialization."""
-        config = u.OracleWms.Tests.build_client_settings(
+        settings = u.OracleWms.Tests.build_client_settings(
             env_config,
             c.OracleWms.WmsApiVersion.V1,
         )
-        assert config.base_url.startswith("https://")
-        assert config.username
-        assert config.password
-        assert config.timeout > 0
-        assert config.max_retries > 0
-        client = FlextOracleWmsUtilitiesClient.Client(config)
-        assert client.config == config
+        assert settings.base_url.startswith("https://")
+        assert settings.username
+        assert settings.password
+        assert settings.timeout > 0
+        assert settings.max_retries > 0
+        client = FlextOracleWmsUtilitiesClient.Client(settings)
+        assert client.settings == settings
         start_result = client.start()
         assert start_result.success, f"Client start failed: {start_result.error}"
         stop_result = client.stop()

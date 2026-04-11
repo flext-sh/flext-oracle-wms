@@ -44,7 +44,7 @@ class OracleWmsCompleteDiscovery:
 
     def __init__(self) -> None:
         """Initialize with ADMINISTRATOR credentials."""
-        self.config: FlextOracleWmsClientSettings = FlextOracleWmsClientSettings(
+        self.settings: FlextOracleWmsClientSettings = FlextOracleWmsClientSettings(
             base_url="https://invalid.wms.ocs.oraclecloud.com",
             username="user",
             password="xyz",
@@ -55,13 +55,13 @@ class OracleWmsCompleteDiscovery:
             enable_logging=True,
         )
         auth_settings = m.OracleWms.AuthSettings(
-            username=self.config.username,
-            password=self.config.password,
+            username=self.settings.username,
+            password=self.settings.password,
         )
         _auth_result = FlextOracleWmsUtilitiesClient.Client.from_auth_settings(
             auth_settings
         )
-        self.client = FlextOracleWmsUtilitiesClient.Client(config=self.config)
+        self.client = FlextOracleWmsUtilitiesClient.Client(settings=self.settings)
         self.discovered_entities: MutableSequence[str] = []
         self.entity_metadata: t.MutableContainerMapping = {}
         self.complete_schemas: t.MutableContainerMapping = {}
@@ -564,8 +564,8 @@ class OracleWmsCompleteDiscovery:
                 if isinstance(meta, dict) and meta.get("has_data")
             ]),
             "schemas_generated": len(self.complete_schemas),
-            "oracle_wms_base_url": self.config.base_url,
-            "api_version": self.config.api_version,
+            "oracle_wms_base_url": self.settings.base_url,
+            "api_version": self.settings.api_version,
             "discovery_mode": "COMPLETE_ADMINISTRATOR_MODE",
         }
         summary_file = results_dir / f"discovery_summary_{timestamp}.json"

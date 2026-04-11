@@ -141,12 +141,12 @@ def create_demo_config() -> FlextOracleWmsClientSettings:
 
 
 def validate_configuration(
-    config: FlextOracleWmsClientSettings,
+    settings: FlextOracleWmsClientSettings,
 ) -> dict[str, t.NormalizedValue]:
     """Validate Oracle WMS client configuration.
 
     Args:
-      config: Oracle WMS client configuration to validate
+      settings: Oracle WMS client configuration to validate
 
     Returns:
       Dictionary containing validation results
@@ -154,30 +154,30 @@ def validate_configuration(
     """
     errors: list[str] = []
     warnings: list[str] = []
-    if not config.base_url:
+    if not settings.base_url:
         errors.append("Base URL is required")
-    elif not config.base_url.startswith("https://"):
+    elif not settings.base_url.startswith("https://"):
         warnings.append("Base URL should use HTTPS for security")
-    if not config.username or not config.password:
+    if not settings.username or not settings.password:
         errors.append("Username and password are required")
     min_timeout_seconds = c.OracleWms.DEFAULT_TIMEOUT // 3
-    if config.timeout <= 0:
+    if settings.timeout <= 0:
         errors.append("Timeout must be positive")
-    elif config.timeout < min_timeout_seconds:
+    elif settings.timeout < min_timeout_seconds:
         warnings.append("Timeout less than 10 seconds may cause issues")
     max_retries_warning_threshold = c.OracleWms.DEFAULT_MAX_RETRIES * 3
-    if config.max_retries < 0:
+    if settings.max_retries < 0:
         errors.append("Max retries cannot be negative")
-    elif config.max_retries > max_retries_warning_threshold:
+    elif settings.max_retries > max_retries_warning_threshold:
         warnings.append("High retry count may cause delays")
     config_summary: dict[str, t.NormalizedValue] = {
-        "base_url": config.base_url,
-        "username": config.username,
-        "api_version": config.api_version,
-        "timeout": config.timeout,
-        "max_retries": config.max_retries,
-        "verify_ssl": config.verify_ssl,
-        "enable_logging": config.enable_logging,
+        "base_url": settings.base_url,
+        "username": settings.username,
+        "api_version": settings.api_version,
+        "timeout": settings.timeout,
+        "max_retries": settings.max_retries,
+        "verify_ssl": settings.verify_ssl,
+        "enable_logging": settings.enable_logging,
     }
     validation_results: dict[str, t.NormalizedValue] = {
         "valid": not errors,
@@ -189,12 +189,12 @@ def validate_configuration(
 
 
 def test_configuration(
-    config: FlextOracleWmsClientSettings,
+    settings: FlextOracleWmsClientSettings,
 ) -> dict[str, t.NormalizedValue]:
     """Test Oracle WMS configuration by attempting connection.
 
     Args:
-      config: Configuration to test
+      settings: Configuration to test
 
     Returns:
       Dictionary with test results
@@ -206,7 +206,7 @@ def test_configuration(
         "error": None,
         "entities_discovered": 0,
     }
-    client = FlextOracleWmsClient(config)
+    client = FlextOracleWmsClient(settings)
     try:
         client.start()
         test_results["connection_success"] = True

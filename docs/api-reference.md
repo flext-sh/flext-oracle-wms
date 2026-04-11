@@ -35,8 +35,8 @@ Main client interface for Oracle WMS integration.
 from flext_oracle_wms import FlextOracleWmsClient, FlextOracleWmsModuleSettings
 
 # Initialize client
-config = FlextOracleWmsModuleSettings.for_testing()
-client = FlextOracleWmsClient(config)
+settings = FlextOracleWmsModuleSettings.for_testing()
+client = FlextOracleWmsClient(settings)
 ```
 
 #### Methods
@@ -77,7 +77,7 @@ Configuration class for Oracle WMS connection settings.
 Returns test configuration with fake URLs.
 
 ```python
-config = FlextOracleWmsModuleSettings.for_testing()
+settings = FlextOracleWmsModuleSettings.for_testing()
 # Uses "https://test.example.com" as base URL
 ```
 

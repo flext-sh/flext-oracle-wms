@@ -12,7 +12,8 @@ from typing import Self
 from flext_api import FlextApiClient, FlextApiModels, FlextApiSettings, FlextApiTypes
 from pydantic import ValidationError
 
-from flext_oracle_wms import r, t, u
+from flext_core import r, u
+from flext_oracle_wms.typings import t
 
 
 class FlextOracleWmsUtilitiesHttpClient:
@@ -192,7 +193,7 @@ class FlextOracleWmsUtilitiesHttpClient:
         def _ensure_client(self) -> None:
             """Ensure Oracle WMS HTTP client is initialized using FLEXT delegation."""
             if self._client is None:
-                config = FlextApiSettings(
+                settings = FlextApiSettings(
                     base_url=self.base_url,
                     timeout=self.timeout,
                     headers=dict(self.default_headers),
@@ -202,7 +203,7 @@ class FlextOracleWmsUtilitiesHttpClient:
                     log_requests=False,
                     log_responses=False,
                 )
-                self._client = FlextApiClient(config=config)
+                self._client = FlextApiClient(settings=settings)
 
         def _execute_request(
             self,

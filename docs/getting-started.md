@@ -57,14 +57,14 @@ export FLEXT_ORACLE_WMS_PASSWORD="test_password"
 from flext_oracle_wms import FlextOracleWmsClient, FlextOracleWmsModuleSettings
 
 # Using test configuration (not real Oracle WMS)
-config = FlextOracleWmsModuleSettings.for_testing()
-print(f"Test Base URL: {config.oracle_wms_base_url}")
+settings = FlextOracleWmsModuleSettings.for_testing()
+print(f"Test Base URL: {settings.oracle_wms_base_url}")
 
 # Test client structure (not real connectivity)
-with FlextOracleWmsClient(config) as client:
+with FlextOracleWmsClient(settings) as client:
     try:
         connection_result = client.test_connection()
-        print("Connection test completed (expected to fail with test config)")
+        print("Connection test completed (expected to fail with test settings)")
     except Exception as e:
         print(f"Expected network error: {str(e)[:100]}...")
 ```

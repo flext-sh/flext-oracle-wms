@@ -45,7 +45,7 @@ The source code follows Clean Architecture principles with clear separation of c
 src/flext_oracle_wms/
 ├── __init__.py              # Public API gateway with comprehensive exports
 ├── client.py                # Primary client interface for Oracle WMS operations
-├── config.py
+├── settings.py
 ├── exceptions.py           # Comprehensive error hierarchy for Oracle WMS
 ├── constants.py            # Oracle WMS constants, enums, and defaults
 ├── types.py
@@ -94,14 +94,14 @@ src/flext_oracle_wms/
 from flext_oracle_wms import FlextOracleWmsClient, FlextOracleWmsClientSettings
 
 # Type-safe configuration
-config = FlextOracleWmsClientSettings(
+settings = FlextOracleWmsClientSettings(
     base_url="https://your-wms.oraclecloud.com",
     username="your_username",
     password="your_password",
 )
 
 # Enterprise client with comprehensive error handling
-client = FlextOracleWmsClient(config)
+client = FlextOracleWmsClient(settings)
 result = client.discover_entities()
 
 # Railway-oriented programming with r
@@ -118,7 +118,7 @@ else:
 from flext_oracle_wms import FlextOracleWmsClientSettings
 
 # Environment-driven configuration with validation
-config = FlextOracleWmsClientSettings(
+settings = FlextOracleWmsClientSettings(
     base_url=os.getenv("FLEXT_ORACLE_WMS_BASE_URL"),
     username=os.getenv("FLEXT_ORACLE_WMS_USERNAME"),
     password=os.getenv("FLEXT_ORACLE_WMS_PASSWORD"),

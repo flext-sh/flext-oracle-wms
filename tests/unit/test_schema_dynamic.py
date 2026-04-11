@@ -21,7 +21,7 @@ class Testc:
         assert c.OracleWms.FLEXT_WMS_VERSION
 
     def test_api_config(self) -> None:
-        """Test API config dict is populated."""
+        """Test API settings dict is populated."""
         cfg = c.OracleWms.API_CONFIG
         assert "version_default" in cfg
         assert "base_url_default" in cfg
@@ -29,7 +29,7 @@ class Testc:
         assert "max_retries" in cfg
 
     def test_processing_config(self) -> None:
-        """Test processing config dict is populated."""
+        """Test processing settings dict is populated."""
         cfg = c.OracleWms.PROCESSING_CONFIG
         assert "default_batch_size" in cfg
         assert "max_batch_size" in cfg

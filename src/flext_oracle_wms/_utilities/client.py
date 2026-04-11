@@ -17,16 +17,13 @@ from flext_api import (
 )
 from pydantic import BaseModel, ValidationError
 
-from flext_core import u
-from flext_oracle_wms import (
-    FlextOracleWmsClientSettings,
-    FlextOracleWmsSettings,
-    FlextOracleWmsUtilitiesAuth,
-    c,
-    m,
-    r,
-    t,
-)
+from flext_core import r, u
+from flext_oracle_wms._utilities.auth import FlextOracleWmsUtilitiesAuth
+from flext_oracle_wms.client_settings import FlextOracleWmsClientSettings
+from flext_oracle_wms.constants import c
+from flext_oracle_wms.models import m
+from flext_oracle_wms.settings import FlextOracleWmsSettings
+from flext_oracle_wms.typings import t
 
 HTTP_BAD_REQUEST_THRESHOLD = 400
 
@@ -61,16 +58,18 @@ class FlextOracleWmsUtilitiesClient:
             })
             return r[FlextOracleWmsUtilitiesClient.Client].ok(cls(resolved_settings))
 
-        def __init__(self, config: FlextOracleWmsSettings | None = None) -> None:
+        def __init__(self, settings: FlextOracleWmsSettings | None = None) -> None:
             """Initialize client with strict settings resolution."""
             resolved_config = (
-                config if config is not None else FlextOracleWmsSettings.fetch_global()
+                settings
+                if settings is not None
+                else FlextOracleWmsSettings.fetch_global()
             )
-            self.config: FlextOracleWmsSettings = resolved_config
-            default_headers = self._build_default_headers(self.config)
+            self.settings: FlextOracleWmsSettings = resolved_config
+            default_headers = self._build_default_headers(self.settings)
             self._api_config = FlextApiSettings.model_validate({
-                "base_url": self.config.base_url,
-                "timeout": int(self.config.timeout),
+                "base_url": self.settings.base_url,
+                "timeout": int(self.settings.timeout),
                 "headers": default_headers,
                 "default_headers": default_headers,
             })
@@ -79,22 +78,22 @@ class FlextOracleWmsUtilitiesClient:
             self._started = False
 
         @staticmethod
-        def _build_default_headers(config: FlextOracleWmsSettings) -> t.StrMapping:
+        def _build_default_headers(settings: FlextOracleWmsSettings) -> t.StrMapping:
             """Build default request headers from Oracle WMS auth settings."""
-            if not config.username and not config.password:
+            if not settings.username and not settings.password:
                 return {}
             auth_settings = m.OracleWms.AuthSettings(
                 method=str(
                     getattr(
-                        config,
+                        settings,
                         "auth_method",
                         c.OracleWms.OracleWMSAuthMethod.BASIC,
                     )
                 ),
-                username=config.username or None,
-                password=config.password or None,
-                oauth2_client_id=getattr(config, "oauth2_client_id", None),
-                oauth2_client_secret=getattr(config, "oauth2_client_secret", None),
+                username=settings.username or None,
+                password=settings.password or None,
+                oauth2_client_id=getattr(settings, "oauth2_client_id", None),
+                oauth2_client_secret=getattr(settings, "oauth2_client_secret", None),
             )
             authenticator = FlextOracleWmsUtilitiesAuth.Authenticator(auth_settings)
             auth_headers = authenticator.get_auth_headers()
@@ -105,7 +104,7 @@ class FlextOracleWmsUtilitiesClient:
 
         def _create_api_client(self) -> FlextApiClient:
             """Create a configured API client for Oracle WMS requests."""
-            return FlextApiClient(config=self._api_config)
+            return FlextApiClient(settings=self._api_config)
 
         @staticmethod
         def _decode_response_model[T: BaseModel](
@@ -261,7 +260,7 @@ class FlextOracleWmsUtilitiesClient:
 
         def start(self) -> r[bool]:
             """Start the Oracle WMS client after validating runtime settings."""
-            validation_result = self.config.validate_config()
+            validation_result = self.settings.validate_config()
             if validation_result.failure:
                 return r[bool].fail(
                     validation_result.error or "Oracle WMS settings are invalid",
@@ -306,7 +305,7 @@ class FlextOracleWmsUtilitiesClient:
             request = FlextApiModels.Api.HttpRequest(
                 method=method,
                 url=path,
-                timeout=self.config.timeout,
+                timeout=self.settings.timeout,
                 headers=dict(headers) if headers is not None else {},
                 query_params=params or {},
                 body=body or {},

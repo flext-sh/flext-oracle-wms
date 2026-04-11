@@ -34,7 +34,7 @@ class Testc:
         assert api["max_retries"] == 3
 
     def test_processing_config(self) -> None:
-        """Test processing config dict is populated."""
+        """Test processing settings dict is populated."""
         proc = c.OracleWms.PROCESSING_CONFIG
         assert "default_batch_size" in proc
         assert "max_batch_size" in proc
@@ -91,10 +91,10 @@ class Testc:
     def test_nested_api_constants(self) -> None:
         """Test nested Api class via CONFIG dict."""
         api = c.Api
-        config = api.CONFIG
-        assert "default_timeout" in config
-        assert "min_http_status_code" in config
-        assert "max_http_status_code" in config
+        settings = api.CONFIG
+        assert "default_timeout" in settings
+        assert "min_http_status_code" in settings
+        assert "max_http_status_code" in settings
 
     def test_entity_type_enum(self) -> None:
         """Test WmsEntityType enum."""

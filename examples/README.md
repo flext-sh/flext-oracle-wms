@@ -75,14 +75,14 @@ This directory contains comprehensive examples demonstrating Oracle WMS Cloud in
 from flext_oracle_wms import FlextOracleWmsClient, FlextOracleWmsClientSettings
 
 # Configure Oracle WMS connection
-config = FlextOracleWmsClientSettings(
+settings = FlextOracleWmsClientSettings(
     base_url="https://your-wms-instance.oraclecloud.com",
     username="your_username",
     password="your_password",
 )
 
 # Initialize client
-client = FlextOracleWmsClient(config)
+client = FlextOracleWmsClient(settings)
 
 # Discover available entities
 result = client.discover_entities()

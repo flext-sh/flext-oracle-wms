@@ -160,42 +160,42 @@ class TestsFlextOracleWmsUtilities(FlextTestsUtilities, FlextOracleWmsUtilities)
                 cls,
                 start_path: Path,
             ) -> r[TestsFlextOracleWmsTypes.OracleWms.Tests.EnvConfig]:
-                """Load declarative integration config from the nearest `.env` file."""
+                """Load declarative integration settings from the nearest `.env` file."""
                 env_path = cls.find_env_file(start_path)
                 if env_path is None:
                     return r[TestsFlextOracleWmsTypes.OracleWms.Tests.EnvConfig].fail(
                         "No .env file found for Oracle WMS integration tests",
                     )
-                config: dict[str, str] = {}
+                settings: dict[str, str] = {}
                 try:
                     with env_path.open(encoding="utf-8") as file_handle:
                         for raw_line in file_handle:
                             line = raw_line.strip()
                             if line and not line.startswith("#") and "=" in line:
                                 key, value = line.split("=", 1)
-                                config[key.strip()] = value.strip()
+                                settings[key.strip()] = value.strip()
                 except (OSError, ValueError, TypeError) as exc:
                     return r[TestsFlextOracleWmsTypes.OracleWms.Tests.EnvConfig].fail(
-                        f"Failed to load .env config: {exc}",
+                        f"Failed to load .env settings: {exc}",
                     )
-                base_url = config.get("ORACLE_WMS_BASE_URL", "")
+                base_url = settings.get("ORACLE_WMS_BASE_URL", "")
                 return r[TestsFlextOracleWmsTypes.OracleWms.Tests.EnvConfig].ok({
                     "base_url": base_url,
-                    "username": config.get("ORACLE_WMS_USERNAME"),
-                    "password": config.get("ORACLE_WMS_PASSWORD"),
+                    "username": settings.get("ORACLE_WMS_USERNAME"),
+                    "password": settings.get("ORACLE_WMS_PASSWORD"),
                     "environment": cls._resolve_environment_name(base_url),
                     "api_version": "LGF_V10",
-                    "timeout": cls.to_int(config.get("ORACLE_WMS_TIMEOUT", "30"), 30),
+                    "timeout": cls.to_int(settings.get("ORACLE_WMS_TIMEOUT", "30"), 30),
                     "max_retries": cls.to_int(
-                        config.get("ORACLE_WMS_MAX_RETRIES", "3"),
+                        settings.get("ORACLE_WMS_MAX_RETRIES", "3"),
                         3,
                     ),
                     "verify_ssl": cls.to_bool(
-                        config.get("ORACLE_WMS_VERIFY_SSL", "true").lower() == "true",
+                        settings.get("ORACLE_WMS_VERIFY_SSL", "true").lower() == "true",
                         True,
                     ),
                     "enable_logging": cls.to_bool(
-                        config.get(
+                        settings.get(
                             "ORACLE_WMS_ENABLE_REQUEST_LOGGING",
                             "true",
                         ).lower()

@@ -24,8 +24,8 @@ class TestFlextOracleWmsClientCore:
 
     def test_client_initialization(self, mock_config: FlextOracleWmsSettings) -> None:
         client = FlextOracleWmsUtilitiesClient.Client(mock_config)
-        assert client.config == mock_config
-        assert client.config.base_url == mock_config.base_url
+        assert client.settings == mock_config
+        assert client.settings.base_url == mock_config.base_url
         assert client._client is not None
 
     def test_client_string_representation(
@@ -43,8 +43,8 @@ class TestFlextOracleWmsClientCore:
         mock_config: FlextOracleWmsSettings,
     ) -> None:
         client = FlextOracleWmsUtilitiesClient.Client(mock_config)
-        assert client.config.base_url == mock_config.base_url
-        assert client.config.timeout == mock_config.timeout
+        assert client.settings.base_url == mock_config.base_url
+        assert client.settings.timeout == mock_config.timeout
 
     def test_client_start_success(self, mock_config: FlextOracleWmsSettings) -> None:
         client = FlextOracleWmsUtilitiesClient.Client(mock_config)
@@ -167,8 +167,8 @@ class TestFlextOracleWmsClientCore:
 
     def test_client_error_handling_none_config(self) -> None:
         client = FlextOracleWmsUtilitiesClient.Client(None)
-        assert client.config is not None
-        assert isinstance(client.config, FlextOracleWmsSettings)
+        assert client.settings is not None
+        assert isinstance(client.settings, FlextOracleWmsSettings)
 
 
 @pytest.mark.unit

@@ -39,63 +39,63 @@ class TestAuthenticationConfig:
 
     def test_basic_auth_config_creation(self) -> None:
         """Test creating basic auth configuration."""
-        config = m.OracleWms.AuthSettings(
+        settings = m.OracleWms.AuthSettings(
             method=c.OracleWms.OracleWMSAuthMethod.BASIC,
             username="test_user",
             password="test_password",
         )
-        assert config.method == c.OracleWms.OracleWMSAuthMethod.BASIC
-        assert config.username == "test_user"
-        assert config.password == "test_password"
+        assert settings.method == c.OracleWms.OracleWMSAuthMethod.BASIC
+        assert settings.username == "test_user"
+        assert settings.password == "test_password"
 
     def test_oauth2_auth_config_creation(self) -> None:
         """Test creating OAuth2 auth configuration."""
-        config = m.OracleWms.AuthSettings(
+        settings = m.OracleWms.AuthSettings(
             method=c.OracleWms.OracleWMSAuthMethod.OAUTH2,
             oauth2_client_id="client_id_123",
             oauth2_client_secret="client_secret_456",
         )
-        assert config.method == c.OracleWms.OracleWMSAuthMethod.OAUTH2
-        assert config.oauth2_client_id == "client_id_123"
-        assert config.oauth2_client_secret == "client_secret_456"
+        assert settings.method == c.OracleWms.OracleWMSAuthMethod.OAUTH2
+        assert settings.oauth2_client_id == "client_id_123"
+        assert settings.oauth2_client_secret == "client_secret_456"
 
     def test_config_validation_success_basic(self) -> None:
         """Test validate_business_rules succeeds for valid basic auth."""
-        config = m.OracleWms.AuthSettings(
+        settings = m.OracleWms.AuthSettings(
             method=c.OracleWms.OracleWMSAuthMethod.BASIC,
             username="test_user",
             password="test_password",
         )
-        result = config.validate_business_rules()
+        result = settings.validate_business_rules()
         assert result.success
 
     def test_config_validation_failure_basic_missing_credentials(self) -> None:
         """Test validate_business_rules fails for basic auth with no credentials."""
-        config = m.OracleWms.AuthSettings(
+        settings = m.OracleWms.AuthSettings(
             method=c.OracleWms.OracleWMSAuthMethod.BASIC,
         )
-        result = config.validate_business_rules()
+        result = settings.validate_business_rules()
         assert result.failure
         assert result.error is not None
         assert "username" in result.error.lower() or "password" in result.error.lower()
 
     def test_config_validation_failure_oauth2_missing_credentials(self) -> None:
         """Test validate_business_rules fails for oauth2 with no credentials."""
-        config = m.OracleWms.AuthSettings(
+        settings = m.OracleWms.AuthSettings(
             method=c.OracleWms.OracleWMSAuthMethod.OAUTH2,
         )
-        result = config.validate_business_rules()
+        result = settings.validate_business_rules()
         assert result.failure
         assert result.error is not None
 
     def test_config_defaults(self) -> None:
-        """Test config default values."""
-        config = m.OracleWms.AuthSettings()
-        assert config.method == c.OracleWms.OracleWMSAuthMethod.BASIC
-        assert config.username is None
-        assert config.password is None
-        assert config.oauth2_scope == "wms.read wms.write"
-        assert config.token_refresh_threshold == 300
+        """Test settings default values."""
+        settings = m.OracleWms.AuthSettings()
+        assert settings.method == c.OracleWms.OracleWMSAuthMethod.BASIC
+        assert settings.username is None
+        assert settings.password is None
+        assert settings.oauth2_scope == "wms.read wms.write"
+        assert settings.token_refresh_threshold == 300
 
 
 @pytest.mark.unit
@@ -103,55 +103,55 @@ class TestAuthenticator:
     """Test authenticator class."""
 
     def test_authenticator_creation(self) -> None:
-        """Test creating authenticator with config."""
-        config = m.OracleWms.AuthSettings(
+        """Test creating authenticator with settings."""
+        settings = m.OracleWms.AuthSettings(
             method=c.OracleWms.OracleWMSAuthMethod.BASIC,
             username="test_user",
             password="test_password",
         )
-        authenticator = FlextOracleWmsUtilitiesAuth.Authenticator(config)
-        assert authenticator.config == config
+        authenticator = FlextOracleWmsUtilitiesAuth.Authenticator(settings)
+        assert authenticator.settings == settings
 
     def test_authenticate_basic_success(self) -> None:
         """Test basic auth returns success token."""
-        config = m.OracleWms.AuthSettings(
+        settings = m.OracleWms.AuthSettings(
             method=c.OracleWms.OracleWMSAuthMethod.BASIC,
             username="test_user",
             password="test_password",
         )
-        authenticator = FlextOracleWmsUtilitiesAuth.Authenticator(config)
+        authenticator = FlextOracleWmsUtilitiesAuth.Authenticator(settings)
         result = authenticator.authenticate()
         assert result.success
         assert result.value == "dGVzdF91c2VyOnRlc3RfcGFzc3dvcmQ="
 
     def test_authenticate_oauth2_not_configured(self) -> None:
-        config = m.OracleWms.AuthSettings(
+        settings = m.OracleWms.AuthSettings(
             method=c.OracleWms.OracleWMSAuthMethod.OAUTH2,
             oauth2_client_id="id",
             oauth2_client_secret="secret",
         )
-        authenticator = FlextOracleWmsUtilitiesAuth.Authenticator(config)
+        authenticator = FlextOracleWmsUtilitiesAuth.Authenticator(settings)
         result = authenticator.authenticate()
         assert result.failure
         assert result.error == "OAuth2 not configured"
 
     def test_authenticate_basic_failure(self) -> None:
         """Test basic auth fails without credentials."""
-        config = m.OracleWms.AuthSettings(
+        settings = m.OracleWms.AuthSettings(
             method=c.OracleWms.OracleWMSAuthMethod.BASIC,
         )
-        authenticator = FlextOracleWmsUtilitiesAuth.Authenticator(config)
+        authenticator = FlextOracleWmsUtilitiesAuth.Authenticator(settings)
         result = authenticator.authenticate()
         assert result.failure
 
     def test_get_auth_headers_success(self) -> None:
         """Test get_auth_headers returns Authorization header."""
-        config = m.OracleWms.AuthSettings(
+        settings = m.OracleWms.AuthSettings(
             method=c.OracleWms.OracleWMSAuthMethod.BASIC,
             username="test_user",
             password="test_password",
         )
-        authenticator = FlextOracleWmsUtilitiesAuth.Authenticator(config)
+        authenticator = FlextOracleWmsUtilitiesAuth.Authenticator(settings)
         result = authenticator.get_auth_headers()
         assert result.success
         headers = result.value
@@ -160,19 +160,19 @@ class TestAuthenticator:
 
     def test_get_auth_headers_failure(self) -> None:
         """Test get_auth_headers fails without credentials."""
-        config = m.OracleWms.AuthSettings(
+        settings = m.OracleWms.AuthSettings(
             method=c.OracleWms.OracleWMSAuthMethod.BASIC,
         )
-        authenticator = FlextOracleWmsUtilitiesAuth.Authenticator(config)
+        authenticator = FlextOracleWmsUtilitiesAuth.Authenticator(settings)
         result = authenticator.get_auth_headers()
         assert result.failure
 
     def test_create_oracle_wms_client(self) -> None:
-        config = m.OracleWms.AuthSettings(
+        settings = m.OracleWms.AuthSettings(
             method=c.OracleWms.OracleWMSAuthMethod.BASIC,
             username="test_user",
             password="test_password",
         )
-        result = FlextOracleWmsUtilitiesClient.Client.from_auth_settings(config)
+        result = FlextOracleWmsUtilitiesClient.Client.from_auth_settings(settings)
         assert result.success
         assert isinstance(result.value, FlextOracleWmsUtilitiesClient.Client)

@@ -9,11 +9,9 @@ from __future__ import annotations
 from collections.abc import Sequence
 
 from flext_core import r
-from flext_oracle_wms import (
-    FlextOracleWmsProtocols as p,
-    c,
-    t,
-)
+from flext_oracle_wms.constants import c
+from flext_oracle_wms.protocols import FlextOracleWmsProtocols as p
+from flext_oracle_wms.typings import t
 
 DISCOVERY_SUCCESS = "discovery_success"
 DISCOVERY_FAILURE = "discovery_failure"

@@ -31,7 +31,7 @@ def mock_config() -> FlextOracleWmsSettings:
 
 @pytest.fixture
 def real_config(load_test_env: bool) -> FlextOracleWmsSettings:
-    """Real config from .env - EXACTLY like working basic_usage.py example."""
+    """Real settings from .env - EXACTLY like working basic_usage.py example."""
     _ = load_test_env
     settings_result = u.OracleWms.Tests.create_real_settings()
     if settings_result.failure:
@@ -51,13 +51,13 @@ def sample_entity_data() -> t.ContainerMapping:
     return u.OracleWms.Tests.sample_entity_data()
 
 
-def pytest_configure(config: pytest.Config) -> None:
+def pytest_configure(settings: pytest.Config) -> None:
     """Configure pytest markers for test categorization."""
-    config.addinivalue_line("markers", "unit: Unit tests (fast)")
-    config.addinivalue_line(
+    settings.addinivalue_line("markers", "unit: Unit tests (fast)")
+    settings.addinivalue_line(
         "markers",
         "integration: Integration tests with real Oracle",
     )
-    config.addinivalue_line("markers", "real: Tests using real .env credentials")
-    config.addinivalue_line("markers", "mock: Tests using mock data only")
-    config.addinivalue_line("markers", "slow: Slow tests (may timeout)")
+    settings.addinivalue_line("markers", "real: Tests using real .env credentials")
+    settings.addinivalue_line("markers", "mock: Tests using mock data only")
+    settings.addinivalue_line("markers", "slow: Slow tests (may timeout)")

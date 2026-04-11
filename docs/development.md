@@ -214,8 +214,8 @@ Tests currently use fake URLs and expect failures:
 
 ```python
 def test_real_connection():
-    config = FlextOracleWmsModuleSettings.for_testing()  # Uses test.example.com
-    # Connection tests expect network failures with test config
+    settings = FlextOracleWmsModuleSettings.for_testing()  # Uses test.example.com
+    # Connection tests expect network failures with test settings
 ```
 
 ## Implementation Priorities

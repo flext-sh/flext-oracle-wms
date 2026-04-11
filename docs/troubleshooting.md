@@ -31,14 +31,14 @@ ______________________________________________________________________
 
 ### Connection Issues
 
-#### "Connection failed with test config"
+#### "Connection failed with test settings"
 
 **Symptom**: Connection tests fail with network errors
 
 ```python
 # Expected behavior with current implementation
-config = FlextOracleWmsModuleSettings.for_testing()
-client = FlextOracleWmsClient(config)
+settings = FlextOracleWmsModuleSettings.for_testing()
+client = FlextOracleWmsClient(settings)
 result = client.test_connection()  # Expected to fail
 ```
 
@@ -114,7 +114,7 @@ assert error.field == "username"  # Now works with MyPy
 ```python
 from flext_oracle_wms import FlextOracleWmsModuleSettings, FlextOracleWmsApiVersion
 
-config = FlextOracleWmsModuleSettings(
+settings = FlextOracleWmsModuleSettings(
     api_version=FlextOracleWmsApiVersion.V1,  # Use enum, not string
     oracle_wms_timeout=30,  # Use int, not float
 )
@@ -158,7 +158,7 @@ import httpx  # FLEXT compliance violation
 
 ```python
 def test_real_connection():
-    # This test expects to fail with test config
+    # This test expects to fail with test settings
     try:
         result = client.test_connection()
     except Exception:
