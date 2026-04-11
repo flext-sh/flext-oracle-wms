@@ -17,6 +17,7 @@ if _t.TYPE_CHECKING:
     from flext_core.exceptions import e
     from flext_core.handlers import h
     from flext_core.mixins import x
+    from flext_core.models import m
     from flext_core.result import r
     from flext_core.service import s
     from flext_oracle_wms._utilities.auth import FlextOracleWmsUtilitiesAuth
@@ -31,10 +32,7 @@ if _t.TYPE_CHECKING:
     )
     from flext_oracle_wms.api import FlextOracleWmsApi
     from flext_oracle_wms.client_settings import FlextOracleWmsClientSettings
-    from flext_oracle_wms.constants import (
-        FlextOracleWmsConstants,
-        FlextOracleWmsConstants as c,
-    )
+    from flext_oracle_wms.constants import FlextOracleWmsConstants, c
     from flext_oracle_wms.errors import (
         FlextOracleWmsApiError,
         FlextOracleWmsAuthenticationError,
@@ -52,17 +50,11 @@ if _t.TYPE_CHECKING:
         FlextOracleWmsShipmentError,
         FlextOracleWmsValidationError,
     )
-    from flext_oracle_wms.models import FlextOracleWmsModels, FlextOracleWmsModels as m
-    from flext_oracle_wms.protocols import (
-        FlextOracleWmsProtocols,
-        FlextOracleWmsProtocols as p,
-    )
+    from flext_oracle_wms.models import FlextOracleWmsModels
+    from flext_oracle_wms.protocols import FlextOracleWmsProtocols, p
     from flext_oracle_wms.settings import FlextOracleWmsSettings
-    from flext_oracle_wms.typings import FlextOracleWmsTypes, FlextOracleWmsTypes as t
-    from flext_oracle_wms.utilities import (
-        FlextOracleWmsUtilities,
-        FlextOracleWmsUtilities as u,
-    )
+    from flext_oracle_wms.typings import FlextOracleWmsTypes, t
+    from flext_oracle_wms.utilities import FlextOracleWmsUtilities, u
 _LAZY_IMPORTS = merge_lazy_imports(
     ("._utilities",),
     build_lazy_import_map(
@@ -79,7 +71,10 @@ _LAZY_IMPORTS = merge_lazy_imports(
             ),
             ".api": ("FlextOracleWmsApi",),
             ".client_settings": ("FlextOracleWmsClientSettings",),
-            ".constants": ("FlextOracleWmsConstants",),
+            ".constants": (
+                "FlextOracleWmsConstants",
+                "c",
+            ),
             ".errors": (
                 "FlextOracleWmsApiError",
                 "FlextOracleWmsAuthenticationError",
@@ -98,23 +93,26 @@ _LAZY_IMPORTS = merge_lazy_imports(
                 "FlextOracleWmsValidationError",
             ),
             ".models": ("FlextOracleWmsModels",),
-            ".protocols": ("FlextOracleWmsProtocols",),
+            ".protocols": (
+                "FlextOracleWmsProtocols",
+                "p",
+            ),
             ".settings": ("FlextOracleWmsSettings",),
-            ".typings": ("FlextOracleWmsTypes",),
-            ".utilities": ("FlextOracleWmsUtilities",),
+            ".typings": (
+                "FlextOracleWmsTypes",
+                "t",
+            ),
+            ".utilities": (
+                "FlextOracleWmsUtilities",
+                "u",
+            ),
             "flext_core.decorators": ("d",),
             "flext_core.exceptions": ("e",),
             "flext_core.handlers": ("h",),
             "flext_core.mixins": ("x",),
+            "flext_core.models": ("m",),
             "flext_core.result": ("r",),
             "flext_core.service": ("s",),
-        },
-        alias_groups={
-            ".constants": (("c", "FlextOracleWmsConstants"),),
-            ".models": (("m", "FlextOracleWmsModels"),),
-            ".protocols": (("p", "FlextOracleWmsProtocols"),),
-            ".typings": (("t", "FlextOracleWmsTypes"),),
-            ".utilities": (("u", "FlextOracleWmsUtilities"),),
         },
     ),
     exclude_names=(
@@ -128,6 +126,9 @@ _LAZY_IMPORTS = merge_lazy_imports(
     ),
     module_name=__name__,
 )
+
+
+install_lazy_exports(__name__, globals(), _LAZY_IMPORTS)
 
 __all__ = [
     "FlextOracleWmsApi",
@@ -179,6 +180,3 @@ __all__ = [
     "u",
     "x",
 ]
-
-
-install_lazy_exports(__name__, globals(), _LAZY_IMPORTS)
