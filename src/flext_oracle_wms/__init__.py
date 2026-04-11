@@ -17,7 +17,10 @@ if _t.TYPE_CHECKING:
     from flext_oracle_wms._utilities.auth import FlextOracleWmsUtilitiesAuth
     from flext_oracle_wms._utilities.client import FlextOracleWmsUtilitiesClient
     from flext_oracle_wms._utilities.discovery import FlextOracleWmsUtilitiesDiscovery
-    from flext_oracle_wms._utilities.filtering import FlextOracleWmsUtilitiesFiltering
+    from flext_oracle_wms._utilities.filtering import (
+        FlextOracleWmsOperatorFilter,
+        FlextOracleWmsUtilitiesFiltering,
+    )
     from flext_oracle_wms._utilities.http_client import (
         FlextOracleWmsUtilitiesHttpClient,
     )
@@ -139,6 +142,7 @@ __all__ = [
     "FlextOracleWmsExceptions",
     "FlextOracleWmsInventoryError",
     "FlextOracleWmsModels",
+    "FlextOracleWmsOperatorFilter",
     "FlextOracleWmsPickingError",
     "FlextOracleWmsProcessingError",
     "FlextOracleWmsProtocols",
