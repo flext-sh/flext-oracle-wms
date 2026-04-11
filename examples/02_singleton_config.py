@@ -12,7 +12,6 @@ from __future__ import annotations
 
 import os
 
-from flext_core import FlextLogger
 from flext_oracle_wms import (
     FlextOracleWmsConstants,
     FlextOracleWmsSettings,
@@ -21,7 +20,7 @@ from flext_oracle_wms import (
 
 FlextOracleWmsClient = FlextOracleWmsUtilitiesClient.Client
 
-logger = FlextLogger(__name__)
+logger = u.fetch_logger(__name__)
 
 
 def demonstrate_singleton_config() -> None:

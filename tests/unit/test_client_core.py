@@ -13,7 +13,7 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from flext_core import FlextLogger, r
+from flext_core import r
 from flext_oracle_wms import FlextOracleWmsSettings, FlextOracleWmsUtilitiesClient
 
 
@@ -175,6 +175,6 @@ class TestGetLogger:
     """Tests for FlextLogger utility within WMS package."""
 
     def test_get_logger_module_name(self) -> None:
-        FlextLogger("test_module")
-        logger_empty = FlextLogger("")
+        u.fetch_logger("test_module")
+        logger_empty = u.fetch_logger("")
         assert callable(logger_empty.info)

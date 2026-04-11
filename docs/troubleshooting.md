@@ -83,7 +83,7 @@ from flext_core import u
 from flext_core import s
 from flext_core import t
 from flext_core import
-logger = FlextLogger(__name__)
+logger = u.fetch_logger(__name__)
 ```
 
 ### Type Safety Issues
@@ -301,7 +301,7 @@ from flext_core import s
 from flext_core import t
 from flext_core import u
 
-logger = FlextLogger(__name__)
+logger = u.fetch_logger(__name__)
 logger.debug("Debug message")
 ```
 

@@ -17,7 +17,6 @@ from typing import ClassVar
 from dotenv import load_dotenv
 from pydantic import BaseModel, ConfigDict, Field
 
-from flext_core import FlextLogger
 from flext_oracle_wms import (
     FlextOracleWmsClientSettings,
     FlextOracleWmsConstants,
@@ -27,7 +26,7 @@ from flext_oracle_wms import (
 
 FlextOracleWmsClient = FlextOracleWmsUtilitiesClient.Client
 
-logger = FlextLogger(__name__)
+logger = u.fetch_logger(__name__)
 
 c = FlextOracleWmsConstants
 
@@ -112,7 +111,7 @@ def create_config_from_environment() -> FlextOracleWmsClientSettings:
         ]
         msg = f"Missing required environment variables: {', '.join(missing)}"
         raise ValueError(msg)
-    env_config = FlextOracleWmsClientSettings.get_global()
+    env_config = FlextOracleWmsClientSettings.fetch_global()
     if env_config.username and env_config.password:
         return env_config
     return FlextOracleWmsClientSettings()

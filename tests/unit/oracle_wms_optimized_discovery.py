@@ -19,11 +19,11 @@ from collections.abc import Mapping
 from datetime import UTC, datetime
 from pathlib import Path
 
-from flext_core import FlextLogger, r
+from flext_core import r
 from flext_oracle_wms import FlextOracleWmsClientSettings, FlextOracleWmsUtilitiesClient
 from tests import t
 
-logger = FlextLogger(__name__)
+logger = u.fetch_logger(__name__)
 
 _API_VERSION_LGF_V10 = "LGF_V10"
 

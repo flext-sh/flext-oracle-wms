@@ -12,7 +12,6 @@ from typing import Self
 from flext_api import FlextApiClient, FlextApiModels, FlextApiSettings, FlextApiTypes
 from pydantic import ValidationError
 
-from flext_core import FlextLogger
 from flext_oracle_wms import r, t
 
 
@@ -23,7 +22,7 @@ class FlextOracleWmsUtilitiesHttpClient:
         """Generic HTTP client using FLEXT delegation with railway-oriented programming."""
 
         HTTP_BAD_REQUEST_THRESHOLD = 400
-        logger = FlextLogger(__name__)
+        logger = u.fetch_logger(__name__)
 
         def __init__(
             self,

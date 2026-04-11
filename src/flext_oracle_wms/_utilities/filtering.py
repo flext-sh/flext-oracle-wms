@@ -10,7 +10,7 @@ from collections.abc import Mapping, MutableSequence, Sequence
 
 from pydantic import ValidationError
 
-from flext_core import FlextLogger, e, r
+from flext_core import e, r
 from flext_oracle_wms import (
     FlextOracleWmsDataValidationError as _FlextOracleWmsDataValidationError,
     FlextOracleWmsModels,
@@ -42,7 +42,7 @@ class FlextOracleWmsUtilitiesFiltering:
     class Filter:
         """Generic filter with functional composition and strict validation."""
 
-        logger = FlextLogger(__name__)
+        logger = u.fetch_logger(__name__)
 
         def __init__(
             self,

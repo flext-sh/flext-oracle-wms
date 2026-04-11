@@ -58,7 +58,7 @@ class FlextOracleWmsApi(s[None]):
             initial_context=None,
         )
         resolved_config = (
-            config if config is not None else FlextOracleWmsSettings.get_global()
+            config if config is not None else FlextOracleWmsSettings.fetch_global()
         )
         self._client = FlextOracleWmsUtilitiesClient.Client(config=resolved_config)
 

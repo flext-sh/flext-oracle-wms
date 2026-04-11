@@ -27,7 +27,7 @@ from pathlib import Path
 
 from dotenv import load_dotenv
 
-from flext_core import FlextContainer, FlextLogger, r
+from flext_core import FlextContainer, r
 from flext_oracle_wms import (
     FlextOracleWmsExceptions,
     FlextOracleWmsSettings,
@@ -39,7 +39,7 @@ FlextOracleWmsClient = FlextOracleWmsUtilitiesClient.Client
 
 MAX_ENTITIES_TO_SHOW = 5
 MAX_VALUE_DISPLAY_LENGTH = 50
-logger = FlextLogger(__name__)
+logger = u.fetch_logger(__name__)
 project_root = Path(__file__).parent.parent
 env_file = project_root / ".env"
 if env_file.exists():
@@ -52,7 +52,7 @@ def setup_client_config() -> None:
     This function demonstrates how to configure the global singleton
     with environment variables and parameter overrides.
     """
-    container = FlextContainer.get_global()
+    container = FlextContainer.fetch_global()
     config = FlextOracleWmsSettings(
         base_url=os.getenv("FLEXT_ORACLE_WMS_BASE_URL", "https://wms.oraclecloud.com"),
         username=os.getenv("FLEXT_ORACLE_WMS_USERNAME", ""),

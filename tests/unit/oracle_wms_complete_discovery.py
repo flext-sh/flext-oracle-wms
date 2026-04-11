@@ -19,7 +19,7 @@ from pathlib import Path
 
 from flext_api import FlextApiModels
 
-from flext_core import FlextLogger, r
+from flext_core import r
 from flext_oracle_wms import (
     FlextOracleWmsApi,
     FlextOracleWmsClientSettings,
@@ -27,7 +27,7 @@ from flext_oracle_wms import (
 )
 from tests import m, t
 
-logger = FlextLogger(__name__)
+logger = u.fetch_logger(__name__)
 
 # API category string constants (Oracle WMS LGF API category names)
 _CATEGORY_DATA_EXTRACT = "data_extract"

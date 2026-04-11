@@ -16,7 +16,7 @@ from pathlib import Path
 
 import pytest
 
-from flext_core import FlextLogger, r
+from flext_core import r
 from flext_oracle_wms import (
     FlextOracleWmsApi,
     FlextOracleWmsClientSettings,
@@ -24,7 +24,7 @@ from flext_oracle_wms import (
 )
 from tests import c, t, u
 
-logger = FlextLogger(__name__)
+logger = u.fetch_logger(__name__)
 
 
 @pytest.fixture

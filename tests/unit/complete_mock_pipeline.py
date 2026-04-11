@@ -19,10 +19,10 @@ from datetime import UTC, datetime
 from pathlib import Path
 from typing import cast
 
-from flext_core import FlextLogger, r
+from flext_core import r
 from tests import t
 
-logger = FlextLogger(__name__)
+logger = u.fetch_logger(__name__)
 
 
 def _extract_replication_methods(catalog: t.NormalizedValue) -> list[str]:

@@ -52,7 +52,7 @@ class FlextOracleWmsUtilitiesClient:
                 return r[FlextOracleWmsUtilitiesClient.Client].fail(
                     "Oracle WMS runtime client currently supports BASIC auth only"
                 )
-            base_settings = FlextOracleWmsSettings.get_global()
+            base_settings = FlextOracleWmsSettings.fetch_global()
             resolved_settings = FlextOracleWmsClientSettings.model_validate({
                 **base_settings.model_dump(),
                 "username": auth_settings.username or base_settings.username,
@@ -64,7 +64,7 @@ class FlextOracleWmsUtilitiesClient:
         def __init__(self, config: FlextOracleWmsSettings | None = None) -> None:
             """Initialize client with strict settings resolution."""
             resolved_config = (
-                config if config is not None else FlextOracleWmsSettings.get_global()
+                config if config is not None else FlextOracleWmsSettings.fetch_global()
             )
             self.config: FlextOracleWmsSettings = resolved_config
             default_headers = self._build_default_headers(self.config)

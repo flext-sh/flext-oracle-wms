@@ -35,7 +35,7 @@ from pathlib import Path
 
 from dotenv import load_dotenv
 
-from flext_core import FlextLogger, r
+from flext_core import r
 from flext_oracle_wms import (
     FlextOracleWmsApi,
     FlextOracleWmsClientSettings,
@@ -50,7 +50,7 @@ from flext_oracle_wms import (
 FlextOracleWmsAuthenticator = FlextOracleWmsUtilitiesAuth.Authenticator
 FlextOracleWmsClient = FlextOracleWmsUtilitiesClient.Client
 
-logger = FlextLogger(__name__)
+logger = u.fetch_logger(__name__)
 
 
 def load_config_from_environment() -> FlextOracleWmsClientSettings:
