@@ -4,7 +4,8 @@ from __future__ import annotations
 
 from typing import Annotated, ClassVar
 
-from pydantic import ConfigDict, Field
+from pydantic import Field
+from pydantic_settings import SettingsConfigDict
 
 from flext_oracle_wms import FlextOracleWmsSettings
 
@@ -12,7 +13,7 @@ from flext_oracle_wms import FlextOracleWmsSettings
 class FlextOracleWmsClientSettings(FlextOracleWmsSettings):
     """Settings contract consumed by FlextOracleWmsClient."""
 
-    model_config: ClassVar[ConfigDict] = ConfigDict(
+    model_config: ClassVar[SettingsConfigDict] = SettingsConfigDict(
         env_prefix="FLEXT_ORACLE_WMS_",
         extra="ignore",
     )
