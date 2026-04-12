@@ -264,7 +264,7 @@ class FlextOracleWmsModels(FlextModels):
         # =====================================================================
 
         class WarehouseLocation(BaseModel):
-            """Warehouse location value t.NormalizedValue."""
+            """Warehouse location value t.RecursiveContainer."""
 
             model_config: ClassVar[ConfigDict] = ConfigDict(frozen=True, extra="forbid")
 
@@ -279,7 +279,7 @@ class FlextOracleWmsModels(FlextModels):
                 return f"{self.zone}-{self.aisle}-{self.shelf}-{self.bin_}"
 
         class ApiCredentials(BaseModel):
-            """API credentials value t.NormalizedValue."""
+            """API credentials value t.RecursiveContainer."""
 
             model_config: ClassVar[ConfigDict] = ConfigDict(frozen=True, extra="forbid")
 

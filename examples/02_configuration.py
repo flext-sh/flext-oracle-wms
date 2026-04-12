@@ -142,7 +142,7 @@ def create_demo_config() -> FlextOracleWmsClientSettings:
 
 def validate_configuration(
     settings: FlextOracleWmsClientSettings,
-) -> dict[str, t.NormalizedValue]:
+) -> dict[str, t.RecursiveContainer]:
     """Validate Oracle WMS client configuration.
 
     Args:
@@ -170,7 +170,7 @@ def validate_configuration(
         errors.append("Max retries cannot be negative")
     elif settings.max_retries > max_retries_warning_threshold:
         warnings.append("High retry count may cause delays")
-    config_summary: dict[str, t.NormalizedValue] = {
+    config_summary: dict[str, t.RecursiveContainer] = {
         "base_url": settings.base_url,
         "username": settings.username,
         "api_version": settings.api_version,
@@ -179,7 +179,7 @@ def validate_configuration(
         "verify_ssl": settings.verify_ssl,
         "enable_logging": settings.enable_logging,
     }
-    validation_results: dict[str, t.NormalizedValue] = {
+    validation_results: dict[str, t.RecursiveContainer] = {
         "valid": not errors,
         "warnings": warnings,
         "errors": errors,
@@ -190,7 +190,7 @@ def validate_configuration(
 
 def test_configuration(
     settings: FlextOracleWmsClientSettings,
-) -> dict[str, t.NormalizedValue]:
+) -> dict[str, t.RecursiveContainer]:
     """Test Oracle WMS configuration by attempting connection.
 
     Args:
@@ -200,7 +200,7 @@ def test_configuration(
       Dictionary with test results
 
     """
-    test_results: dict[str, t.NormalizedValue] = {
+    test_results: dict[str, t.RecursiveContainer] = {
         "connection_success": False,
         "health_check_success": False,
         "error": None,

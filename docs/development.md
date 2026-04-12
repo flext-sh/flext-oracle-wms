@@ -183,7 +183,7 @@ def operation() -> r[ReturnType]:
 
 - **100% MyPy compliance** - Zero type errors tolerated
 - **Pydantic models** - All data structures validated
-- **No `t.NormalizedValue` types** - Explicit typing required
+- **No `t.RecursiveContainer` types** - Explicit typing required
 - **No `type: ignore`** - Fix types at source
 
 ## Testing Strategy
@@ -242,7 +242,7 @@ def test_real_connection():
 
    - Implement modern pick_confirm API
    - Add bulk_update_inventory_attributes endpoint
-   - Add t.NormalizedValue store data extraction capabilities
+   - Add t.RecursiveContainer store data extraction capabilities
 
 1. **Establish real connectivity**
 

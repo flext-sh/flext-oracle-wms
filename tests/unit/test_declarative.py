@@ -28,7 +28,7 @@ logger = u.fetch_logger(__name__)
 
 
 @pytest.fixture
-def env_config() -> t.ContainerMapping:
+def env_config() -> t.RecursiveContainerMapping:
     """Fixture that provides .env configuration or deterministic test defaults."""
     config_result = u.OracleWms.Tests.load_env_config(Path(__file__))
     if config_result.success and config_result.value.get("base_url"):
@@ -44,7 +44,7 @@ def env_config() -> t.ContainerMapping:
 
 @pytest.fixture
 def oracle_wms_client(
-    env_config: t.ContainerMapping,
+    env_config: t.RecursiveContainerMapping,
 ) -> Generator[FlextOracleWmsUtilitiesClient.Client]:
     """Fixture that provides configured Oracle WMS client."""
     settings = FlextOracleWmsClientSettings.model_validate({
@@ -80,7 +80,7 @@ class TestOracleWmsDeclarativeIntegration:
 
     def test_client_configuration_and_lifecycle(
         self,
-        env_config: t.ContainerMapping,
+        env_config: t.RecursiveContainerMapping,
     ) -> None:
         """Test client configuration and initialization."""
         settings = u.OracleWms.Tests.build_client_settings(
@@ -111,7 +111,7 @@ class TestOracleWmsDeclarativeIntegration:
             health_data = (
                 health_response.body
                 if isinstance(health_response.body, dict)
-                else dict[str, t.NormalizedValue]()
+                else dict[str, t.RecursiveContainer]()
             )
             assert health_data.get("service") == "FlextOracleWmsClient"
             assert health_data.get("status") in {"healthy", "unhealthy"}

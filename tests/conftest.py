@@ -46,7 +46,7 @@ def sample_entities() -> t.StrSequence:
 
 
 @pytest.fixture
-def sample_entity_data() -> t.ContainerMapping:
+def sample_entity_data() -> t.RecursiveContainerMapping:
     """Sample entity response data based on REAL query results."""
     return u.OracleWms.Tests.sample_entity_data()
 

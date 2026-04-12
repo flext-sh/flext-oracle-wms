@@ -59,16 +59,16 @@ class FocusedOracleWmsDiscovery:
             "receipt",
             "manifest",
         ]
-        self.entities_with_data: t.MutableContainerMapping = {}
-        self.complete_schemas: t.MutableContainerMapping = {}
+        self.entities_with_data: t.MutableRecursiveContainerMapping = {}
+        self.complete_schemas: t.MutableRecursiveContainerMapping = {}
 
-    def execute_focused_discovery(self) -> r[t.ContainerMapping]:
+    def execute_focused_discovery(self) -> r[t.RecursiveContainerMapping]:
         """Execute complete focused discovery."""
         try:
             self.client.start()
             entities_result = self.client.discover_entities()
             if not entities_result.success:
-                return r[t.ContainerMapping].fail(
+                return r[t.RecursiveContainerMapping].fail(
                     f"Entity discovery failed: {entities_result.error}",
                 )
             all_entities = entities_result.value
@@ -89,7 +89,7 @@ class FocusedOracleWmsDiscovery:
             if data_entities:
 
                 def _entity_count(
-                    pair: tuple[str, t.NormalizedValue],
+                    pair: tuple[str, t.RecursiveContainer],
                 ) -> int:
                     meta = pair[1]
                     if isinstance(meta, dict):
@@ -108,7 +108,7 @@ class FocusedOracleWmsDiscovery:
             if schemas:
                 for _schema in schemas.values():
                     pass
-            return r[t.ContainerMapping].ok({
+            return r[t.RecursiveContainerMapping].ok({
                 "total_entities": len(all_entities),
                 "entities_with_data": len(data_entities),
                 "schemas_generated": len(schemas),
@@ -118,13 +118,15 @@ class FocusedOracleWmsDiscovery:
             })
         except Exception as e:
             logger.exception("Focused discovery failed")
-            return r[t.ContainerMapping].fail(f"Discovery failed: {e}")
+            return r[t.RecursiveContainerMapping].fail(f"Discovery failed: {e}")
         finally:
             self.client.stop()
 
-    def _quick_data_scan(self, entities: t.StrSequence) -> t.MutableContainerMapping:
+    def _quick_data_scan(
+        self, entities: t.StrSequence
+    ) -> t.MutableRecursiveContainerMapping:
         """Quick scan to find entities with actual data."""
-        data_entities: t.MutableContainerMapping = {}
+        data_entities: t.MutableRecursiveContainerMapping = {}
         for entity_name in entities:
             try:
                 result = self.client.get_entity_data(entity_name, limit=1)
@@ -137,7 +139,7 @@ class FocusedOracleWmsDiscovery:
                         )
                         if detailed_result.success:
                             detailed_records = detailed_result.value
-                            entity_info: t.MutableContainerMapping = {
+                            entity_info: t.MutableRecursiveContainerMapping = {
                                 "count": len(detailed_records),
                                 "has_data": True,
                                 "sample_size": len(detailed_records),
@@ -164,9 +166,9 @@ class FocusedOracleWmsDiscovery:
     def _get_entity_structures(
         self,
         entities: t.StrSequence,
-    ) -> t.MutableContainerMapping:
+    ) -> t.MutableRecursiveContainerMapping:
         """Get entity structures even without data."""
-        structures: t.MutableContainerMapping = {}
+        structures: t.MutableRecursiveContainerMapping = {}
         for entity_name in entities:
             try:
                 result = self.client.get_entity_data(entity_name, limit=1)
@@ -199,10 +201,10 @@ class FocusedOracleWmsDiscovery:
 
     def _generate_schemas_from_data(
         self,
-        data_entities: t.ContainerMapping,
-    ) -> t.MutableContainerMapping:
+        data_entities: t.RecursiveContainerMapping,
+    ) -> t.MutableRecursiveContainerMapping:
         """Generate Singer schemas from entities with data."""
-        schemas: t.MutableContainerMapping = {}
+        schemas: t.MutableRecursiveContainerMapping = {}
         for entity_name, entity_data in data_entities.items():
             if isinstance(entity_data, dict):
                 schema = self._create_singer_schema(entity_name, entity_data)
@@ -212,10 +214,10 @@ class FocusedOracleWmsDiscovery:
 
     def _generate_schemas_from_structures(
         self,
-        structure_entities: t.ContainerMapping,
-    ) -> t.MutableContainerMapping:
+        structure_entities: t.RecursiveContainerMapping,
+    ) -> t.MutableRecursiveContainerMapping:
         """Generate Singer schemas from structures."""
-        schemas: t.MutableContainerMapping = {}
+        schemas: t.MutableRecursiveContainerMapping = {}
         for entity_name, structure_data in structure_entities.items():
             if isinstance(structure_data, dict):
                 schema = self._create_singer_schema(entity_name, structure_data)
@@ -226,8 +228,8 @@ class FocusedOracleWmsDiscovery:
     def _create_singer_schema(
         self,
         entity_name: str,
-        entity_data: t.ContainerMapping,
-    ) -> t.ContainerMapping | None:
+        entity_data: t.RecursiveContainerMapping,
+    ) -> t.RecursiveContainerMapping | None:
         """Create Singer schema with proper Oracle WMS typing."""
         try:
             fields = entity_data.get("sample_fields", entity_data.get("fields", []))
@@ -235,7 +237,7 @@ class FocusedOracleWmsDiscovery:
             sample_record = entity_data.get("sample_record", {})
             if not fields or not isinstance(fields, list):
                 return None
-            properties: t.MutableContainerMapping = {}
+            properties: t.MutableRecursiveContainerMapping = {}
             for field in fields:
                 if not isinstance(field, str):
                     continue
@@ -244,7 +246,7 @@ class FocusedOracleWmsDiscovery:
                     if isinstance(field_types, dict) and field in field_types
                     else "str"
                 )
-                sample_value: t.NormalizedValue = (
+                sample_value: t.RecursiveContainer = (
                     sample_record[field]
                     if isinstance(sample_record, dict) and field in sample_record
                     else None
@@ -277,9 +279,9 @@ class FocusedOracleWmsDiscovery:
         self,
         field_name: str,
         python_type: str,
-        sample_value: t.NormalizedValue,
+        sample_value: t.RecursiveContainer,
         entity_name: str,
-    ) -> t.ContainerMapping:
+    ) -> t.RecursiveContainerMapping:
         """Convert Oracle WMS field to Singer type with context."""
         if sample_value is not None:
             if isinstance(sample_value, bool):
@@ -402,18 +404,18 @@ class FocusedOracleWmsDiscovery:
             json.dump(summary, f, indent=2, default=str)
         return r[str].ok(str(results_dir))
 
-    def _create_singer_catalog(self) -> t.ContainerMapping:
+    def _create_singer_catalog(self) -> t.RecursiveContainerMapping:
         """Create Singer catalog."""
-        streams: MutableSequence[t.MutableContainerMapping] = []
+        streams: MutableSequence[t.MutableRecursiveContainerMapping] = []
         for entity_name, schema in self.complete_schemas.items():
             if not isinstance(schema, dict):
                 continue
             key_properties = schema.get("key_properties", [])
-            schema_without_keys: t.MutableContainerMapping = {
+            schema_without_keys: t.MutableRecursiveContainerMapping = {
                 k: v for k, v in schema.items() if k != "key_properties"
             }
             breadcrumb: t.StrSequence = []
-            stream: t.MutableContainerMapping = {
+            stream: t.MutableRecursiveContainerMapping = {
                 "tap_stream_id": entity_name,
                 "stream": entity_name,
                 "schema": schema_without_keys,
