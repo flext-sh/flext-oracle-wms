@@ -155,7 +155,7 @@ class FlextOracleWmsValidationError(FlextOracleWmsExceptions.ValidationError):
     """FlextOracleWmsValidationError - real inheritance from ValidationError."""
 
 
-__all__ = [
+__all__: list[str] = [
     "FlextOracleWmsApiError",
     "FlextOracleWmsAuthenticationError",
     "FlextOracleWmsConfigurationError",

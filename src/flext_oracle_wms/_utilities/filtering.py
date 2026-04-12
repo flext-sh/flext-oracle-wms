@@ -381,7 +381,7 @@ class FlextOracleWmsUtilitiesFiltering:
             return r[bool].ok(True)
 
 
-__all__ = [
+__all__: list[str] = [
     "FlextOracleWmsOperatorFilter",
     "FlextOracleWmsUtilitiesFiltering",
 ]

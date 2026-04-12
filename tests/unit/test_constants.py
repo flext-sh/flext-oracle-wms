@@ -179,4 +179,4 @@ class Testc:
         assert pagination.DEFAULT_PAGE_SIZE == 100
 
 
-__all__ = ["Testc"]
+__all__: list[str] = ["Testc"]

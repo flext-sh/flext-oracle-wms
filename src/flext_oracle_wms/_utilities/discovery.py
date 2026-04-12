@@ -51,4 +51,8 @@ class FlextOracleWmsUtilitiesDiscovery:
             return r[Sequence[t.ContainerValueMapping]].ok(discovered)
 
 
-__all__ = ["DISCOVERY_FAILURE", "DISCOVERY_SUCCESS", "FlextOracleWmsUtilitiesDiscovery"]
+__all__: list[str] = [
+    "DISCOVERY_FAILURE",
+    "DISCOVERY_SUCCESS",
+    "FlextOracleWmsUtilitiesDiscovery",
+]

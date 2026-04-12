@@ -28,4 +28,4 @@ class TestsFlextOracleWmsTypes(FlextTestsTypes, FlextOracleWmsTypes):
 
 t = TestsFlextOracleWmsTypes
 
-__all__ = ["TestsFlextOracleWmsTypes", "t"]
+__all__: list[str] = ["TestsFlextOracleWmsTypes", "t"]

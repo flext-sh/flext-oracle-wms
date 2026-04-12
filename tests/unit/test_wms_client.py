@@ -201,4 +201,4 @@ class TestFlextOracleWmsClient:
         assert result.success
 
 
-__all__ = ["TestFlextOracleWmsClient"]
+__all__: list[str] = ["TestFlextOracleWmsClient"]

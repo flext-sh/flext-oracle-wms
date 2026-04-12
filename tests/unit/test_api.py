@@ -44,4 +44,4 @@ class TestFlextOracleWmsApi:
             )
 
 
-__all__ = ["TestFlextOracleWmsApi"]
+__all__: list[str] = ["TestFlextOracleWmsApi"]

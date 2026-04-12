@@ -296,4 +296,4 @@ class FlextOracleWmsConstants(FlextConstants):
 
 c = FlextOracleWmsConstants
 
-__all__ = ["FlextOracleWmsConstants", "c"]
+__all__: list[str] = ["FlextOracleWmsConstants", "c"]

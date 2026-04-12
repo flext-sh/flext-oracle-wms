@@ -61,4 +61,4 @@ class FlextOracleWmsUtilitiesAuth:
             return r[t.StrMapping].ok({"Authorization": f"{auth_scheme} {token}"})
 
 
-__all__ = ["FlextOracleWmsUtilitiesAuth"]
+__all__: list[str] = ["FlextOracleWmsUtilitiesAuth"]

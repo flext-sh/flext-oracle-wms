@@ -125,4 +125,4 @@ class FlextOracleWmsTypes(FlextTypes):
 
 
 t = FlextOracleWmsTypes
-__all__ = ["FlextOracleWmsTypes", "t"]
+__all__: list[str] = ["FlextOracleWmsTypes", "t"]

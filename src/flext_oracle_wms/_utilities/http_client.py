@@ -311,4 +311,4 @@ class FlextOracleWmsUtilitiesHttpClient:
             )
 
 
-__all__ = ["FlextOracleWmsUtilitiesHttpClient"]
+__all__: list[str] = ["FlextOracleWmsUtilitiesHttpClient"]

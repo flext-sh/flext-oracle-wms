@@ -347,6 +347,6 @@ class FlextOracleWmsModels(FlextModels):
             return r[str].ok(name)
 
 
-__all__ = ["FlextOracleWmsModels"]
+__all__: list[str] = ["FlextOracleWmsModels"]
 
 m = FlextOracleWmsModels

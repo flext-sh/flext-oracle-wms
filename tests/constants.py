@@ -25,4 +25,4 @@ class TestsFlextOracleWmsConstants(FlextTestsConstants, FlextOracleWmsConstants)
 
 
 c = TestsFlextOracleWmsConstants
-__all__ = ["TestsFlextOracleWmsConstants", "c"]
+__all__: list[str] = ["TestsFlextOracleWmsConstants", "c"]

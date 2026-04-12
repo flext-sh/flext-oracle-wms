@@ -70,6 +70,6 @@ class FlextOracleWmsProtocols(FlextProtocols):
                 ...
 
 
-__all__ = ["FlextOracleWmsProtocols", "p"]
+__all__: list[str] = ["FlextOracleWmsProtocols", "p"]
 
 p = FlextOracleWmsProtocols

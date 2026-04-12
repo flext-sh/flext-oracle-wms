@@ -323,4 +323,4 @@ class FlextOracleWmsUtilitiesClient:
             return r[FlextApiModels.Api.HttpResponse].ok(response)
 
 
-__all__ = ["FlextOracleWmsUtilitiesClient"]
+__all__: list[str] = ["FlextOracleWmsUtilitiesClient"]

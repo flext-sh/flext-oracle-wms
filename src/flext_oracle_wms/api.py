@@ -93,4 +93,4 @@ class FlextOracleWmsApi(s[None]):
 
 oracle_wms = FlextOracleWmsApi
 
-__all__ = ["FlextOracleWmsApi", "oracle_wms"]
+__all__: list[str] = ["FlextOracleWmsApi", "oracle_wms"]

@@ -34,6 +34,6 @@ class FlextOracleWmsUtilities(FlextUtilities):
         HttpClient = FlextOracleWmsUtilitiesHttpClient
 
 
-__all__ = ["FlextOracleWmsUtilities", "u"]
+__all__: list[str] = ["FlextOracleWmsUtilities", "u"]
 
 u = FlextOracleWmsUtilities
