@@ -14,8 +14,6 @@ import pytest
 from flext_oracle_wms import FlextOracleWmsSettings
 from tests import t, u
 
-pytest_plugins = ["flext_tests.conftest_plugin"]
-
 
 @pytest.fixture(scope="session")
 def load_test_env() -> bool:
