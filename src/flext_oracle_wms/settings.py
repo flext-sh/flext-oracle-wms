@@ -14,7 +14,10 @@ from flext_core import FlextSettings, r
 class FlextOracleWmsSettings(FlextSettings):
     """Runtime settings for Oracle WMS client."""
 
-    model_config: ClassVar[SettingsConfigDict] = SettingsConfigDict(extra="ignore")
+    model_config: ClassVar[SettingsConfigDict] = SettingsConfigDict(
+        env_prefix="FLEXT_ORACLE_WMS_",
+        extra="ignore",
+    )
 
     base_url: Annotated[str, Field(min_length=1)] = "http://localhost:8080"
     timeout: Annotated[float, Field(ge=1.0, le=300.0)] = 30.0

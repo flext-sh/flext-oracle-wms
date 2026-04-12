@@ -51,13 +51,13 @@ def sample_entity_data() -> t.ContainerMapping:
     return u.OracleWms.Tests.sample_entity_data()
 
 
-def pytest_configure(settings: pytest.Config) -> None:
+def pytest_configure(config: pytest.Config) -> None:
     """Configure pytest markers for test categorization."""
-    settings.addinivalue_line("markers", "unit: Unit tests (fast)")
-    settings.addinivalue_line(
+    config.addinivalue_line("markers", "unit: Unit tests (fast)")
+    config.addinivalue_line(
         "markers",
         "integration: Integration tests with real Oracle",
     )
-    settings.addinivalue_line("markers", "real: Tests using real .env credentials")
-    settings.addinivalue_line("markers", "mock: Tests using mock data only")
-    settings.addinivalue_line("markers", "slow: Slow tests (may timeout)")
+    config.addinivalue_line("markers", "real: Tests using real .env credentials")
+    config.addinivalue_line("markers", "mock: Tests using mock data only")
+    config.addinivalue_line("markers", "slow: Slow tests (may timeout)")
