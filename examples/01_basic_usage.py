@@ -53,13 +53,13 @@ def setup_client_config() -> None:
     This function demonstrates how to configure the global singleton
     with environment variables and parameter overrides.
     """
-    container = FlextContainer.fetch_global()
+    container = FlextContainer.shared()
     settings = FlextOracleWmsSettings(
         base_url=os.getenv("FLEXT_ORACLE_WMS_BASE_URL", "https://wms.oraclecloud.com"),
         username=os.getenv("FLEXT_ORACLE_WMS_USERNAME", ""),
         password=os.getenv("FLEXT_ORACLE_WMS_PASSWORD", ""),
     )
-    _ = container.register("FlextOracleWmsSettings", settings)
+    _ = container.bind("FlextOracleWmsSettings", settings)
 
 
 def discover_wms_entities(
