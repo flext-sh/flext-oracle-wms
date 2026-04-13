@@ -17,7 +17,7 @@ from flext_api import (
 )
 from pydantic import BaseModel, ValidationError
 
-from flext_core import r, u
+from flext_core import p, r, u
 from flext_oracle_wms._utilities.auth import FlextOracleWmsUtilitiesAuth
 from flext_oracle_wms.client_settings import FlextOracleWmsClientSettings
 from flext_oracle_wms.constants import c
@@ -38,7 +38,7 @@ class FlextOracleWmsUtilitiesClient:
         def from_auth_settings(
             cls,
             auth_settings: m.OracleWms.AuthSettings,
-        ) -> r[FlextOracleWmsUtilitiesClient.Client]:
+        ) -> p.Result[FlextOracleWmsUtilitiesClient.Client]:
             """Create a concrete client by merging auth settings with runtime WMS settings."""
             validation_result = auth_settings.validate_business_rules()
             if validation_result.failure:
@@ -110,7 +110,7 @@ class FlextOracleWmsUtilitiesClient:
         def _decode_response_model[T: BaseModel](
             payload: FlextApiTypes.Api.ResponseBody | t.ContainerValue,
             model_type: type[T],
-        ) -> r[T]:
+        ) -> p.Result[T]:
             if isinstance(payload, dict):
                 return u.try_(
                     lambda: model_type.model_validate(payload),
@@ -136,13 +136,13 @@ class FlextOracleWmsUtilitiesClient:
             *,
             headers: t.StrMapping | None = None,
             params: FlextApiTypes.Api.WebParams | None = None,
-        ) -> r[FlextApiModels.Api.HttpResponse]:
+        ) -> p.Result[FlextApiModels.Api.HttpResponse]:
             """Call a specific Oracle WMS API."""
             return self.get(f"/api/{api_name}", headers=headers, params=params)
 
         def create_lpn(
             self, lpn_nbr: str, qty: int
-        ) -> r[FlextApiModels.Api.HttpResponse]:
+        ) -> p.Result[FlextApiModels.Api.HttpResponse]:
             """Create LPN (License Plate Number)."""
             payload: FlextApiTypes.Api.RequestBody = {"lpn_nbr": lpn_nbr, "qty": qty}
             return self.post("/lpn", body=payload)
@@ -152,13 +152,13 @@ class FlextOracleWmsUtilitiesClient:
             path: str,
             *,
             headers: t.StrMapping | None = None,
-        ) -> r[FlextApiModels.Api.HttpResponse]:
+        ) -> p.Result[FlextApiModels.Api.HttpResponse]:
             """Make DELETE request to Oracle WMS API."""
             return self._request(
                 FlextApiConstants.Api.Method.DELETE, path, headers=headers
             )
 
-        def discover_entities(self) -> r[t.StrSequence]:
+        def discover_entities(self) -> p.Result[t.StrSequence]:
             """Discover available Oracle WMS entities."""
             result = self.get("/entities")
             if result.failure:
@@ -178,7 +178,7 @@ class FlextOracleWmsUtilitiesClient:
             *,
             headers: t.StrMapping | None = None,
             params: FlextApiTypes.Api.WebParams | None = None,
-        ) -> r[FlextApiModels.Api.HttpResponse]:
+        ) -> p.Result[FlextApiModels.Api.HttpResponse]:
             """Make GET request to Oracle WMS API."""
             return self._request(
                 FlextApiConstants.Api.Method.GET,
@@ -187,7 +187,9 @@ class FlextOracleWmsUtilitiesClient:
                 params=params,
             )
 
-        def get_apis_by_category(self, category: str) -> r[Sequence[t.StrMapping]]:
+        def get_apis_by_category(
+            self, category: str
+        ) -> p.Result[Sequence[t.StrMapping]]:
             """Get Oracle WMS APIs by category."""
             result = self.get(f"/apis/category/{category}")
             if result.failure:
@@ -205,7 +207,7 @@ class FlextOracleWmsUtilitiesClient:
             entity_name: str,
             limit: int | None = None,
             filters: t.ConfigurationMapping | None = None,
-        ) -> r[Sequence[t.StrMapping]]:
+        ) -> p.Result[Sequence[t.StrMapping]]:
             """Get data for a specific Oracle WMS entity."""
             params_dict: dict[str, str] = {}
             if limit is not None:
@@ -224,7 +226,7 @@ class FlextOracleWmsUtilitiesClient:
                 return r[Sequence[t.StrMapping]].fail(payload_result.error)
             return r[Sequence[t.StrMapping]].ok(payload_result.value.data)
 
-        def health_check(self) -> r[FlextApiModels.Api.HttpResponse]:
+        def health_check(self) -> p.Result[FlextApiModels.Api.HttpResponse]:
             """Check Oracle WMS API health."""
             return self.get("/health")
 
@@ -234,7 +236,7 @@ class FlextOracleWmsUtilitiesClient:
             *,
             headers: t.StrMapping | None = None,
             body: FlextApiTypes.Api.RequestBody | None = None,
-        ) -> r[FlextApiModels.Api.HttpResponse]:
+        ) -> p.Result[FlextApiModels.Api.HttpResponse]:
             """Make POST request to Oracle WMS API."""
             return self._request(
                 FlextApiConstants.Api.Method.POST,
@@ -249,7 +251,7 @@ class FlextOracleWmsUtilitiesClient:
             *,
             headers: t.StrMapping | None = None,
             body: FlextApiTypes.Api.RequestBody | None = None,
-        ) -> r[FlextApiModels.Api.HttpResponse]:
+        ) -> p.Result[FlextApiModels.Api.HttpResponse]:
             """Make PUT request to Oracle WMS API."""
             return self._request(
                 FlextApiConstants.Api.Method.PUT,
@@ -258,7 +260,7 @@ class FlextOracleWmsUtilitiesClient:
                 body=body,
             )
 
-        def start(self) -> r[bool]:
+        def start(self) -> p.Result[bool]:
             """Start the Oracle WMS client after validating runtime settings."""
             validation_result = self.settings.validate_config()
             if validation_result.failure:
@@ -270,7 +272,7 @@ class FlextOracleWmsUtilitiesClient:
             self._started = True
             return r[bool].ok(True)
 
-        def stop(self) -> r[bool]:
+        def stop(self) -> p.Result[bool]:
             """Stop the Oracle WMS client and release the delegated API client."""
             if self._client is not None:
                 close_fn = getattr(self._client, "close", None)
@@ -284,7 +286,7 @@ class FlextOracleWmsUtilitiesClient:
             self,
             oblpn_id: str,
             tracking_number: str,
-        ) -> r[FlextApiModels.Api.HttpResponse]:
+        ) -> p.Result[FlextApiModels.Api.HttpResponse]:
             """Update OBLPN tracking number."""
             payload: FlextApiTypes.Api.RequestBody = {
                 "tracking_number": tracking_number
@@ -299,7 +301,7 @@ class FlextOracleWmsUtilitiesClient:
             headers: t.StrMapping | None = None,
             params: FlextApiTypes.Api.WebParams | None = None,
             body: FlextApiTypes.Api.RequestBody | None = None,
-        ) -> r[FlextApiModels.Api.HttpResponse]:
+        ) -> p.Result[FlextApiModels.Api.HttpResponse]:
             if self._client is None:
                 self._client = self._create_api_client()
             request = FlextApiModels.Api.HttpRequest(

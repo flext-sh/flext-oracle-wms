@@ -19,7 +19,7 @@ from datetime import UTC, datetime
 from pathlib import Path
 from typing import cast
 
-from flext_core import r
+from flext_core import p, r
 from tests import t, u
 
 logger = u.fetch_logger(__name__)
@@ -295,7 +295,7 @@ class CompleteMockPipeline:
         }
         self.results: t.RecursiveContainerMapping = {}
 
-    def run_complete_pipeline(self) -> r[t.RecursiveContainerMapping]:
+    def run_complete_pipeline(self) -> p.Result[t.RecursiveContainerMapping]:
         """Run complete Oracle WMS pipeline with mock data."""
         start_time = datetime.now(UTC)
         try:
@@ -641,7 +641,7 @@ class CompleteMockPipeline:
         tap_records: Sequence[t.RecursiveContainerMapping],
         target_results: t.RecursiveContainerMapping,
         dbt_results: t.RecursiveContainerMapping,
-    ) -> r[str]:
+    ) -> p.Result[str]:
         """Save complete pipeline results."""
         results_dir = Path("complete_pipeline_results")
         results_dir.mkdir(exist_ok=True)

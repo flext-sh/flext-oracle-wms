@@ -8,7 +8,7 @@ from __future__ import annotations
 
 import base64
 
-from flext_core import r
+from flext_core import p, r
 from flext_oracle_wms.constants import c
 from flext_oracle_wms.models import m
 from flext_oracle_wms.typings import t
@@ -25,7 +25,7 @@ class FlextOracleWmsUtilitiesAuth:
             self.settings = settings
             self._token: str | None = None
 
-        def authenticate(self) -> r[str]:
+        def authenticate(self) -> p.Result[str]:
             """Perform authentication."""
             if self.settings.method == c.OracleWms.OracleWMSAuthMethod.BASIC:
                 if not self.settings.username or not self.settings.password:
@@ -45,7 +45,7 @@ class FlextOracleWmsUtilitiesAuth:
                 return r[str].fail("OAuth2 not configured")
             return r[str].fail(f"Unsupported auth method: {self.settings.method}")
 
-        def get_auth_headers(self) -> r[t.StrMapping]:
+        def get_auth_headers(self) -> p.Result[t.StrMapping]:
             """Get authentication headers."""
             auth_result = self.authenticate()
             if auth_result.failure:

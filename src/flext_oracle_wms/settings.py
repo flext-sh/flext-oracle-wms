@@ -7,7 +7,8 @@ from typing import Annotated, ClassVar, Self
 from pydantic import Field
 from pydantic_settings import SettingsConfigDict
 
-from flext_core import FlextSettings, r
+from flext_core import FlextSettings
+from flext_oracle_wms import p, r
 
 
 @FlextSettings.auto_register("oracle-wms")
@@ -25,7 +26,7 @@ class FlextOracleWmsSettings(FlextSettings):
     password: str = ""
     retry_attempts: Annotated[int, Field(ge=0)] = 3
 
-    def validate_config(self) -> r[bool]:
+    def validate_config(self) -> p.Result[bool]:
         """Validate configuration business rules."""
         if not self.base_url:
             return r[bool].fail("base_url is required")

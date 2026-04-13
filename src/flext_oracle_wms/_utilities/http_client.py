@@ -12,7 +12,7 @@ from typing import Self
 from flext_api import FlextApiClient, FlextApiModels, FlextApiSettings, FlextApiTypes
 from pydantic import ValidationError
 
-from flext_core import r, u
+from flext_core import p, r, u
 from flext_oracle_wms.typings import t
 
 
@@ -94,7 +94,7 @@ class FlextOracleWmsUtilitiesHttpClient:
             self,
             path: str,
             headers: t.StrMapping | None = None,
-        ) -> r[t.ContainerValueMapping]:
+        ) -> p.Result[t.ContainerValueMapping]:
             """Make DELETE request."""
             try:
                 self._ensure_client()
@@ -129,7 +129,7 @@ class FlextOracleWmsUtilitiesHttpClient:
             path: str,
             params: FlextApiTypes.Api.WebParams | None = None,
             headers: t.StrMapping | None = None,
-        ) -> r[t.ContainerValueMapping]:
+        ) -> p.Result[t.ContainerValueMapping]:
             """Make GET request with railway-oriented error handling."""
             params_str: FlextApiTypes.Api.WebParams | None = (
                 {str(k): str(v) for k, v in params.items()} if params else None
@@ -144,7 +144,7 @@ class FlextOracleWmsUtilitiesHttpClient:
             data: t.ContainerValueMapping | None = None,
             json_data: t.ContainerValueMapping | None = None,
             headers: t.StrMapping | None = None,
-        ) -> r[t.ContainerValueMapping]:
+        ) -> p.Result[t.ContainerValueMapping]:
             """Make POST request with railway-oriented error handling."""
             body = json_data or data
             return self._execute_request("POST", path, headers=headers, body=body)
@@ -155,7 +155,7 @@ class FlextOracleWmsUtilitiesHttpClient:
             data: t.ContainerValueMapping | None = None,
             json_data: t.ContainerValueMapping | None = None,
             headers: t.StrMapping | None = None,
-        ) -> r[t.ContainerValueMapping]:
+        ) -> p.Result[t.ContainerValueMapping]:
             """Make PUT request."""
             try:
                 self._ensure_client()
@@ -212,7 +212,7 @@ class FlextOracleWmsUtilitiesHttpClient:
             params: FlextApiTypes.Api.WebParams | None = None,
             headers: t.StrMapping | None = None,
             body: t.ContainerValueMapping | None = None,
-        ) -> r[t.ContainerValueMapping]:
+        ) -> p.Result[t.ContainerValueMapping]:
             """Execute HTTP request with FLEXT delegation."""
             try:
                 self._ensure_client()

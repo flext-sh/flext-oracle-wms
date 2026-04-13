@@ -12,7 +12,7 @@ from collections.abc import Mapping, MutableMapping, MutableSequence
 from datetime import UTC, datetime
 from pathlib import Path
 
-from flext_core import r
+from flext_core import p, r
 from flext_oracle_wms import FlextOracleWmsClientSettings, FlextOracleWmsUtilitiesClient
 from tests import t, u
 
@@ -62,7 +62,7 @@ class FocusedOracleWmsDiscovery:
         self.entities_with_data: t.MutableRecursiveContainerMapping = {}
         self.complete_schemas: t.MutableRecursiveContainerMapping = {}
 
-    def execute_focused_discovery(self) -> r[t.RecursiveContainerMapping]:
+    def execute_focused_discovery(self) -> p.Result[t.RecursiveContainerMapping]:
         """Execute complete focused discovery."""
         try:
             self.client.start()
@@ -373,7 +373,7 @@ class FocusedOracleWmsDiscovery:
                 keys.append(key)
         return keys or (["id"] if "id" in fields else [])
 
-    def _save_focused_results(self) -> r[str]:
+    def _save_focused_results(self) -> p.Result[str]:
         """Save focused discovery results."""
         results_dir = Path("oracle_wms_focused_results")
         results_dir.mkdir(exist_ok=True)

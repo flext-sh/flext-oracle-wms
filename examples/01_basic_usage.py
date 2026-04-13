@@ -27,11 +27,12 @@ from pathlib import Path
 
 from dotenv import load_dotenv
 
-from flext_core import FlextContainer, r
+from flext_core import FlextContainer
 from flext_oracle_wms import (
     FlextOracleWmsExceptions,
     FlextOracleWmsSettings,
     FlextOracleWmsUtilitiesClient,
+    p,
     t,
     u,
 )
@@ -64,7 +65,7 @@ def setup_client_config() -> None:
 
 def discover_wms_entities(
     client: FlextOracleWmsClient,
-) -> r[t.StrSequence]:
+) -> p.Result[t.StrSequence]:
     """Discover available Oracle WMS entities.
 
     Args:
@@ -91,7 +92,7 @@ def discover_wms_entities(
 def query_entity_data(
     client: FlextOracleWmsClient,
     entity_name: str,
-) -> r[Sequence[t.StrMapping]]:
+) -> p.Result[Sequence[t.StrMapping]]:
     """Query data from a specific Oracle WMS entity.
 
     Args:

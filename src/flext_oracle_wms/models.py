@@ -14,11 +14,11 @@ from typing import Annotated, ClassVar
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
-from flext_core import FlextModels, r
-from flext_oracle_wms import c, t
+from flext_core import m
+from flext_oracle_wms import c, p, r, t
 
 
-class FlextOracleWmsModels(FlextModels):
+class FlextOracleWmsModels(m):
     """Generic WMS domain models with composition patterns.
 
     Single class per module following DDD, SOLID, and flext-core patterns.
@@ -76,7 +76,7 @@ class FlextOracleWmsModels(FlextModels):
                     raise ValueError(msg)
                 return v
 
-            def validate_entity(self) -> r[bool]:
+            def validate_entity(self) -> p.Result[bool]:
                 """Validate entity configuration."""
                 if not self.name:
                     return r[bool].fail("Entity name is required")
@@ -106,7 +106,7 @@ class FlextOracleWmsModels(FlextModels):
                 Field(description="Error message if any"),
             ] = None
 
-            def validate_response(self) -> r[bool]:
+            def validate_response(self) -> p.Result[bool]:
                 """Validate response state."""
                 if not self.success and not self.error_message:
                     return r[bool].fail("Failed response must include error message")
@@ -134,7 +134,7 @@ class FlextOracleWmsModels(FlextModels):
             oauth2_scope: str = "wms.read wms.write"
             token_refresh_threshold: t.PositiveInt = 300
 
-            def validate_business_rules(self) -> r[bool]:
+            def validate_business_rules(self) -> p.Result[bool]:
                 """Validate authentication configuration business rules."""
                 if self.method == c.OracleWms.OracleWMSAuthMethod.BASIC:
                     if not self.username or not self.password:
@@ -291,7 +291,7 @@ class FlextOracleWmsModels(FlextModels):
         # AGGREGATE ROOTS - Consistency boundaries
         # =====================================================================
 
-        class WarehouseAggregate(FlextModels.AggregateRoot):
+        class WarehouseAggregate(m.AggregateRoot):
             """Warehouse aggregate root."""
 
             id: Annotated[str, Field(description="Warehouse identifier")]
@@ -315,7 +315,7 @@ class FlextOracleWmsModels(FlextModels):
 
             def add_inventory(
                 self, item: FlextOracleWmsModels.OracleWms.InventoryItem
-            ) -> r[bool]:
+            ) -> p.Result[bool]:
                 """Add inventory to warehouse."""
                 if any(i.sku == item.sku for i in self.inventory):
                     return r[bool].fail("SKU already exists")
@@ -337,7 +337,7 @@ class FlextOracleWmsModels(FlextModels):
             return item.quantity * price
 
         @staticmethod
-        def validate_entity_name(name: str) -> r[str]:
+        def validate_entity_name(name: str) -> p.Result[str]:
             """Validate entity name using domain rules."""
             if (
                 not name

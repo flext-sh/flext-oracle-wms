@@ -19,7 +19,7 @@ from collections.abc import Mapping
 from datetime import UTC, datetime
 from pathlib import Path
 
-from flext_core import r
+from flext_core import p, r
 from flext_oracle_wms import FlextOracleWmsClientSettings, FlextOracleWmsUtilitiesClient
 from tests import t, u
 
@@ -78,7 +78,7 @@ class OptimizedOracleWmsDiscovery:
         self.high_value_entities: dict[str, dict[str, t.RecursiveContainer]] = {}
         self.complete_schemas: dict[str, dict[str, t.RecursiveContainer]] = {}
 
-    def start_discovery(self) -> r[bool]:
+    def start_discovery(self) -> p.Result[bool]:
         """Start optimized discovery."""
         start_result = self.client.start()
         if not start_result.success:
@@ -87,7 +87,7 @@ class OptimizedOracleWmsDiscovery:
 
     def discover_priority_entities_fast(
         self,
-    ) -> r[dict[str, t.RecursiveContainer]]:
+    ) -> p.Result[dict[str, t.RecursiveContainer]]:
         """Fast discovery of priority entities with data."""
         entities_result = self.client.discover_entities()
         if not entities_result.success:
@@ -213,7 +213,7 @@ class OptimizedOracleWmsDiscovery:
 
     def generate_complete_singer_schemas(
         self,
-    ) -> r[dict[str, t.RecursiveContainer]]:
+    ) -> p.Result[dict[str, t.RecursiveContainer]]:
         """Generate complete Singer schemas for high-value entities."""
         if not self.high_value_entities:
             return r[dict[str, t.RecursiveContainer]].fail(
@@ -447,7 +447,7 @@ class OptimizedOracleWmsDiscovery:
             streams.append(stream)
         return {"version": 1, "streams": streams}
 
-    def save_optimized_results(self) -> r[str]:
+    def save_optimized_results(self) -> p.Result[str]:
         """Save optimized discovery results."""
         results_dir = Path("oracle_wms_optimized_results")
         results_dir.mkdir(exist_ok=True)
@@ -478,7 +478,7 @@ class OptimizedOracleWmsDiscovery:
             json.dump(summary, f, indent=2, default=str)
         return r[str].ok(str(results_dir))
 
-    def cleanup(self) -> r[bool]:
+    def cleanup(self) -> p.Result[bool]:
         """Clean up resources."""
         try:
             self.client.stop()

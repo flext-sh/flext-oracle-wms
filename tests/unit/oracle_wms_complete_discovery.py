@@ -19,7 +19,7 @@ from pathlib import Path
 
 from flext_api import FlextApiModels
 
-from flext_core import r
+from flext_core import p, r
 from flext_oracle_wms import (
     FlextOracleWmsApi,
     FlextOracleWmsClientSettings,
@@ -66,7 +66,7 @@ class OracleWmsCompleteDiscovery:
         self.entity_metadata: t.MutableRecursiveContainerMapping = {}
         self.complete_schemas: t.MutableRecursiveContainerMapping = {}
 
-    def start_discovery(self) -> r[bool]:
+    def start_discovery(self) -> p.Result[bool]:
         """Start complete discovery process."""
         start_result = self.client.start()
         if not start_result.success:
@@ -75,7 +75,7 @@ class OracleWmsCompleteDiscovery:
 
     def discover_all_apis(
         self,
-    ) -> r[bool]:
+    ) -> p.Result[bool]:
         """Discover and test ALL 22+ Oracle WMS APIs."""
         all_apis: Mapping[str, m.OracleWms.ApiEndpoint] = (
             FlextOracleWmsApi.FLEXT_ORACLE_WMS_APIS
@@ -107,7 +107,7 @@ class OracleWmsCompleteDiscovery:
 
     def _test_data_extract_api(
         self, api_name: str
-    ) -> r[FlextApiModels.Api.HttpResponse]:
+    ) -> p.Result[FlextApiModels.Api.HttpResponse]:
         """Test data extraction APIs."""
         try:
             if api_name == "lgf_entity_discovery":
@@ -141,7 +141,7 @@ class OracleWmsCompleteDiscovery:
         self,
         api_name: str,
         endpoint: m.OracleWms.ApiEndpoint,
-    ) -> r[FlextApiModels.Api.HttpResponse]:
+    ) -> p.Result[FlextApiModels.Api.HttpResponse]:
         """Test entity operations APIs."""
         try:
             if "entity" in endpoint.path and "{entity_name}" in endpoint.path:
@@ -169,7 +169,7 @@ class OracleWmsCompleteDiscovery:
         self,
         api_name: str,
         endpoint: m.OracleWms.ApiEndpoint,
-    ) -> r[FlextApiModels.Api.HttpResponse]:
+    ) -> p.Result[FlextApiModels.Api.HttpResponse]:
         """Test setup and transactional APIs."""
         try:
             return self.client.call_api(api_name)
@@ -182,7 +182,7 @@ class OracleWmsCompleteDiscovery:
         self,
         api_name: str,
         endpoint: m.OracleWms.ApiEndpoint,
-    ) -> r[FlextApiModels.Api.HttpResponse]:
+    ) -> p.Result[FlextApiModels.Api.HttpResponse]:
         """Test automation and operations APIs."""
         try:
             return self.client.call_api(api_name)
@@ -191,7 +191,9 @@ class OracleWmsCompleteDiscovery:
                 f"Automation API test failed: {e}",
             )
 
-    def _test_entity_get_with_discovery(self) -> r[FlextApiModels.Api.HttpResponse]:
+    def _test_entity_get_with_discovery(
+        self,
+    ) -> p.Result[FlextApiModels.Api.HttpResponse]:
         """Test entity get by discovering entity with data first."""
         try:
             self._ensure_discovered_entities()
@@ -210,7 +212,7 @@ class OracleWmsCompleteDiscovery:
                 if isinstance(value, list):
                     self.discovered_entities = list(value)
 
-    def _find_and_get_entity_with_id(self) -> r[FlextApiModels.Api.HttpResponse]:
+    def _find_and_get_entity_with_id(self) -> p.Result[FlextApiModels.Api.HttpResponse]:
         """Find an entity with records and get it by ID."""
         for entity_name in self.discovered_entities[:10]:
             entity_result = self._get_entity_with_id(entity_name)
@@ -223,7 +225,7 @@ class OracleWmsCompleteDiscovery:
     def _get_entity_with_id(
         self,
         entity_name: str,
-    ) -> r[FlextApiModels.Api.HttpResponse] | None:
+    ) -> p.Result[FlextApiModels.Api.HttpResponse] | None:
         """Get entity by ID if it has records."""
         list_result = self.client.get_entity_data(entity_name, limit=1)
         if not list_result.success:
@@ -237,7 +239,9 @@ class OracleWmsCompleteDiscovery:
         entity_id = record["id"]
         return self.client.get(f"/entities/{entity_name}/{entity_id}")
 
-    def _test_data_extract_to_object_store(self) -> r[FlextApiModels.Api.HttpResponse]:
+    def _test_data_extract_to_object_store(
+        self,
+    ) -> p.Result[FlextApiModels.Api.HttpResponse]:
         """Test data extract to object store API."""
         try:
             return self.client.call_api("lgf_data_extract")
@@ -246,7 +250,7 @@ class OracleWmsCompleteDiscovery:
                 f"Data extract to object store failed: {e}",
             )
 
-    def _test_task_status(self) -> r[FlextApiModels.Api.HttpResponse]:
+    def _test_task_status(self) -> p.Result[FlextApiModels.Api.HttpResponse]:
         """Test task status API."""
         try:
             return self.client.call_api(
@@ -262,7 +266,7 @@ class OracleWmsCompleteDiscovery:
         self,
         api_name: str,
         entity_name: str,
-    ) -> r[FlextApiModels.Api.HttpResponse]:
+    ) -> p.Result[FlextApiModels.Api.HttpResponse]:
         """Test entity API that requires ID parameter."""
         try:
             list_result = self.client.get_entity_data(entity_name, limit=1)
@@ -367,7 +371,7 @@ class OracleWmsCompleteDiscovery:
 
     def discover_complete_entity_metadata(
         self,
-    ) -> r[t.RecursiveContainerMapping]:
+    ) -> p.Result[t.RecursiveContainerMapping]:
         """Discover complete metadata for all entities using Oracle WMS APIs."""
         if not self.discovered_entities:
             entities_result = self.client.discover_entities()
@@ -421,7 +425,7 @@ class OracleWmsCompleteDiscovery:
 
     def generate_singer_schemas_with_flattening(
         self,
-    ) -> r[t.RecursiveContainerMapping]:
+    ) -> p.Result[t.RecursiveContainerMapping]:
         """Generate Singer schemas with real data flattening based on Oracle metadata."""
         if not self.entity_metadata:
             return r[t.RecursiveContainerMapping].fail(
@@ -544,7 +548,7 @@ class OracleWmsCompleteDiscovery:
             return name_check or value_check
         return name_check
 
-    def save_complete_discovery_results(self) -> r[str]:
+    def save_complete_discovery_results(self) -> p.Result[str]:
         """Save complete discovery results to files."""
         results_dir = Path("oracle_wms_complete_results")
         results_dir.mkdir(exist_ok=True)
@@ -573,7 +577,7 @@ class OracleWmsCompleteDiscovery:
             json.dump(summary, f, indent=2, default=str)
         return r[str].ok(str(results_dir))
 
-    def cleanup(self) -> r[bool]:
+    def cleanup(self) -> p.Result[bool]:
         """Clean up resources."""
         try:
             self.client.stop()

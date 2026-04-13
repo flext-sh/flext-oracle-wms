@@ -41,7 +41,7 @@ client = FlextOracleWmsClient(settings)
 
 #### Methods
 
-##### `test_connection() -> r[bool]`
+##### `test_connection() -> p.Result[bool]`
 
 Tests connection to Oracle WMS (currently uses fake URLs).
 
@@ -53,7 +53,7 @@ else:
     print(f"Connection failed: {result.error}")
 ```
 
-##### `discover_entities() -> r[List[Dict]]`
+##### `discover_entities() -> p.Result[List[Dict]]`
 
 Discovers available Oracle WMS entities.
 

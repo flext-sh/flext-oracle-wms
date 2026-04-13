@@ -12,7 +12,7 @@ from __future__ import annotations
 from collections.abc import Mapping
 from typing import ClassVar, override
 
-from flext_core import r, s
+from flext_core import p, r, s
 from flext_oracle_wms import (
     FlextOracleWmsSettings,
     FlextOracleWmsUtilitiesClient,
@@ -63,7 +63,7 @@ class FlextOracleWmsApi(s[None]):
         self._client = FlextOracleWmsUtilitiesClient.Client(settings=resolved_config)
 
     @override
-    def execute(self) -> r[None]:
+    def execute(self) -> p.Result[None]:
         """Execute Oracle WMS operations."""
         return r[None].ok(None)
 
@@ -86,7 +86,7 @@ class FlextOracleWmsApi(s[None]):
     @staticmethod
     def create_oracle_wms_client(
         settings: m.OracleWms.AuthSettings,
-    ) -> r[FlextOracleWmsUtilitiesClient.Client]:
+    ) -> p.Result[FlextOracleWmsUtilitiesClient.Client]:
         """Create a runtime Oracle WMS client from auth settings."""
         return FlextOracleWmsUtilitiesClient.Client.from_auth_settings(settings)
 

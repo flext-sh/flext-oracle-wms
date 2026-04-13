@@ -10,7 +10,7 @@ from collections.abc import Mapping, MutableSequence, Sequence
 
 from pydantic import ValidationError
 
-from flext_core import e, r, u
+from flext_core import e, p, r, u
 from flext_oracle_wms.constants import c
 from flext_oracle_wms.errors import (
     FlextOracleWmsDataValidationError as _FlextOracleWmsDataValidationError,
@@ -85,7 +85,7 @@ class FlextOracleWmsUtilitiesFiltering:
             field: str,
             value: t.OracleWms.Core.FilterScalar,
             operator: c.OracleWms.WmsFilterOperator | None = None,
-        ) -> r[Sequence[t.OracleWms.Core.FilterRecord]]:
+        ) -> p.Result[Sequence[t.OracleWms.Core.FilterRecord]]:
             """Filter records by one field using optional operator semantics."""
             engine = cls()
             filters: Mapping[str, FilterEntry]
@@ -104,7 +104,7 @@ class FlextOracleWmsUtilitiesFiltering:
             id_field: str,
             min_id: t.OracleWms.Core.FilterScalar | None = None,
             max_id: t.OracleWms.Core.FilterScalar | None = None,
-        ) -> r[Sequence[t.OracleWms.Core.FilterRecord]]:
+        ) -> p.Result[Sequence[t.OracleWms.Core.FilterRecord]]:
             """Filter records by inclusive identifier range."""
             if not records:
                 return r[Sequence[t.OracleWms.Core.FilterRecord]].ok([])
@@ -182,7 +182,7 @@ class FlextOracleWmsUtilitiesFiltering:
             records: Sequence[t.OracleWms.Core.FilterRecord],
             filters: Mapping[str, FilterEntry],
             limit: int | None = None,
-        ) -> r[Sequence[t.OracleWms.Core.FilterRecord]]:
+        ) -> p.Result[Sequence[t.OracleWms.Core.FilterRecord]]:
             """Filter records against field conditions and optional limit."""
             if (result := self._validate_filters(filters)).failure:
                 return r[Sequence[t.OracleWms.Core.FilterRecord]].fail(
@@ -204,7 +204,7 @@ class FlextOracleWmsUtilitiesFiltering:
             sort_field: str,
             *,
             ascending: bool = True,
-        ) -> r[Sequence[t.OracleWms.Core.FilterRecord]]:
+        ) -> p.Result[Sequence[t.OracleWms.Core.FilterRecord]]:
             """Sort records by a dot-path field."""
             try:
 
@@ -364,7 +364,7 @@ class FlextOracleWmsUtilitiesFiltering:
         def _validate_filter_conditions_total(
             self,
             filters: Mapping[str, FilterEntry],
-        ) -> r[bool]:
+        ) -> p.Result[bool]:
             total = sum(self._condition_size(value) for value in filters.values())
             if total > self.max_conditions:
                 return r[bool].fail(
@@ -372,7 +372,9 @@ class FlextOracleWmsUtilitiesFiltering:
                 )
             return r[bool].ok(True)
 
-        def _validate_filters(self, filters: Mapping[str, FilterEntry]) -> r[bool]:
+        def _validate_filters(
+            self, filters: Mapping[str, FilterEntry]
+        ) -> p.Result[bool]:
             total = sum(self._condition_size(value) for value in filters.values())
             if total > self.max_conditions:
                 return r[bool].fail(

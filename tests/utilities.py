@@ -17,7 +17,7 @@ from urllib.parse import urlparse
 from dotenv import load_dotenv
 from flext_tests import FlextTestsUtilities
 
-from flext_core import r
+from flext_core import p, r
 from flext_oracle_wms import (
     FlextOracleWmsApi,
     FlextOracleWmsClientSettings,
@@ -40,7 +40,7 @@ class TestsFlextOracleWmsUtilities(FlextTestsUtilities, FlextOracleWmsUtilities)
                 """Concrete test facade for the abstract public API."""
 
                 @override
-                def execute(self) -> r[None]:
+                def execute(self) -> p.Result[None]:
                     """Execute the no-op test facade."""
                     return r[None].ok(None)
 
@@ -159,7 +159,7 @@ class TestsFlextOracleWmsUtilities(FlextTestsUtilities, FlextOracleWmsUtilities)
             def load_env_config(
                 cls,
                 start_path: Path,
-            ) -> r[TestsFlextOracleWmsTypes.OracleWms.Tests.EnvConfig]:
+            ) -> p.Result[TestsFlextOracleWmsTypes.OracleWms.Tests.EnvConfig]:
                 """Load declarative integration settings from the nearest `.env` file."""
                 env_path = cls.find_env_file(start_path)
                 if env_path is None:
@@ -214,7 +214,7 @@ class TestsFlextOracleWmsUtilities(FlextTestsUtilities, FlextOracleWmsUtilities)
                 return False
 
             @staticmethod
-            def create_real_settings() -> r[FlextOracleWmsSettings]:
+            def create_real_settings() -> p.Result[FlextOracleWmsSettings]:
                 """Create runtime settings from process environment variables."""
                 base_url = os.getenv("ORACLE_WMS_BASE_URL") or os.getenv(
                     "FLEXT_ORACLE_WMS_BASE_URL",

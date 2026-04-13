@@ -8,7 +8,7 @@ from __future__ import annotations
 
 from collections.abc import Sequence
 
-from flext_core import r
+from flext_core import p, r
 from flext_oracle_wms.constants import c
 from flext_oracle_wms.protocols import FlextOracleWmsProtocols as p
 from flext_oracle_wms.typings import t
@@ -38,7 +38,7 @@ class FlextOracleWmsUtilitiesDiscovery:
                 "strategy": c.OracleWms.EndpointDiscoveryStrategy.API_BASED,
             }
 
-        def discover_entities(self) -> r[Sequence[t.ContainerValueMapping]]:
+        def discover_entities(self) -> p.Result[Sequence[t.ContainerValueMapping]]:
             """Discover entities from Oracle WMS API."""
             entities_result = self.client.discover_entities()
             if entities_result.failure:
