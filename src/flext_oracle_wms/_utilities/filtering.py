@@ -8,15 +8,18 @@ from __future__ import annotations
 
 from collections.abc import Mapping, MutableSequence, Sequence
 
+from flext_api import u
 from pydantic import ValidationError
 
-from flext_core import e, p, r, u
-from flext_oracle_wms.constants import c
-from flext_oracle_wms.errors import (
-    FlextOracleWmsDataValidationError as _FlextOracleWmsDataValidationError,
+from flext_oracle_wms import (
+    FlextOracleWmsDataValidationError,
+    FlextOracleWmsModels,
+    c,
+    e,
+    p,
+    r,
+    t,
 )
-from flext_oracle_wms.models import FlextOracleWmsModels
-from flext_oracle_wms.typings import t
 
 FlextOracleWmsOperatorFilter = (
     FlextOracleWmsModels.OracleWms.FlextOracleWmsOperatorFilter
@@ -36,7 +39,7 @@ type FilterEntry = (
 class FlextOracleWmsUtilitiesFiltering:
     """Filtering utilities for Oracle WMS -- u.OracleWms.Filtering.*."""
 
-    DataValidationError = _FlextOracleWmsDataValidationError
+    DataValidationError = FlextOracleWmsDataValidationError
     OperatorFilter = FlextOracleWmsOperatorFilter
 
     class Filter:
@@ -66,7 +69,7 @@ class FlextOracleWmsUtilitiesFiltering:
                 and self._validate_filter_conditions_total(self.filters).failure
             ):
                 error_message = "Filter validation failed"
-                raise _FlextOracleWmsDataValidationError(error_message)
+                raise FlextOracleWmsDataValidationError(error_message)
 
         @classmethod
         def create_filter(

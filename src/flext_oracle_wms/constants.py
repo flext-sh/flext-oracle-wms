@@ -11,13 +11,13 @@ from enum import StrEnum, unique
 from types import MappingProxyType
 from typing import TYPE_CHECKING, ClassVar, Final
 
-from flext_core import FlextConstants
+from flext_api import c
 
 if TYPE_CHECKING:
     from flext_oracle_wms import t
 
 
-class FlextOracleWmsConstants(FlextConstants):
+class FlextOracleWmsConstants(c):
     """Generic WMS constants class with composition patterns.
 
     Uses Python 3.13+ syntax, reduces declarations through patterns.
@@ -39,9 +39,9 @@ class FlextOracleWmsConstants(FlextConstants):
         })
 
         PROCESSING_CONFIG: ClassVar[t.IntMapping] = MappingProxyType({
-            "default_batch_size": FlextConstants.DEFAULT_SIZE,
-            "max_batch_size": FlextConstants.MAX_ITEMS,
-            "default_page_size": FlextConstants.DEFAULT_PAGE_SIZE,
+            "default_batch_size": c.DEFAULT_SIZE,
+            "max_batch_size": c.MAX_ITEMS,
+            "default_page_size": c.DEFAULT_PAGE_SIZE,
         })
 
         ENVIRONMENTS: ClassVar[t.StrMapping] = MappingProxyType({
@@ -50,10 +50,10 @@ class FlextOracleWmsConstants(FlextConstants):
             "production": "https://prod-wms.example.com",
         })
 
-        DEFAULT_TIMEOUT: Final[int] = FlextConstants.DEFAULT_TIMEOUT_SECONDS
-        DEFAULT_MAX_RETRIES: Final[int] = FlextConstants.MAX_RETRY_ATTEMPTS
-        DEFAULT_RETRY_DELAY: Final[int] = FlextConstants.DEFAULT_RETRY_DELAY_SECONDS
-        MAX_POOL_SIZE: Final[int] = FlextConstants.HTTP_STATUS_MIN
+        DEFAULT_TIMEOUT: Final[int] = c.DEFAULT_TIMEOUT_SECONDS
+        DEFAULT_MAX_RETRIES: Final[int] = c.MAX_RETRY_ATTEMPTS
+        DEFAULT_RETRY_DELAY: Final[int] = c.DEFAULT_RETRY_DELAY_SECONDS
+        MAX_POOL_SIZE: Final[int] = c.HTTP_STATUS_MIN
 
         @unique
         class WmsEntityType(StrEnum):
@@ -238,9 +238,9 @@ class FlextOracleWmsConstants(FlextConstants):
     class WmsProcessing:
         """WMS processing constants - domain-specific."""
 
-        DEFAULT_BATCH_SIZE: Final[int] = FlextConstants.DEFAULT_SIZE
-        MAX_BATCH_SIZE: Final[int] = FlextConstants.MAX_ITEMS
-        DEFAULT_PAGE_SIZE: Final[int] = FlextConstants.DEFAULT_PAGE_SIZE
+        DEFAULT_BATCH_SIZE: Final[int] = c.DEFAULT_SIZE
+        MAX_BATCH_SIZE: Final[int] = c.MAX_ITEMS
+        DEFAULT_PAGE_SIZE: Final[int] = c.DEFAULT_PAGE_SIZE
         MAX_SCHEMA_DEPTH: ClassVar[int] = 10
 
     class Filtering:

@@ -12,12 +12,14 @@ from __future__ import annotations
 from collections.abc import Mapping
 from typing import ClassVar, override
 
-from flext_core import p, r, s
 from flext_oracle_wms import (
     FlextOracleWmsSettings,
     FlextOracleWmsUtilitiesClient,
     FlextOracleWmsUtilitiesHttpClient,
     m,
+    p,
+    r,
+    s,
     t,
 )
 

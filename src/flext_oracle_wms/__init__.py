@@ -13,7 +13,8 @@ from flext_core.lazy import (
 from flext_oracle_wms.__version__ import *
 
 if _t.TYPE_CHECKING:
-    from flext_core import d, e, h, r, s, x
+    from flext_api import d, e, h, r, s, x
+
     from flext_oracle_wms._utilities.auth import FlextOracleWmsUtilitiesAuth
     from flext_oracle_wms._utilities.client import FlextOracleWmsUtilitiesClient
     from flext_oracle_wms._utilities.discovery import (
@@ -110,7 +111,7 @@ _LAZY_IMPORTS = merge_lazy_imports(
                 "FlextOracleWmsUtilities",
                 "u",
             ),
-            "flext_core": (
+            "flext_api": (
                 "d",
                 "e",
                 "h",

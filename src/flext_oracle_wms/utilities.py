@@ -1,6 +1,6 @@
-"""FLEXT Oracle WMS Utilities - Domain-specific utilities extending FlextUtilities.
+"""FLEXT Oracle WMS Utilities - Domain-specific utilities extending u.
 
-This module provides Oracle WMS-specific utility functions extending FlextUtilities
+This module provides Oracle WMS-specific utility functions extending u
 from flext-core. Uses advanced builder patterns and composition for clean code.
 
 Copyright (c) 2025 FLEXT Team. All rights reserved.
@@ -9,7 +9,8 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from flext_core import FlextUtilities
+from flext_api import u
+
 from flext_oracle_wms._utilities.auth import FlextOracleWmsUtilitiesAuth
 from flext_oracle_wms._utilities.client import FlextOracleWmsUtilitiesClient
 from flext_oracle_wms._utilities.discovery import FlextOracleWmsUtilitiesDiscovery
@@ -17,10 +18,10 @@ from flext_oracle_wms._utilities.filtering import FlextOracleWmsUtilitiesFilteri
 from flext_oracle_wms._utilities.http_client import FlextOracleWmsUtilitiesHttpClient
 
 
-class FlextOracleWmsUtilities(FlextUtilities):
-    """Oracle WMS utilities extending FlextUtilities with domain-specific helpers.
+class FlextOracleWmsUtilities(u):
+    """Oracle WMS utilities extending u with domain-specific helpers.
 
-    Architecture: Extends FlextUtilities with Oracle WMS-specific operations.
+    Architecture: Extends u with Oracle WMS-specific operations.
     Uses composition and delegation to maximize reuse of base utilities.
     """
 
@@ -34,6 +35,5 @@ class FlextOracleWmsUtilities(FlextUtilities):
         HttpClient = FlextOracleWmsUtilitiesHttpClient
 
 
-__all__: list[str] = ["FlextOracleWmsUtilities", "u"]
-
 u = FlextOracleWmsUtilities
+__all__: list[str] = ["FlextOracleWmsUtilities", "u"]

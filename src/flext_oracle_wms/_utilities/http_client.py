@@ -9,11 +9,10 @@ from __future__ import annotations
 from types import TracebackType
 from typing import Self
 
-from flext_api import FlextApiClient, FlextApiModels, FlextApiSettings, FlextApiTypes
+from flext_api import FlextApiClient, FlextApiSettings, u
 from pydantic import ValidationError
 
-from flext_core import p, r, u
-from flext_oracle_wms.typings import t
+from flext_oracle_wms import m, p, r, t
 
 
 class FlextOracleWmsUtilitiesHttpClient:
@@ -56,7 +55,7 @@ class FlextOracleWmsUtilitiesHttpClient:
 
         @staticmethod
         def _normalize_headers(
-            headers: t.StrMapping | FlextApiTypes.Api.WebHeaders | None,
+            headers: t.StrMapping | t.Api.WebHeaders | None,
         ) -> t.StrMapping:
             if headers is None:
                 return {}
@@ -103,7 +102,7 @@ class FlextOracleWmsUtilitiesHttpClient:
                 request_headers = dict(self.default_headers)
                 request_headers.update(self._normalize_headers(headers))
                 url = f"{self.base_url}/{path.lstrip('/')}"
-                request = FlextApiModels.Api.HttpRequest(
+                request = m.Api.HttpRequest(
                     method="DELETE",
                     url=url,
                     headers=request_headers,
@@ -127,11 +126,11 @@ class FlextOracleWmsUtilitiesHttpClient:
         def get(
             self,
             path: str,
-            params: FlextApiTypes.Api.WebParams | None = None,
+            params: t.Api.WebParams | None = None,
             headers: t.StrMapping | None = None,
         ) -> p.Result[t.ContainerValueMapping]:
             """Make GET request with railway-oriented error handling."""
-            params_str: FlextApiTypes.Api.WebParams | None = (
+            params_str: t.Api.WebParams | None = (
                 {str(k): str(v) for k, v in params.items()} if params else None
             )
             return self._execute_request(
@@ -165,7 +164,7 @@ class FlextOracleWmsUtilitiesHttpClient:
                 request_headers.update(self._normalize_headers(headers))
                 request_body = json_data or data
                 url = f"{self.base_url}/{path.lstrip('/')}"
-                request = FlextApiModels.Api.HttpRequest(
+                request = m.Api.HttpRequest(
                     method="PUT",
                     url=url,
                     headers=request_headers,
@@ -209,7 +208,7 @@ class FlextOracleWmsUtilitiesHttpClient:
             self,
             method: str,
             path: str,
-            params: FlextApiTypes.Api.WebParams | None = None,
+            params: t.Api.WebParams | None = None,
             headers: t.StrMapping | None = None,
             body: t.ContainerValueMapping | None = None,
         ) -> p.Result[t.ContainerValueMapping]:
@@ -224,7 +223,7 @@ class FlextOracleWmsUtilitiesHttpClient:
                 if params:
                     query = "&".join((f"{k}={v}" for k, v in params.items()))
                     url = f"{url}?{query}"
-                request = FlextApiModels.Api.HttpRequest(
+                request = m.Api.HttpRequest(
                     method=method,
                     url=url,
                     headers=request_headers,
@@ -251,7 +250,7 @@ class FlextOracleWmsUtilitiesHttpClient:
 
         def _parse_response_body(
             self,
-            body: FlextApiTypes.Api.ResponseBody,
+            body: t.Api.ResponseBody,
         ) -> t.ContainerValueMapping:
             """Parse response body using strict model validation."""
             match body:

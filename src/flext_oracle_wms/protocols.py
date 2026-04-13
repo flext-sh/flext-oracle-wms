@@ -8,18 +8,19 @@ from __future__ import annotations
 
 from typing import Protocol, runtime_checkable
 
-from flext_core import FlextProtocols
+from flext_api import p
+
 from flext_oracle_wms import t
 
 
-class FlextOracleWmsProtocols(FlextProtocols):
-    """Oracle WMS protocols extending FlextProtocols.
+class FlextOracleWmsProtocols(p):
+    """Oracle WMS protocols extending p.
 
-    Extends FlextProtocols to inherit all foundation protocols (Result, Service, etc.)
+    Extends p to inherit all foundation protocols (Result, Service, etc.)
     and adds Oracle WMS-specific protocols in the OracleWms namespace.
 
     Architecture:
-    - EXTENDS: FlextProtocols (inherits Foundation, Domain, Application, etc.)
+    - EXTENDS: p (inherits Foundation, Domain, Application, etc.)
     - ADDS: Oracle WMS-specific protocols in OracleWms namespace
     - PROVIDES: Root-level alias `p` for convenient access
 
@@ -42,12 +43,12 @@ class FlextOracleWmsProtocols(FlextProtocols):
         class EntityDiscoveryClient(Protocol):
             """Protocol for entity discovery client used by FlextOracleWmsEntityDiscovery."""
 
-            def discover_entities(self) -> FlextProtocols.Result[t.StrSequence]:
+            def discover_entities(self) -> p.Result[t.StrSequence]:
                 """Discover available entities."""
                 ...
 
         @runtime_checkable
-        class WmsService(FlextProtocols.Service[None], Protocol):
+        class WmsService(p.Service[None], Protocol):
             """Unified WMS service protocol with operation dispatch."""
 
             def execute_wms_operation(
@@ -55,7 +56,7 @@ class FlextOracleWmsProtocols(FlextProtocols):
                 operation: str,
                 settings: t.ContainerValueMapping,
                 **params: t.Scalar,
-            ) -> FlextProtocols.Result[t.ContainerValue]:
+            ) -> p.Result[t.ContainerValue]:
                 """Execute WMS operation with unified interface.
 
                 Args:
@@ -70,6 +71,6 @@ class FlextOracleWmsProtocols(FlextProtocols):
                 ...
 
 
-__all__: list[str] = ["FlextOracleWmsProtocols", "p"]
-
 p = FlextOracleWmsProtocols
+
+__all__: list[str] = ["FlextOracleWmsProtocols", "p"]
