@@ -287,6 +287,14 @@ class FlextOracleWmsConstants(c):
     class Api:
         """API constants - composed."""
 
+        class Method:
+            """HTTP method constants inherited from flext-api canonical API constants."""
+
+            GET: Final[str] = c.Api.Method.GET
+            POST: Final[str] = c.Api.Method.POST
+            PUT: Final[str] = c.Api.Method.PUT
+            DELETE: Final[str] = c.Api.Method.DELETE
+
         CONFIG: ClassVar[t.IntMapping] = MappingProxyType({
             "default_timeout": 60,
             "min_http_status_code": 200,

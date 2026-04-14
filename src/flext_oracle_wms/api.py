@@ -24,7 +24,7 @@ from flext_oracle_wms import (
 )
 
 
-class FlextOracleWmsApi(s[None]):
+class FlextOracleWmsApi(s):
     """Thin facade for Oracle WMS operations with complete FLEXT integration.
 
     Integrates:

@@ -304,7 +304,7 @@ class CompleteMockPipeline:
             tap_records = self._simulate_tap_extraction()
             target_results = self._simulate_target_loading(tap_records)
             dbt_results = self._simulate_dbt_transformations(target_results)
-            save_result: r[str] = self._save_complete_pipeline_results(
+            save_result: p.Result[str] = self._save_complete_pipeline_results(
                 schemas,
                 catalog,
                 tap_records,
