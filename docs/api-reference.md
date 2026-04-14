@@ -21,7 +21,7 @@
 
 **Complete API documentation for flext-oracle-wms**
 
-**Version**: 0.9.9 RC | **Last Updated**: September 17, 2025 | **Status**: Framework with implementation gaps · 1.0.0 Release Preparation
+**Version**: 0.12.0-dev | **Last Updated**: April 14, 2026 | **Status**: Framework with implementation gaps · 1.0.0 Current
 
 ______________________________________________________________________
 
@@ -47,7 +47,7 @@ Tests connection to Oracle WMS (currently uses fake URLs).
 
 ```python
 result = client.test_connection()
-if result.is_success:
+if result.success:
     print("Connection structure verified")
 else:
     print(f"Connection failed: {result.error}")
@@ -59,7 +59,7 @@ Discovers available Oracle WMS entities.
 
 ```python
 result = client.discover_entities()
-if result.is_success:
+if result.success:
     entities = result.value
     print(f"Found {len(entities)} entities")
 ```
@@ -134,7 +134,7 @@ All operations return `r[T]` for type-safe error handling:
 
 ```python
 result = client.some_operation()
-if result.is_success:
+if result.success:
     data = result.value  # Type-safe access
 else:
     error = result.error  # Error message
@@ -174,7 +174,7 @@ entity = FlextOracleWmsEntity(
 
 ______________________________________________________________________
 
-**Last Updated**: September 17, 2025 | **Status**: Framework requiring Oracle WMS Cloud integration implementation · 1.0.0 Release Preparation
+**Last Updated**: April 14, 2026 | **Status**: Framework requiring Oracle WMS Cloud integration implementation · 1.0.0 Current
 
 ## Related Documentation
 

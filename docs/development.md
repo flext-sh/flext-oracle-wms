@@ -33,7 +33,7 @@
 
 **Development workflow and guidelines for flext-oracle-wms**
 
-**Version**: 0.9.9 RC | **Last Updated**: September 17, 2025 | **Status**: Framework requiring implementation · 1.0.0 Release Preparation
+**Version**: 0.12.0-dev | **Last Updated**: April 14, 2026 | **Status**: Framework requiring implementation · 1.0.0 Current
 
 ______________________________________________________________________
 
@@ -323,4 +323,4 @@ python -v script.py        # Verbose imports
 
 ______________________________________________________________________
 
-**Last Updated**: September 17, 2025 | **Status**: Framework requiring FLEXT compliance and Oracle WMS implementation · 1.0.0 Release Preparation
+**Last Updated**: April 14, 2026 | **Status**: Framework requiring FLEXT compliance and Oracle WMS implementation · 1.0.0 Current

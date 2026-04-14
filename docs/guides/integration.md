@@ -11,7 +11,7 @@
   - [Required Development](#required-development)
 <!-- TOC END -->
 
-**Version 0.9.9 | September 17, 2025 | Status: Partial integration with gaps**
+**Version 0.9.9 | April 14, 2026 | Status: Partial integration with gaps**
 
 ## Integration Status
 
@@ -54,4 +54,4 @@ flext-oracle-wms has partial FLEXT ecosystem integration requiring completion wo
 
 ______________________________________________________________________
 
-**Last Updated**: September 17, 2025 | **Status**: Partial integration requiring completion · 1.0.0 Release Preparation
+**Last Updated**: April 14, 2026 | **Status**: Partial integration requiring completion · 1.0.0 Current

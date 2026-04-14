@@ -23,7 +23,7 @@
 
 **Settings and environment management for flext-oracle-wms**
 
-**Version**: 0.9.9 RC | **Last Updated**: September 17, 2025 | **Status**: Test configuration only · 1.0.0 Release Preparation
+**Version**: 0.12.0-dev | **Last Updated**: April 14, 2026 | **Status**: Test configuration only · 1.0.0 Current
 
 ______________________________________________________________________
 
@@ -178,4 +178,4 @@ Oracle WMS Cloud authentication standards:
 
 ______________________________________________________________________
 
-**Last Updated**: September 17, 2025 | **Status**: Test configuration only, requires Oracle WMS Cloud implementation · 1.0.0 Release Preparation
+**Last Updated**: April 14, 2026 | **Status**: Test configuration only, requires Oracle WMS Cloud implementation · 1.0.0 Current
