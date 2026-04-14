@@ -35,7 +35,6 @@ from pathlib import Path
 
 from dotenv import load_dotenv
 
-from flext_core import r
 from flext_oracle_wms import (
     FlextOracleWmsApi,
     FlextOracleWmsClientSettings,
@@ -44,6 +43,7 @@ from flext_oracle_wms import (
     FlextOracleWmsUtilitiesClient,
     c,
     m,
+    p,
     t,
     u,
 )
@@ -214,7 +214,7 @@ def showcase_8_performance_tracking(
     if len(entities) >= min_entities_for_concurrent_test:
         test_entities = entities[:min_entities_for_concurrent_test]
         start_time = time.time()
-        results: list[r[Sequence[t.StrMapping]]] = []
+        results: list[p.Result[Sequence[t.StrMapping]]] = []
         for entity in test_entities:
             result = client.get_entity_data(entity, limit=2)
             results.append(result)

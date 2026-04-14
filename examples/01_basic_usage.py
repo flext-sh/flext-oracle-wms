@@ -60,7 +60,10 @@ def setup_client_config() -> None:
         username=os.getenv("FLEXT_ORACLE_WMS_USERNAME", ""),
         password=os.getenv("FLEXT_ORACLE_WMS_PASSWORD", ""),
     )
-    _ = container.bind("FlextOracleWmsSettings", settings)
+    _ = container.bind(
+        "FlextOracleWmsSettings",
+        settings.model_dump(mode="python"),
+    )
 
 
 def discover_wms_entities(

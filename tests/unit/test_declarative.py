@@ -16,13 +16,12 @@ from pathlib import Path
 
 import pytest
 
-from flext_core import r
 from flext_oracle_wms import (
     FlextOracleWmsApi,
     FlextOracleWmsClientSettings,
     FlextOracleWmsUtilitiesClient,
 )
-from tests import c, t, u
+from tests import c, p, t, u
 
 logger = u.fetch_logger(__name__)
 
@@ -105,7 +104,7 @@ class TestOracleWmsDeclarativeIntegration:
     ) -> None:
         """Test Oracle WMS API health check returns valid result."""
         health_result = oracle_wms_client.health_check()
-        assert isinstance(health_result, r)
+        assert health_result.success or health_result.failure
         if health_result.success:
             health_response = health_result.value
             health_data = (
@@ -123,7 +122,7 @@ class TestOracleWmsDeclarativeIntegration:
     ) -> None:
         """Test getting list of all Oracle WMS entities returns valid result."""
         entities_result = oracle_wms_client.discover_entities()
-        assert isinstance(entities_result, r)
+        assert entities_result.success or entities_result.failure
         if entities_result.success:
             entities = entities_result.value
             assert isinstance(entities, list)
@@ -182,7 +181,7 @@ class TestLgfApiV10Integration:
     ) -> None:
         """Test getting specific entity record by ID returns valid result."""
         list_result = oracle_wms_client.get_entity_data("company", limit=1)
-        assert isinstance(list_result, r)
+        assert list_result.success or list_result.failure
         if not list_result.success:
             assert list_result.error is not None
             return
@@ -197,7 +196,7 @@ class TestLgfApiV10Integration:
             filters={"id": str(record_id)},
             limit=1,
         )
-        assert isinstance(result, r)
+        assert result.success or result.failure
 
 
 class TestAutomationApisIntegration:
@@ -283,7 +282,7 @@ class TestPerformanceIntegration:
     ) -> None:
         """Test concurrent requests to different entities return results."""
         entities = ["company", "facility", "item"]
-        results: list[r[Sequence[t.StrMapping]] | Exception] = []
+        results: list[p.Result[Sequence[t.StrMapping]] | Exception] = []
         for entity in entities:
             try:
                 result = oracle_wms_client.get_entity_data(entity, limit=3)
@@ -293,7 +292,7 @@ class TestPerformanceIntegration:
         assert len(results) == len(entities)
         for result_item in results:
             if not isinstance(result_item, Exception):
-                assert isinstance(result_item, r)
+                assert result_item.success or result_item.failure
 
     def test_pagination_handling(
         self, oracle_wms_client: FlextOracleWmsUtilitiesClient.Client
