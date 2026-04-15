@@ -19,9 +19,9 @@ from collections.abc import Mapping
 from datetime import UTC, datetime
 from pathlib import Path
 
-from flext_core import p, r
+from flext_core import r
 from flext_oracle_wms import FlextOracleWmsClientSettings, FlextOracleWmsUtilitiesClient
-from tests import t, u
+from tests import p, t, u
 
 logger = u.fetch_logger(__name__)
 

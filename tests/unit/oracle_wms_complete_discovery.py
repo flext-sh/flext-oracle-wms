@@ -19,13 +19,13 @@ from pathlib import Path
 
 from flext_api import FlextApiModels
 
-from flext_core import p, r
+from flext_core import r
 from flext_oracle_wms import (
     FlextOracleWmsApi,
     FlextOracleWmsClientSettings,
     FlextOracleWmsUtilitiesClient,
 )
-from tests import m, t, u
+from tests import m, p, t, u
 
 logger = u.fetch_logger(__name__)
 

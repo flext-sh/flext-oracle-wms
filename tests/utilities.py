@@ -17,14 +17,14 @@ from urllib.parse import urlparse
 from dotenv import load_dotenv
 from flext_tests import FlextTestsUtilities
 
-from flext_core import p, r
+from flext_core import r
 from flext_oracle_wms import (
     FlextOracleWmsApi,
     FlextOracleWmsClientSettings,
     FlextOracleWmsSettings,
     FlextOracleWmsUtilities,
 )
-from tests import TestsFlextOracleWmsTypes
+from tests import TestsFlextOracleWmsTypes, p
 
 
 class TestsFlextOracleWmsUtilities(FlextTestsUtilities, FlextOracleWmsUtilities):

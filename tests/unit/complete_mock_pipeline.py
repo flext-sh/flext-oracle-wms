@@ -19,8 +19,8 @@ from datetime import UTC, datetime
 from pathlib import Path
 from typing import cast
 
-from flext_core import p, r
-from tests import t, u
+from flext_core import r
+from tests import p, t, u
 
 logger = u.fetch_logger(__name__)
 
