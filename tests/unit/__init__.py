@@ -33,6 +33,19 @@ _LAZY_IMPORTS = build_lazy_import_map(
         ".test_unified_config": ("test_unified_config",),
         ".test_wms_api": ("test_wms_api",),
         ".test_wms_client": ("test_wms_client",),
+        "flext_oracle_wms": (
+            "c",
+            "d",
+            "e",
+            "h",
+            "m",
+            "p",
+            "r",
+            "s",
+            "t",
+            "u",
+            "x",
+        ),
     },
 )
 
