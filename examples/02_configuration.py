@@ -15,12 +15,13 @@ from pathlib import Path
 from typing import ClassVar
 
 from dotenv import load_dotenv
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import ConfigDict
 
 from flext_oracle_wms import (
     FlextOracleWmsClientSettings,
     FlextOracleWmsConstants,
     FlextOracleWmsUtilitiesClient,
+    m,
     t,
     u,
 )
@@ -41,7 +42,7 @@ class Environment(StrEnum):
     PRODUCTION = "prod"
 
 
-class WmsEnvironmentConfig(BaseModel):
+class WmsEnvironmentConfig(m.BaseModel):
     """WMS environment configuration."""
 
     model_config: ClassVar[ConfigDict] = ConfigDict(
@@ -49,10 +50,10 @@ class WmsEnvironmentConfig(BaseModel):
         validate_assignment=True,
     )
 
-    name: str = Field(description="Environment display name")
-    base_url: str = Field(description="Oracle WMS base URL")
-    timeout: int = Field(ge=1, description="Request timeout in seconds")
-    max_retries: int = Field(ge=0, description="Maximum retry attempts")
+    name: str = m.Field(description="Environment display name")
+    base_url: str = m.Field(description="Oracle WMS base URL")
+    timeout: int = m.Field(ge=1, description="Request timeout in seconds")
+    max_retries: int = m.Field(ge=0, description="Maximum retry attempts")
 
 
 def get_environment_configs() -> Mapping[Environment, WmsEnvironmentConfig]:

@@ -4,27 +4,26 @@ from __future__ import annotations
 
 from typing import Annotated, ClassVar, Self
 
-from pydantic import Field
 from pydantic_settings import SettingsConfigDict
 
 from flext_core import FlextSettings
-from flext_oracle_wms import p, r
+from flext_oracle_wms import m, p, r
 
 
 @FlextSettings.auto_register("oracle-wms")
 class FlextOracleWmsSettings(FlextSettings):
     """Runtime settings for Oracle WMS client."""
 
-    model_config: ClassVar[SettingsConfigDict] = SettingsConfigDict(
+    model_config: ClassVar[SettingsConfigDict] = m.SettingsConfigDict(
         env_prefix="FLEXT_ORACLE_WMS_",
         extra="ignore",
     )
 
-    base_url: Annotated[str, Field(min_length=1)] = "http://localhost:8080"
-    timeout: Annotated[float, Field(ge=1.0, le=300.0)] = 30.0
+    base_url: Annotated[str, m.Field(min_length=1)] = "http://localhost:8080"
+    timeout: Annotated[float, m.Field(ge=1.0, le=300.0)] = 30.0
     username: str = ""
     password: str = ""
-    retry_attempts: Annotated[int, Field(ge=0)] = 3
+    retry_attempts: Annotated[int, m.Field(ge=0)] = 3
 
     def validate_config(self) -> p.Result[bool]:
         """Validate configuration business rules."""

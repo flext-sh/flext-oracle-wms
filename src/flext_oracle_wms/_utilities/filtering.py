@@ -9,7 +9,6 @@ from __future__ import annotations
 from collections.abc import Mapping, MutableSequence, Sequence
 
 from flext_api import u
-from pydantic import ValidationError
 
 from flext_oracle_wms import (
     FlextOracleWmsDataValidationError,
@@ -155,7 +154,7 @@ class FlextOracleWmsUtilitiesFiltering:
                 if op == ">=":
                     return left_num >= right_num
                 return left_num <= right_num
-            except ValidationError:
+            except c.ValidationError:
                 left_str = str(left)
                 right_str = str(right)
                 if op == ">":

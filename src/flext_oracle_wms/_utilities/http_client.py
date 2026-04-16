@@ -12,7 +12,7 @@ from typing import Self
 from flext_api import FlextApiClient, FlextApiSettings, u
 from pydantic import ValidationError
 
-from flext_oracle_wms import m, p, r, t
+from flext_oracle_wms import c, m, p, r, t
 
 
 class FlextOracleWmsUtilitiesHttpClient:
@@ -262,7 +262,7 @@ class FlextOracleWmsUtilitiesHttpClient:
                             )
                         )
                         return validated
-                    except ValidationError:
+                    except c.ValidationError:
                         fallback_dict: t.ContainerValueMapping = {"text": str(payload)}
                         return fallback_dict
                 case str() as raw if raw:

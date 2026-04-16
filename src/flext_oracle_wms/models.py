@@ -13,7 +13,7 @@ from collections.abc import MutableSequence, Sequence
 from typing import Annotated, ClassVar
 
 from flext_api import m
-from pydantic import BaseModel, ConfigDict, Field, field_validator
+from pydantic import ConfigDict, field_validator
 
 from flext_oracle_wms import c, p, r, t
 
@@ -33,37 +33,37 @@ class FlextOracleWmsModels(m):
     class OracleWms:
         """Oracle WMS domain namespace -- m.OracleWms.*."""
 
-        class FlextOracleWmsOperatorFilter(BaseModel):
+        class FlextOracleWmsOperatorFilter(m.BaseModel):
             """Operator filter model for WMS filtering operations."""
 
             operator: str
             value: t.OracleWms.Core.FilterScalar | t.OracleWms.Core.FilterList
 
-        class Entity(BaseModel):
+        class Entity(m.BaseModel):
             """Oracle WMS entity definition."""
 
             model_config: ClassVar[ConfigDict] = ConfigDict(extra="forbid")
 
-            name: Annotated[str, Field(min_length=1, description="Entity name")]
+            name: Annotated[str, m.Field(min_length=1, description="Entity name")]
             endpoint: Annotated[
                 str,
-                Field(min_length=1, description="API endpoint path"),
+                m.Field(min_length=1, description="API endpoint path"),
             ]
             description: Annotated[
                 str | None,
-                Field(description="Entity description"),
+                m.Field(description="Entity description"),
             ] = None
             primary_key: Annotated[
                 str | None,
-                Field(description="Primary key field"),
+                m.Field(description="Primary key field"),
             ] = None
             replication_key: Annotated[
                 str | None,
-                Field(description="Replication key field"),
+                m.Field(description="Replication key field"),
             ] = None
             supports_incremental: Annotated[
                 bool,
-                Field(
+                m.Field(
                     description="Whether entity supports incremental sync",
                 ),
             ] = False
@@ -86,24 +86,24 @@ class FlextOracleWmsModels(m):
                     return r[bool].fail("Entity endpoint is required")
                 return r[bool].ok(True)
 
-        class ApiResponse(BaseModel):
+        class ApiResponse(m.BaseModel):
             """Oracle WMS API response model."""
 
             data: Annotated[
                 t.ContainerValueMapping,
-                Field(description="Response data"),
-            ] = Field(default_factory=dict)
+                m.Field(description="Response data"),
+            ] = m.Field(default_factory=dict)
             status_code: Annotated[
                 t.HttpStatusCode,
-                Field(description="HTTP status code"),
+                m.Field(description="HTTP status code"),
             ] = 200
             success: Annotated[
                 bool,
-                Field(description="Whether request succeeded"),
+                m.Field(description="Whether request succeeded"),
             ] = True
             error_message: Annotated[
                 str | None,
-                Field(description="Error message if any"),
+                m.Field(description="Error message if any"),
             ] = None
 
             def validate_response(self) -> p.Result[bool]:
@@ -112,18 +112,18 @@ class FlextOracleWmsModels(m):
                     return r[bool].fail("Failed response must include error message")
                 return r[bool].ok(True)
 
-        class ApiEndpoint(BaseModel):
+        class ApiEndpoint(m.BaseModel):
             """Typed Oracle WMS API endpoint definition."""
 
-            name: Annotated[str, Field(min_length=1)]
-            method: Annotated[str, Field(min_length=1)]
-            path: Annotated[str, Field(min_length=1)]
-            version: Annotated[str, Field(min_length=1)]
-            category: Annotated[str, Field(min_length=1)]
+            name: Annotated[str, m.Field(min_length=1)]
+            method: Annotated[str, m.Field(min_length=1)]
+            path: Annotated[str, m.Field(min_length=1)]
+            version: Annotated[str, m.Field(min_length=1)]
+            category: Annotated[str, m.Field(min_length=1)]
             description: str = ""
             since_version: str = "6.1"
 
-        class AuthSettings(BaseModel):
+        class AuthSettings(m.BaseModel):
             """Authentication configuration for Oracle WMS flows."""
 
             method: str = c.OracleWms.OracleWMSAuthMethod.BASIC
@@ -148,28 +148,28 @@ class FlextOracleWmsModels(m):
                     return r[bool].ok(True)
                 return r[bool].fail(f"Unsupported auth method: {self.method}")
 
-        class EntitiesResponse(BaseModel):
+        class EntitiesResponse(m.BaseModel):
             """Oracle WMS entities list response."""
 
             model_config: ClassVar[ConfigDict] = ConfigDict(extra="ignore")
 
-            entities: t.StrSequence = Field(default_factory=list)
+            entities: t.StrSequence = m.Field(default_factory=list)
 
-        class ApiCategoryResponse(BaseModel):
+        class ApiCategoryResponse(m.BaseModel):
             """Oracle WMS API category response."""
 
             model_config: ClassVar[ConfigDict] = ConfigDict(extra="ignore")
 
-            apis: Sequence[t.StrMapping] = Field(
+            apis: Sequence[t.StrMapping] = m.Field(
                 default_factory=lambda: list[t.StrMapping]()
             )
 
-        class EntityDataResponse(BaseModel):
+        class EntityDataResponse(m.BaseModel):
             """Oracle WMS entity data response."""
 
             model_config: ClassVar[ConfigDict] = ConfigDict(extra="ignore")
 
-            data: Sequence[t.StrMapping] = Field(
+            data: Sequence[t.StrMapping] = m.Field(
                 default_factory=lambda: list[t.StrMapping]()
             )
 
@@ -177,115 +177,115 @@ class FlextOracleWmsModels(m):
         # DOMAIN ENTITIES - Composed DDD patterns
         # =====================================================================
 
-        class WmsEntity(BaseModel):
+        class WmsEntity(m.BaseModel):
             """Base WMS entity with identity."""
 
             model_config: ClassVar[ConfigDict] = ConfigDict(extra="forbid")
 
-            id: Annotated[str, Field(description="Entity identifier")] = ""
-            name: Annotated[str, Field(description="Entity name")] = ""
+            id: Annotated[str, m.Field(description="Entity identifier")] = ""
+            name: Annotated[str, m.Field(description="Entity name")] = ""
             created_at: Annotated[
                 str | None,
-                Field(description="Creation timestamp"),
+                m.Field(description="Creation timestamp"),
             ] = None
             updated_at: Annotated[
                 str | None,
-                Field(description="Last update timestamp"),
+                m.Field(description="Last update timestamp"),
             ] = None
 
         class InventoryItem(WmsEntity):
             """Inventory domain entity."""
 
-            sku: Annotated[str, Field(description="Stock keeping unit")] = ""
+            sku: Annotated[str, m.Field(description="Stock keeping unit")] = ""
             quantity: Annotated[
                 t.NonNegativeInt,
-                Field(description="Item quantity"),
+                m.Field(description="Item quantity"),
             ] = 0
             location_id: Annotated[
                 str,
-                Field(description="Storage location identifier"),
+                m.Field(description="Storage location identifier"),
             ] = ""
-            status: Annotated[str, Field(description="Item status")] = "active"
+            status: Annotated[str, m.Field(description="Item status")] = "active"
 
         class Order(WmsEntity):
             """Order domain entity."""
 
             customer_id: Annotated[
                 str,
-                Field(description="Customer identifier"),
+                m.Field(description="Customer identifier"),
             ] = ""
-            status: Annotated[str, Field(description="Order status")] = "pending"
+            status: Annotated[str, m.Field(description="Order status")] = "pending"
             total_amount: Annotated[
                 t.NonNegativeFloat,
-                Field(description="Total order amount"),
+                m.Field(description="Total order amount"),
             ] = 0.0
             items: Annotated[
                 Sequence[t.ContainerValueMapping],
-                Field(description="Order items"),
-            ] = Field(default_factory=lambda: list[t.ContainerValueMapping]())
+                m.Field(description="Order items"),
+            ] = m.Field(default_factory=lambda: list[t.ContainerValueMapping]())
 
         class Shipment(WmsEntity):
             """Shipment domain entity."""
 
             order_id: Annotated[
                 str,
-                Field(description="Associated order identifier"),
+                m.Field(description="Associated order identifier"),
             ] = ""
-            status: Annotated[str, Field(description="Shipment status")] = "pending"
+            status: Annotated[str, m.Field(description="Shipment status")] = "pending"
             carrier: Annotated[
                 str | None,
-                Field(description="Shipping carrier name"),
+                m.Field(description="Shipping carrier name"),
             ] = None
             tracking_number: Annotated[
                 str | None,
-                Field(description="Shipment tracking number"),
+                m.Field(description="Shipment tracking number"),
             ] = None
 
         class PickingTask(WmsEntity):
             """Picking task domain entity."""
 
-            wave_id: Annotated[str, Field(description="Wave identifier")] = ""
-            status: Annotated[str, Field(description="Task status")] = "pending"
+            wave_id: Annotated[str, m.Field(description="Wave identifier")] = ""
+            status: Annotated[str, m.Field(description="Task status")] = "pending"
             items: Annotated[
                 Sequence[t.ContainerValueMapping],
-                Field(description="Task items"),
-            ] = Field(default_factory=lambda: list[t.ContainerValueMapping]())
+                m.Field(description="Task items"),
+            ] = m.Field(default_factory=lambda: list[t.ContainerValueMapping]())
 
         class Location(WmsEntity):
             """Location domain entity."""
 
-            aisle: Annotated[str, Field(description="Aisle identifier")] = ""
-            shelf: Annotated[str, Field(description="Shelf identifier")] = ""
-            bin_: Annotated[str, Field(description="Bin identifier")] = ""
-            zone: Annotated[str, Field(description="Zone identifier")] = ""
+            aisle: Annotated[str, m.Field(description="Aisle identifier")] = ""
+            shelf: Annotated[str, m.Field(description="Shelf identifier")] = ""
+            bin_: Annotated[str, m.Field(description="Bin identifier")] = ""
+            zone: Annotated[str, m.Field(description="Zone identifier")] = ""
 
         # =====================================================================
         # VALUE OBJECTS - Immutable domain values
         # =====================================================================
 
-        class WarehouseLocation(BaseModel):
+        class WarehouseLocation(m.BaseModel):
             """Warehouse location value object."""
 
             model_config: ClassVar[ConfigDict] = ConfigDict(frozen=True, extra="forbid")
 
-            aisle: Annotated[str, Field(description="Aisle identifier")]
-            shelf: Annotated[str, Field(description="Shelf identifier")]
-            bin_: Annotated[str, Field(description="Bin identifier")]
-            zone: Annotated[str, Field(description="Zone identifier")] = ""
+            aisle: Annotated[str, m.Field(description="Aisle identifier")]
+            shelf: Annotated[str, m.Field(description="Shelf identifier")]
+            bin_: Annotated[str, m.Field(description="Bin identifier")]
+            zone: Annotated[str, m.Field(description="Zone identifier")] = ""
 
             @property
             def full_location(self) -> str:
                 """Get full location string."""
                 return f"{self.zone}-{self.aisle}-{self.shelf}-{self.bin_}"
 
-        class ApiCredentials(BaseModel):
+        class ApiCredentials(m.BaseModel):
             """API credentials value object."""
 
             model_config: ClassVar[ConfigDict] = ConfigDict(frozen=True, extra="forbid")
 
-            username: Annotated[str, Field(description="API username")]
-            password: Annotated[str | None, Field(description="API password")] = None
-            token: Annotated[str | None, Field(description="API token")] = None
+            username: Annotated[str, m.Field(description="API username")]
+            password: Annotated[str | None, m.Field(description="API password")] = None
+            token: Annotated[str | None, m.Field(description="API token")] = None
 
         # =====================================================================
         # AGGREGATE ROOTS - Consistency boundaries
@@ -294,20 +294,20 @@ class FlextOracleWmsModels(m):
         class WarehouseAggregate(m.AggregateRoot):
             """Warehouse aggregate root."""
 
-            id: Annotated[str, Field(description="Warehouse identifier")]
-            name: Annotated[str, Field(description="Warehouse name")]
+            id: Annotated[str, m.Field(description="Warehouse identifier")]
+            name: Annotated[str, m.Field(description="Warehouse name")]
             locations: Annotated[
                 Sequence[FlextOracleWmsModels.OracleWms.WarehouseLocation],
-                Field(description="Warehouse locations"),
-            ] = Field(
+                m.Field(description="Warehouse locations"),
+            ] = m.Field(
                 default_factory=lambda: list[
                     FlextOracleWmsModels.OracleWms.WarehouseLocation
                 ]()
             )
             inventory: Annotated[
                 MutableSequence[FlextOracleWmsModels.OracleWms.InventoryItem],
-                Field(description="Warehouse inventory items"),
-            ] = Field(
+                m.Field(description="Warehouse inventory items"),
+            ] = m.Field(
                 default_factory=lambda: list[
                     FlextOracleWmsModels.OracleWms.InventoryItem
                 ]()
