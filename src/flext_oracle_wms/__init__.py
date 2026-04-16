@@ -68,6 +68,18 @@ _LAZY_IMPORTS = merge_lazy_imports(
                 "__version__",
                 "__version_info__",
             ),
+            "._utilities.auth": ("FlextOracleWmsUtilitiesAuth",),
+            "._utilities.client": ("FlextOracleWmsUtilitiesClient",),
+            "._utilities.discovery": (
+                "DISCOVERY_FAILURE",
+                "DISCOVERY_SUCCESS",
+                "FlextOracleWmsUtilitiesDiscovery",
+            ),
+            "._utilities.filtering": (
+                "FlextOracleWmsOperatorFilter",
+                "FlextOracleWmsUtilitiesFiltering",
+            ),
+            "._utilities.http_client": ("FlextOracleWmsUtilitiesHttpClient",),
             ".api": (
                 "FlextOracleWmsApi",
                 "oracle_wms",

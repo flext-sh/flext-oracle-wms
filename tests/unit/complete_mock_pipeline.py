@@ -437,7 +437,7 @@ class CompleteMockPipeline:
     ) -> dict[str, t.RecursiveContainer]:
         """Build complete Singer schema - SRP compliance."""
         return {
-            "type": "t.RecursiveContainer",
+            "type": "object",
             "properties": properties,
             "additionalProperties": False,
             "key_properties": key_properties or ["id"],

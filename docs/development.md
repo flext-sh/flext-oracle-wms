@@ -183,7 +183,7 @@ def operation() -> p.Result[ReturnType]:
 
 - **100% MyPy compliance** - Zero type errors tolerated
 - **Pydantic models** - All data structures validated
-- **No `t.RecursiveContainer` types** - Explicit typing required
+- **No `object` types** - Explicit typing required
 - **No `type: ignore`** - Fix types at source
 
 ## Testing Strategy
