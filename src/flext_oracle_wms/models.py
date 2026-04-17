@@ -12,10 +12,10 @@ from __future__ import annotations
 from collections.abc import MutableSequence, Sequence
 from typing import Annotated, ClassVar
 
-from flext_api import m
+from flext_api import m, u
 from pydantic import ConfigDict
 
-from flext_oracle_wms import c, p, r, t, u
+from flext_oracle_wms import c, p, r, t
 
 
 class FlextOracleWmsModels(m):

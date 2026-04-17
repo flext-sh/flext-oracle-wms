@@ -9,10 +9,10 @@ from __future__ import annotations
 from collections.abc import Mapping, Sequence
 from typing import Annotated, Literal
 
-from flext_api import t, u
+from flext_api import m, t, u
 from pydantic import StringConstraints, TypeAdapter
 
-from flext_oracle_wms import c, m
+from flext_oracle_wms import c
 
 
 class FlextOracleWmsTypes(t):
