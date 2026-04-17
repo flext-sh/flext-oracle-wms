@@ -9,7 +9,7 @@ from __future__ import annotations
 from collections.abc import Mapping, Sequence
 from typing import Annotated, Literal
 
-from flext_api import t
+from flext_api import t, u
 from pydantic import StringConstraints, TypeAdapter
 
 from flext_oracle_wms import c, m
@@ -46,7 +46,7 @@ class FlextOracleWmsTypes(t):
         ]
         type TFilterValue = t.OptionalScalar
         type TFilters = Mapping[str, t.OptionalScalar]
-        type TTimeout = Annotated[int, m.Field(ge=1, le=300)]
+        type TTimeout = Annotated[int, u.Field(ge=1, le=300)]
 
         type ProjectType = c.OracleWms.ProjectType
         type WmsProjectConfig = t.ContainerValueMapping

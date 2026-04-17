@@ -45,15 +45,15 @@ class Environment(StrEnum):
 class WmsEnvironmentConfig(m.BaseModel):
     """WMS environment configuration."""
 
-    model_config: ClassVar[ConfigDict] = ConfigDict(
+    model_config: ClassVar[m.ConfigDict] = ConfigDict(
         extra="forbid",
         validate_assignment=True,
     )
 
-    name: str = m.Field(description="Environment display name")
-    base_url: str = m.Field(description="Oracle WMS base URL")
-    timeout: int = m.Field(ge=1, description="Request timeout in seconds")
-    max_retries: int = m.Field(ge=0, description="Maximum retry attempts")
+    name: str = u.Field(description="Environment display name")
+    base_url: str = u.Field(description="Oracle WMS base URL")
+    timeout: int = u.Field(ge=1, description="Request timeout in seconds")
+    max_retries: int = u.Field(ge=0, description="Maximum retry attempts")
 
 
 def get_environment_configs() -> Mapping[Environment, WmsEnvironmentConfig]:

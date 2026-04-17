@@ -76,8 +76,8 @@ class TestFlextOracleWmsFilterConstruction:
         filters: Mapping[str, t.OracleWms.Core.FilterScalar] = {
             "field1": "v1",
             "field2": "v2",
-            "field3": "v3",
-            "field4": "v4",
+            "u.field3": "v3",
+            "u.field4": "v4",
         }
         with pytest.raises(FlextOracleWmsUtilitiesFiltering.DataValidationError):
             FlextOracleWmsUtilitiesFiltering.Filter(filters=filters, max_conditions=3)
@@ -108,7 +108,7 @@ class TestFilterValidation:
         ] = {
             "field1": "value1",
             "field2": "value2",
-            "field3": "value3",
+            "u.field3": "value3",
         }
         result = filter_engine._validate_filters(filters)
         assert result.failure
