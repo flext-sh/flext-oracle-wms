@@ -4,10 +4,10 @@ from __future__ import annotations
 
 from typing import Annotated, ClassVar, Self
 
+from flext_api import m, p, r, u
 from pydantic_settings import SettingsConfigDict
 
 from flext_core import FlextSettings
-from flext_oracle_wms import m, p, r, u
 
 
 @FlextSettings.auto_register("oracle-wms")

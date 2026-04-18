@@ -11,6 +11,7 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
+from collections.abc import Mapping
 from importlib.metadata import PackageMetadata, metadata
 
 from flext_core import FlextVersion
@@ -19,7 +20,7 @@ from flext_core import FlextVersion
 class FlextOracleWmsVersion(FlextVersion):
     """flext-oracle-wms version — MRO-derived from FlextVersion."""
 
-    _metadata: PackageMetadata = metadata("flext-oracle-wms")
+    _metadata: PackageMetadata | Mapping[str, str] = metadata("flext-oracle-wms")
 
 
 __version__ = FlextOracleWmsVersion.__version__

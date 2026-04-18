@@ -282,8 +282,8 @@ class FlextOracleWmsConstants(c):
 
         DEFAULT_PAGE_SIZE: ClassVar[int] = 100
 
-    class Api:
-        """API constants - composed."""
+    class OracleWmsApi:
+        """Oracle WMS API constants - composed."""
 
         class Method:
             """HTTP method constants inherited from flext-api canonical API constants."""

@@ -4,10 +4,11 @@ from __future__ import annotations
 
 from typing import Annotated, ClassVar
 
+from flext_api import m
+from flext_oracle_wms.settings import FlextOracleWmsSettings
 from pydantic_settings import SettingsConfigDict
 
 from flext_core import u
-from flext_oracle_wms import FlextOracleWmsSettings, m
 
 
 class FlextOracleWmsClientSettings(FlextOracleWmsSettings):
