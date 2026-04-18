@@ -7,7 +7,6 @@ integration using the ACTUAL API that exists and functions properly.
 
 from __future__ import annotations
 
-import contextlib
 import os
 from collections.abc import Mapping
 from enum import StrEnum, unique
@@ -15,7 +14,6 @@ from pathlib import Path
 from typing import ClassVar
 
 from dotenv import load_dotenv
-from pydantic import ConfigDict
 
 from flext_oracle_wms import (
     FlextOracleWmsClientSettings,
@@ -45,7 +43,7 @@ class Environment(StrEnum):
 class WmsEnvironmentConfig(m.BaseModel):
     """WMS environment configuration."""
 
-    model_config: ClassVar[m.ConfigDict] = ConfigDict(
+    model_config: ClassVar[m.ConfigDict] = m.ConfigDict(
         extra="forbid",
         validate_assignment=True,
     )
@@ -258,8 +256,7 @@ def demonstrate_configuration_patterns() -> None:
 
 def main() -> None:
     """Main function demonstrating Oracle WMS configuration patterns."""
-    with contextlib.suppress(Exception):
-        demonstrate_configuration_patterns()
+    demonstrate_configuration_patterns()
 
 
 if __name__ == "__main__":
