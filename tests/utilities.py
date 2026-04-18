@@ -46,9 +46,11 @@ class TestsFlextOracleWmsUtilities(FlextTestsUtilities, FlextOracleWmsUtilities)
 
             @staticmethod
             def to_str(
-                value: TestsFlextOracleWmsTypes.NormalizedValue, default: str
+                value: TestsFlextOracleWmsTypes.OptionalContainerValue, default: str
             ) -> str:
                 """Normalize a scalar-like value into a string."""
+                if value is None:
+                    return default
                 if isinstance(value, str):
                     return value
                 if isinstance(value, (int, float)):
@@ -57,9 +59,11 @@ class TestsFlextOracleWmsUtilities(FlextTestsUtilities, FlextOracleWmsUtilities)
 
             @staticmethod
             def to_int(
-                value: TestsFlextOracleWmsTypes.NormalizedValue, default: int
+                value: TestsFlextOracleWmsTypes.OptionalContainerValue, default: int
             ) -> int:
                 """Normalize a scalar-like value into an integer."""
+                if value is None:
+                    return default
                 if isinstance(value, (int, float)):
                     return int(value)
                 if isinstance(value, str):
@@ -71,7 +75,7 @@ class TestsFlextOracleWmsUtilities(FlextTestsUtilities, FlextOracleWmsUtilities)
 
             @staticmethod
             def to_bool(
-                value: TestsFlextOracleWmsTypes.NormalizedValue | None,
+                value: TestsFlextOracleWmsTypes.OptionalContainerValue,
                 default: bool,
             ) -> bool:
                 """Normalize a scalar-like value into a boolean."""
@@ -252,7 +256,9 @@ class TestsFlextOracleWmsUtilities(FlextTestsUtilities, FlextOracleWmsUtilities)
                 ]
 
             @staticmethod
-            def sample_entity_data() -> TestsFlextOracleWmsTypes.ContainerMapping:
+            def sample_entity_data() -> (
+                TestsFlextOracleWmsTypes.OptionalContainerValueMapping
+            ):
                 """Return canonical sample entity payload data for tests."""
                 return {
                     "result_count": 4,

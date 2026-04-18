@@ -27,7 +27,7 @@ logger = u.fetch_logger(__name__)
 
 
 @pytest.fixture
-def env_config() -> t.RecursiveContainerMapping:
+def env_config() -> t.OracleWms.Tests.EnvConfig:
     """Fixture that provides .env configuration or deterministic test defaults."""
     config_result = u.OracleWms.Tests.load_env_config(Path(__file__))
     if config_result.success and config_result.value.get("base_url"):
@@ -43,7 +43,7 @@ def env_config() -> t.RecursiveContainerMapping:
 
 @pytest.fixture
 def oracle_wms_client(
-    env_config: t.RecursiveContainerMapping,
+    env_config: t.OracleWms.Tests.EnvConfig,
 ) -> Generator[FlextOracleWmsUtilitiesClient.Client]:
     """Fixture that provides configured Oracle WMS client."""
     settings = FlextOracleWmsClientSettings.model_validate({
@@ -79,7 +79,7 @@ class TestOracleWmsDeclarativeIntegration:
 
     def test_client_configuration_and_lifecycle(
         self,
-        env_config: t.RecursiveContainerMapping,
+        env_config: t.OracleWms.Tests.EnvConfig,
     ) -> None:
         """Test client configuration and initialization."""
         settings = u.OracleWms.Tests.build_client_settings(
