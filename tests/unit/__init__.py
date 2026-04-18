@@ -18,6 +18,11 @@ _LAZY_IMPORTS = build_lazy_import_map(
             "TestAuthenticationMethod",
             "TestAuthenticator",
         ),
+        ".test_authentication_core": (
+            "TestAuthenticationConfigCore",
+            "TestAuthenticationMethodCore",
+            "TestAuthenticatorCore",
+        ),
         ".test_client": ("TestClientSimpleNew",),
         ".test_client_class": ("test_client_class",),
         ".test_client_core": (
@@ -55,6 +60,7 @@ _LAZY_IMPORTS = build_lazy_import_map(
             "TestRecordSorting",
         ),
         ".test_helpers": ("TestFlextOracleWmsUtilities",),
+        ".test_helpers_core": ("TestFlextOracleWmsUtilitiesCore",),
         ".test_models": ("test_models",),
         ".test_schema_dynamic": (
             "TestNestedConstants",
@@ -65,6 +71,7 @@ _LAZY_IMPORTS = build_lazy_import_map(
             "TestFlextOracleWmsEntity",
         ),
         ".test_unified_config": ("TestFlextOracleWmsSettings",),
+        ".test_wms_api": ("TestFlextOracleWmsApiWms",),
         ".test_wms_client": ("TestFlextOracleWmsClient",),
     },
 )

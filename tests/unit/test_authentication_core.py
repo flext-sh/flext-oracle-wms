@@ -14,7 +14,7 @@ from tests import c, m
 
 
 @pytest.mark.unit
-class TestAuthenticationMethod:
+class TestAuthenticationMethodCore:
     """Test authentication method enum."""
 
     def test_authentication_method_values(self) -> None:
@@ -34,7 +34,7 @@ class TestAuthenticationMethod:
 
 
 @pytest.mark.unit
-class TestAuthenticationConfig:
+class TestAuthenticationConfigCore:
     """Test authentication configuration."""
 
     def test_basic_auth_config_creation(self) -> None:
@@ -110,7 +110,7 @@ class TestAuthenticationConfig:
 
 
 @pytest.mark.unit
-class TestAuthenticator:
+class TestAuthenticatorCore:
     """Test authenticator class."""
 
     def test_authenticator_creation(self) -> None:

@@ -11,7 +11,7 @@ from flext_oracle_wms import FlextOracleWmsApi, FlextOracleWmsUtilitiesClient
 from tests import m
 
 
-class TestFlextOracleWmsApi:
+class TestFlextOracleWmsApiWms:
     """Test cases for FlextOracleWmsApi class."""
 
     def test_api_catalog_exists(self) -> None:
@@ -90,4 +90,4 @@ class TestFlextOracleWmsApi:
         assert isinstance(result.value, FlextOracleWmsUtilitiesClient.Client)
 
 
-__all__: list[str] = ["TestFlextOracleWmsApi"]
+__all__: list[str] = ["TestFlextOracleWmsApiWms"]

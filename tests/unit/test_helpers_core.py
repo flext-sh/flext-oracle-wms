@@ -15,7 +15,7 @@ from tests import u
 
 
 @pytest.mark.unit
-class TestFlextOracleWmsUtilities:
+class TestFlextOracleWmsUtilitiesCore:
     """Test suite for FlextOracleWmsUtilities class."""
 
     def test_inherits_from_flext_utilities(self) -> None:

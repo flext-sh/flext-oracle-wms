@@ -29,6 +29,11 @@ if _t.TYPE_CHECKING:
         TestAuthenticationMethod,
         TestAuthenticator,
     )
+    from tests.unit.test_authentication_core import (
+        TestAuthenticationConfigCore,
+        TestAuthenticationMethodCore,
+        TestAuthenticatorCore,
+    )
     from tests.unit.test_client import TestClientSimpleNew
     from tests.unit.test_client_core import TestFlextOracleWmsClientCore, TestGetLogger
     from tests.unit.test_constants import Testc
@@ -59,12 +64,14 @@ if _t.TYPE_CHECKING:
         TestRecordSorting,
     )
     from tests.unit.test_helpers import TestFlextOracleWmsUtilities
+    from tests.unit.test_helpers_core import TestFlextOracleWmsUtilitiesCore
     from tests.unit.test_schema_dynamic import TestNestedConstants, TestWmsEnums
     from tests.unit.test_singer_flattening import (
         TestFlextOracleWmsApiResponse,
         TestFlextOracleWmsEntity,
     )
     from tests.unit.test_unified_config import TestFlextOracleWmsSettings
+    from tests.unit.test_wms_api import TestFlextOracleWmsApiWms
     from tests.unit.test_wms_client import TestFlextOracleWmsClient
     from tests.utilities import TestsFlextOracleWmsUtilities, u
 _LAZY_IMPORTS = merge_lazy_imports(
@@ -96,6 +103,11 @@ _LAZY_IMPORTS = merge_lazy_imports(
                 "TestAuthenticationConfig",
                 "TestAuthenticationMethod",
                 "TestAuthenticator",
+            ),
+            ".unit.test_authentication_core": (
+                "TestAuthenticationConfigCore",
+                "TestAuthenticationMethodCore",
+                "TestAuthenticatorCore",
             ),
             ".unit.test_client": ("TestClientSimpleNew",),
             ".unit.test_client_core": (
@@ -130,6 +142,7 @@ _LAZY_IMPORTS = merge_lazy_imports(
                 "TestRecordSorting",
             ),
             ".unit.test_helpers": ("TestFlextOracleWmsUtilities",),
+            ".unit.test_helpers_core": ("TestFlextOracleWmsUtilitiesCore",),
             ".unit.test_schema_dynamic": (
                 "TestNestedConstants",
                 "TestWmsEnums",
@@ -139,6 +152,7 @@ _LAZY_IMPORTS = merge_lazy_imports(
                 "TestFlextOracleWmsEntity",
             ),
             ".unit.test_unified_config": ("TestFlextOracleWmsSettings",),
+            ".unit.test_wms_api": ("TestFlextOracleWmsApiWms",),
             ".unit.test_wms_client": ("TestFlextOracleWmsClient",),
             ".utilities": (
                 "TestsFlextOracleWmsUtilities",
@@ -183,8 +197,11 @@ __all__: list[str] = [
     "OracleWmsCompleteDiscovery",
     "TestApplyOperator",
     "TestAuthenticationConfig",
+    "TestAuthenticationConfigCore",
     "TestAuthenticationMethod",
+    "TestAuthenticationMethodCore",
     "TestAuthenticator",
+    "TestAuthenticatorCore",
     "TestAutomationApisIntegration",
     "TestClientSimpleNew",
     "TestConvenienceFunctions",
@@ -196,6 +213,7 @@ __all__: list[str] = [
     "TestFilterValidation",
     "TestFlextOracleWmsApi",
     "TestFlextOracleWmsApiResponse",
+    "TestFlextOracleWmsApiWms",
     "TestFlextOracleWmsClient",
     "TestFlextOracleWmsClientCore",
     "TestFlextOracleWmsEntity",
@@ -203,6 +221,7 @@ __all__: list[str] = [
     "TestFlextOracleWmsFilterConstruction",
     "TestFlextOracleWmsSettings",
     "TestFlextOracleWmsUtilities",
+    "TestFlextOracleWmsUtilitiesCore",
     "TestGetLogger",
     "TestLgfApiV10Integration",
     "TestMatchesCondition",
