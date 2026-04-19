@@ -8,9 +8,8 @@ from __future__ import annotations
 
 from unittest.mock import MagicMock
 
-from flext_core import r
-from flext_oracle_wms import FlextOracleWmsUtilitiesDiscovery, u
-from tests import c
+from flext_oracle_wms import FlextOracleWmsUtilitiesDiscovery
+from tests import c, r, u
 
 
 class TestDiscoveryConstants:

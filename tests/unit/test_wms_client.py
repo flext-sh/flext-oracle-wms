@@ -15,8 +15,8 @@ from unittest.mock import MagicMock
 import pytest
 from flext_api import FlextApiClient
 
-from flext_core import r
 from flext_oracle_wms import FlextOracleWmsSettings, FlextOracleWmsUtilitiesClient
+from tests import r
 
 
 class TestFlextOracleWmsClient:

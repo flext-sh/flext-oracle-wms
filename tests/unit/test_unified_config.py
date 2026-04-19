@@ -7,9 +7,9 @@ SPDX-License-Identifier: MIT.
 from __future__ import annotations
 
 import pytest
-from pydantic import ValidationError
 
 from flext_oracle_wms import FlextOracleWmsSettings
+from tests import e
 
 
 class TestFlextOracleWmsSettings:
@@ -40,14 +40,14 @@ class TestFlextOracleWmsSettings:
 
     def test_config_timeout_bounds(self) -> None:
         """Test timeout validation bounds."""
-        with pytest.raises(ValidationError):
+        with pytest.raises(e.ValidationError):
             FlextOracleWmsSettings(timeout=0)
-        with pytest.raises(ValidationError):
+        with pytest.raises(e.ValidationError):
             FlextOracleWmsSettings(timeout=301)
 
     def test_config_retry_bounds(self) -> None:
         """Test retry_attempts validation bounds."""
-        with pytest.raises(ValidationError):
+        with pytest.raises(e.ValidationError):
             FlextOracleWmsSettings(retry_attempts=-1)
 
     def test_validate_config_success(self) -> None:

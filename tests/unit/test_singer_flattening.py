@@ -10,9 +10,8 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 import pytest
-from pydantic import ValidationError
 
-from tests import m
+from tests import e, m
 
 
 class TestFlextOracleWmsEntity:
@@ -47,12 +46,12 @@ class TestFlextOracleWmsEntity:
 
     def test_entity_name_min_length(self) -> None:
         """Test entity name must have min length 1."""
-        with pytest.raises(ValidationError):
+        with pytest.raises(e.ValidationError):
             m.OracleWms.Entity(name="", endpoint="/test")
 
     def test_entity_endpoint_pattern(self) -> None:
         """Test entity endpoint must start with /."""
-        with pytest.raises(ValidationError):
+        with pytest.raises(e.ValidationError):
             m.OracleWms.Entity(name="test", endpoint="no-slash")
 
     def test_entity_validate_entity_success(self) -> None:
@@ -132,9 +131,9 @@ class TestFlextOracleWmsApiResponse:
 
     def test_response_status_code_bounds(self) -> None:
         """Test status code validation bounds (HttpStatusCode: 100-599)."""
-        with pytest.raises(ValidationError):
+        with pytest.raises(e.ValidationError):
             m.OracleWms.ApiResponse(status_code=99)
-        with pytest.raises(ValidationError):
+        with pytest.raises(e.ValidationError):
             m.OracleWms.ApiResponse(status_code=600)
 
     def test_response_namespace_access(self) -> None:

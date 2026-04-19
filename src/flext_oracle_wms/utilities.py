@@ -24,7 +24,6 @@ class FlextOracleWmsUtilities(u):
         FlextOracleWmsUtilitiesDiscovery,
         FlextOracleWmsUtilitiesFiltering,
         FlextOracleWmsUtilitiesHttpClient,
-        u,
     ):
         """Oracle WMS utilities extending u via MRO composition."""
 

@@ -13,9 +13,8 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from flext_core import r
 from flext_oracle_wms import FlextOracleWmsSettings, FlextOracleWmsUtilitiesClient
-from tests import u
+from tests import r, u
 
 
 @pytest.mark.unit

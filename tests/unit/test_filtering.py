@@ -22,8 +22,8 @@ from collections.abc import Mapping, Sequence
 
 import pytest
 
-from flext_oracle_wms import FlextOracleWmsUtilitiesFiltering, c, e, m
-from tests import t
+from flext_oracle_wms import FlextOracleWmsUtilitiesFiltering
+from tests import c, e, m, t
 
 
 class TestFlextOracleWmsFilterConstruction:
