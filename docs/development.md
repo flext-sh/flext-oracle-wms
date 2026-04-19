@@ -242,7 +242,7 @@ def test_real_connection():
 
    - Implement modern pick_confirm API
    - Add bulk_update_inventory_attributes endpoint
-   - Add t.RecursiveContainer store data extraction capabilities
+   - Add t.Container store data extraction capabilities
 
 1. **Establish real connectivity**
 

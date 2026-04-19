@@ -24,7 +24,7 @@ from tests import p, r, t, u
 logger = u.fetch_logger(__name__)
 
 
-def _extract_replication_methods(catalog: t.RecursiveContainer) -> list[str]:
+def _extract_replication_methods(catalog: t.Container) -> list[str]:
     """Extract distinct replication methods from Singer catalog."""
     if not isinstance(catalog, dict):
         return []
@@ -54,8 +54,8 @@ class CompleteMockPipeline:
     """Complete Oracle WMS pipeline using realistic mock data."""
 
     @staticmethod
-    def _safe_int(value: t.RecursiveContainer, default: int = 0) -> int:
-        """Safely convert t.RecursiveContainer to int."""
+    def _safe_int(value: t.Container, default: int = 0) -> int:
+        """Safely convert t.Container to int."""
         if isinstance(value, int):
             return value
         if isinstance(value, str) and value.isdigit():
@@ -64,7 +64,7 @@ class CompleteMockPipeline:
 
     def __init__(self) -> None:
         """Initialize with realistic Oracle WMS mock data."""
-        self.mock_entities: t.RecursiveContainerMapping = {
+        self.mock_entities: Mapping[str, t.Container] = {
             "company": {
                 "count": 5,
                 "sample_data": {
@@ -292,9 +292,9 @@ class CompleteMockPipeline:
                 },
             },
         }
-        self.results: t.RecursiveContainerMapping = {}
+        self.results: Mapping[str, t.Container] = {}
 
-    def run_complete_pipeline(self) -> p.Result[t.RecursiveContainerMapping]:
+    def run_complete_pipeline(self) -> p.Result[Mapping[str, t.Container]]:
         """Run complete Oracle WMS pipeline with mock data."""
         start_time = datetime.now(UTC)
         try:
@@ -317,7 +317,7 @@ class CompleteMockPipeline:
                     sample_data = data["sample_data"]
                     if isinstance(sample_data, dict):
                         len(sample_data.keys())
-            return r[t.RecursiveContainerMapping].ok({
+            return r[Mapping[str, t.Container]].ok({
                 "duration": duration,
                 "schemas_count": len(schemas),
                 "catalog_streams": len(
@@ -333,11 +333,11 @@ class CompleteMockPipeline:
             })
         except Exception as e:
             logger.exception("Complete pipeline failed")
-            return r[t.RecursiveContainerMapping].fail(f"Pipeline failed: {e}")
+            return r[Mapping[str, t.Container]].fail(f"Pipeline failed: {e}")
 
-    def _generate_complete_singer_schemas(self) -> t.RecursiveContainerMapping:
+    def _generate_complete_singer_schemas(self) -> Mapping[str, t.Container]:
         """Generate complete Singer schemas for all entities."""
-        schemas: dict[str, t.RecursiveContainer] = {}
+        schemas: dict[str, t.Container] = {}
         for entity_name, entity_info in self.mock_entities.items():
             if isinstance(entity_info, dict) and "sample_data" in entity_info:
                 sample_data = entity_info["sample_data"]
@@ -352,10 +352,10 @@ class CompleteMockPipeline:
 
     def _create_entity_properties(
         self,
-        sample_data: t.RecursiveContainerMapping,
-    ) -> tuple[dict[str, t.RecursiveContainer], list[str]]:
+        sample_data: Mapping[str, t.Container],
+    ) -> tuple[dict[str, t.Container], list[str]]:
         """Create properties and key properties from sample data - SRP compliance."""
-        properties: dict[str, t.RecursiveContainer] = {}
+        properties: dict[str, t.Container] = {}
         key_properties: list[str] = []
         for field, value in sample_data.items():
             field_property = self._infer_field_type(field, value=value)
@@ -368,7 +368,7 @@ class CompleteMockPipeline:
         self,
         field: str,
         *,
-        value: t.RecursiveContainer,
+        value: t.Container,
     ) -> t.AttributeMapping:
         """Infer Singer type from field name and value - Strategy Pattern."""
         field_type = self._infer_type_from_field_name(field)
@@ -401,7 +401,7 @@ class CompleteMockPipeline:
     def _infer_type_from_value(
         self,
         *,
-        value: t.RecursiveContainer,
+        value: t.Container,
     ) -> t.AttributeMapping:
         """Infer type from Python value type - Template Method Pattern."""
         if isinstance(value, bool):
@@ -431,9 +431,9 @@ class CompleteMockPipeline:
 
     def _build_singer_schema(
         self,
-        properties: t.RecursiveContainerMapping,
+        properties: Mapping[str, t.Container],
         key_properties: t.StrSequence,
-    ) -> dict[str, t.RecursiveContainer]:
+    ) -> dict[str, t.Container]:
         """Build complete Singer schema - SRP compliance."""
         return {
             "type": "object",
@@ -444,10 +444,10 @@ class CompleteMockPipeline:
 
     def _create_complete_singer_catalog(
         self,
-        schemas: t.RecursiveContainerMapping,
-    ) -> t.RecursiveContainerMapping:
+        schemas: Mapping[str, t.Container],
+    ) -> Mapping[str, t.Container]:
         """Create complete Singer catalog for Meltano integration."""
-        streams: list[dict[str, t.RecursiveContainer]] = []
+        streams: list[dict[str, t.Container]] = []
         for entity_name, schema in schemas.items():
             if not isinstance(schema, dict):
                 continue
@@ -456,7 +456,7 @@ class CompleteMockPipeline:
                 k: v for k, v in schema.items() if k != "key_properties"
             }
             schema_props = schema.get("properties", {})
-            empty_props: dict[str, t.RecursiveContainer] = {}
+            empty_props: dict[str, t.Container] = {}
             schema_props_dict = (
                 schema_props if isinstance(schema_props, dict) else empty_props
             )
@@ -469,7 +469,7 @@ class CompleteMockPipeline:
                 else "FULL_TABLE"
             )
             replication_key = "mod_ts" if "mod_ts" in schema_props_dict else None
-            inner_metadata: dict[str, t.RecursiveContainer] = {
+            inner_metadata: dict[str, t.Container] = {
                 "inclusion": "available",
                 "selected": True,
                 "replication-method": replication_method,
@@ -478,7 +478,7 @@ class CompleteMockPipeline:
             }
             if replication_key:
                 inner_metadata["replication-key"] = replication_key
-            stream: dict[str, t.RecursiveContainer] = {
+            stream: dict[str, t.Container] = {
                 "tap_stream_id": entity_name,
                 "stream": entity_name,
                 "schema": schema_without_keys,
@@ -493,14 +493,14 @@ class CompleteMockPipeline:
             streams.append(stream)
         return {"version": 1, "streams": streams}
 
-    def _simulate_tap_extraction(self) -> list[dict[str, t.RecursiveContainer]]:
+    def _simulate_tap_extraction(self) -> list[dict[str, t.Container]]:
         """Simulate TAP extraction process."""
-        tap_records: list[dict[str, t.RecursiveContainer]] = []
+        tap_records: list[dict[str, t.Container]] = []
         for entity_name, entity_info in self.mock_entities.items():
             if not isinstance(entity_info, dict):
                 continue
             sample_data_raw = entity_info.get("sample_data", {})
-            sample_data: dict[str, t.RecursiveContainer] = (
+            sample_data: dict[str, t.Container] = (
                 dict(sample_data_raw) if isinstance(sample_data_raw, dict) else {}
             )
             sample_data["_sdc_extracted_at"] = datetime.now(UTC).isoformat()
@@ -510,7 +510,7 @@ class CompleteMockPipeline:
             count_value = entity_info.get("count", 1)
             count = min(count_value if isinstance(count_value, int) else 1, 5)
             for i in range(count):
-                record: dict[str, t.RecursiveContainer] = dict(sample_data)
+                record: dict[str, t.Container] = dict(sample_data)
                 if "id" in record and isinstance(record["id"], int):
                     record["id"] += i
                 if "order_nbr" in record and isinstance(record["order_nbr"], str):
@@ -521,10 +521,10 @@ class CompleteMockPipeline:
 
     def _simulate_target_loading(
         self,
-        tap_records: Sequence[dict[str, t.RecursiveContainer]],
-    ) -> dict[str, t.RecursiveContainer]:
+        tap_records: Sequence[dict[str, t.Container]],
+    ) -> dict[str, t.Container]:
         """Simulate TARGET loading process."""
-        target_results: dict[str, t.RecursiveContainer] = {}
+        target_results: dict[str, t.Container] = {}
         for entity_name in self.mock_entities:
             entity_records = [
                 rec for rec in tap_records if rec.get("entity") == entity_name
@@ -545,8 +545,8 @@ class CompleteMockPipeline:
 
     def _simulate_dbt_transformations(
         self,
-        target_results: t.RecursiveContainerMapping,
-    ) -> t.RecursiveContainerMapping:
+        target_results: Mapping[str, t.Container],
+    ) -> Mapping[str, t.Container]:
         """Simulate DBT transformation process."""
         dbt_results: dict[str, Mapping[str, int | t.StrSequence | str]] = {}
         business_models = {
@@ -620,7 +620,7 @@ class CompleteMockPipeline:
                     "rows_processed": sum(
                         self._safe_int(
                             cast(
-                                "t.RecursiveContainerMapping",
+                                "Mapping[str, t.Container]",
                                 target_results.get(src, {}),
                             ).get("records_loaded", 0),
                         )
@@ -631,15 +631,15 @@ class CompleteMockPipeline:
                     "transformation_timestamp": datetime.now(UTC).isoformat(),
                     "status": "SUCCESS",
                 }
-        return cast("t.RecursiveContainerMapping", dbt_results)
+        return cast("Mapping[str, t.Container]", dbt_results)
 
     def _save_complete_pipeline_results(
         self,
-        schemas: t.RecursiveContainerMapping,
-        catalog: t.RecursiveContainerMapping,
-        tap_records: Sequence[t.RecursiveContainerMapping],
-        target_results: t.RecursiveContainerMapping,
-        dbt_results: t.RecursiveContainerMapping,
+        schemas: Mapping[str, t.Container],
+        catalog: Mapping[str, t.Container],
+        tap_records: Sequence[Mapping[str, t.Container]],
+        target_results: Mapping[str, t.Container],
+        dbt_results: Mapping[str, t.Container],
     ) -> p.Result[str]:
         """Save complete pipeline results."""
         results_dir = Path("complete_pipeline_results")

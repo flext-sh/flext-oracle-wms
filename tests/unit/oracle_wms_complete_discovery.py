@@ -284,7 +284,7 @@ class OracleWmsCompleteDiscovery:
                 f"Entity with ID test failed: {e}",
             )
 
-    def _summarize_api_response(self, data: t.RecursiveContainer) -> str:
+    def _summarize_api_response(self, data: t.Container) -> str:
         """Summarize API response data."""
         if isinstance(data, dict):
             if "count" in data:
@@ -370,7 +370,7 @@ class OracleWmsCompleteDiscovery:
 
     def discover_complete_entity_metadata(
         self,
-    ) -> p.Result[t.RecursiveContainerMapping]:
+    ) -> p.Result[Mapping[str, t.Container]]:
         """Discover complete metadata for all entities using Oracle WMS APIs."""
         if not self.discovered_entities:
             entities_result = self.client.discover_entities()
@@ -379,7 +379,7 @@ class OracleWmsCompleteDiscovery:
                 if isinstance(value, list):
                     self.discovered_entities = list(value)
             else:
-                return r[t.RecursiveContainerMapping].fail("Entity discovery failed")
+                return r[Mapping[str, t.Container]].fail("Entity discovery failed")
         metadata_results: t.MutableRecursiveContainerMapping = {}
         entities_with_data: MutableSequence[str] = []
         entities_without_data: MutableSequence[str] = []
@@ -395,7 +395,7 @@ class OracleWmsCompleteDiscovery:
         self.entity_metadata = metadata_results
         if entities_with_data:
 
-            def _entity_count(pair: tuple[str, t.RecursiveContainer]) -> int:
+            def _entity_count(pair: tuple[str, t.Container]) -> int:
                 meta = pair[1]
                 if isinstance(meta, dict):
                     tc = meta.get("total_count")
@@ -403,7 +403,7 @@ class OracleWmsCompleteDiscovery:
                         return tc
                 return 0
 
-            sorted_entities: Sequence[tuple[str, t.RecursiveContainer]] = sorted(
+            sorted_entities: Sequence[tuple[str, t.Container]] = sorted(
                 [
                     (name, metadata_results[name])
                     for name in entities_with_data
@@ -414,7 +414,7 @@ class OracleWmsCompleteDiscovery:
             )
             for _name, _meta in sorted_entities[:10]:
                 pass
-        return r[t.RecursiveContainerMapping].ok({
+        return r[Mapping[str, t.Container]].ok({
             "total_entities": len(self.discovered_entities),
             "entities_with_data": entities_with_data,
             "entities_without_data": entities_without_data,
@@ -424,10 +424,10 @@ class OracleWmsCompleteDiscovery:
 
     def generate_singer_schemas_with_flattening(
         self,
-    ) -> p.Result[t.RecursiveContainerMapping]:
+    ) -> p.Result[Mapping[str, t.Container]]:
         """Generate Singer schemas with real data flattening based on Oracle metadata."""
         if not self.entity_metadata:
-            return r[t.RecursiveContainerMapping].fail(
+            return r[Mapping[str, t.Container]].fail(
                 "No entity metadata available for schema generation",
             )
         entities_with_data = [
@@ -448,24 +448,24 @@ class OracleWmsCompleteDiscovery:
                 if schema:
                     singer_schemas[entity_name] = schema
         self.complete_schemas = singer_schemas
-        return r[t.RecursiveContainerMapping].ok(singer_schemas)
+        return r[Mapping[str, t.Container]].ok(singer_schemas)
 
     def _generate_singer_schema_from_metadata(
         self,
         entity_name: str,
-        metadata: dict[str, t.RecursiveContainer],
-    ) -> t.RecursiveContainerMapping | None:
+        metadata: dict[str, t.Container],
+    ) -> Mapping[str, t.Container] | None:
         """Generate Singer schema from Oracle WMS metadata with flattening."""
         try:
             fields = metadata.get("fields", [])
             field_types = metadata.get("field_types", {})
             sample_data = metadata.get("sample_data", {})
-            properties: dict[str, t.RecursiveContainerMapping] = {}
+            properties: dict[str, Mapping[str, t.Container]] = {}
             if isinstance(fields, list) and isinstance(field_types, dict):
                 for field in fields:
                     if isinstance(field, str):
                         field_type = field_types.get(field, "str")
-                        sample_value: t.RecursiveContainer = None
+                        sample_value: t.Container = None
                         if isinstance(sample_data, dict):
                             sample_value = sample_data.get(field)
                         singer_type = self._map_to_singer_type(
@@ -488,9 +488,9 @@ class OracleWmsCompleteDiscovery:
     def _map_to_singer_type(
         self,
         python_type: str,
-        sample_value: t.RecursiveContainer,
+        sample_value: t.Container,
         field_name: str,
-    ) -> t.RecursiveContainerMapping:
+    ) -> Mapping[str, t.Container]:
         """Map Oracle/Python types to Singer types based on real data."""
         if sample_value is not None:
             if isinstance(sample_value, bool):
@@ -509,7 +509,7 @@ class OracleWmsCompleteDiscovery:
                 return {"type": ["object", "null"]}
             if isinstance(sample_value, list):
                 return {"type": ["array", "null"]}
-        type_mapping: Mapping[str, t.RecursiveContainerMapping] = {
+        type_mapping: Mapping[str, Mapping[str, t.Container]] = {
             "int": {"type": ["integer", "null"]},
             "float": {"type": ["number", "null"]},
             "str": {"type": ["string", "null"]},
@@ -558,7 +558,7 @@ class OracleWmsCompleteDiscovery:
         schemas_file = results_dir / f"singer_schemas_{timestamp}.json"
         with schemas_file.open("w", encoding="utf-8") as f:
             json.dump(self.complete_schemas, f, indent=2, default=str)
-        summary: dict[str, t.RecursiveContainer] = {
+        summary: dict[str, t.Container] = {
             "discovery_timestamp": timestamp,
             "total_entities_discovered": len(self.discovered_entities),
             "entities_with_data": len([
@@ -608,7 +608,7 @@ def run_complete_discovery() -> None:
         if isinstance(metadata_data, dict):
             entities_with_data = metadata_data.get("entities_with_data")
             if isinstance(entities_with_data, list) and entities_with_data:
-                entities_with_counts: list[tuple[str, t.RecursiveContainer]] = [
+                entities_with_counts: list[tuple[str, t.Container]] = [
                     (
                         name,
                         discovery.entity_metadata.get(name, None),
@@ -617,7 +617,7 @@ def run_complete_discovery() -> None:
                     if isinstance(name, str)
                 ]
 
-                def _run_entity_count(pair: tuple[str, t.RecursiveContainer]) -> int:
+                def _run_entity_count(pair: tuple[str, t.Container]) -> int:
                     meta = pair[1]
                     if isinstance(meta, dict):
                         tc = meta.get("total_count")

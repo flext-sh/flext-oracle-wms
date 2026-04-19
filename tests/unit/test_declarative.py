@@ -109,7 +109,7 @@ class TestOracleWmsDeclarativeIntegration:
             health_data = (
                 health_response.body
                 if isinstance(health_response.body, dict)
-                else dict[str, t.RecursiveContainer]()
+                else dict[str, t.Container]()
             )
             assert health_data.get("service") == "FlextOracleWmsClient"
             assert health_data.get("status") in {"healthy", "unhealthy"}
