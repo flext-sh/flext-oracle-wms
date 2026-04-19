@@ -1,0 +1,38 @@
+docs/guides/development.md
+  h_9db9d35f50cf33 154,193,196,202,353,356,405
+tests/unit/oracle_wms_complete_discovery.py
+  h_9db9d35f50cf33 287,373,382,398,406,417,427,430,451,456-457,463,468,491,493,512,561,611,620
+docs/guides/testing.md
+  h_9db9d35f50cf33 528
+tests/unit/oracle_wms_focused_discovery.py
+  h_9db9d35f50cf33 64,70,91,110,120,203,216,230-231,248,281,283,406
+tests/unit/test_client.py
+  h_9db9d35f50cf33 40
+tests/unit/oracle_wms_optimized_discovery.py
+  h_9db9d35f50cf33 77-78,89,93,125,136,138,144,422
+tests/conftest.py
+  h_9db9d35f50cf33 71
+examples/02_configuration.py
+  h_9db9d35f50cf33 145,178,187,198,208
+tests/unit/test_declarative.py
+  h_9db9d35f50cf33 112
+docs/guides/troubleshooting.md
+  h_9db9d35f50cf33 141,155
+tests/README.md
+  h_9db9d35f50cf33 315
+tests/unit/complete_mock_pipeline.py
+  h_9db9d35f50cf33 27,57-58,67,295,297,320,336,338,340,355-356,358,371,404,434,436,447-448,450,459,472,481,496,498,503,513,524-525,527,548-549,623,634,638-642
+docs/development.md
+  h_9db9d35f50cf33 245
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.3.0",
+  "base_commit_sha": "757892ad2fd403e0d641e8b3cfc599b8bb8e8355",
+  "prompts": {},
+  "humans": {
+    "h_9db9d35f50cf33": {
+      "author": "FLEXT Bot"
+    }
+  }
+}
