@@ -12,7 +12,7 @@ from __future__ import annotations
 from tests import c
 
 
-class Testc:
+class TestSchemaConstants:
     """Test the Oracle WMS constants class."""
 
     def test_version_constant(self) -> None:
@@ -98,15 +98,15 @@ class TestNestedConstants:
 
     def test_filtering_max_conditions(self) -> None:
         """Test filtering constants."""
-        assert c.Filtering.MAX_FILTER_CONDITIONS == 50
+        assert c.OracleWms.Filtering.MAX_FILTER_CONDITIONS == 50
 
     def test_wms_entities_max_name(self) -> None:
         """Test entity name length limit."""
-        assert c.WmsEntities.MAX_ENTITY_NAME_LENGTH == 100
+        assert c.OracleWms.WmsEntities.MAX_ENTITY_NAME_LENGTH == 100
 
     def test_wms_processing_defaults(self) -> None:
         """Test processing defaults."""
-        assert c.WmsProcessing.MAX_SCHEMA_DEPTH == 10
+        assert c.OracleWms.WmsProcessing.MAX_SCHEMA_DEPTH == 10
 
     def test_entity_types_tuple(self) -> None:
         """Test ENTITY_TYPES generated from StrEnum."""

@@ -64,6 +64,7 @@ _LAZY_IMPORTS = build_lazy_import_map(
         ".test_models": ("test_models",),
         ".test_schema_dynamic": (
             "TestNestedConstants",
+            "TestSchemaConstants",
             "TestWmsEnums",
         ),
         ".test_singer_flattening": (

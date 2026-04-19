@@ -7,17 +7,17 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from flext_oracle_wms import FlextOracleWmsClientSettings, FlextOracleWmsUtilitiesClient
+from flext_oracle_wms import FlextOracleWmsSettings, FlextOracleWmsUtilitiesClient
 
 
 class TestClientSimpleNew:
     """Simple tests for client functionality."""
 
-    settings: FlextOracleWmsClientSettings
+    settings: FlextOracleWmsSettings
 
     def setup_method(self) -> None:
         """Set up test fixtures."""
-        self.settings = FlextOracleWmsClientSettings(
+        self.settings = FlextOracleWmsSettings(
             base_url="https://test.wms.com",
             username="test_user",
             password="test_pass",
@@ -83,16 +83,16 @@ class TestClientSimpleNew:
 
     def test_client_with_custom_config(self) -> None:
         """Test client with custom configuration."""
-        settings = FlextOracleWmsClientSettings(
+        settings = FlextOracleWmsSettings(
             base_url="https://custom.wms.com",
             username="custom_user",
             password="custom_pass",
             timeout=60,
-            max_retries=3,
+            retry_attempts=3,
         )
         client = FlextOracleWmsUtilitiesClient.Client(settings)
         assert client.settings.timeout == 60
-        assert client.settings.max_retries == 3
+        assert client.settings.retry_attempts == 3
 
     def test_discover_entities_method_validation(self) -> None:
         """Test that discover_entities method exists and is callable."""
@@ -126,7 +126,7 @@ class TestClientSimpleNew:
 
     def test_client_initialization_edge_cases(self) -> None:
         """Test client initialization with edge cases."""
-        minimal_config = FlextOracleWmsClientSettings(
+        minimal_config = FlextOracleWmsSettings(
             base_url="https://test.com",
             username="user",
             password="pass",

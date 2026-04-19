@@ -37,8 +37,8 @@ from dotenv import load_dotenv
 
 from flext_oracle_wms import (
     FlextOracleWmsApi,
-    FlextOracleWmsClientSettings,
     FlextOracleWmsError,
+    FlextOracleWmsSettings,
     FlextOracleWmsUtilitiesAuth,
     FlextOracleWmsUtilitiesClient,
     c,
@@ -54,7 +54,7 @@ FlextOracleWmsClient = FlextOracleWmsUtilitiesClient.Client
 logger = u.fetch_logger(__name__)
 
 
-def load_config_from_environment() -> FlextOracleWmsClientSettings:
+def load_config_from_environment() -> FlextOracleWmsSettings:
     """Load configuration from .env file."""
     env_file = Path(__file__).parent.parent / ".env"
     if env_file.exists():
@@ -68,7 +68,7 @@ def load_config_from_environment() -> FlextOracleWmsClientSettings:
     if base_url is None or username is None or password is None:
         msg = "Required environment variables cannot be None"
         raise ValueError(msg)
-    return FlextOracleWmsClientSettings.model_validate({
+    return FlextOracleWmsSettings.model_validate({
         "base_url": base_url,
         "username": username,
         "password": password,
@@ -81,7 +81,7 @@ def load_config_from_environment() -> FlextOracleWmsClientSettings:
 
 
 def showcase_1_client_initialization(
-    settings: FlextOracleWmsClientSettings,
+    settings: FlextOracleWmsSettings,
 ) -> FlextOracleWmsClient:
     """Feature 1: Client Configuration and Initialization."""
     client = FlextOracleWmsClient(settings)
@@ -143,7 +143,7 @@ def showcase_3_data_retrieval(
     return sample_data
 
 
-def showcase_4_authentication(settings: FlextOracleWmsClientSettings) -> None:
+def showcase_4_authentication(settings: FlextOracleWmsSettings) -> None:
     """Feature 4: Authentication Methods."""
     auth_config = m.OracleWms.AuthSettings(
         method=c.OracleWms.OracleWMSAuthMethod.BASIC,
@@ -176,7 +176,7 @@ def showcase_6_error_handling(client: FlextOracleWmsClient) -> None:
     client.get_entity_data("invalid_entity_xyz123")
     client.call_api("non_existent_api_xyz")
     try:
-        invalid_config = FlextOracleWmsClientSettings.model_validate({
+        invalid_config = FlextOracleWmsSettings.model_validate({
             "base_url": "invalid-url",
             "username": "",
             "password": "",
@@ -246,7 +246,7 @@ def showcase_9_cache_management(client: FlextOracleWmsClient) -> None:
 
 def showcase_10_enterprise_features(
     _client: FlextOracleWmsClient,
-    settings: FlextOracleWmsClientSettings,
+    settings: FlextOracleWmsSettings,
 ) -> None:
     """Feature 10: Enterprise Features."""
 

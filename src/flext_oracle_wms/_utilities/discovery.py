@@ -10,15 +10,12 @@ from collections.abc import Sequence
 
 from flext_oracle_wms import FlextOracleWmsProtocols as p, c, r, t
 
-DISCOVERY_SUCCESS = "discovery_success"
-DISCOVERY_FAILURE = "discovery_failure"
-
 
 class FlextOracleWmsUtilitiesDiscovery:
     """Discovery utilities for Oracle WMS -- u.OracleWms.Discovery.*."""
 
-    DISCOVERY_SUCCESS = DISCOVERY_SUCCESS
-    DISCOVERY_FAILURE = DISCOVERY_FAILURE
+    DISCOVERY_SUCCESS = "discovery_success"
+    DISCOVERY_FAILURE = "discovery_failure"
 
     class EntityDiscovery:
         """Discovery service for Oracle WMS entities."""
@@ -49,7 +46,5 @@ class FlextOracleWmsUtilitiesDiscovery:
 
 
 __all__: list[str] = [
-    "DISCOVERY_FAILURE",
-    "DISCOVERY_SUCCESS",
     "FlextOracleWmsUtilitiesDiscovery",
 ]

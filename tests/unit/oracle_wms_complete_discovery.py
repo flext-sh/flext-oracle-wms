@@ -22,7 +22,7 @@ from flext_api import FlextApiModels
 from flext_core import r
 from flext_oracle_wms import (
     FlextOracleWmsApi,
-    FlextOracleWmsClientSettings,
+    FlextOracleWmsSettings,
     FlextOracleWmsUtilitiesClient,
 )
 from tests import m, p, t, u
@@ -44,7 +44,7 @@ class OracleWmsCompleteDiscovery:
 
     def __init__(self) -> None:
         """Initialize with ADMINISTRATOR credentials."""
-        self.settings: FlextOracleWmsClientSettings = FlextOracleWmsClientSettings(
+        self.settings: FlextOracleWmsSettings = FlextOracleWmsSettings(
             base_url="https://invalid.wms.ocs.oraclecloud.com",
             username="user",
             password="xyz",

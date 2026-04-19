@@ -11,13 +11,13 @@ from __future__ import annotations
 
 from flext_tests import FlextTestsConstants
 
-from flext_oracle_wms import FlextOracleWmsConstants
+from flext_oracle_wms import c
 
 
-class TestsFlextOracleWmsConstants(FlextTestsConstants, FlextOracleWmsConstants):
+class TestsFlextOracleWmsConstants(FlextTestsConstants, c):
     """Test constants for flext-oracle-wms."""
 
-    class OracleWms(FlextOracleWmsConstants.OracleWms):
+    class OracleWms(c.OracleWms):
         """Oracle WMS domain test constants namespace."""
 
         class Tests(FlextTestsConstants.Tests):

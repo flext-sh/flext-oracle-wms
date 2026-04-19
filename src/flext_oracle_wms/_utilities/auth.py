@@ -22,9 +22,16 @@ class FlextOracleWmsUtilitiesAuth:
             self.settings = settings
             self._token: str | None = None
 
+        @property
+        def normalized_method(self) -> str:
+            """Return auth method in canonical lowercase form."""
+            return str(self.settings.method).strip().lower()
+
         def authenticate(self) -> p.Result[str]:
             """Perform authentication."""
-            if self.settings.method == c.OracleWms.OracleWMSAuthMethod.BASIC:
+            basic_method = str(c.OracleWms.OracleWMSAuthMethod.BASIC)
+            oauth2_method = str(c.OracleWms.OracleWMSAuthMethod.OAUTH2)
+            if self.normalized_method == basic_method:
                 if not self.settings.username or not self.settings.password:
                     return r[str].fail("Username and password required for basic auth")
                 credentials = (
@@ -33,7 +40,7 @@ class FlextOracleWmsUtilitiesAuth:
                 token = base64.b64encode(credentials).decode("ascii")
                 self._token = token
                 return r[str].ok(token)
-            if self.settings.method == c.OracleWms.OracleWMSAuthMethod.OAUTH2:
+            if self.normalized_method == oauth2_method:
                 if (
                     not self.settings.oauth2_client_id
                     or not self.settings.oauth2_client_secret
@@ -50,10 +57,9 @@ class FlextOracleWmsUtilitiesAuth:
                     f"Authentication failed: {auth_result.error}"
                 )
             token = auth_result.value
+            basic_method = str(c.OracleWms.OracleWMSAuthMethod.BASIC)
             auth_scheme = (
-                "Basic"
-                if self.settings.method == c.OracleWms.OracleWMSAuthMethod.BASIC
-                else "Bearer"
+                "Basic" if self.normalized_method == basic_method else "Bearer"
             )
             return r[t.StrMapping].ok({"Authorization": f"{auth_scheme} {token}"})
 

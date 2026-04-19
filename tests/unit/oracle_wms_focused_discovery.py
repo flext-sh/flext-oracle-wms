@@ -13,7 +13,7 @@ from datetime import UTC, datetime
 from pathlib import Path
 
 from flext_core import r
-from flext_oracle_wms import FlextOracleWmsClientSettings, FlextOracleWmsUtilitiesClient
+from flext_oracle_wms import FlextOracleWmsSettings, FlextOracleWmsUtilitiesClient
 from tests import p, t, u
 
 logger = u.fetch_logger(__name__)
@@ -26,7 +26,7 @@ class FocusedOracleWmsDiscovery:
 
     def __init__(self) -> None:
         """Initialize with ADMINISTRATOR credentials."""
-        self.settings = FlextOracleWmsClientSettings(
+        self.settings = FlextOracleWmsSettings(
             base_url="https://invalid.wms.ocs.oraclecloud.com",
             username="user",
             password="xyz",

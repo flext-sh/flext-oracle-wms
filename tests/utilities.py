@@ -18,19 +18,16 @@ from dotenv import load_dotenv
 from flext_tests import FlextTestsUtilities
 
 from flext_core import r
-from flext_oracle_wms import (
-    FlextOracleWmsApi,
-    FlextOracleWmsClientSettings,
-    FlextOracleWmsSettings,
-    FlextOracleWmsUtilities,
-)
+from flext_oracle_wms.api import FlextOracleWmsApi
+from flext_oracle_wms.settings import FlextOracleWmsSettings
+from flext_oracle_wms.utilities import FlextOracleWmsUtilities as u
 from tests import TestsFlextOracleWmsTypes, p
 
 
-class TestsFlextOracleWmsUtilities(FlextTestsUtilities, FlextOracleWmsUtilities):
+class TestsFlextOracleWmsUtilities(FlextTestsUtilities, u):
     """Test utilities combining TestsFlextUtilities with flext-oracle-wms utilities."""
 
-    class OracleWms(FlextOracleWmsUtilities.OracleWms):
+    class OracleWms(u.OracleWms):
         """OracleWms test utilities namespace."""
 
         class Tests:
@@ -88,9 +85,9 @@ class TestsFlextOracleWmsUtilities(FlextTestsUtilities, FlextOracleWmsUtilities)
                 cls,
                 env_config: TestsFlextOracleWmsTypes.OracleWms.Tests.EnvConfig,
                 api_version: str,
-            ) -> FlextOracleWmsClientSettings:
+            ) -> FlextOracleWmsSettings:
                 """Build client settings from normalized test environment data."""
-                return FlextOracleWmsClientSettings(
+                return FlextOracleWmsSettings(
                     base_url=cls.to_str(env_config.get("base_url", ""), ""),
                     username=cls.to_str(env_config.get("username", ""), ""),
                     password=cls.to_str(env_config.get("password", ""), ""),

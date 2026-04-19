@@ -13,10 +13,8 @@ from flext_api import (
     FlextApiSettings,
     u,
 )
-from pydantic import BaseModel, ValidationError
 
 from flext_oracle_wms import (
-    FlextOracleWmsClientSettings,
     FlextOracleWmsSettings,
     FlextOracleWmsUtilitiesAuth,
     c,
@@ -26,14 +24,14 @@ from flext_oracle_wms import (
     t,
 )
 
-HTTP_BAD_REQUEST_THRESHOLD = 400
-
 
 class FlextOracleWmsUtilitiesClient:
     """Client utilities for Oracle WMS -- u.OracleWms.Client.*."""
 
     class Client:
         """Oracle WMS client with strict request/response typing."""
+
+        HTTP_BAD_REQUEST_THRESHOLD = 400
 
         @classmethod
         def from_auth_settings(
@@ -46,16 +44,18 @@ class FlextOracleWmsUtilitiesClient:
                 return r[FlextOracleWmsUtilitiesClient.Client].fail(
                     validation_result.error or "Invalid Oracle WMS auth settings"
                 )
-            if auth_settings.method != c.OracleWms.OracleWMSAuthMethod.BASIC:
+            basic_method = str(c.OracleWms.OracleWMSAuthMethod.BASIC)
+            if auth_settings.normalized_method != basic_method:
                 return r[FlextOracleWmsUtilitiesClient.Client].fail(
                     "Oracle WMS runtime client currently supports BASIC auth only"
                 )
             base_settings = FlextOracleWmsSettings.fetch_global()
-            resolved_settings = FlextOracleWmsClientSettings.model_validate({
-                **base_settings.model_dump(),
+            resolved_settings = FlextOracleWmsSettings.model_validate({
+                "base_url": base_settings.base_url,
+                "timeout": base_settings.timeout,
                 "username": auth_settings.username or base_settings.username,
                 "password": auth_settings.password or base_settings.password,
-                "auth_method": auth_settings.method,
+                "auth_method": auth_settings.normalized_method,
             })
             return r[FlextOracleWmsUtilitiesClient.Client].ok(cls(resolved_settings))
 
@@ -83,14 +83,19 @@ class FlextOracleWmsUtilitiesClient:
             """Build default request headers from Oracle WMS auth settings."""
             if not settings.username and not settings.password:
                 return {}
-            auth_settings = m.OracleWms.AuthSettings(
-                method=str(
+            resolved_method = (
+                str(
                     getattr(
                         settings,
                         "auth_method",
                         c.OracleWms.OracleWMSAuthMethod.BASIC,
                     )
-                ),
+                )
+                .strip()
+                .lower()
+            )
+            auth_settings = m.OracleWms.AuthSettings(
+                method=resolved_method,
                 username=settings.username or None,
                 password=settings.password or None,
                 oauth2_client_id=getattr(settings, "oauth2_client_id", None),
@@ -108,24 +113,24 @@ class FlextOracleWmsUtilitiesClient:
             return FlextApiClient(settings=self._api_config)
 
         @staticmethod
-        def _decode_response_model[T: BaseModel](
+        def _decode_response_model[T: m.BaseModel](
             payload: t.Api.ResponseBody | t.ContainerValue,
             model_type: type[T],
         ) -> p.Result[T]:
             if isinstance(payload, dict):
                 return u.try_(
                     lambda: model_type.model_validate(payload),
-                    catch=ValidationError,
+                    catch=c.ValidationError,
                 ).map_error(lambda exc: f"Invalid response payload: {exc}")
             if isinstance(payload, str):
                 return u.try_(
                     lambda: model_type.model_validate_json(payload),
-                    catch=ValidationError,
+                    catch=c.ValidationError,
                 ).map_error(lambda exc: f"Invalid JSON payload: {exc}")
             if isinstance(payload, bytes):
                 return u.try_(
                     lambda: model_type.model_validate_json(payload),
-                    catch=ValidationError,
+                    catch=c.ValidationError,
                 ).map_error(lambda exc: f"Invalid JSON payload: {exc}")
             if payload is None:
                 return r[T].fail("Empty response payload")
@@ -259,11 +264,6 @@ class FlextOracleWmsUtilitiesClient:
 
         def start(self) -> p.Result[bool]:
             """Start the Oracle WMS client after validating runtime settings."""
-            validation_result = self.settings.validate_config()
-            if validation_result.failure:
-                return r[bool].fail(
-                    validation_result.error or "Oracle WMS settings are invalid",
-                )
             if self._client is None:
                 self._client = self._create_api_client()
             self._started = True
@@ -313,7 +313,7 @@ class FlextOracleWmsUtilitiesClient:
                     f"{method} {path} failed: {result.error}",
                 )
             response = result.value
-            if response.status_code >= HTTP_BAD_REQUEST_THRESHOLD:
+            if response.status_code >= self.HTTP_BAD_REQUEST_THRESHOLD:
                 return r[m.Api.HttpResponse].fail(
                     f"{method} {path} returned HTTP {response.status_code}",
                 )

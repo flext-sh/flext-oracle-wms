@@ -11,8 +11,8 @@ from collections.abc import Mapping, MutableSequence, Sequence
 from flext_api import u
 
 from flext_oracle_wms import (
-    FlextOracleWmsDataValidationError,
     FlextOracleWmsModels,
+    FlextOracleWmsValidationError,
     c,
     e,
     p,
@@ -38,7 +38,7 @@ type FilterEntry = (
 class FlextOracleWmsUtilitiesFiltering:
     """Filtering utilities for Oracle WMS -- u.OracleWms.Filtering.*."""
 
-    DataValidationError = FlextOracleWmsDataValidationError
+    DataValidationError = FlextOracleWmsValidationError
     OperatorFilter = FlextOracleWmsOperatorFilter
 
     class Filter:
@@ -56,7 +56,7 @@ class FlextOracleWmsUtilitiesFiltering:
             """Initialize filter engine with strict condition limits."""
             if (
                 max_conditions <= 0
-                or max_conditions > c.Filtering.MAX_FILTER_CONDITIONS
+                or max_conditions > c.OracleWms.Filtering.MAX_FILTER_CONDITIONS
             ):
                 error_message = "Invalid max_conditions"
                 raise e.BaseError(error_message)
@@ -68,7 +68,7 @@ class FlextOracleWmsUtilitiesFiltering:
                 and self._validate_filter_conditions_total(self.filters).failure
             ):
                 error_message = "Filter validation failed"
-                raise FlextOracleWmsDataValidationError(error_message)
+                raise FlextOracleWmsValidationError(error_message)
 
         @classmethod
         def create_filter(

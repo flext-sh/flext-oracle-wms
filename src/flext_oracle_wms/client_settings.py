@@ -4,11 +4,10 @@ from __future__ import annotations
 
 from typing import Annotated, ClassVar
 
-from flext_api import m
-from flext_oracle_wms.settings import FlextOracleWmsSettings
 from pydantic_settings import SettingsConfigDict
 
-from flext_core import u
+from flext_core import m, u
+from flext_oracle_wms.settings import FlextOracleWmsSettings
 
 
 class FlextOracleWmsClientSettings(FlextOracleWmsSettings):
@@ -23,7 +22,7 @@ class FlextOracleWmsClientSettings(FlextOracleWmsSettings):
     username: str = ""
     password: str = ""
     api_version: str = "LGF_V10"
-    auth_method: str = "BASIC"
+    auth_method: str = "basic"
     timeout: Annotated[float, u.Field(ge=1.0)] = 30.0
     max_retries: Annotated[int, u.Field(ge=0)] = 3
     verify_ssl: bool = True

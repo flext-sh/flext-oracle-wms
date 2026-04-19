@@ -17,11 +17,7 @@ if _t.TYPE_CHECKING:
 
     from flext_oracle_wms._utilities.auth import FlextOracleWmsUtilitiesAuth
     from flext_oracle_wms._utilities.client import FlextOracleWmsUtilitiesClient
-    from flext_oracle_wms._utilities.discovery import (
-        DISCOVERY_FAILURE,
-        DISCOVERY_SUCCESS,
-        FlextOracleWmsUtilitiesDiscovery,
-    )
+    from flext_oracle_wms._utilities.discovery import FlextOracleWmsUtilitiesDiscovery
     from flext_oracle_wms._utilities.filtering import (
         FlextOracleWmsOperatorFilter,
         FlextOracleWmsUtilitiesFiltering,
@@ -37,16 +33,8 @@ if _t.TYPE_CHECKING:
         FlextOracleWmsAuthenticationError,
         FlextOracleWmsConfigurationError,
         FlextOracleWmsConnectionError,
-        FlextOracleWmsDataValidationError,
         FlextOracleWmsEntityNotFoundError,
         FlextOracleWmsError,
-        FlextOracleWmsExceptions,
-        FlextOracleWmsInventoryError,
-        FlextOracleWmsPickingError,
-        FlextOracleWmsProcessingError,
-        FlextOracleWmsSchemaError,
-        FlextOracleWmsSchemaFlatteningError,
-        FlextOracleWmsShipmentError,
         FlextOracleWmsValidationError,
     )
     from flext_oracle_wms.models import FlextOracleWmsModels, m
@@ -70,11 +58,7 @@ _LAZY_IMPORTS = merge_lazy_imports(
             ),
             "._utilities.auth": ("FlextOracleWmsUtilitiesAuth",),
             "._utilities.client": ("FlextOracleWmsUtilitiesClient",),
-            "._utilities.discovery": (
-                "DISCOVERY_FAILURE",
-                "DISCOVERY_SUCCESS",
-                "FlextOracleWmsUtilitiesDiscovery",
-            ),
+            "._utilities.discovery": ("FlextOracleWmsUtilitiesDiscovery",),
             "._utilities.filtering": (
                 "FlextOracleWmsOperatorFilter",
                 "FlextOracleWmsUtilitiesFiltering",
@@ -94,16 +78,8 @@ _LAZY_IMPORTS = merge_lazy_imports(
                 "FlextOracleWmsAuthenticationError",
                 "FlextOracleWmsConfigurationError",
                 "FlextOracleWmsConnectionError",
-                "FlextOracleWmsDataValidationError",
                 "FlextOracleWmsEntityNotFoundError",
                 "FlextOracleWmsError",
-                "FlextOracleWmsExceptions",
-                "FlextOracleWmsInventoryError",
-                "FlextOracleWmsPickingError",
-                "FlextOracleWmsProcessingError",
-                "FlextOracleWmsSchemaError",
-                "FlextOracleWmsSchemaFlatteningError",
-                "FlextOracleWmsShipmentError",
                 "FlextOracleWmsValidationError",
             ),
             ".models": (
@@ -149,8 +125,6 @@ _LAZY_IMPORTS = merge_lazy_imports(
 install_lazy_exports(__name__, globals(), _LAZY_IMPORTS)
 
 __all__: list[str] = [
-    "DISCOVERY_FAILURE",
-    "DISCOVERY_SUCCESS",
     "FlextOracleWmsApi",
     "FlextOracleWmsApiError",
     "FlextOracleWmsAuthenticationError",
@@ -158,20 +132,12 @@ __all__: list[str] = [
     "FlextOracleWmsConfigurationError",
     "FlextOracleWmsConnectionError",
     "FlextOracleWmsConstants",
-    "FlextOracleWmsDataValidationError",
     "FlextOracleWmsEntityNotFoundError",
     "FlextOracleWmsError",
-    "FlextOracleWmsExceptions",
-    "FlextOracleWmsInventoryError",
     "FlextOracleWmsModels",
     "FlextOracleWmsOperatorFilter",
-    "FlextOracleWmsPickingError",
-    "FlextOracleWmsProcessingError",
     "FlextOracleWmsProtocols",
-    "FlextOracleWmsSchemaError",
-    "FlextOracleWmsSchemaFlatteningError",
     "FlextOracleWmsSettings",
-    "FlextOracleWmsShipmentError",
     "FlextOracleWmsTypes",
     "FlextOracleWmsUtilities",
     "FlextOracleWmsUtilitiesAuth",

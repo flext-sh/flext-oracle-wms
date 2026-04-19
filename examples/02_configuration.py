@@ -18,6 +18,7 @@ from dotenv import load_dotenv
 from flext_oracle_wms import (
     FlextOracleWmsClientSettings,
     FlextOracleWmsConstants,
+    FlextOracleWmsSettings,
     FlextOracleWmsUtilitiesClient,
     m,
     t,
@@ -78,13 +79,13 @@ def get_environment_configs() -> Mapping[Environment, WmsEnvironmentConfig]:
     }
 
 
-def create_config_from_environment() -> FlextOracleWmsClientSettings:
+def create_config_from_environment() -> FlextOracleWmsSettings:
     """Create Oracle WMS client configuration from environment variables.
 
     This uses the REAL .env file with working Oracle WMS credentials.
 
     Returns:
-      FlextOracleWmsClientSettings configured from environment
+      FlextOracleWmsSettings configured from environment
 
     Raises:
       ValueError: If required environment variables are missing
@@ -111,23 +112,23 @@ def create_config_from_environment() -> FlextOracleWmsClientSettings:
         ]
         msg = f"Missing required environment variables: {', '.join(missing)}"
         raise ValueError(msg)
-    env_config = FlextOracleWmsClientSettings.fetch_global()
+    env_config = FlextOracleWmsSettings.fetch_global()
     if env_config.username and env_config.password:
         return env_config
-    return FlextOracleWmsClientSettings()
+    return FlextOracleWmsSettings()
 
 
-def create_demo_config() -> FlextOracleWmsClientSettings:
+def create_demo_config() -> FlextOracleWmsSettings:
     """Create a demo Oracle WMS configuration using singleton pattern.
 
     Returns:
-      FlextOracleWmsClientSettings with demo values
+      FlextOracleWmsSettings with demo values
 
     Note:
       This demonstrates how to use the global singleton with parameter overrides.
 
     """
-    return FlextOracleWmsClientSettings.model_validate({
+    return FlextOracleWmsSettings.model_validate({
         "base_url": "https://demo-wms.oraclecloud.com/demo",
         "username": "demo_user",
         "password": "demo_password",
@@ -140,7 +141,7 @@ def create_demo_config() -> FlextOracleWmsClientSettings:
 
 
 def validate_configuration(
-    settings: FlextOracleWmsClientSettings,
+    settings: FlextOracleWmsSettings | FlextOracleWmsClientSettings,
 ) -> dict[str, t.RecursiveContainer]:
     """Validate Oracle WMS client configuration.
 
@@ -164,17 +165,22 @@ def validate_configuration(
         errors.append("Timeout must be positive")
     elif settings.timeout < min_timeout_seconds:
         warnings.append("Timeout less than 10 seconds may cause issues")
+    retry_count = (
+        settings.max_retries
+        if isinstance(settings, FlextOracleWmsClientSettings)
+        else settings.retry_attempts
+    )
     max_retries_warning_threshold = c.OracleWms.DEFAULT_MAX_RETRIES * 3
-    if settings.max_retries < 0:
+    if retry_count < 0:
         errors.append("Max retries cannot be negative")
-    elif settings.max_retries > max_retries_warning_threshold:
+    elif retry_count > max_retries_warning_threshold:
         warnings.append("High retry count may cause delays")
-    config_summary: dict[str, t.RecursiveContainer] = {
+    config_summary: t.RecursiveContainerMapping = {
         "base_url": settings.base_url,
         "username": settings.username,
         "api_version": settings.api_version,
         "timeout": settings.timeout,
-        "max_retries": settings.max_retries,
+        "max_retries": retry_count,
         "verify_ssl": settings.verify_ssl,
         "enable_logging": settings.enable_logging,
     }
@@ -188,7 +194,7 @@ def validate_configuration(
 
 
 def test_configuration(
-    settings: FlextOracleWmsClientSettings,
+    settings: FlextOracleWmsSettings,
 ) -> dict[str, t.RecursiveContainer]:
     """Test Oracle WMS configuration by attempting connection.
 

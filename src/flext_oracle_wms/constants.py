@@ -226,78 +226,75 @@ class FlextOracleWmsConstants(c):
             LOGISTICS_SERVICE = "logistics-service"
             WAREHOUSE_OPTIMIZER = "warehouse-optimizer"
 
-    class WmsEntities:
-        """WMS entity configuration - patterns."""
+        class WmsEntities:
+            """WMS entity configuration - patterns."""
 
-        MAX_ENTITY_NAME_LENGTH: ClassVar[int] = 100
-        ENTITY_NAME_PATTERN: ClassVar[str] = "^[a-zA-Z][a-zA-Z0-9_]*$"
-        TYPES: ClassVar[tuple[str, ...]]
+            MAX_ENTITY_NAME_LENGTH: ClassVar[int] = 100
+            ENTITY_NAME_PATTERN: ClassVar[str] = "^[a-zA-Z][a-zA-Z0-9_]*$"
+            TYPES: ClassVar[tuple[str, ...]]
 
-    class WmsProcessing:
-        """WMS processing constants - domain-specific."""
+        class WmsProcessing:
+            """WMS processing constants - domain-specific."""
 
-        DEFAULT_BATCH_SIZE: Final[int] = c.DEFAULT_SIZE
-        MAX_BATCH_SIZE: Final[int] = c.MAX_ITEMS
-        DEFAULT_PAGE_SIZE: Final[int] = c.DEFAULT_PAGE_SIZE
-        MAX_SCHEMA_DEPTH: ClassVar[int] = 10
+            DEFAULT_BATCH_SIZE: Final[int] = c.DEFAULT_SIZE
+            MAX_BATCH_SIZE: Final[int] = c.MAX_ITEMS
+            DEFAULT_PAGE_SIZE: Final[int] = c.DEFAULT_PAGE_SIZE
+            MAX_SCHEMA_DEPTH: ClassVar[int] = 10
 
-    class Filtering:
-        """Filtering constants - minimal declaration."""
+        class Filtering:
+            """Filtering constants - minimal declaration."""
 
-        MAX_FILTER_CONDITIONS: ClassVar[int] = 50
+            MAX_FILTER_CONDITIONS: ClassVar[int] = 50
 
-    class ErrorMessages:
-        """Error messages - composed dict pattern."""
+        class ErrorMessages:
+            """Error messages - composed dict pattern."""
 
-        MESSAGES: ClassVar[t.StrMapping] = MappingProxyType({
-            "entity_validation_failed": "Entity validation failed",
-            "discovery_failed": "Entity discovery failed",
-            "invalid_response": "Invalid API response",
-            "connection_failed": "Connection to WMS failed",
-            "authentication_failed": "Authentication failed",
-        })
+            MESSAGES: ClassVar[t.StrMapping] = MappingProxyType({
+                "entity_validation_failed": "Entity validation failed",
+                "discovery_failed": "Entity discovery failed",
+                "invalid_response": "Invalid API response",
+                "connection_failed": "Connection to WMS failed",
+                "authentication_failed": "Authentication failed",
+            })
 
-    class ResponseFields:
-        """Response fields - composed pattern."""
+        class ResponseFields:
+            """Response fields - composed pattern."""
 
-        FIELDS: ClassVar[t.StrMapping] = MappingProxyType({
-            "result_count": "result_count",
-            "results": "results",
-            "data": "data",
-            "total_count": "total_count",
-            "page_number": "page_number",
-            "page_count": "page_count",
-            "next_page": "next_page",
-            "previous_page": "previous_page",
-        })
+            FIELDS: ClassVar[t.StrMapping] = MappingProxyType({
+                "result_count": "result_count",
+                "results": "results",
+                "data": "data",
+                "total_count": "total_count",
+                "page_number": "page_number",
+                "page_count": "page_count",
+                "next_page": "next_page",
+                "previous_page": "previous_page",
+            })
 
-    class Authentication:
-        """Auth constants - minimal."""
+        class Authentication:
+            """Auth constants - minimal."""
 
-        MIN_TOKEN_LENGTH: ClassVar[int] = 10
-        MIN_API_KEY_LENGTH: ClassVar[int] = 20
+            MIN_TOKEN_LENGTH: ClassVar[int] = 10
+            MIN_API_KEY_LENGTH: ClassVar[int] = 20
 
-    class WmsPagination:
-        """Pagination constants."""
+        class WmsPagination:
+            """Pagination constants."""
 
-        DEFAULT_PAGE_SIZE: ClassVar[int] = 100
+            DEFAULT_PAGE_SIZE: ClassVar[int] = 100
 
-    class OracleWmsApi:
-        """Oracle WMS API constants - composed."""
+            class Method:
+                """HTTP method constants inherited from flext-api canonical API constants."""
 
-        class Method:
-            """HTTP method constants inherited from flext-api canonical API constants."""
+                GET: Final[str] = c.Api.Method.GET
+                POST: Final[str] = c.Api.Method.POST
+                PUT: Final[str] = c.Api.Method.PUT
+                DELETE: Final[str] = c.Api.Method.DELETE
 
-            GET: Final[str] = c.Api.Method.GET
-            POST: Final[str] = c.Api.Method.POST
-            PUT: Final[str] = c.Api.Method.PUT
-            DELETE: Final[str] = c.Api.Method.DELETE
-
-        CONFIG: ClassVar[t.IntMapping] = MappingProxyType({
-            "default_timeout": 60,
-            "min_http_status_code": 200,
-            "max_http_status_code": 599,
-        })
+            CONFIG: ClassVar[t.IntMapping] = MappingProxyType({
+                "default_timeout": 60,
+                "min_http_status_code": 200,
+                "max_http_status_code": 599,
+            })
 
 
 c = FlextOracleWmsConstants

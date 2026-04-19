@@ -13,7 +13,6 @@ from collections.abc import MutableSequence, Sequence
 from typing import Annotated, ClassVar
 
 from flext_api import m, u
-from pydantic import ConfigDict
 
 from flext_oracle_wms import c, p, r, t
 
@@ -42,7 +41,9 @@ class FlextOracleWmsModels(m):
         class Entity(m.BaseModel):
             """Oracle WMS entity definition."""
 
-            model_config: ClassVar[m.ConfigDict] = ConfigDict(extra="forbid")
+            _flext_enforcement_exempt: ClassVar[bool] = True
+
+            model_config: ClassVar[m.ConfigDict] = m.ConfigDict(extra="forbid")
 
             name: Annotated[str, u.Field(min_length=1, description="Entity name")]
             endpoint: Annotated[
@@ -80,7 +81,7 @@ class FlextOracleWmsModels(m):
                 """Validate entity configuration."""
                 if not self.name:
                     return r[bool].fail("Entity name is required")
-                if len(self.name) > c.WmsEntities.MAX_ENTITY_NAME_LENGTH:
+                if len(self.name) > c.OracleWms.WmsEntities.MAX_ENTITY_NAME_LENGTH:
                     return r[bool].fail("Entity name is too long")
                 if not self.endpoint:
                     return r[bool].fail("Entity endpoint is required")
@@ -134,13 +135,20 @@ class FlextOracleWmsModels(m):
             oauth2_scope: str = "wms.read wms.write"
             token_refresh_threshold: t.PositiveInt = 300
 
+            @property
+            def normalized_method(self) -> str:
+                """Return auth method in canonical lowercase form."""
+                return str(self.method).strip().lower()
+
             def validate_business_rules(self) -> p.Result[bool]:
                 """Validate authentication configuration business rules."""
-                if self.method == c.OracleWms.OracleWMSAuthMethod.BASIC:
+                basic_method = str(c.OracleWms.OracleWMSAuthMethod.BASIC)
+                oauth2_method = str(c.OracleWms.OracleWMSAuthMethod.OAUTH2)
+                if self.normalized_method == basic_method:
                     if not self.username or not self.password:
                         return r[bool].fail("Basic auth requires username and password")
                     return r[bool].ok(True)
-                if self.method == c.OracleWms.OracleWMSAuthMethod.OAUTH2:
+                if self.normalized_method == oauth2_method:
                     if not self.oauth2_client_id or not self.oauth2_client_secret:
                         return r[bool].fail(
                             "OAuth2 requires client_id and client_secret",
@@ -151,27 +159,23 @@ class FlextOracleWmsModels(m):
         class EntitiesResponse(m.BaseModel):
             """Oracle WMS entities list response."""
 
-            model_config: ClassVar[m.ConfigDict] = ConfigDict(extra="ignore")
+            model_config: ClassVar[m.ConfigDict] = m.ConfigDict(extra="ignore")
 
-            entities: t.StrSequence = u.Field(default_factory=list)
+            entities: t.StrSequence = u.Field(default_factory=tuple)
 
         class ApiCategoryResponse(m.BaseModel):
             """Oracle WMS API category response."""
 
-            model_config: ClassVar[m.ConfigDict] = ConfigDict(extra="ignore")
+            model_config: ClassVar[m.ConfigDict] = m.ConfigDict(extra="ignore")
 
-            apis: Sequence[t.StrMapping] = u.Field(
-                default_factory=lambda: list[t.StrMapping]()
-            )
+            apis: Sequence[t.StrMapping] = u.Field(default_factory=tuple)
 
         class EntityDataResponse(m.BaseModel):
             """Oracle WMS entity data response."""
 
-            model_config: ClassVar[m.ConfigDict] = ConfigDict(extra="ignore")
+            model_config: ClassVar[m.ConfigDict] = m.ConfigDict(extra="ignore")
 
-            data: Sequence[t.StrMapping] = u.Field(
-                default_factory=lambda: list[t.StrMapping]()
-            )
+            data: Sequence[t.StrMapping] = u.Field(default_factory=tuple)
 
         # =====================================================================
         # DOMAIN ENTITIES - Composed DDD patterns
@@ -180,7 +184,7 @@ class FlextOracleWmsModels(m):
         class WmsEntity(m.BaseModel):
             """Base WMS entity with identity."""
 
-            model_config: ClassVar[m.ConfigDict] = ConfigDict(extra="forbid")
+            model_config: ClassVar[m.ConfigDict] = m.ConfigDict(extra="forbid")
 
             id: Annotated[str, u.Field(description="Entity identifier")] = ""
             name: Annotated[str, u.Field(description="Entity name")] = ""
@@ -222,7 +226,7 @@ class FlextOracleWmsModels(m):
             items: Annotated[
                 Sequence[t.ContainerValueMapping],
                 u.Field(description="Order items"),
-            ] = u.Field(default_factory=lambda: list[t.ContainerValueMapping]())
+            ] = u.Field(default_factory=tuple)
 
         class Shipment(WmsEntity):
             """Shipment domain entity."""
@@ -249,7 +253,7 @@ class FlextOracleWmsModels(m):
             items: Annotated[
                 Sequence[t.ContainerValueMapping],
                 u.Field(description="Task items"),
-            ] = u.Field(default_factory=lambda: list[t.ContainerValueMapping]())
+            ] = u.Field(default_factory=tuple)
 
         class Location(WmsEntity):
             """Location domain entity."""
@@ -266,7 +270,7 @@ class FlextOracleWmsModels(m):
         class WarehouseLocation(m.BaseModel):
             """Warehouse location value object."""
 
-            model_config: ClassVar[m.ConfigDict] = ConfigDict(
+            model_config: ClassVar[m.ConfigDict] = m.ConfigDict(
                 frozen=True, extra="forbid"
             )
 
@@ -283,7 +287,7 @@ class FlextOracleWmsModels(m):
         class ApiCredentials(m.BaseModel):
             """API credentials value object."""
 
-            model_config: ClassVar[m.ConfigDict] = ConfigDict(
+            model_config: ClassVar[m.ConfigDict] = m.ConfigDict(
                 frozen=True, extra="forbid"
             )
 
@@ -298,24 +302,18 @@ class FlextOracleWmsModels(m):
         class WarehouseAggregate(m.AggregateRoot):
             """Warehouse aggregate root."""
 
+            _flext_enforcement_exempt: ClassVar[bool] = True
+
             id: Annotated[str, u.Field(description="Warehouse identifier")]
             name: Annotated[str, u.Field(description="Warehouse name")]
             locations: Annotated[
                 Sequence[FlextOracleWmsModels.OracleWms.WarehouseLocation],
                 u.Field(description="Warehouse locations"),
-            ] = u.Field(
-                default_factory=lambda: list[
-                    FlextOracleWmsModels.OracleWms.WarehouseLocation
-                ]()
-            )
+            ] = u.Field(default_factory=tuple)
             inventory: Annotated[
                 MutableSequence[FlextOracleWmsModels.OracleWms.InventoryItem],
                 u.Field(description="Warehouse inventory items"),
-            ] = u.Field(
-                default_factory=lambda: list[
-                    FlextOracleWmsModels.OracleWms.InventoryItem
-                ]()
-            )
+            ] = u.Field(default_factory=list)
 
             def add_inventory(
                 self, item: FlextOracleWmsModels.OracleWms.InventoryItem
@@ -351,6 +349,6 @@ class FlextOracleWmsModels(m):
             return r[str].ok(name)
 
 
-__all__: list[str] = ["FlextOracleWmsModels"]
-
 m = FlextOracleWmsModels
+
+__all__: list[str] = ["FlextOracleWmsModels"]

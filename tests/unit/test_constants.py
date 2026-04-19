@@ -79,7 +79,7 @@ class Testc:
 
     def test_nested_error_messages_constants(self) -> None:
         """Test nested ErrorMessages class via MESSAGES dict."""
-        error_messages = c.ErrorMessages
+        error_messages = c.OracleWms.ErrorMessages
         msgs = error_messages.MESSAGES
         assert "entity_validation_failed" in msgs
         assert "discovery_failed" in msgs
@@ -89,8 +89,8 @@ class Testc:
         """Test nested Authentication class constants."""
 
     def test_nested_api_constants(self) -> None:
-        """Test nested Api class via CONFIG dict."""
-        api = c.Api
+        """Test nested OracleWmsApi class via CONFIG dict."""
+        api = c.OracleWms.WmsPagination
         settings = api.CONFIG
         assert "default_timeout" in settings
         assert "min_http_status_code" in settings
@@ -175,7 +175,7 @@ class Testc:
 
     def test_wms_pagination_constants(self) -> None:
         """Test WmsPagination class constants."""
-        pagination = c.WmsPagination
+        pagination = c.OracleWms.WmsPagination
         assert pagination.DEFAULT_PAGE_SIZE == 100
 
 

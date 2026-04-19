@@ -10,7 +10,7 @@ from urllib.parse import urlparse
 
 from flext_oracle_wms import (
     FlextOracleWmsApi,
-    FlextOracleWmsClientSettings,
+    FlextOracleWmsSettings,
     FlextOracleWmsUtilitiesClient,
     t,
     u,
@@ -72,7 +72,7 @@ def main() -> None:
         env_config.get("oracle_wms_password"),
     ]):
         return
-    settings = FlextOracleWmsClientSettings.model_validate({
+    settings = FlextOracleWmsSettings.model_validate({
         "base_url": str(env_config["oracle_wms_base_url"]),
         "username": str(env_config["oracle_wms_username"]),
         "password": str(env_config["oracle_wms_password"]),

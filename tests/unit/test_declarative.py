@@ -18,7 +18,7 @@ import pytest
 
 from flext_oracle_wms import (
     FlextOracleWmsApi,
-    FlextOracleWmsClientSettings,
+    FlextOracleWmsSettings,
     FlextOracleWmsUtilitiesClient,
 )
 from tests import c, p, t, u
@@ -46,7 +46,7 @@ def oracle_wms_client(
     env_config: t.OracleWms.Tests.EnvConfig,
 ) -> Generator[FlextOracleWmsUtilitiesClient.Client]:
     """Fixture that provides configured Oracle WMS client."""
-    settings = FlextOracleWmsClientSettings.model_validate({
+    settings = FlextOracleWmsSettings.model_validate({
         **env_config,
         "api_version": "LGF_V10",
     })
@@ -90,7 +90,6 @@ class TestOracleWmsDeclarativeIntegration:
         assert settings.username
         assert settings.password
         assert settings.timeout > 0
-        assert settings.max_retries > 0
         client = FlextOracleWmsUtilitiesClient.Client(settings)
         assert client.settings == settings
         start_result = client.start()

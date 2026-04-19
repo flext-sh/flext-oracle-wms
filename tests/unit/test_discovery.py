@@ -17,10 +17,10 @@ class TestDiscoveryConstants:
     """Test suite for discovery constants."""
 
     def test_discovery_success_constant(self) -> None:
-        assert u.OracleWms.Discovery.DISCOVERY_SUCCESS == "discovery_success"
+        assert u.OracleWms.DISCOVERY_SUCCESS == "discovery_success"
 
     def test_discovery_failure_constant(self) -> None:
-        assert u.OracleWms.Discovery.DISCOVERY_FAILURE == "discovery_failure"
+        assert u.OracleWms.DISCOVERY_FAILURE == "discovery_failure"
 
 
 class TestEndpointDiscoveryStrategyEnum:

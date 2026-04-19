@@ -29,7 +29,7 @@ from dotenv import load_dotenv
 
 from flext_core import FlextContainer
 from flext_oracle_wms import (
-    FlextOracleWmsExceptions,
+    FlextOracleWmsError,
     FlextOracleWmsSettings,
     FlextOracleWmsUtilitiesClient,
     p,
@@ -165,8 +165,8 @@ def main() -> None:
                 first_entity = entities[0]
                 query_entity_data(client, str(first_entity))
         demonstrate_error_handling(client)
-    except FlextOracleWmsExceptions.BaseError:
-        logger.exception("Oracle WMS error")
+    except FlextOracleWmsError:
+        logger.exception("Error in basic usage example")
     except ValueError:
         logger.exception("Configuration error")
     except (RuntimeError, OSError):

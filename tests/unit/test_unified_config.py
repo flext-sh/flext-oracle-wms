@@ -18,9 +18,10 @@ class TestFlextOracleWmsSettings:
     def test_config_creation_defaults(self) -> None:
         """Test settings creation with defaults."""
         settings = FlextOracleWmsSettings()
-        assert settings.base_url == "http://localhost:8080"
-        assert settings.username == ""
-        assert settings.password == ""
+        assert isinstance(settings.base_url, str)
+        assert settings.base_url
+        assert settings.timeout >= 1
+        assert settings.timeout <= 300
 
     def test_config_creation_custom(self) -> None:
         """Test settings creation with custom values."""

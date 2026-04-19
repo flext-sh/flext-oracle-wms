@@ -10,7 +10,6 @@ from types import TracebackType
 from typing import Self
 
 from flext_api import FlextApiClient, FlextApiSettings, u
-from pydantic import ValidationError
 
 from flext_oracle_wms import c, m, p, r, t
 
@@ -22,7 +21,7 @@ class FlextOracleWmsUtilitiesHttpClient:
         """Generic HTTP client using FLEXT delegation with railway-oriented programming."""
 
         HTTP_BAD_REQUEST_THRESHOLD = 400
-        logger = u.fetch_logger(__name__)
+        _logger = u.fetch_logger(__name__)
 
         def __init__(
             self,
@@ -116,11 +115,8 @@ class FlextOracleWmsUtilitiesHttpClient:
                         f"HTTP request failed: {response_result.error}",
                     )
                 response = response_result.value
-                return r[t.ContainerValueMapping].ok(
-                    self._parse_response_body(response.body),
-                )
+                return self._parse_response_body(response.body)
             except Exception as exc:
-                self.logger.exception(f"DELETE {path} error")
                 return r[t.ContainerValueMapping].fail(f"Request error: {exc}")
 
         def get(
@@ -182,11 +178,8 @@ class FlextOracleWmsUtilitiesHttpClient:
                     return r[t.ContainerValueMapping].fail(
                         f"HTTP {response.status_code}: {response.body!r}",
                     )
-                return r[t.ContainerValueMapping].ok(
-                    self._parse_response_body(response.body),
-                )
+                return self._parse_response_body(response.body)
             except Exception as exc:
-                self.logger.exception("Unexpected error")
                 return r[t.ContainerValueMapping].fail(f"Unexpected error: {exc}")
 
         def _ensure_client(self) -> None:
@@ -241,57 +234,53 @@ class FlextOracleWmsUtilitiesHttpClient:
                     return r[t.ContainerValueMapping].fail(
                         f"HTTP {response.status_code}: {response.body!r}",
                     )
-                return r[t.ContainerValueMapping].ok(
-                    self._parse_response_body(response.body),
-                )
+                return self._parse_response_body(response.body)
             except Exception as exc:
-                self.logger.exception(f"HTTP {method} error")
                 return r[t.ContainerValueMapping].fail(f"Request error: {exc}")
 
         def _parse_response_body(
             self,
             body: t.Api.ResponseBody,
-        ) -> t.ContainerValueMapping:
-            """Parse response body using strict model validation."""
+        ) -> p.Result[t.ContainerValueMapping]:
+            """Parse response body; propagates parse failure via result."""
             match body:
                 case dict() as payload:
                     try:
-                        validated: t.ContainerValueMapping = (
+                        return r[t.ContainerValueMapping].ok(
                             t.OracleWms.CONTAINER_VALUE_MAPPING_ADAPTER.validate_python(
                                 payload
                             )
                         )
-                        return validated
-                    except c.ValidationError:
-                        fallback_dict: t.ContainerValueMapping = {"text": str(payload)}
-                        return fallback_dict
+                    except (c.ValidationError, ValueError) as exc:
+                        return r[t.ContainerValueMapping].fail(
+                            f"Response parse error: {exc}"
+                        )
                 case str() as raw if raw:
                     try:
-                        validated_json: t.ContainerValueMapping = (
+                        return r[t.ContainerValueMapping].ok(
                             t.OracleWms.CONTAINER_VALUE_MAPPING_ADAPTER.validate_json(
                                 raw
                             )
                         )
-                        return validated_json
-                    except (ValidationError, ValueError):
-                        str_fallback: t.ContainerValueMapping = {"text": raw}
-                        return str_fallback
+                    except (c.ValidationError, ValueError) as exc:
+                        return r[t.ContainerValueMapping].fail(
+                            f"Response parse error: {exc}"
+                        )
                 case bytes() as raw_bytes:
                     try:
-                        validated_bytes: t.ContainerValueMapping = (
+                        return r[t.ContainerValueMapping].ok(
                             t.OracleWms.CONTAINER_VALUE_MAPPING_ADAPTER.validate_json(
                                 raw_bytes
                             )
                         )
-                        return validated_bytes
-                    except (ValidationError, ValueError):
-                        bytes_fallback: t.ContainerValueMapping = {
-                            "text": raw_bytes.decode("utf-8", errors="ignore"),
-                        }
-                        return bytes_fallback
+                    except (c.ValidationError, ValueError) as exc:
+                        return r[t.ContainerValueMapping].fail(
+                            f"Response parse error: {exc}"
+                        )
                 case _:
-                    empty_body: t.ContainerValueMapping = {}
-                    return empty_body
+                    return r[t.ContainerValueMapping].fail(
+                        f"Unsupported response body type: {type(body)}"
+                    )
 
         @staticmethod
         def create(

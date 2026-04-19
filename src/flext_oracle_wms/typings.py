@@ -10,7 +10,6 @@ from collections.abc import Mapping, Sequence
 from typing import Annotated, Literal
 
 from flext_api import m, t, u
-from pydantic import StringConstraints, TypeAdapter
 
 from flext_oracle_wms import c
 
@@ -25,9 +24,9 @@ class FlextOracleWmsTypes(t):
     class OracleWms:
         """Oracle WMS-specific project types."""
 
-        FLOAT_ADAPTER: m.TypeAdapter[float] = TypeAdapter(float)
+        FLOAT_ADAPTER: m.TypeAdapter[float] = m.TypeAdapter(float)
         CONTAINER_VALUE_MAPPING_ADAPTER: m.TypeAdapter[t.ContainerValueMapping] = (
-            TypeAdapter(t.ContainerValueMapping)
+            m.TypeAdapter(t.ContainerValueMapping)
         )
 
         # =========================================================================
@@ -39,10 +38,12 @@ class FlextOracleWmsTypes(t):
         type TSchema = Mapping[str, t.ContainerValueMapping]
         type TApiResponse = t.ContainerValueMapping
         type TApiVersion = Literal["v2", "v1"]
-        type TEntityId = Annotated[str, StringConstraints(min_length=1, max_length=100)]
+        type TEntityId = Annotated[
+            str, m.StringConstraints(min_length=1, max_length=100)
+        ]
         type TEntityName = Annotated[
             str,
-            StringConstraints(min_length=1, max_length=50, pattern=r"^[a-z0-9_]+$"),
+            m.StringConstraints(min_length=1, max_length=50, pattern=r"^[a-z0-9_]+$"),
         ]
         type TFilterValue = t.OptionalScalar
         type TFilters = Mapping[str, t.OptionalScalar]

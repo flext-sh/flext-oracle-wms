@@ -65,7 +65,11 @@ if _t.TYPE_CHECKING:
     )
     from tests.unit.test_helpers import TestFlextOracleWmsUtilities
     from tests.unit.test_helpers_core import TestFlextOracleWmsUtilitiesCore
-    from tests.unit.test_schema_dynamic import TestNestedConstants, TestWmsEnums
+    from tests.unit.test_schema_dynamic import (
+        TestNestedConstants,
+        TestSchemaConstants,
+        TestWmsEnums,
+    )
     from tests.unit.test_singer_flattening import (
         TestFlextOracleWmsApiResponse,
         TestFlextOracleWmsEntity,
@@ -145,6 +149,7 @@ _LAZY_IMPORTS = merge_lazy_imports(
             ".unit.test_helpers_core": ("TestFlextOracleWmsUtilitiesCore",),
             ".unit.test_schema_dynamic": (
                 "TestNestedConstants",
+                "TestSchemaConstants",
                 "TestWmsEnums",
             ),
             ".unit.test_singer_flattening": (
@@ -233,6 +238,7 @@ __all__: list[str] = [
     "TestPerformanceIntegration",
     "TestRecordFiltering",
     "TestRecordSorting",
+    "TestSchemaConstants",
     "TestWmsEnums",
     "Testc",
     "TestsFlextOracleWmsConstants",

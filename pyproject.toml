@@ -356,7 +356,7 @@ root = "tests"
 
 # [MANAGED] pytest
 [tool.pytest.ini_options]
-addopts = [ "--markdown-check", "--strict-markers" ]
+addopts = [ "--markdown-docs", "--strict-markers" ]
 filterwarnings = [ "error", "ignore::UserWarning:flext_api", "ignore::UserWarning:flext_web" ]
 markers = [
   "docker: tests requiring Docker",
