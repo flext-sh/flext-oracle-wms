@@ -1,0 +1,18 @@
+tests/unit/test_discovery.py
+  h_9db9d35f50cf33 11-12
+src/flext_oracle_wms/client_settings.py
+  h_9db9d35f50cf33 14
+tests/unit/test_filtering.py
+  h_9db9d35f50cf33 26
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.3.0",
+  "base_commit_sha": "c5b52aeccbe0f40a1fd7025489727e7129fae7d8",
+  "prompts": {},
+  "humans": {
+    "h_9db9d35f50cf33": {
+      "author": "FLEXT Bot"
+    }
+  }
+}
