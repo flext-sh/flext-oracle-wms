@@ -28,8 +28,8 @@ from collections.abc import (
 from pathlib import Path
 
 from dotenv import load_dotenv
-
 from flext_core import FlextContainer
+
 from flext_oracle_wms import (
     FlextOracleWmsError,
     FlextOracleWmsSettings,
