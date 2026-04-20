@@ -13,7 +13,11 @@ NO FALLBACKS, NO ESTIMATIONS, NO BASIC LIMITS - FULL EXPLORATION
 from __future__ import annotations
 
 import json
-from collections.abc import Mapping, MutableSequence, Sequence
+from collections.abc import (
+    Mapping,
+    MutableSequence,
+    Sequence,
+)
 from datetime import UTC, datetime
 from pathlib import Path
 

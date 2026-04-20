@@ -8,7 +8,9 @@ integration using the ACTUAL API that exists and functions properly.
 from __future__ import annotations
 
 import os
-from collections.abc import Mapping
+from collections.abc import (
+    Mapping,
+)
 from enum import StrEnum, unique
 from pathlib import Path
 from typing import ClassVar
