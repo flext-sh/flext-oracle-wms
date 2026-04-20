@@ -116,7 +116,7 @@ class FlextOracleWmsUtilitiesClient:
 
         @staticmethod
         def _decode_response_model[T: m.BaseModel](
-            payload: t.Api.ResponseBody | t.ContainerValue,
+            payload: t.Api.ResponseBody | t.Container,
             model_type: type[T],
         ) -> p.Result[T]:
             if isinstance(payload, dict):

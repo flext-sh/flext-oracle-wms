@@ -66,8 +66,8 @@ class OracleWmsCompleteDiscovery:
         )
         self.client = FlextOracleWmsUtilitiesClient.Client(settings=self.settings)
         self.discovered_entities: MutableSequence[str] = []
-        self.entity_metadata: t.MutableRecursiveContainerMapping = {}
-        self.complete_schemas: t.MutableRecursiveContainerMapping = {}
+        self.entity_metadata: t.MutableFlatContainerMapping = {}
+        self.complete_schemas: t.MutableFlatContainerMapping = {}
 
     def start_discovery(self) -> p.Result[bool]:
         """Start complete discovery process."""
@@ -313,7 +313,7 @@ class OracleWmsCompleteDiscovery:
         entities_with_data: MutableSequence[str],
         entities_without_data: MutableSequence[str],
         entities_with_errors: MutableSequence[tuple[str, str]],
-        metadata_results: t.MutableRecursiveContainerMapping,
+        metadata_results: t.MutableFlatContainerMapping,
     ) -> None:
         """Process metadata for a single entity."""
         try:
@@ -337,13 +337,13 @@ class OracleWmsCompleteDiscovery:
         entity_name: str,
         count: int,
         results: Sequence[t.StrMapping],
-    ) -> t.MutableRecursiveContainerMapping:
+    ) -> t.MutableFlatContainerMapping:
         """Create metadata info dict for an entity."""
         fields: MutableSequence[str] = []
         field_types: t.MutableStrMapping = {}
-        sample_data: t.MutableRecursiveContainerMapping | None = None
+        sample_data: t.MutableFlatContainerMapping | None = None
         sample_size = len(results)
-        metadata_info: t.MutableRecursiveContainerMapping = {
+        metadata_info: t.MutableFlatContainerMapping = {
             "entity_name": entity_name,
             "total_count": count,
             "sample_size": sample_size,
@@ -362,7 +362,7 @@ class OracleWmsCompleteDiscovery:
         metadata_info["field_types"] = {
             k: type(v).__name__ for k, v in sample_record.items()
         }
-        safe_sample: t.MutableRecursiveContainerMapping = {}
+        safe_sample: t.MutableFlatContainerMapping = {}
         max_string_length = 200
         for k, v in sample_record.items():
             if len(v) >= max_string_length:
@@ -384,7 +384,7 @@ class OracleWmsCompleteDiscovery:
                     self.discovered_entities = list(value)
             else:
                 return r[Mapping[str, t.Container]].fail("Entity discovery failed")
-        metadata_results: t.MutableRecursiveContainerMapping = {}
+        metadata_results: t.MutableFlatContainerMapping = {}
         entities_with_data: MutableSequence[str] = []
         entities_without_data: MutableSequence[str] = []
         entities_with_errors: MutableSequence[tuple[str, str]] = []
@@ -441,7 +441,7 @@ class OracleWmsCompleteDiscovery:
             and meta.get("has_data")
             and meta.get("structure_available")
         ]
-        singer_schemas: t.MutableRecursiveContainerMapping = {}
+        singer_schemas: t.MutableFlatContainerMapping = {}
         for entity_name in entities_with_data:
             metadata = self.entity_metadata[entity_name]
             if isinstance(metadata, dict):

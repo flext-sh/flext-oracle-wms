@@ -62,8 +62,8 @@ class FocusedOracleWmsDiscovery:
             "receipt",
             "manifest",
         ]
-        self.entities_with_data: t.MutableRecursiveContainerMapping = {}
-        self.complete_schemas: t.MutableRecursiveContainerMapping = {}
+        self.entities_with_data: t.MutableFlatContainerMapping = {}
+        self.complete_schemas: t.MutableFlatContainerMapping = {}
 
     def execute_focused_discovery(self) -> p.Result[Mapping[str, t.Container]]:
         """Execute complete focused discovery."""
@@ -127,9 +127,9 @@ class FocusedOracleWmsDiscovery:
 
     def _quick_data_scan(
         self, entities: t.StrSequence
-    ) -> t.MutableRecursiveContainerMapping:
+    ) -> t.MutableFlatContainerMapping:
         """Quick scan to find entities with actual data."""
-        data_entities: t.MutableRecursiveContainerMapping = {}
+        data_entities: t.MutableFlatContainerMapping = {}
         for entity_name in entities:
             try:
                 result = self.client.get_entity_data(entity_name, limit=1)
@@ -142,7 +142,7 @@ class FocusedOracleWmsDiscovery:
                         )
                         if detailed_result.success:
                             detailed_records = detailed_result.value
-                            entity_info: t.MutableRecursiveContainerMapping = {
+                            entity_info: t.MutableFlatContainerMapping = {
                                 "count": len(detailed_records),
                                 "has_data": True,
                                 "sample_size": len(detailed_records),
@@ -169,9 +169,9 @@ class FocusedOracleWmsDiscovery:
     def _get_entity_structures(
         self,
         entities: t.StrSequence,
-    ) -> t.MutableRecursiveContainerMapping:
+    ) -> t.MutableFlatContainerMapping:
         """Get entity structures even without data."""
-        structures: t.MutableRecursiveContainerMapping = {}
+        structures: t.MutableFlatContainerMapping = {}
         for entity_name in entities:
             try:
                 result = self.client.get_entity_data(entity_name, limit=1)
@@ -205,9 +205,9 @@ class FocusedOracleWmsDiscovery:
     def _generate_schemas_from_data(
         self,
         data_entities: Mapping[str, t.Container],
-    ) -> t.MutableRecursiveContainerMapping:
+    ) -> t.MutableFlatContainerMapping:
         """Generate Singer schemas from entities with data."""
-        schemas: t.MutableRecursiveContainerMapping = {}
+        schemas: t.MutableFlatContainerMapping = {}
         for entity_name, entity_data in data_entities.items():
             if isinstance(entity_data, dict):
                 schema = self._create_singer_schema(entity_name, entity_data)
@@ -218,9 +218,9 @@ class FocusedOracleWmsDiscovery:
     def _generate_schemas_from_structures(
         self,
         structure_entities: Mapping[str, t.Container],
-    ) -> t.MutableRecursiveContainerMapping:
+    ) -> t.MutableFlatContainerMapping:
         """Generate Singer schemas from structures."""
-        schemas: t.MutableRecursiveContainerMapping = {}
+        schemas: t.MutableFlatContainerMapping = {}
         for entity_name, structure_data in structure_entities.items():
             if isinstance(structure_data, dict):
                 schema = self._create_singer_schema(entity_name, structure_data)
@@ -240,7 +240,7 @@ class FocusedOracleWmsDiscovery:
             sample_record = entity_data.get("sample_record", {})
             if not fields or not isinstance(fields, list):
                 return None
-            properties: t.MutableRecursiveContainerMapping = {}
+            properties: t.MutableFlatContainerMapping = {}
             for field in fields:
                 if not isinstance(field, str):
                     continue
@@ -409,16 +409,16 @@ class FocusedOracleWmsDiscovery:
 
     def _create_singer_catalog(self) -> Mapping[str, t.Container]:
         """Create Singer catalog."""
-        streams: MutableSequence[t.MutableRecursiveContainerMapping] = []
+        streams: MutableSequence[t.MutableFlatContainerMapping] = []
         for entity_name, schema in self.complete_schemas.items():
             if not isinstance(schema, dict):
                 continue
             key_properties = schema.get("key_properties", [])
-            schema_without_keys: t.MutableRecursiveContainerMapping = {
+            schema_without_keys: t.MutableFlatContainerMapping = {
                 k: v for k, v in schema.items() if k != "key_properties"
             }
             breadcrumb: t.StrSequence = []
-            stream: t.MutableRecursiveContainerMapping = {
+            stream: t.MutableFlatContainerMapping = {
                 "tap_stream_id": entity_name,
                 "stream": entity_name,
                 "schema": schema_without_keys,

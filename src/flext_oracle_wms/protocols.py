@@ -56,7 +56,7 @@ class FlextOracleWmsProtocols(p):
                 operation: str,
                 settings: t.ContainerValueMapping,
                 **params: t.Scalar,
-            ) -> p.Result[t.ContainerValue]:
+            ) -> p.Result[t.Container]:
                 """Execute WMS operation with unified interface.
 
                 Args:

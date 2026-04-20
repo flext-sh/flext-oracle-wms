@@ -421,9 +421,7 @@ class CompleteMockPipeline:
         """Determine if field should be a key property."""
         return field == "id" or (field.endswith("_code") and (not existing_keys))
 
-    def _add_singer_metadata(
-        self, properties: t.MutableRecursiveContainerMapping
-    ) -> None:
+    def _add_singer_metadata(self, properties: t.MutableFlatContainerMapping) -> None:
         """Add Singer metadata properties - SRP compliance."""
         properties.update({
             "_sdc_extracted_at": {"type": "string", "format": "date-time"},

@@ -66,7 +66,7 @@ class FlextOracleWmsTypes(t):
         ]
         type WmsEntity = Mapping[
             str,
-            t.ContainerValue | t.ContainerValueMapping,
+            t.Container | t.ContainerValueMapping,
         ]
         type WmsRecord = t.ContainerValueMapping
         type WmsRecords = Sequence[t.ContainerValueMapping]
