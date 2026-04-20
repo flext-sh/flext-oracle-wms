@@ -185,16 +185,16 @@ class FlextOracleWmsUtilitiesHttpClient:
         def _ensure_client(self) -> None:
             """Ensure Oracle WMS HTTP client is initialized using FLEXT delegation."""
             if self._client is None:
-                settings = FlextApiSettings(
-                    base_url=self.base_url,
-                    timeout=self.timeout,
-                    headers=dict(self.default_headers),
-                    max_retries=0,
-                    verify_ssl=self.verify_ssl,
-                    default_headers=dict(self.default_headers),
-                    log_requests=False,
-                    log_responses=False,
-                )
+                settings = FlextApiSettings.model_validate({
+                    "base_url": self.base_url,
+                    "timeout": self.timeout,
+                    "headers": dict(self.default_headers),
+                    "max_retries": 0,
+                    "verify_ssl": self.verify_ssl,
+                    "default_headers": dict(self.default_headers),
+                    "log_requests": False,
+                    "log_responses": False,
+                })
                 self._client = FlextApiClient(settings=settings)
 
         def _execute_request(
