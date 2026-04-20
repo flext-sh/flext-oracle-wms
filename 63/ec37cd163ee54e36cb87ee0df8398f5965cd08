@@ -1,0 +1,26 @@
+tests/unit/oracle_wms_focused_discovery.py
+  h_9db9d35f50cf33 65-66,130,132,145,172,174,208,210,221,223,243,412,417,421
+src/flext_oracle_wms/typings.py
+  h_9db9d35f50cf33 69
+tests/unit/oracle_wms_complete_discovery.py
+  h_9db9d35f50cf33 69-70,316,340,344,346,365,387,444
+examples/03_complete_functionality_showcase.py
+  h_9db9d35f50cf33 124,126,200,205
+src/flext_oracle_wms/_utilities/client.py
+  h_9db9d35f50cf33 119
+src/flext_oracle_wms/protocols.py
+  h_9db9d35f50cf33 59
+examples/tests/test_declarative_example.py
+  h_9db9d35f50cf33 24
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.3.0",
+  "base_commit_sha": "63ec37cd163ee54e36cb87ee0df8398f5965cd08",
+  "prompts": {},
+  "humans": {
+    "h_9db9d35f50cf33": {
+      "author": "FLEXT Bot"
+    }
+  }
+}
