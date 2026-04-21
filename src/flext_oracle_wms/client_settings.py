@@ -6,7 +6,7 @@ from typing import Annotated, ClassVar
 
 from flext_core import m, u
 
-from flext_oracle_wms.settings import FlextOracleWmsSettings
+from flext_oracle_wms import FlextOracleWmsSettings
 
 
 class FlextOracleWmsClientSettings(FlextOracleWmsSettings):
