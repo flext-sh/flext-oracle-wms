@@ -44,8 +44,6 @@ class FlextOracleWmsModels(m):
         class Entity(m.BaseModel):
             """Oracle WMS entity definition."""
 
-            _flext_enforcement_exempt: ClassVar[bool] = True
-
             model_config: ClassVar[m.ConfigDict] = m.ConfigDict(extra="forbid")
 
             name: Annotated[str, u.Field(min_length=1, description="Entity name")]
@@ -304,8 +302,6 @@ class FlextOracleWmsModels(m):
 
         class WarehouseAggregate(m.AggregateRoot):
             """Warehouse aggregate root."""
-
-            _flext_enforcement_exempt: ClassVar[bool] = True
 
             id: Annotated[str, u.Field(description="Warehouse identifier")]
             name: Annotated[str, u.Field(description="Warehouse name")]
