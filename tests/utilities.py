@@ -44,7 +44,7 @@ class TestsFlextOracleWmsUtilities(FlextTestsUtilities, u):
 
             @staticmethod
             def to_str(
-                value: TestsFlextOracleWmsTypes.JsonValue | None, default: str
+                value: TestsFlextOracleWmsTypes.JsonPayload | None, default: str
             ) -> str:
                 """Normalize a scalar-like value into a string."""
                 if value is None:
@@ -57,7 +57,7 @@ class TestsFlextOracleWmsUtilities(FlextTestsUtilities, u):
 
             @staticmethod
             def to_int(
-                value: TestsFlextOracleWmsTypes.JsonValue | None, default: int
+                value: TestsFlextOracleWmsTypes.JsonPayload | None, default: int
             ) -> int:
                 """Normalize a scalar-like value into an integer."""
                 if value is None:
@@ -73,7 +73,7 @@ class TestsFlextOracleWmsUtilities(FlextTestsUtilities, u):
 
             @staticmethod
             def to_bool(
-                value: TestsFlextOracleWmsTypes.JsonValue | None,
+                value: TestsFlextOracleWmsTypes.JsonPayload | None,
                 default: bool,
             ) -> bool:
                 """Normalize a scalar-like value into a boolean."""
