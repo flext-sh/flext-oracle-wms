@@ -72,7 +72,10 @@ def sample_entities() -> t.StrSequence:
 @pytest.fixture
 def sample_entity_data() -> t.JsonMapping:
     """Sample entity response data based on REAL query results."""
-    return u.OracleWms.Tests.sample_entity_data()
+    data = u.OracleWms.Tests.sample_entity_data()
+    if data is None:
+        pytest.skip("Sample entity data unavailable")
+    return data
 
 
 def pytest_configure(config: pytest.Config) -> None:

@@ -15,6 +15,7 @@ from collections.abc import (
 )
 from datetime import UTC, datetime
 from pathlib import Path
+from typing import cast
 
 from flext_oracle_wms import FlextOracleWmsSettings, FlextOracleWmsUtilitiesClient
 from tests import p, r, t, u
@@ -111,14 +112,15 @@ class FocusedOracleWmsDiscovery:
             if schemas:
                 for _schema in schemas.values():
                     pass
-            return r[t.JsonMapping].ok({
+            summary_payload: dict[str, t.JsonValue] = {
                 "total_entities": len(all_entities),
                 "entities_with_data": len(data_entities),
                 "schemas_generated": len(schemas),
                 "results_path": save_result.value if save_result.success else None,
-                "data_entities": data_entities,
-                "schemas": schemas,
-            })
+                "data_entities": cast("t.JsonValue", data_entities),
+                "schemas": cast("t.JsonValue", schemas),
+            }
+            return r[t.JsonMapping].ok(summary_payload)
         except Exception as e:
             logger.exception("Focused discovery failed")
             return r[t.JsonMapping].fail(f"Discovery failed: {e}")
@@ -148,18 +150,27 @@ class FocusedOracleWmsDiscovery:
                             if detailed_records:
                                 sample = detailed_records[0]
                                 if isinstance(sample, dict):
-                                    entity_info.update({
+                                    entity_info_extra: dict[str, t.JsonValue] = {
                                         "field_count": len(sample.keys()),
-                                        "sample_fields": list(sample.keys()),
-                                        "field_types": {
-                                            k: type(v).__name__
-                                            for k, v in sample.items()
-                                        },
-                                        "sample_record": self._safe_sample(
-                                            sample,
+                                        "sample_fields": cast(
+                                            "t.JsonValue", list(sample.keys())
                                         ),
-                                    })
-                            data_entities[entity_name] = entity_info
+                                        "field_types": cast(
+                                            "t.JsonValue",
+                                            {
+                                                k: type(v).__name__
+                                                for k, v in sample.items()
+                                            },
+                                        ),
+                                        "sample_record": cast(
+                                            "t.JsonValue",
+                                            self._safe_sample(sample),
+                                        ),
+                                    }
+                                    entity_info.update(entity_info_extra)
+                            data_entities[entity_name] = cast(
+                                "t.JsonValue", entity_info
+                            )
             except (RuntimeError, OSError, ValueError, KeyError):
                 logger.debug("Failed to process entity %s", entity_name)
         return data_entities
@@ -178,14 +189,20 @@ class FocusedOracleWmsDiscovery:
                     if records:
                         sample = records[0]
                         if isinstance(sample, dict):
-                            structures[entity_name] = {
-                                "fields": list(sample.keys()),
-                                "field_types": {
-                                    k: type(v).__name__ for k, v in sample.items()
-                                },
-                                "sample_record": self._safe_sample(sample),
+                            structure_payload: dict[str, t.JsonValue] = {
+                                "fields": cast("t.JsonValue", list(sample.keys())),
+                                "field_types": cast(
+                                    "t.JsonValue",
+                                    {k: type(v).__name__ for k, v in sample.items()},
+                                ),
+                                "sample_record": cast(
+                                    "t.JsonValue", self._safe_sample(sample)
+                                ),
                                 "has_data": False,
                             }
+                            structures[entity_name] = cast(
+                                "t.JsonValue", structure_payload
+                            )
             except (RuntimeError, OSError, ValueError, KeyError):
                 logger.debug("Failed to get structure for entity %s", entity_name)
         return structures
@@ -210,7 +227,7 @@ class FocusedOracleWmsDiscovery:
             if isinstance(entity_data, dict):
                 schema = self._create_singer_schema(entity_name, entity_data)
                 if schema:
-                    schemas[entity_name] = schema
+                    schemas[entity_name] = cast("t.JsonValue", schema)
         return schemas
 
     def _generate_schemas_from_structures(
@@ -223,7 +240,7 @@ class FocusedOracleWmsDiscovery:
             if isinstance(structure_data, dict):
                 schema = self._create_singer_schema(entity_name, structure_data)
                 if schema:
-                    schemas[entity_name] = schema
+                    schemas[entity_name] = cast("t.JsonValue", schema)
         return schemas
 
     def _create_singer_schema(
@@ -258,20 +275,25 @@ class FocusedOracleWmsDiscovery:
                     sample_value,
                     entity_name,
                 )
-                properties[field] = singer_type
-            properties["_sdc_extracted_at"] = {"type": "string", "format": "date-time"}
-            properties["_sdc_entity"] = {"type": "string"}
-            properties["_sdc_record_hash"] = {"type": ["string", "null"]}
+                properties[field] = cast("t.JsonValue", singer_type)
+            properties["_sdc_extracted_at"] = cast(
+                "t.JsonValue", {"type": "string", "format": "date-time"}
+            )
+            properties["_sdc_entity"] = cast("t.JsonValue", {"type": "string"})
+            properties["_sdc_record_hash"] = cast(
+                "t.JsonValue", {"type": ["string", "null"]}
+            )
             str_fields: t.StrSequence = [f for f in fields if isinstance(f, str)]
             key_properties = self._get_oracle_key_properties(entity_name, str_fields)
-            return {
+            schema_result: dict[str, t.JsonValue] = {
                 "type": "object",
-                "properties": properties,
+                "properties": cast("t.JsonValue", properties),
                 "additionalProperties": False,
-                "key_properties": key_properties,
+                "key_properties": cast("t.JsonValue", key_properties),
                 "oracle_wms_entity": entity_name,
                 "oracle_wms_environment": str(self.settings.base_url),
             }
+            return schema_result
         except (RuntimeError, OSError, ValueError, KeyError):
             logger.exception("Schema creation failed for %s", entity_name)
             return None
@@ -419,21 +441,24 @@ class FocusedOracleWmsDiscovery:
             stream: t.MutableJsonMapping = {
                 "tap_stream_id": entity_name,
                 "stream": entity_name,
-                "schema": schema_without_keys,
-                "key_properties": key_properties,
-                "metadata": [
-                    {
-                        "breadcrumb": breadcrumb,
-                        "metadata": {
-                            "inclusion": "available",
-                            "selected": True,
-                            "replication-method": "FULL_TABLE",
+                "schema": cast("t.JsonValue", schema_without_keys),
+                "key_properties": cast("t.JsonValue", key_properties),
+                "metadata": cast(
+                    "t.JsonValue",
+                    [
+                        {
+                            "breadcrumb": breadcrumb,
+                            "metadata": {
+                                "inclusion": "available",
+                                "selected": True,
+                                "replication-method": "FULL_TABLE",
+                            },
                         },
-                    },
-                ],
+                    ],
+                ),
             }
             streams.append(stream)
-        return {"version": 1, "streams": streams}
+        return {"version": 1, "streams": cast("t.JsonValue", streams)}
 
 
 def main() -> None:

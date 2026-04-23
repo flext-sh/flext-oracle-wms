@@ -98,17 +98,17 @@ class FlextOracleWmsUtilitiesHttpClient:
                 self._ensure_client()
                 if self._client is None:
                     return r[t.JsonMapping].fail("Client not initialized")
-                request_headers = dict(self.default_headers)
+                request_headers: t.MutableStrMapping = dict(self.default_headers)
                 request_headers.update(self._normalize_headers(headers))
                 url = f"{self.base_url}/{path.lstrip('/')}"
-                request = m.Api.HttpRequest(
-                    method="DELETE",
-                    url=url,
-                    headers=request_headers,
-                    body={},
-                    query_params={},
-                    timeout=self.timeout,
-                )
+                request = m.Api.HttpRequest.model_validate({
+                    "method": "DELETE",
+                    "url": url,
+                    "headers": request_headers,
+                    "body": {},
+                    "query_params": {},
+                    "timeout": self.timeout,
+                })
                 response_result = self._client.request(request)
                 if response_result.failure:
                     return r[t.JsonMapping].fail(
@@ -156,18 +156,18 @@ class FlextOracleWmsUtilitiesHttpClient:
                 self._ensure_client()
                 if self._client is None:
                     return r[t.JsonMapping].fail("Client not initialized")
-                request_headers = dict(self.default_headers)
+                request_headers: t.MutableStrMapping = dict(self.default_headers)
                 request_headers.update(self._normalize_headers(headers))
                 request_body = json_data or data
                 url = f"{self.base_url}/{path.lstrip('/')}"
-                request = m.Api.HttpRequest(
-                    method="PUT",
-                    url=url,
-                    headers=request_headers,
-                    body=self._normalize_request_body(request_body),
-                    query_params={},
-                    timeout=self.timeout,
-                )
+                request = m.Api.HttpRequest.model_validate({
+                    "method": "PUT",
+                    "url": url,
+                    "headers": request_headers,
+                    "body": self._normalize_request_body(request_body),
+                    "query_params": {},
+                    "timeout": self.timeout,
+                })
                 response_result = self._client.request(request)
                 if response_result.failure:
                     return r[t.JsonMapping].fail(
@@ -210,20 +210,20 @@ class FlextOracleWmsUtilitiesHttpClient:
                 self._ensure_client()
                 if self._client is None:
                     return r[t.JsonMapping].fail("Client not initialized")
-                request_headers = dict(self.default_headers)
+                request_headers: t.MutableStrMapping = dict(self.default_headers)
                 request_headers.update(self._normalize_headers(headers))
                 url = f"{self.base_url}/{path.lstrip('/')}" if path else self.base_url
                 if params:
                     query = "&".join((f"{k}={v}" for k, v in params.items()))
                     url = f"{url}?{query}"
-                request = m.Api.HttpRequest(
-                    method=method,
-                    url=url,
-                    headers=request_headers,
-                    body=self._normalize_request_body(body),
-                    query_params=params or {},
-                    timeout=self.timeout,
-                )
+                request = m.Api.HttpRequest.model_validate({
+                    "method": method,
+                    "url": url,
+                    "headers": request_headers,
+                    "body": self._normalize_request_body(body),
+                    "query_params": params or {},
+                    "timeout": self.timeout,
+                })
                 response_result = self._client.request(request)
                 if response_result.failure:
                     return r[t.JsonMapping].fail(

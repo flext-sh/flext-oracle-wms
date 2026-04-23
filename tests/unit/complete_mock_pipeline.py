@@ -362,7 +362,7 @@ class CompleteMockPipeline:
         key_properties: list[str] = []
         for field, value in sample_data.items():
             field_property = self._infer_field_type(field, value=value)
-            properties[field] = field_property
+            properties[field] = cast("t.JsonValue", field_property)
             if self._is_key_field(field, key_properties):
                 key_properties.append(field)
         return (properties, key_properties)
@@ -436,12 +436,13 @@ class CompleteMockPipeline:
         key_properties: t.StrSequence,
     ) -> dict[str, t.JsonValue]:
         """Build complete Singer schema - SRP compliance."""
-        return {
+        schema: dict[str, t.JsonValue] = {
             "type": "object",
-            "properties": properties,
+            "properties": cast("t.JsonValue", properties),
             "additionalProperties": False,
-            "key_properties": key_properties or ["id"],
+            "key_properties": cast("t.JsonValue", key_properties or ["id"]),
         }
+        return schema
 
     def _create_complete_singer_catalog(
         self,
@@ -482,17 +483,20 @@ class CompleteMockPipeline:
             stream: dict[str, t.JsonValue] = {
                 "tap_stream_id": entity_name,
                 "stream": entity_name,
-                "schema": schema_without_keys,
-                "key_properties": key_properties,
-                "metadata": [
-                    {
-                        "breadcrumb": list[str](),
-                        "metadata": inner_metadata,
-                    },
-                ],
+                "schema": cast("t.JsonValue", schema_without_keys),
+                "key_properties": cast("t.JsonValue", key_properties),
+                "metadata": cast(
+                    "t.JsonValue",
+                    [
+                        {
+                            "breadcrumb": list[str](),
+                            "metadata": inner_metadata,
+                        },
+                    ],
+                ),
             }
             streams.append(stream)
-        return {"version": 1, "streams": streams}
+        return {"version": 1, "streams": cast("t.JsonValue", streams)}
 
     def _simulate_tap_extraction(self) -> list[dict[str, t.JsonValue]]:
         """Simulate TAP extraction process."""
@@ -535,13 +539,16 @@ class CompleteMockPipeline:
             columns: list[str] = (
                 list(first_inner.keys()) if isinstance(first_inner, dict) else []
             )
-            target_results[f"raw_oracle_wms_{entity_name}"] = {
-                "table_name": f"raw_oracle_wms_{entity_name}",
-                "records_loaded": len(entity_records),
-                "load_timestamp": datetime.now(UTC).isoformat(),
-                "status": "SUCCESS",
-                "columns": columns,
-            }
+            target_results[f"raw_oracle_wms_{entity_name}"] = cast(
+                "t.JsonValue",
+                {
+                    "table_name": f"raw_oracle_wms_{entity_name}",
+                    "records_loaded": len(entity_records),
+                    "load_timestamp": datetime.now(UTC).isoformat(),
+                    "status": "SUCCESS",
+                    "columns": columns,
+                },
+            )
         return target_results
 
     def _simulate_dbt_transformations(
@@ -671,7 +678,7 @@ class CompleteMockPipeline:
             "oracle_wms": {
                 "entities_count": len(self.mock_entities),
                 "total_records": sum(
-                    self._safe_int(info.get("count", 0))
+                    self._safe_int(cast("t.JsonValue", info.get("count", 0)))
                     for info in self.mock_entities.values()
                     if isinstance(info, dict)
                 ),
@@ -686,7 +693,9 @@ class CompleteMockPipeline:
                     else [],
                 ),
                 "tap_records_extracted": len(tap_records),
-                "replication_methods": _extract_replication_methods(catalog),
+                "replication_methods": _extract_replication_methods(
+                    cast("t.JsonValue", catalog),
+                ),
             },
             "target_loading": {
                 "tables_created": len(target_results),

@@ -20,6 +20,7 @@ from collections.abc import (
 )
 from datetime import UTC, datetime
 from pathlib import Path
+from typing import cast
 
 from flext_api import FlextApiModels
 
@@ -324,7 +325,7 @@ class OracleWmsCompleteDiscovery:
             records: Sequence[t.StrMapping] = entity_result.value
             count = len(records) if records else 0
             metadata_info = self._create_metadata_info(entity_name, count, records)
-            metadata_results[entity_name] = metadata_info
+            metadata_results[entity_name] = cast("t.JsonValue", metadata_info)
             if count > 0:
                 entities_with_data.append(entity_name)
             else:
@@ -349,19 +350,20 @@ class OracleWmsCompleteDiscovery:
             "sample_size": sample_size,
             "has_data": count > 0,
             "structure_available": sample_size > 0,
-            "fields": fields,
-            "field_types": field_types,
-            "sample_data": sample_data,
+            "fields": cast("t.JsonValue", fields),
+            "field_types": cast("t.JsonValue", field_types),
+            "sample_data": cast("t.JsonValue", sample_data),
         }
         if not results:
             return metadata_info
         sample_record = results[0]
         if not isinstance(sample_record, dict):
             return metadata_info
-        metadata_info["fields"] = list(sample_record.keys())
-        metadata_info["field_types"] = {
-            k: type(v).__name__ for k, v in sample_record.items()
-        }
+        metadata_info["fields"] = cast("t.JsonValue", list(sample_record.keys()))
+        metadata_info["field_types"] = cast(
+            "t.JsonValue",
+            {k: type(v).__name__ for k, v in sample_record.items()},
+        )
         safe_sample: t.MutableJsonMapping = {}
         max_string_length = 200
         for k, v in sample_record.items():
@@ -369,7 +371,7 @@ class OracleWmsCompleteDiscovery:
                 safe_sample[k] = f"<string:{len(v)}chars>"
             else:
                 safe_sample[k] = v
-        metadata_info["sample_data"] = safe_sample
+        metadata_info["sample_data"] = cast("t.JsonValue", safe_sample)
         return metadata_info
 
     def discover_complete_entity_metadata(
@@ -418,13 +420,14 @@ class OracleWmsCompleteDiscovery:
             )
             for _name, _meta in sorted_entities[:10]:
                 pass
-        return r[t.JsonMapping].ok({
+        summary_payload: dict[str, t.JsonValue] = {
             "total_entities": len(self.discovered_entities),
-            "entities_with_data": entities_with_data,
-            "entities_without_data": entities_without_data,
-            "entities_with_errors": entities_with_errors,
-            "metadata": metadata_results,
-        })
+            "entities_with_data": cast("t.JsonValue", entities_with_data),
+            "entities_without_data": cast("t.JsonValue", entities_without_data),
+            "entities_with_errors": cast("t.JsonValue", entities_with_errors),
+            "metadata": cast("t.JsonValue", metadata_results),
+        }
+        return r[t.JsonMapping].ok(summary_payload)
 
     def generate_singer_schemas_with_flattening(
         self,
@@ -450,7 +453,7 @@ class OracleWmsCompleteDiscovery:
                     metadata,
                 )
                 if schema:
-                    singer_schemas[entity_name] = schema
+                    singer_schemas[entity_name] = cast("t.JsonValue", schema)
         self.complete_schemas = singer_schemas
         return r[t.JsonMapping].ok(singer_schemas)
 
@@ -480,11 +483,12 @@ class OracleWmsCompleteDiscovery:
                         properties[field] = singer_type
             properties["_sdc_extracted_at"] = {"type": "string", "format": "date-time"}
             properties["_sdc_entity"] = {"type": "string"}
-            return {
+            schema_payload: dict[str, t.JsonValue] = {
                 "type": "object",
-                "properties": properties,
+                "properties": cast("t.JsonValue", properties),
                 "additionalProperties": False,
             }
+            return schema_payload
         except (RuntimeError, OSError, ValueError, KeyError):
             logger.exception("Schema generation failed for %s", entity_name)
             return None

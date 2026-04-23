@@ -301,14 +301,17 @@ class FlextOracleWmsUtilitiesClient:
         ) -> p.Result[m.Api.HttpResponse]:
             if self._client is None:
                 self._client = self._create_api_client()
-            request = m.Api.HttpRequest(
-                method=method,
-                url=path,
-                timeout=self.settings.timeout,
-                headers=dict(headers) if headers is not None else {},
-                query_params=params or {},
-                body=body or {},
-            )
+            request_headers: t.MutableStrMapping = {}
+            if headers is not None:
+                request_headers.update(headers)
+            request = m.Api.HttpRequest.model_validate({
+                "method": method,
+                "url": path,
+                "timeout": self.settings.timeout,
+                "headers": request_headers,
+                "query_params": params or {},
+                "body": body or {},
+            })
             result = self._client.request(request)
             if result.failure:
                 return r[m.Api.HttpResponse].fail(

@@ -20,6 +20,7 @@ from collections.abc import (
 )
 from datetime import UTC, datetime
 from pathlib import Path
+from typing import cast
 
 from flext_oracle_wms import FlextOracleWmsSettings, FlextOracleWmsUtilitiesClient
 from tests import p, r, t, u
@@ -124,12 +125,15 @@ class OptimizedOracleWmsDiscovery:
             for name, result in all_results.items()
             if result.get("has_data", False)
         }
-        return r[dict[str, t.JsonValue]].ok({
+        summary_payload: dict[str, t.JsonValue] = {
             "total_processed": len(all_results),
             "entities_with_data": len(self.high_value_entities),
-            "high_value_entities": list(self.high_value_entities.keys()),
-            "detailed_results": all_results,
-        })
+            "high_value_entities": cast(
+                "t.JsonValue", list(self.high_value_entities.keys())
+            ),
+            "detailed_results": cast("t.JsonValue", all_results),
+        }
+        return r[dict[str, t.JsonValue]].ok(summary_payload)
 
     def _process_entity_batch(
         self,
@@ -177,16 +181,19 @@ class OptimizedOracleWmsDiscovery:
                 if count > 0 and records:
                     sample_record = records[0]
                     if isinstance(sample_record, dict):
-                        analysis.update({
+                        analysis_extra: dict[str, t.JsonValue] = {
                             "field_count": len(sample_record.keys()),
-                            "fields": list(sample_record.keys()),
-                            "field_types": {
-                                k: type(v).__name__ for k, v in sample_record.items()
-                            },
-                            "sample_record": self._safe_sample_record(
-                                sample_record,
+                            "fields": cast("t.JsonValue", list(sample_record.keys())),
+                            "field_types": cast(
+                                "t.JsonValue",
+                                {k: type(v).__name__ for k, v in sample_record.items()},
                             ),
-                        })
+                            "sample_record": cast(
+                                "t.JsonValue",
+                                self._safe_sample_record(sample_record),
+                            ),
+                        }
+                        analysis.update(analysis_extra)
                 return analysis
             return {
                 "has_data": False,
@@ -228,11 +235,12 @@ class OptimizedOracleWmsDiscovery:
                 singer_schemas[entity_name] = schema
         self.complete_schemas = singer_schemas
         catalog = self._generate_singer_catalog(singer_schemas)
-        return r[dict[str, t.JsonValue]].ok({
+        schemas_payload: dict[str, t.JsonValue] = {
             "schemas_generated": len(singer_schemas),
-            "schemas": singer_schemas,
-            "singer_catalog": catalog,
-        })
+            "schemas": cast("t.JsonValue", singer_schemas),
+            "singer_catalog": cast("t.JsonValue", catalog),
+        }
+        return r[dict[str, t.JsonValue]].ok(schemas_payload)
 
     def _generate_singer_schema_from_entity_data(
         self,
@@ -281,12 +289,13 @@ class OptimizedOracleWmsDiscovery:
             }
             str_fields: list[str] = [f for f in fields if isinstance(f, str)]
             key_properties = self._determine_key_properties(entity_name, str_fields)
-            return {
+            schema_payload: dict[str, t.JsonValue] = {
                 "type": "object",
-                "properties": properties,
+                "properties": cast("t.JsonValue", properties),
                 "additionalProperties": False,
-                "key_properties": key_properties,
+                "key_properties": cast("t.JsonValue", key_properties),
             }
+            return schema_payload
         except (RuntimeError, OSError, ValueError, KeyError):
             logger.exception("Schema generation failed for %s", entity_name)
             return None
@@ -428,23 +437,29 @@ class OptimizedOracleWmsDiscovery:
             stream: dict[str, t.JsonValue] = {
                 "tap_stream_id": entity_name,
                 "stream": entity_name,
-                "schema": {k: v for k, v in schema.items() if k != "key_properties"},
-                "key_properties": key_properties,
-                "metadata": [
-                    {
-                        "breadcrumb": breadcrumb,
-                        "metadata": {
-                            "inclusion": "available",
-                            "selected": True,
-                            "replication-method": "FULL_TABLE",
-                            "forced-replication-method": "FULL_TABLE",
-                            "table-key-properties": key_properties,
+                "schema": cast(
+                    "t.JsonValue",
+                    {k: v for k, v in schema.items() if k != "key_properties"},
+                ),
+                "key_properties": cast("t.JsonValue", key_properties),
+                "metadata": cast(
+                    "t.JsonValue",
+                    [
+                        {
+                            "breadcrumb": breadcrumb,
+                            "metadata": {
+                                "inclusion": "available",
+                                "selected": True,
+                                "replication-method": "FULL_TABLE",
+                                "forced-replication-method": "FULL_TABLE",
+                                "table-key-properties": key_properties,
+                            },
                         },
-                    },
-                ],
+                    ],
+                ),
             }
             streams.append(stream)
-        return {"version": 1, "streams": streams}
+        return {"version": 1, "streams": cast("t.JsonValue", streams)}
 
     def save_optimized_results(self) -> p.Result[str]:
         """Save optimized discovery results."""
@@ -470,7 +485,9 @@ class OptimizedOracleWmsDiscovery:
             "oracle_wms_environment": str(self.settings.base_url),
             "oracle_wms_base_url": str(self.settings.base_url),
             "api_version": str(self.settings.api_version),
-            "high_value_entities": list(self.high_value_entities.keys()),
+            "high_value_entities": cast(
+                "t.JsonValue", list(self.high_value_entities.keys())
+            ),
         }
         summary_file = results_dir / f"discovery_summary_{timestamp}.json"
         with summary_file.open("w", encoding="utf-8") as f:
