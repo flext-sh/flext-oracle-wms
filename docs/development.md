@@ -54,7 +54,7 @@ cd flext-oracle-wms
 poetry install
 
 # Verify installation
-make validate  # Run all quality gates
+make val  # Run all quality gates
 ```
 
 ## Development Commands
@@ -63,7 +63,7 @@ make validate  # Run all quality gates
 
 ```bash
 # Complete validation pipeline
-make validate              # Lint + type + security + test
+make val              # Lint + type + security + test
 
 # Individual checks
 make lint                  # Ruff linting
@@ -242,7 +242,7 @@ def test_real_connection():
 
    - Implement modern pick_confirm API
    - Add bulk_update_inventory_attributes endpoint
-   - Add t.Container store data extraction capabilities
+   - Add t.JsonValue store data extraction capabilities
 
 1. **Establish real connectivity**
 
@@ -268,7 +268,7 @@ def test_real_connection():
 
 ```bash
 # Required before committing
-make validate              # All quality gates must pass
+make val              # All quality gates must pass
 make test                  # All tests must pass
 ```
 

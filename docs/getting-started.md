@@ -37,7 +37,7 @@ cd flext-oracle-wms
 poetry install
 
 # Verify installation
-make validate  # Run quality gates
+make val  # Run quality gates
 ```
 
 ## Basic Configuration

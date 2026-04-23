@@ -21,7 +21,7 @@ logger = u.fetch_logger(__name__)
 FlextOracleWmsClient = FlextOracleWmsUtilitiesClient.Client
 
 
-def load_env_config() -> dict[str, t.Container] | None:
+def load_env_config() -> dict[str, t.JsonValue] | None:
     """Load configuration from .env file."""
     env_path = Path("flext-tap-oracle-wms/.env")
     if not env_path.exists():

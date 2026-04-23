@@ -242,7 +242,7 @@ pytest --maxfail=1    # Stop after one failure
 ```bash
 # Use make commands which are optimized
 make test
-make validate
+make val
 ```
 
 ## Error Messages Reference

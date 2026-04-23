@@ -10,7 +10,6 @@ from __future__ import annotations
 import os
 from collections.abc import (
     Iterator,
-    Mapping,
 )
 from pathlib import Path
 
@@ -71,7 +70,7 @@ def sample_entities() -> t.StrSequence:
 
 
 @pytest.fixture
-def sample_entity_data() -> Mapping[str, t.Container]:
+def sample_entity_data() -> t.JsonMapping:
     """Sample entity response data based on REAL query results."""
     return u.OracleWms.Tests.sample_entity_data()
 

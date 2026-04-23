@@ -40,7 +40,7 @@ Based on actual source code analysis (April 14, 2026):
 ## Development Commands
 
 ```bash
-make validate          # Complete validation pipeline
+make val          # Complete validation pipeline
 make test              # Run test suite
 make lint              # Code quality checks
 make type-check        # Type safety verification

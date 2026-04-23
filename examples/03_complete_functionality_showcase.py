@@ -121,9 +121,9 @@ def showcase_2_entity_discovery(client: FlextOracleWmsClient) -> list[str]:
 def showcase_3_data_retrieval(
     client: FlextOracleWmsClient,
     entities: list[str],
-) -> dict[str, t.Container]:
+) -> dict[str, t.JsonValue]:
     """Feature 3: Data Retrieval and Querying."""
-    sample_data: dict[str, t.Container] = {}
+    sample_data: dict[str, t.JsonValue] = {}
     test_entities = ["company", "facility", "item"]
     for entity_name in test_entities:
         if entity_name not in entities:
@@ -197,12 +197,12 @@ def showcase_6_error_handling(client: FlextOracleWmsClient) -> None:
 
 def showcase_7_health_monitoring(
     client: FlextOracleWmsClient,
-) -> dict[str, t.Container]:
+) -> dict[str, t.JsonValue]:
     """Feature 7: Health Monitoring."""
     health_result = client.health_check()
     if health_result.success:
         response = health_result.value
-        health_data: dict[str, t.Container] = {"status_code": response.status_code}
+        health_data: dict[str, t.JsonValue] = {"status_code": response.status_code}
         return health_data
     return {}
 

@@ -37,7 +37,7 @@ class TestClientSimpleNew:
             "FlextOracleWmsClient" in repr_str
             or "WMS" in repr_str
             or "Client" in repr_str
-            or "t.Container" in repr_str
+            or "t.JsonValue" in repr_str
         )
 
     def test_client_creation_extended(self) -> None:

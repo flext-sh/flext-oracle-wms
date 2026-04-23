@@ -62,16 +62,16 @@ class FocusedOracleWmsDiscovery:
             "receipt",
             "manifest",
         ]
-        self.entities_with_data: t.MutableFlatContainerMapping = {}
-        self.complete_schemas: t.MutableFlatContainerMapping = {}
+        self.entities_with_data: t.MutableJsonMapping = {}
+        self.complete_schemas: t.MutableJsonMapping = {}
 
-    def execute_focused_discovery(self) -> p.Result[Mapping[str, t.Container]]:
+    def execute_focused_discovery(self) -> p.Result[t.JsonMapping]:
         """Execute complete focused discovery."""
         try:
             self.client.start()
             entities_result = self.client.discover_entities()
             if not entities_result.success:
-                return r[Mapping[str, t.Container]].fail(
+                return r[t.JsonMapping].fail(
                     f"Entity discovery failed: {entities_result.error}",
                 )
             all_entities = entities_result.value
@@ -92,7 +92,7 @@ class FocusedOracleWmsDiscovery:
             if data_entities:
 
                 def _entity_count(
-                    pair: tuple[str, t.Container],
+                    pair: tuple[str, t.JsonValue],
                 ) -> int:
                     meta = pair[1]
                     if isinstance(meta, dict):
@@ -111,7 +111,7 @@ class FocusedOracleWmsDiscovery:
             if schemas:
                 for _schema in schemas.values():
                     pass
-            return r[Mapping[str, t.Container]].ok({
+            return r[t.JsonMapping].ok({
                 "total_entities": len(all_entities),
                 "entities_with_data": len(data_entities),
                 "schemas_generated": len(schemas),
@@ -121,15 +121,13 @@ class FocusedOracleWmsDiscovery:
             })
         except Exception as e:
             logger.exception("Focused discovery failed")
-            return r[Mapping[str, t.Container]].fail(f"Discovery failed: {e}")
+            return r[t.JsonMapping].fail(f"Discovery failed: {e}")
         finally:
             self.client.stop()
 
-    def _quick_data_scan(
-        self, entities: t.StrSequence
-    ) -> t.MutableFlatContainerMapping:
+    def _quick_data_scan(self, entities: t.StrSequence) -> t.MutableJsonMapping:
         """Quick scan to find entities with actual data."""
-        data_entities: t.MutableFlatContainerMapping = {}
+        data_entities: t.MutableJsonMapping = {}
         for entity_name in entities:
             try:
                 result = self.client.get_entity_data(entity_name, limit=1)
@@ -142,7 +140,7 @@ class FocusedOracleWmsDiscovery:
                         )
                         if detailed_result.success:
                             detailed_records = detailed_result.value
-                            entity_info: t.MutableFlatContainerMapping = {
+                            entity_info: t.MutableJsonMapping = {
                                 "count": len(detailed_records),
                                 "has_data": True,
                                 "sample_size": len(detailed_records),
@@ -169,9 +167,9 @@ class FocusedOracleWmsDiscovery:
     def _get_entity_structures(
         self,
         entities: t.StrSequence,
-    ) -> t.MutableFlatContainerMapping:
+    ) -> t.MutableJsonMapping:
         """Get entity structures even without data."""
-        structures: t.MutableFlatContainerMapping = {}
+        structures: t.MutableJsonMapping = {}
         for entity_name in entities:
             try:
                 result = self.client.get_entity_data(entity_name, limit=1)
@@ -204,10 +202,10 @@ class FocusedOracleWmsDiscovery:
 
     def _generate_schemas_from_data(
         self,
-        data_entities: Mapping[str, t.Container],
-    ) -> t.MutableFlatContainerMapping:
+        data_entities: t.JsonMapping,
+    ) -> t.MutableJsonMapping:
         """Generate Singer schemas from entities with data."""
-        schemas: t.MutableFlatContainerMapping = {}
+        schemas: t.MutableJsonMapping = {}
         for entity_name, entity_data in data_entities.items():
             if isinstance(entity_data, dict):
                 schema = self._create_singer_schema(entity_name, entity_data)
@@ -217,10 +215,10 @@ class FocusedOracleWmsDiscovery:
 
     def _generate_schemas_from_structures(
         self,
-        structure_entities: Mapping[str, t.Container],
-    ) -> t.MutableFlatContainerMapping:
+        structure_entities: t.JsonMapping,
+    ) -> t.MutableJsonMapping:
         """Generate Singer schemas from structures."""
-        schemas: t.MutableFlatContainerMapping = {}
+        schemas: t.MutableJsonMapping = {}
         for entity_name, structure_data in structure_entities.items():
             if isinstance(structure_data, dict):
                 schema = self._create_singer_schema(entity_name, structure_data)
@@ -231,8 +229,8 @@ class FocusedOracleWmsDiscovery:
     def _create_singer_schema(
         self,
         entity_name: str,
-        entity_data: Mapping[str, t.Container],
-    ) -> Mapping[str, t.Container] | None:
+        entity_data: t.JsonMapping,
+    ) -> t.JsonMapping | None:
         """Create Singer schema with proper Oracle WMS typing."""
         try:
             fields = entity_data.get("sample_fields", entity_data.get("fields", []))
@@ -240,7 +238,7 @@ class FocusedOracleWmsDiscovery:
             sample_record = entity_data.get("sample_record", {})
             if not fields or not isinstance(fields, list):
                 return None
-            properties: t.MutableFlatContainerMapping = {}
+            properties: t.MutableJsonMapping = {}
             for field in fields:
                 if not isinstance(field, str):
                     continue
@@ -249,7 +247,7 @@ class FocusedOracleWmsDiscovery:
                     if isinstance(field_types, dict) and field in field_types
                     else "str"
                 )
-                sample_value: t.Container = (
+                sample_value: t.JsonValue = (
                     sample_record[field]
                     if isinstance(sample_record, dict) and field in sample_record
                     else None
@@ -282,9 +280,9 @@ class FocusedOracleWmsDiscovery:
         self,
         field_name: str,
         python_type: str,
-        sample_value: t.Container,
+        sample_value: t.JsonValue,
         entity_name: str,
-    ) -> Mapping[str, t.Container]:
+    ) -> t.JsonMapping:
         """Convert Oracle WMS field to Singer type with context."""
         if sample_value is not None:
             if isinstance(sample_value, bool):
@@ -407,18 +405,18 @@ class FocusedOracleWmsDiscovery:
             json.dump(summary, f, indent=2, default=str)
         return r[str].ok(str(results_dir))
 
-    def _create_singer_catalog(self) -> Mapping[str, t.Container]:
+    def _create_singer_catalog(self) -> t.JsonMapping:
         """Create Singer catalog."""
-        streams: MutableSequence[t.MutableFlatContainerMapping] = []
+        streams: MutableSequence[t.MutableJsonMapping] = []
         for entity_name, schema in self.complete_schemas.items():
             if not isinstance(schema, dict):
                 continue
             key_properties = schema.get("key_properties", [])
-            schema_without_keys: t.MutableFlatContainerMapping = {
+            schema_without_keys: t.MutableJsonMapping = {
                 k: v for k, v in schema.items() if k != "key_properties"
             }
             breadcrumb: t.StrSequence = []
-            stream: t.MutableFlatContainerMapping = {
+            stream: t.MutableJsonMapping = {
                 "tap_stream_id": entity_name,
                 "stream": entity_name,
                 "schema": schema_without_keys,

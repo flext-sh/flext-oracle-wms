@@ -92,7 +92,7 @@ class FlextOracleWmsModels(m):
             """Oracle WMS API response model."""
 
             data: Annotated[
-                t.ContainerValueMapping,
+                t.JsonMapping,
                 u.Field(description="Response data"),
             ] = u.Field(default_factory=dict)
             status_code: Annotated[
@@ -225,7 +225,7 @@ class FlextOracleWmsModels(m):
                 u.Field(description="Total order amount"),
             ] = 0.0
             items: Annotated[
-                Sequence[t.ContainerValueMapping],
+                Sequence[t.JsonMapping],
                 u.Field(description="Order items"),
             ] = u.Field(default_factory=tuple)
 
@@ -252,7 +252,7 @@ class FlextOracleWmsModels(m):
             wave_id: Annotated[str, u.Field(description="Wave identifier")] = ""
             status: Annotated[str, u.Field(description="Task status")] = "pending"
             items: Annotated[
-                Sequence[t.ContainerValueMapping],
+                Sequence[t.JsonMapping],
                 u.Field(description="Task items"),
             ] = u.Field(default_factory=tuple)
 

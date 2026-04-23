@@ -76,8 +76,8 @@ class OptimizedOracleWmsDiscovery:
             "position",
         }
         self.discovered_entities: list[str] = []
-        self.high_value_entities: dict[str, dict[str, t.Container]] = {}
-        self.complete_schemas: dict[str, dict[str, t.Container]] = {}
+        self.high_value_entities: dict[str, dict[str, t.JsonValue]] = {}
+        self.complete_schemas: dict[str, dict[str, t.JsonValue]] = {}
 
     def start_discovery(self) -> p.Result[bool]:
         """Start optimized discovery."""
@@ -88,11 +88,11 @@ class OptimizedOracleWmsDiscovery:
 
     def discover_priority_entities_fast(
         self,
-    ) -> p.Result[dict[str, t.Container]]:
+    ) -> p.Result[dict[str, t.JsonValue]]:
         """Fast discovery of priority entities with data."""
         entities_result = self.client.discover_entities()
         if not entities_result.success:
-            return r[dict[str, t.Container]].fail(
+            return r[dict[str, t.JsonValue]].fail(
                 f"Entity discovery failed: {entities_result.error}",
             )
         all_entities = entities_result.value
@@ -124,7 +124,7 @@ class OptimizedOracleWmsDiscovery:
             for name, result in all_results.items()
             if result.get("has_data", False)
         }
-        return r[dict[str, t.Container]].ok({
+        return r[dict[str, t.JsonValue]].ok({
             "total_processed": len(all_results),
             "entities_with_data": len(self.high_value_entities),
             "high_value_entities": list(self.high_value_entities.keys()),
@@ -135,15 +135,15 @@ class OptimizedOracleWmsDiscovery:
         self,
         entities: t.StrSequence,
         batch_size: int = 10,
-    ) -> dict[str, dict[str, t.Container]]:
+    ) -> dict[str, dict[str, t.JsonValue]]:
         """Process entity batch with parallel requests."""
-        results: dict[str, dict[str, t.Container]] = {}
+        results: dict[str, dict[str, t.JsonValue]] = {}
         for i in range(0, len(entities), batch_size):
             batch = entities[i : i + batch_size]
             batch_tasks = [
                 self._analyze_single_entity(entity_name) for entity_name in batch
             ]
-            batch_results: list[dict[str, t.Container] | Exception] = []
+            batch_results: list[dict[str, t.JsonValue] | Exception] = []
             for task in batch_tasks:
                 try:
                     batch_results.append(task)
@@ -161,14 +161,14 @@ class OptimizedOracleWmsDiscovery:
             time.sleep(0.1)
         return results
 
-    def _analyze_single_entity(self, entity_name: str) -> dict[str, t.Container]:
+    def _analyze_single_entity(self, entity_name: str) -> dict[str, t.JsonValue]:
         """Analyze single entity for data and structure."""
         try:
             data_result = self.client.get_entity_data(entity_name, limit=3)
             if data_result.success:
                 records = data_result.value
                 count = len(records)
-                analysis: dict[str, t.Container] = {
+                analysis: dict[str, t.JsonValue] = {
                     "has_data": count > 0,
                     "total_count": count,
                     "sample_count": count,
@@ -212,13 +212,13 @@ class OptimizedOracleWmsDiscovery:
 
     def generate_complete_singer_schemas(
         self,
-    ) -> p.Result[dict[str, t.Container]]:
+    ) -> p.Result[dict[str, t.JsonValue]]:
         """Generate complete Singer schemas for high-value entities."""
         if not self.high_value_entities:
-            return r[dict[str, t.Container]].fail(
+            return r[dict[str, t.JsonValue]].fail(
                 "No high-value entities available for schema generation",
             )
-        singer_schemas: dict[str, dict[str, t.Container]] = {}
+        singer_schemas: dict[str, dict[str, t.JsonValue]] = {}
         for entity_name, entity_data in self.high_value_entities.items():
             schema = self._generate_singer_schema_from_entity_data(
                 entity_name,
@@ -228,7 +228,7 @@ class OptimizedOracleWmsDiscovery:
                 singer_schemas[entity_name] = schema
         self.complete_schemas = singer_schemas
         catalog = self._generate_singer_catalog(singer_schemas)
-        return r[dict[str, t.Container]].ok({
+        return r[dict[str, t.JsonValue]].ok({
             "schemas_generated": len(singer_schemas),
             "schemas": singer_schemas,
             "singer_catalog": catalog,
@@ -237,8 +237,8 @@ class OptimizedOracleWmsDiscovery:
     def _generate_singer_schema_from_entity_data(
         self,
         entity_name: str,
-        entity_data: Mapping[str, t.Container],
-    ) -> dict[str, t.Container] | None:
+        entity_data: t.JsonMapping,
+    ) -> dict[str, t.JsonValue] | None:
         """Generate Singer schema from entity data with proper typing."""
         try:
             fields = entity_data.get("fields", [])
@@ -246,7 +246,7 @@ class OptimizedOracleWmsDiscovery:
             sample_record = entity_data.get("sample_record", {})
             if not fields or not isinstance(fields, list):
                 return None
-            properties: dict[str, t.Container] = {}
+            properties: dict[str, t.JsonValue] = {}
             for field in fields:
                 if not isinstance(field, str):
                     continue
@@ -255,7 +255,7 @@ class OptimizedOracleWmsDiscovery:
                     if isinstance(field_types, dict) and field in field_types
                     else "str"
                 )
-                sample_value: t.Container = (
+                sample_value: t.JsonValue = (
                     sample_record[field]
                     if isinstance(sample_record, dict) and field in sample_record
                     else None
@@ -295,8 +295,8 @@ class OptimizedOracleWmsDiscovery:
         self,
         field_name: str,
         python_type: str,
-        sample_value: t.Container,
-    ) -> dict[str, t.Container]:
+        sample_value: t.JsonValue,
+    ) -> dict[str, t.JsonValue]:
         """Convert Oracle field to Singer type with real data analysis."""
         if sample_value is not None:
             if isinstance(sample_value, bool):
@@ -339,7 +339,7 @@ class OptimizedOracleWmsDiscovery:
                     "type": ["array", "null"],
                     "description": f"Oracle WMS array field: {field_name}",
                 }
-        oracle_type_mapping: dict[str, dict[str, t.Container]] = {
+        oracle_type_mapping: dict[str, dict[str, t.JsonValue]] = {
             "int": {"type": ["integer", "null"]},
             "float": {"type": ["number", "null"]},
             "str": {"type": ["string", "null"]},
@@ -418,14 +418,14 @@ class OptimizedOracleWmsDiscovery:
 
     def _generate_singer_catalog(
         self,
-        schemas: Mapping[str, dict[str, t.Container]],
-    ) -> dict[str, t.Container]:
+        schemas: Mapping[str, dict[str, t.JsonValue]],
+    ) -> dict[str, t.JsonValue]:
         """Generate Singer catalog from schemas."""
-        streams: list[dict[str, t.Container]] = []
+        streams: list[dict[str, t.JsonValue]] = []
         for entity_name, schema in schemas.items():
             key_properties = schema.get("key_properties", ["id"])
             breadcrumb: list[str] = []
-            stream: dict[str, t.Container] = {
+            stream: dict[str, t.JsonValue] = {
                 "tap_stream_id": entity_name,
                 "stream": entity_name,
                 "schema": {k: v for k, v in schema.items() if k != "key_properties"},
@@ -462,7 +462,7 @@ class OptimizedOracleWmsDiscovery:
             catalog_file = results_dir / f"singer_catalog_{timestamp}.json"
             with catalog_file.open("w", encoding="utf-8") as f:
                 json.dump(catalog, f, indent=2, default=str)
-        summary: dict[str, t.Container] = {
+        summary: dict[str, t.JsonValue] = {
             "discovery_timestamp": timestamp,
             "discovery_mode": "OPTIMIZED_ADMINISTRATOR_MODE",
             "total_high_value_entities": len(self.high_value_entities),
@@ -505,7 +505,7 @@ def run_optimized_discovery() -> None:
         if discovery.high_value_entities:
 
             def _total_count(
-                pair: tuple[str, dict[str, t.Container]],
+                pair: tuple[str, dict[str, t.JsonValue]],
             ) -> int:
                 tc = pair[1].get("total_count")
                 return tc if isinstance(tc, int) else 0

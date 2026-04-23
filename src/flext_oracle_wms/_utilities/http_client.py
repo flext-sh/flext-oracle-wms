@@ -73,10 +73,10 @@ class FlextOracleWmsUtilitiesHttpClient:
 
         @staticmethod
         def _normalize_request_body(
-            body: t.ContainerValueMapping | None,
-        ) -> t.ContainerValueMapping:
+            body: t.JsonMapping | None,
+        ) -> t.JsonMapping:
             if body is None:
-                empty_body: t.ContainerValueMapping = {}
+                empty_body: t.JsonMapping = {}
                 return empty_body
             return body
 
@@ -92,12 +92,12 @@ class FlextOracleWmsUtilitiesHttpClient:
             self,
             path: str,
             headers: t.StrMapping | None = None,
-        ) -> p.Result[t.ContainerValueMapping]:
+        ) -> p.Result[t.JsonMapping]:
             """Make DELETE request."""
             try:
                 self._ensure_client()
                 if self._client is None:
-                    return r[t.ContainerValueMapping].fail("Client not initialized")
+                    return r[t.JsonMapping].fail("Client not initialized")
                 request_headers = dict(self.default_headers)
                 request_headers.update(self._normalize_headers(headers))
                 url = f"{self.base_url}/{path.lstrip('/')}"
@@ -111,20 +111,20 @@ class FlextOracleWmsUtilitiesHttpClient:
                 )
                 response_result = self._client.request(request)
                 if response_result.failure:
-                    return r[t.ContainerValueMapping].fail(
+                    return r[t.JsonMapping].fail(
                         f"HTTP request failed: {response_result.error}",
                     )
                 response = response_result.value
                 return self._parse_response_body(response.body)
             except Exception as exc:
-                return r[t.ContainerValueMapping].fail(f"Request error: {exc}")
+                return r[t.JsonMapping].fail(f"Request error: {exc}")
 
         def get(
             self,
             path: str,
             params: t.Api.WebParams | None = None,
             headers: t.StrMapping | None = None,
-        ) -> p.Result[t.ContainerValueMapping]:
+        ) -> p.Result[t.JsonMapping]:
             """Make GET request with railway-oriented error handling."""
             params_str: t.Api.WebParams | None = (
                 {str(k): str(v) for k, v in params.items()} if params else None
@@ -136,10 +136,10 @@ class FlextOracleWmsUtilitiesHttpClient:
         def post(
             self,
             path: str,
-            data: t.ContainerValueMapping | None = None,
-            json_data: t.ContainerValueMapping | None = None,
+            data: t.JsonMapping | None = None,
+            json_data: t.JsonMapping | None = None,
             headers: t.StrMapping | None = None,
-        ) -> p.Result[t.ContainerValueMapping]:
+        ) -> p.Result[t.JsonMapping]:
             """Make POST request with railway-oriented error handling."""
             body = json_data or data
             return self._execute_request("POST", path, headers=headers, body=body)
@@ -147,15 +147,15 @@ class FlextOracleWmsUtilitiesHttpClient:
         def put(
             self,
             path: str,
-            data: t.ContainerValueMapping | None = None,
-            json_data: t.ContainerValueMapping | None = None,
+            data: t.JsonMapping | None = None,
+            json_data: t.JsonMapping | None = None,
             headers: t.StrMapping | None = None,
-        ) -> p.Result[t.ContainerValueMapping]:
+        ) -> p.Result[t.JsonMapping]:
             """Make PUT request."""
             try:
                 self._ensure_client()
                 if self._client is None:
-                    return r[t.ContainerValueMapping].fail("Client not initialized")
+                    return r[t.JsonMapping].fail("Client not initialized")
                 request_headers = dict(self.default_headers)
                 request_headers.update(self._normalize_headers(headers))
                 request_body = json_data or data
@@ -170,17 +170,17 @@ class FlextOracleWmsUtilitiesHttpClient:
                 )
                 response_result = self._client.request(request)
                 if response_result.failure:
-                    return r[t.ContainerValueMapping].fail(
+                    return r[t.JsonMapping].fail(
                         f"HTTP request failed: {response_result.error}",
                     )
                 response = response_result.value
                 if response.status_code >= self.HTTP_BAD_REQUEST_THRESHOLD:
-                    return r[t.ContainerValueMapping].fail(
+                    return r[t.JsonMapping].fail(
                         f"HTTP {response.status_code}: {response.body!r}",
                     )
                 return self._parse_response_body(response.body)
             except Exception as exc:
-                return r[t.ContainerValueMapping].fail(f"Unexpected error: {exc}")
+                return r[t.JsonMapping].fail(f"Unexpected error: {exc}")
 
         def _ensure_client(self) -> None:
             """Ensure Oracle WMS HTTP client is initialized using FLEXT delegation."""
@@ -203,13 +203,13 @@ class FlextOracleWmsUtilitiesHttpClient:
             path: str,
             params: t.Api.WebParams | None = None,
             headers: t.StrMapping | None = None,
-            body: t.ContainerValueMapping | None = None,
-        ) -> p.Result[t.ContainerValueMapping]:
+            body: t.JsonMapping | None = None,
+        ) -> p.Result[t.JsonMapping]:
             """Execute HTTP request with FLEXT delegation."""
             try:
                 self._ensure_client()
                 if self._client is None:
-                    return r[t.ContainerValueMapping].fail("Client not initialized")
+                    return r[t.JsonMapping].fail("Client not initialized")
                 request_headers = dict(self.default_headers)
                 request_headers.update(self._normalize_headers(headers))
                 url = f"{self.base_url}/{path.lstrip('/')}" if path else self.base_url
@@ -226,59 +226,53 @@ class FlextOracleWmsUtilitiesHttpClient:
                 )
                 response_result = self._client.request(request)
                 if response_result.failure:
-                    return r[t.ContainerValueMapping].fail(
+                    return r[t.JsonMapping].fail(
                         f"HTTP {method} failed: {response_result.error}",
                     )
                 response = response_result.value
                 if response.status_code >= self.HTTP_BAD_REQUEST_THRESHOLD:
-                    return r[t.ContainerValueMapping].fail(
+                    return r[t.JsonMapping].fail(
                         f"HTTP {response.status_code}: {response.body!r}",
                     )
                 return self._parse_response_body(response.body)
             except Exception as exc:
-                return r[t.ContainerValueMapping].fail(f"Request error: {exc}")
+                return r[t.JsonMapping].fail(f"Request error: {exc}")
 
         def _parse_response_body(
             self,
             body: t.Api.ResponseBody,
-        ) -> p.Result[t.ContainerValueMapping]:
+        ) -> p.Result[t.JsonMapping]:
             """Parse response body; propagates parse failure via result."""
             match body:
                 case dict() as payload:
                     try:
-                        return r[t.ContainerValueMapping].ok(
+                        return r[t.JsonMapping].ok(
                             t.OracleWms.CONTAINER_VALUE_MAPPING_ADAPTER.validate_python(
                                 payload
                             )
                         )
                     except (c.ValidationError, ValueError) as exc:
-                        return r[t.ContainerValueMapping].fail(
-                            f"Response parse error: {exc}"
-                        )
+                        return r[t.JsonMapping].fail(f"Response parse error: {exc}")
                 case str() as raw if raw:
                     try:
-                        return r[t.ContainerValueMapping].ok(
+                        return r[t.JsonMapping].ok(
                             t.OracleWms.CONTAINER_VALUE_MAPPING_ADAPTER.validate_json(
                                 raw
                             )
                         )
                     except (c.ValidationError, ValueError) as exc:
-                        return r[t.ContainerValueMapping].fail(
-                            f"Response parse error: {exc}"
-                        )
+                        return r[t.JsonMapping].fail(f"Response parse error: {exc}")
                 case bytes() as raw_bytes:
                     try:
-                        return r[t.ContainerValueMapping].ok(
+                        return r[t.JsonMapping].ok(
                             t.OracleWms.CONTAINER_VALUE_MAPPING_ADAPTER.validate_json(
                                 raw_bytes
                             )
                         )
                     except (c.ValidationError, ValueError) as exc:
-                        return r[t.ContainerValueMapping].fail(
-                            f"Response parse error: {exc}"
-                        )
+                        return r[t.JsonMapping].fail(f"Response parse error: {exc}")
                 case _:
-                    return r[t.ContainerValueMapping].fail(
+                    return r[t.JsonMapping].fail(
                         f"Unsupported response body type: {type(body)}"
                     )
 

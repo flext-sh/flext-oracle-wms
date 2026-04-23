@@ -23,7 +23,7 @@ class TestsFlextOracleWmsTypes(FlextTestsTypes, t):
         class Tests(FlextTestsTypes.Tests):
             """Oracle WMS-specific test type aliases."""
 
-            type EnvConfig = t.OptionalContainerValueMapping
+            type EnvConfig = t.JsonMapping | None
 
 
 t = TestsFlextOracleWmsTypes

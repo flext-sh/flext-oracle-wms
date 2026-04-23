@@ -44,7 +44,7 @@ class TestsFlextOracleWmsUtilities(FlextTestsUtilities, u):
 
             @staticmethod
             def to_str(
-                value: TestsFlextOracleWmsTypes.OptionalContainerValue, default: str
+                value: TestsFlextOracleWmsTypes.JsonValue | None, default: str
             ) -> str:
                 """Normalize a scalar-like value into a string."""
                 if value is None:
@@ -57,7 +57,7 @@ class TestsFlextOracleWmsUtilities(FlextTestsUtilities, u):
 
             @staticmethod
             def to_int(
-                value: TestsFlextOracleWmsTypes.OptionalContainerValue, default: int
+                value: TestsFlextOracleWmsTypes.JsonValue | None, default: int
             ) -> int:
                 """Normalize a scalar-like value into an integer."""
                 if value is None:
@@ -73,7 +73,7 @@ class TestsFlextOracleWmsUtilities(FlextTestsUtilities, u):
 
             @staticmethod
             def to_bool(
-                value: TestsFlextOracleWmsTypes.OptionalContainerValue,
+                value: TestsFlextOracleWmsTypes.JsonValue | None,
                 default: bool,
             ) -> bool:
                 """Normalize a scalar-like value into a boolean."""
@@ -254,9 +254,7 @@ class TestsFlextOracleWmsUtilities(FlextTestsUtilities, u):
                 ]
 
             @staticmethod
-            def sample_entity_data() -> (
-                TestsFlextOracleWmsTypes.OptionalContainerValueMapping
-            ):
+            def sample_entity_data() -> TestsFlextOracleWmsTypes.JsonMapping | None:
                 """Return canonical sample entity payload data for tests."""
                 return {
                     "result_count": 4,
