@@ -350,4 +350,4 @@ class FlextOracleWmsModels(m):
 
 m = FlextOracleWmsModels
 
-__all__: list[str] = ["FlextOracleWmsModels"]
+__all__: list[str] = ["FlextOracleWmsModels", "m"]
