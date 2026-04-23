@@ -40,7 +40,7 @@ def env_config() -> t.OracleWms.Tests.EnvConfig:
         "username": "test_user",
         "password": "test_pass",
         "timeout": 30,
-        "max_retries": 3,
+        "retry_attempts": 3,
     }
 
 

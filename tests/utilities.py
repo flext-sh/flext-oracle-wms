@@ -98,7 +98,10 @@ class TestsFlextOracleWmsUtilities(FlextTestsUtilities, u):
                         "BASIC",
                     ),
                     timeout=cls.to_int(env_config.get("timeout", 30), 30),
-                    max_retries=cls.to_int(env_config.get("max_retries", 3), 3),
+                    retry_attempts=cls.to_int(
+                        env_config.get("retry_attempts", 3),
+                        3,
+                    ),
                     verify_ssl=cls.to_bool(env_config.get("verify_ssl", True), True),
                     enable_logging=cls.to_bool(
                         env_config.get("enable_logging", True),
@@ -111,14 +114,6 @@ class TestsFlextOracleWmsUtilities(FlextTestsUtilities, u):
                     cache_duration=cls.to_int(
                         env_config.get("cache_duration", 3600),
                         3600,
-                    ),
-                    project_name=cls.to_str(
-                        env_config.get("project_name", "flext-oracle-wms"),
-                        "flext-oracle-wms",
-                    ),
-                    project_version=cls.to_str(
-                        env_config.get("project_version", "0.9.0"),
-                        "0.9.0",
                     ),
                 )
 

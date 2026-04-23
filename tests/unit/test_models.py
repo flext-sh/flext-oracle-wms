@@ -9,7 +9,7 @@ from __future__ import annotations
 
 import pytest
 
-from tests import e, m
+from tests import c, m
 
 
 def test_entity_creation() -> None:
@@ -38,14 +38,14 @@ def test_entity_defaults() -> None:
 
 
 def test_entity_validation_empty_name_raises() -> None:
-    """Test entity with empty name raises e.ValidationError (min_length=1)."""
-    with pytest.raises(e.ValidationError):
+    """Test entity with empty name raises c.ValidationError (min_length=1)."""
+    with pytest.raises(c.ValidationError):
         m.OracleWms.Entity(name="", endpoint="/api/items")
 
 
 def test_entity_validation_bad_endpoint_raises() -> None:
-    """Test entity with non-slash endpoint raises e.ValidationError."""
-    with pytest.raises(e.ValidationError):
+    """Test entity with non-slash endpoint raises c.ValidationError."""
+    with pytest.raises(c.ValidationError):
         m.OracleWms.Entity(name="item", endpoint="api/items")
 
 

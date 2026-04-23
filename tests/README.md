@@ -83,7 +83,7 @@ This directory contains the comprehensive test suite for the **flext-oracle-wms*
 
 The test suite uses pytest markers for comprehensive test categorization:
 
-```python
+```text
 # Unit tests for individual components
 pytest -m unit
 
@@ -246,7 +246,7 @@ pytest --cov=src/flext_oracle_wms --cov-report=xml
 
 ### Test Structure Standards
 
-```python
+```text
 """Test module following enterprise standards."""
 
 import pytest
@@ -291,7 +291,7 @@ class TestComponentName:
 
 ### Performance Testing
 
-```python
+```text
 @pytest.mark.performance
 def test_performance_benchmark():
     """Performance benchmark with timing assertions."""
