@@ -1,0 +1,58 @@
+tests/README.md
+  h_9db9d35f50cf33 182,315
+tests/typings.py
+  h_9db9d35f50cf33 26
+tests/unit/oracle_wms_focused_discovery.py
+  h_9db9d35f50cf33 65-66,68,74,95,114,124,130,172,208,221,285,410
+tests/unit/oracle_wms_optimized_discovery.py
+  h_9db9d35f50cf33 79-80,91,95,127,138,140,146,164,171,215,218,221,231,240-241,249,258,298-299,342,421-422,424,428,465,508
+tests/unit/complete_mock_pipeline.py
+  h_9db9d35f50cf33 61,359,451,528,642-643
+docs/guides/development.md
+  h_9db9d35f50cf33 84,137,154,193,196,202,295,353,356,405
+src/flext_oracle_wms/protocols.py
+  h_9db9d35f50cf33 57,59,68
+tests/unit/oracle_wms_complete_discovery.py
+  h_9db9d35f50cf33 70,387,461
+src/flext_oracle_wms/models.py
+  h_9db9d35f50cf33 95,228,255
+src/flext_oracle_wms/typings.py
+  h_9db9d35f50cf33 31-32,39-42,51-52,56,60,65,69,71-72,82,84,124
+src/flext_oracle_wms/__version__.py
+  h_9db9d35f50cf33 16,22
+src/flext_oracle_wms/_utilities/discovery.py
+  h_9db9d35f50cf33 30,37,41,47
+src/flext_oracle_wms/_utilities/http_client.py
+  h_9db9d35f50cf33 76-77,79,95,100,114,120,127,139-140,142,150-151,153,158,173,178,183,206-207,212,229,234,239,244,249,255
+src/flext_oracle_wms/_utilities/client.py
+  h_9db9d35f50cf33 119
+examples/02_configuration.py
+  h_9db9d35f50cf33 147,180,188-189,194,199,209
+tests/unit/test_client.py
+  h_9db9d35f50cf33 40
+examples/tests/test_declarative_example.py
+  h_9db9d35f50cf33 24
+docs/guides/testing.md
+  h_9db9d35f50cf33 528
+tests/utilities.py
+  h_9db9d35f50cf33 47,60,76
+tests/unit/test_declarative.py
+  h_9db9d35f50cf33 115
+docs/guides/troubleshooting.md
+  h_9db9d35f50cf33 52,61-63,141,155,675,678
+docs/development.md
+  h_9db9d35f50cf33 57,66,245,271
+examples/03_complete_functionality_showcase.py
+  h_9db9d35f50cf33 124,126,200,205
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.3.2",
+  "base_commit_sha": "4b73febf43212a046a6745aca68726dd62011a8a",
+  "prompts": {},
+  "humans": {
+    "h_9db9d35f50cf33": {
+      "author": "FLEXT Bot"
+    }
+  }
+}
