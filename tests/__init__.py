@@ -23,14 +23,12 @@ if _t.TYPE_CHECKING:
     from tests.unit.oracle_wms_complete_discovery import OracleWmsCompleteDiscovery
     from tests.unit.oracle_wms_focused_discovery import FocusedOracleWmsDiscovery
     from tests.unit.oracle_wms_optimized_discovery import OptimizedOracleWmsDiscovery
-    from tests.unit.test_api import TestsFlextOracleWmsApi
     from tests.unit.test_authentication import TestsFlextOracleWmsAuthentication
     from tests.unit.test_authentication_core import (
         TestsFlextOracleWmsAuthenticationCore,
     )
     from tests.unit.test_client import TestsFlextOracleWmsClient
     from tests.unit.test_client_core import TestsFlextOracleWmsClientCore
-    from tests.unit.test_constants import TestsFlextOracleWmsConstantsUnit
     from tests.unit.test_declarative import TestsFlextOracleWmsDeclarative
     from tests.unit.test_discovery import TestsFlextOracleWmsDiscovery
     from tests.unit.test_filtering import TestsFlextOracleWmsFiltering
@@ -39,8 +37,6 @@ if _t.TYPE_CHECKING:
     from tests.unit.test_schema_dynamic import TestsFlextOracleWmsSchemaDynamic
     from tests.unit.test_singer_flattening import TestsFlextOracleWmsSingerFlattening
     from tests.unit.test_unified_config import TestsFlextOracleWmsUnifiedConfig
-    from tests.unit.test_wms_api import TestsFlextOracleWmsWmsApi
-    from tests.unit.test_wms_client import TestsFlextOracleWmsWmsClient
     from tests.utilities import TestsFlextOracleWmsUtilities, u
 _LAZY_IMPORTS = merge_lazy_imports(
     (".unit",),
@@ -66,14 +62,12 @@ _LAZY_IMPORTS = merge_lazy_imports(
             ".unit.oracle_wms_complete_discovery": ("OracleWmsCompleteDiscovery",),
             ".unit.oracle_wms_focused_discovery": ("FocusedOracleWmsDiscovery",),
             ".unit.oracle_wms_optimized_discovery": ("OptimizedOracleWmsDiscovery",),
-            ".unit.test_api": ("TestsFlextOracleWmsApi",),
             ".unit.test_authentication": ("TestsFlextOracleWmsAuthentication",),
             ".unit.test_authentication_core": (
                 "TestsFlextOracleWmsAuthenticationCore",
             ),
             ".unit.test_client": ("TestsFlextOracleWmsClient",),
             ".unit.test_client_core": ("TestsFlextOracleWmsClientCore",),
-            ".unit.test_constants": ("TestsFlextOracleWmsConstantsUnit",),
             ".unit.test_declarative": ("TestsFlextOracleWmsDeclarative",),
             ".unit.test_discovery": ("TestsFlextOracleWmsDiscovery",),
             ".unit.test_filtering": ("TestsFlextOracleWmsFiltering",),
@@ -82,8 +76,6 @@ _LAZY_IMPORTS = merge_lazy_imports(
             ".unit.test_schema_dynamic": ("TestsFlextOracleWmsSchemaDynamic",),
             ".unit.test_singer_flattening": ("TestsFlextOracleWmsSingerFlattening",),
             ".unit.test_unified_config": ("TestsFlextOracleWmsUnifiedConfig",),
-            ".unit.test_wms_api": ("TestsFlextOracleWmsWmsApi",),
-            ".unit.test_wms_client": ("TestsFlextOracleWmsWmsClient",),
             ".utilities": (
                 "TestsFlextOracleWmsUtilities",
                 "u",
@@ -125,13 +117,11 @@ __all__: list[str] = [
     "FocusedOracleWmsDiscovery",
     "OptimizedOracleWmsDiscovery",
     "OracleWmsCompleteDiscovery",
-    "TestsFlextOracleWmsApi",
     "TestsFlextOracleWmsAuthentication",
     "TestsFlextOracleWmsAuthenticationCore",
     "TestsFlextOracleWmsClient",
     "TestsFlextOracleWmsClientCore",
     "TestsFlextOracleWmsConstants",
-    "TestsFlextOracleWmsConstantsUnit",
     "TestsFlextOracleWmsDeclarative",
     "TestsFlextOracleWmsDiscovery",
     "TestsFlextOracleWmsFiltering",
@@ -144,8 +134,6 @@ __all__: list[str] = [
     "TestsFlextOracleWmsTypes",
     "TestsFlextOracleWmsUnifiedConfig",
     "TestsFlextOracleWmsUtilities",
-    "TestsFlextOracleWmsWmsApi",
-    "TestsFlextOracleWmsWmsClient",
     "c",
     "d",
     "e",

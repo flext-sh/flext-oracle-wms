@@ -555,15 +555,6 @@ class TestsFlextOracleWmsFiltering:
                 max_conditions=c.OracleWms.Filtering.MAX_FILTER_CONDITIONS + 1,
             )
 
-    @property
-    def sample_records(self) -> Sequence[t.OracleWms.FilterRecord]:
-        """Sample records for testing."""
-        return [
-            {"id": 1, "name": "Company A", "status": "active"},
-            {"id": 2, "name": "Company B", "status": "inactive"},
-            {"id": 3, "name": "Company C", "status": "active"},
-        ]
-
     def test_filter_by_field_string_value(self) -> None:
         """Test filter by field with string value."""
         result = FlextOracleWmsUtilitiesFiltering.Filter.filter_by_field(

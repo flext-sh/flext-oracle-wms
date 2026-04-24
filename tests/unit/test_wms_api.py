@@ -90,4 +90,4 @@ class TestsFlextOracleWmsWmsApi:
         assert isinstance(result.value, FlextOracleWmsUtilitiesClient.Client)
 
 
-__all__: list[str] = ["TestFlextOracleWmsApiWms"]
+__all__: list[str] = []
