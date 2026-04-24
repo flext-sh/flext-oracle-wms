@@ -295,7 +295,6 @@ class CompleteMockPipeline:
                 },
             },
         }
-        self.results = {}
 
     def run_complete_pipeline(self) -> p.Result[t.JsonMapping]:
         """Run complete Oracle WMS pipeline with mock data."""
@@ -502,8 +501,6 @@ class CompleteMockPipeline:
         """Simulate TAP extraction process."""
         tap_records: list[dict[str, t.JsonValue]] = []
         for entity_name, entity_info in self.mock_entities.items():
-            if not isinstance(entity_info, dict):
-                continue
             sample_data_raw = entity_info.get("sample_data", {})
             sample_data: dict[str, t.JsonValue] = (
                 dict(sample_data_raw) if isinstance(sample_data_raw, dict) else {}
