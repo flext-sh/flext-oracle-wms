@@ -1,0 +1,18 @@
+tests/unit/test_authentication.py
+  h_9db9d35f50cf33 17
+tests/unit/test_client_core.py
+  h_9db9d35f50cf33 21
+tests/unit/test_authentication_core.py
+  h_9db9d35f50cf33 17
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.3.4",
+  "base_commit_sha": "c17d99a6817014dc3da3e72682d54d7ed5caec7f",
+  "prompts": {},
+  "humans": {
+    "h_9db9d35f50cf33": {
+      "author": "FLEXT Bot"
+    }
+  }
+}
