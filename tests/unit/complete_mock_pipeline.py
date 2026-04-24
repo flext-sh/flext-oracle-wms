@@ -315,7 +315,7 @@ class CompleteMockPipeline:
             end_time = datetime.now(UTC)
             duration = (end_time - start_time).total_seconds()
             for data in self.mock_entities.values():
-                if isinstance(data, dict) and "sample_data" in data:
+                if "sample_data" in data:
                     sample_data = data["sample_data"]
                     if isinstance(sample_data, dict):
                         len(sample_data.keys())
@@ -341,7 +341,7 @@ class CompleteMockPipeline:
         """Generate complete Singer schemas for all entities."""
         schemas: dict[str, t.JsonValue] = {}
         for entity_name, entity_info in self.mock_entities.items():
-            if isinstance(entity_info, dict) and "sample_data" in entity_info:
+            if "sample_data" in entity_info:
                 sample_data = entity_info["sample_data"]
                 if isinstance(sample_data, dict):
                     properties, key_properties = self._create_entity_properties(
@@ -677,7 +677,6 @@ class CompleteMockPipeline:
                 "total_records": sum(
                     self._safe_int(cast("t.JsonValue", info.get("count", 0)))
                     for info in self.mock_entities.values()
-                    if isinstance(info, dict)
                 ),
                 "entities": list(self.mock_entities.keys()),
             },
