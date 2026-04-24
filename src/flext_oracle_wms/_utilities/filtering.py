@@ -28,10 +28,6 @@ FlextOracleWmsOperatorFilter = (
     FlextOracleWmsModels.OracleWms.FlextOracleWmsOperatorFilter
 )
 
-# Canonical alias -- single source of truth lives in c.OracleWms.WmsFilterOperator
-# c.OracleWms.WmsFilterOperator = c.OracleWms.WmsFilterOperator
-
-# Type alias for filter entries (can be scalar, list, or operator filter)
 type FilterEntry = (
     t.OracleWms.FilterScalar | t.OracleWms.FilterList | FlextOracleWmsOperatorFilter
 )
