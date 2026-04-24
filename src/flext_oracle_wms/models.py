@@ -39,7 +39,7 @@ class FlextOracleWmsModels(m):
             """Operator filter model for WMS filtering operations."""
 
             operator: str
-            value: t.OracleWms.Core.FilterScalar | t.OracleWms.Core.FilterList
+            value: t.OracleWms.FilterScalar | t.OracleWms.FilterList
 
         class Entity(m.BaseModel):
             """Oracle WMS entity definition."""
