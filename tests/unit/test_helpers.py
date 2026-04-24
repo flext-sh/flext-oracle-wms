@@ -14,7 +14,7 @@ from tests import u
 
 
 @pytest.mark.unit
-class TestFlextOracleWmsUtilities:
+class TestsFlextOracleWmsHelpers:
     """Test FlextOracleWmsUtilities class."""
 
     def test_utilities_class_exists(self) -> None:

@@ -11,7 +11,7 @@ from flext_oracle_wms import FlextOracleWmsApi, FlextOracleWmsUtilitiesClient
 from tests import m
 
 
-class TestFlextOracleWmsApiWms:
+class TestsFlextOracleWmsWmsApi:
     """Test cases for FlextOracleWmsApi class."""
 
     def test_api_catalog_exists(self) -> None:

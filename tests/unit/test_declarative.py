@@ -48,7 +48,6 @@ def env_config() -> t.OracleWms.Tests.EnvConfig:
 def oracle_wms_client(
     env_config: t.OracleWms.Tests.EnvConfig,
 ) -> Generator[FlextOracleWmsUtilitiesClient.Client]:
-    """Fixture that provides configured Oracle WMS client."""
     settings = FlextOracleWmsSettings.model_validate({
         **env_config,
         "api_version": "LGF_V10",
@@ -61,9 +60,7 @@ def oracle_wms_client(
     client.stop()
 
 
-class TestOracleWmsDeclarativeIntegration:
-    """Integration tests for declarative Oracle WMS client."""
-
+class TestsFlextOracleWmsDeclarative:
     def test_api_catalog_completeness(self) -> None:
         """Test that API catalog contains entries."""
         assert len(FlextOracleWmsApi.FLEXT_ORACLE_WMS_APIS) >= 1
@@ -131,10 +128,6 @@ class TestOracleWmsDeclarativeIntegration:
         else:
             assert entities_result.error is not None
 
-
-class TestLgfApiV10Integration:
-    """Integration tests for LGF API v10 data extraction."""
-
     @pytest.mark.parametrize("entity_name", ["company", "facility", "item"])
     def test_get_entity_data(
         self,
@@ -200,10 +193,6 @@ class TestLgfApiV10Integration:
         )
         assert result.success or result.failure
 
-
-class TestAutomationApisIntegration:
-    """Integration tests for automation and operations APIs."""
-
     def test_get_entity_status(
         self, oracle_wms_client: FlextOracleWmsUtilitiesClient.Client
     ) -> None:
@@ -246,10 +235,6 @@ class TestAutomationApisIntegration:
         assert result.error is None or "Client not initialized" not in str(result.error)
         logger.info("⚠️ LPN creation failed as expected: %s", result.error)
 
-
-class TestErrorHandlingIntegration:
-    """Integration tests for error handling and edge cases."""
-
     def test_invalid_entity_name(
         self, oracle_wms_client: FlextOracleWmsUtilitiesClient.Client
     ) -> None:
@@ -273,10 +258,6 @@ class TestErrorHandlingIntegration:
         result = oracle_wms_client.call_api("invalid_api_name")
         assert not result.success
         logger.info("✅ Properly handled malformed LGF call: %s", result.error)
-
-
-class TestPerformanceIntegration:
-    """Performance and stress tests for Oracle WMS client."""
 
     def test_concurrent_entity_requests(
         self,

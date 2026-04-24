@@ -12,7 +12,7 @@ from __future__ import annotations
 from tests import c
 
 
-class TestSchemaConstants:
+class TestsFlextOracleWmsSchemaDynamic:
     """Test the Oracle WMS constants class."""
 
     def test_version_constant(self) -> None:
@@ -41,10 +41,6 @@ class TestSchemaConstants:
         assert "default" in envs
         assert "test" in envs
         assert "production" in envs
-
-
-class TestWmsEnums:
-    """Test WMS StrEnum types."""
 
     def test_wms_entity_type_values(self) -> None:
         """Test WmsEntityType has expected members."""
@@ -91,10 +87,6 @@ class TestWmsEnums:
         assert c.OracleWms.OracleWMSAuthMethod.OAUTH2 == "oauth2"
         assert c.OracleWms.OracleWMSAuthMethod.API_KEY == "api_key"
         assert c.OracleWms.OracleWMSAuthMethod.BEARER == "bearer"
-
-
-class TestNestedConstants:
-    """Test nested constant classes."""
 
     def test_filtering_max_conditions(self) -> None:
         """Test filtering constants."""

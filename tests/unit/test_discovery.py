@@ -12,7 +12,7 @@ from flext_oracle_wms import FlextOracleWmsUtilitiesDiscovery
 from tests import c, r, u
 
 
-class TestDiscoveryConstants:
+class TestsFlextOracleWmsDiscovery:
     """Test suite for discovery constants."""
 
     def test_discovery_success_constant(self) -> None:
@@ -20,10 +20,6 @@ class TestDiscoveryConstants:
 
     def test_discovery_failure_constant(self) -> None:
         assert u.OracleWms.DISCOVERY_FAILURE == "discovery_failure"
-
-
-class TestEndpointDiscoveryStrategyEnum:
-    """Test suite for EndpointDiscoveryStrategy enum."""
 
     def test_api_based_value(self) -> None:
         assert c.OracleWms.EndpointDiscoveryStrategy.API_BASED == "api_based"
@@ -33,10 +29,6 @@ class TestEndpointDiscoveryStrategyEnum:
 
     def test_is_str_enum(self) -> None:
         assert isinstance(c.OracleWms.EndpointDiscoveryStrategy.API_BASED, str)
-
-
-class TestFlextOracleWmsEntityDiscovery:
-    """Test suite for FlextOracleWmsEntityDiscovery class."""
 
     def test_initialization_with_mock_client(self) -> None:
         mock_client = MagicMock()

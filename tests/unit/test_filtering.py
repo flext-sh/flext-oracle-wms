@@ -29,7 +29,7 @@ from flext_oracle_wms import FlextOracleWmsUtilitiesFiltering
 from tests import c, e, m, t
 
 
-class TestFlextOracleWmsFilterConstruction:
+class TestsFlextOracleWmsFiltering:
     """Test filter construction and validation."""
 
     def test_filter_default_construction(self) -> None:
@@ -85,10 +85,6 @@ class TestFlextOracleWmsFilterConstruction:
         with pytest.raises(FlextOracleWmsUtilitiesFiltering.DataValidationError):
             FlextOracleWmsUtilitiesFiltering.Filter(filters=filters, max_conditions=3)
 
-
-class TestFilterValidation:
-    """Test filter validation logic."""
-
     def test_validate_filter_conditions_empty(self) -> None:
         """Test validation with empty filters."""
         filter_engine = FlextOracleWmsUtilitiesFiltering.Filter(
@@ -123,10 +119,6 @@ class TestFilterValidation:
         }
         result = filter_engine._validate_filters(filters)
         assert result.failure
-
-
-class TestRecordFiltering:
-    """Test record filtering functionality."""
 
     @property
     def sample_records(self) -> Sequence[t.OracleWms.FilterRecord]:
@@ -282,10 +274,6 @@ class TestRecordFiltering:
         assert result.failure
         assert result.error is not None and "Too many" in result.error
 
-
-class TestRecordSorting:
-    """Test record sorting functionality."""
-
     @property
     def unsorted_records(self) -> Sequence[t.OracleWms.FilterRecord]:
         """Unsorted records for testing."""
@@ -362,10 +350,6 @@ class TestRecordSorting:
         result = filter_engine.sort_records(self.unsorted_records, "nonexistent")
         assert result.success
 
-
-class TestNestedValueAccess:
-    """Test nested value access with dot notation."""
-
     @property
     def nested_record(self) -> t.OracleWms.FilterRecord:
         """Nested record for testing."""
@@ -433,10 +417,6 @@ class TestNestedValueAccess:
         value = filter_engine._get_nested_value(self.nested_record, "id.invalid")
         assert value is None
 
-
-class TestNormalize:
-    """Test value normalization."""
-
     def test_normalize_case_sensitive(self) -> None:
         filter_engine = FlextOracleWmsUtilitiesFiltering.Filter(case_sensitive=True)
         assert filter_engine._normalize("Test") == "Test"
@@ -453,10 +433,6 @@ class TestNormalize:
     def test_normalize_none(self) -> None:
         filter_engine = FlextOracleWmsUtilitiesFiltering.Filter(case_sensitive=False)
         assert filter_engine._normalize(None) == ""
-
-
-class TestApplyOperator:
-    """Test _apply_operator dispatch table."""
 
     def test_eq_case_sensitive(self) -> None:
         filter_engine = FlextOracleWmsUtilitiesFiltering.Filter(case_sensitive=True)
@@ -552,10 +528,6 @@ class TestApplyOperator:
         )
         assert filter_engine._apply_operator("a", "unknown", "b") is False
 
-
-class TestFactoryFunction:
-    """Test factory function and convenience functions."""
-
     def test_create_filter_default(self) -> None:
         """Test creating filter with default parameters."""
         filter_engine = FlextOracleWmsUtilitiesFiltering.Filter.create_filter()
@@ -582,10 +554,6 @@ class TestFactoryFunction:
             FlextOracleWmsUtilitiesFiltering.Filter.create_filter(
                 max_conditions=c.OracleWms.Filtering.MAX_FILTER_CONDITIONS + 1,
             )
-
-
-class TestConvenienceFunctions:
-    """Test convenience filtering functions."""
 
     @property
     def sample_records(self) -> Sequence[t.OracleWms.FilterRecord]:
@@ -693,10 +661,6 @@ class TestConvenienceFunctions:
         assert result.success
         assert not result.value
 
-
-class TestMatchesCondition:
-    """Test _matches_condition pattern matching."""
-
     def test_matches_condition_simple_equality(self) -> None:
         filter_engine = FlextOracleWmsUtilitiesFiltering.Filter(
             case_sensitive=False, max_conditions=50
@@ -756,10 +720,6 @@ class TestMatchesCondition:
         record: t.OracleWms.FilterRecord = {"field": None}
         assert filter_engine._matches_condition(record, "field", ["a", "b"]) is False
 
-
-class TestErrorHandling:
-    """Test error handling in filtering operations."""
-
     def test_sort_records_handles_exception(self) -> None:
         filter_engine = FlextOracleWmsUtilitiesFiltering.Filter(
             case_sensitive=False, max_conditions=50
@@ -783,10 +743,6 @@ class TestErrorHandling:
         assert filter_engine._apply_operator(None, "gt", 5) is False
         assert filter_engine._apply_operator(5, "lt", None) is False
         assert filter_engine._apply_operator(None, "gte", None) is True
-
-
-class TestPerformanceAndEdgeCases:
-    """Test performance considerations and edge cases."""
 
     def test_filter_large_record_set(self) -> None:
         """Test filtering with large record set."""

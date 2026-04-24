@@ -14,7 +14,7 @@ from tests import c, m
 
 
 @pytest.mark.unit
-class TestAuthenticationMethod:
+class TestsFlextOracleWmsAuthentication:
     """Test authentication method enum."""
 
     def test_authentication_method_values(self) -> None:
@@ -32,11 +32,7 @@ class TestAuthenticationMethod:
         assert "api_key" in methods
         assert "oauth2" in methods
 
-
-@pytest.mark.unit
-class TestAuthenticationConfig:
-    """Test authentication configuration."""
-
+    @pytest.mark.unit
     def test_basic_auth_config_creation(self) -> None:
         """Test creating basic auth configuration."""
         settings = m.OracleWms.AuthSettings(
@@ -97,11 +93,7 @@ class TestAuthenticationConfig:
         assert settings.oauth2_scope == "wms.read wms.write"
         assert settings.token_refresh_threshold == 300
 
-
-@pytest.mark.unit
-class TestAuthenticator:
-    """Test authenticator class."""
-
+    @pytest.mark.unit
     def test_authenticator_creation(self) -> None:
         """Test creating authenticator with settings."""
         settings = m.OracleWms.AuthSettings(

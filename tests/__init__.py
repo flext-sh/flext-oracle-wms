@@ -23,60 +23,24 @@ if _t.TYPE_CHECKING:
     from tests.unit.oracle_wms_complete_discovery import OracleWmsCompleteDiscovery
     from tests.unit.oracle_wms_focused_discovery import FocusedOracleWmsDiscovery
     from tests.unit.oracle_wms_optimized_discovery import OptimizedOracleWmsDiscovery
-    from tests.unit.test_api import TestFlextOracleWmsApi
-    from tests.unit.test_authentication import (
-        TestAuthenticationConfig,
-        TestAuthenticationMethod,
-        TestAuthenticator,
-    )
+    from tests.unit.test_api import TestsFlextOracleWmsApi
+    from tests.unit.test_authentication import TestsFlextOracleWmsAuthentication
     from tests.unit.test_authentication_core import (
-        TestAuthenticationConfigCore,
-        TestAuthenticationMethodCore,
-        TestAuthenticatorCore,
+        TestsFlextOracleWmsAuthenticationCore,
     )
-    from tests.unit.test_client import TestClientSimpleNew
-    from tests.unit.test_client_core import TestFlextOracleWmsClientCore, TestGetLogger
-    from tests.unit.test_constants import Testc
-    from tests.unit.test_declarative import (
-        TestAutomationApisIntegration,
-        TestErrorHandlingIntegration,
-        TestLgfApiV10Integration,
-        TestOracleWmsDeclarativeIntegration,
-        TestPerformanceIntegration,
-    )
-    from tests.unit.test_discovery import (
-        TestDiscoveryConstants,
-        TestEndpointDiscoveryStrategyEnum,
-        TestFlextOracleWmsEntityDiscovery,
-    )
-    from tests.unit.test_filtering import (
-        TestApplyOperator,
-        TestConvenienceFunctions,
-        TestErrorHandling,
-        TestFactoryFunction,
-        TestFilterValidation,
-        TestFlextOracleWmsFilterConstruction,
-        TestMatchesCondition,
-        TestNestedValueAccess,
-        TestNormalize,
-        TestPerformanceAndEdgeCases,
-        TestRecordFiltering,
-        TestRecordSorting,
-    )
-    from tests.unit.test_helpers import TestFlextOracleWmsUtilities
-    from tests.unit.test_helpers_core import TestFlextOracleWmsUtilitiesCore
-    from tests.unit.test_schema_dynamic import (
-        TestNestedConstants,
-        TestSchemaConstants,
-        TestWmsEnums,
-    )
-    from tests.unit.test_singer_flattening import (
-        TestFlextOracleWmsApiResponse,
-        TestFlextOracleWmsEntity,
-    )
-    from tests.unit.test_unified_config import TestFlextOracleWmsSettings
-    from tests.unit.test_wms_api import TestFlextOracleWmsApiWms
-    from tests.unit.test_wms_client import TestFlextOracleWmsClient
+    from tests.unit.test_client import TestsFlextOracleWmsClient
+    from tests.unit.test_client_core import TestsFlextOracleWmsClientCore
+    from tests.unit.test_constants import TestsFlextOracleWmsConstantsUnit
+    from tests.unit.test_declarative import TestsFlextOracleWmsDeclarative
+    from tests.unit.test_discovery import TestsFlextOracleWmsDiscovery
+    from tests.unit.test_filtering import TestsFlextOracleWmsFiltering
+    from tests.unit.test_helpers import TestsFlextOracleWmsHelpers
+    from tests.unit.test_helpers_core import TestsFlextOracleWmsHelpersCore
+    from tests.unit.test_schema_dynamic import TestsFlextOracleWmsSchemaDynamic
+    from tests.unit.test_singer_flattening import TestsFlextOracleWmsSingerFlattening
+    from tests.unit.test_unified_config import TestsFlextOracleWmsUnifiedConfig
+    from tests.unit.test_wms_api import TestsFlextOracleWmsWmsApi
+    from tests.unit.test_wms_client import TestsFlextOracleWmsWmsClient
     from tests.utilities import TestsFlextOracleWmsUtilities, u
 _LAZY_IMPORTS = merge_lazy_imports(
     (".unit",),
@@ -102,63 +66,24 @@ _LAZY_IMPORTS = merge_lazy_imports(
             ".unit.oracle_wms_complete_discovery": ("OracleWmsCompleteDiscovery",),
             ".unit.oracle_wms_focused_discovery": ("FocusedOracleWmsDiscovery",),
             ".unit.oracle_wms_optimized_discovery": ("OptimizedOracleWmsDiscovery",),
-            ".unit.test_api": ("TestFlextOracleWmsApi",),
-            ".unit.test_authentication": (
-                "TestAuthenticationConfig",
-                "TestAuthenticationMethod",
-                "TestAuthenticator",
-            ),
+            ".unit.test_api": ("TestsFlextOracleWmsApi",),
+            ".unit.test_authentication": ("TestsFlextOracleWmsAuthentication",),
             ".unit.test_authentication_core": (
-                "TestAuthenticationConfigCore",
-                "TestAuthenticationMethodCore",
-                "TestAuthenticatorCore",
+                "TestsFlextOracleWmsAuthenticationCore",
             ),
-            ".unit.test_client": ("TestClientSimpleNew",),
-            ".unit.test_client_core": (
-                "TestFlextOracleWmsClientCore",
-                "TestGetLogger",
-            ),
-            ".unit.test_constants": ("Testc",),
-            ".unit.test_declarative": (
-                "TestAutomationApisIntegration",
-                "TestErrorHandlingIntegration",
-                "TestLgfApiV10Integration",
-                "TestOracleWmsDeclarativeIntegration",
-                "TestPerformanceIntegration",
-            ),
-            ".unit.test_discovery": (
-                "TestDiscoveryConstants",
-                "TestEndpointDiscoveryStrategyEnum",
-                "TestFlextOracleWmsEntityDiscovery",
-            ),
-            ".unit.test_filtering": (
-                "TestApplyOperator",
-                "TestConvenienceFunctions",
-                "TestErrorHandling",
-                "TestFactoryFunction",
-                "TestFilterValidation",
-                "TestFlextOracleWmsFilterConstruction",
-                "TestMatchesCondition",
-                "TestNestedValueAccess",
-                "TestNormalize",
-                "TestPerformanceAndEdgeCases",
-                "TestRecordFiltering",
-                "TestRecordSorting",
-            ),
-            ".unit.test_helpers": ("TestFlextOracleWmsUtilities",),
-            ".unit.test_helpers_core": ("TestFlextOracleWmsUtilitiesCore",),
-            ".unit.test_schema_dynamic": (
-                "TestNestedConstants",
-                "TestSchemaConstants",
-                "TestWmsEnums",
-            ),
-            ".unit.test_singer_flattening": (
-                "TestFlextOracleWmsApiResponse",
-                "TestFlextOracleWmsEntity",
-            ),
-            ".unit.test_unified_config": ("TestFlextOracleWmsSettings",),
-            ".unit.test_wms_api": ("TestFlextOracleWmsApiWms",),
-            ".unit.test_wms_client": ("TestFlextOracleWmsClient",),
+            ".unit.test_client": ("TestsFlextOracleWmsClient",),
+            ".unit.test_client_core": ("TestsFlextOracleWmsClientCore",),
+            ".unit.test_constants": ("TestsFlextOracleWmsConstantsUnit",),
+            ".unit.test_declarative": ("TestsFlextOracleWmsDeclarative",),
+            ".unit.test_discovery": ("TestsFlextOracleWmsDiscovery",),
+            ".unit.test_filtering": ("TestsFlextOracleWmsFiltering",),
+            ".unit.test_helpers": ("TestsFlextOracleWmsHelpers",),
+            ".unit.test_helpers_core": ("TestsFlextOracleWmsHelpersCore",),
+            ".unit.test_schema_dynamic": ("TestsFlextOracleWmsSchemaDynamic",),
+            ".unit.test_singer_flattening": ("TestsFlextOracleWmsSingerFlattening",),
+            ".unit.test_unified_config": ("TestsFlextOracleWmsUnifiedConfig",),
+            ".unit.test_wms_api": ("TestsFlextOracleWmsWmsApi",),
+            ".unit.test_wms_client": ("TestsFlextOracleWmsWmsClient",),
             ".utilities": (
                 "TestsFlextOracleWmsUtilities",
                 "u",
@@ -200,52 +125,27 @@ __all__: list[str] = [
     "FocusedOracleWmsDiscovery",
     "OptimizedOracleWmsDiscovery",
     "OracleWmsCompleteDiscovery",
-    "TestApplyOperator",
-    "TestAuthenticationConfig",
-    "TestAuthenticationConfigCore",
-    "TestAuthenticationMethod",
-    "TestAuthenticationMethodCore",
-    "TestAuthenticator",
-    "TestAuthenticatorCore",
-    "TestAutomationApisIntegration",
-    "TestClientSimpleNew",
-    "TestConvenienceFunctions",
-    "TestDiscoveryConstants",
-    "TestEndpointDiscoveryStrategyEnum",
-    "TestErrorHandling",
-    "TestErrorHandlingIntegration",
-    "TestFactoryFunction",
-    "TestFilterValidation",
-    "TestFlextOracleWmsApi",
-    "TestFlextOracleWmsApiResponse",
-    "TestFlextOracleWmsApiWms",
-    "TestFlextOracleWmsClient",
-    "TestFlextOracleWmsClientCore",
-    "TestFlextOracleWmsEntity",
-    "TestFlextOracleWmsEntityDiscovery",
-    "TestFlextOracleWmsFilterConstruction",
-    "TestFlextOracleWmsSettings",
-    "TestFlextOracleWmsUtilities",
-    "TestFlextOracleWmsUtilitiesCore",
-    "TestGetLogger",
-    "TestLgfApiV10Integration",
-    "TestMatchesCondition",
-    "TestNestedConstants",
-    "TestNestedValueAccess",
-    "TestNormalize",
-    "TestOracleWmsDeclarativeIntegration",
-    "TestPerformanceAndEdgeCases",
-    "TestPerformanceIntegration",
-    "TestRecordFiltering",
-    "TestRecordSorting",
-    "TestSchemaConstants",
-    "TestWmsEnums",
-    "Testc",
+    "TestsFlextOracleWmsApi",
+    "TestsFlextOracleWmsAuthentication",
+    "TestsFlextOracleWmsAuthenticationCore",
+    "TestsFlextOracleWmsClient",
+    "TestsFlextOracleWmsClientCore",
     "TestsFlextOracleWmsConstants",
+    "TestsFlextOracleWmsConstantsUnit",
+    "TestsFlextOracleWmsDeclarative",
+    "TestsFlextOracleWmsDiscovery",
+    "TestsFlextOracleWmsFiltering",
+    "TestsFlextOracleWmsHelpers",
+    "TestsFlextOracleWmsHelpersCore",
     "TestsFlextOracleWmsModels",
     "TestsFlextOracleWmsProtocols",
+    "TestsFlextOracleWmsSchemaDynamic",
+    "TestsFlextOracleWmsSingerFlattening",
     "TestsFlextOracleWmsTypes",
+    "TestsFlextOracleWmsUnifiedConfig",
     "TestsFlextOracleWmsUtilities",
+    "TestsFlextOracleWmsWmsApi",
+    "TestsFlextOracleWmsWmsClient",
     "c",
     "d",
     "e",

@@ -11,7 +11,7 @@ from flext_oracle_wms import FlextOracleWmsApi, FlextOracleWmsUtilitiesClient
 from tests import s, u
 
 
-class TestFlextOracleWmsApi:
+class TestsFlextOracleWmsApi:
     """Test cases for FlextOracleWmsApi facade class."""
 
     def test_class_inheritance(self) -> None:

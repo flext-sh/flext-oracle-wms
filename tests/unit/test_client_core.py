@@ -18,7 +18,7 @@ from tests import r, u
 
 
 @pytest.mark.unit
-class TestFlextOracleWmsClientCore:
+class TestsFlextOracleWmsClientCore:
     """Core client functionality tests."""
 
     def test_client_initialization(self, mock_config: FlextOracleWmsSettings) -> None:
@@ -169,11 +169,7 @@ class TestFlextOracleWmsClientCore:
         assert client.settings is not None
         assert isinstance(client.settings, FlextOracleWmsSettings)
 
-
-@pytest.mark.unit
-class TestGetLogger:
-    """Tests for FlextLogger utility within WMS package."""
-
+    @pytest.mark.unit
     def test_get_logger_module_name(self) -> None:
         u.fetch_logger("test_module")
         logger_empty = u.fetch_logger("")

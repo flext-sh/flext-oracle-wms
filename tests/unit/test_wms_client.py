@@ -19,7 +19,7 @@ from flext_oracle_wms import FlextOracleWmsSettings, FlextOracleWmsUtilitiesClie
 from tests import r
 
 
-class TestFlextOracleWmsClient:
+class TestsFlextOracleWmsWmsClient:
     """Test cases for FlextOracleWmsClient class."""
 
     @staticmethod

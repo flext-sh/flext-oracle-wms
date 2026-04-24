@@ -14,7 +14,7 @@ from flext_core import FlextConstants
 from tests import c
 
 
-class Testc:
+class TestsFlextOracleWmsConstantsUnit:
     """Test cases for c class."""
 
     def test_class_inheritance(self) -> None:

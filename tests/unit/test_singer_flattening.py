@@ -14,7 +14,7 @@ import pytest
 from tests import c, m
 
 
-class TestFlextOracleWmsEntity:
+class TestsFlextOracleWmsSingerFlattening:
     """Test the Oracle WMS Entity model."""
 
     def test_entity_creation_valid(self) -> None:
@@ -72,10 +72,6 @@ class TestFlextOracleWmsEntity:
         """Test entity accessible via namespace."""
         entity = m.OracleWms.Entity(name="test", endpoint="/test")
         assert isinstance(entity, m.OracleWms.Entity)
-
-
-class TestFlextOracleWmsApiResponse:
-    """Test the Oracle WMS ApiResponse model."""
 
     def test_response_defaults(self) -> None:
         """Test response creation with defaults."""

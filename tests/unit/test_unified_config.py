@@ -12,7 +12,7 @@ from flext_oracle_wms import FlextOracleWmsSettings
 from tests import c
 
 
-class TestFlextOracleWmsSettings:
+class TestsFlextOracleWmsUnifiedConfig:
     """Test Oracle WMS settings configuration."""
 
     def test_config_creation_defaults(self) -> None:
