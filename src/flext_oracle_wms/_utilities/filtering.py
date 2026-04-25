@@ -15,29 +15,24 @@ from collections.abc import (
 from flext_api import u
 
 from flext_oracle_wms import (
-    FlextOracleWmsModels,
     FlextOracleWmsValidationError,
     c,
     e,
+    m,
     p,
     r,
     t,
 )
 
-FlextOracleWmsOperatorFilter = (
-    FlextOracleWmsModels.OracleWms.FlextOracleWmsOperatorFilter
-)
-
 type FilterEntry = (
-    t.OracleWms.FilterScalar | t.OracleWms.FilterList | FlextOracleWmsOperatorFilter
+    t.OracleWms.FilterScalar
+    | t.OracleWms.FilterList
+    | m.OracleWms.FlextOracleWmsOperatorFilter
 )
 
 
 class FlextOracleWmsUtilitiesFiltering:
     """Filtering utilities for Oracle WMS -- u.OracleWms.Filtering.*."""
-
-    DataValidationError = FlextOracleWmsValidationError
-    OperatorFilter = FlextOracleWmsOperatorFilter
 
     class Filter:
         """Generic filter with functional composition and strict validation."""
@@ -93,7 +88,9 @@ class FlextOracleWmsUtilitiesFiltering:
                 filters = {field: value}
             else:
                 filters = {
-                    field: FlextOracleWmsOperatorFilter(operator=operator, value=value),
+                    field: m.OracleWms.FlextOracleWmsOperatorFilter(
+                        operator=operator, value=value
+                    ),
                 }
             return engine.filter_records(records, filters)
 
@@ -168,7 +165,7 @@ class FlextOracleWmsUtilitiesFiltering:
             match value:
                 case list() as items:
                     return len(items)
-                case FlextOracleWmsOperatorFilter() as condition:
+                case m.OracleWms.FlextOracleWmsOperatorFilter() as condition:
                     match condition.value:
                         case list() as values:
                             return len(values)
@@ -334,7 +331,7 @@ class FlextOracleWmsUtilitiesFiltering:
         ) -> bool:
             field_value = self._get_nested_value(record, field)
             match filter_value:
-                case FlextOracleWmsOperatorFilter() as condition:
+                case m.OracleWms.FlextOracleWmsOperatorFilter() as condition:
                     return self._apply_operator(
                         field_value,
                         condition.operator,
@@ -382,6 +379,5 @@ class FlextOracleWmsUtilitiesFiltering:
 
 
 __all__: list[str] = [
-    "FlextOracleWmsOperatorFilter",
     "FlextOracleWmsUtilitiesFiltering",
 ]

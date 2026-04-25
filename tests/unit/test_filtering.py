@@ -25,7 +25,10 @@ from collections.abc import (
 
 import pytest
 
-from flext_oracle_wms import FlextOracleWmsUtilitiesFiltering
+from flext_oracle_wms import (
+    FlextOracleWmsUtilitiesFiltering,
+    FlextOracleWmsValidationError,
+)
 from tests import c, e, m, t
 
 
@@ -82,7 +85,7 @@ class TestsFlextOracleWmsFiltering:
             "u.field3": "v3",
             "u.field4": "v4",
         }
-        with pytest.raises(FlextOracleWmsUtilitiesFiltering.DataValidationError):
+        with pytest.raises(FlextOracleWmsValidationError):
             FlextOracleWmsUtilitiesFiltering.Filter(filters=filters, max_conditions=3)
 
     def test_validate_filter_conditions_empty(self) -> None:

@@ -19,10 +19,7 @@ if _t.TYPE_CHECKING:
     from flext_oracle_wms._utilities.auth import FlextOracleWmsUtilitiesAuth
     from flext_oracle_wms._utilities.client import FlextOracleWmsUtilitiesClient
     from flext_oracle_wms._utilities.discovery import FlextOracleWmsUtilitiesDiscovery
-    from flext_oracle_wms._utilities.filtering import (
-        FlextOracleWmsOperatorFilter,
-        FlextOracleWmsUtilitiesFiltering,
-    )
+    from flext_oracle_wms._utilities.filtering import FlextOracleWmsUtilitiesFiltering
     from flext_oracle_wms._utilities.http_client import (
         FlextOracleWmsUtilitiesHttpClient,
     )
@@ -60,10 +57,7 @@ _LAZY_IMPORTS = merge_lazy_imports(
             "._utilities.auth": ("FlextOracleWmsUtilitiesAuth",),
             "._utilities.client": ("FlextOracleWmsUtilitiesClient",),
             "._utilities.discovery": ("FlextOracleWmsUtilitiesDiscovery",),
-            "._utilities.filtering": (
-                "FlextOracleWmsOperatorFilter",
-                "FlextOracleWmsUtilitiesFiltering",
-            ),
+            "._utilities.filtering": ("FlextOracleWmsUtilitiesFiltering",),
             "._utilities.http_client": ("FlextOracleWmsUtilitiesHttpClient",),
             ".api": (
                 "FlextOracleWmsApi",
@@ -146,7 +140,6 @@ __all__: list[str] = [
     "FlextOracleWmsEntityNotFoundError",
     "FlextOracleWmsError",
     "FlextOracleWmsModels",
-    "FlextOracleWmsOperatorFilter",
     "FlextOracleWmsProtocols",
     "FlextOracleWmsSettings",
     "FlextOracleWmsTypes",
