@@ -1,0 +1,26 @@
+src/flext_oracle_wms/_utilities/filtering.py
+  f23301fc760199d1 21,28-30,91-93,168,334
+tests/unit/test_filtering.py
+  f23301fc760199d1 28-31,88
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.3.4",
+  "base_commit_sha": "a7ab5d564d7d6a1fa9f7dc649496b1366964e3d5",
+  "prompts": {
+    "f23301fc760199d1": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "a320e347-64b9-4ca2-8599-c05a2ae8bd25",
+        "model": "claude-opus-4-7"
+      },
+      "human_author": "FLEXT Bot",
+      "messages": [],
+      "total_additions": 12,
+      "total_deletions": 15,
+      "accepted_lines": 14,
+      "overriden_lines": 0,
+      "messages_url": "https://usegitai.com/cas/6a087539c34931dfd5be456f781f82c4ba0b3c2eb79e76a771ed96b4aca31880"
+    }
+  }
+}
