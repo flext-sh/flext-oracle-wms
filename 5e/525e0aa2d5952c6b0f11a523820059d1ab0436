@@ -1,0 +1,26 @@
+tests/unit/test_filtering.py
+  f23301fc760199d1 599,639
+base.mk
+  f23301fc760199d1 537
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.3.4",
+  "base_commit_sha": "5e525e0aa2d5952c6b0f11a523820059d1ab0436",
+  "prompts": {
+    "f23301fc760199d1": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "a320e347-64b9-4ca2-8599-c05a2ae8bd25",
+        "model": "claude-opus-4-7"
+      },
+      "human_author": "FLEXT Bot",
+      "messages": [],
+      "total_additions": 90,
+      "total_deletions": 3,
+      "accepted_lines": 3,
+      "overriden_lines": 0,
+      "messages_url": "https://usegitai.com/cas/27ed63e2e5e3ba6147d9dd2b722eebc29c47a4a767fd1fbf1ad73e2fc9025c04"
+    }
+  }
+}
