@@ -1,7 +1,3 @@
-<!-- TOC START -->
-- [Next Pages](#next-pages)
-<!-- TOC END -->
-
 <!-- AUTO-GENERATED — DO NOT EDIT MANUALLY -->
 
 # flext-oracle-wms API Overview
@@ -11,9 +7,9 @@
 - Description: Enterprise Oracle WMS client library for FLEXT data integration platform
 - Project class: `domain`
 - Keywords: `adapter`, `enterprise`, `flext`, `integration`, `typed`
-- Main facades: `FlextOracleWmsUtilitiesDiscovery`, `FlextOracleWmsApi`, `FlextOracleWmsValidationError`, `FlextOracleWmsUtilitiesClient`, `FlextOracleWmsConstants`, `FlextOracleWmsUtilitiesHttpClient`, `FlextOracleWmsEntityNotFoundError`, `FlextOracleWmsUtilities` (+12 more)
+- Main facades: `FlextOracleWmsUtilitiesClient`, `FlextOracleWmsConnectionError`, `FlextOracleWmsUtilities`, `FlextOracleWmsValidationError`, `FlextOracleWmsAuthenticationError`, `FlextOracleWmsTypes`, `FlextOracleWmsUtilitiesHttpClient`, `FlextOracleWmsEntityNotFoundError` (+12 more)
 - Alias exports: `c`, `d`, `e`, `h`, `m`, `p`, `r`, `s`, `t`, `u`, `x`
-- Public symbol exports: `FlextOracleWmsUtilitiesDiscovery`, `FlextOracleWmsApi`, `FlextOracleWmsValidationError`, `FlextOracleWmsUtilitiesClient`, `FlextOracleWmsConstants`, `FlextOracleWmsUtilitiesHttpClient`, `FlextOracleWmsEntityNotFoundError`, `FlextOracleWmsUtilities`, `FlextOracleWmsApiError`, `FlextOracleWmsUtilitiesFiltering` (+11 more)
+- Public symbol exports: `FlextOracleWmsUtilitiesClient`, `FlextOracleWmsConnectionError`, `FlextOracleWmsUtilities`, `FlextOracleWmsValidationError`, `FlextOracleWmsAuthenticationError`, `FlextOracleWmsTypes`, `FlextOracleWmsUtilitiesHttpClient`, `FlextOracleWmsEntityNotFoundError`, `oracle_wms`, `FlextOracleWmsApi` (+11 more)
 - Exported module shortcuts: _none_
 - Generated module pages: `10`
 
