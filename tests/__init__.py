@@ -28,12 +28,17 @@ if _t.TYPE_CHECKING:
         TestsFlextOracleWmsAuthenticationCore,
     )
     from tests.unit.test_client import TestsFlextOracleWmsClient
+    from tests.unit.test_client_class import TestsFlextOracleWmsClientClass
     from tests.unit.test_client_core import TestsFlextOracleWmsClientCore
+    from tests.unit.test_config import TestsFlextOracleWmsConfig
+    from tests.unit.test_config_module import TestsFlextOracleWmsConfigModule
+    from tests.unit.test_connection import TestsFlextOracleWmsConnection
     from tests.unit.test_declarative import TestsFlextOracleWmsDeclarative
     from tests.unit.test_discovery import TestsFlextOracleWmsDiscovery
     from tests.unit.test_filtering import TestsFlextOracleWmsFiltering
     from tests.unit.test_helpers import TestsFlextOracleWmsHelpers
     from tests.unit.test_helpers_core import TestsFlextOracleWmsHelpersCore
+    from tests.unit.test_models import TestsFlextOracleWmsModelsUnit
     from tests.unit.test_schema_dynamic import TestsFlextOracleWmsSchemaDynamic
     from tests.unit.test_singer_flattening import TestsFlextOracleWmsSingerFlattening
     from tests.unit.test_unified_config import TestsFlextOracleWmsUnifiedConfig
@@ -67,12 +72,17 @@ _LAZY_IMPORTS = merge_lazy_imports(
                 "TestsFlextOracleWmsAuthenticationCore",
             ),
             ".unit.test_client": ("TestsFlextOracleWmsClient",),
+            ".unit.test_client_class": ("TestsFlextOracleWmsClientClass",),
             ".unit.test_client_core": ("TestsFlextOracleWmsClientCore",),
+            ".unit.test_config": ("TestsFlextOracleWmsConfig",),
+            ".unit.test_config_module": ("TestsFlextOracleWmsConfigModule",),
+            ".unit.test_connection": ("TestsFlextOracleWmsConnection",),
             ".unit.test_declarative": ("TestsFlextOracleWmsDeclarative",),
             ".unit.test_discovery": ("TestsFlextOracleWmsDiscovery",),
             ".unit.test_filtering": ("TestsFlextOracleWmsFiltering",),
             ".unit.test_helpers": ("TestsFlextOracleWmsHelpers",),
             ".unit.test_helpers_core": ("TestsFlextOracleWmsHelpersCore",),
+            ".unit.test_models": ("TestsFlextOracleWmsModelsUnit",),
             ".unit.test_schema_dynamic": ("TestsFlextOracleWmsSchemaDynamic",),
             ".unit.test_singer_flattening": ("TestsFlextOracleWmsSingerFlattening",),
             ".unit.test_unified_config": ("TestsFlextOracleWmsUnifiedConfig",),
@@ -130,7 +140,11 @@ __all__: list[str] = [
     "TestsFlextOracleWmsAuthentication",
     "TestsFlextOracleWmsAuthenticationCore",
     "TestsFlextOracleWmsClient",
+    "TestsFlextOracleWmsClientClass",
     "TestsFlextOracleWmsClientCore",
+    "TestsFlextOracleWmsConfig",
+    "TestsFlextOracleWmsConfigModule",
+    "TestsFlextOracleWmsConnection",
     "TestsFlextOracleWmsConstants",
     "TestsFlextOracleWmsDeclarative",
     "TestsFlextOracleWmsDiscovery",
@@ -138,6 +152,7 @@ __all__: list[str] = [
     "TestsFlextOracleWmsHelpers",
     "TestsFlextOracleWmsHelpersCore",
     "TestsFlextOracleWmsModels",
+    "TestsFlextOracleWmsModelsUnit",
     "TestsFlextOracleWmsProtocols",
     "TestsFlextOracleWmsSchemaDynamic",
     "TestsFlextOracleWmsSingerFlattening",

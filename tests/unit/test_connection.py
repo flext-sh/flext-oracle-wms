@@ -10,9 +10,12 @@ from __future__ import annotations
 from flext_oracle_wms import FlextOracleWmsSettings, FlextOracleWmsUtilitiesClient
 
 
-def test_real_connection() -> None:
-    """Test client structural setup with testing_config."""
-    settings = FlextOracleWmsSettings.testing_config()
-    client = FlextOracleWmsUtilitiesClient.Client(settings)
-    assert client.settings is settings
-    client.discover_entities()
+class TestsFlextOracleWmsConnection:
+    """Behavior contract for test_connection."""
+
+    def test_real_connection(self) -> None:
+        """Test client structural setup with testing_config."""
+        settings = FlextOracleWmsSettings.testing_config()
+        client = FlextOracleWmsUtilitiesClient.Client(settings)
+        assert client.settings is settings
+        client.discover_entities()
