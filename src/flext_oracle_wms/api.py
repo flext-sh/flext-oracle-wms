@@ -16,13 +16,12 @@ from typing import ClassVar
 
 from flext_oracle_wms import (
     FlextOracleWmsSettings,
-    FlextOracleWmsUtilitiesClient,
-    FlextOracleWmsUtilitiesHttpClient,
     m,
     p,
     r,
     s,
     t,
+    u,
 )
 
 
@@ -64,7 +63,7 @@ class FlextOracleWmsApi(s[bool]):
         resolved_config = (
             settings if settings is not None else FlextOracleWmsSettings.fetch_global()
         )
-        self._client = FlextOracleWmsUtilitiesClient.Client(settings=resolved_config)
+        self._client = u.OracleWms.Client(settings=resolved_config)
 
     def execute(self) -> p.Result[None]:
         """Execute Oracle WMS operations."""
@@ -77,9 +76,9 @@ class FlextOracleWmsApi(s[bool]):
         headers: t.StrMapping | None = None,
         *,
         verify_ssl: bool = True,
-    ) -> FlextOracleWmsUtilitiesHttpClient.HttpClient:
+    ) -> u.OracleWms.HttpClient:
         """Create FlextHttpClient instance."""
-        return FlextOracleWmsUtilitiesHttpClient.HttpClient(
+        return u.OracleWms.HttpClient(
             base_url=base_url,
             timeout=timeout,
             headers=headers,
@@ -89,9 +88,12 @@ class FlextOracleWmsApi(s[bool]):
     @staticmethod
     def create_oracle_wms_client(
         settings: m.OracleWms.AuthSettings,
-    ) -> p.Result[FlextOracleWmsUtilitiesClient.Client]:
+    ) -> p.Result[u.OracleWms.Client]:
         """Create a runtime Oracle WMS client from auth settings."""
-        return FlextOracleWmsUtilitiesClient.Client.from_auth_settings(settings)
+        client_result: p.Result[u.OracleWms.Client] = (
+            u.OracleWms.Client.from_auth_settings(settings)
+        )
+        return client_result
 
 
 oracle_wms = FlextOracleWmsApi

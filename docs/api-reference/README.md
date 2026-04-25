@@ -1,3 +1,9 @@
+<!-- TOC START -->
+- [Source of Truth](#source-of-truth)
+- [Generated Pages](#generated-pages)
+- [Surface Summary](#surface-summary)
+<!-- TOC END -->
+
 <!-- AUTO-GENERATED — DO NOT EDIT MANUALLY -->
 
 # flext-oracle-wms API Reference
@@ -19,7 +25,7 @@ This section is generated from public exports and real docstrings.
 
 ## Surface Summary
 
-- Primary facades: `FlextOracleWmsProtocols`, `FlextOracleWmsAuthenticationError`, `FlextOracleWmsUtilitiesHttpClient`, `FlextOracleWmsConnectionError`, `FlextOracleWmsUtilities`, `FlextOracleWmsError` (+14 more)
+- Primary facades: `FlextOracleWmsUtilitiesDiscovery`, `FlextOracleWmsApi`, `FlextOracleWmsValidationError`, `FlextOracleWmsUtilitiesClient`, `FlextOracleWmsConstants`, `FlextOracleWmsUtilitiesHttpClient` (+14 more)
 - Generated module pages: `10`
 
 - [Back to project docs](../index.md)
