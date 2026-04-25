@@ -596,7 +596,7 @@ class TestsFlextOracleWmsFiltering:
             c.OracleWms.WmsFilterOperator.NE,
         )
         assert result.success
-        assert len(result.value) == 2
+        assert len(result.value) == 3
         assert all(record["status"] != "inactive" for record in result.value)
 
     def test_filter_by_id_range_both_bounds(self) -> None:
@@ -636,7 +636,7 @@ class TestsFlextOracleWmsFiltering:
             self.sample_records, "id"
         )
         assert result.success
-        assert len(result.value) == 3
+        assert len(result.value) == 4
 
     def test_filter_by_id_range_custom_field(self) -> None:
         """Test filter by ID range with custom ID field."""

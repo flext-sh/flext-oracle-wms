@@ -1,8 +1,8 @@
 <!-- AUTO-GENERATED — DO NOT EDIT MANUALLY -->
 
-# flext_oracle_wms.filtering
+# flext_oracle_wms.client_settings
 
-::: flext_oracle_wms.filtering
+::: flext_oracle_wms.client_settings
     options:
       show_root_heading: true
       show_root_full_path: false
