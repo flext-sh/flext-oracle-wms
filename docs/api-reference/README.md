@@ -19,7 +19,7 @@ This section is generated from public exports and real docstrings.
 
 ## Surface Summary
 
-- Primary facades: `FlextOracleWmsUtilitiesClient`, `FlextOracleWmsConnectionError`, `FlextOracleWmsUtilities`, `FlextOracleWmsValidationError`, `FlextOracleWmsAuthenticationError`, `FlextOracleWmsTypes` (+14 more)
+- Primary facades: `FlextOracleWmsUtilitiesAuth`, `FlextOracleWmsUtilities`, `FlextOracleWmsApiError`, `FlextOracleWmsUtilitiesClient`, `FlextOracleWmsApi`, `FlextOracleWmsConstants` (+14 more)
 - Generated module pages: `10`
 
 - [Back to project docs](../index.md)
