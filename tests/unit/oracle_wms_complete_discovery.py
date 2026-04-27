@@ -79,17 +79,26 @@ class OracleWmsCompleteDiscovery:
             try:
                 if api_endpoint.category == c.OracleWms.Tests.Categories.DATA_EXTRACT:
                     (self._test_data_extract_api(api_name))
-                elif api_endpoint.category == c.OracleWms.Tests.Categories.ENTITY_OPERATIONS:
+                elif (
+                    api_endpoint.category
+                    == c.OracleWms.Tests.Categories.ENTITY_OPERATIONS
+                ):
                     self._test_entity_operations_api(
                         api_name,
                         api_endpoint,
                     )
-                elif api_endpoint.category == c.OracleWms.Tests.Categories.SETUP_TRANSACTIONAL:
+                elif (
+                    api_endpoint.category
+                    == c.OracleWms.Tests.Categories.SETUP_TRANSACTIONAL
+                ):
                     self._test_setup_api(
                         api_name,
                         api_endpoint,
                     )
-                elif api_endpoint.category == c.OracleWms.Tests.Categories.AUTOMATION_OPERATIONS:
+                elif (
+                    api_endpoint.category
+                    == c.OracleWms.Tests.Categories.AUTOMATION_OPERATIONS
+                ):
                     self._test_automation_api(
                         api_name,
                         api_endpoint,
