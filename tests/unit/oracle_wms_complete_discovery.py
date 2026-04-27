@@ -29,18 +29,9 @@ from flext_oracle_wms import (
     FlextOracleWmsSettings,
     FlextOracleWmsUtilitiesClient,
 )
-from tests import m, p, r, t, u
+from tests import c, m, p, r, t, u
 
 logger = u.fetch_logger(__name__)
-
-# API category string constants (Oracle WMS LGF API category names)
-_CATEGORY_DATA_EXTRACT = "data_extract"
-_CATEGORY_ENTITY_OPERATIONS = "entity_operations"
-_CATEGORY_SETUP_TRANSACTIONAL = "setup_transactional"
-_CATEGORY_AUTOMATION_OPERATIONS = "automation_operations"
-
-# API version string constants
-_API_VERSION_LGF_V10 = "LGF_V10"
 
 
 class OracleWmsCompleteDiscovery:
@@ -54,7 +45,7 @@ class OracleWmsCompleteDiscovery:
             password="xyz",
             timeout=120.0,
             max_retries=5,
-            api_version=_API_VERSION_LGF_V10,
+            api_version=c.OracleWms.Tests.API_VERSION_LGF_V10,
             verify_ssl=True,
             enable_logging=True,
         )
@@ -86,19 +77,19 @@ class OracleWmsCompleteDiscovery:
         )
         for api_name, api_endpoint in all_apis.items():
             try:
-                if api_endpoint.category == _CATEGORY_DATA_EXTRACT:
+                if api_endpoint.category == c.OracleWms.Tests.Categories.DATA_EXTRACT:
                     (self._test_data_extract_api(api_name))
-                elif api_endpoint.category == _CATEGORY_ENTITY_OPERATIONS:
+                elif api_endpoint.category == c.OracleWms.Tests.Categories.ENTITY_OPERATIONS:
                     self._test_entity_operations_api(
                         api_name,
                         api_endpoint,
                     )
-                elif api_endpoint.category == _CATEGORY_SETUP_TRANSACTIONAL:
+                elif api_endpoint.category == c.OracleWms.Tests.Categories.SETUP_TRANSACTIONAL:
                     self._test_setup_api(
                         api_name,
                         api_endpoint,
                     )
-                elif api_endpoint.category == _CATEGORY_AUTOMATION_OPERATIONS:
+                elif api_endpoint.category == c.OracleWms.Tests.Categories.AUTOMATION_OPERATIONS:
                     self._test_automation_api(
                         api_name,
                         api_endpoint,

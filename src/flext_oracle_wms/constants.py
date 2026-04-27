@@ -301,4 +301,4 @@ class FlextOracleWmsConstants(c):
 
 c = FlextOracleWmsConstants
 
-__all__: list[str] = ["FlextOracleWmsConstants", "c"]
+__all__: tuple[str, ...] = ("FlextOracleWmsConstants", "c")

@@ -26,6 +26,7 @@ from collections.abc import (
     Sequence,
 )
 from pathlib import Path
+from typing import Final
 
 from dotenv import load_dotenv
 
@@ -41,8 +42,8 @@ from flext_oracle_wms import (
 
 FlextOracleWmsClient = FlextOracleWmsUtilitiesClient.Client
 
-MAX_ENTITIES_TO_SHOW = 5
-MAX_VALUE_DISPLAY_LENGTH = 50
+MAX_ENTITIES_TO_SHOW: Final[int] = 5
+MAX_VALUE_DISPLAY_LENGTH: Final[int] = 50
 logger = u.fetch_logger(__name__)
 project_root = Path(__file__).parent.parent
 env_file = project_root / ".env"
