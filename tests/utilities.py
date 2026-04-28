@@ -42,45 +42,6 @@ class TestsFlextOracleWmsUtilities(FlextTestsUtilities, u):
                     """Execute the no-op test facade."""
                     return r[None].ok(None)
 
-            @staticmethod
-            def to_str(
-                value: TestsFlextOracleWmsTypes.JsonPayload | None, default: str
-            ) -> str:
-                """Normalize a scalar-like value into a string."""
-                if value is None:
-                    return default
-                if isinstance(value, str):
-                    return value
-                if isinstance(value, (int, float)):
-                    return str(value)
-                return default
-
-            @staticmethod
-            def to_int(
-                value: TestsFlextOracleWmsTypes.JsonPayload | None, default: int
-            ) -> int:
-                """Normalize a scalar-like value into an integer."""
-                if value is None:
-                    return default
-                if isinstance(value, (int, float)):
-                    return int(value)
-                if isinstance(value, str):
-                    try:
-                        return int(value)
-                    except ValueError:
-                        return default
-                return default
-
-            @staticmethod
-            def to_bool(
-                value: TestsFlextOracleWmsTypes.JsonPayload | None,
-                default: bool,
-            ) -> bool:
-                """Normalize a scalar-like value into a boolean."""
-                if value is None:
-                    return default
-                return bool(value)
-
             @classmethod
             def build_client_settings(
                 cls,
@@ -89,31 +50,33 @@ class TestsFlextOracleWmsUtilities(FlextTestsUtilities, u):
             ) -> FlextOracleWmsSettings:
                 """Build client settings from normalized test environment data."""
                 return FlextOracleWmsSettings(
-                    base_url=cls.to_str(env_config.get("base_url", ""), ""),
-                    username=cls.to_str(env_config.get("username", ""), ""),
-                    password=cls.to_str(env_config.get("password", ""), ""),
+                    base_url=u.to_str(env_config.get("base_url", ""), default=""),
+                    username=u.to_str(env_config.get("username", ""), default=""),
+                    password=u.to_str(env_config.get("password", ""), default=""),
                     api_version=api_version,
-                    auth_method=cls.to_str(
+                    auth_method=u.to_str(
                         env_config.get("auth_method", "BASIC"),
-                        "BASIC",
+                        default="BASIC",
                     ),
-                    timeout=cls.to_int(env_config.get("timeout", 30), 30),
-                    retry_attempts=cls.to_int(
+                    timeout=u.to_int(env_config.get("timeout", 30), default=30),
+                    retry_attempts=u.to_int(
                         env_config.get("retry_attempts", 3),
-                        3,
+                        default=3,
                     ),
-                    verify_ssl=cls.to_bool(env_config.get("verify_ssl", True), True),
-                    enable_logging=cls.to_bool(
+                    verify_ssl=u.to_bool(
+                        env_config.get("verify_ssl", True), default=True
+                    ),
+                    enable_logging=u.to_bool(
                         env_config.get("enable_logging", True),
-                        True,
+                        default=True,
                     ),
-                    connection_pool_size=cls.to_int(
+                    connection_pool_size=u.to_int(
                         env_config.get("connection_pool_size", 20),
-                        20,
+                        default=20,
                     ),
-                    cache_duration=cls.to_int(
+                    cache_duration=u.to_int(
                         env_config.get("cache_duration", 3600),
-                        3600,
+                        default=3600,
                     ),
                 )
 
@@ -182,22 +145,25 @@ class TestsFlextOracleWmsUtilities(FlextTestsUtilities, u):
                     "password": settings.get("ORACLE_WMS_PASSWORD"),
                     "environment": cls._resolve_environment_name(base_url),
                     "api_version": "LGF_V10",
-                    "timeout": cls.to_int(settings.get("ORACLE_WMS_TIMEOUT", "30"), 30),
-                    "max_retries": cls.to_int(
+                    "timeout": u.to_int(
+                        settings.get("ORACLE_WMS_TIMEOUT", "30"),
+                        default=30,
+                    ),
+                    "max_retries": u.to_int(
                         settings.get("ORACLE_WMS_MAX_RETRIES", "3"),
-                        3,
+                        default=3,
                     ),
-                    "verify_ssl": cls.to_bool(
+                    "verify_ssl": u.to_bool(
                         settings.get("ORACLE_WMS_VERIFY_SSL", "true").lower() == "true",
-                        True,
+                        default=True,
                     ),
-                    "enable_logging": cls.to_bool(
+                    "enable_logging": u.to_bool(
                         settings.get(
                             "ORACLE_WMS_ENABLE_REQUEST_LOGGING",
                             "true",
                         ).lower()
                         == "true",
-                        True,
+                        default=True,
                     ),
                 })
 
