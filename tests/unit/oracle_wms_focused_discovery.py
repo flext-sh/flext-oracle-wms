@@ -291,7 +291,7 @@ class FocusedOracleWmsDiscovery:
                 "additionalProperties": False,
                 "key_properties": cast("t.JsonValue", key_properties),
                 "oracle_wms_entity": entity_name,
-                "oracle_wms_environment": str(self.settings.base_url),
+                "oracle_wms_environment": self.settings.base_url,
             }
             return schema_result
         except (RuntimeError, OSError, ValueError, KeyError):

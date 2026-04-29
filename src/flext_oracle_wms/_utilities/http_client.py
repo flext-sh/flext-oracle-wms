@@ -60,15 +60,15 @@ class FlextOracleWmsUtilitiesHttpClient:
                 return {}
             normalized: t.MutableStrMapping = {}
             for key, value in headers.items():
+                str_value: str
                 match value:
-                    case str() as str_value:
-                        normalized[str(key)] = str_value
+                    case str() as s:
+                        str_value = s
                     case list() as list_value:
-                        normalized[str(key)] = ",".join(
-                            str(item) for item in list_value
-                        )
+                        str_value = ",".join(item for item in list_value)
                     case _:
-                        normalized[str(key)] = str(value)
+                        str_value = str(value)
+                normalized[key] = str_value
             return normalized
 
         @staticmethod
@@ -127,7 +127,7 @@ class FlextOracleWmsUtilitiesHttpClient:
         ) -> p.Result[t.JsonMapping]:
             """Make GET request with railway-oriented error handling."""
             params_str: t.Api.WebParams | None = (
-                {str(k): str(v) for k, v in params.items()} if params else None
+                dict(params.items()) if params else None
             )
             return self._execute_request(
                 "GET", path, params=params_str, headers=headers

@@ -154,7 +154,7 @@ class OracleWmsCompleteDiscovery:
                     if entities_result.success:
                         value = entities_result.value
                         if isinstance(value, list):
-                            self.discovered_entities = [str(v) for v in value]
+                            self.discovered_entities = list(value)
                 if self.discovered_entities:
                     entity_name = self.discovered_entities[0]
                     if "{id}" in endpoint.path:

@@ -188,7 +188,7 @@ class TestsFlextOracleWmsDeclarative:
             return
         result = oracle_wms_client.get_entity_data(
             entity_name="company",
-            filters={"id": str(record_id)},
+            filters={"id": record_id},
             limit=1,
         )
         assert result.success or result.failure
@@ -204,10 +204,10 @@ class TestsFlextOracleWmsDeclarative:
         if result.success:
             logger.info("✅ Successfully got entity status")
         else:
-            logger.info("⚠️ Entity status call failed (expected): %s", result.error)
-            assert result.error is None or "Client not initialized" not in str(
-                result.error,
+            logger.info(
+                "Warning: Entity status call failed (expected): %s", result.error
             )
+            assert result.error is None or "Client not initialized" not in result.error
 
     def test_update_oblpn_tracking_number(
         self,
@@ -219,7 +219,7 @@ class TestsFlextOracleWmsDeclarative:
             tracking_number="TRACK123",
         )
         assert not result.success
-        assert result.error is None or "Client not initialized" not in str(result.error)
+        assert result.error is None or "Client not initialized" not in result.error
         logger.info("⚠️ OBLPN update failed as expected: %s", result.error)
 
     def test_create_lpn_api_structure(
@@ -232,7 +232,7 @@ class TestsFlextOracleWmsDeclarative:
             qty=10,
         )
         assert not result.success
-        assert result.error is None or "Client not initialized" not in str(result.error)
+        assert result.error is None or "Client not initialized" not in result.error
         logger.info("⚠️ LPN creation failed as expected: %s", result.error)
 
     def test_invalid_entity_name(

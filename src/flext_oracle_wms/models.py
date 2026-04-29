@@ -139,7 +139,7 @@ class FlextOracleWmsModels(m):
             @property
             def normalized_method(self) -> str:
                 """Return auth method in canonical lowercase form."""
-                return str(self.method).strip().lower()
+                return self.method.strip().lower()
 
             def validate_business_rules(self) -> p.Result[bool]:
                 """Validate authentication configuration business rules."""

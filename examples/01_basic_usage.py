@@ -117,7 +117,7 @@ def query_entity_data(
             field_names: list[str] = list(sample_record.keys())[:5]
             for field in field_names:
                 try:
-                    value_str = str(sample_record.get(field, "N/A"))
+                    value_str = sample_record.get(field, "N/A")
                     if len(value_str) > MAX_VALUE_DISPLAY_LENGTH:
                         _ = value_str[:MAX_VALUE_DISPLAY_LENGTH] + "..."
                     else:
@@ -166,7 +166,7 @@ def main() -> None:
             entities = entities_result.value
             if entities:
                 first_entity = entities[0]
-                query_entity_data(client, str(first_entity))
+                query_entity_data(client, first_entity)
         demonstrate_error_handling(client)
     except FlextOracleWmsError:
         logger.exception("Error in basic usage example")

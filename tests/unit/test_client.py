@@ -133,10 +133,10 @@ class TestsFlextOracleWmsClient:
             timeout=30,
         )
         client = FlextOracleWmsUtilitiesClient.Client(minimal_config)
-        assert "test.com" in str(client.settings.base_url)
+        assert "test.com" in client.settings.base_url
 
     def test_client_configuration_access(self) -> None:
         """Test access to client configuration."""
         client = FlextOracleWmsUtilitiesClient.Client(self.settings)
         assert client.settings.username == "test_user"
-        assert "test.wms.com" in str(client.settings.base_url)
+        assert "test.wms.com" in client.settings.base_url

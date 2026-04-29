@@ -12,7 +12,7 @@ from __future__ import annotations
 from collections.abc import (
     Mapping,
 )
-from typing import ClassVar
+from typing import ClassVar, override
 
 from flext_oracle_wms import (
     FlextOracleWmsSettings,
@@ -65,6 +65,7 @@ class FlextOracleWmsApi(s[bool]):
         )
         self._client = u.OracleWms.Client(settings=resolved_config)
 
+    @override
     def execute(self) -> p.Result[None]:
         """Execute Oracle WMS operations."""
         return r[None].ok(None)

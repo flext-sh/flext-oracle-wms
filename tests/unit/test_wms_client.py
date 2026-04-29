@@ -71,7 +71,7 @@ class TestsFlextOracleWmsWmsClient:
         result = client.get("/test-endpoint")
         assert result.failure
         assert result.error is not None
-        assert "GET /test-endpoint failed" in str(result.error)
+        assert "GET /test-endpoint failed" in result.error
 
     def test_post_method_success(self, monkeypatch: pytest.MonkeyPatch) -> None:
         """Test successful POST request."""

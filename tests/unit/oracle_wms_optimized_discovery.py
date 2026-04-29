@@ -437,11 +437,8 @@ class OptimizedOracleWmsDiscovery:
             stream: dict[str, t.JsonValue] = {
                 "tap_stream_id": entity_name,
                 "stream": entity_name,
-                "schema": cast(
-                    "t.JsonValue",
-                    {k: v for k, v in schema.items() if k != "key_properties"},
-                ),
-                "key_properties": cast("t.JsonValue", key_properties),
+                "schema": {k: v for k, v in schema.items() if k != "key_properties"},
+                "key_properties": key_properties,
                 "metadata": cast(
                     "t.JsonValue",
                     [
@@ -482,9 +479,9 @@ class OptimizedOracleWmsDiscovery:
             "discovery_mode": "OPTIMIZED_ADMINISTRATOR_MODE",
             "total_high_value_entities": len(self.high_value_entities),
             "schemas_generated": len(self.complete_schemas),
-            "oracle_wms_environment": str(self.settings.base_url),
-            "oracle_wms_base_url": str(self.settings.base_url),
-            "api_version": str(self.settings.api_version),
+            "oracle_wms_environment": self.settings.base_url,
+            "oracle_wms_base_url": self.settings.base_url,
+            "api_version": self.settings.api_version,
             "high_value_entities": cast(
                 "t.JsonValue", list(self.high_value_entities.keys())
             ),

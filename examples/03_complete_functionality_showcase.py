@@ -102,9 +102,9 @@ def showcase_2_entity_discovery(client: FlextOracleWmsClient) -> list[str]:
     if not entities_result.success:
         return []
     entity_dicts = entities_result.value or []
-    entities: list[str] = [str(entity) for entity in entity_dicts]
+    entities: list[str] = list(entity_dicts)
     batch_size_val = c.OracleWms.PROCESSING_CONFIG.get("default_batch_size", 100)
-    max_entities_to_show = int(batch_size_val) // 5
+    max_entities_to_show = batch_size_val // 5
     _entity_preview = entities[:max_entities_to_show]
     sample_entities = {
         "Core Entities": ["company", "facility", "item", "location"],
