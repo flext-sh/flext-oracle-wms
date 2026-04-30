@@ -384,9 +384,27 @@ root = "tests"
 
 # [MANAGED] pytest
 [tool.pytest.ini_options]
-addopts = [ "--markdown-docs", "--strict-markers" ]
+addopts = [
+  "--cov-report=term-missing:skip-covered",
+  "--cov=.",
+  "--durations=10",
+  "--ignore-glob=*/tests/_constants/*",
+  "--ignore-glob=*/tests/_models/*",
+  "--ignore-glob=*/tests/_protocols/*",
+  "--ignore-glob=*/tests/_typings/*",
+  "--ignore-glob=*/tests/_utilities/*",
+  "--ignore-glob=*/tests/constants.py",
+  "--ignore-glob=*/tests/models.py",
+  "--ignore-glob=*/tests/protocols.py",
+  "--ignore-glob=*/tests/typings.py",
+  "--ignore-glob=*/tests/utilities.py",
+  "--markdown-docs",
+  "--strict-markers",
+]
 filterwarnings = [
   "error",
+  "ignore:.*TestsFlextBad.*:flext_core.FlextMroViolation",
+  "ignore:.*cannot collect test class.*because it has a __init__ constructor.*:pytest.PytestCollectionWarning",
   "ignore::UserWarning:flext_api",
   "ignore::UserWarning:flext_web",
   "ignore::flext_core._constants.enforcement.FlextMroViolation",
