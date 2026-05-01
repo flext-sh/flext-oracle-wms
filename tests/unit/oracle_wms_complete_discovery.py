@@ -14,9 +14,7 @@ from __future__ import annotations
 
 import json
 from collections.abc import (
-    Mapping,
     MutableSequence,
-    Sequence,
 )
 from datetime import UTC, datetime
 from pathlib import Path
@@ -72,7 +70,7 @@ class OracleWmsCompleteDiscovery:
         self,
     ) -> p.Result[bool]:
         """Discover and test ALL 22+ Oracle WMS APIs."""
-        all_apis: Mapping[str, m.OracleWms.ApiEndpoint] = (
+        all_apis: t.MappingKV[str, m.OracleWms.ApiEndpoint] = (
             FlextOracleWmsApi.FLEXT_ORACLE_WMS_APIS
         )
         for api_name, api_endpoint in all_apis.items():
@@ -322,7 +320,7 @@ class OracleWmsCompleteDiscovery:
             if not entity_result.success:
                 entities_with_errors.append((entity_name, str(entity_result.error)))
                 return
-            records: Sequence[t.StrMapping] = entity_result.value
+            records: t.SequenceOf[t.StrMapping] = entity_result.value
             count = len(records) if records else 0
             metadata_info = self._create_metadata_info(entity_name, count, records)
             metadata_results[entity_name] = cast("t.JsonValue", metadata_info)
@@ -337,7 +335,7 @@ class OracleWmsCompleteDiscovery:
         self,
         entity_name: str,
         count: int,
-        results: Sequence[t.StrMapping],
+        results: t.SequenceOf[t.StrMapping],
     ) -> t.MutableJsonMapping:
         """Create metadata info dict for an entity."""
         fields: MutableSequence[str] = []
@@ -409,7 +407,7 @@ class OracleWmsCompleteDiscovery:
                         return tc
                 return 0
 
-            sorted_entities: Sequence[tuple[str, t.JsonValue]] = sorted(
+            sorted_entities: t.SequenceOf[tuple[str, t.JsonValue]] = sorted(
                 [
                     (name, metadata_results[name])
                     for name in entities_with_data
@@ -517,7 +515,7 @@ class OracleWmsCompleteDiscovery:
                 return {"type": ["object", "null"]}
             if isinstance(sample_value, list):
                 return {"type": ["array", "null"]}
-        type_mapping: Mapping[str, t.JsonMapping] = {
+        type_mapping: t.MappingKV[str, t.JsonMapping] = {
             "int": {"type": ["integer", "null"]},
             "float": {"type": ["number", "null"]},
             "str": {"type": ["string", "null"]},

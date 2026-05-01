@@ -8,9 +8,6 @@ integration using the ACTUAL API that exists and functions properly.
 from __future__ import annotations
 
 import os
-from collections.abc import (
-    Mapping,
-)
 from enum import StrEnum, unique
 from pathlib import Path
 from typing import ClassVar
@@ -57,7 +54,7 @@ class WmsEnvironmentConfig(m.BaseModel):
     max_retries: int = u.Field(ge=0, description="Maximum retry attempts")
 
 
-def get_environment_configs() -> Mapping[Environment, WmsEnvironmentConfig]:
+def get_environment_configs() -> t.MappingKV[Environment, WmsEnvironmentConfig]:
     """Define environment-specific Oracle WMS configurations."""
     return {
         Environment.DEVELOPMENT: WmsEnvironmentConfig(

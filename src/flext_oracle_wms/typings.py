@@ -6,11 +6,6 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from collections.abc import (
-    Mapping,
-    Sequence,
-)
-
 from flext_api import m, t
 
 
@@ -26,26 +21,26 @@ class FlextOracleWmsTypes(t):
         )
 
         type FilterScalar = t.Scalar | None
-        type FilterList = Sequence[FlextOracleWmsTypes.OracleWms.FilterScalar]
+        type FilterList = t.SequenceOf[FlextOracleWmsTypes.OracleWms.FilterScalar]
         type FilterRecordValue = (
             FlextOracleWmsTypes.OracleWms.FilterScalar
             | FlextOracleWmsTypes.OracleWms.FilterList
-            | Mapping[
+            | t.MappingKV[
                 str,
                 FlextOracleWmsTypes.OracleWms.FilterScalar
                 | FlextOracleWmsTypes.OracleWms.FilterList
-                | Mapping[
+                | t.MappingKV[
                     str,
                     FlextOracleWmsTypes.OracleWms.FilterScalar
                     | FlextOracleWmsTypes.OracleWms.FilterList,
                 ],
             ]
         )
-        type FilterRecord = Mapping[
+        type FilterRecord = t.MappingKV[
             str,
             FlextOracleWmsTypes.OracleWms.FilterScalar
             | FlextOracleWmsTypes.OracleWms.FilterList
-            | Mapping[
+            | t.MappingKV[
                 str,
                 FlextOracleWmsTypes.OracleWms.FilterScalar
                 | FlextOracleWmsTypes.OracleWms.FilterList,
@@ -54,11 +49,11 @@ class FlextOracleWmsTypes(t):
         type NestedFilterValue = (
             FlextOracleWmsTypes.OracleWms.FilterScalar
             | FlextOracleWmsTypes.OracleWms.FilterList
-            | Mapping[
+            | t.MappingKV[
                 str,
                 FlextOracleWmsTypes.OracleWms.FilterScalar
                 | FlextOracleWmsTypes.OracleWms.FilterList
-                | Mapping[
+                | t.MappingKV[
                     str,
                     FlextOracleWmsTypes.OracleWms.FilterScalar
                     | FlextOracleWmsTypes.OracleWms.FilterList,

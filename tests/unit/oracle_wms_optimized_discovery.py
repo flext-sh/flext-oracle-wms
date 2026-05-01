@@ -15,9 +15,6 @@ from __future__ import annotations
 
 import json
 import time
-from collections.abc import (
-    Mapping,
-)
 from datetime import UTC, datetime
 from pathlib import Path
 from typing import cast
@@ -427,7 +424,7 @@ class OptimizedOracleWmsDiscovery:
 
     def _generate_singer_catalog(
         self,
-        schemas: Mapping[str, dict[str, t.JsonValue]],
+        schemas: t.MappingKV[str, dict[str, t.JsonValue]],
     ) -> dict[str, t.JsonValue]:
         """Generate Singer catalog from schemas."""
         streams: list[dict[str, t.JsonValue]] = []

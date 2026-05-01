@@ -11,7 +11,6 @@ from __future__ import annotations
 
 from collections.abc import (
     MutableSequence,
-    Sequence,
 )
 from typing import Annotated, ClassVar
 
@@ -169,14 +168,14 @@ class FlextOracleWmsModels(m):
 
             model_config: ClassVar[m.ConfigDict] = m.ConfigDict(extra="ignore")
 
-            apis: Sequence[t.StrMapping] = u.Field(default_factory=tuple)
+            apis: t.SequenceOf[t.StrMapping] = u.Field(default_factory=tuple)
 
         class EntityDataResponse(m.BaseModel):
             """Oracle WMS entity data response."""
 
             model_config: ClassVar[m.ConfigDict] = m.ConfigDict(extra="ignore")
 
-            data: Sequence[t.StrMapping] = u.Field(default_factory=tuple)
+            data: t.SequenceOf[t.StrMapping] = u.Field(default_factory=tuple)
 
         # =====================================================================
         # DOMAIN ENTITIES - Composed DDD patterns
@@ -225,7 +224,7 @@ class FlextOracleWmsModels(m):
                 u.Field(description="Total order amount"),
             ] = 0.0
             items: Annotated[
-                Sequence[t.JsonMapping],
+                t.SequenceOf[t.JsonMapping],
                 u.Field(description="Order items"),
             ] = u.Field(default_factory=tuple)
 
@@ -252,7 +251,7 @@ class FlextOracleWmsModels(m):
             wave_id: Annotated[str, u.Field(description="Wave identifier")] = ""
             status: Annotated[str, u.Field(description="Task status")] = "pending"
             items: Annotated[
-                Sequence[t.JsonMapping],
+                t.SequenceOf[t.JsonMapping],
                 u.Field(description="Task items"),
             ] = u.Field(default_factory=tuple)
 
@@ -306,7 +305,7 @@ class FlextOracleWmsModels(m):
             id: Annotated[str, u.Field(description="Warehouse identifier")]
             name: Annotated[str, u.Field(description="Warehouse name")]
             locations: Annotated[
-                Sequence[FlextOracleWmsModels.OracleWms.WarehouseLocation],
+                t.SequenceOf[FlextOracleWmsModels.OracleWms.WarehouseLocation],
                 u.Field(description="Warehouse locations"),
             ] = u.Field(default_factory=tuple)
             inventory: Annotated[

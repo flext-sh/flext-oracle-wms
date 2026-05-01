@@ -9,7 +9,6 @@ from __future__ import annotations
 
 import json
 from collections.abc import (
-    Mapping,
     MutableMapping,
     MutableSequence,
 )
@@ -375,7 +374,7 @@ class FocusedOracleWmsDiscovery:
         keys: MutableSequence[str] = []
         if "id" in fields:
             keys.append("id")
-        entity_keys: Mapping[str, list[str]] = {
+        entity_keys: t.MappingKV[str, list[str]] = {
             "company": ["code", "company_code"],
             "facility": ["code", "facility_code"],
             "item": ["code", "item_code"],

@@ -14,10 +14,6 @@ from __future__ import annotations
 
 import json
 import uuid
-from collections.abc import (
-    Mapping,
-    Sequence,
-)
 from datetime import UTC, datetime
 from pathlib import Path
 from typing import cast
@@ -383,7 +379,7 @@ class CompleteMockPipeline:
         field: str,
     ) -> t.AttributeMapping | None:
         """Infer type from field name patterns - Template Method Pattern."""
-        field_type_mapping: Mapping[str, t.AttributeMapping] = {
+        field_type_mapping: t.MappingKV[str, t.AttributeMapping] = {
             "id": {"type": "integer"},
             "_code": {"type": ["string", "null"]},
             "_ts": {"type": ["string", "null"], "format": "date-time"},
@@ -523,7 +519,7 @@ class CompleteMockPipeline:
 
     def _simulate_target_loading(
         self,
-        tap_records: Sequence[dict[str, t.JsonValue]],
+        tap_records: t.SequenceOf[dict[str, t.JsonValue]],
     ) -> dict[str, t.JsonValue]:
         """Simulate TARGET loading process."""
         target_results: dict[str, t.JsonValue] = {}
@@ -553,7 +549,7 @@ class CompleteMockPipeline:
         target_results: t.JsonMapping,
     ) -> t.JsonMapping:
         """Simulate DBT transformation process."""
-        dbt_results: dict[str, Mapping[str, int | t.StrSequence | str]] = {}
+        dbt_results: dict[str, t.MappingKV[str, int | t.StrSequence | str]] = {}
         business_models = {
             "dim_company": {
                 "source_tables": ["raw_oracle_wms_company"],
@@ -642,7 +638,7 @@ class CompleteMockPipeline:
         self,
         schemas: t.JsonMapping,
         catalog: t.JsonMapping,
-        tap_records: Sequence[t.JsonMapping],
+        tap_records: t.SequenceOf[t.JsonMapping],
         target_results: t.JsonMapping,
         dbt_results: t.JsonMapping,
     ) -> p.Result[str]:

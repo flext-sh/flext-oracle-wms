@@ -18,11 +18,6 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from collections.abc import (
-    Mapping,
-    Sequence,
-)
-
 import pytest
 
 from flext_oracle_wms import (
@@ -69,7 +64,7 @@ class TestsFlextOracleWmsFiltering:
 
     def test_filter_with_initial_filters(self) -> None:
         """Test filter creation with initial filters dict."""
-        filters: Mapping[str, t.OracleWms.FilterScalar | t.OracleWms.FilterList] = {
+        filters: t.MappingKV[str, t.OracleWms.FilterScalar | t.OracleWms.FilterList] = {
             "status": "active",
         }
         filter_engine = FlextOracleWmsUtilitiesFiltering.Filter(
@@ -79,7 +74,7 @@ class TestsFlextOracleWmsFiltering:
 
     def test_filter_with_too_many_initial_filters(self) -> None:
         """Test filter creation raises when initial filters exceed max_conditions."""
-        filters: Mapping[str, t.OracleWms.FilterScalar] = {
+        filters: t.MappingKV[str, t.OracleWms.FilterScalar] = {
             "field1": "v1",
             "field2": "v2",
             "u.field3": "v3",
@@ -105,7 +100,7 @@ class TestsFlextOracleWmsFiltering:
     def test_validate_filter_conditions_exceeds_limit(self) -> None:
         """Test validation fails when conditions exceed limit."""
         filter_engine = FlextOracleWmsUtilitiesFiltering.Filter(max_conditions=2)
-        filters: Mapping[str, t.OracleWms.FilterScalar | t.OracleWms.FilterList] = {
+        filters: t.MappingKV[str, t.OracleWms.FilterScalar | t.OracleWms.FilterList] = {
             "field1": "value1",
             "field2": "value2",
             "u.field3": "value3",
@@ -117,14 +112,14 @@ class TestsFlextOracleWmsFiltering:
     def test_validate_filter_list_values_count_correctly(self) -> None:
         """Test that list filter values are counted by length."""
         filter_engine = FlextOracleWmsUtilitiesFiltering.Filter(max_conditions=2)
-        filters: Mapping[str, t.OracleWms.FilterScalar | t.OracleWms.FilterList] = {
+        filters: t.MappingKV[str, t.OracleWms.FilterScalar | t.OracleWms.FilterList] = {
             "status": ["a", "b", "c"],
         }
         result = filter_engine._validate_filters(filters)
         assert result.failure
 
     @property
-    def sample_records(self) -> Sequence[t.OracleWms.FilterRecord]:
+    def sample_records(self) -> t.SequenceOf[t.OracleWms.FilterRecord]:
         """Sample records for testing."""
         return [
             {"id": 1, "name": "Company A", "status": "active", "score": 85.5},
@@ -134,7 +129,7 @@ class TestsFlextOracleWmsFiltering:
         ]
 
     @property
-    def nested_records(self) -> Sequence[t.OracleWms.FilterRecord]:
+    def nested_records(self) -> t.SequenceOf[t.OracleWms.FilterRecord]:
         """Nested records for testing dot notation."""
         records: list[t.OracleWms.FilterRecord] = [
             {
@@ -169,7 +164,7 @@ class TestsFlextOracleWmsFiltering:
         filter_engine = FlextOracleWmsUtilitiesFiltering.Filter(
             case_sensitive=False, max_conditions=50
         )
-        filters: Mapping[str, t.OracleWms.FilterScalar | t.OracleWms.FilterList] = {
+        filters: t.MappingKV[str, t.OracleWms.FilterScalar | t.OracleWms.FilterList] = {
             "status": "active",
         }
         result = filter_engine.filter_records(self.sample_records, filters)
@@ -182,7 +177,7 @@ class TestsFlextOracleWmsFiltering:
         filter_engine = FlextOracleWmsUtilitiesFiltering.Filter(
             case_sensitive=False, max_conditions=50
         )
-        filters: Mapping[str, t.OracleWms.FilterScalar | t.OracleWms.FilterList] = {
+        filters: t.MappingKV[str, t.OracleWms.FilterScalar | t.OracleWms.FilterList] = {
             "status": ["active", "pending"],
         }
         result = filter_engine.filter_records(self.sample_records, filters)
@@ -195,7 +190,7 @@ class TestsFlextOracleWmsFiltering:
         filter_engine = FlextOracleWmsUtilitiesFiltering.Filter(
             case_sensitive=False, max_conditions=50
         )
-        filters: Mapping[str, t.OracleWms.FilterScalar | t.OracleWms.FilterList] = {
+        filters: t.MappingKV[str, t.OracleWms.FilterScalar | t.OracleWms.FilterList] = {
             "id": 2
         }
         result = filter_engine.filter_records(self.sample_records, filters)
@@ -209,7 +204,7 @@ class TestsFlextOracleWmsFiltering:
         filter_engine = FlextOracleWmsUtilitiesFiltering.Filter(
             case_sensitive=False, max_conditions=50
         )
-        filters: Mapping[str, t.OracleWms.FilterScalar | t.OracleWms.FilterList] = {
+        filters: t.MappingKV[str, t.OracleWms.FilterScalar | t.OracleWms.FilterList] = {
             "status": "active",
         }
         result = filter_engine.filter_records(self.sample_records, filters, limit=1)
@@ -222,7 +217,7 @@ class TestsFlextOracleWmsFiltering:
         filter_engine = FlextOracleWmsUtilitiesFiltering.Filter(
             case_sensitive=False, max_conditions=50
         )
-        filters: Mapping[str, t.OracleWms.FilterScalar | t.OracleWms.FilterList] = {
+        filters: t.MappingKV[str, t.OracleWms.FilterScalar | t.OracleWms.FilterList] = {
             "status": "nonexistent",
         }
         result = filter_engine.filter_records(self.sample_records, filters)
@@ -234,7 +229,7 @@ class TestsFlextOracleWmsFiltering:
         filter_engine = FlextOracleWmsUtilitiesFiltering.Filter(
             case_sensitive=False, max_conditions=50
         )
-        filters: Mapping[str, t.OracleWms.FilterScalar | t.OracleWms.FilterList] = {
+        filters: t.MappingKV[str, t.OracleWms.FilterScalar | t.OracleWms.FilterList] = {
             "status": "ACTIVE",
         }
         result = filter_engine.filter_records(self.sample_records, filters)
@@ -246,7 +241,7 @@ class TestsFlextOracleWmsFiltering:
         filter_engine = FlextOracleWmsUtilitiesFiltering.Filter(
             case_sensitive=True, max_conditions=50
         )
-        filters: Mapping[str, t.OracleWms.FilterScalar | t.OracleWms.FilterList] = {
+        filters: t.MappingKV[str, t.OracleWms.FilterScalar | t.OracleWms.FilterList] = {
             "status": "ACTIVE",
         }
         result = filter_engine.filter_records(self.sample_records, filters)
@@ -258,7 +253,7 @@ class TestsFlextOracleWmsFiltering:
         filter_engine = FlextOracleWmsUtilitiesFiltering.Filter(
             case_sensitive=False, max_conditions=50
         )
-        filters: Mapping[str, m.OracleWms.FlextOracleWmsOperatorFilter] = {
+        filters: t.MappingKV[str, m.OracleWms.FlextOracleWmsOperatorFilter] = {
             "status": m.OracleWms.FlextOracleWmsOperatorFilter(
                 operator="ne", value="inactive"
             ),
@@ -270,7 +265,7 @@ class TestsFlextOracleWmsFiltering:
     def test_filter_records_exceeds_condition_limit(self) -> None:
         """Test filtering fails when conditions exceed limit."""
         filter_engine = FlextOracleWmsUtilitiesFiltering.Filter(max_conditions=2)
-        filters: Mapping[str, t.OracleWms.FilterScalar | t.OracleWms.FilterList] = {
+        filters: t.MappingKV[str, t.OracleWms.FilterScalar | t.OracleWms.FilterList] = {
             "status": ["a", "b", "c"],
         }
         result = filter_engine.filter_records(self.sample_records, filters)
@@ -278,7 +273,7 @@ class TestsFlextOracleWmsFiltering:
         assert result.error is not None and "Too many" in result.error
 
     @property
-    def unsorted_records(self) -> Sequence[t.OracleWms.FilterRecord]:
+    def unsorted_records(self) -> t.SequenceOf[t.OracleWms.FilterRecord]:
         """Unsorted records for testing."""
         return [
             {"id": 3, "name": "Charlie", "score": 75.5},
@@ -333,7 +328,7 @@ class TestsFlextOracleWmsFiltering:
 
     def test_sort_records_with_none_values(self) -> None:
         """Test sorting records with None values."""
-        records_with_none: Sequence[t.OracleWms.FilterRecord] = [
+        records_with_none: t.SequenceOf[t.OracleWms.FilterRecord] = [
             {"id": 1, "name": "Alice", "score": None},
             {"id": 2, "name": "Bob", "score": 85.0},
             {"id": 3, "name": None, "score": 90.0},
@@ -723,7 +718,7 @@ class TestsFlextOracleWmsFiltering:
 
     def test_filter_records_validation_failure(self) -> None:
         filter_engine = FlextOracleWmsUtilitiesFiltering.Filter(max_conditions=1)
-        filters: Mapping[str, t.OracleWms.FilterScalar | t.OracleWms.FilterList] = {
+        filters: t.MappingKV[str, t.OracleWms.FilterScalar | t.OracleWms.FilterList] = {
             "a": "1",
             "b": "2",
         }
@@ -740,7 +735,7 @@ class TestsFlextOracleWmsFiltering:
 
     def test_filter_large_record_set(self) -> None:
         """Test filtering with large record set."""
-        large_records: Sequence[t.OracleWms.FilterRecord] = [
+        large_records: t.SequenceOf[t.OracleWms.FilterRecord] = [
             {"id": i, "status": "active" if i % 2 == 0 else "inactive"}
             for i in range(1000)
         ]
@@ -758,7 +753,7 @@ class TestsFlextOracleWmsFiltering:
 
     def test_filter_with_complex_nested_data(self) -> None:
         """Test filtering with nested data structures."""
-        complex_records: Sequence[t.OracleWms.FilterRecord] = [
+        complex_records: t.SequenceOf[t.OracleWms.FilterRecord] = [
             {"id": 1, "category": "target", "subcategory": "A"},
             {"id": 2, "category": "other", "subcategory": "B"},
         ]
