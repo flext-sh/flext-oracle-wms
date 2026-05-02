@@ -233,7 +233,6 @@ class FlextOracleWmsConstants(c):
 
             MAX_ENTITY_NAME_LENGTH: ClassVar[int] = 100
             ENTITY_NAME_PATTERN: ClassVar[str] = "^[a-zA-Z][a-zA-Z0-9_]*$"
-            TYPES: ClassVar[tuple[str, ...]]
 
         class WmsProcessing:
             """WMS processing constants - domain-specific."""
