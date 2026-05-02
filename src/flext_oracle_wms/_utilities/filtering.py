@@ -215,7 +215,7 @@ class FlextOracleWmsUtilitiesFiltering:
                 )
             except Exception as exc:
                 self.logger.exception("Sort failed")
-                return r[Sequence[t.OracleWms.FilterRecord]].fail(f"Sort failed: {exc}")
+                return r[Sequence[t.OracleWms.FilterRecord]].fail_op("Sort", exc)
 
         def _apply_operator(
             self,

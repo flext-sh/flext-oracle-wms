@@ -53,9 +53,7 @@ class FlextOracleWmsUtilitiesAuth:
             """Get authentication headers."""
             auth_result = self.authenticate()
             if auth_result.failure:
-                return r[t.StrMapping].fail(
-                    f"Authentication failed: {auth_result.error}"
-                )
+                return r[t.StrMapping].fail_op("Authentication", auth_result.error)
             token = auth_result.value
             basic_method = str(c.OracleWms.OracleWMSAuthMethod.BASIC)
             auth_scheme = (
