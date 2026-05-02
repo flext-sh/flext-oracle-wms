@@ -168,8 +168,8 @@ class FlextOracleWmsUtilitiesHttpClient:
                 })
                 response_result = self._client.request(request)
                 if response_result.failure:
-                    return r[t.JsonMapping].fail(
-                        f"HTTP request failed: {response_result.error}",
+                    return r[t.JsonMapping].fail_op(
+                        "HTTP request", response_result.error,
                     )
                 response = response_result.value
                 if response.status_code >= self.HTTP_BAD_REQUEST_THRESHOLD:
