@@ -252,7 +252,7 @@ class FlextOracleWmsUtilitiesHttpClient:
                                 payload
                             )
                         )
-                    except (c.ValidationError, ValueError) as exc:
+                    except c.EXC_VALIDATION_VALUE as exc:
                         return r[t.JsonMapping].fail(f"Response parse error: {exc}")
                 case str() as raw if raw:
                     try:
@@ -261,7 +261,7 @@ class FlextOracleWmsUtilitiesHttpClient:
                                 raw
                             )
                         )
-                    except (c.ValidationError, ValueError) as exc:
+                    except c.EXC_VALIDATION_VALUE as exc:
                         return r[t.JsonMapping].fail(f"Response parse error: {exc}")
                 case bytes() as raw_bytes:
                     try:
@@ -270,7 +270,7 @@ class FlextOracleWmsUtilitiesHttpClient:
                                 raw_bytes
                             )
                         )
-                    except (c.ValidationError, ValueError) as exc:
+                    except c.EXC_VALIDATION_VALUE as exc:
                         return r[t.JsonMapping].fail(f"Response parse error: {exc}")
                 case _:
                     return r[t.JsonMapping].fail(
