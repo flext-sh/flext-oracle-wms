@@ -211,23 +211,6 @@ class FlextOracleWmsModels(m):
         # VALUE OBJECTS - Immutable domain values
         # =====================================================================
 
-        class WarehouseLocation(m.BaseModel):
-            """Warehouse location value object."""
-
-            model_config: ClassVar[m.ConfigDict] = m.ConfigDict(
-                frozen=True, extra="forbid"
-            )
-
-            aisle: Annotated[str, u.Field(description="Aisle identifier")]
-            shelf: Annotated[str, u.Field(description="Shelf identifier")]
-            bin_: Annotated[str, u.Field(description="Bin identifier")]
-            zone: Annotated[str, u.Field(description="Zone identifier")] = ""
-
-            @property
-            def full_location(self) -> str:
-                """Get full location string."""
-                return f"{self.zone}-{self.aisle}-{self.shelf}-{self.bin_}"
-
         # =====================================================================
         # AGGREGATE ROOTS - Consistency boundaries
         # =====================================================================

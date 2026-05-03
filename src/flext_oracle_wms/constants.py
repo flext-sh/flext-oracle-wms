@@ -150,20 +150,6 @@ class FlextOracleWmsConstants(c):
 
             MAX_FILTER_CONDITIONS: ClassVar[int] = 50
 
-        class ResponseFields:
-            """Response fields - composed pattern."""
-
-            FIELDS: ClassVar[t.StrMapping] = MappingProxyType({
-                "result_count": "result_count",
-                "results": "results",
-                "data": "data",
-                "total_count": "total_count",
-                "page_number": "page_number",
-                "page_count": "page_count",
-                "next_page": "next_page",
-                "previous_page": "previous_page",
-            })
-
         class Authentication:
             """Auth constants - minimal."""
 
