@@ -53,7 +53,6 @@ class FlextOracleWmsConstants(c):
         DEFAULT_TIMEOUT: Final[int] = c.DEFAULT_TIMEOUT_SECONDS
         DEFAULT_MAX_RETRIES: Final[int] = c.MAX_RETRY_ATTEMPTS
         DEFAULT_RETRY_DELAY: Final[int] = c.DEFAULT_RETRY_DELAY_SECONDS
-        MAX_POOL_SIZE: Final[int] = c.HTTP_STATUS_MIN
 
         @unique
         class WmsFilterOperator(StrEnum):
