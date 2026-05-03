@@ -244,38 +244,33 @@ class FlextOracleWmsUtilitiesHttpClient:
             body: t.Api.ResponseBody,
         ) -> p.Result[t.JsonMapping]:
             """Parse response body; propagates parse failure via result."""
-            match body:
-                case dict() as payload:
-                    try:
-                        return r[t.JsonMapping].ok(
+            try:
+                match body:
+                    case dict() as payload:
+                        parsed = (
                             t.OracleWms.CONTAINER_VALUE_MAPPING_ADAPTER.validate_python(
-                                payload
+                                payload,
                             )
                         )
-                    except c.EXC_VALIDATION_VALUE as exc:
-                        return r[t.JsonMapping].fail(f"Response parse error: {exc}")
-                case str() as raw if raw:
-                    try:
-                        return r[t.JsonMapping].ok(
+                    case str() as raw if raw:
+                        parsed = (
                             t.OracleWms.CONTAINER_VALUE_MAPPING_ADAPTER.validate_json(
-                                raw
+                                raw,
                             )
                         )
-                    except c.EXC_VALIDATION_VALUE as exc:
-                        return r[t.JsonMapping].fail(f"Response parse error: {exc}")
-                case bytes() as raw_bytes:
-                    try:
-                        return r[t.JsonMapping].ok(
+                    case bytes() as raw_bytes:
+                        parsed = (
                             t.OracleWms.CONTAINER_VALUE_MAPPING_ADAPTER.validate_json(
-                                raw_bytes
+                                raw_bytes,
                             )
                         )
-                    except c.EXC_VALIDATION_VALUE as exc:
-                        return r[t.JsonMapping].fail(f"Response parse error: {exc}")
-                case _:
-                    return r[t.JsonMapping].fail(
-                        f"Unsupported response body type: {type(body)}"
-                    )
+                    case _:
+                        return r[t.JsonMapping].fail(
+                            f"Unsupported response body type: {type(body)}"
+                        )
+                return r[t.JsonMapping].ok(parsed)
+            except c.EXC_VALIDATION_VALUE as exc:
+                return r[t.JsonMapping].fail(f"Response parse error: {exc}")
 
         @staticmethod
         def create(
