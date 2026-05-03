@@ -56,78 +56,6 @@ class FlextOracleWmsConstants(c):
         MAX_POOL_SIZE: Final[int] = c.HTTP_STATUS_MIN
 
         @unique
-        class WmsEntityType(StrEnum):
-            """Entity types.
-
-            DRY Pattern: This StrEnum is the single source of truth for WMS entity types.
-            All entity type-related constants and Literal types MUST reference this enum.
-            """
-
-            INVENTORY = "inventory"
-            ORDERS = "orders"
-            SHIPMENTS = "shipments"
-            PICKING = "picking"
-            LOCATIONS = "locations"
-            ITEMS = "items"
-            PRODUCTS = "products"
-            WAREHOUSES = "warehouses"
-
-        @unique
-        class WmsApiVersion(StrEnum):
-            """API versions.
-
-            DRY Pattern: This StrEnum is the single source of truth for WMS API versions.
-            All API version-related constants and Literal types MUST reference this enum.
-            """
-
-            V1 = "v1"
-            V2 = "v2"
-            V3 = "v3"
-            LEGACY = "legacy"
-
-        @unique
-        class WmsApiCategory(StrEnum):
-            """API categories.
-
-            DRY Pattern: This StrEnum is the single source of truth for WMS API categories.
-            All API category-related constants and Literal types MUST reference this enum.
-            """
-
-            INVENTORY = "inventory"
-            ORDERS = "orders"
-            SHIPPING = "shipping"
-            RECEIVING = "receiving"
-            REPORTING = "reporting"
-
-        @unique
-        class WmsOperationStatus(StrEnum):
-            """Operation status values.
-
-            DRY Pattern: This StrEnum is the single source of truth for WMS operation statuses.
-            All operation status-related constants and Literal types MUST reference this enum.
-            """
-
-            PENDING = "pending"
-            RUNNING = "running"
-            SUCCESS = "success"
-            ERROR = "error"
-            TIMEOUT = "timeout"
-            CANCELLED = "cancelled"
-
-        @unique
-        class WmsDataQuality(StrEnum):
-            """Data quality levels.
-
-            DRY Pattern: This StrEnum is the single source of truth for WMS data quality levels.
-            All data quality-related constants and Literal types MUST reference this enum.
-            """
-
-            HIGH = "high"
-            MEDIUM = "medium"
-            LOW = "low"
-            UNKNOWN = "unknown"
-
-        @unique
         class WmsFilterOperator(StrEnum):
             """Filter operators.
 
@@ -146,31 +74,6 @@ class FlextOracleWmsConstants(c):
             CONTAINS = "contains"
             STARTS_WITH = "starts_with"
             ENDS_WITH = "ends_with"
-
-        @unique
-        class WmsPageMode(StrEnum):
-            """Page modes.
-
-            DRY Pattern: This StrEnum is the single source of truth for WMS page modes.
-            All page mode-related constants and Literal types MUST reference this enum.
-            """
-
-            APPEND = "append"
-            REPLACE = "replace"
-            MERGE = "merge"
-
-        @unique
-        class WmsWriteMode(StrEnum):
-            """Write modes.
-
-            DRY Pattern: This StrEnum is the single source of truth for WMS write modes.
-            All write mode-related constants and Literal types MUST reference this enum.
-            """
-
-            INSERT = "insert"
-            UPDATE = "update"
-            UPSERT = "upsert"
-            DELETE = "delete"
 
         @unique
         class EndpointDiscoveryStrategy(StrEnum):
@@ -247,17 +150,6 @@ class FlextOracleWmsConstants(c):
 
             MAX_FILTER_CONDITIONS: ClassVar[int] = 50
 
-        class ErrorMessages:
-            """Error messages - composed dict pattern."""
-
-            MESSAGES: ClassVar[t.StrMapping] = MappingProxyType({
-                "entity_validation_failed": "Entity validation failed",
-                "discovery_failed": "Entity discovery failed",
-                "invalid_response": "Invalid API response",
-                "connection_failed": "Connection to WMS failed",
-                "authentication_failed": "Authentication failed",
-            })
-
         class ResponseFields:
             """Response fields - composed pattern."""
 
@@ -277,25 +169,6 @@ class FlextOracleWmsConstants(c):
 
             MIN_TOKEN_LENGTH: ClassVar[int] = 10
             MIN_API_KEY_LENGTH: ClassVar[int] = 20
-
-        class WmsPagination:
-            """Pagination constants."""
-
-            DEFAULT_PAGE_SIZE: ClassVar[int] = 100
-
-            class Method:
-                """HTTP method constants inherited from flext-api canonical API constants."""
-
-                GET: Final[str] = c.Api.Method.GET
-                POST: Final[str] = c.Api.Method.POST
-                PUT: Final[str] = c.Api.Method.PUT
-                DELETE: Final[str] = c.Api.Method.DELETE
-
-            CONFIG: ClassVar[t.IntMapping] = MappingProxyType({
-                "default_timeout": 60,
-                "min_http_status_code": 200,
-                "max_http_status_code": 599,
-            })
 
 
 c = FlextOracleWmsConstants

@@ -9,9 +9,6 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from collections.abc import (
-    MutableSequence,
-)
 from typing import Annotated, ClassVar
 
 from flext_api import m, u
@@ -85,32 +82,6 @@ class FlextOracleWmsModels(m):
                     return r[bool].fail("Entity name is too long")
                 if not self.endpoint:
                     return r[bool].fail("Entity endpoint is required")
-                return r[bool].ok(True)
-
-        class ApiResponse(m.BaseModel):
-            """Oracle WMS API response model."""
-
-            data: Annotated[
-                t.JsonMapping,
-                u.Field(description="Response data"),
-            ] = u.Field(default_factory=dict)
-            status_code: Annotated[
-                t.HttpStatusCode,
-                u.Field(description="HTTP status code"),
-            ] = 200
-            success: Annotated[
-                bool,
-                u.Field(description="Whether request succeeded"),
-            ] = True
-            error_message: Annotated[
-                str | None,
-                u.Field(description="Error message if any"),
-            ] = None
-
-            def validate_response(self) -> p.Result[bool]:
-                """Validate response state."""
-                if not self.success and not self.error_message:
-                    return r[bool].fail("Failed response must include error message")
                 return r[bool].ok(True)
 
         class ApiEndpoint(m.BaseModel):
@@ -211,23 +182,6 @@ class FlextOracleWmsModels(m):
             ] = ""
             status: Annotated[str, u.Field(description="Item status")] = "active"
 
-        class Order(WmsEntity):
-            """Order domain entity."""
-
-            customer_id: Annotated[
-                str,
-                u.Field(description="Customer identifier"),
-            ] = ""
-            status: Annotated[str, u.Field(description="Order status")] = "pending"
-            total_amount: Annotated[
-                t.NonNegativeFloat,
-                u.Field(description="Total order amount"),
-            ] = 0.0
-            items: Annotated[
-                t.SequenceOf[t.JsonMapping],
-                u.Field(description="Order items"),
-            ] = u.Field(default_factory=tuple)
-
         class Shipment(WmsEntity):
             """Shipment domain entity."""
 
@@ -244,16 +198,6 @@ class FlextOracleWmsModels(m):
                 str | None,
                 u.Field(description="Shipment tracking number"),
             ] = None
-
-        class PickingTask(WmsEntity):
-            """Picking task domain entity."""
-
-            wave_id: Annotated[str, u.Field(description="Wave identifier")] = ""
-            status: Annotated[str, u.Field(description="Task status")] = "pending"
-            items: Annotated[
-                t.SequenceOf[t.JsonMapping],
-                u.Field(description="Task items"),
-            ] = u.Field(default_factory=tuple)
 
         class Location(WmsEntity):
             """Location domain entity."""
@@ -284,43 +228,9 @@ class FlextOracleWmsModels(m):
                 """Get full location string."""
                 return f"{self.zone}-{self.aisle}-{self.shelf}-{self.bin_}"
 
-        class ApiCredentials(m.BaseModel):
-            """API credentials value object."""
-
-            model_config: ClassVar[m.ConfigDict] = m.ConfigDict(
-                frozen=True, extra="forbid"
-            )
-
-            username: Annotated[str, u.Field(description="API username")]
-            password: Annotated[str | None, u.Field(description="API password")] = None
-            token: Annotated[str | None, u.Field(description="API token")] = None
-
         # =====================================================================
         # AGGREGATE ROOTS - Consistency boundaries
         # =====================================================================
-
-        class WarehouseAggregate(m.AggregateRoot):
-            """Warehouse aggregate root."""
-
-            id: Annotated[str, u.Field(description="Warehouse identifier")]
-            name: Annotated[str, u.Field(description="Warehouse name")]
-            locations: Annotated[
-                t.SequenceOf[FlextOracleWmsModels.OracleWms.WarehouseLocation],
-                u.Field(description="Warehouse locations"),
-            ] = u.Field(default_factory=tuple)
-            inventory: Annotated[
-                MutableSequence[FlextOracleWmsModels.OracleWms.InventoryItem],
-                u.Field(description="Warehouse inventory items"),
-            ] = u.Field(default_factory=list)
-
-            def add_inventory(
-                self, item: FlextOracleWmsModels.OracleWms.InventoryItem
-            ) -> p.Result[bool]:
-                """Add inventory to warehouse."""
-                if any(i.sku == item.sku for i in self.inventory):
-                    return r[bool].fail("SKU already exists")
-                self.inventory.append(item)
-                return r[bool].ok(True)
 
         # =========================================================================
         # DOMAIN SERVICES - Business logic composition

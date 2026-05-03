@@ -42,30 +42,6 @@ class TestsFlextOracleWmsSchemaDynamic:
         assert "test" in envs
         assert "production" in envs
 
-    def test_wms_entity_type_values(self) -> None:
-        """Test WmsEntityType has expected members."""
-        et = c.OracleWms.WmsEntityType
-        assert et.INVENTORY == "inventory"
-        assert et.ORDERS == "orders"
-        assert et.SHIPMENTS == "shipments"
-
-    def test_wms_api_version_values(self) -> None:
-        """Test WmsApiVersion has expected members."""
-        av = c.OracleWms.WmsApiVersion
-        assert av.V1 == "v1"
-        assert av.V2 == "v2"
-        assert av.V3 == "v3"
-        assert av.LEGACY == "legacy"
-
-    def test_wms_api_category_values(self) -> None:
-        """Test WmsApiCategory has expected members."""
-        ac = c.OracleWms.WmsApiCategory
-        assert ac.INVENTORY == "inventory"
-        assert ac.ORDERS == "orders"
-        assert ac.SHIPPING == "shipping"
-        assert ac.RECEIVING == "receiving"
-        assert ac.REPORTING == "reporting"
-
     def test_wms_filter_operator_values(self) -> None:
         """Test WmsFilterOperator has expected members."""
         fo = c.OracleWms.WmsFilterOperator
@@ -73,13 +49,6 @@ class TestsFlextOracleWmsSchemaDynamic:
         assert fo.NE == "ne"
         assert fo.GT == "gt"
         assert fo.IN == "in"
-
-    def test_wms_operation_status_values(self) -> None:
-        """Test WmsOperationStatus has expected members."""
-        os_ = c.OracleWms.WmsOperationStatus
-        assert os_.PENDING == "pending"
-        assert os_.SUCCESS == "success"
-        assert os_.ERROR == "error"
 
     def test_oracle_wms_auth_method(self) -> None:
         """Test OracleWMSAuthMethod has expected members."""
@@ -99,17 +68,3 @@ class TestsFlextOracleWmsSchemaDynamic:
     def test_wms_processing_defaults(self) -> None:
         """Test processing defaults."""
         assert c.OracleWms.WmsProcessing.MAX_SCHEMA_DEPTH == 10
-
-    def test_entity_types_tuple(self) -> None:
-        """Test ENTITY_TYPES generated from StrEnum."""
-        et = tuple(c.OracleWms.WmsEntityType)
-        assert isinstance(et, tuple)
-        assert "inventory" in et
-        assert "orders" in et
-
-    def test_wms_entities_types_from_enum(self) -> None:
-        """Test WmsEntities.TYPES generated from StrEnum names."""
-        types = tuple(member.name for member in c.OracleWms.WmsEntityType)
-        assert isinstance(types, tuple)
-        assert "INVENTORY" in types
-        assert "ORDERS" in types

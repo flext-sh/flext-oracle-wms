@@ -24,7 +24,7 @@ from flext_oracle_wms import (
     FlextOracleWmsSettings,
     FlextOracleWmsUtilitiesClient,
 )
-from tests import c, p, t, u
+from tests import p, t, u
 
 logger = u.fetch_logger(__name__)
 
@@ -76,26 +76,6 @@ class TestsFlextOracleWmsDeclarative:
             api.version for api in FlextOracleWmsApi.FLEXT_ORACLE_WMS_APIS.values()
         }
         assert len(versions) >= 1
-
-    def test_client_configuration_and_lifecycle(
-        self,
-        env_config: t.OracleWms.Tests.EnvConfig,
-    ) -> None:
-        """Test client configuration and initialization."""
-        settings = u.OracleWms.Tests.build_client_settings(
-            env_config,
-            c.OracleWms.WmsApiVersion.V1,
-        )
-        assert settings.base_url.startswith("https://")
-        assert settings.username
-        assert settings.password
-        assert settings.timeout > 0
-        client = FlextOracleWmsUtilitiesClient.Client(settings)
-        assert client.settings == settings
-        start_result = client.start()
-        assert start_result.success, f"Client start failed: {start_result.error}"
-        stop_result = client.stop()
-        assert stop_result.success, f"Client stop failed: {stop_result.error}"
 
     def test_oracle_wms_health_check(
         self,

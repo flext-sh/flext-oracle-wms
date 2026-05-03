@@ -32,14 +32,8 @@ if _t.TYPE_CHECKING:
         FlextOracleWmsUtilitiesHttpClient,
     )
     from flext_oracle_wms.api import FlextOracleWmsApi, oracle_wms
-    from flext_oracle_wms.client_settings import FlextOracleWmsClientSettings
     from flext_oracle_wms.constants import FlextOracleWmsConstants, c
     from flext_oracle_wms.errors import (
-        FlextOracleWmsApiError,
-        FlextOracleWmsAuthenticationError,
-        FlextOracleWmsConfigurationError,
-        FlextOracleWmsConnectionError,
-        FlextOracleWmsEntityNotFoundError,
         FlextOracleWmsError,
         FlextOracleWmsValidationError,
     )
@@ -71,17 +65,11 @@ _LAZY_IMPORTS = merge_lazy_imports(
                 "FlextOracleWmsApi",
                 "oracle_wms",
             ),
-            ".client_settings": ("FlextOracleWmsClientSettings",),
             ".constants": (
                 "FlextOracleWmsConstants",
                 "c",
             ),
             ".errors": (
-                "FlextOracleWmsApiError",
-                "FlextOracleWmsAuthenticationError",
-                "FlextOracleWmsConfigurationError",
-                "FlextOracleWmsConnectionError",
-                "FlextOracleWmsEntityNotFoundError",
                 "FlextOracleWmsError",
                 "FlextOracleWmsValidationError",
             ),
@@ -139,13 +127,7 @@ install_lazy_exports(__name__, globals(), _LAZY_IMPORTS)
 
 __all__: list[str] = [
     "FlextOracleWmsApi",
-    "FlextOracleWmsApiError",
-    "FlextOracleWmsAuthenticationError",
-    "FlextOracleWmsClientSettings",
-    "FlextOracleWmsConfigurationError",
-    "FlextOracleWmsConnectionError",
     "FlextOracleWmsConstants",
-    "FlextOracleWmsEntityNotFoundError",
     "FlextOracleWmsError",
     "FlextOracleWmsModels",
     "FlextOracleWmsProtocols",
