@@ -71,8 +71,6 @@ class FlextOracleWmsConstants(c):
             IN = "in"
             NOT_IN = "not_in"
             CONTAINS = "contains"
-            STARTS_WITH = "starts_with"
-            ENDS_WITH = "ends_with"
 
         @unique
         class OracleWMSAuthMethod(StrEnum):
@@ -102,28 +100,10 @@ class FlextOracleWmsConstants(c):
         class ProjectType(StrEnum):
             """Project type literals for package metadata."""
 
-            WMS_SERVICE = "wms-service"
-            WAREHOUSE_MANAGEMENT = "warehouse-management"
-            INVENTORY_SYSTEM = "inventory-system"
-            SHIPPING_SERVICE = "shipping-service"
-            PICKING_SYSTEM = "picking-system"
-            WMS_INTEGRATION = "wms-integration"
-            WAREHOUSE_API = "warehouse-api"
-            LOGISTICS_PLATFORM = "logistics-platform"
-            INVENTORY_TRACKER = "inventory-tracker"
-            WAREHOUSE_MONITOR = "warehouse-monitor"
-            WMS_CONNECTOR = "wms-connector"
-            FULFILLMENT_ENGINE = "fulfillment-engine"
-            WAREHOUSE_ANALYTICS = "warehouse-analytics"
-            WMS_CLIENT = "wms-client"
-            LOGISTICS_SERVICE = "logistics-service"
-            WAREHOUSE_OPTIMIZER = "warehouse-optimizer"
-
         class WmsEntities:
             """WMS entity configuration - patterns."""
 
             MAX_ENTITY_NAME_LENGTH: ClassVar[int] = 100
-            ENTITY_NAME_PATTERN: ClassVar[str] = "^[a-zA-Z][a-zA-Z0-9_]*$"
 
         class WmsProcessing:
             """WMS processing constants - domain-specific."""
@@ -140,9 +120,6 @@ class FlextOracleWmsConstants(c):
 
         class Authentication:
             """Auth constants - minimal."""
-
-            MIN_TOKEN_LENGTH: ClassVar[int] = 10
-            MIN_API_KEY_LENGTH: ClassVar[int] = 20
 
 
 c = FlextOracleWmsConstants
