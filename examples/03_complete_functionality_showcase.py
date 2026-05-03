@@ -76,7 +76,7 @@ def load_config_from_environment() -> FlextOracleWmsSettings:
         "password": password,
         "api_version": "LGF_V10",
         "timeout": c.OracleWms.DEFAULT_TIMEOUT,
-        "max_retries": c.OracleWms.DEFAULT_MAX_RETRIES,
+        "retry_attempts": c.OracleWms.DEFAULT_MAX_RETRIES,
         "verify_ssl": True,
         "enable_logging": True,
     })
@@ -100,9 +100,9 @@ def showcase_2_entity_discovery(client: FlextOracleWmsClient) -> list[str]:
     """Feature 2: Entity Discovery (320+ entities)."""
     entities_result = client.discover_entities()
     if not entities_result.success:
-        return []
-    entity_dicts = entities_result.value or []
-    entities: list[str] = list(entity_dicts)
+        msg = entities_result.error or "Failed to discover Oracle WMS entities"
+        raise FlextOracleWmsError(msg)
+    entities: list[str] = list(entities_result.value)
     batch_size_val = c.OracleWms.PROCESSING_CONFIG.get("default_batch_size", 100)
     max_entities_to_show = batch_size_val // 5
     _entity_preview = entities[:max_entities_to_show]
@@ -169,8 +169,12 @@ def showcase_5_api_catalog(client: FlextOracleWmsClient) -> None:
         max_apis_to_show = c.OracleWms.DEFAULT_MAX_RETRIES
         _api_preview = apis[:max_apis_to_show]
     _ = {api.version for api in FlextOracleWmsApi.FLEXT_ORACLE_WMS_APIS.values()}
-    for category in c.OracleWms.WmsApiCategory.__members__.values():
-        client.get_apis_by_category(category)
+    category_names = sorted({api.category for api in FlextOracleWmsApi.FLEXT_ORACLE_WMS_APIS.values()})
+    for category in category_names:
+        category_result = client.get_apis_by_category(category)
+        if category_result.failure:
+            msg = category_result.error or f"Failed to load APIs for category: {category}"
+            raise FlextOracleWmsError(msg)
 
 
 def showcase_6_error_handling(client: FlextOracleWmsClient) -> None:
@@ -184,7 +188,7 @@ def showcase_6_error_handling(client: FlextOracleWmsClient) -> None:
             "password": "",
             "api_version": "LGF_V10",
             "timeout": 30,
-            "max_retries": 3,
+            "retry_attempts": 3,
             "verify_ssl": True,
             "enable_logging": True,
         })
@@ -200,11 +204,12 @@ def showcase_7_health_monitoring(
 ) -> dict[str, t.JsonValue]:
     """Feature 7: Health Monitoring."""
     health_result = client.health_check()
-    if health_result.success:
-        response = health_result.value
-        health_data: dict[str, t.JsonValue] = {"status_code": response.status_code}
-        return health_data
-    return {}
+    if health_result.failure:
+        msg = health_result.error or "Oracle WMS health check failed"
+        raise FlextOracleWmsError(msg)
+    response = health_result.value
+    health_data: dict[str, t.JsonValue] = {"status_code": response.status_code}
+    return health_data
 
 
 def showcase_8_performance_tracking(
@@ -242,8 +247,8 @@ def showcase_9_cache_management(client: FlextOracleWmsClient) -> None:
     second_result = client.discover_entities()
     _second_elapsed = time.time() - start_time
     if first_result.success and second_result.success:
-        _first_count = len(first_result.value or [])
-        _second_count = len(second_result.value or [])
+        _first_count = len(first_result.value)
+        _second_count = len(second_result.value)
 
 
 def showcase_10_enterprise_features(

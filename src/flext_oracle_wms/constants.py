@@ -76,17 +76,6 @@ class FlextOracleWmsConstants(c):
             ENDS_WITH = "ends_with"
 
         @unique
-        class EndpointDiscoveryStrategy(StrEnum):
-            """Discovery strategy enum.
-
-            DRY Pattern: This StrEnum is the single source of truth for discovery strategies.
-            All discovery strategy-related constants and Literal types MUST reference this enum.
-            """
-
-            API_BASED = "api_based"
-            SCHEMA_BASED = "schema_based"
-
-        @unique
         class OracleWMSAuthMethod(StrEnum):
             """Auth methods.
 

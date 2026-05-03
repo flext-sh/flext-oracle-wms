@@ -15,7 +15,6 @@ from typing import ClassVar
 from dotenv import load_dotenv
 
 from flext_oracle_wms import (
-    FlextOracleWmsClientSettings,
     FlextOracleWmsConstants,
     FlextOracleWmsSettings,
     FlextOracleWmsUtilitiesClient,
@@ -51,7 +50,7 @@ class WmsEnvironmentConfig(m.BaseModel):
     name: str = u.Field(description="Environment display name")
     base_url: str = u.Field(description="Oracle WMS base URL")
     timeout: int = u.Field(ge=1, description="Request timeout in seconds")
-    max_retries: int = u.Field(ge=0, description="Maximum retry attempts")
+    retry_attempts: int = u.Field(ge=0, description="Retry attempts")
 
 
 def get_environment_configs() -> t.MappingKV[Environment, WmsEnvironmentConfig]:
@@ -61,19 +60,19 @@ def get_environment_configs() -> t.MappingKV[Environment, WmsEnvironmentConfig]:
             name="Development",
             base_url="https://dev-wms.oraclecloud.com/dev_env",
             timeout=c.OracleWms.DEFAULT_TIMEOUT,
-            max_retries=c.OracleWms.DEFAULT_MAX_RETRIES,
+            retry_attempts=c.OracleWms.DEFAULT_MAX_RETRIES,
         ),
         Environment.STAGING: WmsEnvironmentConfig(
             name="Staging",
             base_url="https://staging-wms.oraclecloud.com/staging_env",
             timeout=c.OracleWms.DEFAULT_TIMEOUT,
-            max_retries=c.OracleWms.DEFAULT_MAX_RETRIES,
+            retry_attempts=c.OracleWms.DEFAULT_MAX_RETRIES,
         ),
         Environment.PRODUCTION: WmsEnvironmentConfig(
             name="Production",
             base_url="https://prod-wms.oraclecloud.com/prod_env",
             timeout=c.OracleWms.DEFAULT_TIMEOUT,
-            max_retries=c.OracleWms.DEFAULT_MAX_RETRIES,
+            retry_attempts=c.OracleWms.DEFAULT_MAX_RETRIES,
         ),
     }
 
@@ -133,15 +132,13 @@ def create_demo_config() -> FlextOracleWmsSettings:
         "password": "demo_password",
         "api_version": "LGF_V10",
         "timeout": c.OracleWms.DEFAULT_TIMEOUT,
-        "max_retries": c.OracleWms.DEFAULT_MAX_RETRIES,
+        "retry_attempts": c.OracleWms.DEFAULT_MAX_RETRIES,
         "verify_ssl": True,
         "enable_logging": True,
     })
 
 
-def validate_configuration(
-    settings: FlextOracleWmsSettings | FlextOracleWmsClientSettings,
-) -> t.JsonMapping:
+def validate_configuration(settings: FlextOracleWmsSettings) -> t.JsonMapping:
     """Validate Oracle WMS client configuration.
 
     Args:
@@ -164,11 +161,7 @@ def validate_configuration(
         errors.append("Timeout must be positive")
     elif settings.timeout < min_timeout_seconds:
         warnings.append("Timeout less than 10 seconds may cause issues")
-    retry_count = (
-        settings.max_retries
-        if isinstance(settings, FlextOracleWmsClientSettings)
-        else settings.retry_attempts
-    )
+    retry_count = settings.retry_attempts
     max_retries_warning_threshold = c.OracleWms.DEFAULT_MAX_RETRIES * 3
     if retry_count < 0:
         errors.append("Max retries cannot be negative")
@@ -179,7 +172,7 @@ def validate_configuration(
         "username": settings.username,
         "api_version": settings.api_version,
         "timeout": settings.timeout,
-        "max_retries": retry_count,
+        "retry_attempts": retry_count,
         "verify_ssl": settings.verify_ssl,
         "enable_logging": settings.enable_logging,
     })

@@ -89,11 +89,5 @@ class TestsFlextOracleWmsConstantsUnit:
         assert c.OracleWms.OracleWMSAuthMethod.API_KEY == "api_key"
         assert c.OracleWms.OracleWMSAuthMethod.BEARER == "bearer"
 
-    def test_endpoint_discovery_strategy_enum(self) -> None:
-        """Test EndpointDiscoveryStrategy enum."""
-        strategy = c.OracleWms.EndpointDiscoveryStrategy
-        assert strategy.API_BASED == "api_based"
-        assert strategy.SCHEMA_BASED == "schema_based"
-
 
 __all__: list[str] = []
