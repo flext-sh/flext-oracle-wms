@@ -169,11 +169,15 @@ def showcase_5_api_catalog(client: FlextOracleWmsClient) -> None:
         max_apis_to_show = c.OracleWms.DEFAULT_MAX_RETRIES
         _api_preview = apis[:max_apis_to_show]
     _ = {api.version for api in FlextOracleWmsApi.FLEXT_ORACLE_WMS_APIS.values()}
-    category_names = sorted({api.category for api in FlextOracleWmsApi.FLEXT_ORACLE_WMS_APIS.values()})
+    category_names = sorted({
+        api.category for api in FlextOracleWmsApi.FLEXT_ORACLE_WMS_APIS.values()
+    })
     for category in category_names:
         category_result = client.get_apis_by_category(category)
         if category_result.failure:
-            msg = category_result.error or f"Failed to load APIs for category: {category}"
+            msg = (
+                category_result.error or f"Failed to load APIs for category: {category}"
+            )
             raise FlextOracleWmsError(msg)
 
 

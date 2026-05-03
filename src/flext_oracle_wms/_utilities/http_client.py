@@ -116,8 +116,10 @@ class FlextOracleWmsUtilitiesHttpClient:
                     )
                 response = response_result.value
                 return self._parse_response_body(response.body)
-            except Exception as exc:
-                return r[t.JsonMapping].fail(f"Request error: {exc}")
+            except c.EXC_VALIDATION_VALUE as exc:
+                return r[t.JsonMapping].fail(f"Request validation error: {exc}")
+            except OSError as exc:
+                return r[t.JsonMapping].fail(f"Request I/O error: {exc}")
 
         def get(
             self,
@@ -180,8 +182,10 @@ class FlextOracleWmsUtilitiesHttpClient:
                         f"HTTP {response.status_code}: {response.body!r}",
                     )
                 return self._parse_response_body(response.body)
-            except Exception as exc:
-                return r[t.JsonMapping].fail(f"Unexpected error: {exc}")
+            except c.EXC_VALIDATION_VALUE as exc:
+                return r[t.JsonMapping].fail(f"PUT validation error: {exc}")
+            except OSError as exc:
+                return r[t.JsonMapping].fail(f"PUT I/O error: {exc}")
 
         def _ensure_client(self) -> None:
             """Ensure Oracle WMS HTTP client is initialized using FLEXT delegation."""
@@ -236,8 +240,10 @@ class FlextOracleWmsUtilitiesHttpClient:
                         f"HTTP {response.status_code}: {response.body!r}",
                     )
                 return self._parse_response_body(response.body)
-            except Exception as exc:
-                return r[t.JsonMapping].fail(f"Request error: {exc}")
+            except c.EXC_VALIDATION_VALUE as exc:
+                return r[t.JsonMapping].fail(f"Request validation error: {exc}")
+            except OSError as exc:
+                return r[t.JsonMapping].fail(f"Request I/O error: {exc}")
 
         def _parse_response_body(
             self,
