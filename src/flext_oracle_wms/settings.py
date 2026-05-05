@@ -4,11 +4,10 @@ from __future__ import annotations
 
 from typing import Annotated, ClassVar, Self
 
-from flext_core import FlextSettings, m, p, r, u
+from flext_core import FlextSettingsBase, m, p, r, u
 
 
-@FlextSettings.auto_register("oracle-wms")
-class FlextOracleWmsSettings(FlextSettings):
+class FlextOracleWmsSettings(FlextSettingsBase):
     """Runtime settings for Oracle WMS client."""
 
     model_config: ClassVar[m.SettingsConfigDict] = m.SettingsConfigDict(

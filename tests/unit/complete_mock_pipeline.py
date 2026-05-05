@@ -12,7 +12,7 @@ PRAGMATIC SOLUTION FOR PERFORMANCE ISSUES
 
 from __future__ import annotations
 
-import json
+import json as _stdlib_json
 import uuid
 from datetime import UTC, datetime
 from pathlib import Path
@@ -648,19 +648,21 @@ class CompleteMockPipeline:
         timestamp = datetime.now(UTC).strftime("%Y%m%d_%H%M%S")
         schemas_file = results_dir / f"singer_schemas_{timestamp}.json"
         with schemas_file.open("w", encoding="utf-8") as f:
-            json.dump(schemas, f, indent=2, default=str)
+            f.write(_stdlib_json.dumps(dict(schemas), indent=2))
         catalog_file = results_dir / f"singer_catalog_{timestamp}.json"
         with catalog_file.open("w", encoding="utf-8") as f:
-            json.dump(catalog, f, indent=2, default=str)
+            f.write(_stdlib_json.dumps(dict(catalog), indent=2))
         tap_file = results_dir / f"tap_extraction_{timestamp}.json"
         with tap_file.open("w", encoding="utf-8") as f:
-            json.dump(tap_records, f, indent=2, default=str)
+            f.write(
+                _stdlib_json.dumps([dict(record) for record in tap_records], indent=2)
+            )
         target_file = results_dir / f"target_loading_{timestamp}.json"
         with target_file.open("w", encoding="utf-8") as f:
-            json.dump(target_results, f, indent=2, default=str)
+            f.write(_stdlib_json.dumps(dict(target_results), indent=2))
         dbt_file = results_dir / f"dbt_transformations_{timestamp}.json"
         with dbt_file.open("w", encoding="utf-8") as f:
-            json.dump(dbt_results, f, indent=2, default=str)
+            f.write(_stdlib_json.dumps(dict(dbt_results), indent=2))
         pipeline_summary = {
             "pipeline_execution": {
                 "timestamp": timestamp,
@@ -720,7 +722,7 @@ class CompleteMockPipeline:
         }
         summary_file = results_dir / f"pipeline_summary_{timestamp}.json"
         with summary_file.open("w", encoding="utf-8") as f:
-            json.dump(pipeline_summary, f, indent=2, default=str)
+            f.write(_stdlib_json.dumps(dict(pipeline_summary), indent=2))
         return r[str].ok(str(results_dir))
 
 

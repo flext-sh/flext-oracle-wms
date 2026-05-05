@@ -13,7 +13,7 @@ OPTIMIZED approach:
 
 from __future__ import annotations
 
-import json
+import json as _stdlib_json
 import time
 from datetime import UTC, datetime
 from pathlib import Path
@@ -462,15 +462,15 @@ class OptimizedOracleWmsDiscovery:
         timestamp = datetime.now(UTC).strftime("%Y%m%d_%H%M%S")
         entities_file = results_dir / f"high_value_entities_{timestamp}.json"
         with entities_file.open("w", encoding="utf-8") as f:
-            json.dump(self.high_value_entities, f, indent=2, default=str)
+            f.write(_stdlib_json.dumps(dict(self.high_value_entities), indent=2))
         schemas_file = results_dir / f"singer_schemas_{timestamp}.json"
         with schemas_file.open("w", encoding="utf-8") as f:
-            json.dump(self.complete_schemas, f, indent=2, default=str)
+            f.write(_stdlib_json.dumps(dict(self.complete_schemas), indent=2))
         if self.complete_schemas:
             catalog = self._generate_singer_catalog(self.complete_schemas)
             catalog_file = results_dir / f"singer_catalog_{timestamp}.json"
             with catalog_file.open("w", encoding="utf-8") as f:
-                json.dump(catalog, f, indent=2, default=str)
+                f.write(_stdlib_json.dumps(dict(catalog), indent=2))
         summary: dict[str, t.JsonValue] = {
             "discovery_timestamp": timestamp,
             "discovery_mode": "OPTIMIZED_ADMINISTRATOR_MODE",
@@ -485,7 +485,7 @@ class OptimizedOracleWmsDiscovery:
         }
         summary_file = results_dir / f"discovery_summary_{timestamp}.json"
         with summary_file.open("w", encoding="utf-8") as f:
-            json.dump(summary, f, indent=2, default=str)
+            f.write(_stdlib_json.dumps(dict(summary), indent=2))
         return r[str].ok(str(results_dir))
 
     def cleanup(self) -> p.Result[bool]:

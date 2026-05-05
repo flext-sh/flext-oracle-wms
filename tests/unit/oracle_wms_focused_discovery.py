@@ -7,7 +7,7 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-import json
+import json as _stdlib_json
 from collections.abc import (
     MutableMapping,
     MutableSequence,
@@ -403,15 +403,17 @@ class FocusedOracleWmsDiscovery:
         if self.entities_with_data:
             entities_file = results_dir / f"entities_with_data_{timestamp}.json"
             with entities_file.open("w", encoding="utf-8") as f:
-                json.dump(self.entities_with_data, f, indent=2, default=str)
+                f.write(
+                    _stdlib_json.dumps(dict(self.entities_with_data), indent=2)
+                )
         if self.complete_schemas:
             schemas_file = results_dir / f"singer_schemas_{timestamp}.json"
             with schemas_file.open("w", encoding="utf-8") as f:
-                json.dump(self.complete_schemas, f, indent=2, default=str)
+                f.write(_stdlib_json.dumps(dict(self.complete_schemas), indent=2))
             catalog = self._create_singer_catalog()
             catalog_file = results_dir / f"singer_catalog_{timestamp}.json"
             with catalog_file.open("w", encoding="utf-8") as f:
-                json.dump(catalog, f, indent=2, default=str)
+                f.write(_stdlib_json.dumps(dict(catalog), indent=2))
         summary = {
             "timestamp": timestamp,
             "mode": "FOCUSED_ADMINISTRATOR_DISCOVERY",
@@ -423,7 +425,7 @@ class FocusedOracleWmsDiscovery:
         }
         summary_file = results_dir / f"summary_{timestamp}.json"
         with summary_file.open("w", encoding="utf-8") as f:
-            json.dump(summary, f, indent=2, default=str)
+            f.write(_stdlib_json.dumps(dict(summary), indent=2))
         return r[str].ok(str(results_dir))
 
     def _create_singer_catalog(self) -> t.JsonMapping:

@@ -12,7 +12,7 @@ NO FALLBACKS, NO ESTIMATIONS, NO BASIC LIMITS - FULL EXPLORATION
 
 from __future__ import annotations
 
-import json
+import json as _stdlib_json
 from collections.abc import (
     MutableSequence,
 )
@@ -560,10 +560,10 @@ class OracleWmsCompleteDiscovery:
         timestamp = datetime.now(UTC).strftime("%Y%m%d_%H%M%S")
         metadata_file = results_dir / f"entity_metadata_{timestamp}.json"
         with metadata_file.open("w", encoding="utf-8") as f:
-            json.dump(self.entity_metadata, f, indent=2, default=str)
+            f.write(_stdlib_json.dumps(dict(self.entity_metadata), indent=2))
         schemas_file = results_dir / f"singer_schemas_{timestamp}.json"
         with schemas_file.open("w", encoding="utf-8") as f:
-            json.dump(self.complete_schemas, f, indent=2, default=str)
+            f.write(_stdlib_json.dumps(dict(self.complete_schemas), indent=2))
         summary: dict[str, t.JsonValue] = {
             "discovery_timestamp": timestamp,
             "total_entities_discovered": len(self.discovered_entities),
@@ -579,7 +579,7 @@ class OracleWmsCompleteDiscovery:
         }
         summary_file = results_dir / f"discovery_summary_{timestamp}.json"
         with summary_file.open("w", encoding="utf-8") as f:
-            json.dump(summary, f, indent=2, default=str)
+            f.write(_stdlib_json.dumps(dict(summary), indent=2))
         return r[str].ok(str(results_dir))
 
     def cleanup(self) -> p.Result[bool]:
