@@ -403,9 +403,7 @@ class FocusedOracleWmsDiscovery:
         if self.entities_with_data:
             entities_file = results_dir / f"entities_with_data_{timestamp}.json"
             with entities_file.open("w", encoding="utf-8") as f:
-                f.write(
-                    _stdlib_json.dumps(dict(self.entities_with_data), indent=2)
-                )
+                f.write(_stdlib_json.dumps(dict(self.entities_with_data), indent=2))
         if self.complete_schemas:
             schemas_file = results_dir / f"singer_schemas_{timestamp}.json"
             with schemas_file.open("w", encoding="utf-8") as f:
