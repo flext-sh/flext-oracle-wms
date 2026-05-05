@@ -52,6 +52,6 @@ class TestsFlextOracleWmsConfigModule:
     def test_config_reset_functionality(self) -> None:
         """Test singleton reset creates fresh instance."""
         config1 = FlextOracleWmsSettings()
-        FlextOracleWmsSettings._reset_instance()
+        FlextOracleWmsSettings.reset_instance()
         config2 = FlextOracleWmsSettings()
         assert config1 is not config2

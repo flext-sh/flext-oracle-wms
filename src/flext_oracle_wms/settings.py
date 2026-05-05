@@ -61,5 +61,5 @@ class FlextOracleWmsSettings(FlextSettings):
             "password": "test_password",
         })
         # Keep test fixture generation isolated from the FlextSettings singleton.
-        cls._reset_instance()
+        cls.reset_instance()
         return settings
