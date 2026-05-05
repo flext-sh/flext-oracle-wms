@@ -66,9 +66,15 @@ class FlextOracleWmsApi(s[bool]):
         self._client = u.OracleWms.Client(settings=resolved_config)
 
     @override
-    def execute(self) -> p.Result[None]:
-        """Execute Oracle WMS operations."""
-        return r[None].ok(None)
+    def execute(self) -> p.Result[bool]:
+        """Execute Oracle WMS operations.
+
+        Default execute surface signals readiness; consumers call the
+        domain-specific methods (``fetch_settings``, ``call_endpoint``, …)
+        for real work. Returning ``r[bool].ok(True)`` matches the
+        ``s[bool]`` type parameter.
+        """
+        return r[bool].ok(value=True)
 
     @staticmethod
     def create_flext_http_client(

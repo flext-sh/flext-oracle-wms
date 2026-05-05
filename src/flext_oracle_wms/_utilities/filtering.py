@@ -162,7 +162,8 @@ class FlextOracleWmsUtilitiesFiltering:
                         result = left_str >= right_str
                     case _:
                         result = left_str <= right_str
-            return result
+            final: bool = result
+            return final
 
         @staticmethod
         def _condition_size(value: FilterEntry) -> int:

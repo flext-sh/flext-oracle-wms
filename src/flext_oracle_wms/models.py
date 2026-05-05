@@ -227,7 +227,8 @@ class FlextOracleWmsModels(m):
             item: FlextOracleWmsModels.OracleWms.InventoryItem, price: float
         ) -> float:
             """Calculate inventory value using domain logic."""
-            return item.quantity * price
+            value: float = item.quantity * price
+            return value
 
         @staticmethod
         def validate_entity_name(name: str) -> p.Result[str]:

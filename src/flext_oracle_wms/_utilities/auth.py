@@ -25,7 +25,8 @@ class FlextOracleWmsUtilitiesAuth:
         @property
         def normalized_method(self) -> str:
             """Return auth method in canonical lowercase form."""
-            return self.settings.method.strip().lower()
+            method: str = self.settings.method.strip().lower()
+            return method
 
         def authenticate(self) -> p.Result[str]:
             """Perform authentication."""
