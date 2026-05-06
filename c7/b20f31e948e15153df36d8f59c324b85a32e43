@@ -1,0 +1,29 @@
+src/flext_oracle_wms/api.py
+  h_5cf852cc46bf92 58
+pyproject.toml
+  s_5a9c2b140a8456::t_5ad03456de2091 144,519-560,564
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.1",
+  "base_commit_sha": "c7b20f31e948e15153df36d8f59c324b85a32e43",
+  "prompts": {},
+  "humans": {
+    "h_5cf852cc46bf92": {
+      "author": "FLEXT Bot <team@flext.sh>"
+    },
+    "h_9db9d35f50cf33": {
+      "author": "FLEXT Bot"
+    }
+  },
+  "sessions": {
+    "s_5a9c2b140a8456": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019dfddc-86ee-79a0-b5bf-0433a8110b6a",
+        "model": "gpt-5.5"
+      },
+      "human_author": "FLEXT Bot <team@flext.sh>"
+    }
+  }
+}
