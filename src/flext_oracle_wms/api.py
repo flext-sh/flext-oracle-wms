@@ -55,11 +55,7 @@ class FlextOracleWmsApi(s[bool]):
 
     def __init__(self, settings: FlextOracleWmsSettings | None = None) -> None:
         """Initialize Oracle WMS facade with FLEXT integration."""
-        super().__init__(
-            settings_type=None,
-            settings_overrides=None,
-            initial_context=None,
-        )
+        super().__init__()
         resolved_config = (
             settings if settings is not None else FlextOracleWmsSettings.fetch_global()
         )
