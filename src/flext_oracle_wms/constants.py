@@ -124,4 +124,4 @@ class FlextOracleWmsConstants(c):
 
 c = FlextOracleWmsConstants
 
-__all__: tuple[str, ...] = ("FlextOracleWmsConstants", "c")
+__all__: t.StrSequence = ("FlextOracleWmsConstants", "c")

@@ -6,10 +6,6 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from collections.abc import (
-    Sequence,
-)
-
 from flext_api import (
     FlextApiClient,
     FlextApiSettings,
@@ -193,25 +189,25 @@ class FlextOracleWmsUtilitiesClient:
 
         def get_apis_by_category(
             self, category: str
-        ) -> p.Result[Sequence[t.StrMapping]]:
+        ) -> p.Result[t.SequenceOf[t.StrMapping]]:
             """Get Oracle WMS APIs by category."""
             result = self.get(f"/apis/category/{category}")
             if result.failure:
-                return r[Sequence[t.StrMapping]].fail(result.error)
+                return r[t.SequenceOf[t.StrMapping]].fail(result.error)
             payload_result = self._decode_response_model(
                 result.value.body,
                 m.OracleWms.ApiCategoryResponse,
             )
             if payload_result.failure:
-                return r[Sequence[t.StrMapping]].fail(payload_result.error)
-            return r[Sequence[t.StrMapping]].ok(payload_result.value.apis)
+                return r[t.SequenceOf[t.StrMapping]].fail(payload_result.error)
+            return r[t.SequenceOf[t.StrMapping]].ok(payload_result.value.apis)
 
         def get_entity_data(
             self,
             entity_name: str,
             limit: int | None = None,
             filters: t.ConfigurationMapping | None = None,
-        ) -> p.Result[Sequence[t.StrMapping]]:
+        ) -> p.Result[t.SequenceOf[t.StrMapping]]:
             """Get data for a specific Oracle WMS entity."""
             params_dict: dict[str, str] = {}
             if limit is not None:
@@ -221,14 +217,14 @@ class FlextOracleWmsUtilitiesClient:
             params: t.Api.WebParams = params_dict
             result = self.get(f"/entities/{entity_name}", params=params)
             if result.failure:
-                return r[Sequence[t.StrMapping]].fail(result.error)
+                return r[t.SequenceOf[t.StrMapping]].fail(result.error)
             payload_result = self._decode_response_model(
                 result.value.body,
                 m.OracleWms.EntityDataResponse,
             )
             if payload_result.failure:
-                return r[Sequence[t.StrMapping]].fail(payload_result.error)
-            return r[Sequence[t.StrMapping]].ok(payload_result.value.data)
+                return r[t.SequenceOf[t.StrMapping]].fail(payload_result.error)
+            return r[t.SequenceOf[t.StrMapping]].ok(payload_result.value.data)
 
         def health_check(self) -> p.Result[m.Api.HttpResponse]:
             """Check Oracle WMS API health."""

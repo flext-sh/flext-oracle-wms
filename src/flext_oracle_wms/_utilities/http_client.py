@@ -128,9 +128,7 @@ class FlextOracleWmsUtilitiesHttpClient:
             headers: t.StrMapping | None = None,
         ) -> p.Result[t.JsonMapping]:
             """Make GET request with railway-oriented error handling."""
-            params_str: t.Api.WebParams | None = (
-                dict(params.items()) if params else None
-            )
+            params_str: t.Api.WebParams | None = params
             return self._execute_request(
                 "GET", path, params=params_str, headers=headers
             )
