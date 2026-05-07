@@ -6,7 +6,7 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from flext_api import m, t
+from flext_api import t
 
 
 class FlextOracleWmsTypes(t):
@@ -14,11 +14,6 @@ class FlextOracleWmsTypes(t):
 
     class OracleWms:
         """Oracle WMS domain namespace (flat members per AGENTS.md §149)."""
-
-        FLOAT_ADAPTER: m.TypeAdapter[float] = m.TypeAdapter(float)
-        CONTAINER_VALUE_MAPPING_ADAPTER: m.TypeAdapter[t.JsonMapping] = m.TypeAdapter(
-            t.JsonMapping
-        )
 
         type FilterScalar = t.Scalar | None
         type FilterList = t.SequenceOf[FlextOracleWmsTypes.OracleWms.FilterScalar]

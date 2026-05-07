@@ -38,9 +38,9 @@ class TestsFlextOracleWmsUtilities(FlextTestsUtilities, u):
                 """Concrete test facade for the abstract public API."""
 
                 @override
-                def execute(self) -> p.Result[None]:
+                def execute(self) -> p.Result[bool]:
                     """Execute the no-op test facade."""
-                    return r[None].ok(None)
+                    return r[bool].ok(True)
 
             @classmethod
             def build_client_settings(

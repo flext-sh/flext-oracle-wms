@@ -251,22 +251,16 @@ class FlextOracleWmsUtilitiesHttpClient:
             try:
                 match body:
                     case dict() as payload:
-                        parsed = (
-                            t.OracleWms.CONTAINER_VALUE_MAPPING_ADAPTER.validate_python(
-                                payload,
-                            )
+                        parsed = t.json_mapping_adapter().validate_python(
+                            payload,
                         )
                     case str() as raw if raw:
-                        parsed = (
-                            t.OracleWms.CONTAINER_VALUE_MAPPING_ADAPTER.validate_json(
-                                raw,
-                            )
+                        parsed = t.json_mapping_adapter().validate_json(
+                            raw,
                         )
                     case bytes() as raw_bytes:
-                        parsed = (
-                            t.OracleWms.CONTAINER_VALUE_MAPPING_ADAPTER.validate_json(
-                                raw_bytes,
-                            )
+                        parsed = t.json_mapping_adapter().validate_json(
+                            raw_bytes,
                         )
                     case _:
                         return r[t.JsonMapping].fail(

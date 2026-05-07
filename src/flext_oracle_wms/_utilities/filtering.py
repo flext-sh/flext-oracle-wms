@@ -139,8 +139,8 @@ class FlextOracleWmsUtilitiesFiltering:
             op: str,
         ) -> bool:
             try:
-                left_num = t.OracleWms.FLOAT_ADAPTER.validate_python(left)
-                right_num = t.OracleWms.FLOAT_ADAPTER.validate_python(right)
+                left_num = t.float_adapter().validate_python(left)
+                right_num = t.float_adapter().validate_python(right)
                 match op:
                     case ">":
                         result = left_num > right_num
