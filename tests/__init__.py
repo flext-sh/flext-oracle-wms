@@ -14,10 +14,12 @@ from flext_core.lazy import (
 if _t.TYPE_CHECKING:
     from flext_tests import td, tf, tk, tm, tv
 
-    from flext_oracle_wms import d, e, h, r, s, x
+    from flext_oracle_wms import d, e, h, r, x
+    from tests.base import TestsFlextOracleWmsServiceBase, s
     from tests.constants import TestsFlextOracleWmsConstants, c
     from tests.models import TestsFlextOracleWmsModels, m
     from tests.protocols import TestsFlextOracleWmsProtocols, p
+    from tests.settings import TestsFlextOracleWmsSettings
     from tests.typings import TestsFlextOracleWmsTypes, t
     from tests.unit.complete_mock_pipeline import CompleteMockPipeline
     from tests.unit.oracle_wms_complete_discovery import OracleWmsCompleteDiscovery
@@ -47,6 +49,10 @@ _LAZY_IMPORTS = merge_lazy_imports(
     (".unit",),
     build_lazy_import_map(
         {
+            ".base": (
+                "TestsFlextOracleWmsServiceBase",
+                "s",
+            ),
             ".constants": (
                 "TestsFlextOracleWmsConstants",
                 "c",
@@ -59,6 +65,7 @@ _LAZY_IMPORTS = merge_lazy_imports(
                 "TestsFlextOracleWmsProtocols",
                 "p",
             ),
+            ".settings": ("TestsFlextOracleWmsSettings",),
             ".typings": (
                 "TestsFlextOracleWmsTypes",
                 "t",
@@ -95,7 +102,6 @@ _LAZY_IMPORTS = merge_lazy_imports(
                 "e",
                 "h",
                 "r",
-                "s",
                 "x",
             ),
             "flext_tests": (
@@ -155,6 +161,8 @@ __all__: list[str] = [
     "TestsFlextOracleWmsModelsUnit",
     "TestsFlextOracleWmsProtocols",
     "TestsFlextOracleWmsSchemaDynamic",
+    "TestsFlextOracleWmsServiceBase",
+    "TestsFlextOracleWmsSettings",
     "TestsFlextOracleWmsSingerFlattening",
     "TestsFlextOracleWmsTypes",
     "TestsFlextOracleWmsUnifiedConfig",

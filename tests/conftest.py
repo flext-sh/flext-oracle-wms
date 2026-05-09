@@ -38,6 +38,6 @@ def isolate_oracle_wms_env(
 @pytest.fixture(autouse=True)
 def isolate_oracle_wms_settings_singleton() -> Iterator[None]:
     """Reset FlextOracleWmsSettings singleton state for each test."""
-    FlextOracleWmsSettings.reset_instance()
+    FlextOracleWmsSettings.reset_for_testing()
     yield
-    FlextOracleWmsSettings.reset_instance()
+    FlextOracleWmsSettings.reset_for_testing()
