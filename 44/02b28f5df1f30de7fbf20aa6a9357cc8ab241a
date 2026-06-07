@@ -1,0 +1,75 @@
+src/flext_oracle_wms/README.md
+  s_73cbfc60e45e37::t_c1d20beb7cd721 147
+  s_73cbfc60e45e37::t_5814e584b30512 182
+  s_73cbfc60e45e37::t_d016c6e5c590a8 101
+docs/configuration.md
+  s_73cbfc60e45e37::t_dba7abd28bc37e 130-131,133-137
+  s_73cbfc60e45e37::t_4bf6818d73ac64 41,43-49,51
+  s_73cbfc60e45e37::t_b0390eff15ee93 95,98
+  s_73cbfc60e45e37::t_b6dea91e3de158 112,115
+docs/development.md
+  s_73cbfc60e45e37::t_722c576a1eb846 153-158,161
+  s_73cbfc60e45e37::t_8fa3c3ad918b5e 138
+  s_73cbfc60e45e37::t_713daf17c984b7 120
+  s_73cbfc60e45e37::t_d48b68c27749a8 199
+src/README.md
+  s_73cbfc60e45e37::t_29ef1427c5ad8e 93-94,97,103-105,107,109-110,112
+  s_73cbfc60e45e37::t_1444ea10e6524c 136-137,141-142,144-149
+  s_73cbfc60e45e37::t_6fa9fc99a790de 118-120,123-126,129,131
+docs/troubleshooting.md
+  s_73cbfc60e45e37::t_c1fb64f09889fc 38
+  s_73cbfc60e45e37::t_4155068034ed6e 77
+  s_73cbfc60e45e37::t_f7f4e6e23e4415 156
+  s_73cbfc60e45e37::t_aa43a94b01ad07 57
+  s_73cbfc60e45e37::t_106d8b64ccf340 237
+  s_73cbfc60e45e37::t_90155ef2d1de19 263,267
+  s_73cbfc60e45e37::t_31dd4d1af5adcf 246
+  s_73cbfc60e45e37::t_06d138660529d5 67
+  s_73cbfc60e45e37::t_53a014af861475 96
+  s_73cbfc60e45e37::t_ecd157f43c0e2e 253
+  s_73cbfc60e45e37::t_37e0bb30108286 84
+  s_73cbfc60e45e37::t_d747e22f34f0a9 141
+docs/guides/getting-started.md
+  s_73cbfc60e45e37::t_434fdc858f016b 225
+  s_73cbfc60e45e37::t_96fd45e7256cea 171,174
+  s_73cbfc60e45e37::t_8df47de1b03e41 115
+  s_73cbfc60e45e37::t_61bf1e869cd83b 101
+  s_73cbfc60e45e37::t_74165e4b83f736 136-137
+docs/guides/configuration.md
+  s_73cbfc60e45e37::t_9d51cd77c33fd0 106,144,164,178,231,264,308,344,380,417,455
+docs/guides/development.md
+  s_73cbfc60e45e37::t_c4a9e5e7a9025a 152,169,189,228,313,404,432
+docs/guides/troubleshooting.md
+  s_73cbfc60e45e37::t_5422bfa58b8be5 88,118,139,148,175,196,210,225,255,291,300,315,325,348,357,372,380,397,408,430,442,453,490,527,558,619,642,722,733,771,784,795,808
+docs/getting-started.md
+  s_73cbfc60e45e37::t_93341689823bdd 57,60-72
+docs/guides/testing.md
+  s_73cbfc60e45e37::t_33de0a5f30d834 76,128,176,219,292,333,357,396,439,471,517,588,611,638,658,700
+examples/README.md
+  s_73cbfc60e45e37::t_10280bfd2c7bde 74
+  s_73cbfc60e45e37::t_a62f4f3847491e 109
+docs/api-reference.md
+  s_73cbfc60e45e37::t_698691a198f635 152,154
+  s_73cbfc60e45e37::t_cc2cb1740d0425 35,37-43
+  s_73cbfc60e45e37::t_01657ff6c90a30 84-86
+  s_73cbfc60e45e37::t_713d5b7bd72a8c 137
+  s_73cbfc60e45e37::t_9ae0353af194a4 52
+  s_73cbfc60e45e37::t_7b05ec04056343 64
+  s_73cbfc60e45e37::t_a953653fcd70fc 156
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "4402b28f5df1f30de7fbf20aa6a9357cc8ab241a",
+  "prompts": {},
+  "sessions": {
+    "s_73cbfc60e45e37": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "80f2c44c-f1f2-49a0-8035-ccac60ac602b",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Zed <hi@zed.dev>"
+    }
+  }
+}
