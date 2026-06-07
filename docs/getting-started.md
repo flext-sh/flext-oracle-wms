@@ -54,19 +54,22 @@ export FLEXT_ORACLE_WMS_PASSWORD="test_password"
 ### Basic Usage Example
 
 ```python
-from flext_oracle_wms import FlextOracleWmsClient, FlextOracleWmsModuleSettings
+from flext_oracle_wms import FlextOracleWmsApi, FlextOracleWmsSettings
 
 # Using test configuration (not real Oracle WMS)
-settings = FlextOracleWmsModuleSettings.for_testing()
-print(f"Test Base URL: {settings.oracle_wms_base_url}")
+settings = FlextOracleWmsSettings(
+    base_url="https://test.example.com",
+    username="test_user",
+    password="test_password",
+)
+print(f"Test Base URL: {settings.base_url}")
 
-# Test client structure (not real connectivity)
-with FlextOracleWmsClient(settings) as client:
-    try:
-        connection_result = client.test_connection()
-        print("Connection test completed (expected to fail with test settings)")
-    except Exception as e:
-        print(f"Expected network error: {str(e)[:100]}...")
+# Build the API facade from the settings
+api = FlextOracleWmsApi.with_settings(settings)
+
+# execute() returns a FlextResult — inspect .success / .value
+result = api.execute()
+print(f"Execute success: {result.success}")
 ```
 
 ## Implementation Status

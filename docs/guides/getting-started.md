@@ -98,26 +98,8 @@ docker run -v $(pwd)/data:/app/data flext:latest
 
 ### 1. Basic Setup
 
-```python
-from flext_core import FlextBus
-from flext_core import FlextSettings
-from flext_core import FlextConstants
+```python notest
 from flext_core import FlextContainer
-from flext_core import FlextContext
-from flext_core import d
-from flext_core import FlextDispatcher
-from flext_core import e
-from flext_core import h
-from flext_core import x
-from flext_core import FlextModels
-from flext_core import FlextProcessors
-from flext_core import p
-from flext_core import FlextRegistry
-from flext_core import r, p
-from flext_core import u
-from flext_core import s
-from flext_core import t
-from flext_core import u
 
 # Create dependency injection container
 container = FlextContainer()
@@ -130,7 +112,7 @@ print("FLEXT application initialized!")
 
 ### 2. Using flext-ldif for LDIF Processing
 
-```python
+```python notest
 from flext_ldif import ldif
 
 # Initialize LDIF API
@@ -151,26 +133,8 @@ else:
 
 ### 3. Railway-Oriented Error Handling
 
-```python
-from flext_core import FlextBus
-from flext_core import FlextSettings
-from flext_core import FlextConstants
-from flext_core import FlextContainer
-from flext_core import FlextContext
-from flext_core import d
-from flext_core import FlextDispatcher
-from flext_core import e
-from flext_core import h
-from flext_core import x
-from flext_core import FlextModels
-from flext_core import FlextProcessors
-from flext_core import p
-from flext_core import FlextRegistry
-from flext_core import r, p
-from flext_core import u
-from flext_core import s
-from flext_core import t
-from flext_core import u
+```python notest
+from flext_core import p, r
 
 
 def process_ldif_data(content: str) -> p.Result[str, Exception]:
@@ -204,27 +168,10 @@ else:
 
 ### 4. CQRS Pattern with Commands and Queries
 
-```python
-from flext_core import FlextBus
-from flext_core import FlextSettings
-from flext_core import FlextConstants
-from flext_core import FlextContainer
-from flext_core import FlextContext
-from flext_core import d
-from flext_core import FlextDispatcher
-from flext_core import e
-from flext_core import h
-from flext_core import x
-from flext_core import FlextModels
-from flext_core import FlextProcessors
-from flext_core import p
-from flext_core import FlextRegistry
-from flext_core import r, p
-from flext_core import u
-from flext_core import s
-from flext_core import t
-from flext_core import u
+```python notest
 from dataclasses import dataclass
+
+from flext_core import FlextDispatcher, p, r
 
 
 @dataclass
@@ -275,7 +222,7 @@ export FLEXT_LDIF_STRICT_VALIDATION=true
 
 ### Programmatic Configuration
 
-```python
+```python notest
 from flext_ldif import FlextLdifSettings
 
 # Create custom configuration

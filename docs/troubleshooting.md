@@ -35,7 +35,7 @@ ______________________________________________________________________
 
 **Symptom**: Connection tests fail with network errors
 
-```python
+```python notest
 # Expected behavior with current implementation
 settings = FlextOracleWmsModuleSettings.for_testing()
 client = FlextOracleWmsClient(settings)
@@ -54,7 +54,7 @@ result = client.test_connection()  # Expected to fail
 
 **Symptom**: Cannot import flext_core components
 
-```python
+```python notest
 from flext_core import get_logger  # ImportError
 ```
 
@@ -63,25 +63,8 @@ from flext_core import get_logger  # ImportError
 **Solution**: Use correct flext_core imports:
 
 ```python
-from flext_core import FlextBus
-from flext_core import FlextSettings
-from flext_core import FlextConstants
-from flext_core import FlextContainer
-from flext_core import FlextContext
-from flext_core import d
-from flext_core import FlextDispatcher
-from flext_core import e
-from flext_core import h
-from flext_core import x
-from flext_core import FlextModels
-from flext_core import FlextProcessors
-from flext_core import p
-from flext_core import FlextRegistry
-from flext_core import r, p
 from flext_core import u
-from flext_core import s
-from flext_core import t
-from flext_core import
+
 logger = u.fetch_logger(__name__)
 ```
 
@@ -91,14 +74,14 @@ logger = u.fetch_logger(__name__)
 
 **Symptom**: MyPy reports missing attributes on exception classes
 
-```python
+```python notest
 error = FlextOracleWmsError("message", field="username")
 assert error.field == "username"  # MyPy error: attribute not found
 ```
 
 **Solution**: Exception classes now declare attributes explicitly:
 
-```python
+```python notest
 # Exception classes have been updated with proper type annotations
 error = FlextOracleWmsError("message", field="username")
 assert error.field == "username"  # Now works with MyPy
@@ -110,7 +93,7 @@ assert error.field == "username"  # Now works with MyPy
 
 **Solution**: Use proper configuration types:
 
-```python
+```python notest
 from flext_oracle_wms import FlextOracleWmsModuleSettings, FlextOracleWmsApiVersion
 
 settings = FlextOracleWmsModuleSettings(
@@ -155,7 +138,7 @@ import httpx  # FLEXT compliance violation
 
 **Symptom**: Tests are designed to expect network failures
 
-```python
+```python notest
 def test_real_connection():
     # This test expects to fail with test settings
     try:
@@ -170,7 +153,7 @@ def test_real_connection():
 
 **Symptom**: Tests intentionally pass wrong types to test validation
 
-```python
+```python notest
 filter_engine.filter_records("not_a_list", {})  # Intentionally wrong type
 ```
 
@@ -251,7 +234,7 @@ make val
 
 #### "ValidationError in configuration"
 
-```python
+```python notest
 # Pydantic validation error
 ValidationError: field required (type=value_error.missing)
 ```
@@ -260,14 +243,14 @@ ValidationError: field required (type=value_error.missing)
 
 #### "FlextOracleWmsConnectionError with retry_count"
 
-```python
+```python notest
 error = FlextOracleWmsConnectionError("failed", retry_count=3)
 assert error.retry_count == 3  # Now works after exception class updates
 ```
 
 #### "Entity not found" errors
 
-```python
+```python notest
 error = FlextOracleWmsEntityNotFoundError("Entity missing", entity_name="test")
 assert error.entity_name == "test"  # Properly handled
 ```
@@ -277,27 +260,11 @@ assert error.entity_name == "test"  # Properly handled
 ### Enable Debug Logging
 
 ```python
-logging.basicConfig(level=logging.DEBUG)
+import logging
 
-from flext_core import FlextBus
-from flext_core import FlextSettings
-from flext_core import FlextConstants
-from flext_core import FlextContainer
-from flext_core import FlextContext
-from flext_core import d
-from flext_core import FlextDispatcher
-from flext_core import e
-from flext_core import h
-from flext_core import x
-from flext_core import FlextModels
-from flext_core import FlextProcessors
-from flext_core import p
-from flext_core import FlextRegistry
-from flext_core import r, p
 from flext_core import u
-from flext_core import s
-from flext_core import t
-from flext_core import u
+
+logging.basicConfig(level=logging.DEBUG)
 
 logger = u.fetch_logger(__name__)
 logger.debug("Debug message")

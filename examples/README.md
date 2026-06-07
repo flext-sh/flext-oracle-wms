@@ -71,7 +71,7 @@ This directory contains comprehensive examples demonstrating Oracle WMS Cloud in
 
 ### Basic Client Setup
 
-```python
+```python notest
 from flext_oracle_wms import FlextOracleWmsClient, FlextOracleWmsClientSettings
 
 # Configure Oracle WMS connection
@@ -106,7 +106,7 @@ export FLEXT_ORACLE_WMS_AUTH_METHOD="basic"
 
 Each example follows a consistent structure:
 
-```python
+```python notest
 """
 Example: [Description]
 

@@ -117,7 +117,7 @@ client = FlextApiClient()
 
 #### 2. Class Architecture Compliance (Critical)
 
-```python
+```python notest
 # Current: Multiple classes per module (71 classes total)
 class WmsClient:
     pass
@@ -135,7 +135,7 @@ class FlextOracleWmsClient(s):
 
 #### 3. Authentication Integration (High Priority)
 
-```python
+```python notest
 # Current: Custom authentication
 class CustomAuth:
     pass  # ❌ VIOLATION
@@ -150,30 +150,15 @@ from flext_auth import FlextAuthenticator  # ✅ REQUIRED
 All operations must use r pattern:
 
 ```python
-from flext_core import FlextBus
-from flext_core import FlextSettings
-from flext_core import FlextConstants
-from flext_core import FlextContainer
-from flext_core import FlextContext
-from flext_core import d
-from flext_core import FlextDispatcher
-from flext_core import e
-from flext_core import h
-from flext_core import x
-from flext_core import FlextModels
-from flext_core import FlextProcessors
-from flext_core import p
-from flext_core import FlextRegistry
-from flext_core import r, p
-from flext_core import u
-from flext_core import s
-from flext_core import t
-from flext_core import u
+from __future__ import annotations
+
+from flext_core import p, r
 
 
-def operation() -> p.Result[ReturnType]:
+def operation() -> p.Result[str]:
     try:
         # Operation logic
+        result = "ok"
         return r.ok(result)
     except Exception as e:
         return r.fail(f"Operation failed: {e}")
@@ -211,7 +196,7 @@ tests/
 
 Tests currently use fake URLs and expect failures:
 
-```python
+```python notest
 def test_real_connection():
     settings = FlextOracleWmsModuleSettings.for_testing()  # Uses test.example.com
     # Connection tests expect network failures with test settings

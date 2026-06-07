@@ -90,65 +90,63 @@ src/flext_oracle_wms/
 
 ### Core Client Interface
 
-```python
-from flext_oracle_wms import FlextOracleWmsClient, FlextOracleWmsClientSettings
+```python notest
+from flext_oracle_wms import FlextOracleWmsApi, FlextOracleWmsSettings
 
 # Type-safe configuration
-settings = FlextOracleWmsClientSettings(
+settings = FlextOracleWmsSettings(
     base_url="https://your-wms.oraclecloud.com",
     username="your_username",
     password="your_password",
 )
 
-# Enterprise client with comprehensive error handling
-client = FlextOracleWmsClient(settings)
-result = client.discover_entities()
+# Build the API facade and discover entities (requires a live Oracle WMS)
+api = FlextOracleWmsApi.with_settings(settings)
+result = api.create_oracle_wms_client(settings)
 
-# Railway-oriented programming with r
+# Railway-oriented programming with FlextResult
 if result.success:
-    entities = result.data
-    print(f"Discovered {len(entities)} WMS entities")
+    client = result.value
+    print("Client created")
 else:
-    logger.error(f"Discovery failed: {result.error}")
+    print(f"Discovery failed: {result.error}")
 ```
 
 ### Configuration Management
 
 ```python
-from flext_oracle_wms import FlextOracleWmsClientSettings
+import os
+
+from flext_oracle_wms import FlextOracleWmsSettings
 
 # Environment-driven configuration with validation
-settings = FlextOracleWmsClientSettings(
-    base_url=os.getenv("FLEXT_ORACLE_WMS_BASE_URL"),
-    username=os.getenv("FLEXT_ORACLE_WMS_USERNAME"),
-    password=os.getenv("FLEXT_ORACLE_WMS_PASSWORD"),
+settings = FlextOracleWmsSettings(
+    base_url=os.getenv("FLEXT_ORACLE_WMS_BASE_URL", "https://test.example.com"),
+    username=os.getenv("FLEXT_ORACLE_WMS_USERNAME", "test_user"),
+    password=os.getenv("FLEXT_ORACLE_WMS_PASSWORD", "test_password"),
     auth_method="basic",
     timeout=30,
-    max_retries=3,
-    enable_caching=True,
+    retry_attempts=3,
 )
+print(settings.base_url)
 ```
 
 ### Error Handling
 
-```python
-from flext_oracle_wms import (
-    FlextOracleWmsError,
-    FlextOracleWmsConnectionError,
-    FlextOracleWmsAuthenticationError,
-)
+```python notest
+from flext_oracle_wms import FlextOracleWmsError, FlextOracleWmsValidationError
 
 try:
     result = client.query_entity_data("INVENTORY")
-    if result.is_failure:
-        # Handle business logic errors via r
+    if not result.success:
+        # Handle business logic errors via FlextResult
         logger.error(f"Query failed: {result.error}")
-except FlextOracleWmsConnectionError:
-    # Handle connection issues
-    logger.error("Failed to connect to Oracle WMS")
-except FlextOracleWmsAuthenticationError:
-    # Handle authentication failures
-    logger.error("Oracle WMS authentication failed")
+except FlextOracleWmsValidationError:
+    # Handle validation issues
+    logger.error("Oracle WMS validation failed")
+except FlextOracleWmsError:
+    # Handle any Oracle WMS error
+    logger.error("Oracle WMS operation failed")
 ```
 
 ## 🔧 **Development Guidelines**

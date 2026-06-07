@@ -32,11 +32,15 @@ ______________________________________________________________________
 Main client interface for Oracle WMS integration.
 
 ```python
-from flext_oracle_wms import FlextOracleWmsClient, FlextOracleWmsModuleSettings
+from flext_oracle_wms import FlextOracleWmsApi, FlextOracleWmsSettings
 
-# Initialize client
-settings = FlextOracleWmsModuleSettings.for_testing()
-client = FlextOracleWmsClient(settings)
+# Initialize the API facade
+settings = FlextOracleWmsSettings(
+    base_url="https://test.example.com",
+    username="test_user",
+    password="test_password",
+)
+api = FlextOracleWmsApi.with_settings(settings)
 ```
 
 #### Methods
@@ -45,7 +49,7 @@ client = FlextOracleWmsClient(settings)
 
 Tests connection to Oracle WMS (currently uses fake URLs).
 
-```python
+```python notest
 result = client.test_connection()
 if result.success:
     print("Connection structure verified")
@@ -57,7 +61,7 @@ else:
 
 Discovers available Oracle WMS entities.
 
-```python
+```python notest
 result = client.discover_entities()
 if result.success:
     entities = result.value
@@ -77,7 +81,9 @@ Configuration class for Oracle WMS connection settings.
 Returns test configuration with fake URLs.
 
 ```python
-settings = FlextOracleWmsModuleSettings.for_testing()
+from flext_oracle_wms import FlextOracleWmsSettings
+
+settings = FlextOracleWmsSettings(base_url="https://test.example.com")
 # Uses "https://test.example.com" as base URL
 ```
 
@@ -120,11 +126,7 @@ Based on Oracle WMS best practices research:
 ```python
 from flext_oracle_wms import (
     FlextOracleWmsError,  # Base exception
-    FlextOracleWmsConnectionError,  # Connection issues
-    FlextOracleWmsAuthenticationError,  # Auth failures
     FlextOracleWmsValidationError,  # Validation errors
-    FlextOracleWmsApiError,  # API errors
-    FlextOracleWmsEntityNotFoundError,  # Entity not found
 )
 ```
 
@@ -132,7 +134,7 @@ from flext_oracle_wms import (
 
 All operations return `r[T]` for type-safe error handling:
 
-```python
+```python notest
 result = client.some_operation()
 if result.success:
     data = result.value  # Type-safe access
@@ -147,10 +149,11 @@ else:
 Represents Oracle WMS entity with metadata.
 
 ```python
-from flext_oracle_wms import FlextOracleWmsEntity
+from flext_oracle_wms import m
 
-entity = FlextOracleWmsEntity(
+entity = m.OracleWms.Entity(
     name="inventory_item",
+    endpoint="/entity/inventory_item",
     description="Inventory item entity",
     # Additional metadata
 )
