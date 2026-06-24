@@ -2,7 +2,7 @@
 
 # flext-oracle-wms Documentation
 
-- Version: `unknown`
+- Version: `0.12.0-dev`
 - Project class: `domain`
 - Package: `flext_oracle_wms`
 - Description: Enterprise Oracle WMS client library for FLEXT data integration platform
