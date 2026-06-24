@@ -1,26 +1,5 @@
 # Troubleshooting Guide
 
-<!-- TOC START -->
-- [Common Issues](#common-issues)
-  - [Connection Issues](#connection-issues)
-  - [Type Safety Issues](#type-safety-issues)
-  - [FLEXT Compliance Issues](#flext-compliance-issues)
-  - [Testing Issues](#testing-issues)
-  - [Development Environment Issues](#development-environment-issues)
-  - [Oracle WMS Specific Issues](#oracle-wms-specific-issues)
-  - [Performance Issues](#performance-issues)
-- [Error Messages Reference](#error-messages-reference)
-  - [Common Error Patterns](#common-error-patterns)
-- [Debugging Tips](#debugging-tips)
-  - [Enable Debug Logging](#enable-debug-logging)
-  - [Type Checking](#type-checking)
-  - [Test Debugging](#test-debugging)
-- [Getting Help](#getting-help)
-  - [Documentation Resources](#documentation-resources)
-  - [Known Limitations](#known-limitations)
-  - [Reporting Issues](#reporting-issues)
-<!-- TOC END -->
-
 **Common issues and solutions for flext-oracle-wms**
 
 **Version**: 0.12.0-dev | **Last Updated**: April 14, 2026 | **Status**: Framework troubleshooting · 1.0.0 Current
@@ -35,7 +14,7 @@ ______________________________________________________________________
 
 **Symptom**: Connection tests fail with network errors
 
-```python notest
+```python
 # Expected behavior with current implementation
 settings = FlextOracleWmsModuleSettings.for_testing()
 client = FlextOracleWmsClient(settings)
@@ -54,7 +33,7 @@ result = client.test_connection()  # Expected to fail
 
 **Symptom**: Cannot import flext_core components
 
-```python notest
+```python
 from flext_core import get_logger  # ImportError
 ```
 
@@ -74,14 +53,14 @@ logger = u.fetch_logger(__name__)
 
 **Symptom**: MyPy reports missing attributes on exception classes
 
-```python notest
+```python
 error = FlextOracleWmsError("message", field="username")
 assert error.field == "username"  # MyPy error: attribute not found
 ```
 
 **Solution**: Exception classes now declare attributes explicitly:
 
-```python notest
+```python
 # Exception classes have been updated with proper type annotations
 error = FlextOracleWmsError("message", field="username")
 assert error.field == "username"  # Now works with MyPy
@@ -93,7 +72,7 @@ assert error.field == "username"  # Now works with MyPy
 
 **Solution**: Use proper configuration types:
 
-```python notest
+```python
 from flext_oracle_wms import FlextOracleWmsModuleSettings, FlextOracleWmsApiVersion
 
 settings = FlextOracleWmsModuleSettings(
@@ -138,7 +117,7 @@ import httpx  # FLEXT compliance violation
 
 **Symptom**: Tests are designed to expect network failures
 
-```python notest
+```python
 def test_real_connection():
     # This test expects to fail with test settings
     try:
@@ -153,7 +132,7 @@ def test_real_connection():
 
 **Symptom**: Tests intentionally pass wrong types to test validation
 
-```python notest
+```python
 filter_engine.filter_records("not_a_list", {})  # Intentionally wrong type
 ```
 
@@ -234,7 +213,7 @@ make val
 
 #### "ValidationError in configuration"
 
-```python notest
+```python
 # Pydantic validation error
 ValidationError: field required (type=value_error.missing)
 ```
@@ -243,14 +222,14 @@ ValidationError: field required (type=value_error.missing)
 
 #### "FlextOracleWmsConnectionError with retry_count"
 
-```python notest
+```python
 error = FlextOracleWmsConnectionError("failed", retry_count=3)
 assert error.retry_count == 3  # Now works after exception class updates
 ```
 
 #### "Entity not found" errors
 
-```python notest
+```python
 error = FlextOracleWmsEntityNotFoundError("Entity missing", entity_name="test")
 assert error.entity_name == "test"  # Properly handled
 ```

@@ -1,36 +1,5 @@
 # Development Guide
 
-<!-- TOC START -->
-- [Development Setup](#development-setup)
-  - [Prerequisites](#prerequisites)
-  - [Installation](#installation)
-- [Development Commands](#development-commands)
-  - [Quality Gates](#quality-gates)
-  - [Testing](#testing)
-  - [Type Safety](#type-safety)
-- [Code Standards](#code-standards)
-  - [FLEXT Compliance Requirements](#flext-compliance-requirements)
-  - [Error Handling Standards](#error-handling-standards)
-  - [Type Safety Requirements](#type-safety-requirements)
-- [Testing Strategy](#testing-strategy)
-  - [Current Test Structure](#current-test-structure)
-  - [Test Requirements](#test-requirements)
-  - [Current Test Limitations](#current-test-limitations)
-- [Implementation Priorities](#implementation-priorities)
-  - [Phase 1: FLEXT Compliance (Weeks 1-2)](#phase-1-flext-compliance-weeks-1-2)
-  - [Phase 2: Oracle WMS Integration (Weeks 3-4)](#phase-2-oracle-wms-integration-weeks-3-4)
-  - [Phase 3: Enhanced Features (Weeks 5-6)](#phase-3-enhanced-features-weeks-5-6)
-- [Code Review Guidelines](#code-review-guidelines)
-  - [Pre-commit Requirements](#pre-commit-requirements)
-  - [Review Checklist](#review-checklist)
-- [Development Environment](#development-environment)
-  - [IDE Configuration](#ide-configuration)
-  - [Environment Variables](#environment-variables)
-- [Troubleshooting](#troubleshooting)
-  - [Common Issues](#common-issues)
-  - [Development Tools](#development-tools)
-<!-- TOC END -->
-
 **Development workflow and guidelines for flext-oracle-wms**
 
 **Version**: 0.12.0-dev | **Last Updated**: April 14, 2026 | **Status**: Framework requiring implementation · 1.0.0 Current
@@ -117,7 +86,7 @@ client = FlextApiClient()
 
 #### 2. Class Architecture Compliance (Critical)
 
-```python notest
+```python
 # Current: Multiple classes per module (71 classes total)
 class WmsClient:
     pass
@@ -135,7 +104,7 @@ class FlextOracleWmsClient(s):
 
 #### 3. Authentication Integration (High Priority)
 
-```python notest
+```python
 # Current: Custom authentication
 class CustomAuth:
     pass  # ❌ VIOLATION
@@ -196,7 +165,7 @@ tests/
 
 Tests currently use fake URLs and expect failures:
 
-```python notest
+```python
 def test_real_connection():
     settings = FlextOracleWmsModuleSettings.for_testing()  # Uses test.example.com
     # Connection tests expect network failures with test settings

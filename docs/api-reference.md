@@ -1,24 +1,5 @@
 # API Reference
 
-<!-- TOC START -->
-- [Client API](#client-api)
-  - [FlextOracleWmsClient](#flextoraclewmsclient)
-- [Configuration API](#configuration-api)
-  - [FlextOracleWmsModuleSettings](#flextoraclewmsmodulesettings)
-- [API Endpoints (Framework)](#api-endpoints-framework)
-  - [Implemented Endpoints (22 total)](#implemented-endpoints-22-total)
-  - [Missing Modern APIs (LGF v10)](#missing-modern-apis-lgf-v10)
-- [Error Handling](#error-handling)
-  - [Exception Hierarchy](#exception-hierarchy)
-  - [r Pattern](#r-pattern)
-- [Models](#models)
-  - [FlextOracleWmsEntity](#flextoraclewmsentity)
-- [Implementation Status](#implementation-status)
-  - [Completed Components](#completed-components)
-  - [Implementation Gaps](#implementation-gaps)
-- [Related Documentation](#related-documentation)
-<!-- TOC END -->
-
 **Complete API documentation for flext-oracle-wms**
 
 **Version**: 0.12.0-dev | **Last Updated**: April 14, 2026 | **Status**: Framework with implementation gaps · 1.0.0 Current
@@ -49,7 +30,7 @@ api = FlextOracleWmsApi.with_settings(settings)
 
 Tests connection to Oracle WMS (currently uses fake URLs).
 
-```python notest
+```python
 result = client.test_connection()
 if result.success:
     print("Connection structure verified")
@@ -61,7 +42,7 @@ else:
 
 Discovers available Oracle WMS entities.
 
-```python notest
+```python
 result = client.discover_entities()
 if result.success:
     entities = result.value
@@ -134,7 +115,7 @@ from flext_oracle_wms import (
 
 All operations return `r[T]` for type-safe error handling:
 
-```python notest
+```python
 result = client.some_operation()
 if result.success:
     data = result.value  # Type-safe access
