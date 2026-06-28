@@ -12,39 +12,99 @@ from flext_core.lazy import (
 )
 
 if _t.TYPE_CHECKING:
-    from flext_tests import td, tf, tk, tm, tv
+    from flext_tests import td as td, tf as tf, tk as tk, tv as tv
 
-    from flext_oracle_wms import d, e, h, r, x
-    from tests.base import TestsFlextOracleWmsServiceBase, s
-    from tests.constants import TestsFlextOracleWmsConstants, c
-    from tests.models import TestsFlextOracleWmsModels, m
-    from tests.protocols import TestsFlextOracleWmsProtocols, p
-    from tests.settings import TestsFlextOracleWmsSettings
-    from tests.typings import TestsFlextOracleWmsTypes, t
-    from tests.unit.complete_mock_pipeline import CompleteMockPipeline
-    from tests.unit.oracle_wms_complete_discovery import OracleWmsCompleteDiscovery
-    from tests.unit.oracle_wms_focused_discovery import FocusedOracleWmsDiscovery
-    from tests.unit.oracle_wms_optimized_discovery import OptimizedOracleWmsDiscovery
-    from tests.unit.test_authentication import TestsFlextOracleWmsAuthentication
-    from tests.unit.test_authentication_core import (
-        TestsFlextOracleWmsAuthenticationCore,
+    from flext_oracle_wms import d as d, e as e, h as h, r as r, x as x
+    from tests.base import (
+        TestsFlextOracleWmsServiceBase as TestsFlextOracleWmsServiceBase,
+        s as s,
     )
-    from tests.unit.test_client import TestsFlextOracleWmsClient
-    from tests.unit.test_client_class import TestsFlextOracleWmsClientClass
-    from tests.unit.test_client_core import TestsFlextOracleWmsClientCore
-    from tests.unit.test_config import TestsFlextOracleWmsConfig
-    from tests.unit.test_config_module import TestsFlextOracleWmsConfigModule
-    from tests.unit.test_connection import TestsFlextOracleWmsConnection
-    from tests.unit.test_declarative import TestsFlextOracleWmsDeclarative
-    from tests.unit.test_discovery import TestsFlextOracleWmsDiscovery
-    from tests.unit.test_filtering import TestsFlextOracleWmsFiltering
-    from tests.unit.test_helpers import TestsFlextOracleWmsHelpers
-    from tests.unit.test_helpers_core import TestsFlextOracleWmsHelpersCore
-    from tests.unit.test_models import TestsFlextOracleWmsModelsUnit
-    from tests.unit.test_schema_dynamic import TestsFlextOracleWmsSchemaDynamic
-    from tests.unit.test_singer_flattening import TestsFlextOracleWmsSingerFlattening
-    from tests.unit.test_unified_config import TestsFlextOracleWmsUnifiedConfig
-    from tests.utilities import TestsFlextOracleWmsUtilities, u
+    from tests.constants import (
+        TestsFlextOracleWmsConstants as TestsFlextOracleWmsConstants,
+        c as c,
+    )
+    from tests.models import (
+        TestsFlextOracleWmsModels as TestsFlextOracleWmsModels,
+        m as m,
+    )
+    from tests.protocols import (
+        TestsFlextOracleWmsProtocols as TestsFlextOracleWmsProtocols,
+        p as p,
+    )
+    from tests.settings import (
+        TestsFlextOracleWmsSettings as TestsFlextOracleWmsSettings,
+    )
+    from tests.typings import (
+        TestsFlextOracleWmsTypes as TestsFlextOracleWmsTypes,
+        t as t,
+    )
+    from tests.unit.complete_mock_pipeline import (
+        CompleteMockPipeline as CompleteMockPipeline,
+    )
+    from tests.unit.oracle_wms_complete_discovery import (
+        OracleWmsCompleteDiscovery as OracleWmsCompleteDiscovery,
+    )
+    from tests.unit.oracle_wms_focused_discovery import (
+        FocusedOracleWmsDiscovery as FocusedOracleWmsDiscovery,
+    )
+    from tests.unit.oracle_wms_optimized_discovery import (
+        OptimizedOracleWmsDiscovery as OptimizedOracleWmsDiscovery,
+    )
+    from tests.unit.test_authentication import (
+        TestsFlextOracleWmsAuthentication as TestsFlextOracleWmsAuthentication,
+    )
+    from tests.unit.test_authentication_core import (
+        TestsFlextOracleWmsAuthenticationCore as TestsFlextOracleWmsAuthenticationCore,
+    )
+    from tests.unit.test_client import (
+        TestsFlextOracleWmsClient as TestsFlextOracleWmsClient,
+    )
+    from tests.unit.test_client_class import (
+        TestsFlextOracleWmsClientClass as TestsFlextOracleWmsClientClass,
+    )
+    from tests.unit.test_client_core import (
+        TestsFlextOracleWmsClientCore as TestsFlextOracleWmsClientCore,
+    )
+    from tests.unit.test_config import (
+        TestsFlextOracleWmsConfig as TestsFlextOracleWmsConfig,
+    )
+    from tests.unit.test_config_module import (
+        TestsFlextOracleWmsConfigModule as TestsFlextOracleWmsConfigModule,
+    )
+    from tests.unit.test_connection import (
+        TestsFlextOracleWmsConnection as TestsFlextOracleWmsConnection,
+    )
+    from tests.unit.test_declarative import (
+        TestsFlextOracleWmsDeclarative as TestsFlextOracleWmsDeclarative,
+    )
+    from tests.unit.test_discovery import (
+        TestsFlextOracleWmsDiscovery as TestsFlextOracleWmsDiscovery,
+    )
+    from tests.unit.test_filtering import (
+        TestsFlextOracleWmsFiltering as TestsFlextOracleWmsFiltering,
+    )
+    from tests.unit.test_helpers import (
+        TestsFlextOracleWmsHelpers as TestsFlextOracleWmsHelpers,
+    )
+    from tests.unit.test_helpers_core import (
+        TestsFlextOracleWmsHelpersCore as TestsFlextOracleWmsHelpersCore,
+    )
+    from tests.unit.test_models import (
+        TestsFlextOracleWmsModelsUnit as TestsFlextOracleWmsModelsUnit,
+    )
+    from tests.unit.test_schema_dynamic import (
+        TestsFlextOracleWmsSchemaDynamic as TestsFlextOracleWmsSchemaDynamic,
+    )
+    from tests.unit.test_singer_flattening import (
+        TestsFlextOracleWmsSingerFlattening as TestsFlextOracleWmsSingerFlattening,
+    )
+    from tests.unit.test_unified_config import (
+        TestsFlextOracleWmsUnifiedConfig as TestsFlextOracleWmsUnifiedConfig,
+    )
+    from tests.utilities import (
+        TestsFlextOracleWmsUtilities as TestsFlextOracleWmsUtilities,
+        u as u,
+    )
 _LAZY_IMPORTS = merge_lazy_imports(
     (".unit",),
     build_lazy_import_map(
@@ -108,7 +168,6 @@ _LAZY_IMPORTS = merge_lazy_imports(
                 "td",
                 "tf",
                 "tk",
-                "tm",
                 "tv",
             ),
         },
@@ -179,7 +238,6 @@ __all__: list[str] = [
     "td",
     "tf",
     "tk",
-    "tm",
     "tv",
     "u",
     "x",
