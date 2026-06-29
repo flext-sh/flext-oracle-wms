@@ -13,15 +13,8 @@ from collections.abc import (
 
 from flext_api import u
 
-from flext_oracle_wms import (
-    FlextOracleWmsValidationError,
-    c,
-    e,
-    m,
-    p,
-    r,
-    t,
-)
+from flext_oracle_wms import c, e, m, p, r, t
+from flext_oracle_wms.errors import FlextOracleWmsValidationError
 
 type FilterEntry = (
     t.OracleWms.FilterScalar

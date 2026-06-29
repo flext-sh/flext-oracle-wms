@@ -13,7 +13,7 @@ from __future__ import annotations
 from unittest.mock import MagicMock
 
 import pytest
-from flext_api import FlextApiClient
+from flext_api._utilities.client import FlextApiClient
 
 from flext_oracle_wms import FlextOracleWmsSettings, FlextOracleWmsUtilitiesClient
 from tests import r

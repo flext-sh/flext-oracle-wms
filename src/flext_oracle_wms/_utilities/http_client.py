@@ -9,7 +9,8 @@ from __future__ import annotations
 from types import TracebackType
 from typing import Self
 
-from flext_api import FlextApiClient, FlextApiSettings, u
+from flext_api import FlextApiSettings, u
+from flext_api._utilities.client import FlextApiClient
 
 from flext_oracle_wms import c, m, p, r, t
 
