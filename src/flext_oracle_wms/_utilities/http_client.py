@@ -9,8 +9,7 @@ from __future__ import annotations
 from types import TracebackType
 from typing import Self
 
-from flext_api import FlextApiSettings, u
-from flext_api._utilities.client import FlextApiClient
+from flext_api import FlextApi, FlextApiSettings, u
 
 from flext_oracle_wms import c, m, p, r, t
 
@@ -37,7 +36,7 @@ class FlextOracleWmsUtilitiesHttpClient:
             self.timeout: float = timeout
             self.default_headers = self._normalize_headers(dict(headers or {}))
             self.verify_ssl: bool = verify_ssl
-            self._client: FlextApiClient | None = None
+            self._client: FlextApi | None = None
 
         def __enter__(self) -> Self:
             """Context manager entry."""
@@ -199,7 +198,7 @@ class FlextOracleWmsUtilitiesHttpClient:
                     "log_requests": False,
                     "log_responses": False,
                 })
-                self._client = FlextApiClient(settings=settings)
+                self._client = FlextApi(settings=settings)
 
         def _execute_request(
             self,

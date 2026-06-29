@@ -10,7 +10,7 @@ from __future__ import annotations
 import pytest
 
 from flext_core import FlextUtilities
-from tests import u
+from tests.utilities import u
 
 
 @pytest.mark.unit

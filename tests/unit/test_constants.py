@@ -10,7 +10,7 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 from flext_core import FlextConstants
-from tests import c
+from tests.constants import c
 
 
 class TestsFlextOracleWmsConstantsUnit:

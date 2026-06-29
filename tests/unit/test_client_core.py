@@ -12,9 +12,11 @@ from __future__ import annotations
 from unittest.mock import MagicMock
 
 import pytest
+from flext_tests import r
 
-from flext_oracle_wms import FlextOracleWmsSettings, FlextOracleWmsUtilitiesClient
-from tests import r, u
+from flext_oracle_wms import FlextOracleWmsSettings
+from flext_oracle_wms.utilities import FlextOracleWmsUtilitiesClient
+from tests.utilities import u
 
 
 @pytest.mark.unit

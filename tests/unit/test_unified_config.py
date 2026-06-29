@@ -9,7 +9,7 @@ from __future__ import annotations
 import pytest
 
 from flext_oracle_wms import FlextOracleWmsSettings
-from tests import c
+from tests.constants import c
 
 
 class TestsFlextOracleWmsUnifiedConfig:

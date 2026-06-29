@@ -15,14 +15,15 @@ from typing import override
 from urllib.parse import urlparse
 
 from dotenv import load_dotenv
-from flext_tests import FlextTestsUtilities
+from flext_tests import FlextTestsUtilities, r
 
 from flext_oracle_wms import (
     FlextOracleWmsApi,
     FlextOracleWmsSettings,
     FlextOracleWmsUtilities as u,
 )
-from tests import TestsFlextOracleWmsTypes, p, r
+from tests.protocols import p
+from tests.typings import TestsFlextOracleWmsTypes
 
 
 class TestsFlextOracleWmsUtilities(FlextTestsUtilities, u):

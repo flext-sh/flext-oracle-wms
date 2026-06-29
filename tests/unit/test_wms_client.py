@@ -1,7 +1,7 @@
 """Unit tests for FlextOracleWmsClient class.
 
 Tests the WMS client module against actual source API.
-The client uses FlextApiClient internally via self._client.request(HttpRequest(...)).
+The client uses FlextApi internally via self._client.request(HttpRequest(...)).
 
 Copyright (c) 2025 FLEXT Team. All rights reserved.
 SPDX-License-Identifier: MIT
@@ -13,10 +13,11 @@ from __future__ import annotations
 from unittest.mock import MagicMock
 
 import pytest
-from flext_api._utilities.client import FlextApiClient
+from flext_api import FlextApi
+from flext_tests import r
 
-from flext_oracle_wms import FlextOracleWmsSettings, FlextOracleWmsUtilitiesClient
-from tests import r
+from flext_oracle_wms import FlextOracleWmsSettings
+from flext_oracle_wms.utilities import FlextOracleWmsUtilitiesClient
 
 
 class TestsFlextOracleWmsWmsClient:
@@ -28,12 +29,12 @@ class TestsFlextOracleWmsWmsClient:
         result: object,
     ) -> None:
         def _request(
-            _self: FlextApiClient,
+            _self: FlextApi,
             _http_request: object,
         ) -> object:
             return result
 
-        monkeypatch.setattr(FlextApiClient, "request", _request)
+        monkeypatch.setattr(FlextApi, "request", _request)
 
     def test_initialization_without_config(self) -> None:
         """Test initialization without explicit configuration uses global/default."""

@@ -15,9 +15,9 @@ import os
 from flext_oracle_wms import (
     FlextOracleWmsConstants,
     FlextOracleWmsSettings,
-    FlextOracleWmsUtilitiesClient,
     u,
 )
+from flext_oracle_wms.utilities import FlextOracleWmsUtilitiesClient
 
 FlextOracleWmsClient = FlextOracleWmsUtilitiesClient.Client
 

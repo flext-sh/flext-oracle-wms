@@ -6,8 +6,7 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from flext_api import FlextApiSettings, u
-from flext_api._utilities.client import FlextApiClient
+from flext_api import FlextApi, FlextApiSettings, u
 
 from flext_oracle_wms import FlextOracleWmsSettings, c, m, p, r, t
 from flext_oracle_wms._utilities.auth import FlextOracleWmsUtilitiesAuth
@@ -62,7 +61,7 @@ class FlextOracleWmsUtilitiesClient:
                 "headers": default_headers,
                 "default_headers": default_headers,
             })
-            self._client: FlextApiClient | None = self._create_api_client()
+            self._client: FlextApi | None = self._create_api_client()
             self._discovered_entities: t.StrSequence = []
             self._started = False
 
@@ -96,9 +95,9 @@ class FlextOracleWmsUtilitiesClient:
                 raise ValueError(error_message)
             return auth_headers.value
 
-        def _create_api_client(self) -> FlextApiClient:
+        def _create_api_client(self) -> FlextApi:
             """Create a configured API client for Oracle WMS requests."""
-            return FlextApiClient(settings=self._api_config)
+            return FlextApi(settings=self._api_config)
 
         @staticmethod
         def _decode_response_model[T: m.BaseModel](

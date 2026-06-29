@@ -22,9 +22,11 @@ import pytest
 from flext_oracle_wms import (
     FlextOracleWmsApi,
     FlextOracleWmsSettings,
-    FlextOracleWmsUtilitiesClient,
 )
-from tests import p, t, u
+from flext_oracle_wms.utilities import FlextOracleWmsUtilitiesClient
+from tests.protocols import p
+from tests.typings import t
+from tests.utilities import u
 
 logger = u.fetch_logger(__name__)
 

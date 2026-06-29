@@ -32,13 +32,13 @@ from dotenv import load_dotenv
 
 from flext_core import FlextContainer
 from flext_oracle_wms import (
-    FlextOracleWmsError,
     FlextOracleWmsSettings,
-    FlextOracleWmsUtilitiesClient,
     p,
     t,
     u,
 )
+from flext_oracle_wms.errors import FlextOracleWmsError
+from flext_oracle_wms.utilities import FlextOracleWmsUtilitiesClient
 
 FlextOracleWmsClient = FlextOracleWmsUtilitiesClient.Client
 

@@ -16,8 +16,13 @@ from datetime import UTC, datetime
 from pathlib import Path
 from typing import cast
 
-from flext_oracle_wms import FlextOracleWmsSettings, FlextOracleWmsUtilitiesClient
-from tests import p, r, t, u
+from flext_tests import r
+
+from flext_oracle_wms import FlextOracleWmsSettings
+from flext_oracle_wms.utilities import FlextOracleWmsUtilitiesClient
+from tests.protocols import p
+from tests.typings import t
+from tests.utilities import u
 
 logger = u.fetch_logger(__name__)
 
