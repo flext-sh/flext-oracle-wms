@@ -3,12 +3,30 @@
 
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 from flext_core.lazy import (
     build_lazy_import_map,
     install_lazy_exports,
     merge_lazy_imports,
 )
 
+if TYPE_CHECKING:
+    from flext_tests import td as td, tf as tf, tk as tk, tm as tm, tv as tv
+
+    from flext_oracle_wms import (
+        c as c,
+        d as d,
+        e as e,
+        h as h,
+        m as m,
+        p as p,
+        r as r,
+        s as s,
+        t as t,
+        u as u,
+        x as x,
+    )
 _LAZY_IMPORTS = merge_lazy_imports(
     (".tests",),
     build_lazy_import_map(
