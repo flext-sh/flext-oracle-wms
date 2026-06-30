@@ -14,7 +14,7 @@ from flext_core.lazy import (
 if TYPE_CHECKING:
     from flext_tests import td as td, tf as tf, tk as tk, tm as tm, tv as tv
 
-    from flext_oracle_wms import (
+    from flext_core import (
         c as c,
         d as d,
         e as e,
@@ -32,7 +32,7 @@ _LAZY_IMPORTS = merge_lazy_imports(
     build_lazy_import_map(
         {
             ".tests": ("tests",),
-            "flext_oracle_wms": (
+            "flext_core": (
                 "c",
                 "d",
                 "e",
