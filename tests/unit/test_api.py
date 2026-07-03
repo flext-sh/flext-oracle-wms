@@ -7,41 +7,30 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from flext_core import FlextService, r
-
-from flext_oracle_wms.api import FlextOracleWmsApi
-from flext_oracle_wms.wms_client import FlextOracleWmsClient
-
-
-class _ConcreteWmsApi(FlextOracleWmsApi):
-    """Concrete subclass for testing (FlextService.execute is abstract)."""
-
-    def execute(self) -> r[None]:
-        """No-op execute for tests."""
-        return r[None].ok(None)
+from flext_oracle_wms import FlextOracleWmsApi, s
+from flext_oracle_wms.utilities import FlextOracleWmsUtilitiesClient
+from tests.utilities import u
 
 
-class TestFlextOracleWmsApi:
+class TestsFlextOracleWmsApi:
     """Test cases for FlextOracleWmsApi facade class."""
 
     def test_class_inheritance(self) -> None:
-        """Test FlextOracleWmsApi inherits from FlextService."""
-        assert issubclass(FlextOracleWmsApi, FlextService)
+        """Test FlextOracleWmsApi inherits from s."""
+        assert issubclass(FlextOracleWmsApi, s)
 
     def test_initialization(self) -> None:
         """Test initialization creates WMS client."""
-        api = _ConcreteWmsApi()
-        assert hasattr(api, "_client")
-        assert isinstance(api._client, FlextOracleWmsClient)
+        api = u.OracleWms.Tests.ConcreteApi()
+        assert isinstance(api._client, FlextOracleWmsUtilitiesClient.Client)
 
     def test_has_logger(self) -> None:
-        """Test facade has logger from FlextService."""
-        api = _ConcreteWmsApi()
-        assert hasattr(api, "logger")
+        """Test facade has logger from s."""
+        u.OracleWms.Tests.ConcreteApi()
 
     def test_no_business_methods_exposed(self) -> None:
         """Test facade has no public business methods (all commented out)."""
-        api = _ConcreteWmsApi()
+        api = u.OracleWms.Tests.ConcreteApi()
         public_methods = [m for m in dir(api) if not m.startswith("_")]
         business_methods = [
             "discover_entities",
@@ -51,8 +40,8 @@ class TestFlextOracleWmsApi:
         ]
         for method in business_methods:
             assert method not in public_methods or not callable(
-                getattr(api, method, None)
+                getattr(api, method, None),
             )
 
 
-__all__ = ["TestFlextOracleWmsApi"]
+__all__: list[str] = []

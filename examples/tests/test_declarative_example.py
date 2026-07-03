@@ -8,24 +8,25 @@ from __future__ import annotations
 from pathlib import Path
 from urllib.parse import urlparse
 
-from flext_core import FlextLogger
-
 from flext_oracle_wms import (
-    FLEXT_ORACLE_WMS_APIS,
-    FlextOracleWmsApiVersion,
-    FlextOracleWmsClient,
-    FlextOracleWmsClientSettings,
+    FlextOracleWmsApi,
+    FlextOracleWmsSettings,
+    t,
+    u,
 )
+from flext_oracle_wms.utilities import FlextOracleWmsUtilitiesClient
 
-logger = FlextLogger(__name__)
+logger = u.fetch_logger(__name__)
+
+FlextOracleWmsClient = FlextOracleWmsUtilitiesClient.Client
 
 
-def load_env_config() -> dict[str, object] | None:
+def load_env_config() -> dict[str, t.JsonValue] | None:
     """Load configuration from .env file."""
     env_path = Path("flext-tap-oracle-wms/.env")
     if not env_path.exists():
         return None
-    config: dict[str, str] = {}
+    settings: dict[str, str] = {}
     with env_path.open(encoding="utf-8") as f:
         for line in f:
             stripped_line = line.strip()
@@ -35,8 +36,8 @@ def load_env_config() -> dict[str, object] | None:
                 and ("=" in stripped_line)
             ):
                 key, value = stripped_line.split("=", 1)
-                config[key.strip()] = value.strip()
-    base_url = config.get("ORACLE_WMS_BASE_URL", "")
+                settings[key.strip()] = value.strip()
+    base_url = settings.get("ORACLE_WMS_BASE_URL", "")
     if base_url:
         try:
             parsed = urlparse(base_url)
@@ -44,18 +45,19 @@ def load_env_config() -> dict[str, object] | None:
             if path_parts and path_parts[-1]:
                 logger.debug(f"Environment detected in URL: {path_parts[-1]}")
         except (ValueError, AttributeError) as e:
-            logger.debug("Failed to parse environment from URL: %s", e)
+            logger.debug(f"Failed to parse environment from URL: {e}")
     return {
         "oracle_wms_base_url": base_url,
-        "oracle_wms_username": config.get("ORACLE_WMS_USERNAME"),
-        "oracle_wms_password": config.get("ORACLE_WMS_PASSWORD"),
-        "api_version": FlextOracleWmsApiVersion.LGF_V10,
-        "oracle_wms_timeout": int(config.get("ORACLE_WMS_TIMEOUT", "30")),
-        "oracle_wms_max_retries": int(config.get("ORACLE_WMS_MAX_RETRIES", "3")),
-        "oracle_wms_verify_ssl": config.get("ORACLE_WMS_VERIFY_SSL", "true").lower()
+        "oracle_wms_username": settings.get("ORACLE_WMS_USERNAME", ""),
+        "oracle_wms_password": settings.get("ORACLE_WMS_PASSWORD", ""),
+        "api_version": "LGF_V10",
+        "oracle_wms_timeout": int(settings.get("ORACLE_WMS_TIMEOUT", "30")),
+        "oracle_wms_max_retries": int(settings.get("ORACLE_WMS_MAX_RETRIES", "3")),
+        "oracle_wms_verify_ssl": settings.get("ORACLE_WMS_VERIFY_SSL", "true").lower()
         == "true",
-        "oracle_wms_enable_logging": config.get(
-            "ORACLE_WMS_ENABLE_REQUEST_LOGGING", "true"
+        "oracle_wms_enable_logging": settings.get(
+            "ORACLE_WMS_ENABLE_REQUEST_LOGGING",
+            "true",
         ).lower()
         == "true",
     }
@@ -70,55 +72,48 @@ def main() -> None:
         env_config.get("oracle_wms_password"),
     ]):
         return
-    config = FlextOracleWmsClientSettings({
+    settings = FlextOracleWmsSettings.model_validate({
         "base_url": str(env_config["oracle_wms_base_url"]),
         "username": str(env_config["oracle_wms_username"]),
         "password": str(env_config["oracle_wms_password"]),
-        "api_version": env_config["api_version"],
+        "api_version": str(env_config["api_version"]),
         "timeout": int(str(env_config["oracle_wms_timeout"])),
-        "retry_attempts": int(str(env_config["oracle_wms_max_retries"])),
-        "enable_ssl_verification": bool(env_config["oracle_wms_verify_ssl"]),
-        "enable_audit_logging": bool(env_config["oracle_wms_enable_logging"]),
+        "max_retries": int(str(env_config["oracle_wms_max_retries"])),
+        "verify_ssl": bool(env_config["oracle_wms_verify_ssl"]),
+        "enable_logging": bool(env_config["oracle_wms_enable_logging"]),
     })
-    client = FlextOracleWmsClient(config)
+    client = FlextOracleWmsClient(settings)
     try:
         start_result = client.start()
-        if not start_result.is_success:
+        if not start_result.success:
             return
         categories: dict[str, list[str]] = {}
-        for api in FLEXT_ORACLE_WMS_APIS.values():
+        for api in FlextOracleWmsApi.FLEXT_ORACLE_WMS_APIS.values():
             if api.category not in categories:
                 categories[api.category] = []
             categories[api.category].append(api.name)
         for _category, _apis in categories.items():
             pass
-        health_result = client.health_check()
-        if health_result.is_success:
-            pass
-        entities_result = client.discover_entities()
-        if entities_result.is_success:
-            pass
+        client.health_check()
+        client.discover_entities()
         for entity in ["company", "facility", "item"]:
             result = client.get_entity_data(entity, limit=3)
-            if result.is_success:
+            if result.success:
                 data = result.value
-                if isinstance(data, dict):
-                    results = data.get("results", [])
-                    if isinstance(results, list):
-                        data.get("count", len(results))
-                elif isinstance(data, list):
-                    len(data)
-        health_result = client.health_check()
-        if health_result.is_success:
-            pass
+                if isinstance(data, list):
+                    for record in data:
+                        if isinstance(record, dict):
+                            record.get("count", str(len(data)))
+        client.health_check()
         client.update_oblpn_tracking_number(
-            oblpn_id="TEST123", tracking_number="TRACK123"
+            oblpn_id="TEST123",
+            tracking_number="TRACK123",
         )
         lpn_result = client.create_lpn(lpn_nbr="TEST_LPN", qty=10)
-        if lpn_result.is_failure:
+        if lpn_result.failure:
             logger.debug(f"LPN creation failed as expected: {lpn_result.error}")
-    except Exception as e:
-        logger.warning("Test execution encountered error: %s", e)
+    except Exception as exc:
+        logger.warning(f"Test execution encountered error: {exc}")
         raise
     finally:
         client.stop()

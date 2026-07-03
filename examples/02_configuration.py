@@ -7,24 +7,30 @@ integration using the ACTUAL API that exists and functions properly.
 
 from __future__ import annotations
 
-import contextlib
 import os
-from enum import StrEnum
+from enum import StrEnum, unique
 from pathlib import Path
+from typing import ClassVar
 
 from dotenv import load_dotenv
-from flext_core import FlextLogger
 
 from flext_oracle_wms import (
-    FlextOracleWmsClient,
-    FlextOracleWmsClientSettings,
+    FlextOracleWmsConstants,
     FlextOracleWmsSettings,
+    m,
+    t,
+    u,
 )
-from flext_oracle_wms.constants import FlextOracleWmsConstants
+from flext_oracle_wms.utilities import FlextOracleWmsUtilitiesClient
 
-logger = FlextLogger(__name__)
+FlextOracleWmsClient = FlextOracleWmsUtilitiesClient.Client
+
+logger = u.fetch_logger(__name__)
+
+c = FlextOracleWmsConstants
 
 
+@unique
 class Environment(StrEnum):
     """Oracle WMS deployment environments."""
 
@@ -33,37 +39,51 @@ class Environment(StrEnum):
     PRODUCTION = "prod"
 
 
-def get_environment_configs() -> dict[Environment, WmsEnvironmentConfig]:
+class WmsEnvironmentConfig(m.BaseModel):
+    """WMS environment configuration."""
+
+    model_config: ClassVar[m.ConfigDict] = m.ConfigDict(
+        extra="forbid",
+        validate_assignment=True,
+    )
+
+    name: str = u.Field(description="Environment display name")
+    base_url: str = u.Field(description="Oracle WMS base URL")
+    timeout: int = u.Field(ge=1, description="Request timeout in seconds")
+    retry_attempts: int = u.Field(ge=0, description="Retry attempts")
+
+
+def get_environment_configs() -> t.MappingKV[Environment, WmsEnvironmentConfig]:
     """Define environment-specific Oracle WMS configurations."""
     return {
         Environment.DEVELOPMENT: WmsEnvironmentConfig(
             name="Development",
             base_url="https://dev-wms.oraclecloud.com/dev_env",
-            timeout=FlextOracleWmsConstants.Connection.DEFAULT_TIMEOUT,
-            max_retries=FlextOracleWmsConstants.Connection.DEFAULT_MAX_RETRIES,
+            timeout=c.OracleWms.DEFAULT_TIMEOUT,
+            retry_attempts=c.OracleWms.DEFAULT_MAX_RETRIES,
         ),
         Environment.STAGING: WmsEnvironmentConfig(
             name="Staging",
             base_url="https://staging-wms.oraclecloud.com/staging_env",
-            timeout=FlextOracleWmsConstants.Connection.DEFAULT_TIMEOUT,
-            max_retries=FlextOracleWmsConstants.Connection.DEFAULT_MAX_RETRIES,
+            timeout=c.OracleWms.DEFAULT_TIMEOUT,
+            retry_attempts=c.OracleWms.DEFAULT_MAX_RETRIES,
         ),
         Environment.PRODUCTION: WmsEnvironmentConfig(
             name="Production",
             base_url="https://prod-wms.oraclecloud.com/prod_env",
-            timeout=FlextOracleWmsConstants.Connection.DEFAULT_TIMEOUT,
-            max_retries=FlextOracleWmsConstants.Connection.DEFAULT_MAX_RETRIES,
+            timeout=c.OracleWms.DEFAULT_TIMEOUT,
+            retry_attempts=c.OracleWms.DEFAULT_MAX_RETRIES,
         ),
     }
 
 
-def create_config_from_environment() -> FlextOracleWmsClientSettings:
+def create_config_from_environment() -> FlextOracleWmsSettings:
     """Create Oracle WMS client configuration from environment variables.
 
     This uses the REAL .env file with working Oracle WMS credentials.
 
     Returns:
-      FlextOracleWmsClientSettings configured from environment
+      FlextOracleWmsSettings configured from environment
 
     Raises:
       ValueError: If required environment variables are missing
@@ -90,41 +110,39 @@ def create_config_from_environment() -> FlextOracleWmsClientSettings:
         ]
         msg = f"Missing required environment variables: {', '.join(missing)}"
         raise ValueError(msg)
-    env_config = FlextOracleWmsClientSettings.get_global()
+    env_config = FlextOracleWmsSettings.fetch_global()
     if env_config.username and env_config.password:
         return env_config
     return FlextOracleWmsSettings()
 
 
-def create_demo_config() -> FlextOracleWmsClientSettings:
+def create_demo_config() -> FlextOracleWmsSettings:
     """Create a demo Oracle WMS configuration using singleton pattern.
 
     Returns:
-      FlextOracleWmsClientSettings with demo values
+      FlextOracleWmsSettings with demo values
 
     Note:
       This demonstrates how to use the global singleton with parameter overrides.
 
     """
-    return FlextOracleWmsClientSettings({
+    return FlextOracleWmsSettings.model_validate({
         "base_url": "https://demo-wms.oraclecloud.com/demo",
         "username": "demo_user",
         "password": "demo_password",
         "api_version": "LGF_V10",
-        "timeout": FlextOracleWmsConstants.Connection.DEFAULT_TIMEOUT,
-        "retry_attempts": FlextOracleWmsConstants.Connection.DEFAULT_MAX_RETRIES,
-        "enable_ssl_verification": True,
-        "enable_audit_logging": True,
+        "timeout": c.OracleWms.DEFAULT_TIMEOUT,
+        "retry_attempts": c.OracleWms.DEFAULT_MAX_RETRIES,
+        "verify_ssl": True,
+        "enable_logging": True,
     })
 
 
-def validate_configuration(
-    config: FlextOracleWmsClientSettings,
-) -> dict[str, object]:
+def validate_configuration(settings: FlextOracleWmsSettings) -> t.JsonMapping:
     """Validate Oracle WMS client configuration.
 
     Args:
-      config: Oracle WMS client configuration to validate
+      settings: Oracle WMS client configuration to validate
 
     Returns:
       Dictionary containing validation results
@@ -132,73 +150,70 @@ def validate_configuration(
     """
     errors: list[str] = []
     warnings: list[str] = []
-    config_summary: dict[str, object] = {}
-    if not config.base_url:
+    if not settings.base_url:
         errors.append("Base URL is required")
-    elif not config.base_url.startswith("https://"):
+    elif not settings.base_url.startswith("https://"):
         warnings.append("Base URL should use HTTPS for security")
-    if not config.username or not config.password:
+    if not settings.username or not settings.password:
         errors.append("Username and password are required")
-    min_timeout_seconds = FlextOracleWmsConstants.Connection.DEFAULT_TIMEOUT // 3
-    if config.timeout <= 0:
+    min_timeout_seconds = c.OracleWms.DEFAULT_TIMEOUT // 3
+    if settings.timeout <= 0:
         errors.append("Timeout must be positive")
-    elif config.timeout < min_timeout_seconds:
+    elif settings.timeout < min_timeout_seconds:
         warnings.append("Timeout less than 10 seconds may cause issues")
-    max_retries_warning_threshold = (
-        FlextOracleWmsConstants.Connection.DEFAULT_MAX_RETRIES * 3
-    )
-    if config.retry_attempts < 0:
+    retry_count = settings.retry_attempts
+    max_retries_warning_threshold = c.OracleWms.DEFAULT_MAX_RETRIES * 3
+    if retry_count < 0:
         errors.append("Max retries cannot be negative")
-    elif config.retry_attempts > max_retries_warning_threshold:
+    elif retry_count > max_retries_warning_threshold:
         warnings.append("High retry count may cause delays")
-    config_summary = {
-        "base_url": config.base_url,
-        "username": config.username,
-        "api_version": config.api_version,
-        "timeout": config.timeout,
-        "max_retries": config.retry_attempts,
-        "verify_ssl": config.enable_ssl_verification,
-        "enable_logging": config.enable_audit_logging,
-    }
-    validation_results: dict[str, object] = {
-        "valid": len(errors) == 0,
+    config_summary = t.json_mapping_adapter().validate_python({
+        "base_url": settings.base_url,
+        "username": settings.username,
+        "api_version": settings.api_version,
+        "timeout": settings.timeout,
+        "retry_attempts": retry_count,
+        "verify_ssl": settings.verify_ssl,
+        "enable_logging": settings.enable_logging,
+    })
+    return t.json_mapping_adapter().validate_python({
+        "valid": not errors,
         "warnings": warnings,
         "errors": errors,
         "configuration_summary": config_summary,
-    }
-    return validation_results
+    })
 
 
 def test_configuration(
-    config: FlextOracleWmsClientSettings,
-) -> dict[str, object]:
+    settings: FlextOracleWmsSettings,
+) -> dict[str, t.JsonValue]:
     """Test Oracle WMS configuration by attempting connection.
 
     Args:
-      config: Configuration to test
+      settings: Configuration to test
 
     Returns:
       Dictionary with test results
 
     """
-    test_results: dict[str, object] = {
+    test_results: dict[str, t.JsonValue] = {
         "connection_success": False,
         "health_check_success": False,
         "error": None,
         "entities_discovered": 0,
     }
-    client = FlextOracleWmsClient(config)
+    client = FlextOracleWmsClient(settings)
     try:
         client.start()
         test_results["connection_success"] = True
         health_result = client.health_check()
-        if health_result.is_success:
+        if health_result.success:
             test_results["health_check_success"] = True
         entities_result = client.discover_entities()
-        if entities_result.is_success and entities_result.value:
+        if entities_result.success and entities_result.value:
             test_results["entities_discovered"] = len(entities_result.value)
-    except Exception as e:
-        test_results["error"] = str(e)
+    except Exception as exc:
+        test_results["error"] = str(exc)
     finally:
         client.stop()
     return test_results
@@ -229,8 +244,8 @@ def demonstrate_configuration_patterns() -> None:
         if warnings and isinstance(warnings, (list, tuple)):
             for _warning in warnings:
                 pass
-    except Exception as e:
-        logger.warning("Configuration validation failed: %s", e)
+    except Exception as exc:
+        logger.warning(f"Configuration validation failed: {exc}")
     env_configs = get_environment_configs()
     for _config in env_configs.values():
         pass
@@ -238,8 +253,7 @@ def demonstrate_configuration_patterns() -> None:
 
 def main() -> None:
     """Main function demonstrating Oracle WMS configuration patterns."""
-    with contextlib.suppress(Exception):
-        demonstrate_configuration_patterns()
+    demonstrate_configuration_patterns()
 
 
 if __name__ == "__main__":

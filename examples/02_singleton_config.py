@@ -12,48 +12,48 @@ from __future__ import annotations
 
 import os
 
-from flext_core import FlextLogger
+from flext_oracle_wms import (
+    FlextOracleWmsConstants,
+    FlextOracleWmsSettings,
+    u,
+)
+from flext_oracle_wms.utilities import FlextOracleWmsUtilitiesClient
 
-from flext_oracle_wms import FlextOracleWmsClient, FlextOracleWmsSettings
-from flext_oracle_wms.constants import FlextOracleWmsConstants
+FlextOracleWmsClient = FlextOracleWmsUtilitiesClient.Client
 
-logger = FlextLogger(__name__)
+logger = u.fetch_logger(__name__)
 
 
 def demonstrate_singleton_config() -> None:
     """Demonstrate Oracle WMS configuration singleton usage with dynamic parameters."""
     logger.info("=== Oracle WMS Configuration Singleton Demo ===")
     logger.info("1. Using global singleton instance with defaults...")
-    config = FlextOracleWmsSettings()
-    logger.info(f"   Base URL: {config.base_url}")
-    logger.info(f"   Environment: {config.environment}")
-    logger.info(f"   App Name: {config.app_name}")
-    logger.info(f"   Config Type: {type(config).__name__}")
+    settings = FlextOracleWmsSettings()
+    logger.info("   Base URL: %s", settings.base_url)
+    logger.info("   Config Type: %s", type(settings).__name__)
     logger.info("2. Updating global singleton with new parameters...")
     updated_config = FlextOracleWmsSettings(timeout=60, retry_attempts=5)
-    logger.info(f"   Updated Timeout: {updated_config.timeout}")
-    logger.info(f"   Updated Max Retries: {updated_config.retry_attempts}")
-    logger.info(f"   Same instance? {config is updated_config}")
+    logger.info("   Updated Timeout: %s", updated_config.timeout)
+    logger.info("   Updated Max Retries: %s", updated_config.retry_attempts)
+    logger.info("   Same instance? %s", settings is updated_config)
     logger.info("3. Creating from environment with overrides...")
     env_config = FlextOracleWmsSettings(
-        timeout=FlextOracleWmsConstants.Connection.DEFAULT_TIMEOUT * 3,
-        enable_ssl_verification=False,
+        timeout=float(FlextOracleWmsConstants.OracleWms.DEFAULT_TIMEOUT * 3),
     )
-    logger.info(f"   Oracle WMS URL: {env_config.base_url}")
-    logger.info(f"   Username: {env_config.username}")
-    logger.info(f"   Timeout: {env_config.timeout}")
-    logger.info(f"   Verify SSL: {env_config.enable_ssl_verification}")
+    logger.info("   Oracle WMS URL: %s", env_config.base_url)
+    logger.info("   Username: %s", env_config.username)
+    logger.info("   Timeout: %s", env_config.timeout)
     logger.info("4. Creating configuration for different environment...")
     new_config = FlextOracleWmsSettings(
         base_url="https://new-environment.wms.oraclecloud.com/test",
         username="NEW_USER",
         password="NEW_PASSWORD",
-        timeout=FlextOracleWmsConstants.Connection.DEFAULT_TIMEOUT * 4,
+        timeout=float(FlextOracleWmsConstants.OracleWms.DEFAULT_TIMEOUT * 4),
     )
     if new_config:
-        logger.info(f"   New Base URL: {new_config.base_url}")
-        logger.info(f"   New Username: {new_config.username}")
-        logger.info(f"   New Timeout: {new_config.timeout}")
+        logger.info("   New Base URL: %s", new_config.base_url)
+        logger.info("   New Username: %s", new_config.username)
+        logger.info("   New Timeout: %s", new_config.timeout)
     else:
         logger.error("   Failed to create new configuration")
     logger.info("5. Resetting global instance...")
@@ -62,37 +62,25 @@ def demonstrate_singleton_config() -> None:
         username="FRESH_USER",
         password="FRESH_PASSWORD",
     )
-    logger.info(f"   Fresh Base URL: {fresh_config.base_url}")
-    logger.info(f"   Fresh Username: {fresh_config.username}")
+    logger.info("   Fresh Base URL: %s", fresh_config.base_url)
+    logger.info("   Fresh Username: %s", fresh_config.username)
     logger.info("6. Creating testing configuration...")
-    test_config = FlextOracleWmsSettings(use_mock=True)
-    logger.info(f"   Test URL: {test_config.base_url}")
-    logger.info(f"   Test Username: {test_config.username}")
-    logger.info(f"   Use Mock: {test_config.use_mock}")
+    test_config = FlextOracleWmsSettings.testing_config()
+    logger.info("   Test URL: %s", test_config.base_url)
+    logger.info("   Test Username: %s", test_config.username)
     logger.info("7. Validating configuration...")
-    validation_result = test_config.validate_business_rules()
-    if validation_result.is_success:
-        logger.info("   ✅ Configuration validation passed")
+    validation_result = test_config.validate_config()
+    if validation_result.success:
+        logger.info("   Configuration validation passed")
     else:
-        logger.error(
-            f"   ❌ Configuration validation failed: {validation_result.error}"
-        )
-    logger.info("8. Extracting environment from URL...")
-    env_from_url = test_config.extract_environment_from_url()
-    logger.info("   Extracted environment: %s", env_from_url)
-    logger.info("9. Creating client with global singleton configuration...")
+        logger.error("   Configuration validation failed: %s", validation_result.error)
+    logger.info("8. Creating client with configuration...")
     try:
-        client = FlextOracleWmsClient()
-        logger.info("   ✅ Client created successfully with global config")
-        logger.info(f"   Client config URL: {client.config.base_url}")
-        health_result = client.health_check()
-        if health_result.is_success:
-            logger.info("   ✅ Health check passed")
-            logger.info(f"   Service: {health_result.value.get('service', 'Unknown')}")
-        else:
-            logger.error(f"   ❌ Health check failed: {health_result.error}")
-    except Exception:
-        logger.exception("   ❌ Failed to create client")
+        client = FlextOracleWmsClient(settings=test_config)
+        logger.info("   Client created successfully with settings")
+        logger.info("   Client settings URL: %s", client.settings.base_url)
+    except (RuntimeError, OSError, ValueError):
+        logger.exception("   Failed to create client")
     logger.info("=== Demo Complete ===")
 
 
@@ -115,7 +103,7 @@ def demonstrate_environment_variables() -> None:
         logger.info("   No Oracle WMS environment variables found")
     logger.info("\nTo set Oracle WMS environment variables:")
     logger.info(
-        "   export FLEXT_ORACLE_WMS_BASE_URL='https://your-wms.oraclecloud.com'"
+        "   export FLEXT_ORACLE_WMS_BASE_URL='https://your-wms.oraclecloud.com'",
     )
     logger.info("   export FLEXT_ORACLE_WMS_USERNAME='your_username'")
     logger.info("   export FLEXT_ORACLE_WMS_PASSWORD='your_password'")
@@ -128,7 +116,7 @@ def main() -> None:
     try:
         demonstrate_singleton_config()
         demonstrate_environment_variables()
-    except Exception:
+    except (RuntimeError, OSError, ValueError):
         logger.exception("Demo failed")
         raise
 

@@ -83,7 +83,7 @@ This directory contains the comprehensive test suite for the **flext-oracle-wms*
 
 The test suite uses pytest markers for comprehensive test categorization:
 
-```python
+```text
 # Unit tests for individual components
 pytest -m unit
 
@@ -179,7 +179,7 @@ pytest -n auto
 
 ```bash
 # Complete validation (includes tests)
-make validate
+make val
 
 # Test-specific quality gates
 make test-unit              # Unit tests with coverage
@@ -246,7 +246,7 @@ pytest --cov=src/flext_oracle_wms --cov-report=xml
 
 ### Test Structure Standards
 
-```python
+```text
 """Test module following enterprise standards."""
 
 import pytest
@@ -259,7 +259,7 @@ class TestComponentName:
     def test_basic_functionality(self):
         """Test basic functionality with clear assertions."""
         # Arrange
-        config = FlextOracleWmsClientSettings(...)
+        settings = FlextOracleWmsClientSettings(...)
 
         # Act
         result = component.operation()
@@ -291,7 +291,7 @@ class TestComponentName:
 
 ### Performance Testing
 
-```python
+```text
 @pytest.mark.performance
 def test_performance_benchmark():
     """Performance benchmark with timing assertions."""
@@ -312,7 +312,7 @@ def test_performance_benchmark():
 - **pytest v7.4.0+** - Primary testing framework with advanced features
 - **pytest-cov v4.1.0+** - Coverage reporting and analysis
 - **pytest-v0.21.0+** - test support for client operations
-- **pytest-mock v3.11.0+** - Mock object support for unit testing
+- **pytest-mock v3.11.0+** - Mock t.JsonValue support for unit testing
 
 ### Additional Testing Tools
 
@@ -335,7 +335,7 @@ Each test file includes comprehensive docstrings explaining:
 
 - **Purpose**: What functionality is being tested
 - **Scope**: Which components and scenarios are covered
-- **Requirements**: object special setup or dependencies needed
+- **Requirements** special setup or dependencies needed
 - **Expected Behavior**: What constitutes success for each test
 
 ### Integration Test Requirements

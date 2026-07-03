@@ -22,20 +22,29 @@ Usage:
 from __future__ import annotations
 
 import os
+from collections.abc import (
+    Sequence,
+)
 from pathlib import Path
+from typing import Final
 
 from dotenv import load_dotenv
-from flext_core import FlextContainer, FlextLogger, r
 
+from flext_core import FlextContainer
 from flext_oracle_wms import (
-    FlextOracleWmsClient,
-    FlextOracleWmsExceptions,
     FlextOracleWmsSettings,
+    p,
+    t,
+    u,
 )
+from flext_oracle_wms.errors import FlextOracleWmsError
+from flext_oracle_wms.utilities import FlextOracleWmsUtilitiesClient
 
-MAX_ENTITIES_TO_SHOW = 5
-MAX_VALUE_DISPLAY_LENGTH = 50
-logger = FlextLogger(__name__)
+FlextOracleWmsClient = FlextOracleWmsUtilitiesClient.Client
+
+MAX_ENTITIES_TO_SHOW: Final[int] = 5
+MAX_VALUE_DISPLAY_LENGTH: Final[int] = 50
+logger = u.fetch_logger(__name__)
 project_root = Path(__file__).parent.parent
 env_file = project_root / ".env"
 if env_file.exists():
@@ -48,18 +57,21 @@ def setup_client_config() -> None:
     This function demonstrates how to configure the global singleton
     with environment variables and parameter overrides.
     """
-    container = FlextContainer.get_global()
-    config = FlextOracleWmsSettings(
+    container = FlextContainer.shared()
+    settings = FlextOracleWmsSettings(
         base_url=os.getenv("FLEXT_ORACLE_WMS_BASE_URL", "https://wms.oraclecloud.com"),
-        username=os.getenv("FLEXT_ORACLE_WMS_USERNAME"),
-        password=os.getenv("FLEXT_ORACLE_WMS_PASSWORD"),
+        username=os.getenv("FLEXT_ORACLE_WMS_USERNAME", ""),
+        password=os.getenv("FLEXT_ORACLE_WMS_PASSWORD", ""),
     )
-    _ = container.register("FlextOracleWmsSettings", config)
+    _ = container.bind(
+        "FlextOracleWmsSettings",
+        settings.model_dump(mode="python"),
+    )
 
 
 def discover_wms_entities(
     client: FlextOracleWmsClient,
-) -> r[list[dict[str, object]]]:
+) -> p.Result[t.StrSequence]:
     """Discover available Oracle WMS entities.
 
     Args:
@@ -70,30 +82,23 @@ def discover_wms_entities(
 
     """
     result = client.discover_entities()
-    if result.is_success:
+    if result.success:
         entities = result.value
-        if entities is None:
-            return result
         for entity in entities[:5]:
-            entity_display = (
-                entity.get("name", "Unknown")
-                if isinstance(entity, dict)
-                else str(entity)
+            logger.debug("Processing entity: %s", entity)
+        if len(entities) > MAX_ENTITIES_TO_SHOW:
+            logger.debug(
+                "Additional entities omitted from preview: %s",
+                len(entities) - MAX_ENTITIES_TO_SHOW,
             )
-            logger.debug("Processing entity: %s", entity_display)
-            if hasattr(entity, "description") and getattr(entity, "description", None):
-                pass
-            if hasattr(entity, "entity_type"):
-                pass
-        if entities and len(entities) > MAX_ENTITIES_TO_SHOW:
-            pass
         return result
     return result
 
 
 def query_entity_data(
-    client: FlextOracleWmsClient, entity_name: str
-) -> r[list[dict[str, object]]]:
+    client: FlextOracleWmsClient,
+    entity_name: str,
+) -> p.Result[Sequence[t.StrMapping]]:
     """Query data from a specific Oracle WMS entity.
 
     Args:
@@ -105,31 +110,20 @@ def query_entity_data(
 
     """
     result = client.get_entity_data(entity_name=entity_name, limit=10)
-    if result.is_success:
+    if result.success:
         data = result.value
         if data:
-            if isinstance(data, (list, tuple)) and len(data) > 0:
-                sample_record = data[0]
-            elif isinstance(data, dict):
-                sample_record = data
-            else:
-                return result
-            if hasattr(sample_record, "keys") or isinstance(sample_record, dict):
-                field_names = list(sample_record.keys())[:5]
-                for field in field_names:
-                    try:
-                        value = (
-                            sample_record.get(field, "N/A")
-                            if hasattr(sample_record, "get")
-                            else getattr(sample_record, field, "N/A")
-                        )
-                        str(value)[:MAX_VALUE_DISPLAY_LENGTH] + "..." if len(
-                            str(value)
-                        ) > MAX_VALUE_DISPLAY_LENGTH else str(value)
-                    except (KeyError, ValueError, TypeError) as e:
-                        logger.debug("Display formatting failed: %s", e)
-        elif data is not None:
-            pass
+            sample_record: t.StrMapping = data[0]
+            field_names: list[str] = list(sample_record.keys())[:5]
+            for field in field_names:
+                try:
+                    value_str = sample_record.get(field, "N/A")
+                    if len(value_str) > MAX_VALUE_DISPLAY_LENGTH:
+                        _ = value_str[:MAX_VALUE_DISPLAY_LENGTH] + "..."
+                    else:
+                        _ = value_str
+                except (KeyError, ValueError, TypeError) as e:
+                    logger.debug(f"Display formatting failed: {e}")
         return result
     return result
 
@@ -138,7 +132,7 @@ def demonstrate_error_handling(client: FlextOracleWmsClient) -> None:
     """Demonstrate proper error handling patterns with r."""
     result = client.get_entity_data("NON_EXISTENT_ENTITY")
     if (
-        result.is_failure
+        result.failure
         and result.error
         and (
             "not found" in result.error.lower()
@@ -154,7 +148,7 @@ def main() -> None:
 
     This function demonstrates:
     1. Configuration using singleton pattern
-    2. Client initialization with global config
+    2. Client initialization with global settings
     3. Entity discovery
     4. Data querying
     5. Error handling patterns
@@ -163,27 +157,22 @@ def main() -> None:
         setup_client_config()
         client = FlextOracleWmsClient()
         start_result = client.start()
-        if start_result.is_success:
+        if start_result.success:
             pass
         else:
             return
         entities_result = discover_wms_entities(client)
-        if entities_result.is_success:
+        if entities_result.success:
             entities = entities_result.value
             if entities:
                 first_entity = entities[0]
-                entity_name = (
-                    first_entity.get("name", "Unknown")
-                    if isinstance(first_entity, dict)
-                    else str(first_entity)
-                )
-                query_entity_data(client, str(entity_name))
+                query_entity_data(client, first_entity)
         demonstrate_error_handling(client)
-    except FlextOracleWmsExceptions.BaseError:
-        logger.exception("Oracle WMS error")
+    except FlextOracleWmsError:
+        logger.exception("Error in basic usage example")
     except ValueError:
         logger.exception("Configuration error")
-    except Exception:
+    except (RuntimeError, OSError):
         if os.getenv("FLEXT_DEBUG_MODE", "").lower() in {"true", "1", "yes"}:
             raise
 

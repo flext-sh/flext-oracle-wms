@@ -1,4 +1,4 @@
-"""FLEXT Oracle WMS Types - composition patterns.
+"""FLEXT Oracle WMS Types.
 
 Copyright (c) 2025 FLEXT Team. All rights reserved.
 SPDX-License-Identifier: MIT
@@ -6,115 +6,57 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from collections.abc import Mapping
-from typing import Literal
-
-from flext_core import FlextTypes
-from pydantic import BaseModel
+from flext_api import t
 
 
-class FlextOracleWmsTypes(FlextTypes):
-    """Oracle WMS types with composition.
-
-    Uses Python 3.13+ syntax, reduces declarations through patterns.
-    One class per module following SOLID principles.
-    """
+class FlextOracleWmsTypes(t):
+    """Oracle WMS type definitions extending t via MRO."""
 
     class OracleWms:
-        """Oracle WMS-specific project types."""
+        """Oracle WMS domain namespace (flat members per AGENTS.md §149)."""
 
-        type ProjectType = Literal[
-            "wms-service",
-            "warehouse-management",
-            "inventory-system",
-            "shipping-service",
-            "picking-system",
-            "wms-integration",
-            "warehouse-api",
-            "logistics-platform",
-            "inventory-tracker",
-            "warehouse-monitor",
-            "wms-connector",
-            "fulfillment-engine",
-            "warehouse-analytics",
-            "wms-client",
-            "logistics-service",
-            "warehouse-optimizer",
-        ]
-        type WmsProjectConfig = dict[str, FlextTypes.ContainerValue]
-        type WarehouseConfig = dict[str, str | int | bool | list[str]]
-        type InventoryConfig = dict[
-            str,
-            bool | str | dict[str, FlextTypes.ContainerValue],
-        ]
-
-    type WmsConfig = dict[
-        str,
-        str | int | bool | dict[str, FlextTypes.ContainerValue],
-    ]
-    type WmsEntity = dict[
-        str,
-        FlextTypes.ContainerValue | dict[str, FlextTypes.ContainerValue],
-    ]
-    type WmsRecord = dict[str, FlextTypes.ContainerValue]
-    type WmsRecords = list[dict[str, FlextTypes.ContainerValue]]
-
-    class Core:
-        """Core convenience type aliases for common patterns.
-
-        Provides commonly used type aliases for consistency across the codebase.
-        These are simple aliases but are used extensively, so provided for convenience.
-        Access parent core types via inheritance from FlextOracleWmsTypes.
-        """
-
-        type Dict = dict[str, FlextTypes.ContainerValue]
-        "Type alias for generic dictionary (attribute name to value mapping)."
-        type FilterScalar = FlextTypes.Scalar | None
-        type FilterList = list[FlextOracleWmsTypes.Core.FilterScalar]
+        type FilterScalar = t.Scalar | None
+        type FilterList = t.SequenceOf[FlextOracleWmsTypes.OracleWms.FilterScalar]
         type FilterRecordValue = (
-            FlextOracleWmsTypes.Core.FilterScalar
-            | FlextOracleWmsTypes.Core.FilterList
-            | Mapping[
+            FlextOracleWmsTypes.OracleWms.FilterScalar
+            | FlextOracleWmsTypes.OracleWms.FilterList
+            | t.MappingKV[
                 str,
-                FlextOracleWmsTypes.Core.FilterScalar
-                | FlextOracleWmsTypes.Core.FilterList
-                | Mapping[
+                FlextOracleWmsTypes.OracleWms.FilterScalar
+                | FlextOracleWmsTypes.OracleWms.FilterList
+                | t.MappingKV[
                     str,
-                    FlextOracleWmsTypes.Core.FilterScalar
-                    | FlextOracleWmsTypes.Core.FilterList,
+                    FlextOracleWmsTypes.OracleWms.FilterScalar
+                    | FlextOracleWmsTypes.OracleWms.FilterList,
                 ],
             ]
         )
-        type FilterRecord = Mapping[
+        type FilterRecord = t.MappingKV[
             str,
-            FlextOracleWmsTypes.Core.FilterScalar
-            | FlextOracleWmsTypes.Core.FilterList
-            | Mapping[
+            FlextOracleWmsTypes.OracleWms.FilterScalar
+            | FlextOracleWmsTypes.OracleWms.FilterList
+            | t.MappingKV[
                 str,
-                FlextOracleWmsTypes.Core.FilterScalar
-                | FlextOracleWmsTypes.Core.FilterList,
+                FlextOracleWmsTypes.OracleWms.FilterScalar
+                | FlextOracleWmsTypes.OracleWms.FilterList,
             ],
         ]
         type NestedFilterValue = (
-            FlextOracleWmsTypes.Core.FilterScalar
-            | FlextOracleWmsTypes.Core.FilterList
-            | Mapping[
+            FlextOracleWmsTypes.OracleWms.FilterScalar
+            | FlextOracleWmsTypes.OracleWms.FilterList
+            | t.MappingKV[
                 str,
-                FlextOracleWmsTypes.Core.FilterScalar
-                | FlextOracleWmsTypes.Core.FilterList
-                | Mapping[
+                FlextOracleWmsTypes.OracleWms.FilterScalar
+                | FlextOracleWmsTypes.OracleWms.FilterList
+                | t.MappingKV[
                     str,
-                    FlextOracleWmsTypes.Core.FilterScalar
-                    | FlextOracleWmsTypes.Core.FilterList,
+                    FlextOracleWmsTypes.OracleWms.FilterScalar
+                    | FlextOracleWmsTypes.OracleWms.FilterList,
                 ],
             ]
         )
 
 
 t = FlextOracleWmsTypes
-__all__ = ["FlextOracleWmsTypes", "t"]
 
-
-class OperatorFilter(BaseModel):
-    operator: str
-    value: FlextOracleWmsTypes.Core.FilterScalar | FlextOracleWmsTypes.Core.FilterList
+__all__: list[str] = ["FlextOracleWmsTypes", "t"]

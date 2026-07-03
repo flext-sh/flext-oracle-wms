@@ -40,7 +40,7 @@ This directory contains the core implementation of the **flext-oracle-wms** libr
 
 - **[**init**.py](**init**.py)** - Public API gateway with comprehensive exports and version information
 - **[client.py](client.py)** - Primary FlextOracleWmsClient interface for Oracle WMS operations
-- **[config.py](config.py)** - Type-safe configuration management with Pydantic validation
+- **[settings.py](settings.py)** - Type-safe configuration management with Pydantic validation
 
 ### 🔧 **Infrastructure Components**
 
@@ -98,11 +98,11 @@ This directory contains the core implementation of the **flext-oracle-wms** libr
 
 ### Basic Client Setup
 
-```python
+```python notest
 from flext_oracle_wms import FlextOracleWmsClient, FlextOracleWmsClientSettings
 
 # Create configuration
-config = FlextOracleWmsClientSettings(
+settings = FlextOracleWmsClientSettings(
     base_url="https://your-wms.oraclecloud.com",
     username="your_username",
     password="your_password",
@@ -110,7 +110,7 @@ config = FlextOracleWmsClientSettings(
 )
 
 # Initialize client
-client = FlextOracleWmsClient(config)
+client = FlextOracleWmsClient(settings)
 client.start()
 
 # Discover entities
@@ -120,24 +120,23 @@ from flext_core import FlextSettings
 from flext_core import FlextConstants
 from flext_core import FlextContainer
 from flext_core import FlextContext
-from flext_core import FlextDecorators
+from flext_core import d
 from flext_core import FlextDispatcher
-from flext_core import FlextExceptions
+from flext_core import e
 from flext_core import h
-from flext_core import FlextLogger
 from flext_core import x
 from flext_core import FlextModels
 from flext_core import FlextProcessors
 from flext_core import p
 from flext_core import FlextRegistry
-from flext_core import r
-from flext_core import FlextRuntime
-from flext_core import FlextService
+from flext_core import r, p
+from flext_core import u
+from flext_core import s
 from flext_core import t
 from flext_core import u
 
 if result.success:
-    logger = FlextLogger(__name__)
+    logger = u.fetch_logger(__name__)
     logger.info("Discovered WMS entities", count=len(result.data))
     for entity in result.data:
         logger.info("Entity", name=str(entity))
@@ -145,7 +144,7 @@ if result.success:
 
 ### Entity Data Querying
 
-```python
+```python notest
 # Query entity data with filtering
 result = client.get_entity_data(
     entity_name="item",
@@ -161,40 +160,39 @@ from flext_core import FlextSettings
 from flext_core import FlextConstants
 from flext_core import FlextContainer
 from flext_core import FlextContext
-from flext_core import FlextDecorators
+from flext_core import d
 from flext_core import FlextDispatcher
-from flext_core import FlextExceptions
+from flext_core import e
 from flext_core import h
-from flext_core import FlextLogger
 from flext_core import x
 from flext_core import FlextModels
 from flext_core import FlextProcessors
 from flext_core import p
 from flext_core import FlextRegistry
-from flext_core import r
-from flext_core import FlextRuntime
-from flext_core import FlextService
+from flext_core import r, p
+from flext_core import u
+from flext_core import s
 from flext_core import t
 from flext_core import u
-    FlextLogger(__name__).info("Records retrieved", count=len(data.get('results', [])))
+    u.fetch_logger(__name__).info("Records retrieved", count=len(data.get('results', [])))
 ```
 
 ### Error Handling with r
 
-```python
-from flext_oracle_wms.exceptions import FlextOracleWmsConnectionError
+```python notest
+from flext_oracle_wms import FlextOracleWmsConnectionError
 
 try:
     result = client.get_entity_data("inventory")
     if result.is_failure:
         # Handle business logic errors via r
 
-        FlextLogger(__name__).error("Query failed", error=result.error)
+        u.fetch_logger(__name__).error("Query failed", error=result.error)
     else:
         # Process successful result
         inventory_data = result.data
 
-        FlextLogger(__name__).info("Retrieved inventory data", count=len(inventory_data))
+        u.fetch_logger(__name__).info("Retrieved inventory data", count=len(inventory_data))
 
 except FlextOracleWmsConnectionError as e:
     # Handle connection-specific errors
@@ -203,22 +201,21 @@ from flext_core import FlextSettings
 from flext_core import FlextConstants
 from flext_core import FlextContainer
 from flext_core import FlextContext
-from flext_core import FlextDecorators
+from flext_core import d
 from flext_core import FlextDispatcher
-from flext_core import FlextExceptions
+from flext_core import e
 from flext_core import h
-from flext_core import FlextLogger
 from flext_core import x
 from flext_core import FlextModels
 from flext_core import FlextProcessors
 from flext_core import p
 from flext_core import FlextRegistry
-from flext_core import r
-from flext_core import FlextRuntime
-from flext_core import FlextService
+from flext_core import r, p
+from flext_core import u
+from flext_core import s
 from flext_core import t
 from flext_core import u
-    FlextLogger(__name__).error("Connection failed", error=str(e))
+    u.fetch_logger(__name__).error("Connection failed", error=str(e))
 ```
 
 ## 🔧 **Development Guidelines**
@@ -265,7 +262,7 @@ pytest -m "oracle_wms" -v
 
 ```bash
 # Complete validation for this module
-make validate               # Lint + type + security + test
+make val               # Lint + type + security + test
 make lint
 make type-check
 make security               # Bandit + pip-audit security scanning
@@ -275,7 +272,7 @@ make security               # Bandit + pip-audit security scanning
 
 ### FLEXT Ecosystem Dependencies
 
-- **[flext-core](https://github.com/organization/flext/tree/main/flext-core/)** - Foundation patterns, r, logging, DI container
+- **[flext-core](https://github.com/organization/flext/tree/main/flext-core/)** - Foundation patterns, r, p, logging, DI container
 - **[flext-api](https://github.com/organization/flext/tree/main/flext-api/)** - Enterprise API client patterns and authentication
 - **[flext-observability](https://github.com/organization/flext/tree/main/flext-observability/)** - Monitoring, metrics, health checks
 

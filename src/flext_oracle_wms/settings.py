@@ -1,56 +1,67 @@
-"""FLEXT WMS Configuration - Generic WMS integration with composition.
-
-Uses Python 3.13+ syntax, reduces declarations through patterns.
-One class per module following SOLID principles. Generic WMS configuration.
-Copyright (c) 2025 FLEXT Team. All rights reserved.
-SPDX-License-Identifier: MIT
-"""
+"""Oracle WMS runtime settings."""
 
 from __future__ import annotations
 
-from typing import Annotated
+from typing import Annotated, ClassVar, Self
 
-from flext_core import FlextSettings
-from pydantic import Field
-from pydantic_settings import SettingsConfigDict
+from flext_core import FlextSettingsBase, r
+from flext_oracle_wms.models import m
+from flext_oracle_wms.protocols import p
+from flext_oracle_wms.utilities import u
 
 
-class FlextOracleWmsSettings(FlextSettings):
+class FlextOracleWmsSettings(FlextSettingsBase):
     """Runtime settings for Oracle WMS client."""
 
-    model_config = SettingsConfigDict(extra="ignore")
+    model_config: ClassVar[m.SettingsConfigDict] = m.SettingsConfigDict(
+        env_prefix="FLEXT_ORACLE_WMS_",
+        extra="ignore",
+    )
 
-    base_url: Annotated[str, Field(default="http://localhost:8080", min_length=1)]
-    timeout: Annotated[float, Field(default=30.0, ge=1.0, le=300.0)]
+    base_url: Annotated[
+        str, u.Field(min_length=1, description="Oracle WMS base URL")
+    ] = "http://localhost:8080"
+    timeout: Annotated[
+        float,
+        u.Field(ge=1.0, le=300.0, description="Request timeout seconds"),
+    ] = 30.0
+    username: Annotated[str, u.Field(description="WMS username")] = ""
+    password: Annotated[str, u.Field(description="WMS password")] = ""
+    retry_attempts: Annotated[int, u.Field(ge=0, description="Retry attempts")] = 3
+    api_version: Annotated[str, u.Field(description="WMS API version")] = "LGF_V10"
+    auth_method: Annotated[str, u.Field(description="Authentication method")] = "basic"
+    verify_ssl: Annotated[
+        bool,
+        u.Field(description="Verify SSL certificates"),
+    ] = True
+    enable_logging: Annotated[
+        bool,
+        u.Field(description="Enable request logging"),
+    ] = False
+    connection_pool_size: Annotated[
+        int,
+        u.Field(ge=1, description="HTTP connection pool size"),
+    ] = 10
+    cache_duration: Annotated[
+        int,
+        u.Field(ge=0, description="Cache duration in seconds"),
+    ] = 300
+
+    def validate_config(self) -> p.Result[bool]:
+        """Validate configuration business rules."""
+        if not self.base_url:
+            return r[bool].fail("base_url is required")
+        return r[bool].ok(True)
 
     @classmethod
-    def testing_config(cls) -> FlextOracleWmsSettings:
+    def testing_config(cls) -> Self:
         """Build deterministic settings for tests."""
-        return cls.model_validate({
-            "base_url": "http://localhost:8080",
+        settings = cls.model_validate({
+            "base_url": "https://test-wms.example.com",
             "timeout": 30.0,
+            "username": "test_user",
+            "password": "test_password",
         })
-
-
-class FlextOracleWmsClientSettings(FlextOracleWmsSettings):
-    """Settings contract consumed by FlextOracleWmsClient."""
-
-    model_config = SettingsConfigDict(extra="ignore")
-
-    base_url: Annotated[str, Field(default="")]
-    username: Annotated[str, Field(default="")]
-    password: Annotated[str, Field(default="")]
-    api_version: Annotated[str, Field(default="LGF_V10")]
-    auth_method: Annotated[str, Field(default="BASIC")]
-    timeout: Annotated[float, Field(default=30.0, ge=1.0)]
-    max_retries: Annotated[int, Field(default=3, ge=0)]
-    verify_ssl: Annotated[bool, Field(default=True)]
-    enable_logging: Annotated[bool, Field(default=False)]
-    use_mock: Annotated[bool, Field(default=False)]
-    connection_pool_size: Annotated[int, Field(default=10, ge=1)]
-    cache_duration: Annotated[int, Field(default=300, ge=0)]
-    project_name: Annotated[str, Field(default="flext-oracle-wms")]
-    project_version: Annotated[str, Field(default="1.0.0")]
-
-
-__all__ = ["FlextOracleWmsClientSettings", "FlextOracleWmsSettings"]
+        # Keep test fixture generation isolated from the FlextSettings singleton.
+        cls.reset_instance()
+        return settings

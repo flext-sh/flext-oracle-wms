@@ -5,16 +5,16 @@ as specifically requested by the user: "FOQUE MUITO NOS EXEMPLES/ PARA FUNCIONAR
 COM TODA A FUNCIONALIDADE DO CODIGO"
 
 Features Demonstrated:
-    1. ✅ Client Configuration and Initialization
-    2. ✅ Entity Discovery (320+ entities)
-    3. ✅ Data Retrieval and Querying
-    4. ✅ Authentication Methods
-    5. ✅ API Catalog Management
-    6. ✅ Error Handling and Recovery
-    7. ✅ Health Monitoring
-    8. ✅ Performance Tracking
-    9. ✅ Cache Management
-    10. ✅ Enterprise Features
+    1. Client Configuration and Initialization
+    2. Entity Discovery (320+ entities)
+    3. Data Retrieval and Querying
+    4. Authentication Methods
+    5. API Catalog Management
+    6. Error Handling and Recovery
+    7. Health Monitoring
+    8. Performance Tracking
+    9. Cache Management
+    10. Enterprise Features
 
 Usage:
     python examples/03_complete_functionality_showcase.py
@@ -27,32 +27,38 @@ Requirements:
 
 from __future__ import annotations
 
-import asyncio
 import os
 import time
 import traceback
+from collections.abc import (
+    Sequence,
+)
 from pathlib import Path
 
 from dotenv import load_dotenv
-from flext_core import FlextLogger, r
 
 from flext_oracle_wms import (
-    FLEXT_ORACLE_WMS_APIS,
-    FlextOracleWmsApiCategory,
-    FlextOracleWmsApiVersion,
-    FlextOracleWmsAuthenticator,
-    FlextOracleWmsAuthSettings,
-    FlextOracleWmsClient,
-    FlextOracleWmsClientSettings,
-    FlextOracleWmsError,
-    OracleWMSAuthMethod,
+    FlextOracleWmsApi,
+    FlextOracleWmsSettings,
+    c,
+    m,
+    p,
+    t,
+    u,
 )
-from flext_oracle_wms.constants import FlextOracleWmsConstants
+from flext_oracle_wms.errors import FlextOracleWmsError
+from flext_oracle_wms.utilities import (
+    FlextOracleWmsUtilitiesAuth,
+    FlextOracleWmsUtilitiesClient,
+)
 
-logger = FlextLogger(__name__)
+FlextOracleWmsAuthenticator = FlextOracleWmsUtilitiesAuth.Authenticator
+FlextOracleWmsClient = FlextOracleWmsUtilitiesClient.Client
+
+logger = u.fetch_logger(__name__)
 
 
-def load_config_from_environment() -> FlextOracleWmsClientSettings:
+def load_config_from_environment() -> FlextOracleWmsSettings:
     """Load configuration from .env file."""
     env_file = Path(__file__).parent.parent / ".env"
     if env_file.exists():
@@ -66,25 +72,25 @@ def load_config_from_environment() -> FlextOracleWmsClientSettings:
     if base_url is None or username is None or password is None:
         msg = "Required environment variables cannot be None"
         raise ValueError(msg)
-    return FlextOracleWmsClientSettings({
+    return FlextOracleWmsSettings.model_validate({
         "base_url": base_url,
         "username": username,
         "password": password,
-        "api_version": FlextOracleWmsApiVersion.LGF_V10,
-        "timeout": FlextOracleWmsConstants.Connection.DEFAULT_TIMEOUT,
-        "retry_attempts": FlextOracleWmsConstants.Connection.DEFAULT_MAX_RETRIES,
-        "enable_ssl_verification": True,
-        "enable_audit_logging": True,
+        "api_version": "LGF_V10",
+        "timeout": c.OracleWms.DEFAULT_TIMEOUT,
+        "retry_attempts": c.OracleWms.DEFAULT_MAX_RETRIES,
+        "verify_ssl": True,
+        "enable_logging": True,
     })
 
 
 def showcase_1_client_initialization(
-    config: FlextOracleWmsClientSettings,
+    settings: FlextOracleWmsSettings,
 ) -> FlextOracleWmsClient:
     """Feature 1: Client Configuration and Initialization."""
-    client = FlextOracleWmsClient(config)
+    client = FlextOracleWmsClient(settings)
     start_result = client.start()
-    if start_result.is_success:
+    if start_result.success:
         pass
     else:
         msg = f"Failed to start client: {start_result.error}"
@@ -95,18 +101,13 @@ def showcase_1_client_initialization(
 def showcase_2_entity_discovery(client: FlextOracleWmsClient) -> list[str]:
     """Feature 2: Entity Discovery (320+ entities)."""
     entities_result = client.discover_entities()
-    if not entities_result.is_success:
-        return []
-    entity_dicts = entities_result.value or []
-    entities: list[str] = [
-        str(entity.get("name", "Unknown")) if isinstance(entity, dict) else str(entity)
-        for entity in entity_dicts
-    ]
-    max_entities_to_show = FlextOracleWmsConstants.Processing.DEFAULT_BATCH_SIZE // 5
-    for _i, _entity in enumerate(entities[:max_entities_to_show]):
-        pass
-    if len(entities) > max_entities_to_show:
-        pass
+    if not entities_result.success:
+        msg = entities_result.error or "Failed to discover Oracle WMS entities"
+        raise FlextOracleWmsError(msg)
+    entities: list[str] = list(entities_result.value)
+    batch_size_val = c.OracleWms.PROCESSING_CONFIG.get("default_batch_size", 100)
+    max_entities_to_show = batch_size_val // 5
+    _entity_preview = entities[:max_entities_to_show]
     sample_entities = {
         "Core Entities": ["company", "facility", "item", "location"],
         "Inventory": ["inventory", "inventory_status", "inventory_txn"],
@@ -115,172 +116,150 @@ def showcase_2_entity_discovery(client: FlextOracleWmsClient) -> list[str]:
         "Shipping": ["shipment", "container", "manifest", "carrier"],
     }
     for category_entities in sample_entities.values():
-        available = [e for e in category_entities if e in entities]
-        if available:
-            pass
+        [e_name for e_name in category_entities if e_name in entities]
     return entities
 
 
 def showcase_3_data_retrieval(
-    client: FlextOracleWmsClient, entities: list[str]
-) -> dict[str, object]:
+    client: FlextOracleWmsClient,
+    entities: list[str],
+) -> dict[str, t.JsonValue]:
     """Feature 3: Data Retrieval and Querying."""
-    sample_data: dict[str, object] = {}
+    sample_data: dict[str, t.JsonValue] = {}
     test_entities = ["company", "facility", "item"]
     for entity_name in test_entities:
         if entity_name not in entities:
             continue
         data_result = client.get_entity_data(entity_name, limit=5)
-        if data_result.is_success:
+        if data_result.success:
             data = data_result.value
-            if isinstance(data, dict) and "results" in data:
-                results = data["results"]
-                if isinstance(results, list):
-                    data.get("count", len(results))
-                    if results:
-                        first_record = results[0]
-                    len(first_record) if isinstance(first_record, dict) else 0
-                sample_data[entity_name] = data
-            else:
-                sample_data[entity_name] = data
+            if isinstance(data, list) and data:
+                first_record = data[0]
+                if isinstance(first_record, dict):
+                    len(first_record)
+                sample_data[entity_name] = str(len(data))
     if "company" in sample_data:
-        filtered_result = client.get_entity_data(
-            entity_name="company", limit=3, filters={"active": "Y"}
+        client.get_entity_data(
+            entity_name="company",
+            limit=3,
+            filters={"active": "Y"},
         )
-        if filtered_result.is_success:
-            pass
     return sample_data
 
 
-def showcase_4_authentication(config: FlextOracleWmsClientSettings) -> None:
+def showcase_4_authentication(settings: FlextOracleWmsSettings) -> None:
     """Feature 4: Authentication Methods."""
-    auth_config = FlextOracleWmsAuthSettings(
-        auth_type=OracleWMSAuthMethod.BASIC,
-        username=getattr(config, "oracle_wms_username", "invalid"),
-        password=getattr(config, "oracle_wms_password", "invalid"),
+    auth_config = m.OracleWms.AuthSettings(
+        method=c.OracleWms.OracleWMSAuthMethod.BASIC,
+        username=getattr(settings, "username", "invalid"),
+        password=getattr(settings, "password", "invalid"),
     )
-    validation_result = auth_config.validate_business_rules()
-    if validation_result.is_success:
-        pass
+    auth_config.validate_business_rules()
     authenticator = FlextOracleWmsAuthenticator(auth_config)
-    headers_result = authenticator.get_auth_headers()
-    if hasattr(headers_result, "is_success") and headers_result.is_success:
-        pass
-    for _method in OracleWMSAuthMethod.__members__.values():
-        pass
+    _headers_result = authenticator.get_auth_headers()
 
 
 def showcase_5_api_catalog(client: FlextOracleWmsClient) -> None:
     """Feature 5: API Catalog Management."""
-    categories = {}
-    for api_name, api_info in FLEXT_ORACLE_WMS_APIS.items():
+    categories: dict[str, list[str]] = {}
+    for api_name, api_info in FlextOracleWmsApi.FLEXT_ORACLE_WMS_APIS.items():
         category = api_info.category
         if category not in categories:
             categories[category] = []
         categories[category].append(api_name)
     for apis in categories.values():
-        max_apis_to_show = FlextOracleWmsConstants.Connection.DEFAULT_MAX_RETRIES
-        for _api in apis[:max_apis_to_show]:
-            pass
-        if len(apis) > max_apis_to_show:
-            pass
-    {api.version for api in FLEXT_ORACLE_WMS_APIS.values()}
-    for category in FlextOracleWmsApiCategory.__members__.values():
-        category_apis = client.get_apis_by_category(category)
-        if category_apis:
-            pass
+        max_apis_to_show = c.OracleWms.DEFAULT_MAX_RETRIES
+        _api_preview = apis[:max_apis_to_show]
+    _ = {api.version for api in FlextOracleWmsApi.FLEXT_ORACLE_WMS_APIS.values()}
+    category_names = sorted({
+        api.category for api in FlextOracleWmsApi.FLEXT_ORACLE_WMS_APIS.values()
+    })
+    for category in category_names:
+        category_result = client.get_apis_by_category(category)
+        if category_result.failure:
+            msg = (
+                category_result.error or f"Failed to load APIs for category: {category}"
+            )
+            raise FlextOracleWmsError(msg)
 
 
 def showcase_6_error_handling(client: FlextOracleWmsClient) -> None:
     """Feature 6: Error Handling and Recovery."""
-    invalid_result = client.get_entity_data("invalid_entity_xyz123")
-    if not invalid_result.is_success:
-        pass
-    api_result = client.call_api("non_existent_api_xyz")
-    if not api_result.is_success:
-        pass
+    client.get_entity_data("invalid_entity_xyz123")
+    client.call_api("non_existent_api_xyz")
     try:
-        invalid_config = FlextOracleWmsClientSettings({
+        invalid_config = FlextOracleWmsSettings.model_validate({
             "base_url": "invalid-url",
             "username": "",
             "password": "",
-            "api_version": FlextOracleWmsApiVersion.LGF_V10,
+            "api_version": "LGF_V10",
             "timeout": 30,
             "retry_attempts": 3,
-            "enable_ssl_verification": True,
-            "enable_audit_logging": True,
+            "verify_ssl": True,
+            "enable_logging": True,
         })
-        validation = invalid_config.validate_business_rules()
-        if not validation.is_success:
+        validation = invalid_config.validate_config()
+        if not validation.success:
             logger.info(f"Expected validation failure: {validation.error}")
-    except Exception as e:
-        logger.warning("Error handling demonstration: %s", e)
+    except Exception as exc:
+        logger.warning(f"Error handling demonstration: {exc}")
 
 
-def showcase_7_health_monitoring(client: FlextOracleWmsClient) -> object:
+def showcase_7_health_monitoring(
+    client: FlextOracleWmsClient,
+) -> dict[str, t.JsonValue]:
     """Feature 7: Health Monitoring."""
     health_result = client.health_check()
-    if health_result.is_success:
-        health_data = health_result.value or {}
-        for key in health_data:
-            if key == "test_call_success":
-                pass
-        return health_data
-    return {}
+    if health_result.failure:
+        msg = health_result.error or "Oracle WMS health check failed"
+        raise FlextOracleWmsError(msg)
+    response = health_result.value
+    health_data: dict[str, t.JsonValue] = {"status_code": response.status_code}
+    return health_data
 
 
 def showcase_8_performance_tracking(
-    client: FlextOracleWmsClient, entities: list[str]
+    client: FlextOracleWmsClient,
+    entities: list[str],
 ) -> None:
     """Feature 8: Performance Tracking."""
-    min_entities_for_concurrent_test = (
-        FlextOracleWmsConstants.Connection.DEFAULT_MAX_RETRIES
-    )
+    min_entities_for_concurrent_test = c.OracleWms.DEFAULT_MAX_RETRIES
     if len(entities) >= min_entities_for_concurrent_test:
         test_entities = entities[:min_entities_for_concurrent_test]
         start_time = time.time()
-        results: list[r[list[dict[str, str]]]] = []
+        results: list[p.Result[Sequence[t.StrMapping]]] = []
         for entity in test_entities:
             result = client.get_entity_data(entity, limit=2)
             results.append(result)
         end_time = time.time()
-        end_time - start_time
-        successful_requests = sum(
-            1
-            for result in results
-            if hasattr(result, "is_success") and result.is_success
+        _elapsed = end_time - start_time
+        _successful_requests = sum(
+            1 for result in results if hasattr(result, "success") and result.success
         )
-        if successful_requests > 0:
-            pass
     if "company" in entities:
         page_sizes = [1, 5, 10]
         for page_size in page_sizes:
             start_time = time.time()
-            result = client.get_entity_data("company", limit=page_size)
-            end_time = time.time()
-            if result.is_success:
-                pass
+            _result = client.get_entity_data("company", limit=page_size)
+            _elapsed = time.time() - start_time
 
 
 def showcase_9_cache_management(client: FlextOracleWmsClient) -> None:
     """Feature 9: Cache Management."""
     start_time = time.time()
     first_result = client.discover_entities()
-    first_time = time.time() - start_time
+    _first_elapsed = time.time() - start_time
     start_time = time.time()
     second_result = client.discover_entities()
-    second_time = time.time() - start_time
-    if first_result.is_success and second_result.is_success:
-        first_count = len(first_result.value or [])
-        second_count = len(second_result.value or [])
-        if second_time < first_time:
-            pass
-        if first_count == second_count:
-            pass
+    _second_elapsed = time.time() - start_time
+    if first_result.success and second_result.success:
+        _first_count = len(first_result.value)
+        _second_count = len(second_result.value)
 
 
 def showcase_10_enterprise_features(
-    _client: FlextOracleWmsClient, config: FlextOracleWmsClientSettings
+    _client: FlextOracleWmsClient,
+    settings: FlextOracleWmsSettings,
 ) -> None:
     """Feature 10: Enterprise Features."""
 
@@ -288,23 +267,23 @@ def showcase_10_enterprise_features(
 def main() -> int:
     """Main showcase execution."""
     try:
-        config = load_config_from_environment()
-        client = showcase_1_client_initialization(config)
+        settings = load_config_from_environment()
+        client = showcase_1_client_initialization(settings)
         entities = showcase_2_entity_discovery(client)
         showcase_3_data_retrieval(client, entities)
-        showcase_4_authentication(config)
+        showcase_4_authentication(settings)
         showcase_5_api_catalog(client)
         showcase_6_error_handling(client)
         showcase_7_health_monitoring(client)
         showcase_8_performance_tracking(client, entities)
         showcase_9_cache_management(client)
-        showcase_10_enterprise_features(client, config)
+        showcase_10_enterprise_features(client, settings)
         client.stop()
-    except Exception:
+    except (RuntimeError, OSError, ValueError):
         traceback.print_exc()
         return 1
     return 0
 
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    main()

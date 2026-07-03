@@ -1,6 +1,7 @@
-"""Module skeleton for TestsFlextOracleWmsTypes.
+"""Test type definitions for flext-oracle-wms.
 
-Test type aliases for flextoraclewms.
+Provides TestsFlextOracleWmsTypes, combining TestsFlextTypes with
+t for test-specific type definitions.
 
 Copyright (c) 2025 FLEXT Team. All rights reserved.
 SPDX-License-Identifier: MIT
@@ -10,6 +11,21 @@ from __future__ import annotations
 
 from flext_tests import FlextTestsTypes
 
+from flext_oracle_wms import t
 
-class TestsFlextOracleWmsTypes(FlextTestsTypes):
-    """Test type aliases for flextoraclewms."""
+
+class TestsFlextOracleWmsTypes(FlextTestsTypes, t):
+    """Test types combining TestsFlextTypes with flext-oracle-wms types."""
+
+    class OracleWms(t.OracleWms):
+        """Oracle WMS domain test type aliases."""
+
+        class Tests(FlextTestsTypes.Tests):
+            """Oracle WMS-specific test type aliases."""
+
+            type EnvConfig = t.MetadataMapping
+
+
+t = TestsFlextOracleWmsTypes
+
+__all__: list[str] = ["TestsFlextOracleWmsTypes", "t"]

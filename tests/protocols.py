@@ -1,7 +1,7 @@
 """Test protocol definitions for flext-oracle-wms.
 
-Provides TestsFlextOracleWmsProtocols, combining FlextTestsProtocols with
-FlextOracleWmsProtocols for test-specific protocol definitions.
+Provides TestsFlextOracleWmsProtocols, combining TestsFlextProtocols with
+p for test-specific protocol definitions.
 
 Copyright (c) 2025 FLEXT Team. All rights reserved.
 SPDX-License-Identifier: MIT
@@ -11,28 +11,18 @@ from __future__ import annotations
 
 from flext_tests import FlextTestsProtocols
 
-from flext_oracle_wms.protocols import FlextOracleWmsProtocols
+from flext_oracle_wms import p
 
 
-class TestsFlextOracleWmsProtocols(FlextTestsProtocols, FlextOracleWmsProtocols):
-    """Test protocols combining FlextTestsProtocols and FlextOracleWmsProtocols.
+class TestsFlextOracleWmsProtocols(FlextTestsProtocols, p):
+    """Test protocols combining TestsFlextProtocols and p."""
 
-    Provides access to:
-    - p.Tests.Docker.* (from FlextTestsProtocols)
-    - p.Tests.Factory.* (from FlextTestsProtocols)
-    - p.OracleWms.* (from FlextOracleWmsProtocols)
-    """
+    class OracleWms(p.OracleWms):
+        """OracleWms test protocols namespace."""
 
-    class Tests:
-        """Project-specific test protocols.
-
-        Extends FlextTestsProtocols.Tests with OracleWms-specific protocols.
-        """
-
-        class OracleWms:
+        class Tests:
             """OracleWms-specific test protocols."""
 
 
 p = TestsFlextOracleWmsProtocols
-p = TestsFlextOracleWmsProtocols
-__all__ = ["TestsFlextOracleWmsProtocols", "p"]
+__all__: list[str] = ["TestsFlextOracleWmsProtocols", "p"]

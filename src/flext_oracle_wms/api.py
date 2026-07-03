@@ -9,14 +9,23 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from typing import override
+from collections.abc import (
+    Mapping,
+)
+from typing import ClassVar, override
 
-from flext_core import FlextService, r
+from flext_oracle_wms import (
+    FlextOracleWmsSettings,
+    m,
+    p,
+    r,
+    s,
+    t,
+    u,
+)
 
-from flext_oracle_wms.wms_client import FlextOracleWmsClient
 
-
-class FlextOracleWmsApi(FlextService[None]):
+class FlextOracleWmsApi(s[bool]):
     """Thin facade for Oracle WMS operations with complete FLEXT integration.
 
     Integrates:
@@ -26,25 +35,70 @@ class FlextOracleWmsApi(FlextService[None]):
     - FlextCqrs: CQRS pattern for WMS commands/queries
     - FlextDispatcher: Message routing for WMS operations
     - FlextRegistry: Component registration for WMS plugins
-    - FlextLogger: Structured logging for WMS operations
+    - `u.fetch_logger(...)` / `p.Logger`: Structured logging for WMS operations
 
     This facade provides easy access to all Oracle WMS functionality
     while maintaining clean separation between business logic and infrastructure.
     """
 
-    def __init__(self) -> None:
+    FLEXT_ORACLE_WMS_APIS: ClassVar[Mapping[str, m.OracleWms.ApiEndpoint]] = {
+        "test": m.OracleWms.ApiEndpoint(
+            name="test",
+            method="GET",
+            path="/test/",
+            version="v1",
+            category="test",
+            description="Test endpoint",
+            since_version="6.1",
+        ),
+    }
+
+    def __init__(self, settings: FlextOracleWmsSettings | None = None) -> None:
         """Initialize Oracle WMS facade with FLEXT integration."""
-        super().__init__(
-            config_type=None,
-            config_overrides=None,
-            initial_context=None,
+        super().__init__()
+        resolved_config = (
+            settings if settings is not None else FlextOracleWmsSettings.fetch_global()
         )
-        self._client = FlextOracleWmsClient()
+        self._client = u.OracleWms.Client(settings=resolved_config)
 
     @override
-    def execute(self) -> r[None]:
-        """Execute Oracle WMS operations."""
-        return r[None].ok(None)
+    def execute(self) -> p.Result[bool]:
+        """Execute Oracle WMS operations.
+
+        Default execute surface signals readiness; consumers call the
+        domain-specific methods (``fetch_settings``, ``call_endpoint``, …)
+        for real work. Returning ``r[bool].ok(True)`` matches the
+        ``s[bool]`` type parameter.
+        """
+        return r[bool].ok(value=True)
+
+    @staticmethod
+    def create_flext_http_client(
+        base_url: str,
+        timeout: float = 30.0,
+        headers: t.StrMapping | None = None,
+        *,
+        verify_ssl: bool = True,
+    ) -> u.OracleWms.HttpClient:
+        """Create FlextHttpClient instance."""
+        return u.OracleWms.HttpClient(
+            base_url=base_url,
+            timeout=timeout,
+            headers=headers,
+            verify_ssl=verify_ssl,
+        )
+
+    @staticmethod
+    def create_oracle_wms_client(
+        settings: m.OracleWms.AuthSettings,
+    ) -> p.Result[u.OracleWms.Client]:
+        """Create a runtime Oracle WMS client from auth settings."""
+        client_result: p.Result[u.OracleWms.Client] = (
+            u.OracleWms.Client.from_auth_settings(settings)
+        )
+        return client_result
 
 
-__all__ = ["FlextOracleWmsApi"]
+oracle_wms = FlextOracleWmsApi
+
+__all__: list[str] = ["FlextOracleWmsApi", "oracle_wms"]
