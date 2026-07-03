@@ -10,7 +10,7 @@ from __future__ import annotations
 
 import pytest
 
-from flext_core import FlextUtilities
+from flext_core import u as core_u
 from tests.utilities import u
 
 
@@ -19,7 +19,7 @@ class TestsFlextOracleWmsHelpersCore:
     """Test suite for FlextOracleWmsUtilities class."""
 
     def test_inherits_from_flext_utilities(self) -> None:
-        assert issubclass(u, FlextUtilities)
+        assert issubclass(u, core_u)
 
     def test_has_oracle_wms_namespace(self) -> None:
         pass

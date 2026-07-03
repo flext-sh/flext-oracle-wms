@@ -9,7 +9,7 @@ from __future__ import annotations
 
 import pytest
 
-from flext_core import FlextUtilities
+from flext_core import u as core_u
 from tests.utilities import u
 
 
@@ -26,4 +26,4 @@ class TestsFlextOracleWmsHelpers:
 
     def test_utilities_inherits_flext_utilities(self) -> None:
         """Test inheritance from FlextUtilities."""
-        assert issubclass(u, FlextUtilities)
+        assert issubclass(u, core_u)

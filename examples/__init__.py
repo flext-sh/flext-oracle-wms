@@ -13,38 +13,11 @@ from flext_core.lazy import (
 
 if TYPE_CHECKING:
     from flext_tests import td as td, tf as tf, tk as tk, tm as tm, tv as tv
-
-    from flext_core import (
-        c as c,
-        d as d,
-        e as e,
-        h as h,
-        m as m,
-        p as p,
-        r as r,
-        s as s,
-        t as t,
-        u as u,
-        x as x,
-    )
 _LAZY_IMPORTS = merge_lazy_imports(
     (".tests",),
     build_lazy_import_map(
         {
             ".tests": ("tests",),
-            "flext_core": (
-                "c",
-                "d",
-                "e",
-                "h",
-                "m",
-                "p",
-                "r",
-                "s",
-                "t",
-                "u",
-                "x",
-            ),
             "flext_tests": (
                 "td",
                 "tf",

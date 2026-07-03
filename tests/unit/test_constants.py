@@ -9,7 +9,7 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from flext_core import FlextConstants
+from flext_core import c as core_c
 from tests.constants import c
 
 
@@ -18,7 +18,7 @@ class TestsFlextOracleWmsConstantsUnit:
 
     def test_class_inheritance(self) -> None:
         """Test that c follows proper inheritance patterns."""
-        assert issubclass(c, FlextConstants)
+        assert issubclass(c, core_c)
 
     def test_flext_wms_version(self) -> None:
         """Test FLEXT_WMS_VERSION constant."""
