@@ -8,7 +8,7 @@ from __future__ import annotations
 
 from typing import Protocol, runtime_checkable
 
-from flext_api import p
+from flext_api.protocols import p
 
 from flext_oracle_wms import t
 
