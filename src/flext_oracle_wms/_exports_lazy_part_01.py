@@ -33,6 +33,14 @@ FLEXT_ORACLE_WMS_LAZY_IMPORTS_PART_01 = build_lazy_import_map(
             "FlextOracleWmsUtilities",
             "u",
         ),
+        "flext_core": (
+            "d",
+            "e",
+            "h",
+            "r",
+            "s",
+            "x",
+        ),
     },
 )
 
