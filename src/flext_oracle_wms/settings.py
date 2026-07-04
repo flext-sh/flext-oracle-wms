@@ -4,10 +4,10 @@ from __future__ import annotations
 
 from typing import Annotated, ClassVar, Self
 
+from flext_api import m, u
+
 from flext_core import FlextSettingsBase, r
-from flext_oracle_wms.models import m
 from flext_oracle_wms.protocols import p
-from flext_oracle_wms.utilities import u
 
 
 class FlextOracleWmsSettings(FlextSettingsBase):
