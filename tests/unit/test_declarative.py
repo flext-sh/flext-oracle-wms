@@ -11,11 +11,8 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from collections.abc import (
-    Generator,
-    Sequence,
-)
 from pathlib import Path
+from typing import TYPE_CHECKING
 
 import pytest
 
@@ -24,9 +21,16 @@ from flext_oracle_wms import (
     FlextOracleWmsSettings,
 )
 from flext_oracle_wms.utilities import FlextOracleWmsUtilitiesClient
-from tests.protocols import p
 from tests.typings import t
 from tests.utilities import u
+
+if TYPE_CHECKING:
+    from collections.abc import (
+        Generator,
+        Sequence,
+    )
+
+    from tests.protocols import p
 
 logger = u.fetch_logger(__name__)
 
@@ -97,7 +101,8 @@ class TestsFlextOracleWmsDeclarative:
             assert health_result.error is not None
 
     def test_get_all_entities(
-        self, oracle_wms_client: FlextOracleWmsUtilitiesClient.Client
+        self,
+        oracle_wms_client: FlextOracleWmsUtilitiesClient.Client,
     ) -> None:
         """Test getting list of all Oracle WMS entities returns valid result."""
         entities_result = oracle_wms_client.discover_entities()
@@ -152,7 +157,8 @@ class TestsFlextOracleWmsDeclarative:
             logger.warning("⚠️ Filtered query failed: %s", result.error)
 
     def test_get_entity_by_id(
-        self, oracle_wms_client: FlextOracleWmsUtilitiesClient.Client
+        self,
+        oracle_wms_client: FlextOracleWmsUtilitiesClient.Client,
     ) -> None:
         """Test getting specific entity record by ID returns valid result."""
         list_result = oracle_wms_client.get_entity_data("company", limit=1)
@@ -174,7 +180,8 @@ class TestsFlextOracleWmsDeclarative:
         assert result.success or result.failure
 
     def test_get_entity_status(
-        self, oracle_wms_client: FlextOracleWmsUtilitiesClient.Client
+        self,
+        oracle_wms_client: FlextOracleWmsUtilitiesClient.Client,
     ) -> None:
         """Test getting entity status."""
         result = oracle_wms_client.get_entity_data(
@@ -185,7 +192,8 @@ class TestsFlextOracleWmsDeclarative:
             logger.info("✅ Successfully got entity status")
         else:
             logger.info(
-                "Warning: Entity status call failed (expected): %s", result.error
+                "Warning: Entity status call failed (expected): %s",
+                result.error,
             )
             assert result.error is None or "Client not initialized" not in result.error
 
@@ -216,7 +224,8 @@ class TestsFlextOracleWmsDeclarative:
         logger.info("⚠️ LPN creation failed as expected: %s", result.error)
 
     def test_invalid_entity_name(
-        self, oracle_wms_client: FlextOracleWmsUtilitiesClient.Client
+        self,
+        oracle_wms_client: FlextOracleWmsUtilitiesClient.Client,
     ) -> None:
         """Test handling of invalid entity names returns failure result."""
         result = oracle_wms_client.get_entity_data("invalid_entity_xyz")
@@ -224,7 +233,8 @@ class TestsFlextOracleWmsDeclarative:
         assert result.error is not None
 
     def test_unknown_api_call(
-        self, oracle_wms_client: FlextOracleWmsUtilitiesClient.Client
+        self,
+        oracle_wms_client: FlextOracleWmsUtilitiesClient.Client,
     ) -> None:
         """Test handling of unknown API calls returns failure result."""
         result = oracle_wms_client.call_api("unknown_api_xyz")
@@ -232,7 +242,8 @@ class TestsFlextOracleWmsDeclarative:
         assert result.error is not None
 
     def test_malformed_lgf_call(
-        self, oracle_wms_client: FlextOracleWmsUtilitiesClient.Client
+        self,
+        oracle_wms_client: FlextOracleWmsUtilitiesClient.Client,
     ) -> None:
         """Test handling of malformed LGF API calls."""
         result = oracle_wms_client.call_api("invalid_api_name")
@@ -258,7 +269,8 @@ class TestsFlextOracleWmsDeclarative:
                 assert result_item.success or result_item.failure
 
     def test_pagination_handling(
-        self, oracle_wms_client: FlextOracleWmsUtilitiesClient.Client
+        self,
+        oracle_wms_client: FlextOracleWmsUtilitiesClient.Client,
     ) -> None:
         """Test pagination with different page sizes."""
         page_sizes = [1, 5, 10]

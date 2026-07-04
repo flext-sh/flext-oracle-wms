@@ -6,12 +6,14 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from types import TracebackType
-from typing import Self
+from typing import TYPE_CHECKING, Self
 
 from flext_api import FlextApi, FlextApiSettings, u
 
 from flext_oracle_wms import c, m, p, r, t
+
+if TYPE_CHECKING:
+    from types import TracebackType
 
 
 class FlextOracleWmsUtilitiesHttpClient:
@@ -95,7 +97,10 @@ class FlextOracleWmsUtilitiesHttpClient:
             """Make DELETE request."""
             try:
                 return self._execute_request_unchecked(
-                    "DELETE", path, headers=headers, body={}
+                    "DELETE",
+                    path,
+                    headers=headers,
+                    body={},
                 )
             except c.EXC_VALIDATION_VALUE as exc:
                 return r[t.JsonMapping].fail(f"Request validation error: {exc}")
@@ -111,7 +116,10 @@ class FlextOracleWmsUtilitiesHttpClient:
             """Make GET request with railway-oriented error handling."""
             params_str: t.Api.WebParams | None = params
             return self._execute_request(
-                "GET", path, params=params_str, headers=headers
+                "GET",
+                path,
+                params=params_str,
+                headers=headers,
             )
 
         def post(
@@ -135,7 +143,10 @@ class FlextOracleWmsUtilitiesHttpClient:
             """Make PUT request."""
             try:
                 return self._execute_request_unchecked(
-                    "PUT", path, headers=headers, body=json_data or data
+                    "PUT",
+                    path,
+                    headers=headers,
+                    body=json_data or data,
                 )
             except c.EXC_VALIDATION_VALUE as exc:
                 return r[t.JsonMapping].fail(f"PUT validation error: {exc}")
@@ -243,7 +254,7 @@ class FlextOracleWmsUtilitiesHttpClient:
                 isinstance(body, str) and not body
             ):
                 return r[t.JsonMapping].fail(
-                    f"Unsupported response body type: {type(body)}"
+                    f"Unsupported response body type: {type(body)}",
                 )
             try:
                 return r[t.JsonMapping].ok(self._parse_response_body_unchecked(body))

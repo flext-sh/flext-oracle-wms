@@ -237,7 +237,8 @@ class FlextOracleWmsModels(m):
 
         @staticmethod
         def calculate_inventory_value(
-            item: FlextOracleWmsModels.OracleWms.InventoryItem, price: float
+            item: FlextOracleWmsModels.OracleWms.InventoryItem,
+            price: float,
         ) -> float:
             """Calculate inventory value using domain logic."""
             value: float = item.quantity * price

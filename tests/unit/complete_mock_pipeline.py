@@ -16,13 +16,15 @@ import json as _stdlib_json
 import uuid
 from datetime import UTC, datetime
 from pathlib import Path
-from typing import cast
+from typing import TYPE_CHECKING, cast
 
 from flext_tests import r
 
-from tests.protocols import p
 from tests.typings import t
 from tests.utilities import u
+
+if TYPE_CHECKING:
+    from tests.protocols import p
 
 logger = u.fetch_logger(__name__)
 
@@ -676,7 +678,7 @@ class CompleteMockPipeline:
         tap_file = results_dir / f"tap_extraction_{timestamp}.json"
         with tap_file.open("w", encoding="utf-8") as f:
             f.write(
-                _stdlib_json.dumps([dict(record) for record in tap_records], indent=2)
+                _stdlib_json.dumps([dict(record) for record in tap_records], indent=2),
             )
         target_file = results_dir / f"target_loading_{timestamp}.json"
         with target_file.open("w", encoding="utf-8") as f:

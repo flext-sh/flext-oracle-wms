@@ -83,7 +83,7 @@ class TestsFlextOracleWmsAuthenticationCore:
     def test_config_validation_failure_basic_no_credentials(self) -> None:
         """Test validate_business_rules fails for basic auth without credentials."""
         settings = m.OracleWms.AuthSettings(
-            method=c.OracleWms.OracleWMSAuthMethod.BASIC
+            method=c.OracleWms.OracleWMSAuthMethod.BASIC,
         )
         result = settings.validate_business_rules()
         assert result.failure
@@ -92,7 +92,7 @@ class TestsFlextOracleWmsAuthenticationCore:
     def test_config_validation_failure_oauth2_no_credentials(self) -> None:
         """Test validate_business_rules fails for oauth2 without credentials."""
         settings = m.OracleWms.AuthSettings(
-            method=c.OracleWms.OracleWMSAuthMethod.OAUTH2
+            method=c.OracleWms.OracleWMSAuthMethod.OAUTH2,
         )
         result = settings.validate_business_rules()
         assert result.failure
@@ -134,7 +134,7 @@ class TestsFlextOracleWmsAuthenticationCore:
     def test_authenticate_basic_failure(self) -> None:
         """Test basic auth authenticate fails without credentials."""
         settings = m.OracleWms.AuthSettings(
-            method=c.OracleWms.OracleWMSAuthMethod.BASIC
+            method=c.OracleWms.OracleWMSAuthMethod.BASIC,
         )
         authenticator = FlextOracleWmsUtilitiesAuth.Authenticator(settings)
         result = authenticator.authenticate()
@@ -154,7 +154,7 @@ class TestsFlextOracleWmsAuthenticationCore:
     def test_authenticate_oauth2_failure(self) -> None:
         """Test oauth2 authenticate fails without credentials."""
         settings = m.OracleWms.AuthSettings(
-            method=c.OracleWms.OracleWMSAuthMethod.OAUTH2
+            method=c.OracleWms.OracleWMSAuthMethod.OAUTH2,
         )
         authenticator = FlextOracleWmsUtilitiesAuth.Authenticator(settings)
         result = authenticator.authenticate()
@@ -186,7 +186,7 @@ class TestsFlextOracleWmsAuthenticationCore:
     def test_get_auth_headers_failure(self) -> None:
         """Test get_auth_headers fails without credentials."""
         settings = m.OracleWms.AuthSettings(
-            method=c.OracleWms.OracleWMSAuthMethod.BASIC
+            method=c.OracleWms.OracleWMSAuthMethod.BASIC,
         )
         authenticator = FlextOracleWmsUtilitiesAuth.Authenticator(settings)
         result = authenticator.get_auth_headers()
@@ -195,7 +195,7 @@ class TestsFlextOracleWmsAuthenticationCore:
     def test_unsupported_auth_method(self) -> None:
         """Test authenticate fails with unsupported method."""
         settings = m.OracleWms.AuthSettings(
-            method=c.OracleWms.OracleWMSAuthMethod.BEARER
+            method=c.OracleWms.OracleWMSAuthMethod.BEARER,
         )
         authenticator = FlextOracleWmsUtilitiesAuth.Authenticator(settings)
         result = authenticator.authenticate()

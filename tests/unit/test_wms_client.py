@@ -10,14 +10,17 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
 from unittest.mock import MagicMock
 
-import pytest
 from flext_api import FlextApi
 from flext_tests import r
 
 from flext_oracle_wms import FlextOracleWmsSettings
 from flext_oracle_wms.utilities import FlextOracleWmsUtilitiesClient
+
+if TYPE_CHECKING:
+    import pytest
 
 
 class TestsFlextOracleWmsWmsClient:
@@ -159,7 +162,8 @@ class TestsFlextOracleWmsWmsClient:
         assert result.value == [{"id": "1"}, {"id": "2"}]
 
     def test_get_apis_by_category_success(
-        self, monkeypatch: pytest.MonkeyPatch
+        self,
+        monkeypatch: pytest.MonkeyPatch,
     ) -> None:
         """Test API discovery by category extracts 'apis' key."""
         settings = FlextOracleWmsSettings.testing_config()

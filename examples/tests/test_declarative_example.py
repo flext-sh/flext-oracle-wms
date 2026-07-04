@@ -45,7 +45,7 @@ def load_env_config() -> t.MutableJsonMapping | None:
             if path_parts and path_parts[-1]:
                 logger.debug(f"Environment detected in URL: {path_parts[-1]}")
         except (ValueError, AttributeError) as e:
-            logger.debug(f"Failed to parse environment from URL: {e}")
+            logger.debug("Failed to parse environment from URL: %s", e)
     return {
         "oracle_wms_base_url": base_url,
         "oracle_wms_username": settings.get("ORACLE_WMS_USERNAME", ""),
@@ -86,7 +86,7 @@ def main() -> None:
     try:
         run_client_flow(client)
     except Exception as exc:
-        logger.warning(f"Test execution encountered error: {exc}")
+        logger.warning("Test execution encountered error: %s", exc)
         raise
     finally:
         client.stop()

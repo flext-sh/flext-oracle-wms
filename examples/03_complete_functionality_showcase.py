@@ -30,10 +30,8 @@ from __future__ import annotations
 import os
 import time
 import traceback
-from collections.abc import (
-    Sequence,
-)
 from pathlib import Path
+from typing import TYPE_CHECKING
 
 from dotenv import load_dotenv
 
@@ -51,6 +49,11 @@ from flext_oracle_wms.utilities import (
     FlextOracleWmsUtilitiesAuth,
     FlextOracleWmsUtilitiesClient,
 )
+
+if TYPE_CHECKING:
+    from collections.abc import (
+        Sequence,
+    )
 
 FlextOracleWmsAuthenticator = FlextOracleWmsUtilitiesAuth.Authenticator
 FlextOracleWmsClient = FlextOracleWmsUtilitiesClient.Client
@@ -202,7 +205,7 @@ def showcase_6_error_handling(client: FlextOracleWmsClient) -> None:
         if not validation.success:
             logger.info(f"Expected validation failure: {validation.error}")
     except Exception as exc:
-        logger.warning(f"Error handling demonstration: {exc}")
+        logger.warning("Error handling demonstration: %s", exc)
 
 
 def showcase_7_health_monitoring(

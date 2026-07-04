@@ -22,11 +22,8 @@ Usage:
 from __future__ import annotations
 
 import os
-from collections.abc import (
-    Sequence,
-)
 from pathlib import Path
-from typing import Final
+from typing import TYPE_CHECKING, Final
 
 from dotenv import load_dotenv
 
@@ -39,6 +36,11 @@ from flext_oracle_wms import (
 )
 from flext_oracle_wms.errors import FlextOracleWmsErrors
 from flext_oracle_wms.utilities import FlextOracleWmsUtilitiesClient
+
+if TYPE_CHECKING:
+    from collections.abc import (
+        Sequence,
+    )
 
 FlextOracleWmsClient = FlextOracleWmsUtilitiesClient.Client
 
@@ -123,7 +125,7 @@ def query_entity_data(
                     else:
                         _ = value_str
                 except (KeyError, ValueError, TypeError) as e:
-                    logger.debug(f"Display formatting failed: {e}")
+                    logger.debug("Display formatting failed: %s", e)
         return result
     return result
 

@@ -17,15 +17,17 @@ import json as _stdlib_json
 import time
 from datetime import UTC, datetime
 from pathlib import Path
-from typing import cast
+from typing import TYPE_CHECKING, cast
 
 from flext_tests import r
 
 from flext_oracle_wms import FlextOracleWmsSettings
 from flext_oracle_wms.utilities import FlextOracleWmsUtilitiesClient
-from tests.protocols import p
 from tests.typings import t
 from tests.utilities import u
+
+if TYPE_CHECKING:
+    from tests.protocols import p
 
 logger = u.fetch_logger(__name__)
 
@@ -131,7 +133,8 @@ class OptimizedOracleWmsDiscovery:
             "total_processed": len(all_results),
             "entities_with_data": len(self.high_value_entities),
             "high_value_entities": cast(
-                "t.JsonValue", list(self.high_value_entities.keys())
+                "t.JsonValue",
+                list(self.high_value_entities.keys()),
             ),
             "detailed_results": cast("t.JsonValue", all_results),
         }
@@ -179,7 +182,8 @@ class OptimizedOracleWmsDiscovery:
             }
 
     def _analyze_single_entity_unchecked(
-        self, entity_name: str
+        self,
+        entity_name: str,
     ) -> t.MutableJsonMapping:
         """Analyze one entity while allowing client errors upward."""
         data_result = self.client.get_entity_data(entity_name, limit=3)
@@ -523,7 +527,8 @@ class OptimizedOracleWmsDiscovery:
             "oracle_wms_base_url": self.settings.base_url,
             "api_version": self.settings.api_version,
             "high_value_entities": cast(
-                "t.JsonValue", list(self.high_value_entities.keys())
+                "t.JsonValue",
+                list(self.high_value_entities.keys()),
             ),
         }
         summary_file = results_dir / f"discovery_summary_{timestamp}.json"

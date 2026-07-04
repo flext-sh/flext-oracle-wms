@@ -28,12 +28,12 @@ class FlextOracleWmsUtilitiesClient:
             validation_result = auth_settings.validate_business_rules()
             if validation_result.failure:
                 return r[FlextOracleWmsUtilitiesClient.Client].fail(
-                    validation_result.error or "Invalid Oracle WMS auth settings"
+                    validation_result.error or "Invalid Oracle WMS auth settings",
                 )
             basic_method = str(c.OracleWms.OracleWMSAuthMethod.BASIC)
             if auth_settings.normalized_method != basic_method:
                 return r[FlextOracleWmsUtilitiesClient.Client].fail(
-                    "Oracle WMS runtime client currently supports BASIC auth only"
+                    "Oracle WMS runtime client currently supports BASIC auth only",
                 )
             base_settings = FlextOracleWmsSettings.fetch_global()
             resolved_settings = FlextOracleWmsSettings.model_validate({
@@ -75,7 +75,7 @@ class FlextOracleWmsUtilitiesClient:
                         settings,
                         "auth_method",
                         c.OracleWms.OracleWMSAuthMethod.BASIC,
-                    )
+                    ),
                 )
                 .strip()
                 .lower()
@@ -176,7 +176,8 @@ class FlextOracleWmsUtilitiesClient:
             )
 
         def get_apis_by_category(
-            self, category: str
+            self,
+            category: str,
         ) -> p.Result[t.SequenceOf[t.StrMapping]]:
             """Get Oracle WMS APIs by category."""
             result = self.get(f"/apis/category/{category}")

@@ -75,7 +75,8 @@ class FlextOracleWmsUtilitiesFiltering:
             else:
                 filters = {
                     field: m.OracleWms.FlextOracleWmsOperatorFilter(
-                        operator=operator, value=value
+                        operator=operator,
+                        value=value,
                     ),
                 }
             return engine.filter_records(records, filters)
@@ -217,7 +218,7 @@ class FlextOracleWmsUtilitiesFiltering:
                 def key_func(record: t.OracleWms.FilterRecord) -> str:
                     value = self._get_nested_value(record, sort_field)
                     return str(
-                        value if value is not None else "" if ascending else "zzz"
+                        value if value is not None else "" if ascending else "zzz",
                     )
 
                 return r[Sequence[t.OracleWms.FilterRecord]].ok(
@@ -250,11 +251,11 @@ class FlextOracleWmsUtilitiesFiltering:
                 match operator:
                     case c.OracleWms.WmsFilterOperator.EQ | "eq":
                         result = self._normalize(field_value) == self._normalize(
-                            filter_value
+                            filter_value,
                         )
                     case c.OracleWms.WmsFilterOperator.NE | "ne":
                         result = self._normalize(field_value) != self._normalize(
-                            filter_value
+                            filter_value,
                         )
                     case c.OracleWms.WmsFilterOperator.IN | "in":
                         match filter_value:
@@ -271,19 +272,19 @@ class FlextOracleWmsUtilitiesFiltering:
                         )
                     case c.OracleWms.WmsFilterOperator.GT | "gt":
                         result = type(field_value) is type(
-                            filter_value
+                            filter_value,
                         ) and self._compare(field_value, filter_value, ">")
                     case c.OracleWms.WmsFilterOperator.LT | "lt":
                         result = type(field_value) is type(
-                            filter_value
+                            filter_value,
                         ) and self._compare(field_value, filter_value, "<")
                     case c.OracleWms.WmsFilterOperator.GTE | "gte":
                         result = type(field_value) is type(
-                            filter_value
+                            filter_value,
                         ) and self._compare(field_value, filter_value, ">=")
                     case c.OracleWms.WmsFilterOperator.LTE | "lte":
                         result = type(field_value) is type(
-                            filter_value
+                            filter_value,
                         ) and self._compare(field_value, filter_value, "<=")
                     case _:
                         result = False
@@ -386,7 +387,8 @@ class FlextOracleWmsUtilitiesFiltering:
             return r[bool].ok(True)
 
         def _validate_filters(
-            self, filters: t.MappingKV[str, t.OracleWms.FilterEntry]
+            self,
+            filters: t.MappingKV[str, t.OracleWms.FilterEntry],
         ) -> p.Result[bool]:
             total = sum(self._condition_size(value) for value in filters.values())
             if total > self.max_conditions:

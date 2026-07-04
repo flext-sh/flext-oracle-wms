@@ -241,7 +241,7 @@ def demonstrate_configuration_patterns() -> None:
     try:
         _demonstrate_demo_configuration()
     except Exception as exc:
-        logger.warning(f"Configuration validation failed: {exc}")
+        logger.warning("Configuration validation failed: %s", exc)
     env_configs = get_environment_configs()
     for _config in env_configs.values():
         pass

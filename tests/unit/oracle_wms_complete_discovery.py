@@ -13,12 +13,9 @@ NO FALLBACKS, NO ESTIMATIONS, NO BASIC LIMITS - FULL EXPLORATION
 from __future__ import annotations
 
 import json as _stdlib_json
-from collections.abc import (
-    MutableSequence,
-)
 from datetime import UTC, datetime
 from pathlib import Path
-from typing import cast
+from typing import TYPE_CHECKING, cast
 
 from flext_api import FlextApiModels
 from flext_tests import r
@@ -30,9 +27,15 @@ from flext_oracle_wms import (
 from flext_oracle_wms.utilities import FlextOracleWmsUtilitiesClient
 from tests.constants import c
 from tests.models import m
-from tests.protocols import p
 from tests.typings import t
 from tests.utilities import u
+
+if TYPE_CHECKING:
+    from collections.abc import (
+        MutableSequence,
+    )
+
+    from tests.protocols import p
 
 logger = u.fetch_logger(__name__)
 
@@ -57,7 +60,7 @@ class OracleWmsCompleteDiscovery:
             password=self.settings.password,
         )
         _auth_result = FlextOracleWmsUtilitiesClient.Client.from_auth_settings(
-            auth_settings
+            auth_settings,
         )
         self.client = FlextOracleWmsUtilitiesClient.Client(settings=self.settings)
         self.discovered_entities: MutableSequence[str] = []
@@ -105,7 +108,8 @@ class OracleWmsCompleteDiscovery:
             r[FlextApiModels.Api.HttpResponse].fail("Unknown API category")
 
     def _test_data_extract_api(
-        self, api_name: str
+        self,
+        api_name: str,
     ) -> p.Result[FlextApiModels.Api.HttpResponse]:
         """Test data extraction APIs."""
         try:
@@ -179,7 +183,7 @@ class OracleWmsCompleteDiscovery:
             return self.client.call_api(api_name)
         except Exception as e:
             return r[FlextApiModels.Api.HttpResponse].fail(
-                f"Setup API test failed: {e}"
+                f"Setup API test failed: {e}",
             )
 
     def _test_automation_api(
@@ -263,7 +267,7 @@ class OracleWmsCompleteDiscovery:
             )
         except Exception as e:
             return r[FlextApiModels.Api.HttpResponse].fail(
-                f"task status test failed: {e}"
+                f"task status test failed: {e}",
             )
 
     def _test_entity_with_id(

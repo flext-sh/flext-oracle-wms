@@ -85,7 +85,7 @@ class TestsFlextOracleWmsWmsApi:
             m.OracleWms.AuthSettings(
                 username="test_user",
                 password="test_password",
-            )
+            ),
         )
         assert result.success
         assert isinstance(result.value, FlextOracleWmsUtilitiesClient.Client)

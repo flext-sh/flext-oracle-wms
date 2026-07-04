@@ -2,12 +2,14 @@
 
 from __future__ import annotations
 
-from typing import Annotated, ClassVar, Self
+from typing import TYPE_CHECKING, Annotated, ClassVar, Self
 
 from flext_api import m, u
 
 from flext_core import FlextSettingsBase, r
-from flext_oracle_wms import p
+
+if TYPE_CHECKING:
+    from flext_oracle_wms import p
 
 
 class FlextOracleWmsSettings(FlextSettingsBase):
@@ -19,7 +21,8 @@ class FlextOracleWmsSettings(FlextSettingsBase):
     )
 
     base_url: Annotated[
-        str, u.Field(min_length=1, description="Oracle WMS base URL")
+        str,
+        u.Field(min_length=1, description="Oracle WMS base URL"),
     ] = "http://localhost:8080"
     timeout: Annotated[
         float,

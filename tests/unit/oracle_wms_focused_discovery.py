@@ -8,21 +8,24 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 import json as _stdlib_json
-from collections.abc import (
-    MutableMapping,
-    MutableSequence,
-)
 from datetime import UTC, datetime
 from pathlib import Path
-from typing import cast
+from typing import TYPE_CHECKING, cast
 
 from flext_tests import r
 
 from flext_oracle_wms import FlextOracleWmsSettings
 from flext_oracle_wms.utilities import FlextOracleWmsUtilitiesClient
-from tests.protocols import p
 from tests.typings import t
 from tests.utilities import u
+
+if TYPE_CHECKING:
+    from collections.abc import (
+        MutableMapping,
+        MutableSequence,
+    )
+
+    from tests.protocols import p
 
 logger = u.fetch_logger(__name__)
 
@@ -342,11 +345,13 @@ class FocusedOracleWmsDiscovery:
     def _add_schema_metadata_properties(properties: t.MutableJsonMapping) -> None:
         """Add Singer metadata properties."""
         properties["_sdc_extracted_at"] = cast(
-            "t.JsonValue", {"type": "string", "format": "date-time"}
+            "t.JsonValue",
+            {"type": "string", "format": "date-time"},
         )
         properties["_sdc_entity"] = cast("t.JsonValue", {"type": "string"})
         properties["_sdc_record_hash"] = cast(
-            "t.JsonValue", {"type": ["string", "null"]}
+            "t.JsonValue",
+            {"type": ["string", "null"]},
         )
 
     def _oracle_field_to_singer_type(
