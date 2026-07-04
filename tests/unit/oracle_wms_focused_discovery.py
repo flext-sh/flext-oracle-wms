@@ -73,111 +73,126 @@ class FocusedOracleWmsDiscovery:
     def execute_focused_discovery(self) -> p.Result[t.JsonMapping]:
         """Execute complete focused discovery."""
         try:
-            self.client.start()
-            entities_result = self.client.discover_entities()
-            if not entities_result.success:
-                return r[t.JsonMapping].fail(
-                    f"Entity discovery failed: {entities_result.error}",
-                )
-            all_entities = entities_result.value
-            available_quick = [e for e in self.quick_test_entities if e in all_entities]
-            data_entities = self._quick_data_scan(available_quick)
-            if data_entities and len(all_entities) > len(available_quick):
-                remaining = [e for e in all_entities if e not in available_quick][:30]
-                additional_data = self._quick_data_scan(remaining)
-                data_entities.update(additional_data)
-            self.entities_with_data = data_entities
-            if not data_entities:
-                structure_entities = self._get_entity_structures(available_quick[:5])
-                schemas = self._generate_schemas_from_structures(structure_entities)
-            else:
-                schemas = self._generate_schemas_from_data(data_entities)
-            self.complete_schemas = schemas
-            save_result = self._save_focused_results()
-            if data_entities:
-
-                def _entity_count(
-                    pair: tuple[str, t.JsonValue],
-                ) -> int:
-                    meta = pair[1]
-                    if isinstance(meta, dict):
-                        c = meta.get("count")
-                        if isinstance(c, int):
-                            return c
-                    return 0
-
-                sorted_entities = sorted(
-                    data_entities.items(),
-                    key=_entity_count,
-                    reverse=True,
-                )
-                for _entity_name, _data in sorted_entities:
-                    pass
-            if schemas:
-                for _schema in schemas.values():
-                    pass
-            summary_payload: dict[str, t.JsonValue] = {
-                "total_entities": len(all_entities),
-                "entities_with_data": len(data_entities),
-                "schemas_generated": len(schemas),
-                "results_path": save_result.value if save_result.success else None,
-                "data_entities": cast("t.JsonValue", data_entities),
-                "schemas": cast("t.JsonValue", schemas),
-            }
-            return r[t.JsonMapping].ok(summary_payload)
+            return self._execute_focused_discovery_unchecked()
         except Exception as e:
             logger.exception("Focused discovery failed")
             return r[t.JsonMapping].fail(f"Discovery failed: {e}")
         finally:
             self.client.stop()
 
+    def _execute_focused_discovery_unchecked(self) -> p.Result[t.JsonMapping]:
+        """Execute focused discovery while allowing client failures upward."""
+        self.client.start()
+        entities_result = self.client.discover_entities()
+        if not entities_result.success:
+            return r[t.JsonMapping].fail(
+                f"Entity discovery failed: {entities_result.error}",
+            )
+        all_entities = entities_result.value
+        available_quick = [e for e in self.quick_test_entities if e in all_entities]
+        data_entities = self._quick_data_scan(available_quick)
+        if data_entities and len(all_entities) > len(available_quick):
+            remaining = [e for e in all_entities if e not in available_quick][:30]
+            data_entities.update(self._quick_data_scan(remaining))
+        self.entities_with_data = data_entities
+        schemas = self._generate_focused_schemas(data_entities, available_quick)
+        self.complete_schemas = schemas
+        save_result = self._save_focused_results()
+        self._summarize_data_entities(data_entities)
+        self._visit_schemas(schemas)
+        summary_payload: t.MutableJsonMapping = {
+            "total_entities": len(all_entities),
+            "entities_with_data": len(data_entities),
+            "schemas_generated": len(schemas),
+            "results_path": save_result.value if save_result.success else None,
+            "data_entities": cast("t.JsonValue", data_entities),
+            "schemas": cast("t.JsonValue", schemas),
+        }
+        return r[t.JsonMapping].ok(summary_payload)
+
+    def _generate_focused_schemas(
+        self,
+        data_entities: t.JsonMapping,
+        available_quick: t.StrSequence,
+    ) -> t.MutableJsonMapping:
+        """Generate focused schemas from available data or structure probes."""
+        if data_entities:
+            return self._generate_schemas_from_data(data_entities)
+        structure_entities = self._get_entity_structures(available_quick[:5])
+        return self._generate_schemas_from_structures(structure_entities)
+
+    @staticmethod
+    def _entity_count(pair: tuple[str, t.JsonValue]) -> int:
+        """Return the count field for a discovered entity."""
+        meta = pair[1]
+        if isinstance(meta, dict):
+            count = meta.get("count")
+            if isinstance(count, int):
+                return count
+        return 0
+
+    def _summarize_data_entities(self, data_entities: t.JsonMapping) -> None:
+        """Sort data entities by count to exercise deterministic ordering."""
+        if not data_entities:
+            return
+        sorted_entities = sorted(
+            data_entities.items(),
+            key=self._entity_count,
+            reverse=True,
+        )
+        for _entity_name, _data in sorted_entities:
+            pass
+
+    @staticmethod
+    def _visit_schemas(schemas: t.JsonMapping) -> None:
+        """Iterate generated schemas for deterministic coverage."""
+        if schemas:
+            for _schema in schemas.values():
+                pass
+
     def _quick_data_scan(self, entities: t.StrSequence) -> t.MutableJsonMapping:
         """Quick scan to find entities with actual data."""
         data_entities: t.MutableJsonMapping = {}
         for entity_name in entities:
             try:
-                result = self.client.get_entity_data(entity_name, limit=1)
-                if result.success:
-                    records = result.value
-                    if records:
-                        detailed_result = self.client.get_entity_data(
-                            entity_name,
-                            limit=3,
-                        )
-                        if detailed_result.success:
-                            detailed_records = detailed_result.value
-                            entity_info: t.MutableJsonMapping = {
-                                "count": len(detailed_records),
-                                "has_data": True,
-                                "sample_size": len(detailed_records),
-                            }
-                            if detailed_records:
-                                sample = detailed_records[0]
-                                if isinstance(sample, dict):
-                                    entity_info_extra: dict[str, t.JsonValue] = {
-                                        "field_count": len(sample.keys()),
-                                        "sample_fields": cast(
-                                            "t.JsonValue", list(sample.keys())
-                                        ),
-                                        "field_types": cast(
-                                            "t.JsonValue",
-                                            {
-                                                k: type(v).__name__
-                                                for k, v in sample.items()
-                                            },
-                                        ),
-                                        "sample_record": cast(
-                                            "t.JsonValue",
-                                            self._safe_sample(sample),
-                                        ),
-                                    }
-                                    entity_info.update(entity_info_extra)
-                            data_entities[entity_name] = cast(
-                                "t.JsonValue", entity_info
-                            )
+                entity_info = self._scan_entity_data(entity_name)
+                if entity_info is not None:
+                    data_entities[entity_name] = cast("t.JsonValue", entity_info)
             except (RuntimeError, OSError, ValueError, KeyError):
                 logger.debug("Failed to process entity %s", entity_name)
         return data_entities
+
+    def _scan_entity_data(self, entity_name: str) -> t.MutableJsonMapping | None:
+        """Scan one entity and return sample metadata when data exists."""
+        result = self.client.get_entity_data(entity_name, limit=1)
+        if not result.success or not result.value:
+            return None
+        detailed_result = self.client.get_entity_data(entity_name, limit=3)
+        if not detailed_result.success:
+            return None
+        detailed_records = detailed_result.value
+        entity_info: t.MutableJsonMapping = {
+            "count": len(detailed_records),
+            "has_data": True,
+            "sample_size": len(detailed_records),
+        }
+        if detailed_records:
+            sample = detailed_records[0]
+            if isinstance(sample, dict):
+                entity_info.update(self._entity_info_extra(sample))
+        return entity_info
+
+    def _entity_info_extra(self, sample: t.StrMapping) -> t.MutableJsonMapping:
+        """Build extra metadata for an entity sample record."""
+        return {
+            "field_count": len(sample.keys()),
+            "sample_fields": cast("t.JsonValue", list(sample.keys())),
+            "field_types": cast(
+                "t.JsonValue",
+                {k: type(v).__name__ for k, v in sample.items()},
+            ),
+            "sample_record": cast("t.JsonValue", self._safe_sample(sample)),
+        }
 
     def _get_entity_structures(
         self,
@@ -187,29 +202,30 @@ class FocusedOracleWmsDiscovery:
         structures: t.MutableJsonMapping = {}
         for entity_name in entities:
             try:
-                result = self.client.get_entity_data(entity_name, limit=1)
-                if result.success:
-                    records = result.value
-                    if records:
-                        sample = records[0]
-                        if isinstance(sample, dict):
-                            structure_payload: dict[str, t.JsonValue] = {
-                                "fields": cast("t.JsonValue", list(sample.keys())),
-                                "field_types": cast(
-                                    "t.JsonValue",
-                                    {k: type(v).__name__ for k, v in sample.items()},
-                                ),
-                                "sample_record": cast(
-                                    "t.JsonValue", self._safe_sample(sample)
-                                ),
-                                "has_data": False,
-                            }
-                            structures[entity_name] = cast(
-                                "t.JsonValue", structure_payload
-                            )
+                structure_payload = self._get_entity_structure(entity_name)
+                if structure_payload is not None:
+                    structures[entity_name] = cast("t.JsonValue", structure_payload)
             except (RuntimeError, OSError, ValueError, KeyError):
                 logger.debug("Failed to get structure for entity %s", entity_name)
         return structures
+
+    def _get_entity_structure(self, entity_name: str) -> t.MutableJsonMapping | None:
+        """Return structure metadata for one entity when a sample exists."""
+        result = self.client.get_entity_data(entity_name, limit=1)
+        if not result.success or not result.value:
+            return None
+        sample = result.value[0]
+        if not isinstance(sample, dict):
+            return None
+        return {
+            "fields": cast("t.JsonValue", list(sample.keys())),
+            "field_types": cast(
+                "t.JsonValue",
+                {k: type(v).__name__ for k, v in sample.items()},
+            ),
+            "sample_record": cast("t.JsonValue", self._safe_sample(sample)),
+            "has_data": False,
+        }
 
     def _safe_sample(
         self,
@@ -254,53 +270,84 @@ class FocusedOracleWmsDiscovery:
     ) -> t.JsonMapping | None:
         """Create Singer schema with proper Oracle WMS typing."""
         try:
-            fields = entity_data.get("sample_fields", entity_data.get("fields", []))
-            field_types = entity_data.get("field_types", {})
-            sample_record = entity_data.get("sample_record", {})
-            if not fields or not isinstance(fields, list):
-                return None
-            properties: t.MutableJsonMapping = {}
-            for field in fields:
-                if not isinstance(field, str):
-                    continue
-                python_type = (
-                    field_types[field]
-                    if isinstance(field_types, dict) and field in field_types
-                    else "str"
-                )
-                sample_value: t.JsonValue = (
-                    sample_record[field]
-                    if isinstance(sample_record, dict) and field in sample_record
-                    else None
-                )
-                singer_type = self._oracle_field_to_singer_type(
-                    field,
-                    str(python_type),
-                    sample_value,
-                    entity_name,
-                )
-                properties[field] = cast("t.JsonValue", singer_type)
-            properties["_sdc_extracted_at"] = cast(
-                "t.JsonValue", {"type": "string", "format": "date-time"}
-            )
-            properties["_sdc_entity"] = cast("t.JsonValue", {"type": "string"})
-            properties["_sdc_record_hash"] = cast(
-                "t.JsonValue", {"type": ["string", "null"]}
-            )
-            str_fields: t.StrSequence = [f for f in fields if isinstance(f, str)]
-            key_properties = self._get_oracle_key_properties(entity_name, str_fields)
-            schema_result: dict[str, t.JsonValue] = {
-                "type": "object",
-                "properties": cast("t.JsonValue", properties),
-                "additionalProperties": False,
-                "key_properties": cast("t.JsonValue", key_properties),
-                "oracle_wms_entity": entity_name,
-                "oracle_wms_environment": self.settings.base_url,
-            }
-            return schema_result
+            return self._create_singer_schema_unchecked(entity_name, entity_data)
         except (RuntimeError, OSError, ValueError, KeyError):
             logger.exception("Schema creation failed for %s", entity_name)
             return None
+
+    def _create_singer_schema_unchecked(
+        self,
+        entity_name: str,
+        entity_data: t.JsonMapping,
+    ) -> t.JsonMapping | None:
+        """Create a Singer schema while allowing data errors upward."""
+        fields = entity_data.get("sample_fields", entity_data.get("fields", []))
+        field_types = entity_data.get("field_types", {})
+        sample_record = entity_data.get("sample_record", {})
+        if not fields or not isinstance(fields, list):
+            return None
+        properties = self._create_schema_properties(
+            entity_name,
+            fields,
+            field_types,
+            sample_record,
+        )
+        key_properties = self._get_oracle_key_properties(
+            entity_name,
+            [f for f in fields if isinstance(f, str)],
+        )
+        schema_result: t.MutableJsonMapping = {
+            "type": "object",
+            "properties": cast("t.JsonValue", properties),
+            "additionalProperties": False,
+            "key_properties": cast("t.JsonValue", key_properties),
+            "oracle_wms_entity": entity_name,
+            "oracle_wms_environment": self.settings.base_url,
+        }
+        return schema_result
+
+    def _create_schema_properties(
+        self,
+        entity_name: str,
+        fields: t.SequenceOf[t.JsonValue],
+        field_types: t.JsonValue,
+        sample_record: t.JsonValue,
+    ) -> t.MutableJsonMapping:
+        """Create Singer schema properties for one entity."""
+        properties: t.MutableJsonMapping = {}
+        for field in fields:
+            if not isinstance(field, str):
+                continue
+            python_type = (
+                field_types[field]
+                if isinstance(field_types, dict) and field in field_types
+                else "str"
+            )
+            sample_value: t.JsonValue = (
+                sample_record[field]
+                if isinstance(sample_record, dict) and field in sample_record
+                else None
+            )
+            singer_type = self._oracle_field_to_singer_type(
+                field,
+                str(python_type),
+                sample_value,
+                entity_name,
+            )
+            properties[field] = cast("t.JsonValue", singer_type)
+        self._add_schema_metadata_properties(properties)
+        return properties
+
+    @staticmethod
+    def _add_schema_metadata_properties(properties: t.MutableJsonMapping) -> None:
+        """Add Singer metadata properties."""
+        properties["_sdc_extracted_at"] = cast(
+            "t.JsonValue", {"type": "string", "format": "date-time"}
+        )
+        properties["_sdc_entity"] = cast("t.JsonValue", {"type": "string"})
+        properties["_sdc_record_hash"] = cast(
+            "t.JsonValue", {"type": ["string", "null"]}
+        )
 
     def _oracle_field_to_singer_type(
         self,

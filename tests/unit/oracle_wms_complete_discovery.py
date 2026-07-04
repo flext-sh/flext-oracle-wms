@@ -76,73 +76,67 @@ class OracleWmsCompleteDiscovery:
     ) -> p.Result[bool]:
         """Discover and test ALL 22+ Oracle WMS APIs."""
         all_apis: t.MappingKV[str, m.OracleWms.ApiEndpoint] = (
-            FlextOracleWmsApi.FLEXT_ORACLE_WMS_APIS
+            FlextOracleWmsApi.api_endpoints()
         )
         for api_name, api_endpoint in all_apis.items():
             try:
-                if api_endpoint.category == c.OracleWms.Tests.Categories.DATA_EXTRACT:
-                    (self._test_data_extract_api(api_name))
-                elif (
-                    api_endpoint.category
-                    == c.OracleWms.Tests.Categories.ENTITY_OPERATIONS
-                ):
-                    self._test_entity_operations_api(
-                        api_name,
-                        api_endpoint,
-                    )
-                elif (
-                    api_endpoint.category
-                    == c.OracleWms.Tests.Categories.SETUP_TRANSACTIONAL
-                ):
-                    self._test_setup_api(
-                        api_name,
-                        api_endpoint,
-                    )
-                elif (
-                    api_endpoint.category
-                    == c.OracleWms.Tests.Categories.AUTOMATION_OPERATIONS
-                ):
-                    self._test_automation_api(
-                        api_name,
-                        api_endpoint,
-                    )
-                else:
-                    r[FlextApiModels.Api.HttpResponse].fail("Unknown API category")
+                self._test_api_by_category(api_name, api_endpoint)
             except Exception as e:
                 r[FlextApiModels.Api.HttpResponse].fail(f"Exception: {e}")
         return r[bool].ok(value=True)
+
+    def _test_api_by_category(
+        self,
+        api_name: str,
+        api_endpoint: m.OracleWms.ApiEndpoint,
+    ) -> None:
+        """Dispatch one API test by endpoint category."""
+        if api_endpoint.category == c.OracleWms.Tests.Categories.DATA_EXTRACT:
+            self._test_data_extract_api(api_name)
+        elif api_endpoint.category == c.OracleWms.Tests.Categories.ENTITY_OPERATIONS:
+            self._test_entity_operations_api(api_name, api_endpoint)
+        elif api_endpoint.category == c.OracleWms.Tests.Categories.SETUP_TRANSACTIONAL:
+            self._test_setup_api(api_name, api_endpoint)
+        elif (
+            api_endpoint.category == c.OracleWms.Tests.Categories.AUTOMATION_OPERATIONS
+        ):
+            self._test_automation_api(api_name, api_endpoint)
+        else:
+            r[FlextApiModels.Api.HttpResponse].fail("Unknown API category")
 
     def _test_data_extract_api(
         self, api_name: str
     ) -> p.Result[FlextApiModels.Api.HttpResponse]:
         """Test data extraction APIs."""
         try:
-            if api_name == "lgf_entity_discovery":
-                return self.client.call_api(api_name)
-            if api_name == "lgf_entity_list":
-                if not self.discovered_entities:
-                    entities_result = self.client.discover_entities()
-                    if entities_result.success:
-                        value = entities_result.value
-                        if isinstance(value, list):
-                            self.discovered_entities = list(value)
-                if self.discovered_entities:
-                    entity_name = self.discovered_entities[0]
-                    return self.client.get(f"/entities/{entity_name}")
-                return r[FlextApiModels.Api.HttpResponse].fail(
-                    "No entities available for testing",
-                )
-            if api_name == "lgf_entity_get":
-                return self._test_entity_get_with_discovery()
-            if api_name == "lgf_data_extract":
-                return self._test_data_extract_to_object_store()
-            if api_name == "lgf_task_status":
-                return self._test_task_status()
-            return self.client.call_api(api_name)
+            return self._test_data_extract_api_unchecked(api_name)
         except Exception as e:
             return r[FlextApiModels.Api.HttpResponse].fail(
                 f"Data extract API test failed: {e}",
             )
+
+    def _test_data_extract_api_unchecked(
+        self,
+        api_name: str,
+    ) -> p.Result[FlextApiModels.Api.HttpResponse]:
+        """Test data extraction APIs while allowing client exceptions upward."""
+        if api_name == "lgf_entity_discovery":
+            return self.client.call_api(api_name)
+        if api_name == "lgf_entity_list":
+            self._ensure_discovered_entities()
+            if self.discovered_entities:
+                entity_name = self.discovered_entities[0]
+                return self.client.get(f"/entities/{entity_name}")
+            return r[FlextApiModels.Api.HttpResponse].fail(
+                "No entities available for testing",
+            )
+        if api_name == "lgf_entity_get":
+            return self._test_entity_get_with_discovery()
+        if api_name == "lgf_data_extract":
+            return self._test_data_extract_to_object_store()
+        if api_name == "lgf_task_status":
+            return self._test_task_status()
+        return self.client.call_api(api_name)
 
     def _test_entity_operations_api(
         self,
@@ -151,26 +145,29 @@ class OracleWmsCompleteDiscovery:
     ) -> p.Result[FlextApiModels.Api.HttpResponse]:
         """Test entity operations APIs."""
         try:
-            if "entity" in endpoint.path and "{entity_name}" in endpoint.path:
-                if not self.discovered_entities:
-                    entities_result = self.client.discover_entities()
-                    if entities_result.success:
-                        value = entities_result.value
-                        if isinstance(value, list):
-                            self.discovered_entities = list(value)
-                if self.discovered_entities:
-                    entity_name = self.discovered_entities[0]
-                    if "{id}" in endpoint.path:
-                        return self._test_entity_with_id(api_name, entity_name)
-                    return self.client.get(f"/entities/{entity_name}")
-                return r[FlextApiModels.Api.HttpResponse].fail(
-                    "No entities for entity operations test",
-                )
-            return self.client.call_api(api_name)
+            return self._test_entity_operations_api_unchecked(api_name, endpoint)
         except Exception as e:
             return r[FlextApiModels.Api.HttpResponse].fail(
                 f"Entity operations API test failed: {e}",
             )
+
+    def _test_entity_operations_api_unchecked(
+        self,
+        api_name: str,
+        endpoint: m.OracleWms.ApiEndpoint,
+    ) -> p.Result[FlextApiModels.Api.HttpResponse]:
+        """Test entity operations APIs while allowing client exceptions upward."""
+        if "entity" in endpoint.path and "{entity_name}" in endpoint.path:
+            self._ensure_discovered_entities()
+            if self.discovered_entities:
+                entity_name = self.discovered_entities[0]
+                if "{id}" in endpoint.path:
+                    return self._test_entity_with_id(api_name, entity_name)
+                return self.client.get(f"/entities/{entity_name}")
+            return r[FlextApiModels.Api.HttpResponse].fail(
+                "No entities for entity operations test",
+            )
+        return self.client.call_api(api_name)
 
     def _test_setup_api(
         self,
@@ -276,21 +273,28 @@ class OracleWmsCompleteDiscovery:
     ) -> p.Result[FlextApiModels.Api.HttpResponse]:
         """Test entity API that requires ID parameter."""
         try:
-            list_result = self.client.get_entity_data(entity_name, limit=1)
-            if list_result.success:
-                records = list_result.value
-                if records and isinstance(records, list):
-                    record = records[0]
-                    if isinstance(record, dict) and "id" in record:
-                        entity_id = record["id"]
-                        return self.client.get(f"/entities/{entity_name}/{entity_id}")
-            return r[FlextApiModels.Api.HttpResponse].fail(
-                f"No valid ID found for entity {entity_name}",
-            )
+            return self._test_entity_with_id_unchecked(entity_name)
         except Exception as e:
             return r[FlextApiModels.Api.HttpResponse].fail(
                 f"Entity with ID test failed: {e}",
             )
+
+    def _test_entity_with_id_unchecked(
+        self,
+        entity_name: str,
+    ) -> p.Result[FlextApiModels.Api.HttpResponse]:
+        """Resolve one entity ID and call the entity-by-id endpoint."""
+        list_result = self.client.get_entity_data(entity_name, limit=1)
+        if list_result.success:
+            records = list_result.value
+            if records and isinstance(records, list):
+                record = records[0]
+                if isinstance(record, dict) and "id" in record:
+                    entity_id = record["id"]
+                    return self.client.get(f"/entities/{entity_name}/{entity_id}")
+        return r[FlextApiModels.Api.HttpResponse].fail(
+            f"No valid ID found for entity {entity_name}",
+        )
 
     def _summarize_api_response(self, data: t.JsonValue) -> str:
         """Summarize API response data."""
@@ -321,20 +325,37 @@ class OracleWmsCompleteDiscovery:
     ) -> None:
         """Process metadata for a single entity."""
         try:
-            entity_result = self.client.get_entity_data(entity_name, limit=5)
-            if not entity_result.success:
-                entities_with_errors.append((entity_name, str(entity_result.error)))
-                return
-            records: t.SequenceOf[t.StrMapping] = entity_result.value
-            count = len(records) if records else 0
-            metadata_info = self._create_metadata_info(entity_name, count, records)
-            metadata_results[entity_name] = cast("t.JsonValue", metadata_info)
-            if count > 0:
-                entities_with_data.append(entity_name)
-            else:
-                entities_without_data.append(entity_name)
+            self._process_entity_metadata_unchecked(
+                entity_name,
+                entities_with_data,
+                entities_without_data,
+                entities_with_errors,
+                metadata_results,
+            )
         except Exception as e:
             entities_with_errors.append((entity_name, f"Exception: {e}"))
+
+    def _process_entity_metadata_unchecked(
+        self,
+        entity_name: str,
+        entities_with_data: MutableSequence[str],
+        entities_without_data: MutableSequence[str],
+        entities_with_errors: MutableSequence[tuple[str, str]],
+        metadata_results: t.MutableJsonMapping,
+    ) -> None:
+        """Process metadata for a single entity while allowing exceptions upward."""
+        entity_result = self.client.get_entity_data(entity_name, limit=5)
+        if not entity_result.success:
+            entities_with_errors.append((entity_name, str(entity_result.error)))
+            return
+        records: t.SequenceOf[t.StrMapping] = entity_result.value
+        count = len(records) if records else 0
+        metadata_info = self._create_metadata_info(entity_name, count, records)
+        metadata_results[entity_name] = cast("t.JsonValue", metadata_info)
+        if count > 0:
+            entities_with_data.append(entity_name)
+        else:
+            entities_without_data.append(entity_name)
 
     def _create_metadata_info(
         self,
@@ -423,7 +444,7 @@ class OracleWmsCompleteDiscovery:
             )
             for _name, _meta in sorted_entities[:10]:
                 pass
-        summary_payload: dict[str, t.JsonValue] = {
+        summary_payload: t.MutableJsonMapping = {
             "total_entities": len(self.discovered_entities),
             "entities_with_data": cast("t.JsonValue", entities_with_data),
             "entities_without_data": cast("t.JsonValue", entities_without_data),
@@ -463,38 +484,45 @@ class OracleWmsCompleteDiscovery:
     def _generate_singer_schema_from_metadata(
         self,
         entity_name: str,
-        metadata: dict[str, t.JsonValue],
+        metadata: t.JsonMapping,
     ) -> t.JsonMapping | None:
         """Generate Singer schema from Oracle WMS metadata with flattening."""
         try:
-            fields = metadata.get("fields", [])
-            field_types = metadata.get("field_types", {})
-            sample_data = metadata.get("sample_data", {})
-            properties: dict[str, t.JsonMapping] = {}
-            if isinstance(fields, list) and isinstance(field_types, dict):
-                for field in fields:
-                    if isinstance(field, str):
-                        field_type = field_types.get(field, "str")
-                        sample_value: t.JsonValue = None
-                        if isinstance(sample_data, dict):
-                            sample_value = sample_data.get(field)
-                        singer_type = self._map_to_singer_type(
-                            str(field_type),
-                            sample_value,
-                            field,
-                        )
-                        properties[field] = singer_type
-            properties["_sdc_extracted_at"] = {"type": "string", "format": "date-time"}
-            properties["_sdc_entity"] = {"type": "string"}
-            schema_payload: dict[str, t.JsonValue] = {
-                "type": "object",
-                "properties": cast("t.JsonValue", properties),
-                "additionalProperties": False,
-            }
-            return schema_payload
+            return self._generate_singer_schema_from_metadata_unchecked(metadata)
         except (RuntimeError, OSError, ValueError, KeyError):
             logger.exception("Schema generation failed for %s", entity_name)
             return None
+
+    def _generate_singer_schema_from_metadata_unchecked(
+        self,
+        metadata: t.JsonMapping,
+    ) -> t.JsonMapping:
+        """Generate a Singer schema while allowing parse exceptions upward."""
+        fields = metadata.get("fields", [])
+        field_types = metadata.get("field_types", {})
+        sample_data = metadata.get("sample_data", {})
+        properties: t.MutableMappingKV[str, t.JsonMapping] = {}
+        if isinstance(fields, list) and isinstance(field_types, dict):
+            for field in fields:
+                if isinstance(field, str):
+                    field_type = field_types.get(field, "str")
+                    sample_value: t.JsonValue = None
+                    if isinstance(sample_data, dict):
+                        sample_value = sample_data.get(field)
+                    singer_type = self._map_to_singer_type(
+                        str(field_type),
+                        sample_value,
+                        field,
+                    )
+                    properties[field] = singer_type
+        properties["_sdc_extracted_at"] = {"type": "string", "format": "date-time"}
+        properties["_sdc_entity"] = {"type": "string"}
+        schema_payload: t.MutableJsonMapping = {
+            "type": "object",
+            "properties": cast("t.JsonValue", properties),
+            "additionalProperties": False,
+        }
+        return schema_payload
 
     def _map_to_singer_type(
         self,
@@ -569,7 +597,7 @@ class OracleWmsCompleteDiscovery:
         schemas_file = results_dir / f"singer_schemas_{timestamp}.json"
         with schemas_file.open("w", encoding="utf-8") as f:
             f.write(_stdlib_json.dumps(dict(self.complete_schemas), indent=2))
-        summary: dict[str, t.JsonValue] = {
+        summary: t.MutableJsonMapping = {
             "discovery_timestamp": timestamp,
             "total_entities_discovered": len(self.discovered_entities),
             "entities_with_data": len([
@@ -596,10 +624,23 @@ class OracleWmsCompleteDiscovery:
             return r[bool].fail(f"Cleanup failed: {e}")
 
 
-def run_complete_discovery() -> None:
-    """Run complete Oracle WMS discovery with ADMINISTRATOR credentials."""
-    discovery = OracleWmsCompleteDiscovery()
-    try:
+class OracleWmsCompleteDiscoveryRunner:
+    """Runner namespace for complete Oracle WMS discovery."""
+
+    @staticmethod
+    def run_complete_discovery() -> None:
+        """Run complete Oracle WMS discovery with ADMINISTRATOR credentials."""
+        discovery = OracleWmsCompleteDiscovery()
+        try:
+            OracleWmsCompleteDiscoveryRunner._run_discovery_steps(discovery)
+        except (RuntimeError, OSError, ValueError, KeyError):
+            logger.exception("Complete discovery failed")
+        finally:
+            discovery.cleanup()
+
+    @staticmethod
+    def _run_discovery_steps(discovery: OracleWmsCompleteDiscovery) -> None:
+        """Run discovery steps and summarize results."""
         start_result = discovery.start_discovery()
         if not start_result.success:
             return
@@ -617,36 +658,45 @@ def run_complete_discovery() -> None:
             return
         metadata_data = metadata_result.value
         if isinstance(metadata_data, dict):
-            entities_with_data = metadata_data.get("entities_with_data")
-            if isinstance(entities_with_data, list) and entities_with_data:
-                entities_with_counts: list[tuple[str, t.JsonValue]] = [
-                    (
-                        name,
-                        discovery.entity_metadata.get(name, None),
-                    )
-                    for name in entities_with_data
-                    if isinstance(name, str)
-                ]
+            OracleWmsCompleteDiscoveryRunner._summarize_entities_with_data(
+                discovery,
+                metadata_data,
+            )
 
-                def _run_entity_count(pair: tuple[str, t.JsonValue]) -> int:
-                    meta = pair[1]
-                    if isinstance(meta, dict):
-                        tc = meta.get("total_count")
-                        if isinstance(tc, int):
-                            return tc
-                    return 0
+    @staticmethod
+    def _summarize_entities_with_data(
+        discovery: OracleWmsCompleteDiscovery,
+        metadata_data: t.JsonMapping,
+    ) -> None:
+        """Sort discovered entities with data by record count."""
+        entities_with_data = metadata_data.get("entities_with_data")
+        if not isinstance(entities_with_data, list) or not entities_with_data:
+            return
+        entities_with_counts: list[tuple[str, t.JsonValue]] = [
+            (
+                name,
+                discovery.entity_metadata.get(name, None),
+            )
+            for name in entities_with_data
+            if isinstance(name, str)
+        ]
+        entities_with_counts.sort(
+            key=OracleWmsCompleteDiscoveryRunner._run_entity_count,
+            reverse=True,
+        )
+        for _name, _meta in entities_with_counts[:15]:
+            pass
 
-                entities_with_counts.sort(
-                    key=_run_entity_count,
-                    reverse=True,
-                )
-                for _name, _meta in entities_with_counts[:15]:
-                    pass
-    except (RuntimeError, OSError, ValueError, KeyError):
-        logger.exception("Complete discovery failed")
-    finally:
-        discovery.cleanup()
+    @staticmethod
+    def _run_entity_count(pair: tuple[str, t.JsonValue]) -> int:
+        """Return the total_count field for an entity summary pair."""
+        meta = pair[1]
+        if isinstance(meta, dict):
+            tc = meta.get("total_count")
+            if isinstance(tc, int):
+                return tc
+        return 0
 
 
 if __name__ == "__main__":
-    run_complete_discovery()
+    OracleWmsCompleteDiscoveryRunner.run_complete_discovery()

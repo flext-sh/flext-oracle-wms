@@ -6,14 +6,14 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from tests.utilities import u
+from tests.constants import c
 
 
 class TestsFlextOracleWmsDiscovery:
     """Test suite for discovery constants."""
 
     def test_discovery_success_constant(self) -> None:
-        assert u.OracleWms.DISCOVERY_SUCCESS == "discovery_success"
+        assert c.OracleWms.DISCOVERY_SUCCESS == "discovery_success"
 
     def test_discovery_failure_constant(self) -> None:
-        assert u.OracleWms.DISCOVERY_FAILURE == "discovery_failure"
+        assert c.OracleWms.DISCOVERY_FAILURE == "discovery_failure"

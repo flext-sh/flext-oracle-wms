@@ -9,13 +9,11 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from collections.abc import (
-    Mapping,
-)
-from typing import ClassVar, override
+from typing import override
 
 from flext_oracle_wms import (
     FlextOracleWmsSettings,
+    c,
     m,
     p,
     r,
@@ -41,18 +39,6 @@ class FlextOracleWmsApi(s[bool]):
     while maintaining clean separation between business logic and infrastructure.
     """
 
-    FLEXT_ORACLE_WMS_APIS: ClassVar[Mapping[str, m.OracleWms.ApiEndpoint]] = {
-        "test": m.OracleWms.ApiEndpoint(
-            name="test",
-            method="GET",
-            path="/test/",
-            version="v1",
-            category="test",
-            description="Test endpoint",
-            since_version="6.1",
-        ),
-    }
-
     def __init__(self, settings: FlextOracleWmsSettings | None = None) -> None:
         """Initialize Oracle WMS facade with FLEXT integration."""
         super().__init__()
@@ -71,6 +57,14 @@ class FlextOracleWmsApi(s[bool]):
         ``s[bool]`` type parameter.
         """
         return r[bool].ok(value=True)
+
+    @staticmethod
+    def api_endpoints() -> t.MappingKV[str, m.OracleWms.ApiEndpoint]:
+        """Return Oracle WMS API endpoint models from canonical constants."""
+        return {
+            name: m.OracleWms.ApiEndpoint.model_validate(payload)
+            for name, payload in c.OracleWms.API_ENDPOINTS.items()
+        }
 
     @staticmethod
     def create_flext_http_client(
@@ -99,6 +93,4 @@ class FlextOracleWmsApi(s[bool]):
         return client_result
 
 
-oracle_wms = FlextOracleWmsApi
-
-__all__: list[str] = ["FlextOracleWmsApi", "oracle_wms"]
+__all__: list[str] = ["FlextOracleWmsApi"]

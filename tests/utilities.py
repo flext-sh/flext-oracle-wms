@@ -23,7 +23,7 @@ from flext_oracle_wms import (
     FlextOracleWmsUtilities as u,
 )
 from tests.protocols import p
-from tests.typings import TestsFlextOracleWmsTypes
+from tests.typings import TestsFlextOracleWmsTypes, t
 
 
 class TestsFlextOracleWmsUtilities(FlextTestsUtilities, u):
@@ -127,7 +127,7 @@ class TestsFlextOracleWmsUtilities(FlextTestsUtilities, u):
                     return r[TestsFlextOracleWmsTypes.OracleWms.Tests.EnvConfig].fail(
                         "No .env file found for Oracle WMS integration tests",
                     )
-                settings: dict[str, str] = {}
+                settings: t.MutableStrMapping = {}
                 try:
                     with env_path.open(encoding="utf-8") as file_handle:
                         for raw_line in file_handle:

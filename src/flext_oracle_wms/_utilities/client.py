@@ -19,8 +19,6 @@ class FlextOracleWmsUtilitiesClient:
     class Client:
         """Oracle WMS client with strict request/response typing."""
 
-        HTTP_BAD_REQUEST_THRESHOLD = 400
-
         @classmethod
         def from_auth_settings(
             cls,
@@ -199,11 +197,11 @@ class FlextOracleWmsUtilitiesClient:
             filters: t.ConfigurationMapping | None = None,
         ) -> p.Result[t.SequenceOf[t.StrMapping]]:
             """Get data for a specific Oracle WMS entity."""
-            params_dict: dict[str, str] = {}
+            params_dict: t.MutableStrMapping = {}
             if limit is not None:
                 params_dict["limit"] = str(limit)
             if filters:
-                params_dict |= {key: str(value) for key, value in filters.items()}
+                params_dict.update({key: str(value) for key, value in filters.items()})
             params: t.Api.WebParams = params_dict
             result = self.get(f"/entities/{entity_name}", params=params)
             if result.failure:
@@ -304,7 +302,7 @@ class FlextOracleWmsUtilitiesClient:
                     f"{method} {path} failed: {result.error}",
                 )
             response = result.value
-            if response.status_code >= self.HTTP_BAD_REQUEST_THRESHOLD:
+            if response.status_code >= c.OracleWms.HTTP_BAD_REQUEST_THRESHOLD:
                 return r[m.Api.HttpResponse].fail(
                     f"{method} {path} returned HTTP {response.status_code}",
                 )

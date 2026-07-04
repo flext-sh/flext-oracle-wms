@@ -8,14 +8,12 @@ from flext_core.lazy import build_lazy_import_map
 FLEXT_ORACLE_WMS_LAZY_IMPORTS_PART_01 = build_lazy_import_map(
     {
         "._utilities": ("_utilities",),
-        ".api": (
-            "FlextOracleWmsApi",
-            "oracle_wms",
-        ),
+        ".api": ("FlextOracleWmsApi",),
         ".constants": (
             "FlextOracleWmsConstants",
             "c",
         ),
+        ".errors": ("FlextOracleWmsErrors",),
         ".models": (
             "FlextOracleWmsModels",
             "m",

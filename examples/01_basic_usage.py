@@ -37,7 +37,7 @@ from flext_oracle_wms import (
     t,
     u,
 )
-from flext_oracle_wms.errors import FlextOracleWmsError
+from flext_oracle_wms.errors import FlextOracleWmsErrors
 from flext_oracle_wms.utilities import FlextOracleWmsUtilitiesClient
 
 FlextOracleWmsClient = FlextOracleWmsUtilitiesClient.Client
@@ -143,6 +143,21 @@ def demonstrate_error_handling(client: FlextOracleWmsClient) -> None:
         logger.info(f"Expected error handled: {result.error}")
 
 
+def run_basic_usage() -> None:
+    """Run the basic Oracle WMS usage flow."""
+    setup_client_config()
+    client = FlextOracleWmsClient()
+    start_result = client.start()
+    if not start_result.success:
+        return
+    entities_result = discover_wms_entities(client)
+    if entities_result.success:
+        entities = entities_result.value
+        if entities:
+            query_entity_data(client, entities[0])
+    demonstrate_error_handling(client)
+
+
 def main() -> None:
     """Main example function demonstrating basic Oracle WMS usage patterns.
 
@@ -154,21 +169,8 @@ def main() -> None:
     5. Error handling patterns
     """
     try:
-        setup_client_config()
-        client = FlextOracleWmsClient()
-        start_result = client.start()
-        if start_result.success:
-            pass
-        else:
-            return
-        entities_result = discover_wms_entities(client)
-        if entities_result.success:
-            entities = entities_result.value
-            if entities:
-                first_entity = entities[0]
-                query_entity_data(client, first_entity)
-        demonstrate_error_handling(client)
-    except FlextOracleWmsError:
+        run_basic_usage()
+    except FlextOracleWmsErrors.Error:
         logger.exception("Error in basic usage example")
     except ValueError:
         logger.exception("Configuration error")

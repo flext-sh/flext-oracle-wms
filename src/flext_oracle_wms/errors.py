@@ -9,15 +9,16 @@ from __future__ import annotations
 from flext_api import e
 
 
-class FlextOracleWmsError(e.BaseError):
-    """Base Oracle WMS error."""
+class FlextOracleWmsErrors(e):
+    """Oracle WMS-specific exceptions extending the API exception facade."""
+
+    class Error(e.BaseError):
+        """Base Oracle WMS error."""
+
+    class ValidationError(Error):
+        """Oracle WMS validation error."""
 
 
-class FlextOracleWmsValidationError(FlextOracleWmsError):
-    """Oracle WMS validation error."""
+e = FlextOracleWmsErrors
 
-
-__all__: list[str] = [
-    "FlextOracleWmsError",
-    "FlextOracleWmsValidationError",
-]
+__all__: list[str] = ["FlextOracleWmsErrors", "e"]

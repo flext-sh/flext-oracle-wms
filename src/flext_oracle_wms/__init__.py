@@ -34,12 +34,12 @@ _EAGER_EXPORTS = (
 _PUBLIC_EXPORTS: tuple[str, ...] = (
     "FlextOracleWmsApi",
     "FlextOracleWmsConstants",
+    "FlextOracleWmsErrors",
     "FlextOracleWmsModels",
     "FlextOracleWmsProtocols",
     "FlextOracleWmsSettings",
     "FlextOracleWmsTypes",
     "FlextOracleWmsUtilities",
-    "oracle_wms",
     "__author__",
     "__author_email__",
     "__description__",

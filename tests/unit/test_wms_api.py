@@ -17,12 +17,12 @@ class TestsFlextOracleWmsWmsApi:
 
     def test_api_catalog_exists(self) -> None:
         """Test that API catalog is properly defined."""
-        assert isinstance(FlextOracleWmsApi.FLEXT_ORACLE_WMS_APIS, dict)
-        assert FlextOracleWmsApi.FLEXT_ORACLE_WMS_APIS
+        assert isinstance(FlextOracleWmsApi.api_endpoints(), dict)
+        assert FlextOracleWmsApi.api_endpoints()
 
     def test_api_catalog_entries_are_endpoints(self) -> None:
         """Test that API catalog entries are m.OracleWms.ApiEndpoint instances."""
-        apis = FlextOracleWmsApi.FLEXT_ORACLE_WMS_APIS
+        apis = FlextOracleWmsApi.api_endpoints()
         for api_name, api_endpoint in apis.items():
             assert isinstance(api_endpoint, m.OracleWms.ApiEndpoint)
             assert isinstance(api_name, str)
@@ -30,12 +30,12 @@ class TestsFlextOracleWmsWmsApi:
 
     def test_test_endpoint_exists(self) -> None:
         """Test that the 'test' endpoint is defined in catalog."""
-        apis = FlextOracleWmsApi.FLEXT_ORACLE_WMS_APIS
+        apis = FlextOracleWmsApi.api_endpoints()
         assert "test" in apis
 
     def test_test_endpoint_properties(self) -> None:
         """Test properties of the test endpoint."""
-        endpoint = FlextOracleWmsApi.FLEXT_ORACLE_WMS_APIS["test"]
+        endpoint = FlextOracleWmsApi.api_endpoints()["test"]
         assert endpoint.name == "test"
         assert endpoint.method == "GET"
         assert endpoint.path == "/test/"
@@ -46,7 +46,7 @@ class TestsFlextOracleWmsWmsApi:
 
     def test_class_level_apis(self) -> None:
         """Test class-level FLEXT_ORACLE_WMS_APIS."""
-        assert FlextOracleWmsApi.FLEXT_ORACLE_WMS_APIS
+        assert FlextOracleWmsApi.api_endpoints()
 
     def test_api_endpoint_model_fields(self) -> None:
         """Test m.OracleWms.ApiEndpoint Pydantic model fields."""

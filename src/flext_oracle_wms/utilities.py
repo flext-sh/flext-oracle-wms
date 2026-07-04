@@ -16,7 +16,16 @@ from flext_oracle_wms._utilities.filtering import FlextOracleWmsUtilitiesFilteri
 from flext_oracle_wms._utilities.http_client import FlextOracleWmsUtilitiesHttpClient
 
 
-class FlextOracleWmsUtilities(u, FlextUtilitiesConversion, FlextUtilitiesReliability):
+class FlextOracleWmsUtilities(
+    u,
+    FlextUtilitiesConversion,
+    FlextUtilitiesReliability,
+    FlextOracleWmsUtilitiesAuth,
+    FlextOracleWmsUtilitiesClient,
+    FlextOracleWmsUtilitiesDiscovery,
+    FlextOracleWmsUtilitiesFiltering,
+    FlextOracleWmsUtilitiesHttpClient,
+):
     """Oracle WMS utilities composing all domain-specific utility mixins via MRO."""
 
     class OracleWms(

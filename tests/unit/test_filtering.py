@@ -21,7 +21,7 @@ from __future__ import annotations
 import pytest
 from flext_tests import e
 
-from flext_oracle_wms.errors import FlextOracleWmsValidationError
+from flext_oracle_wms.errors import FlextOracleWmsErrors
 from flext_oracle_wms.utilities import FlextOracleWmsUtilitiesFiltering
 from tests.constants import c
 from tests.models import m
@@ -81,7 +81,7 @@ class TestsFlextOracleWmsFiltering:
             "u.field3": "v3",
             "u.field4": "v4",
         }
-        with pytest.raises(FlextOracleWmsValidationError):
+        with pytest.raises(FlextOracleWmsErrors.ValidationError):
             FlextOracleWmsUtilitiesFiltering.Filter(filters=filters, max_conditions=3)
 
     def test_validate_filter_conditions_empty(self) -> None:

@@ -37,6 +37,19 @@ class FlextOracleWmsModels(m):
             operator: str
             value: t.OracleWms.FilterScalar | t.OracleWms.FilterList
 
+        class EnvironmentConfig(m.BaseModel):
+            """Oracle WMS environment configuration."""
+
+            model_config: ClassVar[m.ConfigDict] = m.ConfigDict(
+                extra="forbid",
+                validate_assignment=True,
+            )
+
+            name: str = u.Field(description="Environment display name")
+            base_url: str = u.Field(description="Oracle WMS base URL")
+            timeout: int = u.Field(ge=1, description="Request timeout in seconds")
+            retry_attempts: int = u.Field(ge=0, description="Retry attempts")
+
         class Entity(m.BaseModel):
             """Oracle WMS entity definition."""
 

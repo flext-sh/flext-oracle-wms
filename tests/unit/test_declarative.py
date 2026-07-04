@@ -65,8 +65,8 @@ def oracle_wms_client(
 class TestsFlextOracleWmsDeclarative:
     def test_api_catalog_completeness(self) -> None:
         """Test that API catalog contains entries."""
-        assert len(FlextOracleWmsApi.FLEXT_ORACLE_WMS_APIS) >= 1
-        for api in FlextOracleWmsApi.FLEXT_ORACLE_WMS_APIS.values():
+        assert len(FlextOracleWmsApi.api_endpoints()) >= 1
+        for api in FlextOracleWmsApi.api_endpoints().values():
             assert api.name
             assert api.method
             assert api.path
@@ -74,9 +74,7 @@ class TestsFlextOracleWmsDeclarative:
 
     def test_api_versions_coverage(self) -> None:
         """Test that API catalog entries have valid version strings."""
-        versions = {
-            api.version for api in FlextOracleWmsApi.FLEXT_ORACLE_WMS_APIS.values()
-        }
+        versions = {api.version for api in FlextOracleWmsApi.api_endpoints().values()}
         assert len(versions) >= 1
 
     def test_oracle_wms_health_check(

@@ -8,9 +8,7 @@ integration using the ACTUAL API that exists and functions properly.
 from __future__ import annotations
 
 import os
-from enum import StrEnum, unique
 from pathlib import Path
-from typing import ClassVar
 
 from dotenv import load_dotenv
 
@@ -30,45 +28,25 @@ logger = u.fetch_logger(__name__)
 c = FlextOracleWmsConstants
 
 
-@unique
-class Environment(StrEnum):
-    """Oracle WMS deployment environments."""
-
-    DEVELOPMENT = "dev"
-    STAGING = "staging"
-    PRODUCTION = "prod"
-
-
-class WmsEnvironmentConfig(m.BaseModel):
-    """WMS environment configuration."""
-
-    model_config: ClassVar[m.ConfigDict] = m.ConfigDict(
-        extra="forbid",
-        validate_assignment=True,
-    )
-
-    name: str = u.Field(description="Environment display name")
-    base_url: str = u.Field(description="Oracle WMS base URL")
-    timeout: int = u.Field(ge=1, description="Request timeout in seconds")
-    retry_attempts: int = u.Field(ge=0, description="Retry attempts")
-
-
-def get_environment_configs() -> t.MappingKV[Environment, WmsEnvironmentConfig]:
+def get_environment_configs() -> t.MappingKV[
+    c.OracleWms.Environment,
+    m.OracleWms.EnvironmentConfig,
+]:
     """Define environment-specific Oracle WMS configurations."""
     return {
-        Environment.DEVELOPMENT: WmsEnvironmentConfig(
+        c.OracleWms.Environment.DEVELOPMENT: m.OracleWms.EnvironmentConfig(
             name="Development",
             base_url="https://dev-wms.oraclecloud.com/dev_env",
             timeout=c.OracleWms.DEFAULT_TIMEOUT,
             retry_attempts=c.OracleWms.DEFAULT_MAX_RETRIES,
         ),
-        Environment.STAGING: WmsEnvironmentConfig(
+        c.OracleWms.Environment.STAGING: m.OracleWms.EnvironmentConfig(
             name="Staging",
             base_url="https://staging-wms.oraclecloud.com/staging_env",
             timeout=c.OracleWms.DEFAULT_TIMEOUT,
             retry_attempts=c.OracleWms.DEFAULT_MAX_RETRIES,
         ),
-        Environment.PRODUCTION: WmsEnvironmentConfig(
+        c.OracleWms.Environment.PRODUCTION: m.OracleWms.EnvironmentConfig(
             name="Production",
             base_url="https://prod-wms.oraclecloud.com/prod_env",
             timeout=c.OracleWms.DEFAULT_TIMEOUT,
@@ -186,7 +164,7 @@ def validate_configuration(settings: FlextOracleWmsSettings) -> t.JsonMapping:
 
 def test_configuration(
     settings: FlextOracleWmsSettings,
-) -> dict[str, t.JsonValue]:
+) -> t.MutableJsonMapping:
     """Test Oracle WMS configuration by attempting connection.
 
     Args:
@@ -196,7 +174,7 @@ def test_configuration(
       Dictionary with test results
 
     """
-    test_results: dict[str, t.JsonValue] = {
+    test_results: t.MutableJsonMapping = {
         "connection_success": False,
         "health_check_success": False,
         "error": None,
@@ -204,14 +182,7 @@ def test_configuration(
     }
     client = FlextOracleWmsClient(settings)
     try:
-        client.start()
-        test_results["connection_success"] = True
-        health_result = client.health_check()
-        if health_result.success:
-            test_results["health_check_success"] = True
-        entities_result = client.discover_entities()
-        if entities_result.success and entities_result.value:
-            test_results["entities_discovered"] = len(entities_result.value)
+        _run_configuration_test(client, test_results)
     except Exception as exc:
         test_results["error"] = str(exc)
     finally:
@@ -219,31 +190,56 @@ def test_configuration(
     return test_results
 
 
+def _run_configuration_test(
+    client: FlextOracleWmsClient,
+    test_results: t.MutableJsonMapping,
+) -> None:
+    """Populate connection and discovery test results."""
+    client.start()
+    test_results["connection_success"] = True
+    health_result = client.health_check()
+    if health_result.success:
+        test_results["health_check_success"] = True
+    entities_result = client.discover_entities()
+    if entities_result.success and entities_result.value:
+        test_results["entities_discovered"] = len(entities_result.value)
+
+
+def _demonstrate_environment_configuration() -> None:
+    """Demonstrate environment-derived configuration validation."""
+    env_config = create_config_from_environment()
+    validation = validate_configuration(env_config)
+    warnings = validation.get("warnings", [])
+    if warnings and isinstance(warnings, list):
+        for _warning in warnings:
+            pass
+    if validation["valid"]:
+        pass
+    else:
+        errors = validation.get("errors", [])
+        if errors and isinstance(errors, list):
+            for _error in errors:
+                pass
+
+
+def _demonstrate_demo_configuration() -> None:
+    """Demonstrate demo configuration validation."""
+    demo_config = create_demo_config()
+    validation = validate_configuration(demo_config)
+    warnings = validation.get("warnings", [])
+    if warnings and isinstance(warnings, (list, tuple)):
+        for _warning in warnings:
+            pass
+
+
 def demonstrate_configuration_patterns() -> None:
     """Demonstrate working Oracle WMS configuration patterns."""
     try:
-        env_config = create_config_from_environment()
-        validation = validate_configuration(env_config)
-        warnings = validation.get("warnings", [])
-        if warnings and isinstance(warnings, list):
-            for _warning in warnings:
-                pass
-        if validation["valid"]:
-            pass
-        else:
-            errors = validation.get("errors", [])
-            if errors and isinstance(errors, list):
-                for _error in errors:
-                    pass
-    except ValueError:
-        pass
+        _demonstrate_environment_configuration()
+    except ValueError as exc:
+        logger.info("Environment configuration unavailable: %s", exc)
     try:
-        demo_config = create_demo_config()
-        validation = validate_configuration(demo_config)
-        warnings = validation.get("warnings", [])
-        if warnings and isinstance(warnings, (list, tuple)):
-            for _warning in warnings:
-                pass
+        _demonstrate_demo_configuration()
     except Exception as exc:
         logger.warning(f"Configuration validation failed: {exc}")
     env_configs = get_environment_configs()

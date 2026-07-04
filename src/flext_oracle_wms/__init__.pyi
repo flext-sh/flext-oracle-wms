@@ -12,12 +12,12 @@ from flext_oracle_wms.__version__ import (
 )
 from flext_oracle_wms.api import (
     FlextOracleWmsApi as FlextOracleWmsApi,
-    oracle_wms as oracle_wms,
 )
 from flext_oracle_wms.constants import (
     FlextOracleWmsConstants as FlextOracleWmsConstants,
     c as c,
 )
+from flext_oracle_wms.errors import FlextOracleWmsErrors as FlextOracleWmsErrors
 from flext_oracle_wms.models import FlextOracleWmsModels as FlextOracleWmsModels, m as m
 from flext_oracle_wms.protocols import (
     FlextOracleWmsProtocols as FlextOracleWmsProtocols,
@@ -33,6 +33,7 @@ from flext_oracle_wms.utilities import (
 __all__ = (
     "FlextOracleWmsApi",
     "FlextOracleWmsConstants",
+    "FlextOracleWmsErrors",
     "FlextOracleWmsModels",
     "FlextOracleWmsProtocols",
     "FlextOracleWmsSettings",
@@ -51,7 +52,6 @@ __all__ = (
     "e",
     "h",
     "m",
-    "oracle_wms",
     "p",
     "r",
     "s",

@@ -46,7 +46,7 @@ from flext_oracle_wms import (
     t,
     u,
 )
-from flext_oracle_wms.errors import FlextOracleWmsError
+from flext_oracle_wms.errors import FlextOracleWmsErrors
 from flext_oracle_wms.utilities import (
     FlextOracleWmsUtilitiesAuth,
     FlextOracleWmsUtilitiesClient,
@@ -94,7 +94,7 @@ def showcase_1_client_initialization(
         pass
     else:
         msg = f"Failed to start client: {start_result.error}"
-        raise FlextOracleWmsError(msg)
+        raise FlextOracleWmsErrors.Error(msg)
     return client
 
 
@@ -103,7 +103,7 @@ def showcase_2_entity_discovery(client: FlextOracleWmsClient) -> list[str]:
     entities_result = client.discover_entities()
     if not entities_result.success:
         msg = entities_result.error or "Failed to discover Oracle WMS entities"
-        raise FlextOracleWmsError(msg)
+        raise FlextOracleWmsErrors.Error(msg)
     entities: list[str] = list(entities_result.value)
     batch_size_val = c.OracleWms.PROCESSING_CONFIG.get("default_batch_size", 100)
     max_entities_to_show = batch_size_val // 5
@@ -123,9 +123,9 @@ def showcase_2_entity_discovery(client: FlextOracleWmsClient) -> list[str]:
 def showcase_3_data_retrieval(
     client: FlextOracleWmsClient,
     entities: list[str],
-) -> dict[str, t.JsonValue]:
+) -> t.MutableJsonMapping:
     """Feature 3: Data Retrieval and Querying."""
-    sample_data: dict[str, t.JsonValue] = {}
+    sample_data: t.MutableJsonMapping = {}
     test_entities = ["company", "facility", "item"]
     for entity_name in test_entities:
         if entity_name not in entities:
@@ -161,8 +161,8 @@ def showcase_4_authentication(settings: FlextOracleWmsSettings) -> None:
 
 def showcase_5_api_catalog(client: FlextOracleWmsClient) -> None:
     """Feature 5: API Catalog Management."""
-    categories: dict[str, list[str]] = {}
-    for api_name, api_info in FlextOracleWmsApi.FLEXT_ORACLE_WMS_APIS.items():
+    categories: t.MutableMappingKV[str, t.MutableSequenceOf[str]] = {}
+    for api_name, api_info in FlextOracleWmsApi.api_endpoints().items():
         category = api_info.category
         if category not in categories:
             categories[category] = []
@@ -170,9 +170,9 @@ def showcase_5_api_catalog(client: FlextOracleWmsClient) -> None:
     for apis in categories.values():
         max_apis_to_show = c.OracleWms.DEFAULT_MAX_RETRIES
         _api_preview = apis[:max_apis_to_show]
-    _ = {api.version for api in FlextOracleWmsApi.FLEXT_ORACLE_WMS_APIS.values()}
+    _ = {api.version for api in FlextOracleWmsApi.api_endpoints().values()}
     category_names = sorted({
-        api.category for api in FlextOracleWmsApi.FLEXT_ORACLE_WMS_APIS.values()
+        api.category for api in FlextOracleWmsApi.api_endpoints().values()
     })
     for category in category_names:
         category_result = client.get_apis_by_category(category)
@@ -180,7 +180,7 @@ def showcase_5_api_catalog(client: FlextOracleWmsClient) -> None:
             msg = (
                 category_result.error or f"Failed to load APIs for category: {category}"
             )
-            raise FlextOracleWmsError(msg)
+            raise FlextOracleWmsErrors.Error(msg)
 
 
 def showcase_6_error_handling(client: FlextOracleWmsClient) -> None:
@@ -207,14 +207,14 @@ def showcase_6_error_handling(client: FlextOracleWmsClient) -> None:
 
 def showcase_7_health_monitoring(
     client: FlextOracleWmsClient,
-) -> dict[str, t.JsonValue]:
+) -> t.MutableJsonMapping:
     """Feature 7: Health Monitoring."""
     health_result = client.health_check()
     if health_result.failure:
         msg = health_result.error or "Oracle WMS health check failed"
-        raise FlextOracleWmsError(msg)
+        raise FlextOracleWmsErrors.Error(msg)
     response = health_result.value
-    health_data: dict[str, t.JsonValue] = {"status_code": response.status_code}
+    health_data: t.MutableJsonMapping = {"status_code": response.status_code}
     return health_data
 
 
@@ -264,21 +264,26 @@ def showcase_10_enterprise_features(
     """Feature 10: Enterprise Features."""
 
 
+def run_showcase() -> None:
+    """Run the complete showcase flow."""
+    settings = load_config_from_environment()
+    client = showcase_1_client_initialization(settings)
+    entities = showcase_2_entity_discovery(client)
+    showcase_3_data_retrieval(client, entities)
+    showcase_4_authentication(settings)
+    showcase_5_api_catalog(client)
+    showcase_6_error_handling(client)
+    showcase_7_health_monitoring(client)
+    showcase_8_performance_tracking(client, entities)
+    showcase_9_cache_management(client)
+    showcase_10_enterprise_features(client, settings)
+    client.stop()
+
+
 def main() -> int:
     """Main showcase execution."""
     try:
-        settings = load_config_from_environment()
-        client = showcase_1_client_initialization(settings)
-        entities = showcase_2_entity_discovery(client)
-        showcase_3_data_retrieval(client, entities)
-        showcase_4_authentication(settings)
-        showcase_5_api_catalog(client)
-        showcase_6_error_handling(client)
-        showcase_7_health_monitoring(client)
-        showcase_8_performance_tracking(client, entities)
-        showcase_9_cache_management(client)
-        showcase_10_enterprise_features(client, settings)
-        client.stop()
+        run_showcase()
     except (RuntimeError, OSError, ValueError):
         traceback.print_exc()
         return 1
