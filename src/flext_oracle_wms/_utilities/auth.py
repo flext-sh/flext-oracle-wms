@@ -24,7 +24,7 @@ class FlextOracleWmsUtilitiesAuth:
 
         @property
         def normalized_method(self) -> str:
-            """Return auth method in canonical lowercase form."""
+            """The auth method in canonical lowercase form."""
             method: str = self.settings.method.strip().lower()
             return method
 
@@ -51,7 +51,7 @@ class FlextOracleWmsUtilitiesAuth:
             return r[str].fail(f"Unsupported auth method: {self.settings.method}")
 
         def get_auth_headers(self) -> p.Result[t.StrMapping]:
-            """Get authentication headers."""
+            """The authentication headers."""
             auth_result = self.authenticate()
             if auth_result.failure:
                 return r[t.StrMapping].fail_op("Authentication", auth_result.error)
