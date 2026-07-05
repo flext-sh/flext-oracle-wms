@@ -1,8 +1,10 @@
-"""Integration tests for Oracle WMS Client - Declarative Implementation.
+"""Behavioral tests for the Oracle WMS declarative client and API facade.
 
-Tests the new declarative Oracle WMS Cloud client using real .env configuration.
-Skips tests if .env is not available.
-
+Asserts observable public contracts only:
+- ``FlextOracleWmsApi.api_endpoints()`` returns typed endpoint models.
+- ``FlextOracleWmsApi.execute()`` honours its ``s[bool]`` readiness contract.
+- Every client operation returns an ``r[T]`` value (never raises) that satisfies
+  the success-XOR-failure invariant, with a non-empty error message on failure.
 
 Copyright (c) 2025 FLEXT Team. All rights reserved.
 SPDX-License-Identifier: MIT
@@ -19,25 +21,21 @@ import pytest
 from flext_oracle_wms import (
     FlextOracleWmsApi,
     FlextOracleWmsSettings,
+    m,
 )
 from flext_oracle_wms.utilities import FlextOracleWmsUtilitiesClient
 from tests.typings import t
 from tests.utilities import u
 
 if TYPE_CHECKING:
-    from collections.abc import (
-        Generator,
-        Sequence,
-    )
+    from collections.abc import Generator, Sequence
 
     from tests.protocols import p
-
-logger = u.fetch_logger(__name__)
 
 
 @pytest.fixture
 def env_config() -> t.OracleWms.Tests.EnvConfig:
-    """Fixture that provides .env configuration or deterministic test defaults."""
+    """Provide .env configuration or deterministic test defaults."""
     config_result = u.OracleWms.Tests.load_env_config(Path(__file__))
     if config_result.success and config_result.value.get("base_url"):
         return config_result.value
@@ -67,233 +65,181 @@ def oracle_wms_client(
 
 
 class TestsFlextOracleWmsDeclarative:
-    def test_api_catalog_completeness(self) -> None:
-        """Test that API catalog contains entries."""
-        assert len(FlextOracleWmsApi.api_endpoints()) >= 1
-        for api in FlextOracleWmsApi.api_endpoints().values():
-            assert api.name
-            assert api.method
-            assert api.path
-            assert api.version
+    """Behavioral contract for the declarative Oracle WMS surface."""
 
-    def test_api_versions_coverage(self) -> None:
-        """Test that API catalog entries have valid version strings."""
-        versions = {api.version for api in FlextOracleWmsApi.api_endpoints().values()}
-        assert len(versions) >= 1
+    @staticmethod
+    def _assert_result_contract[T](result: p.Result[T]) -> None:
+        """Assert the universal ``r[T]`` invariant: exactly one of success/failure.
 
-    def test_oracle_wms_health_check(
+        On failure the error must be a non-empty, human-readable string so that
+        callers can surface it. This is the fail-loud guarantee: operations
+        return a typed result instead of raising or hiding failures.
+        """
+        assert result.success is not result.failure
+        if result.failure:
+            assert isinstance(result.error, str)
+            assert result.error
+
+    # ------------------------------------------------------------------
+    # API facade — deterministic, no I/O
+    # ------------------------------------------------------------------
+
+    def test_api_endpoints_return_typed_models(self) -> None:
+        """api_endpoints() exposes typed ApiEndpoint models with populated fields."""
+        endpoints = FlextOracleWmsApi.api_endpoints()
+        assert endpoints
+        for endpoint in endpoints.values():
+            assert isinstance(endpoint, m.OracleWms.ApiEndpoint)
+            assert endpoint.name
+            assert endpoint.method
+            assert endpoint.path
+            assert endpoint.version
+            assert endpoint.category
+
+    def test_api_endpoints_expose_at_least_one_version(self) -> None:
+        """The catalog advertises one or more non-empty API version strings."""
+        versions = {
+            endpoint.version
+            for endpoint in FlextOracleWmsApi.api_endpoints().values()
+        }
+        assert versions
+        assert all(version for version in versions)
+
+    def test_execute_signals_readiness_success(self) -> None:
+        """The facade execute() contract returns a successful r[bool] carrying True."""
+        result = FlextOracleWmsApi().execute()
+        assert result.success
+        assert result.value is True
+
+    # ------------------------------------------------------------------
+    # Client operations — r[T] contract on every path
+    # ------------------------------------------------------------------
+
+    def test_health_check_returns_result_contract(
         self,
         oracle_wms_client: FlextOracleWmsUtilitiesClient.Client,
     ) -> None:
-        """Test Oracle WMS API health check returns valid result."""
-        health_result = oracle_wms_client.health_check()
-        assert health_result.success or health_result.failure
-        if health_result.success:
-            health_response = health_result.value
-            health_data = (
-                health_response.body
-                if isinstance(health_response.body, dict)
-                else dict[str, t.JsonValue]()
-            )
-            assert health_data.get("service") == "FlextOracleWmsClient"
-            assert health_data.get("status") in {"healthy", "unhealthy"}
-        else:
-            assert health_result.error is not None
+        """health_check() returns a well-formed r[T]; on success reports service."""
+        result = oracle_wms_client.health_check()
+        self._assert_result_contract(result)
+        if result.success:
+            body = result.value.body
+            payload = body if isinstance(body, dict) else dict[str, t.JsonValue]()
+            assert payload.get("service") == "FlextOracleWmsClient"
+            assert payload.get("status") in {"healthy", "unhealthy"}
 
-    def test_get_all_entities(
+    def test_discover_entities_returns_sequence_on_success(
         self,
         oracle_wms_client: FlextOracleWmsUtilitiesClient.Client,
     ) -> None:
-        """Test getting list of all Oracle WMS entities returns valid result."""
-        entities_result = oracle_wms_client.discover_entities()
-        assert entities_result.success or entities_result.failure
-        if entities_result.success:
-            entities = entities_result.value
-            assert isinstance(entities, list)
-        else:
-            assert entities_result.error is not None
+        """discover_entities() yields a list of entities when it succeeds."""
+        result = oracle_wms_client.discover_entities()
+        self._assert_result_contract(result)
+        if result.success:
+            assert isinstance(result.value, list)
 
     @pytest.mark.parametrize("entity_name", ["company", "facility", "item"])
-    def test_get_entity_data(
+    def test_get_entity_data_returns_record_sequence(
         self,
         oracle_wms_client: FlextOracleWmsUtilitiesClient.Client,
         entity_name: str,
     ) -> None:
-        """Test getting entity data using LGF API v10."""
+        """get_entity_data() honours the r[T] contract and returns a sequence."""
         result = oracle_wms_client.get_entity_data(entity_name=entity_name, limit=5)
+        self._assert_result_contract(result)
         if result.success:
-            records = result.value
-            assert isinstance(records, (list, tuple))
-            record_count = len(records)
-            logger.info(
-                "✅ Successfully retrieved %s data",
-                entity_name,
-                record_count=record_count,
-            )
-        else:
-            logger.warning(
-                "⚠️ Failed to get %s data: %s",
-                entity_name,
-                result.error,
-            )
+            assert isinstance(result.value, (list, tuple))
 
-    def test_get_entity_data_with_filters(
+    def test_get_entity_data_with_filters_returns_result_contract(
         self,
         oracle_wms_client: FlextOracleWmsUtilitiesClient.Client,
     ) -> None:
-        """Test getting entity data with filters."""
+        """Filtered queries still satisfy the r[T] contract."""
         result = oracle_wms_client.get_entity_data(
             entity_name="company",
             limit=10,
             filters={"active": "Y"},
         )
+        self._assert_result_contract(result)
         if result.success:
-            records = result.value
-            logger.info(
-                "✅ Successfully retrieved filtered company data: %d records",
-                len(records),
-            )
-        else:
-            logger.warning("⚠️ Filtered query failed: %s", result.error)
+            assert isinstance(result.value, (list, tuple))
 
-    def test_get_entity_by_id(
+    @pytest.mark.parametrize(
+        "limit",
+        [1, 5, 10],
+    )
+    def test_pagination_never_exceeds_requested_limit(
         self,
         oracle_wms_client: FlextOracleWmsUtilitiesClient.Client,
+        limit: int,
     ) -> None:
-        """Test getting specific entity record by ID returns valid result."""
-        list_result = oracle_wms_client.get_entity_data("company", limit=1)
-        assert list_result.success or list_result.failure
-        if not list_result.success:
-            assert list_result.error is not None
-            return
-        records = list_result.value
-        if not records or not isinstance(records[0], dict):
-            return
-        record_id = records[0].get("id") or records[0].get("company_code")
-        if not record_id:
-            return
-        result = oracle_wms_client.get_entity_data(
-            entity_name="company",
-            filters={"id": record_id},
-            limit=1,
-        )
-        assert result.success or result.failure
-
-    def test_get_entity_status(
-        self,
-        oracle_wms_client: FlextOracleWmsUtilitiesClient.Client,
-    ) -> None:
-        """Test getting entity status."""
-        result = oracle_wms_client.get_entity_data(
-            entity_name="company",
-            filters={"company_code": "DEFAULT"},
-        )
+        """A successful paged query never returns more records than requested."""
+        result = oracle_wms_client.get_entity_data(entity_name="company", limit=limit)
+        self._assert_result_contract(result)
         if result.success:
-            logger.info("✅ Successfully got entity status")
-        else:
-            logger.info(
-                "Warning: Entity status call failed (expected): %s",
-                result.error,
-            )
-            assert result.error is None or "Client not initialized" not in result.error
+            assert len(result.value) <= limit
 
-    def test_update_oblpn_tracking_number(
+    def test_concurrent_entity_requests_all_honour_contract(
         self,
         oracle_wms_client: FlextOracleWmsUtilitiesClient.Client,
     ) -> None:
-        """Test OBLPN tracking number update API structure."""
+        """Sequential requests to distinct entities each return a valid r[T]."""
+        entities = ["company", "facility", "item"]
+        results: list[p.Result[Sequence[t.StrMapping]]] = [
+            oracle_wms_client.get_entity_data(entity, limit=3) for entity in entities
+        ]
+        assert len(results) == len(entities)
+        for result in results:
+            self._assert_result_contract(result)
+
+    # ------------------------------------------------------------------
+    # Error paths — deterministic failures
+    # ------------------------------------------------------------------
+
+    @pytest.mark.parametrize("entity_name", ["invalid_entity_xyz", ""])
+    def test_unknown_entity_fails_with_error(
+        self,
+        oracle_wms_client: FlextOracleWmsUtilitiesClient.Client,
+        entity_name: str,
+    ) -> None:
+        """Requesting an unknown entity fails with a populated error message."""
+        result = oracle_wms_client.get_entity_data(entity_name)
+        assert result.failure
+        assert result.error
+
+    @pytest.mark.parametrize("api_name", ["unknown_api_xyz", "invalid_api_name"])
+    def test_unknown_api_call_fails_with_error(
+        self,
+        oracle_wms_client: FlextOracleWmsUtilitiesClient.Client,
+        api_name: str,
+    ) -> None:
+        """Calling an unknown API name fails with a populated error message."""
+        result = oracle_wms_client.call_api(api_name)
+        assert result.failure
+        assert result.error
+
+    def test_update_oblpn_tracking_failure_is_not_initialization_error(
+        self,
+        oracle_wms_client: FlextOracleWmsUtilitiesClient.Client,
+    ) -> None:
+        """A started client never fails OBLPN updates for being uninitialized."""
         result = oracle_wms_client.update_oblpn_tracking_number(
             oblpn_id="TEST123",
             tracking_number="TRACK123",
         )
-        assert not result.success
-        assert result.error is None or "Client not initialized" not in result.error
-        logger.info("⚠️ OBLPN update failed as expected: %s", result.error)
+        self._assert_result_contract(result)
+        if result.failure and result.error:
+            assert "Client not initialized" not in result.error
 
-    def test_create_lpn_api_structure(
+    def test_create_lpn_failure_is_not_initialization_error(
         self,
         oracle_wms_client: FlextOracleWmsUtilitiesClient.Client,
     ) -> None:
-        """Test LPN creation API structure."""
-        result = oracle_wms_client.create_lpn(
-            lpn_nbr="TEST_LPN_001",
-            qty=10,
-        )
-        assert not result.success
-        assert result.error is None or "Client not initialized" not in result.error
-        logger.info("⚠️ LPN creation failed as expected: %s", result.error)
-
-    def test_invalid_entity_name(
-        self,
-        oracle_wms_client: FlextOracleWmsUtilitiesClient.Client,
-    ) -> None:
-        """Test handling of invalid entity names returns failure result."""
-        result = oracle_wms_client.get_entity_data("invalid_entity_xyz")
-        assert not result.success
-        assert result.error is not None
-
-    def test_unknown_api_call(
-        self,
-        oracle_wms_client: FlextOracleWmsUtilitiesClient.Client,
-    ) -> None:
-        """Test handling of unknown API calls returns failure result."""
-        result = oracle_wms_client.call_api("unknown_api_xyz")
-        assert not result.success
-        assert result.error is not None
-
-    def test_malformed_lgf_call(
-        self,
-        oracle_wms_client: FlextOracleWmsUtilitiesClient.Client,
-    ) -> None:
-        """Test handling of malformed LGF API calls."""
-        result = oracle_wms_client.call_api("invalid_api_name")
-        assert not result.success
-        logger.info("✅ Properly handled malformed LGF call: %s", result.error)
-
-    def test_concurrent_entity_requests(
-        self,
-        oracle_wms_client: FlextOracleWmsUtilitiesClient.Client,
-    ) -> None:
-        """Test concurrent requests to different entities return results."""
-        entities = ["company", "facility", "item"]
-        results: list[p.Result[Sequence[t.StrMapping]] | Exception] = []
-        for entity in entities:
-            try:
-                result = oracle_wms_client.get_entity_data(entity, limit=3)
-                results.append(result)
-            except Exception as exc:
-                results.append(exc)
-        assert len(results) == len(entities)
-        for result_item in results:
-            if not isinstance(result_item, Exception):
-                assert result_item.success or result_item.failure
-
-    def test_pagination_handling(
-        self,
-        oracle_wms_client: FlextOracleWmsUtilitiesClient.Client,
-    ) -> None:
-        """Test pagination with different page sizes."""
-        page_sizes = [1, 5, 10]
-        for page_size in page_sizes:
-            result = oracle_wms_client.get_entity_data(
-                entity_name="company",
-                limit=page_size,
-            )
-            if result.success:
-                records = result.value
-                actual_count = len(records)
-                logger.info(
-                    "✅ Page size %d returned %d records",
-                    page_size,
-                    actual_count,
-                )
-                assert actual_count <= page_size
-            else:
-                logger.warning(
-                    "⚠️ Pagination test failed for size %d: %s",
-                    page_size,
-                    result.error,
-                )
+        """A started client never fails LPN creation for being uninitialized."""
+        result = oracle_wms_client.create_lpn(lpn_nbr="TEST_LPN_001", qty=10)
+        self._assert_result_contract(result)
+        if result.failure and result.error:
+            assert "Client not initialized" not in result.error
 
 
 pytestmark = [pytest.mark.integration]

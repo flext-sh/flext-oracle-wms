@@ -1,178 +1,273 @@
-"""Unit tests for FlextOracleWmsClient -- core functionality coverage.
+"""Behavioral unit tests for the Oracle WMS client public contract.
 
-Tests against actual wms_client.py source API.
+Exercises the observable behavior of ``FlextOracleWmsUtilitiesClient.Client``:
+settings resolution, lifecycle (start/stop) idempotence, ``from_auth_settings``
+construction rules, and the ``r[T]`` outcomes of the request-based operations.
+
+The only collaborator substituted is the genuine external HTTP boundary
+(``FlextApi``), stubbed with ``Mock(spec=FlextApi)`` and returning real
+``m.Api.HttpResponse`` models. The client exposes no public dependency-injection
+seam for that transport, so the stub is installed on the ``_client`` slot; every
+assertion targets public return values / ``r[T]`` state, never internals.
 
 Copyright (c) 2025 FLEXT Team. All rights reserved.
 SPDX-License-Identifier: MIT
-
 """
 
 from __future__ import annotations
 
-from unittest.mock import MagicMock
+from collections.abc import Callable
+from unittest.mock import Mock
 
 import pytest
+from flext_api import FlextApi
 from flext_tests import r
 
-from flext_oracle_wms import FlextOracleWmsSettings
+from flext_oracle_wms import FlextOracleWmsSettings, c, m
 from flext_oracle_wms.utilities import FlextOracleWmsUtilitiesClient
-from tests.utilities import u
+
+type Client = FlextOracleWmsUtilitiesClient.Client
+
+
+def _http_response(*, status_code: int, body: dict[str, object]) -> m.Api.HttpResponse:
+    """Build a real HTTP response model as returned by the transport boundary."""
+    return m.Api.HttpResponse.model_validate({
+        "status_code": status_code,
+        "headers": {},
+        "body": body,
+        "request_id": "test-request",
+    })
+
+
+def _client_with_response(
+    settings: FlextOracleWmsSettings,
+    response: m.Api.HttpResponse,
+) -> Client:
+    """Create a client whose external HTTP boundary yields ``response``."""
+    client = FlextOracleWmsUtilitiesClient.Client(settings)
+    transport = Mock(spec=FlextApi)
+    transport.request.return_value = r[m.Api.HttpResponse].ok(response)
+    client._client = transport  # inject external boundary (no public DI seam)
+    return client
+
+
+def _client_with_transport_failure(
+    settings: FlextOracleWmsSettings,
+    error: str,
+) -> Client:
+    """Create a client whose external HTTP boundary fails every request."""
+    client = FlextOracleWmsUtilitiesClient.Client(settings)
+    transport = Mock(spec=FlextApi)
+    transport.request.return_value = r[m.Api.HttpResponse].fail(error)
+    client._client = transport
+    return client
 
 
 @pytest.mark.unit
 class TestsFlextOracleWmsClientCore:
-    """Core client functionality tests."""
+    """Public-contract behavior of the Oracle WMS utilities client."""
 
-    def test_client_initialization(self, mock_config: FlextOracleWmsSettings) -> None:
-        client = FlextOracleWmsUtilitiesClient.Client(mock_config)
-        assert client.settings == mock_config
-        assert client.settings.base_url == mock_config.base_url
-        assert client._client is not None
-
-    def test_client_string_representation(
+    def test_init_preserves_supplied_settings(
         self,
         mock_config: FlextOracleWmsSettings,
     ) -> None:
         client = FlextOracleWmsUtilitiesClient.Client(mock_config)
-        repr_str = repr(client)
-        str_str = str(client)
-        assert "FlextOracleWmsClient" in repr_str or "Client" in repr_str
-        assert isinstance(str_str, str)
-
-    def test_client_config_properties(
-        self,
-        mock_config: FlextOracleWmsSettings,
-    ) -> None:
-        client = FlextOracleWmsUtilitiesClient.Client(mock_config)
+        assert client.settings is mock_config
         assert client.settings.base_url == mock_config.base_url
         assert client.settings.timeout == mock_config.timeout
 
-    def test_client_start_success(self, mock_config: FlextOracleWmsSettings) -> None:
-        client = FlextOracleWmsUtilitiesClient.Client(mock_config)
-        result = client.start()
-        assert result.success
-        assert result.value is True
+    def test_init_without_settings_resolves_global_config(self) -> None:
+        client = FlextOracleWmsUtilitiesClient.Client(None)
+        assert isinstance(client.settings, FlextOracleWmsSettings)
 
-    def test_client_start_multiple_times(
+    def test_start_reports_success(
+        self,
+        mock_config: FlextOracleWmsSettings,
+    ) -> None:
+        result = FlextOracleWmsUtilitiesClient.Client(mock_config).start()
+        assert result.success
+        assert result.unwrap() is True
+
+    def test_start_is_idempotent(
         self,
         mock_config: FlextOracleWmsSettings,
     ) -> None:
         client = FlextOracleWmsUtilitiesClient.Client(mock_config)
-        result1 = client.start()
-        assert result1.success
-        result2 = client.start()
-        assert result2.success
+        assert client.start().unwrap() is True
+        assert client.start().unwrap() is True
 
-    def test_client_stop_success(self, mock_config: FlextOracleWmsSettings) -> None:
+    def test_stop_reports_success(
+        self,
+        mock_config: FlextOracleWmsSettings,
+    ) -> None:
         client = FlextOracleWmsUtilitiesClient.Client(mock_config)
         client.start()
         result = client.stop()
         assert result.success
-        assert result.value is True
+        assert result.unwrap() is True
 
-    def test_client_stop_not_started(self, mock_config: FlextOracleWmsSettings) -> None:
-        client = FlextOracleWmsUtilitiesClient.Client(mock_config)
-        result = client.stop()
+    def test_stop_before_start_still_succeeds(
+        self,
+        mock_config: FlextOracleWmsSettings,
+    ) -> None:
+        result = FlextOracleWmsUtilitiesClient.Client(mock_config).stop()
         assert result.success
+        assert result.unwrap() is True
 
-    def test_client_has_expected_methods(
+    def test_restart_after_stop_succeeds(
         self,
         mock_config: FlextOracleWmsSettings,
     ) -> None:
         client = FlextOracleWmsUtilitiesClient.Client(mock_config)
-        assert callable(client.start)
-        assert callable(client.stop)
+        client.start()
+        client.stop()
+        assert client.start().unwrap() is True
 
-    def test_get_apis_by_category(self, mock_config: FlextOracleWmsSettings) -> None:
-        client = FlextOracleWmsUtilitiesClient.Client(mock_config)
-        mock_response = MagicMock()
-        mock_response.status_code = 200
-        mock_response.body = {"apis": [{"name": "test_api"}]}
-        client._client = MagicMock()
-        client._client.request.return_value = r[MagicMock].ok(mock_response)
-        result = client.get_apis_by_category("inventory")
+    def test_from_auth_settings_builds_client_for_basic_auth(self) -> None:
+        auth = m.OracleWms.AuthSettings(
+            method="basic",
+            username="wms_user",
+            password="wms_pass",
+        )
+        result = FlextOracleWmsUtilitiesClient.Client.from_auth_settings(auth)
         assert result.success
+        assert isinstance(result.unwrap(), FlextOracleWmsUtilitiesClient.Client)
 
-    def test_health_check_delegates_to_get(
+    def test_from_auth_settings_rejects_non_basic_auth(self) -> None:
+        auth = m.OracleWms.AuthSettings(
+            method="oauth2",
+            oauth2_client_id="client-id",
+            oauth2_client_secret="client-secret",
+        )
+        result = FlextOracleWmsUtilitiesClient.Client.from_auth_settings(auth)
+        assert result.failure
+        assert "BASIC" in (result.error or "")
+
+    def test_from_auth_settings_rejects_invalid_business_rules(self) -> None:
+        auth = m.OracleWms.AuthSettings(method="basic", username=None, password=None)
+        result = FlextOracleWmsUtilitiesClient.Client.from_auth_settings(auth)
+        assert result.failure
+        assert result.error
+
+    def test_health_check_returns_ok_response(
         self,
         mock_config: FlextOracleWmsSettings,
     ) -> None:
-        client = FlextOracleWmsUtilitiesClient.Client(mock_config)
-        mock_response = MagicMock()
-        mock_response.status_code = 200
-        mock_response.body = {"status": "healthy"}
-        client._client = MagicMock()
-        client._client.request.return_value = r[MagicMock].ok(mock_response)
+        client = _client_with_response(
+            mock_config,
+            _http_response(status_code=200, body={"status": "healthy"}),
+        )
         result = client.health_check()
         assert result.success
+        assert result.unwrap().status_code == 200
 
-    def test_discover_entities_success(
+    def test_call_api_returns_ok_response(
         self,
         mock_config: FlextOracleWmsSettings,
     ) -> None:
-        client = FlextOracleWmsUtilitiesClient.Client(mock_config)
-        mock_response = MagicMock()
-        mock_response.status_code = 200
-        mock_response.body = {"entities": ["company", "facility", "item"]}
-        client._client = MagicMock()
-        client._client.request.return_value = r[MagicMock].ok(mock_response)
-        result = client.discover_entities()
+        client = _client_with_response(
+            mock_config,
+            _http_response(status_code=200, body={"result": "ok"}),
+        )
+        result = client.call_api("allocation")
         assert result.success
-        assert isinstance(result.value, list)
-        assert len(result.value) == 3
+        assert result.unwrap().body == {"result": "ok"}
 
-    def test_discover_entities_failure(
+    def test_discover_entities_returns_parsed_entity_names(
         self,
         mock_config: FlextOracleWmsSettings,
     ) -> None:
-        client = FlextOracleWmsUtilitiesClient.Client(mock_config)
-        client._client = MagicMock()
-        client._client.request.return_value = r[MagicMock].fail("Connection refused")
+        client = _client_with_response(
+            mock_config,
+            _http_response(
+                status_code=200,
+                body={"entities": ["company", "facility", "item"]},
+            ),
+        )
         result = client.discover_entities()
-        assert result.failure
-
-    def test_get_entity_data_success(self, mock_config: FlextOracleWmsSettings) -> None:
-        client = FlextOracleWmsUtilitiesClient.Client(mock_config)
-        mock_response = MagicMock()
-        mock_response.status_code = 200
-        mock_response.body = {"data": [{"id": "1"}, {"id": "2"}]}
-        client._client = MagicMock()
-        client._client.request.return_value = r[MagicMock].ok(mock_response)
-        result = client.get_entity_data("test_entity", limit=10)
         assert result.success
-        assert result.value == [{"id": "1"}, {"id": "2"}]
+        assert list(result.unwrap()) == ["company", "facility", "item"]
 
-    def test_get_entity_data_failure(self, mock_config: FlextOracleWmsSettings) -> None:
-        client = FlextOracleWmsUtilitiesClient.Client(mock_config)
-        client._client = MagicMock()
-        client._client.request.return_value = r[MagicMock].fail("Not found")
-        result = client.get_entity_data("test_entity")
-        assert result.failure
-
-    def test_call_api_success(self, mock_config: FlextOracleWmsSettings) -> None:
-        client = FlextOracleWmsUtilitiesClient.Client(mock_config)
-        mock_response = MagicMock()
-        mock_response.status_code = 200
-        mock_response.body = {"result": "ok"}
-        client._client = MagicMock()
-        client._client.request.return_value = r[MagicMock].ok(mock_response)
-        result = client.call_api("test_api")
+    def test_get_entity_data_returns_parsed_rows(
+        self,
+        mock_config: FlextOracleWmsSettings,
+    ) -> None:
+        client = _client_with_response(
+            mock_config,
+            _http_response(status_code=200, body={"data": [{"id": "1"}, {"id": "2"}]}),
+        )
+        result = client.get_entity_data("item", limit=10)
         assert result.success
+        assert list(result.unwrap()) == [{"id": "1"}, {"id": "2"}]
 
-    def test_call_api_failure(self, mock_config: FlextOracleWmsSettings) -> None:
-        client = FlextOracleWmsUtilitiesClient.Client(mock_config)
-        client._client = MagicMock()
-        client._client.request.return_value = r[MagicMock].fail("API error")
-        result = client.call_api("test_api")
+    def test_get_apis_by_category_returns_parsed_apis(
+        self,
+        mock_config: FlextOracleWmsSettings,
+    ) -> None:
+        client = _client_with_response(
+            mock_config,
+            _http_response(status_code=200, body={"apis": [{"name": "test_api"}]}),
+        )
+        result = client.get_apis_by_category("inventory")
+        assert result.success
+        assert list(result.unwrap()) == [{"name": "test_api"}]
+
+    @pytest.mark.parametrize(
+        "operation",
+        [
+            lambda client: client.health_check(),
+            lambda client: client.call_api("allocation"),
+            lambda client: client.discover_entities(),
+            lambda client: client.get_entity_data("item"),
+            lambda client: client.get_apis_by_category("inventory"),
+        ],
+    )
+    def test_transport_failure_propagates_to_result(
+        self,
+        mock_config: FlextOracleWmsSettings,
+        operation: Callable[[Client], r[object]],
+    ) -> None:
+        client = _client_with_transport_failure(mock_config, "Connection refused")
+        result = operation(client)
         assert result.failure
+        assert result.error
 
-    def test_client_error_handling_none_config(self) -> None:
-        client = FlextOracleWmsUtilitiesClient.Client(None)
-        assert client.settings is not None
-        assert isinstance(client.settings, FlextOracleWmsSettings)
+    @pytest.mark.parametrize("status_code", [400, 404, 500])
+    def test_http_error_status_yields_failure(
+        self,
+        mock_config: FlextOracleWmsSettings,
+        status_code: int,
+    ) -> None:
+        client = _client_with_response(
+            mock_config,
+            _http_response(status_code=status_code, body={"error": "boom"}),
+        )
+        result = client.health_check()
+        assert result.failure
+        assert str(status_code) in (result.error or "")
 
-    @pytest.mark.unit
-    def test_get_logger_module_name(self) -> None:
-        u.fetch_logger("test_module")
-        logger_empty = u.fetch_logger("")
-        assert callable(logger_empty.info)
+    def test_status_below_threshold_is_success(
+        self,
+        mock_config: FlextOracleWmsSettings,
+    ) -> None:
+        below = c.OracleWms.HTTP_BAD_REQUEST_THRESHOLD - 1
+        client = _client_with_response(
+            mock_config,
+            _http_response(status_code=below, body={"ok": True}),
+        )
+        assert client.health_check().success
+
+    def test_discover_entities_defaults_to_empty_on_absent_entities(
+        self,
+        mock_config: FlextOracleWmsSettings,
+    ) -> None:
+        client = _client_with_response(
+            mock_config,
+            _http_response(status_code=200, body={"unexpected": "shape"}),
+        )
+        result = client.discover_entities()
+        assert result.success
+        assert list(result.unwrap()) == []
+
+
+__all__: list[str] = ["TestsFlextOracleWmsClientCore"]

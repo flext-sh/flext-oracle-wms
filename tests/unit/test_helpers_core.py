@@ -1,6 +1,9 @@
-"""Unit tests for Oracle WMS utilities module.
+"""Behavioral unit tests for Oracle WMS test utilities.
 
-Tests u from utilities.py.
+Exercises the observable public contract of ``TestsFlextOracleWmsUtilities``
+(the ``u`` facade): environment/config loading, client-settings construction,
+canonical sample data, and the concrete API facade — all through the public
+API only.
 
 Copyright (c) 2025 FLEXT Team. All rights reserved.
 SPDX-License-Identifier: MIT
@@ -8,21 +11,238 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 import pytest
 
 from flext_core import u as core_u
 from tests.utilities import u
 
+if TYPE_CHECKING:
+    from pathlib import Path
+
+__all__ = ["TestsFlextOracleWmsHelpersCore"]
+
+_TESTS = u.OracleWms.Tests
+
 
 @pytest.mark.unit
 class TestsFlextOracleWmsHelpersCore:
-    """Test suite for FlextOracleWmsUtilities class."""
+    """Contract tests for the Oracle WMS test-utilities facade."""
 
-    def test_inherits_from_flext_utilities(self) -> None:
+    def test_utilities_facade_specializes_flext_core_utilities(self) -> None:
+        # Consumers rely on core converter helpers being available on ``u``.
         assert issubclass(u, core_u)
 
-    def test_has_oracle_wms_namespace(self) -> None:
-        pass
+    @pytest.mark.parametrize(
+        ("raw", "expected"),
+        [(123, "123"), ("abc", "abc"), (True, "True")],
+    )
+    def test_to_str_coerces_values_to_string(
+        self,
+        raw: str | int | bool,
+        expected: str,
+    ) -> None:
+        assert u.to_str(raw, default="") == expected
 
-    def test_utilities_is_accessible(self) -> None:
-        assert u is not None
+    @pytest.mark.parametrize(
+        ("raw", "expected"),
+        [("5", 5), (7, 7), ("not-a-number", 0)],
+    )
+    def test_to_int_coerces_or_falls_back_to_default(
+        self,
+        raw: str | int,
+        expected: int,
+    ) -> None:
+        assert u.to_int(raw, default=0) == expected
+
+    @pytest.mark.parametrize(
+        ("raw", "expected"),
+        [("true", True), (True, True), (False, False)],
+    )
+    def test_to_bool_coerces_values(
+        self,
+        raw: str | bool,
+        *,
+        expected: bool,
+    ) -> None:
+        assert u.to_bool(raw, default=False) is expected
+
+    def test_sample_entities_returns_canonical_entity_list(self) -> None:
+        assert _TESTS.sample_entities() == [
+            "action_code",
+            "company",
+            "facility",
+            "item",
+            "order_hdr",
+            "order_dtl",
+        ]
+
+    def test_sample_entity_data_exposes_paged_result_envelope(self) -> None:
+        data = _TESTS.sample_entity_data()
+
+        assert data is not None
+        assert data["result_count"] == 4
+        assert data["page_count"] == 1
+        assert data["next_page"] is None
+
+        results = data["results"]
+        assert isinstance(results, list)
+        assert len(results) == 2
+        first = results[0]
+        assert isinstance(first, dict)
+        assert first["code"] == "TEST_CODE"
+
+    def test_build_client_settings_maps_env_config_to_settings_fields(self) -> None:
+        settings = _TESTS.build_client_settings(
+            {
+                "base_url": "https://wms.example/prod",
+                "username": "svc_user",
+                "password": "secret",
+                "auth_method": "BASIC",
+                "timeout": "45",
+                "retry_attempts": "2",
+                "verify_ssl": "true",
+                "enable_logging": "true",
+                "connection_pool_size": "10",
+                "cache_duration": "100",
+            },
+            "LGF_V10",
+        )
+
+        assert settings.base_url == "https://wms.example/prod"
+        assert settings.username == "svc_user"
+        assert settings.api_version == "LGF_V10"
+        assert settings.timeout == 45
+        assert settings.retry_attempts == 2
+
+    def test_build_client_settings_applies_defaults_for_missing_keys(self) -> None:
+        settings = _TESTS.build_client_settings({"base_url": "https://x"}, "LGF_V10")
+
+        assert settings.base_url == "https://x"
+        assert settings.timeout == 30
+        assert settings.retry_attempts == 3
+
+    def test_find_env_file_locates_nearest_env(self, tmp_path: Path) -> None:
+        (tmp_path / ".env").write_text("ORACLE_WMS_BASE_URL=https://h\n")
+        nested = tmp_path / "a" / "b"
+        nested.mkdir(parents=True)
+
+        assert _TESTS.find_env_file(nested / "file.py") == tmp_path / ".env"
+
+    def test_find_env_file_returns_none_when_absent(self, tmp_path: Path) -> None:
+        nested = tmp_path / "x" / "y"
+        nested.mkdir(parents=True)
+
+        assert _TESTS.find_env_file(nested / "z.py") is None
+
+    def test_load_env_config_parses_env_and_ignores_comments(
+        self,
+        tmp_path: Path,
+    ) -> None:
+        (tmp_path / ".env").write_text(
+            "ORACLE_WMS_BASE_URL=https://h/production\n"
+            "ORACLE_WMS_USERNAME=u1\n"
+            "# a comment line\n"
+            "ORACLE_WMS_TIMEOUT=50\n",
+        )
+        start = tmp_path / "a"
+        start.mkdir()
+
+        result = _TESTS.load_env_config(start / "file.py")
+
+        assert result.success
+        config = result.unwrap()
+        assert config["base_url"] == "https://h/production"
+        assert config["username"] == "u1"
+        assert config["timeout"] == 50
+        assert config["api_version"] == "LGF_V10"
+
+    def test_load_env_config_fails_when_no_env_present(self, tmp_path: Path) -> None:
+        nested = tmp_path / "x" / "y"
+        nested.mkdir(parents=True)
+
+        result = _TESTS.load_env_config(nested / "z.py")
+
+        assert result.failure
+        assert result.error is not None
+        assert "No .env file found" in result.error
+
+    @pytest.mark.parametrize(
+        ("url_tail", "expected_env"),
+        [
+            ("prod", "production"),
+            ("production", "production"),
+            ("staging", "staging"),
+            ("testing", "test"),
+            ("local", "local"),
+            ("anything-else", "development"),
+        ],
+    )
+    def test_load_env_config_resolves_environment_from_base_url(
+        self,
+        tmp_path: Path,
+        url_tail: str,
+        expected_env: str,
+    ) -> None:
+        (tmp_path / ".env").write_text(
+            f"ORACLE_WMS_BASE_URL=https://host/{url_tail}\n",
+        )
+        start = tmp_path / "a"
+        start.mkdir()
+
+        result = _TESTS.load_env_config(start / "file.py")
+
+        assert result.success
+        assert result.unwrap()["environment"] == expected_env
+
+    def test_load_test_env_reports_presence_of_env_file(self, tmp_path: Path) -> None:
+        assert _TESTS.load_test_env(tmp_path) is False
+
+        (tmp_path / ".env").write_text("ORACLE_WMS_BASE_URL=https://h\n")
+        assert _TESTS.load_test_env(tmp_path) is True
+
+    def test_create_real_settings_fails_without_credentials(
+        self,
+        monkeypatch: pytest.MonkeyPatch,
+    ) -> None:
+        for var in (
+            "ORACLE_WMS_BASE_URL",
+            "FLEXT_ORACLE_WMS_BASE_URL",
+            "ORACLE_WMS_USERNAME",
+            "FLEXT_ORACLE_WMS_USERNAME",
+            "ORACLE_WMS_PASSWORD",
+            "FLEXT_ORACLE_WMS_PASSWORD",
+        ):
+            monkeypatch.delenv(var, raising=False)
+
+        result = _TESTS.create_real_settings()
+
+        assert result.failure
+        assert result.error is not None
+        assert "credentials not available" in result.error
+
+    def test_create_real_settings_builds_settings_from_environment(
+        self,
+        monkeypatch: pytest.MonkeyPatch,
+    ) -> None:
+        monkeypatch.setenv("ORACLE_WMS_BASE_URL", "https://wms.example/prod")
+        monkeypatch.setenv("ORACLE_WMS_USERNAME", "svc_user")
+        monkeypatch.setenv("ORACLE_WMS_PASSWORD", "secret")
+        monkeypatch.setenv("ORACLE_WMS_TIMEOUT", "42")
+        monkeypatch.setenv("ORACLE_WMS_MAX_RETRIES", "4")
+
+        result = _TESTS.create_real_settings()
+
+        assert result.success
+        settings = result.unwrap()
+        assert settings.base_url == "https://wms.example/prod"
+        assert settings.username == "svc_user"
+        assert settings.timeout == 42
+        assert settings.retry_attempts == 4
+
+    def test_concrete_api_execute_returns_successful_result(self) -> None:
+        result = _TESTS.ConcreteApi().execute()
+
+        assert result.success
+        assert result.unwrap() is True

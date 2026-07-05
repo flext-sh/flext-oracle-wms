@@ -1,7 +1,12 @@
-"""Unit tests for FlextOracleWmsClient class.
+"""Behavioral unit tests for the Oracle WMS runtime client.
 
-Tests the WMS client module against actual source API.
-The client uses FlextApi internally via self._client.request(HttpRequest(...)).
+Exercises the PUBLIC contract of ``FlextOracleWmsUtilitiesClient.Client``:
+return values, ``r[T]`` success/failure outcomes, error messages, HTTP
+error propagation, entity/data extraction and lifecycle idempotence.
+
+The only mocked seam is the genuine external boundary -- ``FlextApi.request``
+(the network call). Everything else is driven through the public API with
+real ``m.Api.HttpResponse`` models.
 
 Copyright (c) 2025 FLEXT Team. All rights reserved.
 SPDX-License-Identifier: MIT
@@ -10,42 +15,71 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
-from unittest.mock import MagicMock
-
+import pytest
 from flext_api import FlextApi
-from flext_tests import r
 
-from flext_oracle_wms import FlextOracleWmsSettings
+from flext_oracle_wms import FlextOracleWmsSettings, m, p, r, t
 from flext_oracle_wms.utilities import FlextOracleWmsUtilitiesClient
 
-if TYPE_CHECKING:
-    import pytest
+type Client = FlextOracleWmsUtilitiesClient.Client
 
 
 class TestsFlextOracleWmsWmsClient:
-    """Test cases for FlextOracleWmsClient class."""
+    """Behavioral contract tests for the Oracle WMS client."""
 
     @staticmethod
-    def _patch_request(
+    def _response(
+        status_code: int,
+        body: t.Api.ResponseBody,
+    ) -> m.Api.HttpResponse:
+        """Build a real HTTP response model as the boundary would return."""
+        return m.Api.HttpResponse.model_validate({
+            "status_code": status_code,
+            "body": body,
+        })
+
+    @classmethod
+    def _stub_boundary(
+        cls,
         monkeypatch: pytest.MonkeyPatch,
-        result: object,
+        outcome: p.Result[m.Api.HttpResponse],
     ) -> None:
+        """Stub the external HTTP boundary FlextApi.request with an outcome."""
+
         def _request(
             _self: FlextApi,
-            _http_request: object,
-        ) -> object:
-            return result
+            _request: m.Api.HttpRequest,
+        ) -> p.Result[m.Api.HttpResponse]:
+            return outcome
 
         monkeypatch.setattr(FlextApi, "request", _request)
 
-    def test_initialization_without_config(self) -> None:
-        """Test initialization without explicit configuration uses global/default."""
+    @classmethod
+    def _stub_ok(
+        cls,
+        monkeypatch: pytest.MonkeyPatch,
+        status_code: int,
+        body: t.Api.ResponseBody,
+    ) -> None:
+        cls._stub_boundary(
+            monkeypatch,
+            r[m.Api.HttpResponse].ok(cls._response(status_code, body)),
+        )
+
+    @pytest.fixture
+    def client(self) -> Client:
+        """A client bound to the deterministic testing configuration."""
+        return FlextOracleWmsUtilitiesClient.Client(
+            FlextOracleWmsSettings.testing_config(),
+        )
+
+    # -- construction contract ------------------------------------------
+
+    def test_default_construction_exposes_settings_instance(self) -> None:
         client = FlextOracleWmsUtilitiesClient.Client()
         assert isinstance(client.settings, FlextOracleWmsSettings)
 
-    def test_initialization_with_config(self) -> None:
-        """Test initialization with explicit configuration."""
+    def test_explicit_settings_are_exposed_unchanged(self) -> None:
         settings = FlextOracleWmsSettings(
             base_url="https://custom-wms.example.com",
             timeout=60,
@@ -55,162 +89,182 @@ class TestsFlextOracleWmsWmsClient:
         assert client.settings.base_url == "https://custom-wms.example.com"
         assert client.settings.timeout == 60
 
-    def test_get_method_success(self, monkeypatch: pytest.MonkeyPatch) -> None:
-        """Test successful GET request via _client.request."""
-        settings = FlextOracleWmsSettings.testing_config()
-        client = FlextOracleWmsUtilitiesClient.Client(settings)
-        mock_response = MagicMock()
-        mock_response.status_code = 200
-        mock_response.body = {"data": "test"}
-        self._patch_request(monkeypatch, r[MagicMock].ok(mock_response))
+    # -- verb methods return the response payload -----------------------
+
+    def test_get_success_returns_response_body(
+        self,
+        client: Client,
+        monkeypatch: pytest.MonkeyPatch,
+    ) -> None:
+        self._stub_ok(monkeypatch, 200, {"data": "test"})
         result = client.get("/test-endpoint")
         assert result.success
+        assert result.value.status_code == 200
         assert result.value.body == {"data": "test"}
 
-    def test_get_method_failure(self, monkeypatch: pytest.MonkeyPatch) -> None:
-        """Test failed GET request."""
-        settings = FlextOracleWmsSettings.testing_config()
-        client = FlextOracleWmsUtilitiesClient.Client(settings)
-        self._patch_request(monkeypatch, r[MagicMock].fail("Network error"))
+    def test_get_boundary_failure_is_wrapped_with_context(
+        self,
+        client: Client,
+        monkeypatch: pytest.MonkeyPatch,
+    ) -> None:
+        self._stub_boundary(
+            monkeypatch,
+            r[m.Api.HttpResponse].fail("Network error"),
+        )
         result = client.get("/test-endpoint")
         assert result.failure
         assert result.error is not None
         assert "GET /test-endpoint failed" in result.error
+        assert "Network error" in result.error
 
-    def test_post_method_success(self, monkeypatch: pytest.MonkeyPatch) -> None:
-        """Test successful POST request."""
-        settings = FlextOracleWmsSettings.testing_config()
-        client = FlextOracleWmsUtilitiesClient.Client(settings)
-        mock_response = MagicMock()
-        mock_response.status_code = 201
-        mock_response.body = {"created": True}
-        self._patch_request(monkeypatch, r[MagicMock].ok(mock_response))
-        result = client.post("/test-endpoint", body={"key": "value"})
+    @pytest.mark.parametrize("status_code", [400, 404, 500, 503])
+    def test_http_error_status_becomes_failure(
+        self,
+        client: Client,
+        monkeypatch: pytest.MonkeyPatch,
+        status_code: int,
+    ) -> None:
+        self._stub_ok(monkeypatch, status_code, {"error": "boom"})
+        result = client.get("/broken")
+        assert result.failure
+        assert result.error is not None
+        assert f"HTTP {status_code}" in result.error
+
+    @pytest.mark.parametrize(
+        ("verb", "status_code", "body"),
+        [
+            ("post", 201, {"created": True}),
+            ("put", 200, {"updated": True}),
+            ("delete", 200, {"deleted": True}),
+        ],
+    )
+    def test_write_verbs_return_response(
+        self,
+        client: Client,
+        monkeypatch: pytest.MonkeyPatch,
+        verb: str,
+        status_code: int,
+        body: t.Api.ResponseBody,
+    ) -> None:
+        self._stub_ok(monkeypatch, status_code, body)
+        method = getattr(client, verb)
+        result = method("/test-endpoint")
         assert result.success
+        assert result.value.body == body
 
-    def test_put_method_success(self, monkeypatch: pytest.MonkeyPatch) -> None:
-        """Test successful PUT request."""
-        settings = FlextOracleWmsSettings.testing_config()
-        client = FlextOracleWmsUtilitiesClient.Client(settings)
-        mock_response = MagicMock()
-        mock_response.status_code = 200
-        mock_response.body = {"updated": True}
-        self._patch_request(monkeypatch, r[MagicMock].ok(mock_response))
-        result = client.put("/test-endpoint", body={"key": "value"})
-        assert result.success
-
-    def test_delete_method_success(self, monkeypatch: pytest.MonkeyPatch) -> None:
-        """Test successful DELETE request."""
-        settings = FlextOracleWmsSettings.testing_config()
-        client = FlextOracleWmsUtilitiesClient.Client(settings)
-        mock_response = MagicMock()
-        mock_response.status_code = 200
-        mock_response.body = {"deleted": True}
-        self._patch_request(monkeypatch, r[MagicMock].ok(mock_response))
-        result = client.delete("/test-endpoint")
-        assert result.success
-
-    def test_health_check(self, monkeypatch: pytest.MonkeyPatch) -> None:
-        """Test health check delegates to self.get('/health')."""
-        settings = FlextOracleWmsSettings.testing_config()
-        client = FlextOracleWmsUtilitiesClient.Client(settings)
-        mock_response = MagicMock()
-        mock_response.status_code = 200
-        mock_response.body = {"status": "healthy"}
-        self._patch_request(monkeypatch, r[MagicMock].ok(mock_response))
+    def test_health_check_returns_health_payload(
+        self,
+        client: Client,
+        monkeypatch: pytest.MonkeyPatch,
+    ) -> None:
+        self._stub_ok(monkeypatch, 200, {"status": "healthy"})
         result = client.health_check()
         assert result.success
+        assert result.value.body == {"status": "healthy"}
 
-    def test_start_method(self) -> None:
-        """Test client start method returns ok(True)."""
-        settings = FlextOracleWmsSettings.testing_config()
-        client = FlextOracleWmsUtilitiesClient.Client(settings)
-        result = client.start()
-        assert result.success
-        assert result.value is True
-
-    def test_stop_method(self) -> None:
-        """Test client stop method returns ok(True)."""
-        settings = FlextOracleWmsSettings.testing_config()
-        client = FlextOracleWmsUtilitiesClient.Client(settings)
-        result = client.stop()
-        assert result.success
-        assert result.value is True
-
-    def test_discover_entities_success(self, monkeypatch: pytest.MonkeyPatch) -> None:
-        """Test entity discovery extracts 'entities' key from response."""
-        settings = FlextOracleWmsSettings.testing_config()
-        client = FlextOracleWmsUtilitiesClient.Client(settings)
-        mock_response = MagicMock()
-        mock_response.status_code = 200
-        mock_response.body = {"entities": ["entity1", "entity2"]}
-        self._patch_request(monkeypatch, r[MagicMock].ok(mock_response))
-        result = client.discover_entities()
-        assert result.success
-        assert result.value == ["entity1", "entity2"]
-
-    def test_get_entity_data_success(self, monkeypatch: pytest.MonkeyPatch) -> None:
-        """Test entity data retrieval extracts 'data' key from response."""
-        settings = FlextOracleWmsSettings.testing_config()
-        client = FlextOracleWmsUtilitiesClient.Client(settings)
-        mock_response = MagicMock()
-        mock_response.status_code = 200
-        mock_response.body = {"data": [{"id": "1"}, {"id": "2"}]}
-        self._patch_request(monkeypatch, r[MagicMock].ok(mock_response))
-        result = client.get_entity_data("test_entity", limit=10)
-        assert result.success
-        assert result.value == [{"id": "1"}, {"id": "2"}]
-
-    def test_get_apis_by_category_success(
+    def test_call_api_returns_response(
         self,
+        client: Client,
         monkeypatch: pytest.MonkeyPatch,
     ) -> None:
-        """Test API discovery by category extracts 'apis' key."""
-        settings = FlextOracleWmsSettings.testing_config()
-        client = FlextOracleWmsUtilitiesClient.Client(settings)
-        mock_response = MagicMock()
-        mock_response.status_code = 200
-        mock_response.body = {"apis": [{"name": "api1"}, {"name": "api2"}]}
-        self._patch_request(monkeypatch, r[MagicMock].ok(mock_response))
-        result = client.get_apis_by_category("inventory")
-        assert result.success
-        assert len(result.value) == 2
-
-    def test_call_api_success(self, monkeypatch: pytest.MonkeyPatch) -> None:
-        """Test call_api delegates to self.get('/api/{api_name}')."""
-        settings = FlextOracleWmsSettings.testing_config()
-        client = FlextOracleWmsUtilitiesClient.Client(settings)
-        mock_response = MagicMock()
-        mock_response.status_code = 200
-        mock_response.body = {"result": "success"}
-        self._patch_request(monkeypatch, r[MagicMock].ok(mock_response))
+        self._stub_ok(monkeypatch, 200, {"result": "success"})
         result = client.call_api("test_api")
         assert result.success
+        assert result.value.body == {"result": "success"}
 
-    def test_update_oblpn_tracking_number(
+    def test_update_oblpn_tracking_number_returns_response(
         self,
+        client: Client,
         monkeypatch: pytest.MonkeyPatch,
     ) -> None:
-        """Test OBLPN tracking number update via PUT."""
-        settings = FlextOracleWmsSettings.testing_config()
-        client = FlextOracleWmsUtilitiesClient.Client(settings)
-        mock_response = MagicMock()
-        mock_response.status_code = 200
-        mock_response.body = {"updated": True}
-        self._patch_request(monkeypatch, r[MagicMock].ok(mock_response))
+        self._stub_ok(monkeypatch, 200, {"updated": True})
         result = client.update_oblpn_tracking_number("oblpn123", "track456")
         assert result.success
+        assert result.value.body == {"updated": True}
 
-    def test_create_lpn(self, monkeypatch: pytest.MonkeyPatch) -> None:
-        """Test LPN creation via POST."""
-        settings = FlextOracleWmsSettings.testing_config()
-        client = FlextOracleWmsUtilitiesClient.Client(settings)
-        mock_response = MagicMock()
-        mock_response.status_code = 201
-        mock_response.body = {"created": True}
-        self._patch_request(monkeypatch, r[MagicMock].ok(mock_response))
+    def test_create_lpn_returns_response(
+        self,
+        client: Client,
+        monkeypatch: pytest.MonkeyPatch,
+    ) -> None:
+        self._stub_ok(monkeypatch, 201, {"created": True})
         result = client.create_lpn("lpn123", 5)
         assert result.success
+        assert result.value.body == {"created": True}
+
+    # -- discovery/extraction contract ----------------------------------
+
+    def test_discover_entities_extracts_entity_names(
+        self,
+        client: Client,
+        monkeypatch: pytest.MonkeyPatch,
+    ) -> None:
+        self._stub_ok(monkeypatch, 200, {"entities": ["entity1", "entity2"]})
+        result = client.discover_entities()
+        assert result.success
+        assert list(result.value) == ["entity1", "entity2"]
+
+    def test_discover_entities_propagates_boundary_failure(
+        self,
+        client: Client,
+        monkeypatch: pytest.MonkeyPatch,
+    ) -> None:
+        self._stub_boundary(
+            monkeypatch,
+            r[m.Api.HttpResponse].fail("Network error"),
+        )
+        result = client.discover_entities()
+        assert result.failure
+        assert result.error is not None
+        assert "GET /entities failed" in result.error
+
+    def test_get_entity_data_extracts_data_rows(
+        self,
+        client: Client,
+        monkeypatch: pytest.MonkeyPatch,
+    ) -> None:
+        self._stub_ok(monkeypatch, 200, {"data": [{"id": "1"}, {"id": "2"}]})
+        result = client.get_entity_data("test_entity", limit=10)
+        assert result.success
+        assert list(result.value) == [{"id": "1"}, {"id": "2"}]
+
+    def test_get_apis_by_category_extracts_api_list(
+        self,
+        client: Client,
+        monkeypatch: pytest.MonkeyPatch,
+    ) -> None:
+        self._stub_ok(
+            monkeypatch,
+            200,
+            {"apis": [{"name": "api1"}, {"name": "api2"}]},
+        )
+        result = client.get_apis_by_category("inventory")
+        assert result.success
+        assert [row["name"] for row in result.value] == ["api1", "api2"]
+
+    # -- lifecycle contract ---------------------------------------------
+
+    def test_start_is_idempotent_and_reports_running(
+        self,
+        client: Client,
+    ) -> None:
+        first = client.start()
+        second = client.start()
+        assert first.success
+        assert first.value is True
+        assert second.success
+        assert second.value is True
+
+    def test_stop_is_idempotent_and_reports_stopped(
+        self,
+        client: Client,
+    ) -> None:
+        first = client.stop()
+        second = client.stop()
+        assert first.success
+        assert first.value is True
+        assert second.success
+        assert second.value is True
 
 
-__all__: list[str] = []
+__all__: list[str] = ["TestsFlextOracleWmsWmsClient"]

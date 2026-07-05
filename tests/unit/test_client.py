@@ -1,143 +1,167 @@
-"""Simple focused tests for FlextOracleWmsClient - high coverage without complex mocking.
+"""Behavioral tests for the Oracle WMS runtime client.
+
+Asserts the observable public contract: constructor settings resolution,
+the ``r[bool]`` outcomes of the start/stop lifecycle, and the ``r[Client]``
+outcomes of ``from_auth_settings`` across valid and invalid auth inputs.
 
 Copyright (c) 2025 FLEXT Team. All rights reserved.
 SPDX-License-Identifier: MIT
-
 """
 
 from __future__ import annotations
 
-from flext_oracle_wms import FlextOracleWmsSettings
+import pytest
+
+from flext_oracle_wms import FlextOracleWmsSettings, m
 from flext_oracle_wms.utilities import FlextOracleWmsUtilitiesClient
 
 
 class TestsFlextOracleWmsClient:
-    """Simple tests for client functionality."""
+    """Public-contract tests for ``FlextOracleWmsUtilitiesClient.Client``."""
 
-    settings: FlextOracleWmsSettings
-
-    def setup_method(self) -> None:
-        """Set up test fixtures."""
-        self.settings = FlextOracleWmsSettings(
+    @pytest.fixture
+    def settings(self) -> FlextOracleWmsSettings:
+        """Deterministic runtime settings for a BASIC-auth client."""
+        return FlextOracleWmsSettings(
             base_url="https://test.wms.com",
             username="test_user",
             password="test_pass",
             timeout=30,
         )
 
-    def test_client_creation(self) -> None:
-        """Test basic client creation."""
-        client = FlextOracleWmsUtilitiesClient.Client(self.settings)
-        assert client.settings == self.settings
+    # ---- constructor settings resolution -----------------------------------
 
-    def test_client_repr(self) -> None:
-        """Test client string representation."""
-        client = FlextOracleWmsUtilitiesClient.Client(self.settings)
-        repr_str = str(client)
-        assert (
-            "FlextOracleWmsClient" in repr_str
-            or "WMS" in repr_str
-            or "Client" in repr_str
-            or "t.JsonValue" in repr_str
-        )
+    def test_constructor_honors_provided_settings(
+        self,
+        settings: FlextOracleWmsSettings,
+    ) -> None:
+        """The client exposes exactly the settings object it was built with."""
+        client = FlextOracleWmsUtilitiesClient.Client(settings)
 
-    def test_client_creation_extended(self) -> None:
-        """Test client creation and basic properties (extended)."""
-        client = FlextOracleWmsUtilitiesClient.Client(self.settings)
-        assert isinstance(client, FlextOracleWmsUtilitiesClient.Client)
-        assert client.settings is not None
+        assert client.settings is settings
+        assert client.settings.base_url == "https://test.wms.com"
+        assert client.settings.username == "test_user"
 
-    def test_client_basic_operations(self) -> None:
-        """Test client basic operations don't raise errors."""
-        client = FlextOracleWmsUtilitiesClient.Client(self.settings)
-        assert callable(client.start)
-        assert callable(client.stop)
-
-    def test_client_stop_method(self) -> None:
-        """Test client stop method exists."""
-        client = FlextOracleWmsUtilitiesClient.Client(self.settings)
-        assert callable(client.stop)
-
-    def test_health_check_method_exists(self) -> None:
-        """Test health check method exists."""
-        client = FlextOracleWmsUtilitiesClient.Client(self.settings)
-        assert callable(client.health_check)
-
-    def test_discover_entities_method_exists(self) -> None:
-        """Test entity discovery method exists."""
-        client = FlextOracleWmsUtilitiesClient.Client(self.settings)
-        assert callable(client.discover_entities)
-
-    def test_client_specialized_methods(self) -> None:
-        """Test client specialized method interface."""
-        client = FlextOracleWmsUtilitiesClient.Client(self.settings)
-        assert callable(client.create_lpn)
-
-    def test_client_properties(self) -> None:
-        """Test client property access."""
-        client = FlextOracleWmsUtilitiesClient.Client(self.settings)
-        assert client.settings is not None
-
-    def test_client_methods_exist(self) -> None:
-        """Test that actual client methods exist."""
-        FlextOracleWmsUtilitiesClient.Client(self.settings)
-
-    def test_client_with_custom_config(self) -> None:
-        """Test client with custom configuration."""
-        settings = FlextOracleWmsSettings(
+    def test_constructor_preserves_custom_configuration_fields(self) -> None:
+        """Custom configuration fields survive on the public settings state."""
+        custom = FlextOracleWmsSettings(
             base_url="https://custom.wms.com",
             username="custom_user",
             password="custom_pass",
             timeout=60,
-            retry_attempts=3,
+            retry_attempts=5,
         )
+
+        client = FlextOracleWmsUtilitiesClient.Client(custom)
+
+        assert client.settings.timeout == pytest.approx(60.0)
+        assert client.settings.retry_attempts == 5
+        assert client.settings.base_url == "https://custom.wms.com"
+
+    def test_constructor_without_settings_yields_valid_settings(self) -> None:
+        """Omitting settings resolves the global runtime settings contract."""
+        client = FlextOracleWmsUtilitiesClient.Client()
+
+        assert isinstance(client.settings, FlextOracleWmsSettings)
+        assert client.settings.base_url
+
+    # ---- start/stop lifecycle ----------------------------------------------
+
+    def test_start_returns_success(
+        self,
+        settings: FlextOracleWmsSettings,
+    ) -> None:
+        """``start`` reports a successful ``r[bool]`` carrying ``True``."""
         client = FlextOracleWmsUtilitiesClient.Client(settings)
-        assert client.settings.timeout == 60
-        assert client.settings.retry_attempts == 3
 
-    def test_discover_entities_method_validation(self) -> None:
-        """Test that discover_entities method exists and is callable."""
-        client = FlextOracleWmsUtilitiesClient.Client(self.settings)
-        assert callable(client.discover_entities)
+        result = client.start()
 
-    def test_client_create_lpn_method_exists(self) -> None:
-        """Test create_lpn method exists."""
-        client = FlextOracleWmsUtilitiesClient.Client(self.settings)
-        assert callable(client.create_lpn)
+        assert result.success
+        assert result.unwrap() is True
 
-    def test_client_health_check_sync(self) -> None:
-        """Test client health check (sync version)."""
-        client = FlextOracleWmsUtilitiesClient.Client(self.settings)
-        assert callable(client.health_check)
+    def test_stop_returns_success(
+        self,
+        settings: FlextOracleWmsSettings,
+    ) -> None:
+        """``stop`` reports a successful ``r[bool]`` carrying ``True``."""
+        client = FlextOracleWmsUtilitiesClient.Client(settings)
 
-    def test_client_config_access(self) -> None:
-        """Test client configuration access."""
-        client = FlextOracleWmsUtilitiesClient.Client(self.settings)
-        assert client.settings is not None
+        result = client.stop()
 
-    def test_client_internal_properties(self) -> None:
-        """Test client internal properties exist."""
-        FlextOracleWmsUtilitiesClient.Client(self.settings)
+        assert result.success
+        assert result.unwrap() is True
 
-    def test_client_properties_access(self) -> None:
-        """Test client properties are accessible."""
-        client = FlextOracleWmsUtilitiesClient.Client(self.settings)
-        settings = client.settings
-        assert settings is not None
+    def test_start_stop_lifecycle_is_idempotent(
+        self,
+        settings: FlextOracleWmsSettings,
+    ) -> None:
+        """Repeated start/stop cycles keep succeeding without error."""
+        client = FlextOracleWmsUtilitiesClient.Client(settings)
 
-    def test_client_initialization_edge_cases(self) -> None:
-        """Test client initialization with edge cases."""
-        minimal_config = FlextOracleWmsSettings(
-            base_url="https://test.com",
-            username="user",
-            password="pass",
-            timeout=30,
+        assert client.start().success
+        assert client.stop().success
+        assert client.start().success
+        assert client.stop().success
+        # A second stop with no live client still succeeds (idempotent release).
+        assert client.stop().success
+
+    # ---- from_auth_settings contract ---------------------------------------
+
+    def test_from_auth_settings_valid_basic_builds_client(self) -> None:
+        """Valid BASIC auth settings produce a usable client honoring creds."""
+        auth = m.OracleWms.AuthSettings(
+            method="basic",
+            username="alice",
+            password="secret",
         )
-        client = FlextOracleWmsUtilitiesClient.Client(minimal_config)
-        assert "test.com" in client.settings.base_url
 
-    def test_client_configuration_access(self) -> None:
-        """Test access to client configuration."""
-        client = FlextOracleWmsUtilitiesClient.Client(self.settings)
-        assert client.settings.username == "test_user"
-        assert "test.wms.com" in client.settings.base_url
+        result = FlextOracleWmsUtilitiesClient.Client.from_auth_settings(auth)
+
+        assert result.success
+        client = result.unwrap()
+        assert isinstance(client, FlextOracleWmsUtilitiesClient.Client)
+        assert client.settings.username == "alice"
+        assert client.settings.password == "secret"
+
+    def test_from_auth_settings_basic_missing_credentials_fails(self) -> None:
+        """BASIC auth without credentials fails business-rule validation."""
+        auth = m.OracleWms.AuthSettings(method="basic")
+
+        result = FlextOracleWmsUtilitiesClient.Client.from_auth_settings(auth)
+
+        assert result.failure
+        assert result.error is not None
+        assert "username and password" in result.error
+
+    def test_from_auth_settings_oauth2_rejected_as_unsupported_runtime(
+        self,
+    ) -> None:
+        """A validly-configured OAuth2 method is rejected: runtime is BASIC-only."""
+        auth = m.OracleWms.AuthSettings(
+            method="oauth2",
+            oauth2_client_id="client-id",
+            oauth2_client_secret="client-secret",
+        )
+
+        result = FlextOracleWmsUtilitiesClient.Client.from_auth_settings(auth)
+
+        assert result.failure
+        assert result.error is not None
+        assert "BASIC auth only" in result.error
+
+    def test_from_auth_settings_unknown_method_fails(self) -> None:
+        """An unsupported auth method fails validation before client creation."""
+        auth = m.OracleWms.AuthSettings(
+            method="kerberos",
+            username="bob",
+            password="pw",
+        )
+
+        result = FlextOracleWmsUtilitiesClient.Client.from_auth_settings(auth)
+
+        assert result.failure
+        assert result.error is not None
+        assert "Unsupported auth method" in result.error
+
+
+__all__: list[str] = ["TestsFlextOracleWmsClient"]
