@@ -99,8 +99,7 @@ class TestsFlextOracleWmsDeclarative:
     def test_api_endpoints_expose_at_least_one_version(self) -> None:
         """The catalog advertises one or more non-empty API version strings."""
         versions = {
-            endpoint.version
-            for endpoint in FlextOracleWmsApi.api_endpoints().values()
+            endpoint.version for endpoint in FlextOracleWmsApi.api_endpoints().values()
         }
         assert versions
         assert all(version for version in versions)

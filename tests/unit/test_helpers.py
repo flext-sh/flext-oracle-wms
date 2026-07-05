@@ -134,7 +134,9 @@ class TestsFlextOracleWmsHelpers:
         assert engine.case_sensitive is True
         assert engine.max_conditions == 10
 
-    @pytest.mark.parametrize("max_conditions", [0, -1, c.OracleWms.Filtering.MAX_FILTER_CONDITIONS + 1])
+    @pytest.mark.parametrize(
+        "max_conditions", [0, -1, c.OracleWms.Filtering.MAX_FILTER_CONDITIONS + 1]
+    )
     def test_create_filter_rejects_out_of_range_limits(
         self,
         max_conditions: int,

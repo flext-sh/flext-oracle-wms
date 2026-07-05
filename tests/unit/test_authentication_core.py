@@ -237,9 +237,7 @@ class TestsFlextOracleWmsAuthenticationCore:
         self, basic_settings: m.OracleWms.AuthSettings
     ) -> None:
         """Valid BASIC settings yield a concrete Oracle WMS client."""
-        result = FlextOracleWmsUtilitiesClient.Client.from_auth_settings(
-            basic_settings
-        )
+        result = FlextOracleWmsUtilitiesClient.Client.from_auth_settings(basic_settings)
         assert result.success
         assert isinstance(result.unwrap(), FlextOracleWmsUtilitiesClient.Client)
 
@@ -259,7 +257,10 @@ class TestsFlextOracleWmsAuthenticationCore:
         )
         result = FlextOracleWmsUtilitiesClient.Client.from_auth_settings(settings)
         assert result.failure
-        assert result.error == "Oracle WMS runtime client currently supports BASIC auth only"
+        assert (
+            result.error
+            == "Oracle WMS runtime client currently supports BASIC auth only"
+        )
 
 
 __all__: list[str] = ["TestsFlextOracleWmsAuthenticationCore"]
