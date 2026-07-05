@@ -8,9 +8,15 @@ from flext_core.lazy import build_lazy_import_map, install_lazy_exports
 _LAZY_IMPORTS = build_lazy_import_map(
     {
         ".complete_mock_pipeline": ("CompleteMockPipeline",),
-        ".oracle_wms_complete_discovery": ("OracleWmsCompleteDiscovery",),
+        ".oracle_wms_complete_discovery": (
+            "OracleWmsCompleteDiscovery",
+            "OracleWmsCompleteDiscoveryRunner",
+        ),
         ".oracle_wms_focused_discovery": ("FocusedOracleWmsDiscovery",),
-        ".oracle_wms_optimized_discovery": ("OptimizedOracleWmsDiscovery",),
+        ".oracle_wms_optimized_discovery": (
+            "OptimizedOracleWmsDiscovery",
+            "OptimizedOracleWmsDiscoveryRunner",
+        ),
         ".sitecustomize": ("sitecustomize",),
         ".test_api": ("test_api",),
         ".test_authentication": ("TestsFlextOracleWmsAuthentication",),

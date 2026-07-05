@@ -18,9 +18,15 @@ TESTS_FLEXT_ORACLE_WMS_LAZY_IMPORTS_PART_01 = build_lazy_import_map(
         ".settings": ("TestsFlextOracleWmsSettings",),
         ".typings": ("TestsFlextOracleWmsTypes",),
         ".unit.complete_mock_pipeline": ("CompleteMockPipeline",),
-        ".unit.oracle_wms_complete_discovery": ("OracleWmsCompleteDiscovery",),
+        ".unit.oracle_wms_complete_discovery": (
+            "OracleWmsCompleteDiscovery",
+            "OracleWmsCompleteDiscoveryRunner",
+        ),
         ".unit.oracle_wms_focused_discovery": ("FocusedOracleWmsDiscovery",),
-        ".unit.oracle_wms_optimized_discovery": ("OptimizedOracleWmsDiscovery",),
+        ".unit.oracle_wms_optimized_discovery": (
+            "OptimizedOracleWmsDiscovery",
+            "OptimizedOracleWmsDiscoveryRunner",
+        ),
         ".unit.test_authentication": ("TestsFlextOracleWmsAuthentication",),
         ".unit.test_authentication_core": ("TestsFlextOracleWmsAuthenticationCore",),
         ".unit.test_client": ("TestsFlextOracleWmsClient",),
@@ -39,10 +45,6 @@ TESTS_FLEXT_ORACLE_WMS_LAZY_IMPORTS_PART_01 = build_lazy_import_map(
         ".unit.test_singer_flattening": ("TestsFlextOracleWmsSingerFlattening",),
         ".unit.test_unified_config": ("TestsFlextOracleWmsUnifiedConfig",),
         ".utilities": ("TestsFlextOracleWmsUtilities",),
-        "flext_tests": (
-            "d",
-            "e",
-        ),
     },
 )
 

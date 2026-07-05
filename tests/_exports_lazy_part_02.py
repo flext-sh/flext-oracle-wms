@@ -14,6 +14,8 @@ TESTS_FLEXT_ORACLE_WMS_LAZY_IMPORTS_PART_02 = build_lazy_import_map(
         ".unit": ("unit",),
         ".utilities": ("u",),
         "flext_tests": (
+            "d",
+            "e",
             "h",
             "r",
             "td",
