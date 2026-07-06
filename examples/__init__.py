@@ -14,7 +14,7 @@ from flext_core.lazy import (
 if TYPE_CHECKING:
     from flext_tests import td as td, tf as tf, tk as tk, tm as tm, tv as tv
 
-    from flext_core._root_typing_parts import (
+    from flext_core import (
         c as c,
         d as d,
         e as e,
