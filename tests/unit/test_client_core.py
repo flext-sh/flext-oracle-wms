@@ -25,8 +25,7 @@ from flext_tests import r
 
 from flext_oracle_wms import FlextOracleWmsSettings, c, m
 from flext_oracle_wms.utilities import FlextOracleWmsUtilitiesClient
-
-type Client = FlextOracleWmsUtilitiesClient.Client
+from tests.typings import t
 
 
 def _http_response(*, status_code: int, body: dict[str, object]) -> m.Api.HttpResponse:
@@ -42,7 +41,7 @@ def _http_response(*, status_code: int, body: dict[str, object]) -> m.Api.HttpRe
 def _client_with_response(
     settings: FlextOracleWmsSettings,
     response: m.Api.HttpResponse,
-) -> Client:
+) -> t.OracleWms.Tests.Client:
     """Create a client whose external HTTP boundary yields ``response``."""
     client = FlextOracleWmsUtilitiesClient.Client(settings)
     transport = Mock(spec=FlextApi)
@@ -54,7 +53,7 @@ def _client_with_response(
 def _client_with_transport_failure(
     settings: FlextOracleWmsSettings,
     error: str,
-) -> Client:
+) -> t.OracleWms.Tests.Client:
     """Create a client whose external HTTP boundary fails every request."""
     client = FlextOracleWmsUtilitiesClient.Client(settings)
     transport = Mock(spec=FlextApi)
@@ -225,7 +224,7 @@ class TestsFlextOracleWmsClientCore:
     def test_transport_failure_propagates_to_result(
         self,
         mock_config: FlextOracleWmsSettings,
-        operation: Callable[[Client], r[object]],
+        operation: Callable[[t.OracleWms.Tests.Client], r[object]],
     ) -> None:
         client = _client_with_transport_failure(mock_config, "Connection refused")
         result = operation(client)

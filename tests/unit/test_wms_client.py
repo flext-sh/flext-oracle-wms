@@ -18,10 +18,9 @@ from __future__ import annotations
 import pytest
 from flext_api import FlextApi
 
-from flext_oracle_wms import FlextOracleWmsSettings, m, p, r, t
+from flext_oracle_wms import FlextOracleWmsSettings, m, p, r
 from flext_oracle_wms.utilities import FlextOracleWmsUtilitiesClient
-
-type Client = FlextOracleWmsUtilitiesClient.Client
+from tests.typings import t
 
 
 class TestsFlextOracleWmsWmsClient:
@@ -67,7 +66,7 @@ class TestsFlextOracleWmsWmsClient:
         )
 
     @pytest.fixture
-    def client(self) -> Client:
+    def client(self) -> t.OracleWms.Tests.Client:
         """A client bound to the deterministic testing configuration."""
         return FlextOracleWmsUtilitiesClient.Client(
             FlextOracleWmsSettings.testing_config(),
@@ -93,7 +92,7 @@ class TestsFlextOracleWmsWmsClient:
 
     def test_get_success_returns_response_body(
         self,
-        client: Client,
+        client: t.OracleWms.Tests.Client,
         monkeypatch: pytest.MonkeyPatch,
     ) -> None:
         self._stub_ok(monkeypatch, 200, {"data": "test"})
@@ -104,7 +103,7 @@ class TestsFlextOracleWmsWmsClient:
 
     def test_get_boundary_failure_is_wrapped_with_context(
         self,
-        client: Client,
+        client: t.OracleWms.Tests.Client,
         monkeypatch: pytest.MonkeyPatch,
     ) -> None:
         self._stub_boundary(
@@ -120,7 +119,7 @@ class TestsFlextOracleWmsWmsClient:
     @pytest.mark.parametrize("status_code", [400, 404, 500, 503])
     def test_http_error_status_becomes_failure(
         self,
-        client: Client,
+        client: t.OracleWms.Tests.Client,
         monkeypatch: pytest.MonkeyPatch,
         status_code: int,
     ) -> None:
@@ -140,7 +139,7 @@ class TestsFlextOracleWmsWmsClient:
     )
     def test_write_verbs_return_response(
         self,
-        client: Client,
+        client: t.OracleWms.Tests.Client,
         monkeypatch: pytest.MonkeyPatch,
         verb: str,
         status_code: int,
@@ -154,7 +153,7 @@ class TestsFlextOracleWmsWmsClient:
 
     def test_health_check_returns_health_payload(
         self,
-        client: Client,
+        client: t.OracleWms.Tests.Client,
         monkeypatch: pytest.MonkeyPatch,
     ) -> None:
         self._stub_ok(monkeypatch, 200, {"status": "healthy"})
@@ -164,7 +163,7 @@ class TestsFlextOracleWmsWmsClient:
 
     def test_call_api_returns_response(
         self,
-        client: Client,
+        client: t.OracleWms.Tests.Client,
         monkeypatch: pytest.MonkeyPatch,
     ) -> None:
         self._stub_ok(monkeypatch, 200, {"result": "success"})
@@ -174,7 +173,7 @@ class TestsFlextOracleWmsWmsClient:
 
     def test_update_oblpn_tracking_number_returns_response(
         self,
-        client: Client,
+        client: t.OracleWms.Tests.Client,
         monkeypatch: pytest.MonkeyPatch,
     ) -> None:
         self._stub_ok(monkeypatch, 200, {"updated": True})
@@ -184,7 +183,7 @@ class TestsFlextOracleWmsWmsClient:
 
     def test_create_lpn_returns_response(
         self,
-        client: Client,
+        client: t.OracleWms.Tests.Client,
         monkeypatch: pytest.MonkeyPatch,
     ) -> None:
         self._stub_ok(monkeypatch, 201, {"created": True})
@@ -196,7 +195,7 @@ class TestsFlextOracleWmsWmsClient:
 
     def test_discover_entities_extracts_entity_names(
         self,
-        client: Client,
+        client: t.OracleWms.Tests.Client,
         monkeypatch: pytest.MonkeyPatch,
     ) -> None:
         self._stub_ok(monkeypatch, 200, {"entities": ["entity1", "entity2"]})
@@ -206,7 +205,7 @@ class TestsFlextOracleWmsWmsClient:
 
     def test_discover_entities_propagates_boundary_failure(
         self,
-        client: Client,
+        client: t.OracleWms.Tests.Client,
         monkeypatch: pytest.MonkeyPatch,
     ) -> None:
         self._stub_boundary(
@@ -220,7 +219,7 @@ class TestsFlextOracleWmsWmsClient:
 
     def test_get_entity_data_extracts_data_rows(
         self,
-        client: Client,
+        client: t.OracleWms.Tests.Client,
         monkeypatch: pytest.MonkeyPatch,
     ) -> None:
         self._stub_ok(monkeypatch, 200, {"data": [{"id": "1"}, {"id": "2"}]})
@@ -230,7 +229,7 @@ class TestsFlextOracleWmsWmsClient:
 
     def test_get_apis_by_category_extracts_api_list(
         self,
-        client: Client,
+        client: t.OracleWms.Tests.Client,
         monkeypatch: pytest.MonkeyPatch,
     ) -> None:
         self._stub_ok(
@@ -246,7 +245,7 @@ class TestsFlextOracleWmsWmsClient:
 
     def test_start_is_idempotent_and_reports_running(
         self,
-        client: Client,
+        client: t.OracleWms.Tests.Client,
     ) -> None:
         first = client.start()
         second = client.start()
@@ -257,7 +256,7 @@ class TestsFlextOracleWmsWmsClient:
 
     def test_stop_is_idempotent_and_reports_stopped(
         self,
-        client: Client,
+        client: t.OracleWms.Tests.Client,
     ) -> None:
         first = client.stop()
         second = client.stop()

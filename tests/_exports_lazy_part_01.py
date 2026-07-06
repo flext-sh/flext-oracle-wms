@@ -8,11 +8,7 @@ from flext_core.lazy import build_lazy_import_map
 TESTS_FLEXT_ORACLE_WMS_LAZY_IMPORTS_PART_01 = build_lazy_import_map(
     {
         ".base": ("TestsFlextOracleWmsServiceBase",),
-        ".conftest": ("conftest",),
-        ".constants": (
-            "TestsFlextOracleWmsConstants",
-            "c",
-        ),
+        ".constants": ("TestsFlextOracleWmsConstants",),
         ".models": ("TestsFlextOracleWmsModels",),
         ".protocols": ("TestsFlextOracleWmsProtocols",),
         ".settings": ("TestsFlextOracleWmsSettings",),
@@ -27,6 +23,7 @@ TESTS_FLEXT_ORACLE_WMS_LAZY_IMPORTS_PART_01 = build_lazy_import_map(
             "OptimizedOracleWmsDiscovery",
             "OptimizedOracleWmsDiscoveryRunner",
         ),
+        ".unit.test_api": ("TestsFlextOracleWmsApi",),
         ".unit.test_authentication": ("TestsFlextOracleWmsAuthentication",),
         ".unit.test_authentication_core": ("TestsFlextOracleWmsAuthenticationCore",),
         ".unit.test_client": ("TestsFlextOracleWmsClient",),
@@ -35,6 +32,7 @@ TESTS_FLEXT_ORACLE_WMS_LAZY_IMPORTS_PART_01 = build_lazy_import_map(
         ".unit.test_config": ("TestsFlextOracleWmsConfig",),
         ".unit.test_config_module": ("TestsFlextOracleWmsConfigModule",),
         ".unit.test_connection": ("TestsFlextOracleWmsConnection",),
+        ".unit.test_constants": ("TestsFlextOracleWmsConstantsUnit",),
         ".unit.test_declarative": ("TestsFlextOracleWmsDeclarative",),
         ".unit.test_discovery": ("TestsFlextOracleWmsDiscovery",),
         ".unit.test_filtering": ("TestsFlextOracleWmsFiltering",),

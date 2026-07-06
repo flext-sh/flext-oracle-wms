@@ -11,6 +11,7 @@ import pytest
 
 from tests.constants import c
 from tests.models import m
+from tests.typings import t
 
 __all__: list[str] = ["TestsFlextOracleWmsModelsUnit"]
 
@@ -64,7 +65,10 @@ class TestsFlextOracleWmsModelsUnit:
         value: str,
     ) -> None:
         """Empty required strings violate min_length and raise ValidationError."""
-        kwargs: dict[str, str] = {"name": "item", "endpoint": "/api/items"}
+        kwargs: t.MutableMappingKV[str, str] = {
+            "name": "item",
+            "endpoint": "/api/items",
+        }
         kwargs[field] = value
         with pytest.raises(c.ValidationError):
             m.OracleWms.Entity(**kwargs)

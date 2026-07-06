@@ -54,7 +54,12 @@ class TestsFlextOracleWmsFiltering:
 
     def _ids(self, records: t.SequenceOf[t.OracleWms.FilterRecord]) -> set[int]:
         """Collect the ``id`` field of every record for set comparison."""
-        return {int(record["id"]) for record in records}  # type: ignore[arg-type]
+        ids: set[int] = set()
+        for record in records:
+            id_value = record["id"]
+            assert isinstance(id_value, int)
+            ids.add(id_value)
+        return ids
 
     # ------------------------------------------------------------------ #
     # Construction / configuration contract.

@@ -12,9 +12,8 @@ import pytest
 from flext_core import u as core_u
 from flext_oracle_wms import c, e, m
 from flext_oracle_wms.errors import FlextOracleWmsErrors
+from tests.typings import t
 from tests.utilities import u
-
-type Record = dict[str, str | int]
 
 __all__: list[str] = ["TestsFlextOracleWmsHelpers"]
 
@@ -24,7 +23,7 @@ class TestsFlextOracleWmsHelpers:
     """Behavioral contract of FlextOracleWmsUtilities (public utilities facade)."""
 
     @pytest.fixture
-    def records(self) -> list[Record]:
+    def records(self) -> list[t.OracleWms.Tests.Record]:
         """Three ordered records exercised by the filtering contract."""
         return [
             {"id": 1, "name": "Alpha"},
@@ -65,7 +64,7 @@ class TestsFlextOracleWmsHelpers:
 
     def test_filter_by_field_keeps_only_matching_records(
         self,
-        records: list[Record],
+        records: list[t.OracleWms.Tests.Record],
     ) -> None:
         """Equality filtering yields exactly the records whose field matches."""
         result = u.Filter.filter_by_field(records, "name", "beta")
@@ -75,7 +74,7 @@ class TestsFlextOracleWmsHelpers:
 
     def test_filter_by_field_with_operator_applies_comparison(
         self,
-        records: list[Record],
+        records: list[t.OracleWms.Tests.Record],
     ) -> None:
         """A GTE operator keeps records at or above the threshold."""
         result = u.Filter.filter_by_field(
@@ -101,7 +100,7 @@ class TestsFlextOracleWmsHelpers:
     )
     def test_filter_by_id_range_is_inclusive(
         self,
-        records: list[Record],
+        records: list[t.OracleWms.Tests.Record],
         min_id: int | None,
         max_id: int | None,
         expected: list[int],
@@ -162,7 +161,7 @@ class TestsFlextOracleWmsHelpers:
 
     def test_case_insensitive_engine_matches_regardless_of_case(
         self,
-        records: list[Record],
+        records: list[t.OracleWms.Tests.Record],
     ) -> None:
         """Default (case-insensitive) matching ignores letter case."""
         engine = u.Filter.create_filter()
@@ -174,7 +173,7 @@ class TestsFlextOracleWmsHelpers:
 
     def test_case_sensitive_engine_requires_exact_case(
         self,
-        records: list[Record],
+        records: list[t.OracleWms.Tests.Record],
     ) -> None:
         """A case-sensitive engine rejects a case mismatch."""
         engine = u.Filter.create_filter(case_sensitive=True)
@@ -188,7 +187,7 @@ class TestsFlextOracleWmsHelpers:
 
     def test_filter_records_respects_limit(
         self,
-        records: list[Record],
+        records: list[t.OracleWms.Tests.Record],
     ) -> None:
         """The optional limit truncates the matched records."""
         engine = u.Filter.create_filter()
@@ -200,7 +199,7 @@ class TestsFlextOracleWmsHelpers:
 
     def test_filter_records_reports_condition_overflow_as_failure(
         self,
-        records: list[Record],
+        records: list[t.OracleWms.Tests.Record],
     ) -> None:
         """Exceeding max_conditions returns a failure result, not a raise."""
         engine = u.Filter.create_filter(max_conditions=1)
@@ -229,7 +228,7 @@ class TestsFlextOracleWmsHelpers:
     )
     def test_sort_records_orders_by_field(
         self,
-        records: list[Record],
+        records: list[t.OracleWms.Tests.Record],
         *,
         ascending: bool,
         expected: list[int],

@@ -12,6 +12,7 @@ from __future__ import annotations
 from flext_tests import FlextTestsTypes
 
 from flext_oracle_wms import t
+from flext_oracle_wms.utilities import FlextOracleWmsUtilitiesClient
 
 
 class TestsFlextOracleWmsTypes(FlextTestsTypes, t):
@@ -23,7 +24,9 @@ class TestsFlextOracleWmsTypes(FlextTestsTypes, t):
         class Tests(FlextTestsTypes.Tests):
             """Oracle WMS-specific test type aliases."""
 
+            type Client = FlextOracleWmsUtilitiesClient.Client
             type EnvConfig = t.MetadataMapping
+            type Record = t.MutableMappingKV[str, str | int]
 
 
 t = TestsFlextOracleWmsTypes

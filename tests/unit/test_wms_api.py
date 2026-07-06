@@ -12,6 +12,7 @@ import pytest
 from flext_oracle_wms import FlextOracleWmsApi, m
 from flext_oracle_wms.utilities import FlextOracleWmsUtilitiesClient
 from tests.models import m as tm
+from tests.typings import t
 
 
 class TestsFlextOracleWmsWmsApi:
@@ -100,7 +101,7 @@ class TestsFlextOracleWmsWmsApi:
     )
     def test_api_endpoint_rejects_blank_required_field(self, blank_field: str) -> None:
         """Each required identifier field must be non-empty (min_length=1)."""
-        fields: dict[str, str] = {
+        fields: t.MutableMappingKV[str, str] = {
             "name": "n",
             "method": "GET",
             "path": "/n/",

@@ -1,3 +1,4 @@
+# mypy: warn-unused-ignores=False
 """Behavioral tests for Oracle WMS public constants and enum contracts.
 
 Asserts the observable public contract exposed via ``c.OracleWms`` — enum
@@ -13,6 +14,7 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 from enum import StrEnum
+from types import MappingProxyType
 
 import pytest
 
@@ -44,9 +46,8 @@ class TestsFlextOracleWmsSchemaDynamic:
         assert _WMS.API_CONFIG[key] == expected
 
     def test_api_config_is_immutable(self) -> None:
-        """API_CONFIG is a read-only mapping; consumers cannot mutate it."""
-        with pytest.raises(TypeError):
-            _WMS.API_CONFIG["version_default"] = "v2"  # type: ignore[index]  # Why: proving read-only contract
+        """API_CONFIG is a read-only mappingproxy; consumers cannot mutate it."""
+        assert isinstance(_WMS.API_CONFIG, MappingProxyType)
 
     @pytest.mark.parametrize(
         "key",

@@ -9,7 +9,7 @@ from __future__ import annotations
 
 import pytest
 
-from flext_core import FlextResult
+from flext_core import r
 from flext_oracle_wms import FlextOracleWmsSettings
 from flext_oracle_wms.models import FlextOracleWmsModels as m
 from flext_oracle_wms.utilities import FlextOracleWmsUtilitiesClient
@@ -86,7 +86,7 @@ class TestsFlextOracleWmsConnection:
     ) -> None:
         """Network discovery surfaces failure as r[T], never raises."""
         result = client.discover_entities()
-        assert isinstance(result, FlextResult)
+        assert isinstance(result, r)
         assert result.failure
         assert isinstance(result.error, str)
         assert result.error
@@ -97,7 +97,7 @@ class TestsFlextOracleWmsConnection:
     ) -> None:
         """Category lookup returns a failing result rather than throwing."""
         result = client.get_apis_by_category("entity")
-        assert isinstance(result, FlextResult)
+        assert isinstance(result, r)
         assert result.failure
         assert isinstance(result.error, str)
         assert result.error
