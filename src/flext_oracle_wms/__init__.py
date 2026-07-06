@@ -20,7 +20,7 @@ from flext_oracle_wms.__version__ import (
 if TYPE_CHECKING:
     from flext_api import d, e, h, r, s, x
 
-    from flext_oracle_wms.api import FlextOracleWmsApi
+    from flext_oracle_wms.api import FlextOracleWmsApi, oracle_wms
     from flext_oracle_wms.constants import FlextOracleWmsConstants, c
     from flext_oracle_wms.models import FlextOracleWmsModels, m
     from flext_oracle_wms.protocols import FlextOracleWmsProtocols, p
