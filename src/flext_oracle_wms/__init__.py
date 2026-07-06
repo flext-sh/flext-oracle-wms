@@ -19,14 +19,8 @@ from flext_oracle_wms.__version__ import (
 from flext_oracle_wms._exports import FLEXT_ORACLE_WMS_LAZY_IMPORTS
 
 if TYPE_CHECKING:
-    from flext_core._root_typing_parts.facades import (
-        d as d,
-        e as e,
-        h as h,
-        r as r,
-        s as s,
-        x as x,
-    )
+    from flext_api import d as d, e as e, h as h, r as r, s as s, x as x
+
     from flext_oracle_wms.api import (
         FlextOracleWmsApi as FlextOracleWmsApi,
         oracle_wms as oracle_wms,
