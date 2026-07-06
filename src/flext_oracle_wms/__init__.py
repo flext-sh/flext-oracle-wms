@@ -5,7 +5,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from flext_core.lazy import install_lazy_exports
+from flext_core.lazy import build_lazy_import_map, install_lazy_exports
 from flext_oracle_wms.__version__ import (
     __author__,
     __author_email__,
@@ -16,84 +16,68 @@ from flext_oracle_wms.__version__ import (
     __version__,
     __version_info__,
 )
-from flext_oracle_wms._exports import FLEXT_ORACLE_WMS_LAZY_IMPORTS
 
 if TYPE_CHECKING:
-    from flext_api import d as d, e as e, h as h, r as r, s as s, x as x
+    from flext_api import d, e, h, r, s, x
 
-    from flext_oracle_wms.api import (
-        FlextOracleWmsApi as FlextOracleWmsApi,
-        oracle_wms as oracle_wms,
-    )
-    from flext_oracle_wms.constants import (
-        FlextOracleWmsConstants as FlextOracleWmsConstants,
-        c as c,
-    )
-    from flext_oracle_wms.models import (
-        FlextOracleWmsModels as FlextOracleWmsModels,
-        m as m,
-    )
-    from flext_oracle_wms.protocols import (
-        FlextOracleWmsProtocols as FlextOracleWmsProtocols,
-        p as p,
-    )
-    from flext_oracle_wms.settings import (
-        FlextOracleWmsSettings as FlextOracleWmsSettings,
-    )
-    from flext_oracle_wms.typings import (
-        FlextOracleWmsTypes as FlextOracleWmsTypes,
-        t as t,
-    )
+    from flext_oracle_wms.api import FlextOracleWmsApi
+    from flext_oracle_wms.constants import FlextOracleWmsConstants, c
+    from flext_oracle_wms.models import FlextOracleWmsModels, m
+    from flext_oracle_wms.protocols import FlextOracleWmsProtocols, p
+    from flext_oracle_wms.settings import FlextOracleWmsSettings
+    from flext_oracle_wms.typings import FlextOracleWmsTypes, t
     from flext_oracle_wms.utilities import (
-        FlextOracleWmsUtilities as FlextOracleWmsUtilities,
-        u as u,
+        FlextOracleWmsUtilities,
+        FlextOracleWmsUtilitiesAuth,
+        FlextOracleWmsUtilitiesClient,
+        FlextOracleWmsUtilitiesDiscovery,
+        FlextOracleWmsUtilitiesFiltering,
+        FlextOracleWmsUtilitiesHttpClient,
+        u,
     )
-
-
-_LAZY_IMPORTS = FLEXT_ORACLE_WMS_LAZY_IMPORTS
-
-
-_EAGER_EXPORTS = (
-    __author__,
-    __author_email__,
-    __description__,
-    __license__,
-    __title__,
-    __url__,
-    __version__,
-    __version_info__,
+_LAZY_IMPORTS = build_lazy_import_map(
+    {
+        ".api": (
+            "FlextOracleWmsApi",
+            "oracle_wms",
+        ),
+        ".constants": (
+            "FlextOracleWmsConstants",
+            "c",
+        ),
+        ".models": (
+            "FlextOracleWmsModels",
+            "m",
+        ),
+        ".protocols": (
+            "FlextOracleWmsProtocols",
+            "p",
+        ),
+        ".settings": ("FlextOracleWmsSettings",),
+        ".typings": (
+            "FlextOracleWmsTypes",
+            "t",
+        ),
+        ".utilities": (
+            "FlextOracleWmsUtilities",
+            "FlextOracleWmsUtilitiesAuth",
+            "FlextOracleWmsUtilitiesClient",
+            "FlextOracleWmsUtilitiesDiscovery",
+            "FlextOracleWmsUtilitiesFiltering",
+            "FlextOracleWmsUtilitiesHttpClient",
+            "u",
+        ),
+        "flext_api": (
+            "d",
+            "e",
+            "h",
+            "r",
+            "s",
+            "x",
+        ),
+    },
 )
 
-
-_PUBLIC_EXPORTS: tuple[str, ...] = (
-    "FlextOracleWmsApi",
-    "FlextOracleWmsConstants",
-    "FlextOracleWmsModels",
-    "FlextOracleWmsProtocols",
-    "FlextOracleWmsSettings",
-    "FlextOracleWmsTypes",
-    "FlextOracleWmsUtilities",
-    "oracle_wms",
-    "__author__",
-    "__author_email__",
-    "__description__",
-    "__license__",
-    "__title__",
-    "__url__",
-    "__version__",
-    "__version_info__",
-    "c",
-    "d",
-    "e",
-    "h",
-    "m",
-    "p",
-    "r",
-    "s",
-    "t",
-    "u",
-    "x",
-)
 
 __all__: tuple[str, ...] = (
     "FlextOracleWmsApi",
@@ -103,6 +87,11 @@ __all__: tuple[str, ...] = (
     "FlextOracleWmsSettings",
     "FlextOracleWmsTypes",
     "FlextOracleWmsUtilities",
+    "FlextOracleWmsUtilitiesAuth",
+    "FlextOracleWmsUtilitiesClient",
+    "FlextOracleWmsUtilitiesDiscovery",
+    "FlextOracleWmsUtilitiesFiltering",
+    "FlextOracleWmsUtilitiesHttpClient",
     "__author__",
     "__author_email__",
     "__description__",
@@ -130,5 +119,5 @@ install_lazy_exports(
     __name__,
     globals(),
     _LAZY_IMPORTS,
-    public_exports=_PUBLIC_EXPORTS,
+    public_exports=__all__,
 )
