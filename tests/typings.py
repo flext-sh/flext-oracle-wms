@@ -9,10 +9,14 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 from flext_tests import FlextTestsTypes
 
 from flext_oracle_wms import t
-from flext_oracle_wms.utilities import FlextOracleWmsUtilitiesClient
+
+if TYPE_CHECKING:
+    from flext_oracle_wms.utilities import FlextOracleWmsUtilitiesClient
 
 
 class TestsFlextOracleWmsTypes(FlextTestsTypes, t):
