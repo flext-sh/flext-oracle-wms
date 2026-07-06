@@ -14,7 +14,7 @@ from flext_core.lazy import (
 if TYPE_CHECKING:
     from flext_tests import td as td, tf as tf, tk as tk, tm as tm, tv as tv
 
-    from flext_core import (
+    from flext_core._root_typing_parts.facades import (
         c as c,
         d as d,
         e as e,
@@ -32,7 +32,7 @@ _LAZY_IMPORTS = merge_lazy_imports(
     build_lazy_import_map(
         {
             ".tests": ("tests",),
-            "flext_core._root_typing_parts": (
+            "flext_core._root_typing_parts.facades": (
                 "c",
                 "d",
                 "e",
