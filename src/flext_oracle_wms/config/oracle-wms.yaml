@@ -1,0 +1,3 @@
+OracleWms:
+  name: flext-oracle-wms
+  version: "0.12.0-dev"

@@ -88,7 +88,6 @@ def create_config_from_environment() -> FlextOracleWmsSettings:
         ]
         msg = f"Missing required environment variables: {', '.join(missing)}"
         raise ValueError(msg)
-    env_config = FlextOracleWmsSettings.fetch_global()
     if env_config.username and env_config.password:
         return env_config
     return FlextOracleWmsSettings()

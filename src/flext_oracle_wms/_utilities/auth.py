@@ -19,13 +19,12 @@ class FlextOracleWmsUtilitiesAuth:
 
         def __init__(self, settings: m.OracleWms.AuthSettings) -> None:
             """Initialize authenticator."""
-            self.settings = settings
             self._token: str | None = None
 
         @property
         def normalized_method(self) -> str:
             """The auth method in canonical lowercase form."""
-            method: str = self.settings.method.strip().lower()
+            method: str = settings.method.strip().lower()
             return method
 
         def authenticate(self) -> p.Result[str]:
@@ -33,22 +32,17 @@ class FlextOracleWmsUtilitiesAuth:
             basic_method = str(c.OracleWms.OracleWMSAuthMethod.BASIC)
             oauth2_method = str(c.OracleWms.OracleWMSAuthMethod.OAUTH2)
             if self.normalized_method == basic_method:
-                if not self.settings.username or not self.settings.password:
+                if not settings.username or not settings.password:
                     return r[str].fail("Username and password required for basic auth")
-                credentials = (
-                    f"{self.settings.username}:{self.settings.password}".encode()
-                )
+                credentials = f"{settings.username}:{settings.password}".encode()
                 token = base64.b64encode(credentials).decode("ascii")
                 self._token = token
                 return r[str].ok(token)
             if self.normalized_method == oauth2_method:
-                if (
-                    not self.settings.oauth2_client_id
-                    or not self.settings.oauth2_client_secret
-                ):
+                if not settings.oauth2_client_id or not settings.oauth2_client_secret:
                     return r[str].fail("OAuth2 credentials required")
                 return r[str].fail("OAuth2 not configured")
-            return r[str].fail(f"Unsupported auth method: {self.settings.method}")
+            return r[str].fail(f"Unsupported auth method: {settings.method}")
 
         def get_auth_headers(self) -> p.Result[t.StrMapping]:
             """The authentication headers."""

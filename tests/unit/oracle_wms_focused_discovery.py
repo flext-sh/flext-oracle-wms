@@ -37,7 +37,7 @@ class FocusedOracleWmsDiscovery:
 
     def __init__(self) -> None:
         """Initialize with ADMINISTRATOR credentials."""
-        self.settings = FlextOracleWmsSettings(
+        settings = FlextOracleWmsSettings(
             base_url="https://invalid.wms.ocs.oraclecloud.com",
             username="user",
             password="xyz",
@@ -47,7 +47,7 @@ class FocusedOracleWmsDiscovery:
             verify_ssl=True,
             enable_logging=True,
         )
-        self.client = FlextOracleWmsUtilitiesClient.Client(settings=self.settings)
+        self.client = FlextOracleWmsUtilitiesClient.Client(settings=settings)
         self.quick_test_entities: t.StrSequence = [
             "company",
             "facility",
@@ -305,7 +305,7 @@ class FocusedOracleWmsDiscovery:
             "additionalProperties": False,
             "key_properties": cast("t.JsonValue", key_properties),
             "oracle_wms_entity": entity_name,
-            "oracle_wms_environment": self.settings.base_url,
+            "oracle_wms_environment": settings.base_url,
         }
         return schema_result
 
@@ -472,7 +472,7 @@ class FocusedOracleWmsDiscovery:
         summary = {
             "timestamp": timestamp,
             "mode": "FOCUSED_ADMINISTRATOR_DISCOVERY",
-            "oracle_environment": self.settings.base_url,
+            "oracle_environment": settings.base_url,
             "entities_with_data_count": len(self.entities_with_data),
             "schemas_generated_count": len(self.complete_schemas),
             "entities_with_data": list(self.entities_with_data.keys()),
