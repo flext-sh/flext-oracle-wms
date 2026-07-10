@@ -94,12 +94,11 @@ _LAZY_IMPORTS = build_lazy_import_map(
 
 
 __all__: tuple[str, ...] = (
-    "FlextOracleWmsSettings",
-    "settings",
     "FlextOracleWmsApi",
     "FlextOracleWmsConstants",
     "FlextOracleWmsModels",
     "FlextOracleWmsProtocols",
+    "FlextOracleWmsSettings",
     "FlextOracleWmsTypes",
     "FlextOracleWmsUtilities",
     "FlextOracleWmsUtilitiesAuth",
@@ -124,6 +123,7 @@ __all__: tuple[str, ...] = (
     "p",
     "r",
     "s",
+    "settings",
     "t",
     "u",
     "x",

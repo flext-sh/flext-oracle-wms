@@ -7,10 +7,10 @@ from typing import TYPE_CHECKING
 from pydantic import BaseModel, Field
 from pydantic_settings import SettingsConfigDict
 
-from flext_core import FlextSettings
+from flext_cli import FlextCliSettings
 
 
-class FlextOracleWmsSettings(FlextSettings):
+class FlextOracleWmsSettings(FlextCliSettings):
     """Runtime settings for Oracle WMS client.
 
     Project-scoped scalars live under the nested ``OracleWms`` namespace group;
