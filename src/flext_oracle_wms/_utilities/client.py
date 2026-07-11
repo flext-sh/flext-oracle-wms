@@ -23,20 +23,54 @@ class FlextOracleWmsUtilitiesClient:
             """Initialize client with strict settings resolution."""
             # NOTE (multi-agent): mro-idb4.7/mro-rn88 — resolve+retain the injected
             # settings (DI, canonical `or fetch_global()`); never read a bare flext_api
-            # global. All project fields are namespaced under `.OracleWms.*`.
-            self._settings: FlextOracleWmsSettings = (
+            # global. All project fields are namespaced under `.OracleWms.*`. The
+            # resolved settings are exposed on the public `settings` attribute —
+            # that is the documented client contract asserted by tests.
+            self.settings: FlextOracleWmsSettings = (
                 settings or FlextOracleWmsSettings.fetch_global()
             )
-            default_headers = self._build_default_headers(self._settings)
+            default_headers = self._build_default_headers(self.settings)
             self._api_config = FlextApiSettings.model_validate({
-                "base_url": self._settings.OracleWms.base_url,
-                "timeout": int(self._settings.OracleWms.timeout),
+                "base_url": self.settings.OracleWms.base_url,
+                "timeout": int(self.settings.OracleWms.timeout),
                 "headers": default_headers,
                 "default_headers": default_headers,
             })
             self._client: FlextApi | None = self._create_api_client()
             self._discovered_entities: t.StrSequence = []
             self._started = False
+
+        @classmethod
+        def from_auth_settings(
+            cls,
+            auth_settings: m.OracleWms.AuthSettings,
+        ) -> p.Result[FlextOracleWmsUtilitiesClient.Client]:
+            """Create a concrete client by merging auth settings with runtime WMS settings."""
+            validation_result = auth_settings.validate_business_rules()
+            if validation_result.failure:
+                return r[FlextOracleWmsUtilitiesClient.Client].fail(
+                    validation_result.error or "Invalid Oracle WMS auth settings",
+                )
+            basic_method = str(c.OracleWms.OracleWMSAuthMethod.BASIC)
+            if auth_settings.normalized_method != basic_method:
+                return r[FlextOracleWmsUtilitiesClient.Client].fail(
+                    "Oracle WMS runtime client currently supports BASIC auth only",
+                )
+            # NOTE (multi-agent): clone() keeps the flext-core singleton intact
+            # (isolated copy + re-validation); nested namespace overrides merge
+            # onto the current `.OracleWms.*` state — never construct settings
+            # directly (that would seize the global singleton).
+            base_settings = FlextOracleWmsSettings.fetch_global()
+            resolved_settings = base_settings.clone(
+                OracleWms={
+                    "username": auth_settings.username
+                    or base_settings.OracleWms.username,
+                    "password": auth_settings.password
+                    or base_settings.OracleWms.password,
+                    "auth_method": auth_settings.normalized_method,
+                },
+            )
+            return r[FlextOracleWmsUtilitiesClient.Client].ok(cls(resolved_settings))
 
         @staticmethod
         def _build_default_headers(
@@ -46,7 +80,7 @@ class FlextOracleWmsUtilitiesClient:
             wms = settings.OracleWms
             if not wms.username and not wms.password:
                 return {}
-            resolved_method = str(wms.auth_method).strip().lower()
+            resolved_method = wms.auth_method.strip().lower()
             auth_settings = m.OracleWms.AuthSettings(
                 method=resolved_method,
                 username=wms.username or None,
@@ -257,7 +291,7 @@ class FlextOracleWmsUtilitiesClient:
             request = m.Api.HttpRequest.model_validate({
                 "method": method,
                 "url": path,
-                "timeout": self._settings.OracleWms.timeout,
+                "timeout": self.settings.OracleWms.timeout,
                 "headers": request_headers,
                 "query_params": params or {},
                 "body": body or {},
