@@ -42,8 +42,7 @@ class FlextOracleWmsApi(s[bool]):
     def __init__(self, settings: FlextOracleWmsSettings | None = None) -> None:
         """Initialize Oracle WMS facade with FLEXT integration."""
         super().__init__()
-        resolved_config = ()
-        self._client = u.OracleWms.Client(settings=resolved_config)
+        self._client = u.OracleWms.Client(settings=settings)
 
     @override
     def execute(self) -> p.Result[bool]:
@@ -85,10 +84,7 @@ class FlextOracleWmsApi(s[bool]):
         settings: m.OracleWms.AuthSettings,
     ) -> p.Result[u.OracleWms.Client]:
         """Create a runtime Oracle WMS client from auth settings."""
-        client_result: p.Result[u.OracleWms.Client] = (
-            u.OracleWms.Client.from_auth_settings(settings)
-        )
-        return client_result
+        return u.OracleWms.Client.from_auth_settings(settings)
 
 
 oracle_wms = FlextOracleWmsApi
