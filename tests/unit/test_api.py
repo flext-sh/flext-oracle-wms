@@ -26,11 +26,13 @@ class TestsFlextOracleWmsApi:
     def api(self) -> FlextOracleWmsApi:
         """Return a facade built from explicit settings (no global lookup)."""
         return FlextOracleWmsApi(
-            settings=FlextOracleWmsSettings(
-                base_url="http://wms.example",
-                username="user",
-                password="secret",
-            ),
+            settings=FlextOracleWmsSettings.model_validate({
+                "OracleWms": {
+                    "base_url": "http://wms.example",
+                    "username": "user",
+                    "password": "secret",
+                },
+            }),
         )
 
     def test_is_flext_service(self) -> None:

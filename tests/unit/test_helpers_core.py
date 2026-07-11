@@ -110,18 +110,18 @@ class TestsFlextOracleWmsHelpersCore:
             "LGF_V10",
         )
 
-        assert settings.base_url == "https://wms.example/prod"
-        assert settings.username == "svc_user"
-        assert settings.api_version == "LGF_V10"
-        assert settings.timeout == 45
-        assert settings.retry_attempts == 2
+        assert settings.OracleWms.base_url == "https://wms.example/prod"
+        assert settings.OracleWms.username == "svc_user"
+        assert settings.OracleWms.api_version == "LGF_V10"
+        assert settings.OracleWms.timeout == 45
+        assert settings.OracleWms.retry_attempts == 2
 
     def test_build_client_settings_applies_defaults_for_missing_keys(self) -> None:
         settings = _TESTS.build_client_settings({"base_url": "https://x"}, "LGF_V10")
 
-        assert settings.base_url == "https://x"
-        assert settings.timeout == 30
-        assert settings.retry_attempts == 3
+        assert settings.OracleWms.base_url == "https://x"
+        assert settings.OracleWms.timeout == 30
+        assert settings.OracleWms.retry_attempts == 3
 
     def test_find_env_file_locates_nearest_env(self, tmp_path: Path) -> None:
         (tmp_path / ".env").write_text("ORACLE_WMS_BASE_URL=https://h\n")
@@ -236,10 +236,10 @@ class TestsFlextOracleWmsHelpersCore:
 
         assert result.success
         settings = result.unwrap()
-        assert settings.base_url == "https://wms.example/prod"
-        assert settings.username == "svc_user"
-        assert settings.timeout == 42
-        assert settings.retry_attempts == 4
+        assert settings.OracleWms.base_url == "https://wms.example/prod"
+        assert settings.OracleWms.username == "svc_user"
+        assert settings.OracleWms.timeout == 42
+        assert settings.OracleWms.retry_attempts == 4
 
     def test_concrete_api_execute_returns_successful_result(self) -> None:
         result = _TESTS.ConcreteApi().execute()

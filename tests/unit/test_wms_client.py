@@ -69,7 +69,14 @@ class TestsFlextOracleWmsWmsClient:
     def client(self) -> t.OracleWms.Tests.Client:
         """A client bound to the deterministic testing configuration."""
         return FlextOracleWmsUtilitiesClient.Client(
-            FlextOracleWmsSettings.testing_config(),
+            FlextOracleWmsSettings.model_validate({
+                "OracleWms": {
+                    "base_url": "https://test-wms.example.com",
+                    "timeout": 30.0,
+                    "username": "test_user",
+                    "password": "test_password",
+                },
+            }),
         )
 
     # -- construction contract ------------------------------------------
@@ -79,14 +86,16 @@ class TestsFlextOracleWmsWmsClient:
         assert isinstance(client.settings, FlextOracleWmsSettings)
 
     def test_explicit_settings_are_exposed_unchanged(self) -> None:
-        settings = FlextOracleWmsSettings(
-            base_url="https://custom-wms.example.com",
-            timeout=60,
-        )
+        settings = FlextOracleWmsSettings.model_validate({
+            "OracleWms": {
+                "base_url": "https://custom-wms.example.com",
+                "timeout": 60,
+            },
+        })
         client = FlextOracleWmsUtilitiesClient.Client(settings=settings)
         assert client.settings is settings
-        assert client.settings.base_url == "https://custom-wms.example.com"
-        assert client.settings.timeout == 60
+        assert client.settings.OracleWms.base_url == "https://custom-wms.example.com"
+        assert client.settings.OracleWms.timeout == 60
 
     # -- verb methods return the response payload -----------------------
 

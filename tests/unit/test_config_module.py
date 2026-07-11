@@ -1,5 +1,9 @@
 """Oracle WMS Configuration Module tests.
 
+ADR-005: project-scoped scalars live under the nested ``settings.OracleWms.*``
+namespace; settings carry raw scalars (range/enum validation lives at the
+domain boundary, not in the settings layer).
+
 Copyright (c) 2025 FLEXT Team. All rights reserved.
 SPDX-License-Identifier: MIT
 
@@ -7,10 +11,7 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from collections.abc import Callable
-
 import pytest
-from pydantic import ValidationError
 
 from flext_oracle_wms import FlextOracleWmsSettings
 
@@ -27,99 +28,86 @@ class TestsFlextOracleWmsConfigModule:
 
     def test_defaults_expose_documented_values(self) -> None:
         """A default instance exposes the documented default field values."""
-        settings = FlextOracleWmsSettings()
+        settings = FlextOracleWmsSettings.model_validate({})
+        ns = settings.OracleWms
 
-        assert settings.base_url == "http://localhost:8080"
-        assert settings.timeout == pytest.approx(30.0)
-        assert settings.username == ""
-        assert settings.password == ""
-        assert settings.retry_attempts == 3
-        assert settings.api_version == "LGF_V10"
-        assert settings.auth_method == "basic"
-        assert settings.verify_ssl is True
-        assert settings.enable_logging is False
-        assert settings.connection_pool_size == 10
-        assert settings.cache_duration == 300
+        assert ns.base_url == "http://localhost:8080"
+        assert ns.timeout == pytest.approx(30.0)
+        assert ns.username == ""
+        assert ns.password == ""
+        assert ns.retry_attempts == 3
+        assert ns.api_version == "LGF_V10"
+        assert ns.auth_method == "basic"
+        assert ns.verify_ssl is True
+        assert ns.enable_logging is False
+        assert ns.connection_pool_size == 10
+        assert ns.cache_duration == 300
 
     def test_custom_values_are_retained(self) -> None:
         """Explicit field values are preserved on the constructed instance."""
-        settings = FlextOracleWmsSettings(
-            base_url="https://example.com",
-            username="test_user",
-            password="test_password",
-        )
+        settings = FlextOracleWmsSettings.model_validate({
+            "OracleWms": {
+                "base_url": "https://example.com",
+                "username": "test_user",
+                "password": "test_password",
+            },
+        })
 
-        assert settings.base_url == "https://example.com"
-        assert settings.username == "test_user"
-        assert settings.password == "test_password"
+        assert settings.OracleWms.base_url == "https://example.com"
+        assert settings.OracleWms.username == "test_user"
+        assert settings.OracleWms.password == "test_password"
 
     def test_model_dump_round_trips_public_state(self) -> None:
         """model_dump() reflects the constructed public field state."""
-        settings = FlextOracleWmsSettings(base_url="https://wms.example.com")
+        settings = FlextOracleWmsSettings.model_validate({
+            "OracleWms": {"base_url": "https://wms.example.com"},
+        })
         dumped = settings.model_dump()
 
-        assert dumped["base_url"] == "https://wms.example.com"
+        assert dumped["OracleWms"]["base_url"] == "https://wms.example.com"
         rebuilt = FlextOracleWmsSettings.model_validate(dumped)
-        assert rebuilt.base_url == settings.base_url
-        assert rebuilt.timeout == settings.timeout
+        assert rebuilt.OracleWms.base_url == settings.OracleWms.base_url
+        assert rebuilt.OracleWms.timeout == settings.OracleWms.timeout
 
-    @pytest.mark.parametrize(
-        ("label", "build"),
-        [
-            ("empty_base_url", lambda: FlextOracleWmsSettings(base_url="")),
-            ("timeout_below_min", lambda: FlextOracleWmsSettings(timeout=0.5)),
-            ("timeout_above_max", lambda: FlextOracleWmsSettings(timeout=301.0)),
-            ("negative_retries", lambda: FlextOracleWmsSettings(retry_attempts=-1)),
-            ("zero_pool_size", lambda: FlextOracleWmsSettings(connection_pool_size=0)),
-            ("negative_cache", lambda: FlextOracleWmsSettings(cache_duration=-1)),
-        ],
-    )
-    def test_field_constraints_reject_invalid_values(
-        self, label: str, build: Callable[[], FlextOracleWmsSettings]
-    ) -> None:
-        """Out-of-range field values raise a pydantic ValidationError."""
-        assert label
-        with pytest.raises(ValidationError):
-            build()
+    def test_out_of_range_scalars_are_carried_raw(self) -> None:
+        """Out-of-range scalars are stored as-is (ADR-005: no range checks here)."""
+        settings = FlextOracleWmsSettings.model_validate({
+            "OracleWms": {
+                "base_url": "",
+                "timeout": 0.5,
+                "retry_attempts": -1,
+                "connection_pool_size": 0,
+                "cache_duration": -1,
+            },
+        })
+        ns = settings.OracleWms
 
-    def test_validate_config_succeeds_for_valid_settings(self) -> None:
-        """validate_config() returns a successful result carrying True."""
-        settings = FlextOracleWmsSettings(timeout=30.0, retry_attempts=3)
-        result = settings.validate_config()
-
-        assert result.success
-        assert result.value is True
-        assert result.unwrap() is True
-
-    def test_validate_config_result_supports_map_combinator(self) -> None:
-        """The success result chains through map without losing its value."""
-        settings = FlextOracleWmsSettings()
-        mapped = settings.validate_config().map(lambda ok: "ok" if ok else "no")
-
-        assert mapped.success
-        assert mapped.value == "ok"
-
-    def test_testing_factory_builds_deterministic_settings(self) -> None:
-        """testing_config() yields the documented deterministic fixture."""
-        settings = FlextOracleWmsSettings.testing_config()
-
-        assert isinstance(settings, FlextOracleWmsSettings)
-        assert settings.base_url == "https://test-wms.example.com"
-        assert settings.username == "test_user"
-        assert settings.password == "test_password"
-        assert settings.timeout == pytest.approx(30.0)
+        assert ns.base_url == ""
+        assert ns.timeout == pytest.approx(0.5)
+        assert ns.retry_attempts == -1
+        assert ns.connection_pool_size == 0
+        assert ns.cache_duration == -1
 
     def test_singleton_returns_same_instance(self) -> None:
-        """Repeated construction returns the same singleton instance."""
-        first = FlextOracleWmsSettings()
-        second = FlextOracleWmsSettings()
+        """Repeated fetch_global calls return the same singleton instance."""
+        first = FlextOracleWmsSettings.fetch_global()
+        second = FlextOracleWmsSettings.fetch_global()
 
         assert first is second
 
     def test_reset_for_testing_creates_fresh_instance(self) -> None:
         """reset_for_testing() breaks the singleton so a new instance is built."""
-        first = FlextOracleWmsSettings()
+        first = FlextOracleWmsSettings.fetch_global()
         FlextOracleWmsSettings.reset_for_testing()
-        second = FlextOracleWmsSettings()
+        second = FlextOracleWmsSettings.fetch_global()
 
         assert first is not second
+
+    def test_clone_overrides_isolated_copy_without_mutating_singleton(self) -> None:
+        """clone() returns an isolated re-validated copy; the singleton is intact."""
+        base = FlextOracleWmsSettings.fetch_global()
+        cloned = base.clone(OracleWms={"base_url": "https://clone.example.com"})
+
+        assert cloned is not base
+        assert cloned.OracleWms.base_url == "https://clone.example.com"
+        assert base.OracleWms.base_url == "http://localhost:8080"

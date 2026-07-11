@@ -25,7 +25,14 @@ class TestsFlextOracleWmsConnection:
     @pytest.fixture
     def settings(self) -> FlextOracleWmsSettings:
         """Deterministic testing settings from the public factory."""
-        return FlextOracleWmsSettings.testing_config()
+        return FlextOracleWmsSettings.model_validate({
+            "OracleWms": {
+                "base_url": "https://test-wms.example.com",
+                "timeout": 30.0,
+                "username": "test_user",
+                "password": "test_password",
+            },
+        })
 
     @pytest.fixture
     def client(self, settings: FlextOracleWmsSettings) -> Client:
@@ -50,13 +57,17 @@ class TestsFlextOracleWmsConnection:
         field: str,
         expected: str | float,
     ) -> None:
-        """testing_config publishes stable, documented field values."""
-        assert settings.model_dump()[field] == expected
+        """Deterministic settings publish stable, documented field values."""
+        assert settings.model_dump()["OracleWms"][field] == expected
 
     def test_testing_config_is_deterministic(self) -> None:
         """Two independent factory calls yield equal public state."""
-        first = FlextOracleWmsSettings.testing_config()
-        second = FlextOracleWmsSettings.testing_config()
+        first = FlextOracleWmsSettings.model_validate({
+            "OracleWms": {"base_url": "https://test-wms.example.com"},
+        })
+        second = FlextOracleWmsSettings.model_validate({
+            "OracleWms": {"base_url": "https://test-wms.example.com"},
+        })
         assert first.model_dump() == second.model_dump()
 
     def test_client_publishes_its_settings(
@@ -77,8 +88,8 @@ class TestsFlextOracleWmsConnection:
         result = Client.from_auth_settings(auth)
         assert result.success
         built = result.unwrap()
-        assert built.settings.username == "alice"
-        assert built.settings.password == "secret"
+        assert built.settings.OracleWms.username == "alice"
+        assert built.settings.OracleWms.password == "secret"
 
     def test_discover_entities_returns_result_on_unreachable_host(
         self,

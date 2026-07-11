@@ -72,8 +72,8 @@ class TestsFlextOracleWmsClientCore:
     ) -> None:
         client = FlextOracleWmsUtilitiesClient.Client(mock_config)
         assert client.settings is mock_config
-        assert client.settings.base_url == mock_config.base_url
-        assert client.settings.timeout == mock_config.timeout
+        assert client.settings.OracleWms.base_url == mock_config.OracleWms.base_url
+        assert client.settings.OracleWms.timeout == mock_config.OracleWms.timeout
 
     def test_init_without_settings_resolves_global_config(self) -> None:
         client = FlextOracleWmsUtilitiesClient.Client(None)

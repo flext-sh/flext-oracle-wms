@@ -53,37 +53,45 @@ class TestsFlextOracleWmsUtilities(FlextTestsUtilities, u):
                 api_version: str,
             ) -> FlextOracleWmsSettings:
                 """Build client settings from normalized test environment data."""
-                return FlextOracleWmsSettings(
-                    base_url=u.to_str(env_config.get("base_url", ""), default=""),
-                    username=u.to_str(env_config.get("username", ""), default=""),
-                    password=u.to_str(env_config.get("password", ""), default=""),
-                    api_version=api_version,
-                    auth_method=u.to_str(
-                        env_config.get("auth_method", "BASIC"),
-                        default="BASIC",
-                    ),
-                    timeout=u.to_int(env_config.get("timeout", 30), default=30),
-                    retry_attempts=u.to_int(
-                        env_config.get("retry_attempts", 3),
-                        default=3,
-                    ),
-                    verify_ssl=u.to_bool(
-                        env_config.get("verify_ssl", True),
-                        default=True,
-                    ),
-                    enable_logging=u.to_bool(
-                        env_config.get("enable_logging", True),
-                        default=True,
-                    ),
-                    connection_pool_size=u.to_int(
-                        env_config.get("connection_pool_size", 20),
-                        default=20,
-                    ),
-                    cache_duration=u.to_int(
-                        env_config.get("cache_duration", 3600),
-                        default=3600,
-                    ),
-                )
+                # NOTE (multi-agent): ADR-005 — project scalars live under the
+                # nested ``OracleWms`` namespace; build via model_validate with
+                # the namespaced payload, never flat constructor kwargs.
+                return FlextOracleWmsSettings.model_validate({
+                    "OracleWms": {
+                        "base_url": u.to_str(
+                            env_config.get("base_url", ""),
+                            default="",
+                        ),
+                        "username": u.to_str(env_config.get("username", ""), default=""),
+                        "password": u.to_str(env_config.get("password", ""), default=""),
+                        "api_version": api_version,
+                        "auth_method": u.to_str(
+                            env_config.get("auth_method", "BASIC"),
+                            default="BASIC",
+                        ),
+                        "timeout": u.to_int(env_config.get("timeout", 30), default=30),
+                        "retry_attempts": u.to_int(
+                            env_config.get("retry_attempts", 3),
+                            default=3,
+                        ),
+                        "verify_ssl": u.to_bool(
+                            env_config.get("verify_ssl", True),
+                            default=True,
+                        ),
+                        "enable_logging": u.to_bool(
+                            env_config.get("enable_logging", True),
+                            default=True,
+                        ),
+                        "connection_pool_size": u.to_int(
+                            env_config.get("connection_pool_size", 20),
+                            default=20,
+                        ),
+                        "cache_duration": u.to_int(
+                            env_config.get("cache_duration", 3600),
+                            default=3600,
+                        ),
+                    },
+                })
 
             @staticmethod
             def find_env_file(start_path: Path) -> Path | None:
@@ -198,13 +206,17 @@ class TestsFlextOracleWmsUtilities(FlextTestsUtilities, u):
                         "Real Oracle WMS credentials not available in .env",
                     )
                 return r[FlextOracleWmsSettings].ok(
-                    FlextOracleWmsSettings(
-                        base_url=base_url,
-                        username=username,
-                        password=password,
-                        timeout=int(os.getenv("ORACLE_WMS_TIMEOUT", "30")),
-                        retry_attempts=int(os.getenv("ORACLE_WMS_MAX_RETRIES", "3")),
-                    ),
+                    FlextOracleWmsSettings.model_validate({
+                        "OracleWms": {
+                            "base_url": base_url,
+                            "username": username,
+                            "password": password,
+                            "timeout": int(os.getenv("ORACLE_WMS_TIMEOUT", "30")),
+                            "retry_attempts": int(
+                                os.getenv("ORACLE_WMS_MAX_RETRIES", "3"),
+                            ),
+                        },
+                    }),
                 )
 
             @staticmethod

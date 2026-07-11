@@ -166,15 +166,18 @@ class TestsFlextOracleWmsAuthentication:
 
     # ---- Authenticator.authenticate contract ----------------------------
 
-    def test_authenticator_exposes_its_settings(self) -> None:
-        """The authenticator keeps the settings it was constructed with."""
+    def test_authenticator_behavior_reflects_its_settings(self) -> None:
+        """The authenticator's public behavior reflects the injected settings."""
         settings = m.OracleWms.AuthSettings(
             method=_Method.BASIC,
             username="test_user",
             password="test_password",
         )
         authenticator = FlextOracleWmsUtilitiesAuth.Authenticator(settings)
-        assert authenticator.settings == settings
+        # NOTE (multi-agent): auth lane keeps the injected settings private
+        # (``_settings``); retention is asserted via observable public behavior.
+        assert authenticator.normalized_method == settings.normalized_method
+        assert authenticator.authenticate().unwrap() == _BASIC_TOKEN
 
     def test_basic_authenticate_returns_deterministic_token(self) -> None:
         """Basic auth yields the base64 user:password token."""

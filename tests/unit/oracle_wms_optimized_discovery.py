@@ -39,17 +39,21 @@ class OptimizedOracleWmsDiscovery:
 
     def __init__(self) -> None:
         """Initialize with ADMINISTRATOR credentials."""
-        settings = FlextOracleWmsSettings(
-            base_url="https://invalid.wms.ocs.oraclecloud.com",
-            username="user",
-            password="xyz",
-            timeout=60.0,
-            max_retries=3,
-            api_version=_API_VERSION_LGF_V10,
-            verify_ssl=True,
-            enable_logging=True,
-        )
-        self.client = FlextOracleWmsUtilitiesClient.Client(settings=settings)
+        # NOTE (multi-agent): ADR-005 — settings scalars are namespaced under
+        # ``OracleWms``; build via model_validate, retain on self.settings.
+        self.settings = FlextOracleWmsSettings.model_validate({
+            "OracleWms": {
+                "base_url": "https://invalid.wms.ocs.oraclecloud.com",
+                "username": "user",
+                "password": "xyz",
+                "timeout": 60.0,
+                "retry_attempts": 3,
+                "api_version": _API_VERSION_LGF_V10,
+                "verify_ssl": True,
+                "enable_logging": True,
+            },
+        })
+        self.client = FlextOracleWmsUtilitiesClient.Client(settings=self.settings)
         self.priority_entities: set[str] = {
             "company",
             "facility",
@@ -523,9 +527,9 @@ class OptimizedOracleWmsDiscovery:
             "discovery_mode": "OPTIMIZED_ADMINISTRATOR_MODE",
             "total_high_value_entities": len(self.high_value_entities),
             "schemas_generated": len(self.complete_schemas),
-            "oracle_wms_environment": settings.base_url,
-            "oracle_wms_base_url": settings.base_url,
-            "api_version": settings.api_version,
+            "oracle_wms_environment": self.settings.OracleWms.base_url,
+            "oracle_wms_base_url": self.settings.OracleWms.base_url,
+            "api_version": self.settings.OracleWms.api_version,
             "high_value_entities": cast(
                 "t.JsonValue",
                 list(self.high_value_entities.keys()),

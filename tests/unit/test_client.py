@@ -22,12 +22,14 @@ class TestsFlextOracleWmsClient:
     @pytest.fixture
     def settings(self) -> FlextOracleWmsSettings:
         """Deterministic runtime settings for a BASIC-auth client."""
-        return FlextOracleWmsSettings(
-            base_url="https://test.wms.com",
-            username="test_user",
-            password="test_pass",
-            timeout=30,
-        )
+        return FlextOracleWmsSettings.model_validate({
+            "OracleWms": {
+                "base_url": "https://test.wms.com",
+                "username": "test_user",
+                "password": "test_pass",
+                "timeout": 30,
+            },
+        })
 
     # ---- constructor settings resolution -----------------------------------
 
@@ -39,31 +41,33 @@ class TestsFlextOracleWmsClient:
         client = FlextOracleWmsUtilitiesClient.Client(settings)
 
         assert client.settings is settings
-        assert client.settings.base_url == "https://test.wms.com"
-        assert client.settings.username == "test_user"
+        assert client.settings.OracleWms.base_url == "https://test.wms.com"
+        assert client.settings.OracleWms.username == "test_user"
 
     def test_constructor_preserves_custom_configuration_fields(self) -> None:
         """Custom configuration fields survive on the public settings state."""
-        custom = FlextOracleWmsSettings(
-            base_url="https://custom.wms.com",
-            username="custom_user",
-            password="custom_pass",
-            timeout=60,
-            retry_attempts=5,
-        )
+        custom = FlextOracleWmsSettings.model_validate({
+            "OracleWms": {
+                "base_url": "https://custom.wms.com",
+                "username": "custom_user",
+                "password": "custom_pass",
+                "timeout": 60,
+                "retry_attempts": 5,
+            },
+        })
 
         client = FlextOracleWmsUtilitiesClient.Client(custom)
 
-        assert client.settings.timeout == pytest.approx(60.0)
-        assert client.settings.retry_attempts == 5
-        assert client.settings.base_url == "https://custom.wms.com"
+        assert client.settings.OracleWms.timeout == pytest.approx(60.0)
+        assert client.settings.OracleWms.retry_attempts == 5
+        assert client.settings.OracleWms.base_url == "https://custom.wms.com"
 
     def test_constructor_without_settings_yields_valid_settings(self) -> None:
         """Omitting settings resolves the global runtime settings contract."""
         client = FlextOracleWmsUtilitiesClient.Client()
 
         assert isinstance(client.settings, FlextOracleWmsSettings)
-        assert client.settings.base_url
+        assert client.settings.OracleWms.base_url
 
     # ---- start/stop lifecycle ----------------------------------------------
 
@@ -120,8 +124,8 @@ class TestsFlextOracleWmsClient:
         assert result.success
         client = result.unwrap()
         assert isinstance(client, FlextOracleWmsUtilitiesClient.Client)
-        assert client.settings.username == "alice"
-        assert client.settings.password == "secret"
+        assert client.settings.OracleWms.username == "alice"
+        assert client.settings.OracleWms.password == "secret"
 
     def test_from_auth_settings_basic_missing_credentials_fails(self) -> None:
         """BASIC auth without credentials fails business-rule validation."""

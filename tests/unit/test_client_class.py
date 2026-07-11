@@ -23,7 +23,14 @@ class TestsFlextOracleWmsClientClass:
     @pytest.fixture
     def settings(self) -> FlextOracleWmsSettings:
         """Deterministic runtime settings for the client under test."""
-        return FlextOracleWmsSettings.testing_config()
+        return FlextOracleWmsSettings.model_validate({
+            "OracleWms": {
+                "base_url": "https://test-wms.example.com",
+                "timeout": 30.0,
+                "username": "test_user",
+                "password": "test_password",
+            },
+        })
 
     def test_construction_exposes_supplied_settings(
         self,
@@ -34,16 +41,14 @@ class TestsFlextOracleWmsClientClass:
 
         assert isinstance(client, Client)
         assert client.settings is settings
-        assert client.settings.base_url == "https://test-wms.example.com"
+        assert client.settings.OracleWms.base_url == "https://test-wms.example.com"
 
     def test_construction_without_settings_resolves_defaults(self) -> None:
         """Constructing without settings yields a usable settings contract."""
-        FlextOracleWmsSettings.testing_config()
-
         client = Client()
 
         assert isinstance(client.settings, FlextOracleWmsSettings)
-        assert client.settings.base_url
+        assert client.settings.OracleWms.base_url
 
     def test_start_reports_success(
         self,
@@ -100,7 +105,6 @@ class TestsFlextOracleWmsClientClass:
 
     def test_from_auth_settings_builds_client_for_valid_basic(self) -> None:
         """Valid BASIC auth produces a client that adopts the supplied credentials."""
-        FlextOracleWmsSettings.testing_config()
         auth = m.OracleWms.AuthSettings(
             method="basic",
             username="wms-user",
@@ -112,8 +116,8 @@ class TestsFlextOracleWmsClientClass:
         assert result.success
         built = result.unwrap()
         assert isinstance(built, Client)
-        assert built.settings.username == "wms-user"
-        assert built.settings.password == "wms-secret"
+        assert built.settings.OracleWms.username == "wms-user"
+        assert built.settings.OracleWms.password == "wms-secret"
 
     @pytest.mark.parametrize(
         ("method", "expected_fragment"),

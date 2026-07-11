@@ -23,8 +23,15 @@ _ORACLE_WMS_ENV_SNAPSHOTS: t.MutableMappingKV[str, t.StrMapping] = {}
 
 @pytest.fixture
 def mock_config() -> FlextOracleWmsSettings:
-    """Mock configuration for unit testing."""
-    return FlextOracleWmsSettings.testing_config()
+    """Deterministic Oracle WMS settings for unit testing."""
+    return FlextOracleWmsSettings.model_validate({
+        "OracleWms": {
+            "base_url": "https://test-wms.example.com",
+            "timeout": 30.0,
+            "username": "test_user",
+            "password": "test_password",
+        },
+    })
 
 
 def pytest_runtest_setup(item: pytest.Item) -> None:
