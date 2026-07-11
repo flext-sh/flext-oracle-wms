@@ -154,8 +154,8 @@ def showcase_4_authentication(settings: FlextOracleWmsSettings) -> None:
     """Feature 4: Authentication Methods."""
     auth_config = m.OracleWms.AuthSettings(
         method=c.OracleWms.OracleWMSAuthMethod.BASIC,
-        username=getattr(settings, "username", "invalid"),
-        password=getattr(settings, "password", "invalid"),
+        username=settings.OracleWms.username or "invalid",
+        password=settings.OracleWms.password or "invalid",
     )
     auth_config.validate_business_rules()
     authenticator = FlextOracleWmsAuthenticator(auth_config)
@@ -192,18 +192,24 @@ def showcase_6_error_handling(client: FlextOracleWmsClient) -> None:
     client.call_api("non_existent_api_xyz")
     try:
         invalid_config = FlextOracleWmsSettings.model_validate({
-            "base_url": "invalid-url",
-            "username": "",
-            "password": "",
-            "api_version": "LGF_V10",
-            "timeout": 30,
-            "retry_attempts": 3,
-            "verify_ssl": True,
-            "enable_logging": True,
+            "OracleWms": {
+                "base_url": "invalid-url",
+                "username": "",
+                "password": "",
+                "api_version": "LGF_V10",
+                "timeout": 30,
+                "retry_attempts": 3,
+                "verify_ssl": True,
+                "enable_logging": True,
+            },
         })
-        validation = invalid_config.validate_config()
-        if not validation.success:
-            logger.info(f"Expected validation failure: {validation.error}")
+        invalid_auth = m.OracleWms.AuthSettings(
+            username=invalid_config.OracleWms.username,
+            password=invalid_config.OracleWms.password,
+        )
+        validation = invalid_auth.validate_business_rules()
+        if validation.failure:
+            logger.info("Expected validation failure: %s", validation.error)
     except Exception as exc:
         logger.warning("Error handling demonstration: %s", exc)
 

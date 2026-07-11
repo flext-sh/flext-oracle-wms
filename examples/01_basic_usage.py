@@ -60,11 +60,18 @@ def setup_client_config() -> None:
     with environment variables and parameter overrides.
     """
     container = FlextContainer.shared()
-    settings = FlextOracleWmsSettings(
-        base_url=os.getenv("FLEXT_ORACLE_WMS_BASE_URL", "https://wms.oraclecloud.com"),
-        username=os.getenv("FLEXT_ORACLE_WMS_USERNAME", ""),
-        password=os.getenv("FLEXT_ORACLE_WMS_PASSWORD", ""),
-    )
+    # NOTE (multi-agent): ADR-005 — project scalars are namespaced under the
+    # ``OracleWms`` group; env vars use the nested ``ORACLEWMS__`` delimiter.
+    settings = FlextOracleWmsSettings.model_validate({
+        "OracleWms": {
+            "base_url": os.getenv(
+                "FLEXT_ORACLE_WMS_ORACLEWMS__BASE_URL",
+                "https://wms.oraclecloud.com",
+            ),
+            "username": os.getenv("FLEXT_ORACLE_WMS_ORACLEWMS__USERNAME", ""),
+            "password": os.getenv("FLEXT_ORACLE_WMS_ORACLEWMS__PASSWORD", ""),
+        },
+    })
     _ = container.bind(
         "FlextOracleWmsSettings",
         settings.model_dump(mode="python"),

@@ -88,9 +88,15 @@ def create_config_from_environment() -> FlextOracleWmsSettings:
         ]
         msg = f"Missing required environment variables: {', '.join(missing)}"
         raise ValueError(msg)
-    if env_config.username and env_config.password:
-        return env_config
-    return FlextOracleWmsSettings()
+    # NOTE (multi-agent): ADR-005 — project scalars are namespaced under the
+    # ``OracleWms`` group; build via model_validate with the nested payload.
+    return FlextOracleWmsSettings.model_validate({
+        "OracleWms": {
+            "base_url": base_url,
+            "username": username,
+            "password": password,
+        },
+    })
 
 
 def create_demo_config() -> FlextOracleWmsSettings:
@@ -104,14 +110,16 @@ def create_demo_config() -> FlextOracleWmsSettings:
 
     """
     return FlextOracleWmsSettings.model_validate({
-        "base_url": "https://demo-wms.oraclecloud.com/demo",
-        "username": "demo_user",
-        "password": "demo_password",
-        "api_version": "LGF_V10",
-        "timeout": c.OracleWms.DEFAULT_TIMEOUT,
-        "retry_attempts": c.OracleWms.DEFAULT_MAX_RETRIES,
-        "verify_ssl": True,
-        "enable_logging": True,
+        "OracleWms": {
+            "base_url": "https://demo-wms.oraclecloud.com/demo",
+            "username": "demo_user",
+            "password": "demo_password",
+            "api_version": "LGF_V10",
+            "timeout": c.OracleWms.DEFAULT_TIMEOUT,
+            "retry_attempts": c.OracleWms.DEFAULT_MAX_RETRIES,
+            "verify_ssl": True,
+            "enable_logging": True,
+        },
     })
 
 
@@ -127,31 +135,32 @@ def validate_configuration(settings: FlextOracleWmsSettings) -> t.JsonMapping:
     """
     errors: list[str] = []
     warnings: list[str] = []
-    if not settings.base_url:
+    wms = settings.OracleWms
+    if not wms.base_url:
         errors.append("Base URL is required")
-    elif not settings.base_url.startswith("https://"):
+    elif not wms.base_url.startswith("https://"):
         warnings.append("Base URL should use HTTPS for security")
-    if not settings.username or not settings.password:
+    if not wms.username or not wms.password:
         errors.append("Username and password are required")
     min_timeout_seconds = c.OracleWms.DEFAULT_TIMEOUT // 3
-    if settings.timeout <= 0:
+    if wms.timeout <= 0:
         errors.append("Timeout must be positive")
-    elif settings.timeout < min_timeout_seconds:
+    elif wms.timeout < min_timeout_seconds:
         warnings.append("Timeout less than 10 seconds may cause issues")
-    retry_count = settings.retry_attempts
+    retry_count = wms.retry_attempts
     max_retries_warning_threshold = c.OracleWms.DEFAULT_MAX_RETRIES * 3
     if retry_count < 0:
         errors.append("Max retries cannot be negative")
     elif retry_count > max_retries_warning_threshold:
         warnings.append("High retry count may cause delays")
     config_summary = t.json_mapping_adapter().validate_python({
-        "base_url": settings.base_url,
-        "username": settings.username,
-        "api_version": settings.api_version,
-        "timeout": settings.timeout,
+        "base_url": wms.base_url,
+        "username": wms.username,
+        "api_version": wms.api_version,
+        "timeout": wms.timeout,
         "retry_attempts": retry_count,
-        "verify_ssl": settings.verify_ssl,
-        "enable_logging": settings.enable_logging,
+        "verify_ssl": wms.verify_ssl,
+        "enable_logging": wms.enable_logging,
     })
     return t.json_mapping_adapter().validate_python({
         "valid": not errors,
