@@ -6,7 +6,7 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from flext_api import FlextApi, FlextApiSettings, p, r, settings, t, u
+from flext_api import FlextApi, FlextApiSettings, p, r, t, u
 
 from flext_oracle_wms import c, m
 from flext_oracle_wms._settings import FlextOracleWmsSettings
@@ -21,10 +21,16 @@ class FlextOracleWmsUtilitiesClient:
 
         def __init__(self, settings: FlextOracleWmsSettings | None = None) -> None:
             """Initialize client with strict settings resolution."""
-            default_headers = self._build_default_headers(settings)
+            # NOTE (multi-agent): mro-idb4.7/mro-rn88 — resolve+retain the injected
+            # settings (DI, canonical `or fetch_global()`); never read a bare flext_api
+            # global. All project fields are namespaced under `.OracleWms.*`.
+            self._settings: FlextOracleWmsSettings = (
+                settings or FlextOracleWmsSettings.fetch_global()
+            )
+            default_headers = self._build_default_headers(self._settings)
             self._api_config = FlextApiSettings.model_validate({
-                "base_url": settings.OracleWms.base_url,
-                "timeout": int(settings.OracleWms.timeout),
+                "base_url": self._settings.OracleWms.base_url,
+                "timeout": int(self._settings.OracleWms.timeout),
                 "headers": default_headers,
                 "default_headers": default_headers,
             })
@@ -33,27 +39,18 @@ class FlextOracleWmsUtilitiesClient:
             self._started = False
 
         @staticmethod
-        def _build_default_headers() -> t.StrMapping:
+        def _build_default_headers(
+            settings: FlextOracleWmsSettings,
+        ) -> t.StrMapping:
             """Build default request headers from Oracle WMS auth settings."""
-            if not settings.username and not settings.password:
+            wms = settings.OracleWms
+            if not wms.username and not wms.password:
                 return {}
-            resolved_method = (
-                str(
-                    getattr(
-                        settings,
-                        "auth_method",
-                        c.OracleWms.OracleWMSAuthMethod.BASIC,
-                    ),
-                )
-                .strip()
-                .lower()
-            )
+            resolved_method = str(wms.auth_method).strip().lower()
             auth_settings = m.OracleWms.AuthSettings(
                 method=resolved_method,
-                username=settings.username or None,
-                password=settings.password or None,
-                oauth2_client_id=getattr(settings, "oauth2_client_id", None),
-                oauth2_client_secret=getattr(settings, "oauth2_client_secret", None),
+                username=wms.username or None,
+                password=wms.password or None,
             )
             authenticator = FlextOracleWmsUtilitiesAuth.Authenticator(auth_settings)
             auth_headers = authenticator.get_auth_headers()
@@ -260,7 +257,7 @@ class FlextOracleWmsUtilitiesClient:
             request = m.Api.HttpRequest.model_validate({
                 "method": method,
                 "url": path,
-                "timeout": settings.timeout,
+                "timeout": self._settings.OracleWms.timeout,
                 "headers": request_headers,
                 "query_params": params or {},
                 "body": body or {},
