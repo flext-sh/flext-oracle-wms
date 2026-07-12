@@ -750,7 +750,7 @@ class CompleteMockPipeline:
 
 
 def main() -> None:
-    """Main execution."""
+    """Run the complete mock pipeline."""
     pipeline = CompleteMockPipeline()
     pipeline.run_complete_pipeline()
 

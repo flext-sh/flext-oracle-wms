@@ -522,7 +522,7 @@ class FocusedOracleWmsDiscovery:
 
 
 def main() -> None:
-    """Main execution."""
+    """Run the focused discovery."""
     discovery = FocusedOracleWmsDiscovery()
     result = discovery.execute_focused_discovery()
     if result.success:

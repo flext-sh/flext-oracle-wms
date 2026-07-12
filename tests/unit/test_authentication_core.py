@@ -28,7 +28,7 @@ class TestsFlextOracleWmsAuthenticationCore:
 
     @pytest.fixture
     def basic_settings(self) -> m.OracleWms.AuthSettings:
-        """Valid BASIC auth settings."""
+        """Return valid BASIC auth settings."""
         return m.OracleWms.AuthSettings(
             method=_AuthMethod.BASIC,
             username="test_user",

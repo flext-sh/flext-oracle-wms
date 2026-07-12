@@ -67,7 +67,7 @@ class TestsFlextOracleWmsWmsClient:
 
     @pytest.fixture
     def client(self) -> t.OracleWms.Tests.Client:
-        """A client bound to the deterministic testing configuration."""
+        """Return a client bound to the deterministic testing configuration."""
         return FlextOracleWmsUtilitiesClient.Client(
             FlextOracleWmsSettings.model_validate({
                 "OracleWms": {
