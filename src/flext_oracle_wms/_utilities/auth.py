@@ -53,7 +53,7 @@ class FlextOracleWmsUtilitiesAuth:
             return r[str].fail(f"Unsupported auth method: {self._settings.method}")
 
         def get_auth_headers(self) -> p.Result[t.StrMapping]:
-            """The authentication headers."""
+            """Return the authentication headers."""
             auth_result = self.authenticate()
             if auth_result.failure:
                 return r[t.StrMapping].fail_op("Authentication", auth_result.error)
