@@ -20,6 +20,10 @@ from flext_oracle_wms.__version__ import (
 if TYPE_CHECKING:
     from flext_api import d as d, e as e, h as h, r as r, s as s, x as x
 
+    from flext_oracle_wms._config import (
+        FlextOracleWmsConfig as FlextOracleWmsConfig,
+        config as config,
+    )
     from flext_oracle_wms._settings import (
         FlextOracleWmsSettings as FlextOracleWmsSettings,
         settings as settings,
@@ -55,6 +59,7 @@ if TYPE_CHECKING:
     )
 _LAZY_IMPORTS = build_lazy_import_map(
     {
+        "._config": ("FlextOracleWmsConfig", "config"),
         "._settings": ("FlextOracleWmsSettings", "settings"),
         ".api": (
             "FlextOracleWmsApi",
@@ -99,6 +104,7 @@ _LAZY_IMPORTS = build_lazy_import_map(
 
 __all__: tuple[str, ...] = (
     "FlextOracleWmsApi",
+    "FlextOracleWmsConfig",
     "FlextOracleWmsConstants",
     "FlextOracleWmsModels",
     "FlextOracleWmsProtocols",
@@ -119,6 +125,7 @@ __all__: tuple[str, ...] = (
     "__version__",
     "__version_info__",
     "c",
+    "config",
     "d",
     "e",
     "h",

@@ -18,13 +18,16 @@ class FlextOracleWmsUtilitiesAuth:
         """Oracle WMS authenticator with enterprise patterns."""
 
         def __init__(self, settings: m.OracleWms.AuthSettings) -> None:
-            """Initialize authenticator."""
+            """Initialize authenticator with an injected auth value model."""
+            # NOTE (multi-agent): mro-rn88 — retain the injected AuthSettings value model;
+            # every method consumes it via self._settings (was an unbound bare name).
+            self._settings: m.OracleWms.AuthSettings = settings
             self._token: str | None = None
 
         @property
         def normalized_method(self) -> str:
             """The auth method in canonical lowercase form."""
-            method: str = settings.method.strip().lower()
+            method: str = self._settings.method.strip().lower()
             return method
 
         def authenticate(self) -> p.Result[str]:
@@ -32,17 +35,22 @@ class FlextOracleWmsUtilitiesAuth:
             basic_method = str(c.OracleWms.OracleWMSAuthMethod.BASIC)
             oauth2_method = str(c.OracleWms.OracleWMSAuthMethod.OAUTH2)
             if self.normalized_method == basic_method:
-                if not settings.username or not settings.password:
+                if not self._settings.username or not self._settings.password:
                     return r[str].fail("Username and password required for basic auth")
-                credentials = f"{settings.username}:{settings.password}".encode()
+                credentials = (
+                    f"{self._settings.username}:{self._settings.password}".encode()
+                )
                 token = base64.b64encode(credentials).decode("ascii")
                 self._token = token
                 return r[str].ok(token)
             if self.normalized_method == oauth2_method:
-                if not settings.oauth2_client_id or not settings.oauth2_client_secret:
+                if (
+                    not self._settings.oauth2_client_id
+                    or not self._settings.oauth2_client_secret
+                ):
                     return r[str].fail("OAuth2 credentials required")
                 return r[str].fail("OAuth2 not configured")
-            return r[str].fail(f"Unsupported auth method: {settings.method}")
+            return r[str].fail(f"Unsupported auth method: {self._settings.method}")
 
         def get_auth_headers(self) -> p.Result[t.StrMapping]:
             """The authentication headers."""
