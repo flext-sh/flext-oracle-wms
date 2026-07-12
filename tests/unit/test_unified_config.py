@@ -92,9 +92,7 @@ class TestsFlextOracleWmsUnifiedConfig:
         assert settings.OracleWms.retry_attempts == retry_attempts
 
     @pytest.mark.parametrize("retry_attempts", [-1, -10])
-    def test_negative_retry_attempts_are_carried_raw(
-        self, retry_attempts: int
-    ) -> None:
+    def test_negative_retry_attempts_are_carried_raw(self, retry_attempts: int) -> None:
         """Negative retry_attempts are stored raw (no range checks at this layer)."""
         settings = FlextOracleWmsSettings.model_validate({
             "OracleWms": {"retry_attempts": retry_attempts},

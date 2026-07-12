@@ -37,6 +37,7 @@ class FlextOracleWmsUtilitiesAuth:
         return r[bool].fail(
             f"Unsupported auth method: {auth_settings.method}",
         )
+
     class Authenticator:
         """Oracle WMS authenticator with enterprise patterns."""
 

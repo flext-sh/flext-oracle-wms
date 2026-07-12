@@ -62,8 +62,12 @@ class TestsFlextOracleWmsUtilities(FlextTestsUtilities, u):
                             env_config.get("base_url", ""),
                             default="",
                         ),
-                        "username": u.to_str(env_config.get("username", ""), default=""),
-                        "password": u.to_str(env_config.get("password", ""), default=""),
+                        "username": u.to_str(
+                            env_config.get("username", ""), default=""
+                        ),
+                        "password": u.to_str(
+                            env_config.get("password", ""), default=""
+                        ),
                         "api_version": api_version,
                         "auth_method": u.to_str(
                             env_config.get("auth_method", "BASIC"),
