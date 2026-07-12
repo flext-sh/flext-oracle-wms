@@ -100,7 +100,7 @@ class TestsFlextOracleWmsAuthenticationCore:
         self, basic_settings: m.OracleWms.AuthSettings
     ) -> None:
         """Complete BASIC credentials pass business-rule validation."""
-        result = basic_settings.validate_business_rules()
+        result = FlextOracleWmsUtilitiesAuth.validate_auth_settings(basic_settings)
         assert result.success
         assert result.unwrap() is True
 
@@ -111,7 +111,7 @@ class TestsFlextOracleWmsAuthenticationCore:
             oauth2_client_id="id",
             oauth2_client_secret="secret",
         )
-        result = settings.validate_business_rules()
+        result = FlextOracleWmsUtilitiesAuth.validate_auth_settings(settings)
         assert result.success
         assert result.unwrap() is True
 
@@ -142,7 +142,7 @@ class TestsFlextOracleWmsAuthenticationCore:
         self, settings: m.OracleWms.AuthSettings, expected_error: str
     ) -> None:
         """Incomplete/unsupported configs fail with a specific diagnostic."""
-        result = settings.validate_business_rules()
+        result = FlextOracleWmsUtilitiesAuth.validate_auth_settings(settings)
         assert result.failure
         assert result.error == expected_error
 

@@ -1,3 +1,54 @@
-OracleWms:
-  name: flext-oracle-wms
-  version: "0.12.0-dev"
+# Oracle WMS runtime business rules (SSOT).
+#
+# ALL business rules live in this YAML — never hardcoded in Python. Thin FLEXT
+# facets read them through the ``flext_oracle_wms.config`` singleton and hold no
+# rule literals. Domains are keyed at ROOT level and validated into the frozen
+# ``FlextOracleWmsConfigModels`` shapes, exposed as ``config.OracleWms.<domain>``.
+
+# HTTP response-classification thresholds.
+http:
+  bad_request_threshold: 400
+
+# Runtime API connection defaults.
+api:
+  version_default: "v1"
+  timeout_default: 30
+  max_retries: 3
+  retry_delay: 1
+
+# Batch/page/schema processing limits.
+processing:
+  default_batch_size: 1000
+  max_batch_size: 10000
+  default_page_size: 10
+  max_schema_depth: 10
+
+# Query-filter construction limits.
+filtering:
+  max_filter_conditions: 50
+
+# Entity-name validation rules.
+entities:
+  max_entity_name_length: 100
+
+# OAuth2 authentication policy.
+auth:
+  oauth2_token_endpoint: "/oauth2/token"
+  oauth2_scope_default: "read write"
+
+# Named Oracle WMS environment base URLs.
+environments:
+  default: "http://localhost:8080"
+  test: "https://test-wms.example.com"
+  production: "https://prod-wms.example.com"
+
+# Oracle WMS API endpoint catalog (name -> validated endpoint definition).
+api_endpoints:
+  test:
+    name: "test"
+    method: "GET"
+    path: "/test/"
+    version: "v1"
+    category: "test"
+    description: "Test endpoint"
+    since_version: "6.1"

@@ -13,7 +13,7 @@ from typing import Annotated, ClassVar
 
 from flext_api import m, u
 
-from flext_oracle_wms import c, p, r, t
+from flext_oracle_wms import c, t
 
 
 class FlextOracleWmsModels(m):
@@ -87,16 +87,6 @@ class FlextOracleWmsModels(m):
                     raise ValueError(msg)
                 return v
 
-            def validate_entity(self) -> p.Result[bool]:
-                """Validate entity configuration."""
-                if not self.name:
-                    return r[bool].fail("Entity name is required")
-                if len(self.name) > c.OracleWms.WmsEntities.MAX_ENTITY_NAME_LENGTH:
-                    return r[bool].fail("Entity name is too long")
-                if not self.endpoint:
-                    return r[bool].fail("Entity endpoint is required")
-                return r[bool].ok(True)
-
         class ApiEndpoint(m.BaseModel):
             """Typed Oracle WMS API endpoint definition."""
 
@@ -119,26 +109,11 @@ class FlextOracleWmsModels(m):
             oauth2_scope: str = "wms.read wms.write"
             token_refresh_threshold: t.PositiveInt = 300
 
+            @u.computed_field(return_type=str)
             @property
             def normalized_method(self) -> str:
                 """The auth method in canonical lowercase form."""
                 return self.method.strip().lower()
-
-            def validate_business_rules(self) -> p.Result[bool]:
-                """Validate authentication configuration business rules."""
-                basic_method = str(c.OracleWms.OracleWMSAuthMethod.BASIC)
-                oauth2_method = str(c.OracleWms.OracleWMSAuthMethod.OAUTH2)
-                if self.normalized_method == basic_method:
-                    if not self.username or not self.password:
-                        return r[bool].fail("Basic auth requires username and password")
-                    return r[bool].ok(True)
-                if self.normalized_method == oauth2_method:
-                    if not self.oauth2_client_id or not self.oauth2_client_secret:
-                        return r[bool].fail(
-                            "OAuth2 requires client_id and client_secret",
-                        )
-                    return r[bool].ok(True)
-                return r[bool].fail(f"Unsupported auth method: {self.method}")
 
         class EntitiesResponse(m.BaseModel):
             """Oracle WMS entities list response."""
@@ -227,32 +202,6 @@ class FlextOracleWmsModels(m):
         # =====================================================================
         # AGGREGATE ROOTS - Consistency boundaries
         # =====================================================================
-
-        # =========================================================================
-        # DOMAIN SERVICES - Business logic composition
-        # =========================================================================
-
-        # Domain constants
-        MAX_ENTITY_NAME_LENGTH: int = 50
-
-        @staticmethod
-        def calculate_inventory_value(
-            item: FlextOracleWmsModels.OracleWms.InventoryItem,
-            price: float,
-        ) -> float:
-            """Calculate inventory value using domain logic."""
-            value: float = item.quantity * price
-            return value
-
-        @staticmethod
-        def validate_entity_name(name: str) -> p.Result[str]:
-            """Validate entity name using domain rules."""
-            if (
-                not name
-                or len(name) > FlextOracleWmsModels.OracleWms.MAX_ENTITY_NAME_LENGTH
-            ):
-                return r[str].fail("Invalid entity name")
-            return r[str].ok(name)
 
 
 m = FlextOracleWmsModels

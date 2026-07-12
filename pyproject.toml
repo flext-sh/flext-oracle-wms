@@ -565,6 +565,10 @@ known-first-party = [ "flext_cli", "flext_core", "flext_oracle_wms" ]
 split-on-trailing-comma = true
 
 [tool.ruff.lint.per-file-ignores]
+# PascalCase domain accessors (config.OracleWms cached_property) are intentional
+# namespace names, not methods (mirrors flext-cli/cosmos config accessors).
+"**/flext_oracle_wms/_config.py" = [ "N802" ]
+"**/flext_oracle_wms/_protocols/*.py" = [ "N802" ]
 "**/.vulture_whitelist.py" = [ "ALL" ]
 "**/*_pb2*.py" = [ "ALL" ]
 "**/*dispatcher*" = [  ]

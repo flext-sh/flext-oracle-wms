@@ -14,6 +14,29 @@ from flext_oracle_wms import c, m, p, r, t
 class FlextOracleWmsUtilitiesAuth:
     """Authentication utilities for Oracle WMS -- u.OracleWms.Auth.*."""
 
+    @staticmethod
+    def validate_auth_settings(
+        auth_settings: m.OracleWms.AuthSettings,
+    ) -> p.Result[bool]:
+        """Validate Oracle WMS authentication configuration business rules."""
+        # NOTE (multi-agent): U17 — business validation lives in u.*, not on the
+        # model (declaration layer). Moved verbatim from m.OracleWms.AuthSettings.
+        basic_method = str(c.OracleWms.OracleWMSAuthMethod.BASIC)
+        oauth2_method = str(c.OracleWms.OracleWMSAuthMethod.OAUTH2)
+        if auth_settings.normalized_method == basic_method:
+            if not auth_settings.username or not auth_settings.password:
+                return r[bool].fail("Basic auth requires username and password")
+            return r[bool].ok(True)
+        if auth_settings.normalized_method == oauth2_method:
+            if (
+                not auth_settings.oauth2_client_id
+                or not auth_settings.oauth2_client_secret
+            ):
+                return r[bool].fail("OAuth2 requires client_id and client_secret")
+            return r[bool].ok(True)
+        return r[bool].fail(
+            f"Unsupported auth method: {auth_settings.method}",
+        )
     class Authenticator:
         """Oracle WMS authenticator with enterprise patterns."""
 
@@ -26,9 +49,10 @@ class FlextOracleWmsUtilitiesAuth:
 
         @property
         def normalized_method(self) -> str:
-            """The auth method in canonical lowercase form."""
-            method: str = self._settings.method.strip().lower()
-            return method
+            """The auth method in canonical lowercase form (from the model)."""
+            # NOTE (multi-agent): DRY — consume the model's computed_field, do not
+            # re-derive (was a duplicate of m.OracleWms.AuthSettings.normalized_method).
+            return self._settings.normalized_method
 
         def authenticate(self) -> p.Result[str]:
             """Perform authentication."""

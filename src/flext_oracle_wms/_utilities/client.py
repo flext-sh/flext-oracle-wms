@@ -46,7 +46,9 @@ class FlextOracleWmsUtilitiesClient:
             auth_settings: m.OracleWms.AuthSettings,
         ) -> p.Result[FlextOracleWmsUtilitiesClient.Client]:
             """Create a concrete client by merging auth settings with runtime WMS settings."""
-            validation_result = auth_settings.validate_business_rules()
+            validation_result = FlextOracleWmsUtilitiesAuth.validate_auth_settings(
+                auth_settings,
+            )
             if validation_result.failure:
                 return r[FlextOracleWmsUtilitiesClient.Client].fail(
                     validation_result.error or "Invalid Oracle WMS auth settings",

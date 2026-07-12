@@ -121,7 +121,7 @@ class TestsFlextOracleWmsAuthentication:
             username="test_user",
             password="test_password",
         )
-        assert settings.validate_business_rules().unwrap() is True
+        assert FlextOracleWmsUtilitiesAuth.validate_auth_settings(settings).unwrap() is True
 
     def test_validate_business_rules_accepts_complete_oauth2(self) -> None:
         """Complete OAuth2 credentials validate successfully."""
@@ -130,7 +130,7 @@ class TestsFlextOracleWmsAuthentication:
             oauth2_client_id="id",
             oauth2_client_secret="secret",
         )
-        assert settings.validate_business_rules().unwrap() is True
+        assert FlextOracleWmsUtilitiesAuth.validate_auth_settings(settings).unwrap() is True
 
     @pytest.mark.parametrize(
         ("settings", "expected_fragment"),
@@ -159,7 +159,7 @@ class TestsFlextOracleWmsAuthentication:
         expected_fragment: str,
     ) -> None:
         """Incomplete/unsupported configs fail with an explanatory error."""
-        result = settings.validate_business_rules()
+        result = FlextOracleWmsUtilitiesAuth.validate_auth_settings(settings)
         assert result.failure
         assert result.error is not None
         assert expected_fragment in result.error.lower()
