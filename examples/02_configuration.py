@@ -15,11 +15,11 @@ from dotenv import load_dotenv
 from flext_oracle_wms import (
     FlextOracleWmsConstants,
     FlextOracleWmsSettings,
+    FlextOracleWmsUtilitiesClient,
     m,
     t,
     u,
 )
-from flext_oracle_wms.utilities import FlextOracleWmsUtilitiesClient
 
 FlextOracleWmsClient = FlextOracleWmsUtilitiesClient.Client
 

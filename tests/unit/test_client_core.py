@@ -23,9 +23,8 @@ import pytest
 from flext_api import FlextApi
 from flext_tests import r
 
-from flext_oracle_wms import FlextOracleWmsSettings, c, m
-from flext_oracle_wms.utilities import FlextOracleWmsUtilitiesClient
-from tests.typings import t
+from flext_oracle_wms import FlextOracleWmsSettings, FlextOracleWmsUtilitiesClient, c, m
+from tests import t
 
 
 def _http_response(*, status_code: int, body: dict[str, object]) -> m.Api.HttpResponse:

@@ -18,7 +18,7 @@ import operator
 import pytest
 
 from flext_core import c as core_c
-from tests.constants import c
+from tests import c
 
 _AuthMethod = c.OracleWms.OracleWMSAuthMethod
 _FilterOp = c.OracleWms.WmsFilterOperator

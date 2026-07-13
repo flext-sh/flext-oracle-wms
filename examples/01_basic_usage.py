@@ -30,12 +30,12 @@ from dotenv import load_dotenv
 from flext_core import FlextContainer
 from flext_oracle_wms import (
     FlextOracleWmsSettings,
+    FlextOracleWmsUtilitiesClient,
     p,
     t,
     u,
 )
 from flext_oracle_wms.errors import FlextOracleWmsErrors
-from flext_oracle_wms.utilities import FlextOracleWmsUtilitiesClient
 
 if TYPE_CHECKING:
     from collections.abc import (

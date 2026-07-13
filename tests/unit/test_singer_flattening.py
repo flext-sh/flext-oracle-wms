@@ -13,9 +13,8 @@ from __future__ import annotations
 
 import pytest
 
-from flext_oracle_wms.utilities import FlextOracleWmsUtilitiesDiscovery
-from tests.constants import c
-from tests.models import m
+from flext_oracle_wms import FlextOracleWmsUtilitiesDiscovery
+from tests import c, m
 
 __all__ = ["TestsFlextOracleWmsSingerFlattening"]
 

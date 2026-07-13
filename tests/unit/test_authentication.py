@@ -15,12 +15,11 @@ from __future__ import annotations
 
 import pytest
 
-from flext_oracle_wms.utilities import (
+from flext_oracle_wms import (
     FlextOracleWmsUtilitiesAuth,
     FlextOracleWmsUtilitiesClient,
 )
-from tests.constants import c
-from tests.models import m
+from tests import c, m
 
 # Method enum reused across cases.
 _Method = c.OracleWms.OracleWMSAuthMethod

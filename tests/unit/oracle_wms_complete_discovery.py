@@ -23,19 +23,16 @@ from flext_tests import r
 from flext_oracle_wms import (
     FlextOracleWmsApi,
     FlextOracleWmsSettings,
+    FlextOracleWmsUtilitiesClient,
 )
-from flext_oracle_wms.utilities import FlextOracleWmsUtilitiesClient
-from tests.constants import c
-from tests.models import m
-from tests.typings import t
-from tests.utilities import u
+from tests import c, m, t, u
 
 if TYPE_CHECKING:
     from collections.abc import (
         MutableSequence,
     )
 
-    from tests.protocols import p
+    from tests import p
 
 logger = u.fetch_logger(__name__)
 

@@ -21,13 +21,11 @@ from typing import TYPE_CHECKING, cast
 
 from flext_tests import r
 
-from flext_oracle_wms import FlextOracleWmsSettings
-from flext_oracle_wms.utilities import FlextOracleWmsUtilitiesClient
-from tests.typings import t
-from tests.utilities import u
+from flext_oracle_wms import FlextOracleWmsSettings, FlextOracleWmsUtilitiesClient
+from tests import t, u
 
 if TYPE_CHECKING:
-    from tests.protocols import p
+    from tests import p
 
 logger = u.fetch_logger(__name__)
 

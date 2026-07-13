@@ -21,16 +21,15 @@ import pytest
 from flext_oracle_wms import (
     FlextOracleWmsApi,
     FlextOracleWmsSettings,
+    FlextOracleWmsUtilitiesClient,
     m,
 )
-from flext_oracle_wms.utilities import FlextOracleWmsUtilitiesClient
-from tests.typings import t
-from tests.utilities import u
+from tests import t, u
 
 if TYPE_CHECKING:
     from collections.abc import Generator, Sequence
 
-    from tests.protocols import p
+    from tests import p
 
 
 @pytest.fixture

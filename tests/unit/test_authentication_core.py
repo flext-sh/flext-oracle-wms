@@ -11,12 +11,11 @@ import base64
 
 import pytest
 
-from flext_oracle_wms.utilities import (
+from flext_oracle_wms import (
     FlextOracleWmsUtilitiesAuth,
     FlextOracleWmsUtilitiesClient,
 )
-from tests.constants import c
-from tests.models import m
+from tests import c, m
 
 _AuthMethod = c.OracleWms.OracleWMSAuthMethod
 _BASIC_TOKEN = base64.b64encode(b"test_user:test_password").decode("ascii")

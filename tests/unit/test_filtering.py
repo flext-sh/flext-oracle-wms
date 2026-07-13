@@ -23,13 +23,12 @@ from typing import TYPE_CHECKING
 import pytest
 from flext_tests import e
 
+from flext_oracle_wms import FlextOracleWmsUtilitiesFiltering
 from flext_oracle_wms.errors import FlextOracleWmsErrors
-from flext_oracle_wms.utilities import FlextOracleWmsUtilitiesFiltering
-from tests.constants import c
-from tests.models import m
+from tests import c, m
 
 if TYPE_CHECKING:
-    from tests.typings import t
+    from tests import t
 
 Filter = FlextOracleWmsUtilitiesFiltering.Filter
 Operator = m.OracleWms.FlextOracleWmsOperatorFilter

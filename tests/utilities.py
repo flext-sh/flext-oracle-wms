@@ -21,12 +21,12 @@ from flext_oracle_wms import (
     FlextOracleWmsSettings,
     FlextOracleWmsUtilities as u,
 )
-from tests.typings import TestsFlextOracleWmsTypes, t
+from tests import TestsFlextOracleWmsTypes, t
 
 if TYPE_CHECKING:
     from pathlib import Path
 
-    from tests.protocols import p
+    from tests import p
 
 
 class TestsFlextOracleWmsUtilities(FlextTestsUtilities, u):

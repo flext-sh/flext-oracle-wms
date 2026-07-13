@@ -10,9 +10,11 @@ from __future__ import annotations
 import pytest
 
 from flext_core import r
-from flext_oracle_wms import FlextOracleWmsSettings
-from flext_oracle_wms.models import FlextOracleWmsModels as m
-from flext_oracle_wms.utilities import FlextOracleWmsUtilitiesClient
+from flext_oracle_wms import (
+    FlextOracleWmsModels as m,
+    FlextOracleWmsSettings,
+    FlextOracleWmsUtilitiesClient,
+)
 
 __all__ = ["TestsFlextOracleWmsConnection"]
 

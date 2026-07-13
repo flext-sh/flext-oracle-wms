@@ -8,7 +8,7 @@ from __future__ import annotations
 
 import pytest
 
-from tests.constants import c
+from tests import c
 
 __all__: list[str] = ["TestsFlextOracleWmsDiscovery"]
 

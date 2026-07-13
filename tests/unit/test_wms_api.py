@@ -9,10 +9,8 @@ from __future__ import annotations
 
 import pytest
 
-from flext_oracle_wms import FlextOracleWmsApi, m
-from flext_oracle_wms.utilities import FlextOracleWmsUtilitiesClient
-from tests.models import m as tm
-from tests.typings import t
+from flext_oracle_wms import FlextOracleWmsApi, FlextOracleWmsUtilitiesClient, m
+from tests import m as tm, t
 
 
 class TestsFlextOracleWmsWmsApi:

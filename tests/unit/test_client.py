@@ -12,8 +12,7 @@ from __future__ import annotations
 
 import pytest
 
-from flext_oracle_wms import FlextOracleWmsSettings, m
-from flext_oracle_wms.utilities import FlextOracleWmsUtilitiesClient
+from flext_oracle_wms import FlextOracleWmsSettings, FlextOracleWmsUtilitiesClient, m
 
 
 class TestsFlextOracleWmsClient:

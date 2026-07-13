@@ -11,10 +11,10 @@ from urllib.parse import urlparse
 from flext_oracle_wms import (
     FlextOracleWmsApi,
     FlextOracleWmsSettings,
+    FlextOracleWmsUtilitiesClient,
     t,
     u,
 )
-from flext_oracle_wms.utilities import FlextOracleWmsUtilitiesClient
 
 logger = u.fetch_logger(__name__)
 

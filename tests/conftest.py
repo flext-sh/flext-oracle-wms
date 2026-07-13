@@ -15,7 +15,7 @@ import pytest
 from flext_oracle_wms import FlextOracleWmsSettings
 
 if TYPE_CHECKING:
-    from tests.typings import t
+    from tests import t
 
 _ORACLE_WMS_ENV_PREFIX = "FLEXT_ORACLE_WMS_"
 _ORACLE_WMS_ENV_SNAPSHOTS: t.MutableMappingKV[str, t.StrMapping] = {}

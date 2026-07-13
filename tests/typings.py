@@ -16,7 +16,7 @@ from flext_tests import FlextTestsTypes
 from flext_oracle_wms import t
 
 if TYPE_CHECKING:
-    from flext_oracle_wms.utilities import FlextOracleWmsUtilitiesClient
+    from flext_oracle_wms import FlextOracleWmsUtilitiesClient
 
 
 class TestsFlextOracleWmsTypes(FlextTestsTypes, t):

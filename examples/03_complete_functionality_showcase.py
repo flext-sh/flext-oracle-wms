@@ -38,6 +38,8 @@ from dotenv import load_dotenv
 from flext_oracle_wms import (
     FlextOracleWmsApi,
     FlextOracleWmsSettings,
+    FlextOracleWmsUtilitiesAuth,
+    FlextOracleWmsUtilitiesClient,
     c,
     m,
     p,
@@ -45,10 +47,6 @@ from flext_oracle_wms import (
     u,
 )
 from flext_oracle_wms.errors import FlextOracleWmsErrors
-from flext_oracle_wms.utilities import (
-    FlextOracleWmsUtilitiesAuth,
-    FlextOracleWmsUtilitiesClient,
-)
 
 if TYPE_CHECKING:
     from collections.abc import (
