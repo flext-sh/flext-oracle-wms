@@ -155,7 +155,9 @@ def showcase_4_authentication(settings: FlextOracleWmsSettings) -> None:
         username=settings.OracleWms.username or "invalid",
         password=settings.OracleWms.password or "invalid",
     )
-    auth_config.validate_business_rules()
+    validation = FlextOracleWmsUtilitiesAuth.validate_auth_settings(auth_config)
+    if validation.failure:
+        raise ValueError(validation.error or "Authentication settings are invalid")
     authenticator = FlextOracleWmsAuthenticator(auth_config)
     _headers_result = authenticator.get_auth_headers()
 
@@ -205,7 +207,7 @@ def showcase_6_error_handling(client: FlextOracleWmsClient) -> None:
             username=invalid_config.OracleWms.username,
             password=invalid_config.OracleWms.password,
         )
-        validation = invalid_auth.validate_business_rules()
+        validation = FlextOracleWmsUtilitiesAuth.validate_auth_settings(invalid_auth)
         if validation.failure:
             logger.info("Expected validation failure: %s", validation.error)
     except Exception as exc:
@@ -288,7 +290,7 @@ def run_showcase() -> None:
 
 
 def main() -> int:
-    """Main showcase execution."""
+    """Run the complete functionality showcase."""
     try:
         run_showcase()
     except (RuntimeError, OSError, ValueError):

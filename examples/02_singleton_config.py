@@ -133,7 +133,7 @@ def demonstrate_environment_variables() -> None:
 
 
 def main() -> None:
-    """Main function."""
+    """Demonstrate singleton configuration."""
     try:
         demonstrate_singleton_config()
         demonstrate_environment_variables()

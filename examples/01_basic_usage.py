@@ -168,7 +168,7 @@ def run_basic_usage() -> None:
 
 
 def main() -> None:
-    """Main example function demonstrating basic Oracle WMS usage patterns.
+    """Demonstrate basic Oracle WMS usage patterns.
 
     This function demonstrates:
     1. Configuration using singleton pattern

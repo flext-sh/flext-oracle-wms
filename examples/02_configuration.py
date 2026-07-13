@@ -256,7 +256,7 @@ def demonstrate_configuration_patterns() -> None:
 
 
 def main() -> None:
-    """Main function demonstrating Oracle WMS configuration patterns."""
+    """Demonstrate Oracle WMS configuration patterns."""
     demonstrate_configuration_patterns()
 
 
