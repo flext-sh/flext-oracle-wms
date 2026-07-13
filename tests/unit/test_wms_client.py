@@ -17,6 +17,7 @@ from __future__ import annotations
 
 import pytest
 from flext_api import FlextApi
+from flext_tests import tm
 
 from flext_oracle_wms import (
     FlextOracleWmsSettings,
@@ -88,7 +89,7 @@ class TestsFlextOracleWmsWmsClient:
 
     def test_default_construction_exposes_settings_instance(self) -> None:
         client = FlextOracleWmsUtilitiesClient.Client()
-        assert isinstance(client.settings, FlextOracleWmsSettings)
+        tm.that(client.settings, is_=FlextOracleWmsSettings)
 
     def test_explicit_settings_are_exposed_unchanged(self) -> None:
         settings = FlextOracleWmsSettings.model_validate({
@@ -99,8 +100,8 @@ class TestsFlextOracleWmsWmsClient:
         })
         client = FlextOracleWmsUtilitiesClient.Client(settings=settings)
         assert client.settings is settings
-        assert client.settings.OracleWms.base_url == "https://custom-wms.example.com"
-        assert client.settings.OracleWms.timeout == 60
+        tm.that(client.settings.OracleWms.base_url, eq="https://custom-wms.example.com")
+        tm.that(client.settings.OracleWms.timeout, eq=60)
 
     # -- verb methods return the response payload -----------------------
 
@@ -111,9 +112,9 @@ class TestsFlextOracleWmsWmsClient:
     ) -> None:
         self._stub_ok(monkeypatch, 200, {"data": "test"})
         result = client.get("/test-endpoint")
-        assert result.success
-        assert result.value.status_code == 200
-        assert result.value.body == {"data": "test"}
+        tm.ok(result)
+        tm.that(result.value.status_code, eq=200)
+        tm.that(result.value.body, eq={"data": "test"})
 
     def test_get_boundary_failure_is_wrapped_with_context(
         self,
@@ -125,10 +126,10 @@ class TestsFlextOracleWmsWmsClient:
             r[m.Api.HttpResponse].fail("Network error"),
         )
         result = client.get("/test-endpoint")
-        assert result.failure
-        assert result.error is not None
-        assert "GET /test-endpoint failed" in result.error
-        assert "Network error" in result.error
+        tm.fail(result)
+        tm.that(result.error, none=False)
+        tm.that(result.error, has="GET /test-endpoint failed")
+        tm.that(result.error, has="Network error")
 
     @pytest.mark.parametrize("status_code", [400, 404, 500, 503])
     def test_http_error_status_becomes_failure(
@@ -139,9 +140,9 @@ class TestsFlextOracleWmsWmsClient:
     ) -> None:
         self._stub_ok(monkeypatch, status_code, {"error": "boom"})
         result = client.get("/broken")
-        assert result.failure
-        assert result.error is not None
-        assert f"HTTP {status_code}" in result.error
+        tm.fail(result)
+        tm.that(result.error, none=False)
+        tm.that(result.error, has=f"HTTP {status_code}")
 
     @pytest.mark.parametrize(
         ("verb", "status_code", "body"),
@@ -162,8 +163,8 @@ class TestsFlextOracleWmsWmsClient:
         self._stub_ok(monkeypatch, status_code, body)
         method = getattr(client, verb)
         result = method("/test-endpoint")
-        assert result.success
-        assert result.value.body == body
+        tm.ok(result)
+        tm.that(result.value.body, eq=body)
 
     def test_health_check_returns_health_payload(
         self,
@@ -172,8 +173,8 @@ class TestsFlextOracleWmsWmsClient:
     ) -> None:
         self._stub_ok(monkeypatch, 200, {"status": "healthy"})
         result = client.health_check()
-        assert result.success
-        assert result.value.body == {"status": "healthy"}
+        tm.ok(result)
+        tm.that(result.value.body, eq={"status": "healthy"})
 
     def test_call_api_returns_response(
         self,
@@ -182,8 +183,8 @@ class TestsFlextOracleWmsWmsClient:
     ) -> None:
         self._stub_ok(monkeypatch, 200, {"result": "success"})
         result = client.call_api("test_api")
-        assert result.success
-        assert result.value.body == {"result": "success"}
+        tm.ok(result)
+        tm.that(result.value.body, eq={"result": "success"})
 
     def test_update_oblpn_tracking_number_returns_response(
         self,
@@ -192,8 +193,8 @@ class TestsFlextOracleWmsWmsClient:
     ) -> None:
         self._stub_ok(monkeypatch, 200, {"updated": True})
         result = client.update_oblpn_tracking_number("oblpn123", "track456")
-        assert result.success
-        assert result.value.body == {"updated": True}
+        tm.ok(result)
+        tm.that(result.value.body, eq={"updated": True})
 
     def test_create_lpn_returns_response(
         self,
@@ -202,8 +203,8 @@ class TestsFlextOracleWmsWmsClient:
     ) -> None:
         self._stub_ok(monkeypatch, 201, {"created": True})
         result = client.create_lpn("lpn123", 5)
-        assert result.success
-        assert result.value.body == {"created": True}
+        tm.ok(result)
+        tm.that(result.value.body, eq={"created": True})
 
     # -- discovery/extraction contract ----------------------------------
 
@@ -214,8 +215,8 @@ class TestsFlextOracleWmsWmsClient:
     ) -> None:
         self._stub_ok(monkeypatch, 200, {"entities": ["entity1", "entity2"]})
         result = client.discover_entities()
-        assert result.success
-        assert list(result.value) == ["entity1", "entity2"]
+        tm.ok(result)
+        tm.that(list(result.value), eq=["entity1", "entity2"])
 
     def test_discover_entities_propagates_boundary_failure(
         self,
@@ -227,9 +228,9 @@ class TestsFlextOracleWmsWmsClient:
             r[m.Api.HttpResponse].fail("Network error"),
         )
         result = client.discover_entities()
-        assert result.failure
-        assert result.error is not None
-        assert "GET /entities failed" in result.error
+        tm.fail(result)
+        tm.that(result.error, none=False)
+        tm.that(result.error, has="GET /entities failed")
 
     def test_get_entity_data_extracts_data_rows(
         self,
@@ -238,8 +239,8 @@ class TestsFlextOracleWmsWmsClient:
     ) -> None:
         self._stub_ok(monkeypatch, 200, {"data": [{"id": "1"}, {"id": "2"}]})
         result = client.get_entity_data("test_entity", limit=10)
-        assert result.success
-        assert list(result.value) == [{"id": "1"}, {"id": "2"}]
+        tm.ok(result)
+        tm.that(list(result.value), eq=[{"id": "1"}, {"id": "2"}])
 
     def test_get_apis_by_category_extracts_api_list(
         self,
@@ -252,8 +253,8 @@ class TestsFlextOracleWmsWmsClient:
             {"apis": [{"name": "api1"}, {"name": "api2"}]},
         )
         result = client.get_apis_by_category("inventory")
-        assert result.success
-        assert [row["name"] for row in result.value] == ["api1", "api2"]
+        tm.ok(result)
+        tm.that([row["name"] for row in result.value], eq=["api1", "api2"])
 
     # -- lifecycle contract ---------------------------------------------
 
@@ -263,10 +264,10 @@ class TestsFlextOracleWmsWmsClient:
     ) -> None:
         first = client.start()
         second = client.start()
-        assert first.success
-        assert first.value is True
-        assert second.success
-        assert second.value is True
+        tm.ok(first)
+        tm.that(first.value, eq=True)
+        tm.ok(second)
+        tm.that(second.value, eq=True)
 
     def test_stop_is_idempotent_and_reports_stopped(
         self,
@@ -274,10 +275,10 @@ class TestsFlextOracleWmsWmsClient:
     ) -> None:
         first = client.stop()
         second = client.stop()
-        assert first.success
-        assert first.value is True
-        assert second.success
-        assert second.value is True
+        tm.ok(first)
+        tm.that(first.value, eq=True)
+        tm.ok(second)
+        tm.that(second.value, eq=True)
 
 
 __all__: list[str] = ["TestsFlextOracleWmsWmsClient"]

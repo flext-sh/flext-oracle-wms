@@ -12,6 +12,7 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 import pytest
+from flext_tests import tm
 
 from flext_oracle_wms import FlextOracleWmsUtilitiesDiscovery
 from tests import c, m
@@ -28,12 +29,12 @@ class TestsFlextOracleWmsSingerFlattening:
         """Required fields are set and optionals default as documented."""
         entity = m.OracleWms.Entity(name="inventory", endpoint="/inventory")
 
-        assert entity.name == "inventory"
-        assert entity.endpoint == "/inventory"
-        assert entity.description is None
-        assert entity.primary_key is None
-        assert entity.replication_key is None
-        assert entity.supports_incremental is False
+        tm.that(entity.name, eq="inventory")
+        tm.that(entity.endpoint, eq="/inventory")
+        tm.that(entity.description, none=True)
+        tm.that(entity.primary_key, none=True)
+        tm.that(entity.replication_key, none=True)
+        tm.that(entity.supports_incremental, eq=False)
 
     def test_full_entity_round_trips_through_model_dump(self) -> None:
         """model_dump reflects every value passed to the constructor."""
@@ -46,14 +47,17 @@ class TestsFlextOracleWmsSingerFlattening:
             supports_incremental=True,
         )
 
-        assert entity.model_dump() == {
-            "name": "orders",
-            "endpoint": "/orders",
-            "description": "Order stream",
-            "primary_key": "id",
-            "replication_key": "updated_at",
-            "supports_incremental": True,
-        }
+        tm.that(
+            entity.model_dump(),
+            eq={
+                "name": "orders",
+                "endpoint": "/orders",
+                "description": "Order stream",
+                "primary_key": "id",
+                "replication_key": "updated_at",
+                "supports_incremental": True,
+            },
+        )
 
     @pytest.mark.parametrize(
         ("name", "endpoint"),
@@ -87,8 +91,8 @@ class TestsFlextOracleWmsSingerFlattening:
 
         result = FlextOracleWmsUtilitiesDiscovery.validate_wms_entity(entity)
 
-        assert result.success
-        assert result.unwrap() is True
+        tm.ok(result)
+        tm.that(result.unwrap(), eq=True)
 
     def test_validate_entity_at_max_name_length_succeeds(self) -> None:
         """A name exactly at the length ceiling still validates."""
@@ -96,8 +100,8 @@ class TestsFlextOracleWmsSingerFlattening:
 
         result = FlextOracleWmsUtilitiesDiscovery.validate_wms_entity(entity)
 
-        assert result.success
-        assert result.unwrap() is True
+        tm.ok(result)
+        tm.that(result.unwrap(), eq=True)
 
     def test_validate_entity_rejects_overlong_name(self) -> None:
         """A name past the ceiling fails with a descriptive error."""
@@ -105,6 +109,6 @@ class TestsFlextOracleWmsSingerFlattening:
 
         result = FlextOracleWmsUtilitiesDiscovery.validate_wms_entity(entity)
 
-        assert result.failure
-        assert result.error is not None
-        assert "too long" in result.error
+        tm.fail(result)
+        tm.that(result.error, none=False)
+        tm.that(result.error, has="too long")

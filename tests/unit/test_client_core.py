@@ -21,7 +21,7 @@ from unittest.mock import Mock
 
 import pytest
 from flext_api import FlextApi
-from flext_tests import r
+from flext_tests import r, tm
 
 from flext_oracle_wms import FlextOracleWmsSettings, FlextOracleWmsUtilitiesClient, c, m
 from tests import t
@@ -71,28 +71,28 @@ class TestsFlextOracleWmsClientCore:
     ) -> None:
         client = FlextOracleWmsUtilitiesClient.Client(mock_config)
         assert client.settings is mock_config
-        assert client.settings.OracleWms.base_url == mock_config.OracleWms.base_url
-        assert client.settings.OracleWms.timeout == mock_config.OracleWms.timeout
+        tm.that(client.settings.OracleWms.base_url, eq=mock_config.OracleWms.base_url)
+        tm.that(client.settings.OracleWms.timeout, eq=mock_config.OracleWms.timeout)
 
     def test_init_without_settings_resolves_global_config(self) -> None:
         client = FlextOracleWmsUtilitiesClient.Client(None)
-        assert isinstance(client.settings, FlextOracleWmsSettings)
+        tm.that(client.settings, is_=FlextOracleWmsSettings)
 
     def test_start_reports_success(
         self,
         mock_config: FlextOracleWmsSettings,
     ) -> None:
         result = FlextOracleWmsUtilitiesClient.Client(mock_config).start()
-        assert result.success
-        assert result.unwrap() is True
+        tm.ok(result)
+        tm.that(result.unwrap(), eq=True)
 
     def test_start_is_idempotent(
         self,
         mock_config: FlextOracleWmsSettings,
     ) -> None:
         client = FlextOracleWmsUtilitiesClient.Client(mock_config)
-        assert client.start().unwrap() is True
-        assert client.start().unwrap() is True
+        tm.that(client.start().unwrap(), eq=True)
+        tm.that(client.start().unwrap(), eq=True)
 
     def test_stop_reports_success(
         self,
@@ -101,16 +101,16 @@ class TestsFlextOracleWmsClientCore:
         client = FlextOracleWmsUtilitiesClient.Client(mock_config)
         client.start()
         result = client.stop()
-        assert result.success
-        assert result.unwrap() is True
+        tm.ok(result)
+        tm.that(result.unwrap(), eq=True)
 
     def test_stop_before_start_still_succeeds(
         self,
         mock_config: FlextOracleWmsSettings,
     ) -> None:
         result = FlextOracleWmsUtilitiesClient.Client(mock_config).stop()
-        assert result.success
-        assert result.unwrap() is True
+        tm.ok(result)
+        tm.that(result.unwrap(), eq=True)
 
     def test_restart_after_stop_succeeds(
         self,
@@ -119,7 +119,7 @@ class TestsFlextOracleWmsClientCore:
         client = FlextOracleWmsUtilitiesClient.Client(mock_config)
         client.start()
         client.stop()
-        assert client.start().unwrap() is True
+        tm.that(client.start().unwrap(), eq=True)
 
     def test_from_auth_settings_builds_client_for_basic_auth(self) -> None:
         auth = m.OracleWms.AuthSettings(
@@ -128,8 +128,8 @@ class TestsFlextOracleWmsClientCore:
             password="wms_pass",
         )
         result = FlextOracleWmsUtilitiesClient.Client.from_auth_settings(auth)
-        assert result.success
-        assert isinstance(result.unwrap(), FlextOracleWmsUtilitiesClient.Client)
+        tm.ok(result)
+        tm.that(result.unwrap(), is_=FlextOracleWmsUtilitiesClient.Client)
 
     def test_from_auth_settings_rejects_non_basic_auth(self) -> None:
         auth = m.OracleWms.AuthSettings(
@@ -138,13 +138,13 @@ class TestsFlextOracleWmsClientCore:
             oauth2_client_secret="client-secret",
         )
         result = FlextOracleWmsUtilitiesClient.Client.from_auth_settings(auth)
-        assert result.failure
-        assert "BASIC" in (result.error or "")
+        tm.fail(result)
+        tm.that((result.error or ""), has="BASIC")
 
     def test_from_auth_settings_rejects_invalid_business_rules(self) -> None:
         auth = m.OracleWms.AuthSettings(method="basic", username=None, password=None)
         result = FlextOracleWmsUtilitiesClient.Client.from_auth_settings(auth)
-        assert result.failure
+        tm.fail(result)
         assert result.error
 
     def test_health_check_returns_ok_response(
@@ -156,8 +156,8 @@ class TestsFlextOracleWmsClientCore:
             _http_response(status_code=200, body={"status": "healthy"}),
         )
         result = client.health_check()
-        assert result.success
-        assert result.unwrap().status_code == 200
+        tm.ok(result)
+        tm.that(result.unwrap().status_code, eq=200)
 
     def test_call_api_returns_ok_response(
         self,
@@ -168,8 +168,8 @@ class TestsFlextOracleWmsClientCore:
             _http_response(status_code=200, body={"result": "ok"}),
         )
         result = client.call_api("allocation")
-        assert result.success
-        assert result.unwrap().body == {"result": "ok"}
+        tm.ok(result)
+        tm.that(result.unwrap().body, eq={"result": "ok"})
 
     def test_discover_entities_returns_parsed_entity_names(
         self,
@@ -183,8 +183,8 @@ class TestsFlextOracleWmsClientCore:
             ),
         )
         result = client.discover_entities()
-        assert result.success
-        assert list(result.unwrap()) == ["company", "facility", "item"]
+        tm.ok(result)
+        tm.that(list(result.unwrap()), eq=["company", "facility", "item"])
 
     def test_get_entity_data_returns_parsed_rows(
         self,
@@ -195,8 +195,8 @@ class TestsFlextOracleWmsClientCore:
             _http_response(status_code=200, body={"data": [{"id": "1"}, {"id": "2"}]}),
         )
         result = client.get_entity_data("item", limit=10)
-        assert result.success
-        assert list(result.unwrap()) == [{"id": "1"}, {"id": "2"}]
+        tm.ok(result)
+        tm.that(list(result.unwrap()), eq=[{"id": "1"}, {"id": "2"}])
 
     def test_get_apis_by_category_returns_parsed_apis(
         self,
@@ -207,8 +207,8 @@ class TestsFlextOracleWmsClientCore:
             _http_response(status_code=200, body={"apis": [{"name": "test_api"}]}),
         )
         result = client.get_apis_by_category("inventory")
-        assert result.success
-        assert list(result.unwrap()) == [{"name": "test_api"}]
+        tm.ok(result)
+        tm.that(list(result.unwrap()), eq=[{"name": "test_api"}])
 
     @pytest.mark.parametrize(
         "operation",
@@ -227,7 +227,7 @@ class TestsFlextOracleWmsClientCore:
     ) -> None:
         client = _client_with_transport_failure(mock_config, "Connection refused")
         result = operation(client)
-        assert result.failure
+        tm.fail(result)
         assert result.error
 
     @pytest.mark.parametrize("status_code", [400, 404, 500])
@@ -241,8 +241,8 @@ class TestsFlextOracleWmsClientCore:
             _http_response(status_code=status_code, body={"error": "boom"}),
         )
         result = client.health_check()
-        assert result.failure
-        assert str(status_code) in (result.error or "")
+        tm.fail(result)
+        tm.that((result.error or ""), has=str(status_code))
 
     def test_status_below_threshold_is_success(
         self,
@@ -253,7 +253,7 @@ class TestsFlextOracleWmsClientCore:
             mock_config,
             _http_response(status_code=below, body={"ok": True}),
         )
-        assert client.health_check().success
+        tm.ok(client.health_check())
 
     def test_discover_entities_defaults_to_empty_on_absent_entities(
         self,
@@ -264,8 +264,8 @@ class TestsFlextOracleWmsClientCore:
             _http_response(status_code=200, body={"unexpected": "shape"}),
         )
         result = client.discover_entities()
-        assert result.success
-        assert list(result.unwrap()) == []
+        tm.ok(result)
+        tm.that(list(result.unwrap()), eq=[])
 
 
 __all__: list[str] = ["TestsFlextOracleWmsClientCore"]

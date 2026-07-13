@@ -17,6 +17,7 @@ from enum import StrEnum
 from types import MappingProxyType
 
 import pytest
+from flext_tests import tm
 
 from tests import c
 
@@ -28,7 +29,7 @@ class TestsFlextOracleWmsSchemaDynamic:
 
     def test_version_is_nonempty_string(self) -> None:
         """FLEXT_WMS_VERSION is exposed as a concrete non-empty version string."""
-        assert _WMS.FLEXT_WMS_VERSION == "1.0.0"
+        tm.that(_WMS.FLEXT_WMS_VERSION, eq="1.0.0")
 
     @pytest.mark.parametrize(
         ("key", "expected"),
@@ -43,11 +44,11 @@ class TestsFlextOracleWmsSchemaDynamic:
         self, key: str, expected: str | int
     ) -> None:
         """API_CONFIG maps each documented key to its promised default value."""
-        assert _WMS.API_CONFIG[key] == expected
+        tm.that(_WMS.API_CONFIG[key], eq=expected)
 
     def test_api_config_is_immutable(self) -> None:
         """API_CONFIG is a read-only mappingproxy; consumers cannot mutate it."""
-        assert isinstance(_WMS.API_CONFIG, MappingProxyType)
+        tm.that(_WMS.API_CONFIG, is_=MappingProxyType)
 
     @pytest.mark.parametrize(
         "key",
@@ -56,7 +57,7 @@ class TestsFlextOracleWmsSchemaDynamic:
     def test_processing_config_keys_are_positive_ints(self, key: str) -> None:
         """PROCESSING_CONFIG exposes positive integer sizing defaults."""
         value = _WMS.PROCESSING_CONFIG[key]
-        assert isinstance(value, int)
+        tm.that(value, is_=int)
         assert value > 0
 
     @pytest.mark.parametrize(
@@ -71,7 +72,7 @@ class TestsFlextOracleWmsSchemaDynamic:
         self, env: str, expected_url: str
     ) -> None:
         """ENVIRONMENTS resolves each named environment to its endpoint URL."""
-        assert _WMS.ENVIRONMENTS[env] == expected_url
+        tm.that(_WMS.ENVIRONMENTS[env], eq=expected_url)
 
     @pytest.mark.parametrize(
         ("member", "value"),
@@ -90,22 +91,25 @@ class TestsFlextOracleWmsSchemaDynamic:
     def test_filter_operator_member_values(self, member: str, value: str) -> None:
         """WmsFilterOperator members carry their documented string values."""
         operator = _WMS.WmsFilterOperator[member]
-        assert operator == value
-        assert isinstance(operator, StrEnum)
+        tm.that(operator, eq=value)
+        tm.that(operator, is_=StrEnum)
 
     def test_filter_operator_is_complete(self) -> None:
         """WmsFilterOperator exposes exactly the documented operator set."""
-        assert {op.value for op in _WMS.WmsFilterOperator} == {
-            "eq",
-            "ne",
-            "gt",
-            "gte",
-            "lt",
-            "lte",
-            "in",
-            "not_in",
-            "contains",
-        }
+        tm.that(
+            {op.value for op in _WMS.WmsFilterOperator},
+            eq={
+                "eq",
+                "ne",
+                "gt",
+                "gte",
+                "lt",
+                "lte",
+                "in",
+                "not_in",
+                "contains",
+            },
+        )
 
     @pytest.mark.parametrize(
         ("member", "value"),
@@ -119,29 +123,32 @@ class TestsFlextOracleWmsSchemaDynamic:
     def test_auth_method_member_values(self, member: str, value: str) -> None:
         """OracleWMSAuthMethod members carry their documented string values."""
         method = _WMS.OracleWMSAuthMethod[member]
-        assert method == value
-        assert isinstance(method, StrEnum)
+        tm.that(method, eq=value)
+        tm.that(method, is_=StrEnum)
 
     def test_auth_method_is_complete(self) -> None:
         """OracleWMSAuthMethod exposes exactly the four supported methods."""
-        assert {m.value for m in _WMS.OracleWMSAuthMethod} == {
-            "basic",
-            "oauth2",
-            "api_key",
-            "bearer",
-        }
+        tm.that(
+            {m.value for m in _WMS.OracleWMSAuthMethod},
+            eq={
+                "basic",
+                "oauth2",
+                "api_key",
+                "bearer",
+            },
+        )
 
     def test_filtering_max_conditions_limit(self) -> None:
         """Filtering caps filter conditions at the documented maximum."""
-        assert _WMS.Filtering.MAX_FILTER_CONDITIONS == 50
+        tm.that(_WMS.Filtering.MAX_FILTER_CONDITIONS, eq=50)
 
     def test_entity_name_length_limit(self) -> None:
         """WmsEntities bounds entity names to the documented maximum length."""
-        assert _WMS.WmsEntities.MAX_ENTITY_NAME_LENGTH == 100
+        tm.that(_WMS.WmsEntities.MAX_ENTITY_NAME_LENGTH, eq=100)
 
     def test_processing_schema_depth_limit(self) -> None:
         """WmsProcessing bounds schema nesting to the documented maximum depth."""
-        assert _WMS.WmsProcessing.MAX_SCHEMA_DEPTH == 10
+        tm.that(_WMS.WmsProcessing.MAX_SCHEMA_DEPTH, eq=10)
 
 
 __all__: list[str] = ["TestsFlextOracleWmsSchemaDynamic"]

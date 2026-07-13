@@ -11,6 +11,7 @@ import pytest
 
 from flext_core import r
 from flext_oracle_wms import (
+from flext_tests import tm
     FlextOracleWmsModels as m,
     FlextOracleWmsSettings,
     FlextOracleWmsUtilitiesClient,
@@ -60,7 +61,7 @@ class TestsFlextOracleWmsConnection:
         expected: str | float,
     ) -> None:
         """Deterministic settings publish stable, documented field values."""
-        assert settings.model_dump()["OracleWms"][field] == expected
+        tm.that(settings.model_dump()["OracleWms"][field], eq=expected)
 
     def test_testing_config_is_deterministic(self) -> None:
         """Two independent factory calls yield equal public state."""
@@ -70,7 +71,7 @@ class TestsFlextOracleWmsConnection:
         second = FlextOracleWmsSettings.model_validate({
             "OracleWms": {"base_url": "https://test-wms.example.com"},
         })
-        assert first.model_dump() == second.model_dump()
+        tm.that(first.model_dump(), eq=second.model_dump())
 
     def test_client_publishes_its_settings(
         self,
@@ -88,10 +89,10 @@ class TestsFlextOracleWmsConnection:
             password="secret",
         )
         result = Client.from_auth_settings(auth)
-        assert result.success
+        tm.ok(result)
         built = result.unwrap()
-        assert built.settings.OracleWms.username == "alice"
-        assert built.settings.OracleWms.password == "secret"
+        tm.that(built.settings.OracleWms.username, eq="alice")
+        tm.that(built.settings.OracleWms.password, eq="secret")
 
     def test_discover_entities_returns_result_on_unreachable_host(
         self,
@@ -99,9 +100,9 @@ class TestsFlextOracleWmsConnection:
     ) -> None:
         """Network discovery surfaces failure as r[T], never raises."""
         result = client.discover_entities()
-        assert isinstance(result, r)
-        assert result.failure
-        assert isinstance(result.error, str)
+        tm.that(result, is_=r)
+        tm.fail(result)
+        tm.that(result.error, is_=str)
         assert result.error
 
     def test_get_apis_by_category_returns_result_on_unreachable_host(
@@ -110,7 +111,7 @@ class TestsFlextOracleWmsConnection:
     ) -> None:
         """Category lookup returns a failing result rather than throwing."""
         result = client.get_apis_by_category("entity")
-        assert isinstance(result, r)
-        assert result.failure
-        assert isinstance(result.error, str)
+        tm.that(result, is_=r)
+        tm.fail(result)
+        tm.that(result.error, is_=str)
         assert result.error

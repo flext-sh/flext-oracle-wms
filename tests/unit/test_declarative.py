@@ -17,6 +17,7 @@ from pathlib import Path
 from typing import TYPE_CHECKING
 
 import pytest
+from flext_tests import tm
 
 from flext_oracle_wms import (
     FlextOracleWmsApi,
@@ -76,7 +77,7 @@ class TestsFlextOracleWmsDeclarative:
         """
         assert result.success is not result.failure
         if result.failure:
-            assert isinstance(result.error, str)
+            tm.that(result.error, is_=str)
             assert result.error
 
     # ------------------------------------------------------------------
@@ -88,7 +89,7 @@ class TestsFlextOracleWmsDeclarative:
         endpoints = FlextOracleWmsApi.api_endpoints()
         assert endpoints
         for endpoint in endpoints.values():
-            assert isinstance(endpoint, m.OracleWms.ApiEndpoint)
+            tm.that(endpoint, is_=m.OracleWms.ApiEndpoint)
             assert endpoint.name
             assert endpoint.method
             assert endpoint.path
@@ -106,8 +107,8 @@ class TestsFlextOracleWmsDeclarative:
     def test_execute_signals_readiness_success(self) -> None:
         """The facade execute() contract returns a successful r[bool] carrying True."""
         result = FlextOracleWmsApi().execute()
-        assert result.success
-        assert result.value is True
+        tm.ok(result)
+        tm.that(result.value, eq=True)
 
     # ------------------------------------------------------------------
     # Client operations — r[T] contract on every path
@@ -123,8 +124,8 @@ class TestsFlextOracleWmsDeclarative:
         if result.success:
             body = result.value.body
             payload = body if isinstance(body, dict) else dict[str, t.JsonValue]()
-            assert payload.get("service") == "FlextOracleWmsClient"
-            assert payload.get("status") in {"healthy", "unhealthy"}
+            tm.that(payload.get("service"), eq="FlextOracleWmsClient")
+            tm.that({"healthy", "unhealthy"}, has=payload.get("status"))
 
     def test_discover_entities_returns_sequence_on_success(
         self,
@@ -134,7 +135,7 @@ class TestsFlextOracleWmsDeclarative:
         result = oracle_wms_client.discover_entities()
         self._assert_result_contract(result)
         if result.success:
-            assert isinstance(result.value, list)
+            tm.that(result.value, is_=list)
 
     @pytest.mark.parametrize("entity_name", ["company", "facility", "item"])
     def test_get_entity_data_returns_record_sequence(
@@ -146,7 +147,7 @@ class TestsFlextOracleWmsDeclarative:
         result = oracle_wms_client.get_entity_data(entity_name=entity_name, limit=5)
         self._assert_result_contract(result)
         if result.success:
-            assert isinstance(result.value, (list, tuple))
+            tm.that(result.value, is_=(list, tuple))
 
     def test_get_entity_data_with_filters_returns_result_contract(
         self,
@@ -160,7 +161,7 @@ class TestsFlextOracleWmsDeclarative:
         )
         self._assert_result_contract(result)
         if result.success:
-            assert isinstance(result.value, (list, tuple))
+            tm.that(result.value, is_=(list, tuple))
 
     @pytest.mark.parametrize(
         "limit",
@@ -186,7 +187,7 @@ class TestsFlextOracleWmsDeclarative:
         results: list[p.Result[Sequence[t.StrMapping]]] = [
             oracle_wms_client.get_entity_data(entity, limit=3) for entity in entities
         ]
-        assert len(results) == len(entities)
+        tm.that(len(results), eq=len(entities))
         for result in results:
             self._assert_result_contract(result)
 
@@ -202,7 +203,7 @@ class TestsFlextOracleWmsDeclarative:
     ) -> None:
         """Requesting an unknown entity fails with a populated error message."""
         result = oracle_wms_client.get_entity_data(entity_name)
-        assert result.failure
+        tm.fail(result)
         assert result.error
 
     @pytest.mark.parametrize("api_name", ["unknown_api_xyz", "invalid_api_name"])
@@ -213,7 +214,7 @@ class TestsFlextOracleWmsDeclarative:
     ) -> None:
         """Calling an unknown API name fails with a populated error message."""
         result = oracle_wms_client.call_api(api_name)
-        assert result.failure
+        tm.fail(result)
         assert result.error
 
     def test_update_oblpn_tracking_failure_is_not_initialization_error(
@@ -227,7 +228,7 @@ class TestsFlextOracleWmsDeclarative:
         )
         self._assert_result_contract(result)
         if result.failure and result.error:
-            assert "Client not initialized" not in result.error
+            tm.that(result.error, lacks="Client not initialized")
 
     def test_create_lpn_failure_is_not_initialization_error(
         self,
@@ -237,7 +238,7 @@ class TestsFlextOracleWmsDeclarative:
         result = oracle_wms_client.create_lpn(lpn_nbr="TEST_LPN_001", qty=10)
         self._assert_result_contract(result)
         if result.failure and result.error:
-            assert "Client not initialized" not in result.error
+            tm.that(result.error, lacks="Client not initialized")
 
 
 pytestmark = [pytest.mark.integration]

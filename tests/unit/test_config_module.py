@@ -12,6 +12,7 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 import pytest
+from flext_tests import tm
 
 from flext_oracle_wms import FlextOracleWmsSettings
 
@@ -31,17 +32,17 @@ class TestsFlextOracleWmsConfigModule:
         settings = FlextOracleWmsSettings.model_validate({})
         ns = settings.OracleWms
 
-        assert ns.base_url == "http://localhost:8080"
-        assert ns.timeout == pytest.approx(30.0)
-        assert ns.username == ""
-        assert ns.password == ""
-        assert ns.retry_attempts == 3
-        assert ns.api_version == "LGF_V10"
-        assert ns.auth_method == "basic"
-        assert ns.verify_ssl is True
-        assert ns.enable_logging is False
-        assert ns.connection_pool_size == 10
-        assert ns.cache_duration == 300
+        tm.that(ns.base_url, eq="http://localhost:8080")
+        tm.that(ns.timeout, eq=pytest.approx(30.0))
+        tm.that(ns.username, eq="")
+        tm.that(ns.password, eq="")
+        tm.that(ns.retry_attempts, eq=3)
+        tm.that(ns.api_version, eq="LGF_V10")
+        tm.that(ns.auth_method, eq="basic")
+        tm.that(ns.verify_ssl, eq=True)
+        tm.that(ns.enable_logging, eq=False)
+        tm.that(ns.connection_pool_size, eq=10)
+        tm.that(ns.cache_duration, eq=300)
 
     def test_custom_values_are_retained(self) -> None:
         """Explicit field values are preserved on the constructed instance."""
@@ -53,9 +54,9 @@ class TestsFlextOracleWmsConfigModule:
             },
         })
 
-        assert settings.OracleWms.base_url == "https://example.com"
-        assert settings.OracleWms.username == "test_user"
-        assert settings.OracleWms.password == "test_password"
+        tm.that(settings.OracleWms.base_url, eq="https://example.com")
+        tm.that(settings.OracleWms.username, eq="test_user")
+        tm.that(settings.OracleWms.password, eq="test_password")
 
     def test_model_dump_round_trips_public_state(self) -> None:
         """model_dump() reflects the constructed public field state."""
@@ -64,10 +65,10 @@ class TestsFlextOracleWmsConfigModule:
         })
         dumped = settings.model_dump()
 
-        assert dumped["OracleWms"]["base_url"] == "https://wms.example.com"
+        tm.that(dumped["OracleWms"]["base_url"], eq="https://wms.example.com")
         rebuilt = FlextOracleWmsSettings.model_validate(dumped)
-        assert rebuilt.OracleWms.base_url == settings.OracleWms.base_url
-        assert rebuilt.OracleWms.timeout == settings.OracleWms.timeout
+        tm.that(rebuilt.OracleWms.base_url, eq=settings.OracleWms.base_url)
+        tm.that(rebuilt.OracleWms.timeout, eq=settings.OracleWms.timeout)
 
     def test_out_of_range_scalars_are_carried_raw(self) -> None:
         """Out-of-range scalars are stored as-is (ADR-005: no range checks here)."""
@@ -82,11 +83,11 @@ class TestsFlextOracleWmsConfigModule:
         })
         ns = settings.OracleWms
 
-        assert ns.base_url == ""
-        assert ns.timeout == pytest.approx(0.5)
-        assert ns.retry_attempts == -1
-        assert ns.connection_pool_size == 0
-        assert ns.cache_duration == -1
+        tm.that(ns.base_url, eq="")
+        tm.that(ns.timeout, eq=pytest.approx(0.5))
+        tm.that(ns.retry_attempts, eq=-1)
+        tm.that(ns.connection_pool_size, eq=0)
+        tm.that(ns.cache_duration, eq=-1)
 
     def test_singleton_returns_same_instance(self) -> None:
         """Repeated fetch_global calls return the same singleton instance."""
@@ -109,5 +110,5 @@ class TestsFlextOracleWmsConfigModule:
         cloned = base.clone(OracleWms={"base_url": "https://clone.example.com"})
 
         assert cloned is not base
-        assert cloned.OracleWms.base_url == "https://clone.example.com"
-        assert base.OracleWms.base_url == "http://localhost:8080"
+        tm.that(cloned.OracleWms.base_url, eq="https://clone.example.com")
+        tm.that(base.OracleWms.base_url, eq="http://localhost:8080")

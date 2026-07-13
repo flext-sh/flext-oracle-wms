@@ -8,6 +8,7 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 import pytest
+from flext_tests import tm
 
 from flext_oracle_wms import FlextOracleWmsApi, FlextOracleWmsUtilitiesClient, m
 from tests import m as tm, t
@@ -26,32 +27,35 @@ class TestsFlextOracleWmsWmsApi:
 
         assert endpoints, "expected a non-empty endpoint catalog"
         for name, endpoint in endpoints.items():
-            assert isinstance(name, str)
+            tm.that(name, is_=str)
             assert name
-            assert isinstance(endpoint, tm.OracleWms.ApiEndpoint)
-            assert endpoint.name == name
+            tm.that(endpoint, is_=tm.OracleWms.ApiEndpoint)
+            tm.that(endpoint.name, eq=name)
 
     def test_api_endpoints_publishes_documented_test_endpoint(self) -> None:
         """The catalog exposes the documented 'test' probe endpoint verbatim."""
         endpoint = FlextOracleWmsApi.api_endpoints()["test"]
 
-        assert endpoint.model_dump() == {
-            "name": "test",
-            "method": "GET",
-            "path": "/test/",
-            "version": "v1",
-            "category": "test",
-            "description": endpoint.description,
-            "since_version": "6.1",
-        }
-        assert isinstance(endpoint.description, str)
+        tm.that(
+            endpoint.model_dump(),
+            eq={
+                "name": "test",
+                "method": "GET",
+                "path": "/test/",
+                "version": "v1",
+                "category": "test",
+                "description": endpoint.description,
+                "since_version": "6.1",
+            },
+        )
+        tm.that(endpoint.description, is_=str)
 
     def test_api_endpoints_returns_equivalent_snapshot_each_call(self) -> None:
         """Repeated calls yield equal catalogs (idempotent, no shared drift)."""
         first = FlextOracleWmsApi.api_endpoints()
         second = FlextOracleWmsApi.api_endpoints()
 
-        assert first.keys() == second.keys()
+        tm.that(first.keys(), eq=second.keys())
         assert all(first[k].model_dump() == second[k].model_dump() for k in first)
 
     # ------------------------------------------------------------------
@@ -70,15 +74,18 @@ class TestsFlextOracleWmsWmsApi:
             since_version="7.0",
         )
 
-        assert endpoint.model_dump() == {
-            "name": "custom",
-            "method": "POST",
-            "path": "/custom/",
-            "version": "v2",
-            "category": "inventory",
-            "description": "Custom endpoint",
-            "since_version": "7.0",
-        }
+        tm.that(
+            endpoint.model_dump(),
+            eq={
+                "name": "custom",
+                "method": "POST",
+                "path": "/custom/",
+                "version": "v2",
+                "category": "inventory",
+                "description": "Custom endpoint",
+                "since_version": "7.0",
+            },
+        )
 
     def test_api_endpoint_applies_documented_defaults(self) -> None:
         """Description field defaults to '' and since_version to '6.1' baseline."""
@@ -90,8 +97,8 @@ class TestsFlextOracleWmsWmsApi:
             category="test",
         )
 
-        assert endpoint.description == ""
-        assert endpoint.since_version == "6.1"
+        tm.that(endpoint.description, eq="")
+        tm.that(endpoint.since_version, eq="6.1")
 
     @pytest.mark.parametrize(
         "blank_field",
@@ -121,8 +128,8 @@ class TestsFlextOracleWmsWmsApi:
             m.OracleWms.AuthSettings(username="test_user", password="test_password"),
         )
 
-        assert result.success
-        assert isinstance(result.unwrap(), FlextOracleWmsUtilitiesClient.Client)
+        tm.ok(result)
+        tm.that(result.unwrap(), is_=FlextOracleWmsUtilitiesClient.Client)
 
     def test_create_client_fails_when_basic_credentials_incomplete(self) -> None:
         """BASIC auth without a password fails with the business-rule error."""
@@ -130,8 +137,8 @@ class TestsFlextOracleWmsWmsApi:
             m.OracleWms.AuthSettings(username="only_user"),
         )
 
-        assert result.failure
-        assert result.error == "Basic auth requires username and password"
+        tm.fail(result)
+        tm.that(result.error, eq="Basic auth requires username and password")
 
     def test_create_client_rejects_unsupported_oauth2_method(self) -> None:
         """A valid OAuth2 config is refused: runtime supports BASIC auth only."""
@@ -143,9 +150,9 @@ class TestsFlextOracleWmsWmsApi:
             ),
         )
 
-        assert result.failure
-        assert result.error is not None
-        assert "BASIC" in result.error
+        tm.fail(result)
+        tm.that(result.error, none=False)
+        tm.that(result.error, has="BASIC")
 
     # ------------------------------------------------------------------
     # execute() default readiness surface
@@ -157,8 +164,8 @@ class TestsFlextOracleWmsWmsApi:
 
         result = api.execute()
 
-        assert result.success
-        assert result.unwrap() is True
+        tm.ok(result)
+        tm.that(result.unwrap(), eq=True)
 
 
 __all__: list[str] = []

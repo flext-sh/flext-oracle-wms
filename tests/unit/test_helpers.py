@@ -8,6 +8,7 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 import pytest
+from flext_tests import tm
 
 from flext_core import u as core_u
 from flext_oracle_wms import c, e, m
@@ -57,7 +58,7 @@ class TestsFlextOracleWmsHelpers:
         expected: str,
     ) -> None:
         """to_str stringifies present values and substitutes the default for None."""
-        assert u.to_str(value, default=default) == expected
+        tm.that(u.to_str(value, default=default), eq=expected)
 
     # ---- filter_by_field -------------------------------------------------
 
@@ -68,8 +69,8 @@ class TestsFlextOracleWmsHelpers:
         """Equality filtering yields exactly the records whose field matches."""
         result = u.Filter.filter_by_field(records, "name", "beta")
 
-        assert result.success
-        assert [row["id"] for row in result.unwrap()] == [2]
+        tm.ok(result)
+        tm.that([row["id"] for row in result.unwrap()], eq=[2])
 
     def test_filter_by_field_with_operator_applies_comparison(
         self,
@@ -83,8 +84,8 @@ class TestsFlextOracleWmsHelpers:
             operator=c.OracleWms.WmsFilterOperator.GTE,
         )
 
-        assert result.success
-        assert [row["id"] for row in result.unwrap()] == [2, 5]
+        tm.ok(result)
+        tm.that([row["id"] for row in result.unwrap()], eq=[2, 5])
 
     # ---- filter_by_id_range ---------------------------------------------
 
@@ -112,15 +113,15 @@ class TestsFlextOracleWmsHelpers:
             max_id=max_id,
         )
 
-        assert result.success
-        assert [row["id"] for row in result.unwrap()] == expected
+        tm.ok(result)
+        tm.that([row["id"] for row in result.unwrap()], eq=expected)
 
     def test_filter_by_id_range_on_empty_input_returns_empty(self) -> None:
         """Filtering an empty collection succeeds with an empty result."""
         result = u.Filter.filter_by_id_range([], "id", min_id=1)
 
-        assert result.success
-        assert result.unwrap() == []
+        tm.ok(result)
+        tm.that(result.unwrap(), eq=[])
 
     # ---- create_filter / instance state ---------------------------------
 
@@ -128,9 +129,9 @@ class TestsFlextOracleWmsHelpers:
         """The engine reports the configuration it was created with."""
         engine = u.Filter.create_filter(case_sensitive=True, max_conditions=10)
 
-        assert isinstance(engine, u.Filter)
-        assert engine.case_sensitive is True
-        assert engine.max_conditions == 10
+        tm.that(engine, is_=u.Filter)
+        tm.that(engine.case_sensitive, eq=True)
+        tm.that(engine.max_conditions, eq=10)
 
     @pytest.mark.parametrize(
         "max_conditions", [0, -1, c.OracleWms.Filtering.MAX_FILTER_CONDITIONS + 1]
@@ -167,8 +168,8 @@ class TestsFlextOracleWmsHelpers:
 
         result = engine.filter_records(records, {"name": "ALPHA"})
 
-        assert result.success
-        assert [row["id"] for row in result.unwrap()] == [1]
+        tm.ok(result)
+        tm.that([row["id"] for row in result.unwrap()], eq=[1])
 
     def test_case_sensitive_engine_requires_exact_case(
         self,
@@ -179,8 +180,8 @@ class TestsFlextOracleWmsHelpers:
 
         result = engine.filter_records(records, {"name": "ALPHA"})
 
-        assert result.success
-        assert result.unwrap() == []
+        tm.ok(result)
+        tm.that(result.unwrap(), eq=[])
 
     # ---- filter_records limit and validation ----------------------------
 
@@ -193,8 +194,8 @@ class TestsFlextOracleWmsHelpers:
 
         result = engine.filter_records(records, {}, limit=2)
 
-        assert result.success
-        assert len(result.unwrap()) == 2
+        tm.ok(result)
+        tm.that(len(result.unwrap()), eq=2)
 
     def test_filter_records_reports_condition_overflow_as_failure(
         self,
@@ -213,8 +214,8 @@ class TestsFlextOracleWmsHelpers:
             },
         )
 
-        assert result.failure
-        assert "Too many conditions" in (result.error or "")
+        tm.fail(result)
+        tm.that((result.error or ""), has="Too many conditions")
 
     # ---- sort_records ----------------------------------------------------
 
@@ -237,5 +238,5 @@ class TestsFlextOracleWmsHelpers:
 
         result = engine.sort_records(records, "name", ascending=ascending)
 
-        assert result.success
-        assert [row["id"] for row in result.unwrap()] == expected
+        tm.ok(result)
+        tm.that([row["id"] for row in result.unwrap()], eq=expected)

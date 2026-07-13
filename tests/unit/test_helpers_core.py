@@ -14,6 +14,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 import pytest
+from flext_tests import tm
 
 from flext_core import u as core_u
 from tests import u
@@ -43,7 +44,7 @@ class TestsFlextOracleWmsHelpersCore:
         raw: str | int | bool,
         expected: str,
     ) -> None:
-        assert u.to_str(raw, default="") == expected
+        tm.that(u.to_str(raw, default=""), eq=expected)
 
     @pytest.mark.parametrize(
         ("raw", "expected"),
@@ -54,7 +55,7 @@ class TestsFlextOracleWmsHelpersCore:
         raw: str | int,
         expected: int,
     ) -> None:
-        assert u.to_int(raw, default=0) == expected
+        tm.that(u.to_int(raw, default=0), eq=expected)
 
     @pytest.mark.parametrize(
         ("raw", "expected"),
@@ -69,29 +70,32 @@ class TestsFlextOracleWmsHelpersCore:
         assert u.to_bool(raw, default=False) is expected
 
     def test_sample_entities_returns_canonical_entity_list(self) -> None:
-        assert _TESTS.sample_entities() == [
-            "action_code",
-            "company",
-            "facility",
-            "item",
-            "order_hdr",
-            "order_dtl",
-        ]
+        tm.that(
+            _TESTS.sample_entities(),
+            eq=[
+                "action_code",
+                "company",
+                "facility",
+                "item",
+                "order_hdr",
+                "order_dtl",
+            ],
+        )
 
     def test_sample_entity_data_exposes_paged_result_envelope(self) -> None:
         data = _TESTS.sample_entity_data()
 
-        assert data is not None
-        assert data["result_count"] == 4
-        assert data["page_count"] == 1
-        assert data["next_page"] is None
+        tm.that(data, none=False)
+        tm.that(data["result_count"], eq=4)
+        tm.that(data["page_count"], eq=1)
+        tm.that(data["next_page"], none=True)
 
         results = data["results"]
-        assert isinstance(results, list)
-        assert len(results) == 2
+        tm.that(results, is_=list)
+        tm.that(len(results), eq=2)
         first = results[0]
-        assert isinstance(first, dict)
-        assert first["code"] == "TEST_CODE"
+        tm.that(first, is_=dict)
+        tm.that(first["code"], eq="TEST_CODE")
 
     def test_build_client_settings_maps_env_config_to_settings_fields(self) -> None:
         settings = _TESTS.build_client_settings(
@@ -110,31 +114,31 @@ class TestsFlextOracleWmsHelpersCore:
             "LGF_V10",
         )
 
-        assert settings.OracleWms.base_url == "https://wms.example/prod"
-        assert settings.OracleWms.username == "svc_user"
-        assert settings.OracleWms.api_version == "LGF_V10"
-        assert settings.OracleWms.timeout == 45
-        assert settings.OracleWms.retry_attempts == 2
+        tm.that(settings.OracleWms.base_url, eq="https://wms.example/prod")
+        tm.that(settings.OracleWms.username, eq="svc_user")
+        tm.that(settings.OracleWms.api_version, eq="LGF_V10")
+        tm.that(settings.OracleWms.timeout, eq=45)
+        tm.that(settings.OracleWms.retry_attempts, eq=2)
 
     def test_build_client_settings_applies_defaults_for_missing_keys(self) -> None:
         settings = _TESTS.build_client_settings({"base_url": "https://x"}, "LGF_V10")
 
-        assert settings.OracleWms.base_url == "https://x"
-        assert settings.OracleWms.timeout == 30
-        assert settings.OracleWms.retry_attempts == 3
+        tm.that(settings.OracleWms.base_url, eq="https://x")
+        tm.that(settings.OracleWms.timeout, eq=30)
+        tm.that(settings.OracleWms.retry_attempts, eq=3)
 
     def test_find_env_file_locates_nearest_env(self, tmp_path: Path) -> None:
         (tmp_path / ".env").write_text("ORACLE_WMS_BASE_URL=https://h\n")
         nested = tmp_path / "a" / "b"
         nested.mkdir(parents=True)
 
-        assert _TESTS.find_env_file(nested / "file.py") == tmp_path / ".env"
+        tm.that(_TESTS.find_env_file(nested / "file.py"), eq=tmp_path / ".env")
 
     def test_find_env_file_returns_none_when_absent(self, tmp_path: Path) -> None:
         nested = tmp_path / "x" / "y"
         nested.mkdir(parents=True)
 
-        assert _TESTS.find_env_file(nested / "z.py") is None
+        tm.that(_TESTS.find_env_file(nested / "z.py"), none=True)
 
     def test_load_env_config_parses_env_and_ignores_comments(
         self,
@@ -151,12 +155,12 @@ class TestsFlextOracleWmsHelpersCore:
 
         result = _TESTS.load_env_config(start / "file.py")
 
-        assert result.success
+        tm.ok(result)
         config = result.unwrap()
-        assert config["base_url"] == "https://h/production"
-        assert config["username"] == "u1"
-        assert config["timeout"] == 50
-        assert config["api_version"] == "LGF_V10"
+        tm.that(config["base_url"], eq="https://h/production")
+        tm.that(config["username"], eq="u1")
+        tm.that(config["timeout"], eq=50)
+        tm.that(config["api_version"], eq="LGF_V10")
 
     def test_load_env_config_fails_when_no_env_present(self, tmp_path: Path) -> None:
         nested = tmp_path / "x" / "y"
@@ -164,9 +168,9 @@ class TestsFlextOracleWmsHelpersCore:
 
         result = _TESTS.load_env_config(nested / "z.py")
 
-        assert result.failure
-        assert result.error is not None
-        assert "No .env file found" in result.error
+        tm.fail(result)
+        tm.that(result.error, none=False)
+        tm.that(result.error, has="No .env file found")
 
     @pytest.mark.parametrize(
         ("url_tail", "expected_env"),
@@ -193,14 +197,14 @@ class TestsFlextOracleWmsHelpersCore:
 
         result = _TESTS.load_env_config(start / "file.py")
 
-        assert result.success
-        assert result.unwrap()["environment"] == expected_env
+        tm.ok(result)
+        tm.that(result.unwrap()["environment"], eq=expected_env)
 
     def test_load_test_env_reports_presence_of_env_file(self, tmp_path: Path) -> None:
-        assert _TESTS.load_test_env(tmp_path) is False
+        tm.that(_TESTS.load_test_env(tmp_path), eq=False)
 
         (tmp_path / ".env").write_text("ORACLE_WMS_BASE_URL=https://h\n")
-        assert _TESTS.load_test_env(tmp_path) is True
+        tm.that(_TESTS.load_test_env(tmp_path), eq=True)
 
     def test_create_real_settings_fails_without_credentials(
         self,
@@ -218,9 +222,9 @@ class TestsFlextOracleWmsHelpersCore:
 
         result = _TESTS.create_real_settings()
 
-        assert result.failure
-        assert result.error is not None
-        assert "credentials not available" in result.error
+        tm.fail(result)
+        tm.that(result.error, none=False)
+        tm.that(result.error, has="credentials not available")
 
     def test_create_real_settings_builds_settings_from_environment(
         self,
@@ -234,15 +238,15 @@ class TestsFlextOracleWmsHelpersCore:
 
         result = _TESTS.create_real_settings()
 
-        assert result.success
+        tm.ok(result)
         settings = result.unwrap()
-        assert settings.OracleWms.base_url == "https://wms.example/prod"
-        assert settings.OracleWms.username == "svc_user"
-        assert settings.OracleWms.timeout == 42
-        assert settings.OracleWms.retry_attempts == 4
+        tm.that(settings.OracleWms.base_url, eq="https://wms.example/prod")
+        tm.that(settings.OracleWms.username, eq="svc_user")
+        tm.that(settings.OracleWms.timeout, eq=42)
+        tm.that(settings.OracleWms.retry_attempts, eq=4)
 
     def test_concrete_api_execute_returns_successful_result(self) -> None:
         result = _TESTS.ConcreteApi().execute()
 
-        assert result.success
-        assert result.unwrap() is True
+        tm.ok(result)
+        tm.that(result.unwrap(), eq=True)

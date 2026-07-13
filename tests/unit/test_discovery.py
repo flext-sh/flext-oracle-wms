@@ -7,6 +7,7 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 import pytest
+from flext_tests import tm
 
 from tests import c
 
@@ -37,14 +38,14 @@ class TestsFlextOracleWmsDiscovery:
         """Each discovery outcome token is published with its exact string."""
         token: str = getattr(c.OracleWms, attribute)
 
-        assert token == expected_token
-        assert isinstance(token, str)
+        tm.that(token, eq=expected_token)
+        tm.that(token, is_=str)
 
     def test_success_and_failure_tokens_are_distinct(self) -> None:
         """Success and failure outcomes must never collide as the same token."""
-        assert c.OracleWms.DISCOVERY_SUCCESS != c.OracleWms.DISCOVERY_FAILURE
+        tm.that(c.OracleWms.DISCOVERY_SUCCESS, ne=c.OracleWms.DISCOVERY_FAILURE)
 
     def test_discovery_tokens_are_stable_across_access(self) -> None:
         """Repeated reads return the identical token (immutable contract)."""
-        assert c.OracleWms.DISCOVERY_SUCCESS == c.OracleWms.DISCOVERY_SUCCESS
-        assert c.OracleWms.DISCOVERY_FAILURE == c.OracleWms.DISCOVERY_FAILURE
+        tm.that(c.OracleWms.DISCOVERY_SUCCESS, eq=c.OracleWms.DISCOVERY_SUCCESS)
+        tm.that(c.OracleWms.DISCOVERY_FAILURE, eq=c.OracleWms.DISCOVERY_FAILURE)

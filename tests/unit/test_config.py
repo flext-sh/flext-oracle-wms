@@ -12,6 +12,7 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 import pytest
+from flext_tests import tm
 
 from flext_oracle_wms import FlextOracleWmsSettings
 
@@ -34,28 +35,28 @@ class TestsFlextOracleWmsConfig:
             },
         })
         ns = settings.OracleWms
-        assert ns.base_url == "https://wms.oraclecloud.com/test"
-        assert ns.username == "user"
-        assert ns.password == "test_password"
-        assert ns.timeout == pytest.approx(30.0)
-        assert ns.retry_attempts == 3
+        tm.that(ns.base_url, eq="https://wms.oraclecloud.com/test")
+        tm.that(ns.username, eq="user")
+        tm.that(ns.password, eq="test_password")
+        tm.that(ns.timeout, eq=pytest.approx(30.0))
+        tm.that(ns.retry_attempts, eq=3)
 
     @pytest.mark.unit
     def test_defaults_define_documented_contract(self) -> None:
         """Default construction yields the documented default configuration."""
         settings = FlextOracleWmsSettings.model_validate({})
         ns = settings.OracleWms
-        assert ns.base_url == "http://localhost:8080"
-        assert ns.timeout == pytest.approx(30.0)
-        assert ns.retry_attempts == 3
-        assert ns.username == ""
-        assert ns.password == ""
-        assert ns.api_version == "LGF_V10"
-        assert ns.auth_method == "basic"
-        assert ns.verify_ssl is True
-        assert ns.enable_logging is False
-        assert ns.connection_pool_size == 10
-        assert ns.cache_duration == 300
+        tm.that(ns.base_url, eq="http://localhost:8080")
+        tm.that(ns.timeout, eq=pytest.approx(30.0))
+        tm.that(ns.retry_attempts, eq=3)
+        tm.that(ns.username, eq="")
+        tm.that(ns.password, eq="")
+        tm.that(ns.api_version, eq="LGF_V10")
+        tm.that(ns.auth_method, eq="basic")
+        tm.that(ns.verify_ssl, eq=True)
+        tm.that(ns.enable_logging, eq=False)
+        tm.that(ns.connection_pool_size, eq=10)
+        tm.that(ns.cache_duration, eq=300)
 
     @pytest.mark.unit
     def test_settings_accept_unvalidated_scalars(self) -> None:
@@ -64,8 +65,8 @@ class TestsFlextOracleWmsConfig:
             "OracleWms": {"timeout": -1, "retry_attempts": -5},
         })
 
-        assert settings.OracleWms.timeout == -1
-        assert settings.OracleWms.retry_attempts == -5
+        tm.that(settings.OracleWms.timeout, eq=-1)
+        tm.that(settings.OracleWms.retry_attempts, eq=-5)
 
     @pytest.mark.unit
     def test_model_validate_round_trips_public_fields(self) -> None:
@@ -79,10 +80,10 @@ class TestsFlextOracleWmsConfig:
             },
         })
         dumped = original.model_dump()
-        assert dumped["OracleWms"]["base_url"] == "https://wms.example.com"
-        assert dumped["OracleWms"]["username"] == "alice"
-        assert dumped["OracleWms"]["timeout"] == pytest.approx(45.0)
-        assert dumped["OracleWms"]["retry_attempts"] == 5
+        tm.that(dumped["OracleWms"]["base_url"], eq="https://wms.example.com")
+        tm.that(dumped["OracleWms"]["username"], eq="alice")
+        tm.that(dumped["OracleWms"]["timeout"], eq=pytest.approx(45.0))
+        tm.that(dumped["OracleWms"]["retry_attempts"], eq=5)
 
     @pytest.mark.unit
     def test_settings_ignore_unknown_keys(self) -> None:
@@ -91,8 +92,8 @@ class TestsFlextOracleWmsConfig:
             "not_a_real_setting": "value",
         })
 
-        assert "not_a_real_setting" not in settings.model_dump()
-        assert settings.OracleWms.base_url == "http://localhost:8080"
+        tm.that(settings.model_dump(), lacks="not_a_real_setting")
+        tm.that(settings.OracleWms.base_url, eq="http://localhost:8080")
 
     @pytest.mark.unit
     def test_default_construction_is_deterministic(self) -> None:
@@ -100,5 +101,5 @@ class TestsFlextOracleWmsConfig:
         first = FlextOracleWmsSettings.model_validate({})
         second = FlextOracleWmsSettings.model_validate({})
 
-        assert first.OracleWms.base_url == "http://localhost:8080"
-        assert first.model_dump() == second.model_dump()
+        tm.that(first.OracleWms.base_url, eq="http://localhost:8080")
+        tm.that(first.model_dump(), eq=second.model_dump())
