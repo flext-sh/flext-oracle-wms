@@ -13,8 +13,6 @@ from flext_tests import tm
 from flext_oracle_wms import FlextOracleWmsUtilitiesDiscovery
 from tests import c, m, t
 
-__all__: list[str] = ["TestsFlextOracleWmsModelsUnit"]
-
 
 class TestsFlextOracleWmsModelsUnit:
     """Observable contract for m.OracleWms.Entity."""
@@ -118,3 +116,6 @@ class TestsFlextOracleWmsModelsUnit:
         limit = c.OracleWms.WmsEntities.MAX_ENTITY_NAME_LENGTH
         entity = m.OracleWms.Entity(name="x" * limit, endpoint="/api/items")
         tm.ok(FlextOracleWmsUtilitiesDiscovery.validate_wms_entity(entity))
+
+
+__all__: list[str] = ["TestsFlextOracleWmsModelsUnit"]

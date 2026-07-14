@@ -11,8 +11,6 @@ from flext_tests import tm
 
 from tests import c
 
-__all__: list[str] = ["TestsFlextOracleWmsDiscovery"]
-
 
 class TestsFlextOracleWmsDiscovery:
     """Public-contract suite for the discovery outcome tokens.
@@ -49,3 +47,6 @@ class TestsFlextOracleWmsDiscovery:
         """Repeated reads return the identical token (immutable contract)."""
         tm.that(c.OracleWms.DISCOVERY_SUCCESS, eq=c.OracleWms.DISCOVERY_SUCCESS)
         tm.that(c.OracleWms.DISCOVERY_FAILURE, eq=c.OracleWms.DISCOVERY_FAILURE)
+
+
+__all__: list[str] = ["TestsFlextOracleWmsDiscovery"]
