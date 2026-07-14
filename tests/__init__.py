@@ -39,7 +39,7 @@ if TYPE_CHECKING:
     )
     from tests.protocols import (
         TestsFlextOracleWmsProtocols as TestsFlextOracleWmsProtocols,
-        p as p,
+        p,
     )
     from tests.settings import (
         TestsFlextOracleWmsSettings as TestsFlextOracleWmsSettings,
@@ -122,7 +122,7 @@ if TYPE_CHECKING:
     )
     from tests.utilities import (
         TestsFlextOracleWmsUtilities as TestsFlextOracleWmsUtilities,
-        u as u,
+        u,
     )
 _LAZY_IMPORTS = merge_lazy_imports(
     (".unit",),

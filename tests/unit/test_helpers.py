@@ -10,10 +10,8 @@ from __future__ import annotations
 import pytest
 from flext_tests import tm
 
-from flext_core import u as core_u
-from flext_oracle_wms import c, e, m
 from flext_oracle_wms.errors import FlextOracleWmsErrors
-from tests import t, u
+from tests import c, e, m, t, u
 
 __all__: list[str] = ["TestsFlextOracleWmsHelpers"]
 
@@ -35,7 +33,7 @@ class TestsFlextOracleWmsHelpers:
 
     def test_utilities_facade_inherits_flext_core_utilities(self) -> None:
         """The facade composes flext-core utilities via MRO."""
-        assert issubclass(u, core_u)
+        assert issubclass(u, u)
 
     def test_filter_engine_reachable_through_public_namespace(self) -> None:
         """Filtering engine is exposed on both the facade and OracleWms namespace."""

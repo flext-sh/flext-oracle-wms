@@ -18,17 +18,12 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
-
 import pytest
 from flext_tests import e, tm
 
 from flext_oracle_wms import FlextOracleWmsUtilitiesFiltering
 from flext_oracle_wms.errors import FlextOracleWmsErrors
-from tests import c, m
-
-if TYPE_CHECKING:
-    from tests import t
+from tests import c, m, t
 
 Filter = FlextOracleWmsUtilitiesFiltering.Filter
 Operator = m.OracleWms.FlextOracleWmsOperatorFilter

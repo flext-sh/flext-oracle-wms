@@ -17,8 +17,6 @@ from flext_tests import tm
 from flext_oracle_wms import FlextOracleWmsUtilitiesDiscovery
 from tests import c, m
 
-__all__ = ["TestsFlextOracleWmsSingerFlattening"]
-
 _MAX_NAME_LENGTH = c.OracleWms.WmsEntities.MAX_ENTITY_NAME_LENGTH
 
 
@@ -112,3 +110,6 @@ class TestsFlextOracleWmsSingerFlattening:
         tm.fail(result)
         tm.that(result.error, none=False)
         tm.that(result.error, has="too long")
+
+
+__all__ = ["TestsFlextOracleWmsSingerFlattening"]

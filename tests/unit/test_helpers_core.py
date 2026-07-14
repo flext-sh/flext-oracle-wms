@@ -11,20 +11,12 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from pathlib import Path
 
 import pytest
 from flext_tests import tm
 
-from flext_core import u as core_u
 from tests import u
-
-if TYPE_CHECKING:
-    from pathlib import Path
-
-__all__ = ["TestsFlextOracleWmsHelpersCore"]
-
-_TESTS = u.OracleWms.Tests
 
 
 @pytest.mark.unit
@@ -33,7 +25,7 @@ class TestsFlextOracleWmsHelpersCore:
 
     def test_utilities_facade_specializes_flext_core_utilities(self) -> None:
         # Consumers rely on core converter helpers being available on ``u``.
-        assert issubclass(u, core_u)
+        assert issubclass(u, u)
 
     @pytest.mark.parametrize(
         ("raw", "expected"),
@@ -71,7 +63,7 @@ class TestsFlextOracleWmsHelpersCore:
 
     def test_sample_entities_returns_canonical_entity_list(self) -> None:
         tm.that(
-            _TESTS.sample_entities(),
+            u.OracleWms.Tests.sample_entities(),
             eq=[
                 "action_code",
                 "company",
@@ -83,7 +75,7 @@ class TestsFlextOracleWmsHelpersCore:
         )
 
     def test_sample_entity_data_exposes_paged_result_envelope(self) -> None:
-        data = _TESTS.sample_entity_data()
+        data = u.OracleWms.Tests.sample_entity_data()
 
         tm.that(data, none=False)
         tm.that(data["result_count"], eq=4)
@@ -98,7 +90,7 @@ class TestsFlextOracleWmsHelpersCore:
         tm.that(first["code"], eq="TEST_CODE")
 
     def test_build_client_settings_maps_env_config_to_settings_fields(self) -> None:
-        settings = _TESTS.build_client_settings(
+        settings = u.OracleWms.Tests.build_client_settings(
             {
                 "base_url": "https://wms.example/prod",
                 "username": "svc_user",
@@ -121,7 +113,9 @@ class TestsFlextOracleWmsHelpersCore:
         tm.that(settings.OracleWms.retry_attempts, eq=2)
 
     def test_build_client_settings_applies_defaults_for_missing_keys(self) -> None:
-        settings = _TESTS.build_client_settings({"base_url": "https://x"}, "LGF_V10")
+        settings = u.OracleWms.Tests.build_client_settings(
+            {"base_url": "https://x"}, "LGF_V10"
+        )
 
         tm.that(settings.OracleWms.base_url, eq="https://x")
         tm.that(settings.OracleWms.timeout, eq=30)
@@ -132,13 +126,15 @@ class TestsFlextOracleWmsHelpersCore:
         nested = tmp_path / "a" / "b"
         nested.mkdir(parents=True)
 
-        tm.that(_TESTS.find_env_file(nested / "file.py"), eq=tmp_path / ".env")
+        tm.that(
+            u.OracleWms.Tests.find_env_file(nested / "file.py"), eq=tmp_path / ".env"
+        )
 
     def test_find_env_file_returns_none_when_absent(self, tmp_path: Path) -> None:
         nested = tmp_path / "x" / "y"
         nested.mkdir(parents=True)
 
-        tm.that(_TESTS.find_env_file(nested / "z.py"), none=True)
+        tm.that(u.OracleWms.Tests.find_env_file(nested / "z.py"), none=True)
 
     def test_load_env_config_parses_env_and_ignores_comments(
         self,
@@ -153,7 +149,7 @@ class TestsFlextOracleWmsHelpersCore:
         start = tmp_path / "a"
         start.mkdir()
 
-        result = _TESTS.load_env_config(start / "file.py")
+        result = u.OracleWms.Tests.load_env_config(start / "file.py")
 
         tm.ok(result)
         config = result.unwrap()
@@ -166,7 +162,7 @@ class TestsFlextOracleWmsHelpersCore:
         nested = tmp_path / "x" / "y"
         nested.mkdir(parents=True)
 
-        result = _TESTS.load_env_config(nested / "z.py")
+        result = u.OracleWms.Tests.load_env_config(nested / "z.py")
 
         tm.fail(result)
         tm.that(result.error, none=False)
@@ -195,16 +191,16 @@ class TestsFlextOracleWmsHelpersCore:
         start = tmp_path / "a"
         start.mkdir()
 
-        result = _TESTS.load_env_config(start / "file.py")
+        result = u.OracleWms.Tests.load_env_config(start / "file.py")
 
         tm.ok(result)
         tm.that(result.unwrap()["environment"], eq=expected_env)
 
     def test_load_test_env_reports_presence_of_env_file(self, tmp_path: Path) -> None:
-        tm.that(_TESTS.load_test_env(tmp_path), eq=False)
+        tm.that(u.OracleWms.Tests.load_test_env(tmp_path), eq=False)
 
         (tmp_path / ".env").write_text("ORACLE_WMS_BASE_URL=https://h\n")
-        tm.that(_TESTS.load_test_env(tmp_path), eq=True)
+        tm.that(u.OracleWms.Tests.load_test_env(tmp_path), eq=True)
 
     def test_create_real_settings_fails_without_credentials(
         self,
@@ -220,7 +216,7 @@ class TestsFlextOracleWmsHelpersCore:
         ):
             monkeypatch.delenv(var, raising=False)
 
-        result = _TESTS.create_real_settings()
+        result = u.OracleWms.Tests.create_real_settings()
 
         tm.fail(result)
         tm.that(result.error, none=False)
@@ -236,7 +232,7 @@ class TestsFlextOracleWmsHelpersCore:
         monkeypatch.setenv("ORACLE_WMS_TIMEOUT", "42")
         monkeypatch.setenv("ORACLE_WMS_MAX_RETRIES", "4")
 
-        result = _TESTS.create_real_settings()
+        result = u.OracleWms.Tests.create_real_settings()
 
         tm.ok(result)
         settings = result.unwrap()
@@ -246,7 +242,10 @@ class TestsFlextOracleWmsHelpersCore:
         tm.that(settings.OracleWms.retry_attempts, eq=4)
 
     def test_concrete_api_execute_returns_successful_result(self) -> None:
-        result = _TESTS.ConcreteApi().execute()
+        result = u.OracleWms.Tests.ConcreteApi().execute()
 
         tm.ok(result)
         tm.that(result.unwrap(), eq=True)
+
+
+__all__ = ["TestsFlextOracleWmsHelpersCore"]

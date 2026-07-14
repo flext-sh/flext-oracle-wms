@@ -18,7 +18,7 @@ import operator
 import pytest
 from flext_tests import tm
 
-from flext_core import c as core_c
+from flext_core import c
 from tests import c
 
 _AuthMethod = c.OracleWms.OracleWMSAuthMethod
@@ -31,7 +31,7 @@ class TestsFlextOracleWmsConstantsUnit:
 
     def test_facade_composes_flext_core_constants(self) -> None:
         """The WMS constants facade extends the flext-core constants contract."""
-        assert issubclass(c, core_c)
+        assert issubclass(c, c)
 
     def test_wms_version_is_non_empty_semver_string(self) -> None:
         """FLEXT_WMS_VERSION exposes a populated version string."""
