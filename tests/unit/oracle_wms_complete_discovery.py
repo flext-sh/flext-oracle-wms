@@ -13,9 +13,12 @@ NO FALLBACKS, NO ESTIMATIONS, NO BASIC LIMITS - FULL EXPLORATION
 from __future__ import annotations
 
 import json as _stdlib_json
+from collections.abc import (
+    MutableSequence,
+)
 from datetime import UTC, datetime
 from pathlib import Path
-from typing import TYPE_CHECKING, cast
+from typing import cast
 
 from flext_api import FlextApiModels
 from flext_tests import r
@@ -25,14 +28,7 @@ from flext_oracle_wms import (
     FlextOracleWmsSettings,
     FlextOracleWmsUtilitiesClient,
 )
-from tests import c, m, t, u
-
-if TYPE_CHECKING:
-    from collections.abc import (
-        MutableSequence,
-    )
-
-    from tests import p
+from tests import c, m, p, t, u
 
 logger = u.fetch_logger(__name__)
 
@@ -43,8 +39,8 @@ class OracleWmsCompleteDiscovery:
     def __init__(self) -> None:
         """Initialize with ADMINISTRATOR credentials."""
         # NOTE (multi-agent): ADR-005 — settings scalars are namespaced under
-        # ``OracleWms``; build via model_validate, retain on self.settings.
-        self.settings: FlextOracleWmsSettings = FlextOracleWmsSettings.model_validate({
+        # ``OracleWms``; build via model_validate, retain on settings.
+        settings: FlextOracleWmsSettings = FlextOracleWmsSettings.model_validate({
             "OracleWms": {
                 "base_url": "https://invalid.wms.ocs.oraclecloud.com",
                 "username": "user",
@@ -57,13 +53,13 @@ class OracleWmsCompleteDiscovery:
             },
         })
         auth_settings = m.OracleWms.AuthSettings(
-            username=self.settings.OracleWms.username,
-            password=self.settings.OracleWms.password,
+            username=settings.OracleWms.username,
+            password=settings.OracleWms.password,
         )
         _auth_result = FlextOracleWmsUtilitiesClient.Client.from_auth_settings(
             auth_settings,
         )
-        self.client = FlextOracleWmsUtilitiesClient.Client(settings=self.settings)
+        self.client = FlextOracleWmsUtilitiesClient.Client(settings=settings)
         self.discovered_entities: MutableSequence[str] = []
         self.entity_metadata: t.MutableJsonMapping = {}
         self.complete_schemas: t.MutableJsonMapping = {}
@@ -611,8 +607,8 @@ class OracleWmsCompleteDiscovery:
                 if isinstance(meta, dict) and meta.get("has_data")
             ]),
             "schemas_generated": len(self.complete_schemas),
-            "oracle_wms_base_url": self.settings.OracleWms.base_url,
-            "api_version": self.settings.OracleWms.api_version,
+            "oracle_wms_base_url": settings.OracleWms.base_url,
+            "api_version": settings.OracleWms.api_version,
             "discovery_mode": "COMPLETE_ADMINISTRATOR_MODE",
         }
         summary_file = results_dir / f"discovery_summary_{timestamp}.json"

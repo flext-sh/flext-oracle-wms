@@ -6,14 +6,12 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Self
+from types import TracebackType
+from typing import Self
 
 from flext_api import FlextApi, FlextApiSettings, u
 
 from flext_oracle_wms import c, m, p, r, t
-
-if TYPE_CHECKING:
-    from types import TracebackType
 
 
 class FlextOracleWmsUtilitiesHttpClient:

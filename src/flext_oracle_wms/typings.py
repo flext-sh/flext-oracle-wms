@@ -6,12 +6,9 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
-
 from flext_api import t
 
-if TYPE_CHECKING:
-    from flext_oracle_wms import m
+from flext_oracle_wms import m
 
 
 class FlextOracleWmsTypes(t):

@@ -10,7 +10,8 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 import os
-from typing import TYPE_CHECKING, override
+from pathlib import Path
+from typing import override
 from urllib.parse import urlparse
 
 from dotenv import load_dotenv
@@ -21,12 +22,7 @@ from flext_oracle_wms import (
     FlextOracleWmsSettings,
     FlextOracleWmsUtilities as u,
 )
-from tests import TestsFlextOracleWmsTypes, t
-
-if TYPE_CHECKING:
-    from pathlib import Path
-
-    from tests import p
+from tests import TestsFlextOracleWmsTypes, p, t
 
 
 class TestsFlextOracleWmsUtilities(FlextTestsUtilities, u):

@@ -30,8 +30,10 @@ from __future__ import annotations
 import os
 import time
 import traceback
+from collections.abc import (
+    Sequence,
+)
 from pathlib import Path
-from typing import TYPE_CHECKING
 
 from dotenv import load_dotenv
 
@@ -47,11 +49,6 @@ from flext_oracle_wms import (
     u,
 )
 from flext_oracle_wms.errors import FlextOracleWmsErrors
-
-if TYPE_CHECKING:
-    from collections.abc import (
-        Sequence,
-    )
 
 FlextOracleWmsAuthenticator = FlextOracleWmsUtilitiesAuth.Authenticator
 FlextOracleWmsClient = FlextOracleWmsUtilitiesClient.Client

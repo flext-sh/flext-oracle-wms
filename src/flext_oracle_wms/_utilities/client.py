@@ -8,7 +8,7 @@ from __future__ import annotations
 
 from flext_api import FlextApi, FlextApiSettings, p, r, t, u
 
-from flext_oracle_wms import c, m
+from flext_oracle_wms import c, m, settings
 from flext_oracle_wms._settings import FlextOracleWmsSettings
 from flext_oracle_wms._utilities.auth import FlextOracleWmsUtilitiesAuth
 
@@ -19,20 +19,17 @@ class FlextOracleWmsUtilitiesClient:
     class Client:
         """Oracle WMS client with strict request/response typing."""
 
-        def __init__(self, settings: FlextOracleWmsSettings | None = None) -> None:
+        def __init__(self) -> None:
             """Initialize client with strict settings resolution."""
             # NOTE (multi-agent): mro-idb4.7/mro-rn88 — resolve+retain the injected
             # settings (DI, canonical `or fetch_global()`); never read a bare flext_api
             # global. All project fields are namespaced under `.OracleWms.*`. The
             # resolved settings are exposed on the public `settings` attribute —
             # that is the documented client contract asserted by tests.
-            self.settings: FlextOracleWmsSettings = (
-                settings or FlextOracleWmsSettings.fetch_global()
-            )
-            default_headers = self._build_default_headers(self.settings)
+            default_headers = self._build_default_headers(settings)
             self._api_config = FlextApiSettings.model_validate({
-                "base_url": self.settings.OracleWms.base_url,
-                "timeout": int(self.settings.OracleWms.timeout),
+                "base_url": settings.OracleWms.base_url,
+                "timeout": int(settings.OracleWms.timeout),
                 "headers": default_headers,
                 "default_headers": default_headers,
             })
@@ -293,7 +290,7 @@ class FlextOracleWmsUtilitiesClient:
             request = m.Api.HttpRequest.model_validate({
                 "method": method,
                 "url": path,
-                "timeout": self.settings.OracleWms.timeout,
+                "timeout": settings.OracleWms.timeout,
                 "headers": request_headers,
                 "query_params": params or {},
                 "body": body or {},

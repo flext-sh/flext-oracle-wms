@@ -16,14 +16,11 @@ import json as _stdlib_json
 import uuid
 from datetime import UTC, datetime
 from pathlib import Path
-from typing import TYPE_CHECKING, cast
+from typing import cast
 
 from flext_tests import r
 
-from tests import t, u
-
-if TYPE_CHECKING:
-    from tests import p
+from tests import p, t, u
 
 logger = u.fetch_logger(__name__)
 
