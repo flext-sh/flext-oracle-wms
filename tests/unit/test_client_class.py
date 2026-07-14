@@ -8,6 +8,7 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 import pytest
+from flext_tests import tm
 
 from flext_oracle_wms import FlextOracleWmsSettings, FlextOracleWmsUtilitiesClient, m
 
@@ -38,15 +39,15 @@ class TestsFlextOracleWmsClientClass:
         """Constructing with explicit settings surfaces them on the public field."""
         client = Client(settings)
 
-        assert isinstance(client, Client)
+        tm.that(client, is_=Client)
         assert client.settings is settings
-        assert client.settings.OracleWms.base_url == "https://test-wms.example.com"
+        tm.that(client.settings.OracleWms.base_url, eq="https://test-wms.example.com")
 
     def test_construction_without_settings_resolves_defaults(self) -> None:
         """Constructing without settings yields a usable settings contract."""
         client = Client()
 
-        assert isinstance(client.settings, FlextOracleWmsSettings)
+        tm.that(client.settings, is_=FlextOracleWmsSettings)
         assert client.settings.OracleWms.base_url
 
     def test_start_reports_success(
@@ -56,8 +57,8 @@ class TestsFlextOracleWmsClientClass:
         """start() returns a successful result carrying True."""
         result = Client(settings).start()
 
-        assert result.success
-        assert result.unwrap() is True
+        tm.ok(result)
+        tm.that(result.unwrap(), eq=True)
 
     def test_stop_reports_success(
         self,
@@ -66,8 +67,8 @@ class TestsFlextOracleWmsClientClass:
         """stop() returns a successful result carrying True."""
         result = Client(settings).stop()
 
-        assert result.success
-        assert result.unwrap() is True
+        tm.ok(result)
+        tm.that(result.unwrap(), eq=True)
 
     def test_lifecycle_is_idempotent(
         self,
@@ -77,8 +78,8 @@ class TestsFlextOracleWmsClientClass:
         client = Client(settings)
 
         for _ in range(2):
-            assert client.start().success
-            assert client.stop().success
+            tm.ok(client.start())
+            tm.ok(client.stop())
 
     def test_from_auth_settings_rejects_basic_without_credentials(self) -> None:
         """BASIC auth missing username/password fails business-rule validation."""
@@ -86,8 +87,8 @@ class TestsFlextOracleWmsClientClass:
 
         result = Client.from_auth_settings(auth)
 
-        assert result.failure
-        assert "username and password" in (result.error or "")
+        tm.fail(result)
+        tm.that((result.error or ""), has="username and password")
 
     def test_from_auth_settings_rejects_non_basic_method(self) -> None:
         """A valid non-BASIC method is refused by the runtime client."""
@@ -99,8 +100,8 @@ class TestsFlextOracleWmsClientClass:
 
         result = Client.from_auth_settings(auth)
 
-        assert result.failure
-        assert "BASIC" in (result.error or "")
+        tm.fail(result)
+        tm.that((result.error or ""), has="BASIC")
 
     def test_from_auth_settings_builds_client_for_valid_basic(self) -> None:
         """Valid BASIC auth produces a client that adopts the supplied credentials."""
@@ -112,11 +113,11 @@ class TestsFlextOracleWmsClientClass:
 
         result = Client.from_auth_settings(auth)
 
-        assert result.success
+        tm.ok(result)
         built = result.unwrap()
-        assert isinstance(built, Client)
-        assert built.settings.OracleWms.username == "wms-user"
-        assert built.settings.OracleWms.password == "wms-secret"
+        tm.that(built, is_=Client)
+        tm.that(built.settings.OracleWms.username, eq="wms-user")
+        tm.that(built.settings.OracleWms.password, eq="wms-secret")
 
     @pytest.mark.parametrize(
         ("method", "expected_fragment"),
@@ -136,5 +137,5 @@ class TestsFlextOracleWmsClientClass:
 
         result = Client.from_auth_settings(auth)
 
-        assert result.failure
-        assert expected_fragment in (result.error or "")
+        tm.fail(result)
+        tm.that((result.error or ""), has=expected_fragment)

@@ -16,6 +16,7 @@ from __future__ import annotations
 import operator
 
 import pytest
+from flext_tests import tm
 
 from flext_core import c as core_c
 from tests import c
@@ -35,8 +36,8 @@ class TestsFlextOracleWmsConstantsUnit:
     def test_wms_version_is_non_empty_semver_string(self) -> None:
         """FLEXT_WMS_VERSION exposes a populated version string."""
         version = c.OracleWms.FLEXT_WMS_VERSION
-        assert isinstance(version, str)
-        assert version.count(".") == 2
+        tm.that(version, is_=str)
+        tm.that(version.count("."), eq=2)
         assert all(part.isdigit() for part in version.split("."))
 
     @pytest.mark.parametrize(
@@ -52,7 +53,7 @@ class TestsFlextOracleWmsConstantsUnit:
         self, key: str, expected: str | int
     ) -> None:
         """API_CONFIG maps each documented key to its published default."""
-        assert c.OracleWms.API_CONFIG[key] == expected
+        tm.that(c.OracleWms.API_CONFIG[key], eq=expected)
 
     @pytest.mark.parametrize(
         "key",
@@ -61,7 +62,7 @@ class TestsFlextOracleWmsConstantsUnit:
     def test_processing_config_exposes_positive_int_defaults(self, key: str) -> None:
         """PROCESSING_CONFIG advertises positive integer sizing defaults."""
         value = c.OracleWms.PROCESSING_CONFIG[key]
-        assert isinstance(value, int)
+        tm.that(value, is_=int)
         assert value > 0
 
     def test_processing_config_batch_bounds_are_ordered(self) -> None:
@@ -79,7 +80,7 @@ class TestsFlextOracleWmsConstantsUnit:
     )
     def test_environments_map_to_endpoint_urls(self, key: str, expected: str) -> None:
         """ENVIRONMENTS maps each environment name to its published URL."""
-        assert c.OracleWms.ENVIRONMENTS[key] == expected
+        tm.that(c.OracleWms.ENVIRONMENTS[key], eq=expected)
 
     @pytest.mark.parametrize(
         ("name", "value"),
@@ -93,8 +94,8 @@ class TestsFlextOracleWmsConstantsUnit:
     def test_auth_method_enum_values(self, name: str, value: str) -> None:
         """OracleWMSAuthMethod publishes the documented wire values."""
         member = _AuthMethod[name]
-        assert member == value
-        assert member.value == value
+        tm.that(member, eq=value)
+        tm.that(member.value, eq=value)
 
     @pytest.mark.parametrize(
         ("key", "expected"),
@@ -114,8 +115,8 @@ class TestsFlextOracleWmsConstantsUnit:
     def test_auth_config_carries_oauth2_endpoint_metadata(self) -> None:
         """AUTH_CONFIG exposes the OAuth2 token endpoint and default scope."""
         auth = c.OracleWms.AUTH_CONFIG
-        assert auth["oauth2_token_endpoint"] == "/oauth2/token"
-        assert auth["oauth2_scope_default"] == "read write"
+        tm.that(auth["oauth2_token_endpoint"], eq="/oauth2/token")
+        tm.that(auth["oauth2_scope_default"], eq="read write")
 
     @pytest.mark.parametrize(
         ("name", "value"),
@@ -134,8 +135,8 @@ class TestsFlextOracleWmsConstantsUnit:
     def test_filter_operator_enum_values(self, name: str, value: str) -> None:
         """WmsFilterOperator publishes the documented operator tokens."""
         member = _FilterOp[name]
-        assert member == value
-        assert member.value == value
+        tm.that(member, eq=value)
+        tm.that(member.value, eq=value)
 
     @pytest.mark.parametrize(
         ("name", "value"),
@@ -147,7 +148,7 @@ class TestsFlextOracleWmsConstantsUnit:
     )
     def test_environment_enum_values(self, name: str, value: str) -> None:
         """Environment enum publishes deployment-tier tokens."""
-        assert _Environment[name] == value
+        tm.that(_Environment[name], eq=value)
 
     def test_entity_and_processing_bounds(self) -> None:
         """Nested entity/processing namespaces publish positive bounds."""
@@ -168,9 +169,9 @@ class TestsFlextOracleWmsConstantsUnit:
     def test_test_facade_adds_oracle_wms_category_taxonomy(self) -> None:
         """The test facade extends the domain with WMS API categories."""
         categories = c.OracleWms.Tests.Categories
-        assert categories.DATA_EXTRACT == "data_extract"
-        assert categories.ENTITY_OPERATIONS == "entity_operations"
-        assert c.OracleWms.Tests.API_VERSION_LGF_V10 == "LGF_V10"
+        tm.that(categories.DATA_EXTRACT, eq="data_extract")
+        tm.that(categories.ENTITY_OPERATIONS, eq="entity_operations")
+        tm.that(c.OracleWms.Tests.API_VERSION_LGF_V10, eq="LGF_V10")
 
 
 __all__: list[str] = ["TestsFlextOracleWmsConstantsUnit"]

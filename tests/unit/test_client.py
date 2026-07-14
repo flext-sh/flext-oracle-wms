@@ -11,6 +11,7 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 import pytest
+from flext_tests import tm
 
 from flext_oracle_wms import FlextOracleWmsSettings, FlextOracleWmsUtilitiesClient, m
 
@@ -40,8 +41,8 @@ class TestsFlextOracleWmsClient:
         client = FlextOracleWmsUtilitiesClient.Client(settings)
 
         assert client.settings is settings
-        assert client.settings.OracleWms.base_url == "https://test.wms.com"
-        assert client.settings.OracleWms.username == "test_user"
+        tm.that(client.settings.OracleWms.base_url, eq="https://test.wms.com")
+        tm.that(client.settings.OracleWms.username, eq="test_user")
 
     def test_constructor_preserves_custom_configuration_fields(self) -> None:
         """Custom configuration fields survive on the public settings state."""
@@ -57,15 +58,15 @@ class TestsFlextOracleWmsClient:
 
         client = FlextOracleWmsUtilitiesClient.Client(custom)
 
-        assert client.settings.OracleWms.timeout == pytest.approx(60.0)
-        assert client.settings.OracleWms.retry_attempts == 5
-        assert client.settings.OracleWms.base_url == "https://custom.wms.com"
+        tm.that(client.settings.OracleWms.timeout, eq=pytest.approx(60.0))
+        tm.that(client.settings.OracleWms.retry_attempts, eq=5)
+        tm.that(client.settings.OracleWms.base_url, eq="https://custom.wms.com")
 
     def test_constructor_without_settings_yields_valid_settings(self) -> None:
         """Omitting settings resolves the global runtime settings contract."""
         client = FlextOracleWmsUtilitiesClient.Client()
 
-        assert isinstance(client.settings, FlextOracleWmsSettings)
+        tm.that(client.settings, is_=FlextOracleWmsSettings)
         assert client.settings.OracleWms.base_url
 
     # ---- start/stop lifecycle ----------------------------------------------
@@ -79,8 +80,8 @@ class TestsFlextOracleWmsClient:
 
         result = client.start()
 
-        assert result.success
-        assert result.unwrap() is True
+        tm.ok(result)
+        tm.that(result.unwrap(), eq=True)
 
     def test_stop_returns_success(
         self,
@@ -91,8 +92,8 @@ class TestsFlextOracleWmsClient:
 
         result = client.stop()
 
-        assert result.success
-        assert result.unwrap() is True
+        tm.ok(result)
+        tm.that(result.unwrap(), eq=True)
 
     def test_start_stop_lifecycle_is_idempotent(
         self,
@@ -101,12 +102,12 @@ class TestsFlextOracleWmsClient:
         """Repeated start/stop cycles keep succeeding without error."""
         client = FlextOracleWmsUtilitiesClient.Client(settings)
 
-        assert client.start().success
-        assert client.stop().success
-        assert client.start().success
-        assert client.stop().success
+        tm.ok(client.start())
+        tm.ok(client.stop())
+        tm.ok(client.start())
+        tm.ok(client.stop())
         # A second stop with no live client still succeeds (idempotent release).
-        assert client.stop().success
+        tm.ok(client.stop())
 
     # ---- from_auth_settings contract ---------------------------------------
 
@@ -120,11 +121,11 @@ class TestsFlextOracleWmsClient:
 
         result = FlextOracleWmsUtilitiesClient.Client.from_auth_settings(auth)
 
-        assert result.success
+        tm.ok(result)
         client = result.unwrap()
-        assert isinstance(client, FlextOracleWmsUtilitiesClient.Client)
-        assert client.settings.OracleWms.username == "alice"
-        assert client.settings.OracleWms.password == "secret"
+        tm.that(client, is_=FlextOracleWmsUtilitiesClient.Client)
+        tm.that(client.settings.OracleWms.username, eq="alice")
+        tm.that(client.settings.OracleWms.password, eq="secret")
 
     def test_from_auth_settings_basic_missing_credentials_fails(self) -> None:
         """BASIC auth without credentials fails business-rule validation."""
@@ -132,9 +133,9 @@ class TestsFlextOracleWmsClient:
 
         result = FlextOracleWmsUtilitiesClient.Client.from_auth_settings(auth)
 
-        assert result.failure
-        assert result.error is not None
-        assert "username and password" in result.error
+        tm.fail(result)
+        tm.that(result.error, none=False)
+        tm.that(result.error, has="username and password")
 
     def test_from_auth_settings_oauth2_rejected_as_unsupported_runtime(
         self,
@@ -148,9 +149,9 @@ class TestsFlextOracleWmsClient:
 
         result = FlextOracleWmsUtilitiesClient.Client.from_auth_settings(auth)
 
-        assert result.failure
-        assert result.error is not None
-        assert "BASIC auth only" in result.error
+        tm.fail(result)
+        tm.that(result.error, none=False)
+        tm.that(result.error, has="BASIC auth only")
 
     def test_from_auth_settings_unknown_method_fails(self) -> None:
         """An unsupported auth method fails validation before client creation."""
@@ -162,9 +163,9 @@ class TestsFlextOracleWmsClient:
 
         result = FlextOracleWmsUtilitiesClient.Client.from_auth_settings(auth)
 
-        assert result.failure
-        assert result.error is not None
-        assert "Unsupported auth method" in result.error
+        tm.fail(result)
+        tm.that(result.error, none=False)
+        tm.that(result.error, has="Unsupported auth method")
 
 
 __all__: list[str] = ["TestsFlextOracleWmsClient"]
