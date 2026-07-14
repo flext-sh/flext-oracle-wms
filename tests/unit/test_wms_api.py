@@ -11,7 +11,7 @@ import pytest
 from flext_tests import tm
 
 from flext_oracle_wms import FlextOracleWmsApi, FlextOracleWmsUtilitiesClient, m
-from tests import m as tm, t
+from tests import t
 
 
 class TestsFlextOracleWmsWmsApi:
@@ -29,7 +29,7 @@ class TestsFlextOracleWmsWmsApi:
         for name, endpoint in endpoints.items():
             tm.that(name, is_=str)
             assert name
-            tm.that(endpoint, is_=tm.OracleWms.ApiEndpoint)
+            tm.that(endpoint, is_=m.OracleWms.ApiEndpoint)
             tm.that(endpoint.name, eq=name)
 
     def test_api_endpoints_publishes_documented_test_endpoint(self) -> None:
