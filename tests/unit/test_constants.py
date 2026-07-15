@@ -18,7 +18,6 @@ import operator
 import pytest
 from flext_tests import tm
 
-from flext_core import c
 from tests import c
 
 _AuthMethod = c.OracleWms.OracleWMSAuthMethod
