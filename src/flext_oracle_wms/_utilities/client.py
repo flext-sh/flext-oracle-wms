@@ -40,7 +40,7 @@ class FlextOracleWmsUtilitiesClient:
         @classmethod
         def from_auth_settings(
             cls,
-            auth_settings: m.OracleWms.AuthSettings,
+            auth_settings: p.OracleWms.AuthSettings,
         ) -> p.Result[FlextOracleWmsUtilitiesClient.Client]:
             """Create a concrete client by merging auth settings with runtime WMS settings."""
             validation_result = FlextOracleWmsUtilitiesAuth.validate_auth_settings(
@@ -97,7 +97,7 @@ class FlextOracleWmsUtilitiesClient:
             return FlextApi(settings=self._api_config)
 
         @staticmethod
-        def _decode_response_model[T: m.BaseModel](
+        def _decode_response_model[T: p.BaseModel](
             payload: t.Api.ResponseBody | t.JsonValue,
             model_type: type[T],
         ) -> p.Result[T]:

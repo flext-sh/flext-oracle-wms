@@ -24,7 +24,7 @@ from flext_api import FlextApi
 from flext_tests import r, tm
 
 from flext_oracle_wms import FlextOracleWmsSettings, FlextOracleWmsUtilitiesClient, c, m
-from tests import t
+from tests import p, t
 
 
 def _http_response(*, status_code: int, body: dict[str, object]) -> p.Api.HttpResponse:
@@ -39,7 +39,7 @@ def _http_response(*, status_code: int, body: dict[str, object]) -> p.Api.HttpRe
 
 def _client_with_response(
     settings: FlextOracleWmsSettings,
-    response: m.Api.HttpResponse,
+    response: p.Api.HttpResponse,
 ) -> t.OracleWms.Tests.Client:
     """Create a client whose external HTTP boundary yields ``response``."""
     client = FlextOracleWmsUtilitiesClient.Client(settings)

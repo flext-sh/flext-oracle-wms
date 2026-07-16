@@ -132,7 +132,7 @@ from flext_core import FlextRegistry
 from flext_core import r, p
 from flext_core import u
 from flext_core import s
-from flext_core import t
+from flext_core import p, t
 from flext_core import u
 
 if result.success:
@@ -172,7 +172,7 @@ from flext_core import FlextRegistry
 from flext_core import r, p
 from flext_core import u
 from flext_core import s
-from flext_core import t
+from flext_core import p, t
 from flext_core import u
     u.fetch_logger(__name__).info("Records retrieved", count=len(data.get('results', [])))
 ```
@@ -213,7 +213,7 @@ from flext_core import FlextRegistry
 from flext_core import r, p
 from flext_core import u
 from flext_core import s
-from flext_core import t
+from flext_core import p, t
 from flext_core import u
     u.fetch_logger(__name__).error("Connection failed", error=str(e))
 ```

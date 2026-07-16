@@ -11,9 +11,9 @@ from __future__ import annotations
 
 from typing import Annotated, ClassVar
 
-from flext_api import m, u
+from flext_api import m, p, u
 
-from flext_oracle_wms import c, t
+from flext_oracle_wms import c, p, t
 
 
 class FlextOracleWmsModels(m):

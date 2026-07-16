@@ -68,7 +68,7 @@ class TestsFlextOracleWmsAuthenticationCore:
         tm.that(dumped["token_refresh_threshold"], eq=300)
 
     def test_supplied_credentials_are_retained(
-        self, basic_settings: m.OracleWms.AuthSettings
+        self, basic_settings: p.OracleWms.AuthSettings
     ) -> None:
         """BASIC credentials round-trip through public fields."""
         tm.that(basic_settings.method, eq=_AuthMethod.BASIC)
@@ -97,7 +97,7 @@ class TestsFlextOracleWmsAuthenticationCore:
     # --- validate_business_rules -----------------------------------------
 
     def test_validate_business_rules_accepts_complete_basic(
-        self, basic_settings: m.OracleWms.AuthSettings
+        self, basic_settings: p.OracleWms.AuthSettings
     ) -> None:
         """Complete BASIC credentials pass business-rule validation."""
         result = FlextOracleWmsUtilitiesAuth.validate_auth_settings(basic_settings)
@@ -139,7 +139,7 @@ class TestsFlextOracleWmsAuthenticationCore:
         ],
     )
     def test_validate_business_rules_reports_specific_failure(
-        self, settings: m.OracleWms.AuthSettings, expected_error: str
+        self, settings: p.OracleWms.AuthSettings, expected_error: str
     ) -> None:
         """Incomplete/unsupported configs fail with a specific diagnostic."""
         result = FlextOracleWmsUtilitiesAuth.validate_auth_settings(settings)
@@ -149,7 +149,7 @@ class TestsFlextOracleWmsAuthenticationCore:
     # --- Authenticator.authenticate --------------------------------------
 
     def test_authenticator_behavior_reflects_its_settings(
-        self, basic_settings: m.OracleWms.AuthSettings
+        self, basic_settings: p.OracleWms.AuthSettings
     ) -> None:
         """The authenticator's public behavior reflects the injected settings."""
         authenticator = FlextOracleWmsUtilitiesAuth.Authenticator(basic_settings)
@@ -159,7 +159,7 @@ class TestsFlextOracleWmsAuthenticationCore:
         tm.that(authenticator.authenticate().unwrap(), eq=_BASIC_TOKEN)
 
     def test_authenticate_basic_yields_decodable_credentials(
-        self, basic_settings: m.OracleWms.AuthSettings
+        self, basic_settings: p.OracleWms.AuthSettings
     ) -> None:
         """BASIC authentication returns a base64 token decoding to user:password."""
         authenticator = FlextOracleWmsUtilitiesAuth.Authenticator(basic_settings)
@@ -170,7 +170,7 @@ class TestsFlextOracleWmsAuthenticationCore:
         tm.that(base64.b64decode(token).decode(), eq="test_user:test_password")
 
     def test_authenticate_is_idempotent(
-        self, basic_settings: m.OracleWms.AuthSettings
+        self, basic_settings: p.OracleWms.AuthSettings
     ) -> None:
         """Repeated authentication yields the same token for the same credentials."""
         authenticator = FlextOracleWmsUtilitiesAuth.Authenticator(basic_settings)
@@ -206,7 +206,7 @@ class TestsFlextOracleWmsAuthenticationCore:
         ],
     )
     def test_authenticate_failure_carries_specific_error(
-        self, settings: m.OracleWms.AuthSettings, expected_error: str
+        self, settings: p.OracleWms.AuthSettings, expected_error: str
     ) -> None:
         """Every unauthenticatable configuration fails with a precise message."""
         authenticator = FlextOracleWmsUtilitiesAuth.Authenticator(settings)
@@ -217,7 +217,7 @@ class TestsFlextOracleWmsAuthenticationCore:
     # --- Authenticator.get_auth_headers ----------------------------------
 
     def test_get_auth_headers_basic_emits_basic_scheme(
-        self, basic_settings: m.OracleWms.AuthSettings
+        self, basic_settings: p.OracleWms.AuthSettings
     ) -> None:
         """BASIC headers carry the token under an 'Authorization: Basic' entry."""
         authenticator = FlextOracleWmsUtilitiesAuth.Authenticator(basic_settings)
@@ -237,7 +237,7 @@ class TestsFlextOracleWmsAuthenticationCore:
     # --- Client.from_auth_settings ---------------------------------------
 
     def test_from_auth_settings_builds_client_for_basic_auth(
-        self, basic_settings: m.OracleWms.AuthSettings
+        self, basic_settings: p.OracleWms.AuthSettings
     ) -> None:
         """Valid BASIC settings yield a concrete Oracle WMS client."""
         result = FlextOracleWmsUtilitiesClient.Client.from_auth_settings(basic_settings)

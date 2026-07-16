@@ -74,7 +74,7 @@ class FlextOracleWmsUtilitiesFiltering:
                 filters = {field: value}
             else:
                 filters = {
-                    field: m.OracleWms.FlextOracleWmsOperatorFilter(
+                    field: p.OracleWms.FlextOracleWmsOperatorFilter(
                         operator=operator,
                         value=value,
                     ),

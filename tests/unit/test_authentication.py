@@ -164,7 +164,7 @@ class TestsFlextOracleWmsAuthentication:
     )
     def test_validate_business_rules_reports_specific_failure(
         self,
-        settings: m.OracleWms.AuthSettings,
+        settings: p.OracleWms.AuthSettings,
         expected_fragment: str,
     ) -> None:
         """Incomplete/unsupported configs fail with an explanatory error."""
@@ -235,7 +235,7 @@ class TestsFlextOracleWmsAuthentication:
     )
     def test_authenticate_failure_carries_reason(
         self,
-        settings: m.OracleWms.AuthSettings,
+        settings: p.OracleWms.AuthSettings,
         expected_error: str,
     ) -> None:
         """Failed authentication surfaces the precise reason."""

@@ -26,7 +26,7 @@ from flext_oracle_wms import (
     p,
     r,
 )
-from tests import t
+from tests import p, t
 
 
 class TestsFlextOracleWmsWmsClient:
@@ -53,7 +53,7 @@ class TestsFlextOracleWmsWmsClient:
 
         def _request(
             _self: FlextApi,
-            _request: m.Api.HttpRequest,
+            _request: p.Api.HttpRequest,
         ) -> p.Result[p.Api.HttpResponse]:
             return outcome
 

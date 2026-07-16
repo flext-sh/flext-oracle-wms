@@ -88,7 +88,7 @@ class OracleWmsCompleteDiscovery:
     def _test_api_by_category(
         self,
         api_name: str,
-        api_endpoint: m.OracleWms.ApiEndpoint,
+        api_endpoint: p.OracleWms.ApiEndpoint,
     ) -> None:
         """Dispatch one API test by endpoint category."""
         if api_endpoint.category == c.OracleWms.Tests.Categories.DATA_EXTRACT:
@@ -142,7 +142,7 @@ class OracleWmsCompleteDiscovery:
     def _test_entity_operations_api(
         self,
         api_name: str,
-        endpoint: m.OracleWms.ApiEndpoint,
+        endpoint: p.OracleWms.ApiEndpoint,
     ) -> p.Result[FlextApiModels.Api.HttpResponse]:
         """Test entity operations APIs."""
         try:
@@ -155,7 +155,7 @@ class OracleWmsCompleteDiscovery:
     def _test_entity_operations_api_unchecked(
         self,
         api_name: str,
-        endpoint: m.OracleWms.ApiEndpoint,
+        endpoint: p.OracleWms.ApiEndpoint,
     ) -> p.Result[FlextApiModels.Api.HttpResponse]:
         """Test entity operations APIs while allowing client exceptions upward."""
         if "entity" in endpoint.path and "{entity_name}" in endpoint.path:
@@ -173,7 +173,7 @@ class OracleWmsCompleteDiscovery:
     def _test_setup_api(
         self,
         api_name: str,
-        endpoint: m.OracleWms.ApiEndpoint,
+        endpoint: p.OracleWms.ApiEndpoint,
     ) -> p.Result[FlextApiModels.Api.HttpResponse]:
         """Test setup and transactional APIs."""
         try:
@@ -186,7 +186,7 @@ class OracleWmsCompleteDiscovery:
     def _test_automation_api(
         self,
         api_name: str,
-        endpoint: m.OracleWms.ApiEndpoint,
+        endpoint: p.OracleWms.ApiEndpoint,
     ) -> p.Result[FlextApiModels.Api.HttpResponse]:
         """Test automation and operations APIs."""
         try:

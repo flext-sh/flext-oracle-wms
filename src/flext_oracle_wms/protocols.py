@@ -10,7 +10,7 @@ from typing import Protocol, runtime_checkable
 
 from flext_api import p
 
-from flext_oracle_wms import t
+from flext_oracle_wms import p, t
 
 
 class FlextOracleWmsProtocols(p):

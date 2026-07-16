@@ -11,7 +11,7 @@ import pytest
 from flext_tests import tm
 
 from flext_oracle_wms.errors import FlextOracleWmsErrors
-from tests import c, e, m, t, u
+from tests import c, e, t, u
 
 __all__: list[str] = ["TestsFlextOracleWmsHelpers"]
 
@@ -147,7 +147,7 @@ class TestsFlextOracleWmsHelpers:
         with pytest.raises(FlextOracleWmsErrors.ValidationError):
             u.Filter(
                 filters={
-                    "id": m.OracleWms.FlextOracleWmsOperatorFilter(
+                    "id": p.OracleWms.FlextOracleWmsOperatorFilter(
                         operator=c.OracleWms.WmsFilterOperator.IN,
                         value=[1, 2, 3],
                     ),
@@ -205,7 +205,7 @@ class TestsFlextOracleWmsHelpers:
         result = engine.filter_records(
             records,
             {
-                "id": m.OracleWms.FlextOracleWmsOperatorFilter(
+                "id": p.OracleWms.FlextOracleWmsOperatorFilter(
                     operator=c.OracleWms.WmsFilterOperator.IN,
                     value=[1, 2, 5],
                 ),

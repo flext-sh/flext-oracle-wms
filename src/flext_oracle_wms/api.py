@@ -59,7 +59,7 @@ class FlextOracleWmsApi(s[bool]):
     def api_endpoints() -> t.MappingKV[str, m.OracleWms.ApiEndpoint]:
         """Return Oracle WMS API endpoint models from canonical constants."""
         return {
-            name: m.OracleWms.ApiEndpoint.model_validate(payload)
+            name: p.OracleWms.ApiEndpoint.model_validate(payload)
             for name, payload in c.OracleWms.API_ENDPOINTS.items()
         }
 
@@ -81,7 +81,7 @@ class FlextOracleWmsApi(s[bool]):
 
     @staticmethod
     def create_oracle_wms_client(
-        settings: m.OracleWms.AuthSettings,
+        settings: p.OracleWms.AuthSettings,
     ) -> p.Result[u.OracleWms.Client]:
         """Create a runtime Oracle WMS client from auth settings."""
         return u.OracleWms.Client.from_auth_settings(settings)
