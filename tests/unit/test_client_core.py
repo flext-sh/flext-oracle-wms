@@ -27,7 +27,7 @@ from flext_oracle_wms import FlextOracleWmsSettings, FlextOracleWmsUtilitiesClie
 from tests import t
 
 
-def _http_response(*, status_code: int, body: dict[str, object]) -> m.Api.HttpResponse:
+def _http_response(*, status_code: int, body: dict[str, object]) -> p.Api.HttpResponse:
     """Build a real HTTP response model as returned by the transport boundary."""
     return m.Api.HttpResponse.model_validate({
         "status_code": status_code,
@@ -44,7 +44,7 @@ def _client_with_response(
     """Create a client whose external HTTP boundary yields ``response``."""
     client = FlextOracleWmsUtilitiesClient.Client(settings)
     transport = Mock(spec=FlextApi)
-    transport.request.return_value = r[m.Api.HttpResponse].ok(response)
+    transport.request.return_value = r[p.Api.HttpResponse].ok(response)
     client._client = transport  # inject external boundary (no public DI seam)
     return client
 
@@ -56,7 +56,7 @@ def _client_with_transport_failure(
     """Create a client whose external HTTP boundary fails every request."""
     client = FlextOracleWmsUtilitiesClient.Client(settings)
     transport = Mock(spec=FlextApi)
-    transport.request.return_value = r[m.Api.HttpResponse].fail(error)
+    transport.request.return_value = r[p.Api.HttpResponse].fail(error)
     client._client = transport
     return client
 

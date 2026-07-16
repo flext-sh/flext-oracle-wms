@@ -36,7 +36,7 @@ class TestsFlextOracleWmsWmsClient:
     def _response(
         status_code: int,
         body: t.Api.ResponseBody,
-    ) -> m.Api.HttpResponse:
+    ) -> p.Api.HttpResponse:
         """Build a real HTTP response model as the boundary would return."""
         return m.Api.HttpResponse.model_validate({
             "status_code": status_code,
@@ -47,14 +47,14 @@ class TestsFlextOracleWmsWmsClient:
     def _stub_boundary(
         cls,
         monkeypatch: pytest.MonkeyPatch,
-        outcome: p.Result[m.Api.HttpResponse],
+        outcome: p.Result[p.Api.HttpResponse],
     ) -> None:
         """Stub the external HTTP boundary FlextApi.request with an outcome."""
 
         def _request(
             _self: FlextApi,
             _request: m.Api.HttpRequest,
-        ) -> p.Result[m.Api.HttpResponse]:
+        ) -> p.Result[p.Api.HttpResponse]:
             return outcome
 
         monkeypatch.setattr(FlextApi, "request", _request)
@@ -68,7 +68,7 @@ class TestsFlextOracleWmsWmsClient:
     ) -> None:
         cls._stub_boundary(
             monkeypatch,
-            r[m.Api.HttpResponse].ok(cls._response(status_code, body)),
+            r[p.Api.HttpResponse].ok(cls._response(status_code, body)),
         )
 
     @pytest.fixture
@@ -123,7 +123,7 @@ class TestsFlextOracleWmsWmsClient:
     ) -> None:
         self._stub_boundary(
             monkeypatch,
-            r[m.Api.HttpResponse].fail("Network error"),
+            r[p.Api.HttpResponse].fail("Network error"),
         )
         result = client.get("/test-endpoint")
         tm.fail(result)
@@ -225,7 +225,7 @@ class TestsFlextOracleWmsWmsClient:
     ) -> None:
         self._stub_boundary(
             monkeypatch,
-            r[m.Api.HttpResponse].fail("Network error"),
+            r[p.Api.HttpResponse].fail("Network error"),
         )
         result = client.discover_entities()
         tm.fail(result)
