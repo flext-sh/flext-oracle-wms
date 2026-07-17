@@ -236,7 +236,7 @@ class TestsFlextOracleWmsUtilities(FlextTestsUtilities, u):
                 ]
 
             @staticmethod
-            def sample_entity_data() -> TestsFlextOracleWmsTypes.JsonMapping | None:
+            def sample_entity_data() -> TestsFlextOracleWmsTypes.JsonMapping:
                 """Return canonical sample entity payload data for tests."""
                 return {
                     "result_count": 4,

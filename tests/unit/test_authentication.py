@@ -169,9 +169,8 @@ class TestsFlextOracleWmsAuthentication:
     ) -> None:
         """Incomplete/unsupported configs fail with an explanatory error."""
         result = FlextOracleWmsUtilitiesAuth.validate_auth_settings(settings)
-        tm.fail(result)
-        tm.that(result.error, none=False)
-        tm.that(result.error.lower(), has=expected_fragment)
+        error = tm.fail(result)
+        tm.that(error.lower(), has=expected_fragment)
 
     # ---- Authenticator.authenticate contract ----------------------------
 
@@ -248,9 +247,8 @@ class TestsFlextOracleWmsAuthentication:
         """A method that is neither basic nor oauth2 is rejected."""
         settings = m.OracleWms.AuthSettings(method=_Method.API_KEY)
         result = FlextOracleWmsUtilitiesAuth.Authenticator(settings).authenticate()
-        tm.fail(result)
-        tm.that(result.error, none=False)
-        tm.that(result.error.lower(), has="unsupported auth method")
+        error = tm.fail(result)
+        tm.that(error.lower(), has="unsupported auth method")
 
     # ---- Authenticator.get_auth_headers contract ------------------------
 
@@ -302,9 +300,8 @@ class TestsFlextOracleWmsAuthentication:
             oauth2_client_secret="secret",
         )
         result = FlextOracleWmsUtilitiesClient.Client.from_auth_settings(settings)
-        tm.fail(result)
-        tm.that(result.error, none=False)
-        tm.that(result.error.lower(), has="basic auth only")
+        error = tm.fail(result)
+        tm.that(error.lower(), has="basic auth only")
 
 
 __all__: list[str] = ["TestsFlextOracleWmsAuthentication"]

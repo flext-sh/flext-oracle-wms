@@ -83,10 +83,10 @@ class TestsFlextOracleWmsHelpersCore:
         tm.that(data["next_page"], none=True)
 
         results = data["results"]
-        tm.that(results, is_=list)
+        assert isinstance(results, list)
         tm.that(len(results), eq=2)
         first = results[0]
-        tm.that(first, is_=dict)
+        assert isinstance(first, dict)
         tm.that(first["code"], eq="TEST_CODE")
 
     def test_build_client_settings_maps_env_config_to_settings_fields(self) -> None:
