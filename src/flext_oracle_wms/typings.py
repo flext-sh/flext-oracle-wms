@@ -8,8 +8,6 @@ from __future__ import annotations
 
 from flext_api import t
 
-from flext_oracle_wms import m
-
 
 class FlextOracleWmsTypes(t):
     """Oracle WMS type definitions extending t via MRO."""
@@ -22,7 +20,7 @@ class FlextOracleWmsTypes(t):
         type FilterEntry = (
             FlextOracleWmsTypes.OracleWms.FilterScalar
             | FlextOracleWmsTypes.OracleWms.FilterList
-            | m.OracleWms.FlextOracleWmsOperatorFilter
+            | p.OracleWms.FlextOracleWmsOperatorFilter
         )
         type FilterRecordValue = (
             FlextOracleWmsTypes.OracleWms.FilterScalar

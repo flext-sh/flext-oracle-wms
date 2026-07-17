@@ -205,7 +205,6 @@ project-excludes = [
   "**/typings/**",
   "**/vendor/**",
   "**/venv/**",
-  ".flext-deps/**",
   ".venv/**",
   "typings/**",
   "vendor/**",
@@ -215,14 +214,12 @@ python-interpreter-path = "../.venv/bin/python"
 python-version = "3.13"
 search-path = [
   ".",
-  # mro-f1fe (agent: kimi-sweep): removed stale search-path to migrated examples (legado/)
+  "../flext-api/src",
   "../flext-cli/src",
-  "../flext-core/examples",
-  "../flext-core/scripts",
   "../flext-core/src",
   "../flext-infra/src",
-  "../flext-infra/tmp_flow_test",
   "../flext-tests/src",
+  "../flext-web/src",
   "src",
 ]
 use-ignore-files = false
@@ -570,8 +567,6 @@ split-on-trailing-comma = true
 [tool.ruff.lint.per-file-ignores]
 # PascalCase domain accessors (config.OracleWms cached_property) are intentional
 # namespace names, not methods (mirrors flext-cli/cosmos config accessors).
-"**/flext_oracle_wms/_config.py" = [ "N802" ]
-"**/flext_oracle_wms/_protocols/*.py" = [ "N802" ]
 "**/.vulture_whitelist.py" = [ "ALL" ]
 "**/*_pb2*.py" = [ "ALL" ]
 "**/*dispatcher*" = [  ]
@@ -721,6 +716,8 @@ split-on-trailing-comma = true
 "**/context.py" = [  ]
 "**/external_command*.py" = [ "S404", "S603" ]
 "**/file_tools.py" = [ "D102" ]
+"**/flext_oracle_wms/_config.py" = [ "N802" ]
+"**/flext_oracle_wms/_protocols/*.py" = [ "N802" ]
 "**/managers.py" = [ "S105" ]
 "**/models.py" = [ "PLC0415", "PLC2801", "S102", "S105" ]
 "**/orchestrator*.py" = [ "S404", "S603" ]
