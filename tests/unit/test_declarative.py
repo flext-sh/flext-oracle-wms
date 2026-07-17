@@ -13,8 +13,8 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from collections.abc import Generator, Sequence
 from pathlib import Path
+from typing import TYPE_CHECKING
 
 import pytest
 from flext_tests import tm
@@ -26,6 +26,9 @@ from flext_oracle_wms import (
     m,
 )
 from tests import p, t, u
+
+if TYPE_CHECKING:
+    from collections.abc import Generator, Sequence
 
 
 @pytest.fixture

@@ -16,7 +16,7 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from collections.abc import Callable
+from typing import TYPE_CHECKING
 from unittest.mock import Mock
 
 import pytest
@@ -25,6 +25,9 @@ from flext_tests import r, tm
 
 from flext_oracle_wms import FlextOracleWmsSettings, FlextOracleWmsUtilitiesClient, c, m
 from tests import p, t
+
+if TYPE_CHECKING:
+    from collections.abc import Callable
 
 
 def _http_response(*, status_code: int, body: dict[str, object]) -> p.Api.HttpResponse:

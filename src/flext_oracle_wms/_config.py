@@ -14,14 +14,16 @@ from __future__ import annotations
 
 from functools import cached_property
 from pathlib import Path
-from typing import ClassVar
+from typing import TYPE_CHECKING, ClassVar
 
 from flext_core import FlextConfig
 from flext_oracle_wms._models.config import FlextOracleWmsConfigModels
 
 # NOTE (multi-agent): config-scaffold — accessor typed by PROTOCOL (p), never
 # the model class; the protocol module enters under TYPE_CHECKING only.
-from flext_oracle_wms._protocols.config import FlextOracleWmsProtocolsConfig
+
+if TYPE_CHECKING:
+    from flext_oracle_wms._protocols.config import FlextOracleWmsProtocolsConfig
 
 
 class FlextOracleWmsConfig(FlextConfig):

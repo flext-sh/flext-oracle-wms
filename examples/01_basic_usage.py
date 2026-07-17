@@ -22,11 +22,8 @@ Usage:
 from __future__ import annotations
 
 import os
-from collections.abc import (
-    Sequence,
-)
 from pathlib import Path
-from typing import Final
+from typing import TYPE_CHECKING, Final
 
 from dotenv import load_dotenv
 
@@ -39,6 +36,11 @@ from flext_oracle_wms import (
     u,
 )
 from flext_oracle_wms.errors import FlextOracleWmsErrors
+
+if TYPE_CHECKING:
+    from collections.abc import (
+        Sequence,
+    )
 
 FlextOracleWmsClient = FlextOracleWmsUtilitiesClient.Client
 

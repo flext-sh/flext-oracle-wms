@@ -6,16 +6,18 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from collections.abc import (
-    Mapping,
-)
 from enum import StrEnum, unique
 from types import MappingProxyType
-from typing import ClassVar, Final
+from typing import TYPE_CHECKING, ClassVar, Final
 
 from flext_api import c
 
-from flext_oracle_wms import t
+if TYPE_CHECKING:
+    from collections.abc import (
+        Mapping,
+    )
+
+    from flext_oracle_wms import t
 
 
 class FlextOracleWmsConstants(c):
