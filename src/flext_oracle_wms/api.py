@@ -84,7 +84,10 @@ class FlextOracleWmsApi(s[bool]):
         settings: p.OracleWms.AuthSettings,
     ) -> p.Result[u.OracleWms.Client]:
         """Create a runtime Oracle WMS client from auth settings."""
-        return u.OracleWms.Client.from_auth_settings(settings)
+        result: p.Result[u.OracleWms.Client] = (
+            u.OracleWms.Client.from_auth_settings(settings)
+        )
+        return result
 
 
 oracle_wms = FlextOracleWmsApi

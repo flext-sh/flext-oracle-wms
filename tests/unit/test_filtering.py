@@ -51,7 +51,7 @@ class TestsFlextOracleWmsFiltering:
         ids: set[int] = set()
         for record in records:
             id_value = record["id"]
-            tm.that(id_value, is_=int)
+            assert isinstance(id_value, int)
             ids.add(id_value)
         return ids
 
