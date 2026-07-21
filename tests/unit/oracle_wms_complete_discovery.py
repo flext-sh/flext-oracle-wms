@@ -17,20 +17,19 @@ from datetime import UTC, datetime
 from pathlib import Path
 from typing import TYPE_CHECKING, cast
 
-from flext_api import FlextApiModels
 from flext_tests import r
 
+from flext_api import FlextApiModels
 from flext_oracle_wms import (
     FlextOracleWmsApi,
     FlextOracleWmsSettings,
     FlextOracleWmsUtilitiesClient,
+    settings,
 )
 from tests import c, m, p, t, u
 
 if TYPE_CHECKING:
-    from collections.abc import (
-        MutableSequence,
-    )
+    from collections.abc import MutableSequence
 
 logger = u.fetch_logger(__name__)
 

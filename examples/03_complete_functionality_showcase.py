@@ -49,9 +49,7 @@ from flext_oracle_wms import (
 from flext_oracle_wms.errors import FlextOracleWmsErrors
 
 if TYPE_CHECKING:
-    from collections.abc import (
-        Sequence,
-    )
+    from collections.abc import Sequence
 
 FlextOracleWmsAuthenticator = FlextOracleWmsUtilitiesAuth.Authenticator
 FlextOracleWmsClient = FlextOracleWmsUtilitiesClient.Client

@@ -19,7 +19,6 @@ from flext_oracle_wms.__version__ import (
 
 if TYPE_CHECKING:
     from flext_api import d as d, e as e, h as h, r as r, s as s, x as x
-
     from flext_oracle_wms._config import (
         FlextOracleWmsConfig as FlextOracleWmsConfig,
         config as config,

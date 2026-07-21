@@ -19,6 +19,7 @@ from flext_tests import tm
 from flext_oracle_wms import (
     FlextOracleWmsUtilitiesAuth,
     FlextOracleWmsUtilitiesClient,
+    p,
 )
 from tests import c, m
 

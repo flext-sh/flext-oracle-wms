@@ -6,13 +6,9 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from collections.abc import (
-    MutableSequence,
-    Sequence,
-)
+from collections.abc import MutableSequence, Sequence
 
 from flext_api import u
-
 from flext_oracle_wms import c, e, m, p, r, t
 from flext_oracle_wms.errors import FlextOracleWmsErrors
 

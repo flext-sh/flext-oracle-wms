@@ -21,7 +21,11 @@ from typing import cast
 
 from flext_tests import r
 
-from flext_oracle_wms import FlextOracleWmsSettings, FlextOracleWmsUtilitiesClient
+from flext_oracle_wms import (
+    FlextOracleWmsSettings,
+    FlextOracleWmsUtilitiesClient,
+    settings,
+)
 from tests import p, t, u
 
 logger = u.fetch_logger(__name__)

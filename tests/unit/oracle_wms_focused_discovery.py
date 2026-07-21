@@ -14,14 +14,15 @@ from typing import TYPE_CHECKING, cast
 
 from flext_tests import r
 
-from flext_oracle_wms import FlextOracleWmsSettings, FlextOracleWmsUtilitiesClient
+from flext_oracle_wms import (
+    FlextOracleWmsSettings,
+    FlextOracleWmsUtilitiesClient,
+    settings,
+)
 from tests import p, t, u
 
 if TYPE_CHECKING:
-    from collections.abc import (
-        MutableMapping,
-        MutableSequence,
-    )
+    from collections.abc import MutableMapping, MutableSequence
 
 logger = u.fetch_logger(__name__)
 

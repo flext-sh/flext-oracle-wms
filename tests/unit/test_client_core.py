@@ -20,9 +20,9 @@ from typing import TYPE_CHECKING
 from unittest.mock import Mock
 
 import pytest
-from flext_api import FlextApi
 from flext_tests import r, tm
 
+from flext_api import FlextApi
 from flext_oracle_wms import FlextOracleWmsSettings, FlextOracleWmsUtilitiesClient, c, m
 from tests import p, t
 

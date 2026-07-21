@@ -11,16 +11,7 @@ from __future__ import annotations
 
 from typing import override
 
-from flext_oracle_wms import (
-    FlextOracleWmsSettings,
-    c,
-    m,
-    p,
-    r,
-    s,
-    t,
-    u,
-)
+from flext_oracle_wms import FlextOracleWmsSettings, c, m, p, r, s, t, u
 
 
 class FlextOracleWmsApi(s[bool]):
