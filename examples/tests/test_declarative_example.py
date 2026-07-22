@@ -11,22 +11,22 @@ from urllib.parse import urlparse
 from flext_oracle_wms import (
     FlextOracleWmsApi,
     FlextOracleWmsSettings,
+    FlextOracleWmsUtilitiesClient,
     t,
     u,
 )
-from flext_oracle_wms.utilities import FlextOracleWmsUtilitiesClient
 
 logger = u.fetch_logger(__name__)
 
 FlextOracleWmsClient = FlextOracleWmsUtilitiesClient.Client
 
 
-def load_env_config() -> dict[str, t.JsonValue] | None:
+def load_env_config() -> t.MutableJsonMapping | None:
     """Load configuration from .env file."""
     env_path = Path("flext-tap-oracle-wms/.env")
     if not env_path.exists():
         return None
-    settings: dict[str, str] = {}
+    settings: t.MutableStrMapping = {}
     with env_path.open(encoding="utf-8") as f:
         for line in f:
             stripped_line = line.strip()
@@ -45,7 +45,7 @@ def load_env_config() -> dict[str, t.JsonValue] | None:
             if path_parts and path_parts[-1]:
                 logger.debug(f"Environment detected in URL: {path_parts[-1]}")
         except (ValueError, AttributeError) as e:
-            logger.debug(f"Failed to parse environment from URL: {e}")
+            logger.debug("Failed to parse environment from URL: %s", e)
     return {
         "oracle_wms_base_url": base_url,
         "oracle_wms_username": settings.get("ORACLE_WMS_USERNAME", ""),
@@ -56,8 +56,7 @@ def load_env_config() -> dict[str, t.JsonValue] | None:
         "oracle_wms_verify_ssl": settings.get("ORACLE_WMS_VERIFY_SSL", "true").lower()
         == "true",
         "oracle_wms_enable_logging": settings.get(
-            "ORACLE_WMS_ENABLE_REQUEST_LOGGING",
-            "true",
+            "ORACLE_WMS_ENABLE_REQUEST_LOGGING", "true"
         ).lower()
         == "true",
     }
@@ -84,39 +83,41 @@ def main() -> None:
     })
     client = FlextOracleWmsClient(settings)
     try:
-        start_result = client.start()
-        if not start_result.success:
-            return
-        categories: dict[str, list[str]] = {}
-        for api in FlextOracleWmsApi.FLEXT_ORACLE_WMS_APIS.values():
-            if api.category not in categories:
-                categories[api.category] = []
-            categories[api.category].append(api.name)
-        for _category, _apis in categories.items():
-            pass
-        client.health_check()
-        client.discover_entities()
-        for entity in ["company", "facility", "item"]:
-            result = client.get_entity_data(entity, limit=3)
-            if result.success:
-                data = result.value
-                if isinstance(data, list):
-                    for record in data:
-                        if isinstance(record, dict):
-                            record.get("count", str(len(data)))
-        client.health_check()
-        client.update_oblpn_tracking_number(
-            oblpn_id="TEST123",
-            tracking_number="TRACK123",
-        )
-        lpn_result = client.create_lpn(lpn_nbr="TEST_LPN", qty=10)
-        if lpn_result.failure:
-            logger.debug(f"LPN creation failed as expected: {lpn_result.error}")
+        run_client_flow(client)
     except Exception as exc:
-        logger.warning(f"Test execution encountered error: {exc}")
+        logger.warning("Test execution encountered error: %s", exc)
         raise
     finally:
         client.stop()
+
+
+def run_client_flow(client: FlextOracleWmsClient) -> None:
+    """Run the declarative example client flow."""
+    start_result = client.start()
+    if not start_result.success:
+        return
+    categories: t.MutableMappingKV[str, t.MutableSequenceOf[str]] = {}
+    for api in FlextOracleWmsApi.api_endpoints().values():
+        if api.category not in categories:
+            categories[api.category] = []
+        categories[api.category].append(api.name)
+    for _category, _apis in categories.items():
+        pass
+    client.health_check()
+    client.discover_entities()
+    for entity in ["company", "facility", "item"]:
+        result = client.get_entity_data(entity, limit=3)
+        if result.success:
+            data = result.value
+            if isinstance(data, list):
+                for record in data:
+                    if isinstance(record, dict):
+                        record.get("count", str(len(data)))
+    client.health_check()
+    client.update_oblpn_tracking_number(oblpn_id="TEST123", tracking_number="TRACK123")
+    lpn_result = client.create_lpn(lpn_nbr="TEST_LPN", qty=10)
+    if lpn_result.failure:
+        logger.debug(f"LPN creation failed as expected: {lpn_result.error}")
 
 
 if __name__ == "__main__":

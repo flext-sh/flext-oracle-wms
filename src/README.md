@@ -120,31 +120,33 @@ import os
 from flext_oracle_wms import FlextOracleWmsSettings
 
 # Environment-driven configuration with validation
-settings = FlextOracleWmsSettings(
-    base_url=os.getenv("FLEXT_ORACLE_WMS_BASE_URL", "https://test.example.com"),
-    username=os.getenv("FLEXT_ORACLE_WMS_USERNAME", "test_user"),
-    password=os.getenv("FLEXT_ORACLE_WMS_PASSWORD", "test_password"),
-    auth_method="basic",
-    timeout=30,
-    retry_attempts=3,
-)
-print(settings.base_url)
+settings = FlextOracleWmsSettings.model_validate({
+    "OracleWms": {
+        "base_url": os.getenv("FLEXT_ORACLE_WMS_BASE_URL", "https://test.example.com"),
+        "username": os.getenv("FLEXT_ORACLE_WMS_USERNAME", "test_user"),
+        "password": os.getenv("FLEXT_ORACLE_WMS_PASSWORD", "test_password"),
+        "auth_method": "basic",
+        "timeout": 30,
+        "retry_attempts": 3,
+    }
+})
+print(settings.OracleWms.base_url)
 ```
 
 ### Error Handling
 
 ```python notest
-from flext_oracle_wms import FlextOracleWmsError, FlextOracleWmsValidationError
+from flext_oracle_wms import FlextOracleWmsErrors
 
 try:
     result = client.query_entity_data("INVENTORY")
     if not result.success:
         # Handle business logic errors via FlextResult
         logger.error(f"Query failed: {result.error}")
-except FlextOracleWmsValidationError:
+except FlextOracleWmsErrors.ValidationError:
     # Handle validation issues
     logger.error("Oracle WMS validation failed")
-except FlextOracleWmsError:
+except FlextOracleWmsErrors.Error:
     # Handle any Oracle WMS error
     logger.error("Oracle WMS operation failed")
 ```

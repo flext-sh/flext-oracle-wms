@@ -9,20 +9,9 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from collections.abc import (
-    Mapping,
-)
-from typing import ClassVar, override
+from typing import override
 
-from flext_oracle_wms import (
-    FlextOracleWmsSettings,
-    m,
-    p,
-    r,
-    s,
-    t,
-    u,
-)
+from flext_oracle_wms import FlextOracleWmsSettings, c, m, p, r, s, t, u
 
 
 class FlextOracleWmsApi(s[bool]):
@@ -41,25 +30,10 @@ class FlextOracleWmsApi(s[bool]):
     while maintaining clean separation between business logic and infrastructure.
     """
 
-    FLEXT_ORACLE_WMS_APIS: ClassVar[Mapping[str, m.OracleWms.ApiEndpoint]] = {
-        "test": m.OracleWms.ApiEndpoint(
-            name="test",
-            method="GET",
-            path="/test/",
-            version="v1",
-            category="test",
-            description="Test endpoint",
-            since_version="6.1",
-        ),
-    }
-
     def __init__(self, settings: FlextOracleWmsSettings | None = None) -> None:
         """Initialize Oracle WMS facade with FLEXT integration."""
         super().__init__()
-        resolved_config = (
-            settings if settings is not None else FlextOracleWmsSettings.fetch_global()
-        )
-        self._client = u.OracleWms.Client(settings=resolved_config)
+        self._client = u.OracleWms.Client(settings=settings)
 
     @override
     def execute(self) -> p.Result[bool]:
@@ -73,6 +47,14 @@ class FlextOracleWmsApi(s[bool]):
         return r[bool].ok(value=True)
 
     @staticmethod
+    def api_endpoints() -> t.MappingKV[str, m.OracleWms.ApiEndpoint]:
+        """Return Oracle WMS API endpoint models from canonical constants."""
+        return {
+            name: m.OracleWms.ApiEndpoint.model_validate(payload)
+            for name, payload in c.OracleWms.API_ENDPOINTS.items()
+        }
+
+    @staticmethod
     def create_flext_http_client(
         base_url: str,
         timeout: float = 30.0,
@@ -82,10 +64,7 @@ class FlextOracleWmsApi(s[bool]):
     ) -> u.OracleWms.HttpClient:
         """Create FlextHttpClient instance."""
         return u.OracleWms.HttpClient(
-            base_url=base_url,
-            timeout=timeout,
-            headers=headers,
-            verify_ssl=verify_ssl,
+            base_url=base_url, timeout=timeout, headers=headers, verify_ssl=verify_ssl
         )
 
     @staticmethod
@@ -93,10 +72,10 @@ class FlextOracleWmsApi(s[bool]):
         settings: m.OracleWms.AuthSettings,
     ) -> p.Result[u.OracleWms.Client]:
         """Create a runtime Oracle WMS client from auth settings."""
-        client_result: p.Result[u.OracleWms.Client] = (
-            u.OracleWms.Client.from_auth_settings(settings)
+        result: p.Result[u.OracleWms.Client] = u.OracleWms.Client.from_auth_settings(
+            settings
         )
-        return client_result
+        return result
 
 
 oracle_wms = FlextOracleWmsApi

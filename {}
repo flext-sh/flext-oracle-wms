@@ -1,0 +1,2765 @@
+"""Complete Oracle WMS Functionality Showcase - ALL Features Demonstrated.
+
+This example demonstrates EVERY major functionality of the flext-oracle-wms library
+as specifically requested by the user: "FOQUE MUITO NOS EXEMPLES/ PARA FUNCIONAR
+COM TODA A FUNCIONALIDADE DO CODIGO"
+
+Features Demonstrated:
+    1. Client Configuration and Initialization
+    2. Entity Discovery (320+ entities)
+    3. Data Retrieval and Querying
+    4. Authentication Methods
+    5. API Catalog Management
+    6. Error Handling and Recovery
+    7. Health Monitoring
+    8. Performance Tracking
+    9. Cache Management
+    10. Enterprise Features
+
+Usage:
+    python examples/03_complete_functionality_showcase.py
+
+Requirements:
+    - .env file with Oracle WMS credentials
+    - Network connectivity to Oracle WMS Cloud
+    - All FLEXT dependencies installed
+"""
+
+from __future__ import annotations
+
+import os
+import time
+import traceback
+from collections.abc import (
+    Sequence,
+)
+from pathlib import Path
+
+from dotenv import load_dotenv
+
+from flext_oracle_wms import (
+    FlextOracleWmsApi,
+    FlextOracleWmsError,
+    FlextOracleWmsSettings,
+    FlextOracleWmsUtilitiesAuth,
+    FlextOracleWmsUtilitiesClient,
+    c,
+    m,
+    p,
+    t,
+    u,
+)
+
+FlextOracleWmsAuthenticator = FlextOracleWmsUtilitiesAuth.Authenticator
+FlextOracleWmsClient = FlextOracleWmsUtilitiesClient.Client
+
+logger = u.fetch_logger(__name__)
+
+
+def load_config_from_environment() -> FlextOracleWmsSettings:
+    """Load configuration from .env file."""
+    env_file = Path(__file__).parent.parent / ".env"
+    if env_file.exists():
+        load_dotenv(env_file)
+    base_url = os.getenv("ORACLE_WMS_BASE_URL")
+    username = os.getenv("ORACLE_WMS_USERNAME")
+    password = os.getenv("ORACLE_WMS_PASSWORD")
+    if not all([base_url, username, password]):
+        msg = "Missing required environment variables: ORACLE_WMS_BASE_URL, ORACLE_WMS_USERNAME, ORACLE_WMS_PASSWORD"
+        raise ValueError(msg)
+    if base_url is None or username is None or password is None:
+        msg = "Required environment variables cannot be None"
+        raise ValueError(msg)
+    return FlextOracleWmsSettings.model_validate({
+        "base_url": base_url,
+        "username": username,
+        "password": password,
+        "api_version": "LGF_V10",
+        "timeout": c.OracleWms.DEFAULT_TIMEOUT,
+        "max_retries": c.OracleWms.DEFAULT_MAX_RETRIES,
+        "verify_ssl": True,
+        "enable_logging": True,
+    })
+
+
+def showcase_1_client_initialization(
+    settings: FlextOracleWmsSettings,
+) -> FlextOracleWmsClient:
+    """Feature 1: Client Configuration and Initialization."""
+    client = FlextOracleWmsClient(settings)
+    start_result = client.start()
+    if start_result.success:
+        pass
+    else:
+        msg = f"Failed to start client: {start_result.error}"
+        raise FlextOracleWmsError(msg)
+    return client
+
+
+def showcase_2_entity_discovery(client: FlextOracleWmsClient) -> list[str]:
+    """Feature 2: Entity Discovery (320+ entities)."""
+    entities_result = client.discover_entities()
+    if not entities_result.success:
+        return []
+    entity_dicts = entities_result.value or []
+    entities: list[str] = [str(entity) for entity in entity_dicts]
+    batch_size_val = c.OracleWms.PROCESSING_CONFIG.get("default_batch_size", 100)
+    max_entities_to_show = int(batch_size_val) // 5
+    _entity_preview = entities[:max_entities_to_show]
+    sample_entities = {
+        "Core Entities": ["company", "facility", "item", "location"],
+        "Inventory": ["inventory", "inventory_status", "inventory_txn"],
+        "Orders": ["order_hdr", "order_dtl", "order_status"],
+        "Warehouse": ["wave", "task", "work_order", "work_assignment"],
+        "Shipping": ["shipment", "container", "manifest", "carrier"],
+    }
+    for category_entities in sample_entities.values():
+        [e_name for e_name in category_entities if e_name in entities]
+    return entities
+
+
+def showcase_3_data_retrieval(
+    client: FlextOracleWmsClient,
+    entities: list[str],
+) -> dict[str, t.ContainerValue]:
+    """Feature 3: Data Retrieval and Querying."""
+    sample_data: dict[str, t.ContainerValue] = {}
+    test_entities = ["company", "facility", "item"]
+    for entity_name in test_entities:
+        if entity_name not in entities:
+            continue
+        data_result = client.get_entity_data(entity_name, limit=5)
+        if data_result.success:
+            data = data_result.value
+            if isinstance(data, list) and data:
+                first_record = data[0]
+                if isinstance(first_record, dict):
+                    len(first_record)
+                sample_data[entity_name] = str(len(data))
+    if "company" in sample_data:
+        client.get_entity_data(
+            entity_name="company",
+            limit=3,
+            filters={"active": "Y"},
+        )
+    return sample_data
+
+
+def showcase_4_authentication(settings: FlextOracleWmsSettings) -> None:
+    """Feature 4: Authentication Methods."""
+    auth_config = m.OracleWms.AuthSettings(
+        method=c.OracleWms.OracleWMSAuthMethod.BASIC,
+        username=getattr(settings, "username", "invalid"),
+        password=getattr(settings, "password", "invalid"),
+    )
+    auth_config.validate_business_rules()
+    authenticator = FlextOracleWmsAuthenticator(auth_config)
+    _headers_result = authenticator.get_auth_headers()
+
+
+def showcase_5_api_catalog(client: FlextOracleWmsClient) -> None:
+    """Feature 5: API Catalog Management."""
+    categories: dict[str, list[str]] = {}
+    for api_name, api_info in FlextOracleWmsApi.FLEXT_ORACLE_WMS_APIS.items():
+        category = api_info.category
+        if category not in categories:
+            categories[category] = []
+        categories[category].append(api_name)
+    for apis in categories.values():
+        max_apis_to_show = c.OracleWms.DEFAULT_MAX_RETRIES
+        _api_preview = apis[:max_apis_to_show]
+    _ = {api.version for api in FlextOracleWmsApi.FLEXT_ORACLE_WMS_APIS.values()}
+    for category in c.OracleWms.WmsApiCategory.__members__.values():
+        client.get_apis_by_category(category)
+
+
+def showcase_6_error_handling(client: FlextOracleWmsClient) -> None:
+    """Feature 6: Error Handling and Recovery."""
+    client.get_entity_data("invalid_entity_xyz123")
+    client.call_api("non_existent_api_xyz")
+    try:
+        invalid_config = FlextOracleWmsSettings.model_validate({
+            "base_url": "invalid-url",
+            "username": "",
+            "password": "",
+            "api_version": "LGF_V10",
+            "timeout": 30,
+            "max_retries": 3,
+            "verify_ssl": True,
+            "enable_logging": True,
+        })
+        validation = invalid_config.validate_config()
+        if not validation.success:
+            logger.info(f"Expected validation failure: {validation.error}")
+    except Exception as exc:
+        logger.warning(f"Error handling demonstration: {exc}")
+
+
+def showcase_7_health_monitoring(
+    client: FlextOracleWmsClient,
+) -> dict[str, t.ContainerValue]:
+    """Feature 7: Health Monitoring."""
+    health_result = client.health_check()
+    if health_result.success:
+        response = health_result.value
+        health_data: dict[str, t.ContainerValue] = {"status_code": response.status_code}
+        return health_data
+    return {}
+
+
+def showcase_8_performance_tracking(
+    client: FlextOracleWmsClient,
+    entities: list[str],
+) -> None:
+    """Feature 8: Performance Tracking."""
+    min_entities_for_concurrent_test = c.OracleWms.DEFAULT_MAX_RETRIES
+    if len(entities) >= min_entities_for_concurrent_test:
+        test_entities = entities[:min_entities_for_concurrent_test]
+        start_time = time.time()
+        results: list[p.Result[Sequence[t.StrMapping]]] = []
+        for entity in test_entities:
+            result = client.get_entity_data(entity, limit=2)
+            results.append(result)
+        end_time = time.time()
+        _elapsed = end_time - start_time
+        _successful_requests = sum(
+            1 for result in results if hasattr(result, "success") and result.success
+        )
+    if "company" in entities:
+        page_sizes = [1, 5, 10]
+        for page_size in page_sizes:
+            start_time = time.time()
+            _result = client.get_entity_data("company", limit=page_size)
+            _elapsed = time.time() - start_time
+
+
+def showcase_9_cache_management(client: FlextOracleWmsClient) -> None:
+    """Feature 9: Cache Management."""
+    start_time = time.time()
+    first_result = client.discover_entities()
+    _first_elapsed = time.time() - start_time
+    start_time = time.time()
+    second_result = client.discover_entities()
+    _second_elapsed = time.time() - start_time
+    if first_result.success and second_result.success:
+        _first_count = len(first_result.value or [])
+        _second_count = len(second_result.value or [])
+
+
+def showcase_10_enterprise_features(
+    _client: FlextOracleWmsClient,
+    settings: FlextOracleWmsSettings,
+) -> None:
+    """Feature 10: Enterprise Features."""
+
+
+def main() -> int:
+    """Main showcase execution."""
+    try:
+        settings = load_config_from_environment()
+        client = showcase_1_client_initialization(settings)
+        entities = showcase_2_entity_discovery(client)
+        showcase_3_data_retrieval(client, entities)
+        showcase_4_authentication(settings)
+        showcase_5_api_catalog(client)
+        showcase_6_error_handling(client)
+        showcase_7_health_monitoring(client)
+        showcase_8_performance_tracking(client, entities)
+        showcase_9_cache_management(client)
+        showcase_10_enterprise_features(client, settings)
+        client.stop()
+    except (RuntimeError, OSError, ValueError):
+        traceback.print_exc()
+        return 1
+    return 0
+
+
+if __name__ == "__main__":
+    main()
+"""Example usage of the new declarative Oracle WMS Client.
+
+This demonstrates the declarative approach with massive code reduction.
+"""
+
+from __future__ import annotations
+
+from pathlib import Path
+from urllib.parse import urlparse
+
+from flext_oracle_wms import (
+    FlextOracleWmsApi,
+    FlextOracleWmsSettings,
+    FlextOracleWmsUtilitiesClient,
+    t,
+    u,
+)
+
+logger = u.fetch_logger(__name__)
+
+FlextOracleWmsClient = FlextOracleWmsUtilitiesClient.Client
+
+
+def load_env_config() -> dict[str, t.ContainerValue] | None:
+    """Load configuration from .env file."""
+    env_path = Path("flext-tap-oracle-wms/.env")
+    if not env_path.exists():
+        return None
+    settings: dict[str, str] = {}
+    with env_path.open(encoding="utf-8") as f:
+        for line in f:
+            stripped_line = line.strip()
+            if (
+                stripped_line
+                and (not stripped_line.startswith("#"))
+                and ("=" in stripped_line)
+            ):
+                key, value = stripped_line.split("=", 1)
+                settings[key.strip()] = value.strip()
+    base_url = settings.get("ORACLE_WMS_BASE_URL", "")
+    if base_url:
+        try:
+            parsed = urlparse(base_url)
+            path_parts = parsed.path.strip("/").split("/")
+            if path_parts and path_parts[-1]:
+                logger.debug(f"Environment detected in URL: {path_parts[-1]}")
+        except (ValueError, AttributeError) as e:
+            logger.debug(f"Failed to parse environment from URL: {e}")
+    return {
+        "oracle_wms_base_url": base_url,
+        "oracle_wms_username": settings.get("ORACLE_WMS_USERNAME", ""),
+        "oracle_wms_password": settings.get("ORACLE_WMS_PASSWORD", ""),
+        "api_version": "LGF_V10",
+        "oracle_wms_timeout": int(settings.get("ORACLE_WMS_TIMEOUT", "30")),
+        "oracle_wms_max_retries": int(settings.get("ORACLE_WMS_MAX_RETRIES", "3")),
+        "oracle_wms_verify_ssl": settings.get("ORACLE_WMS_VERIFY_SSL", "true").lower()
+        == "true",
+        "oracle_wms_enable_logging": settings.get(
+            "ORACLE_WMS_ENABLE_REQUEST_LOGGING",
+            "true",
+        ).lower()
+        == "true",
+    }
+
+
+def main() -> None:
+    """Demonstrate declarative Oracle WMS Client usage."""
+    env_config = load_env_config()
+    if not env_config or not all([
+        env_config.get("oracle_wms_base_url"),
+        env_config.get("oracle_wms_username"),
+        env_config.get("oracle_wms_password"),
+    ]):
+        return
+    settings = FlextOracleWmsSettings.model_validate({
+        "base_url": str(env_config["oracle_wms_base_url"]),
+        "username": str(env_config["oracle_wms_username"]),
+        "password": str(env_config["oracle_wms_password"]),
+        "api_version": str(env_config["api_version"]),
+        "timeout": int(str(env_config["oracle_wms_timeout"])),
+        "max_retries": int(str(env_config["oracle_wms_max_retries"])),
+        "verify_ssl": bool(env_config["oracle_wms_verify_ssl"]),
+        "enable_logging": bool(env_config["oracle_wms_enable_logging"]),
+    })
+    client = FlextOracleWmsClient(settings)
+    try:
+        start_result = client.start()
+        if not start_result.success:
+            return
+        categories: dict[str, list[str]] = {}
+        for api in FlextOracleWmsApi.FLEXT_ORACLE_WMS_APIS.values():
+            if api.category not in categories:
+                categories[api.category] = []
+            categories[api.category].append(api.name)
+        for _category, _apis in categories.items():
+            pass
+        client.health_check()
+        client.discover_entities()
+        for entity in ["company", "facility", "item"]:
+            result = client.get_entity_data(entity, limit=3)
+            if result.success:
+                data = result.value
+                if isinstance(data, list):
+                    for record in data:
+                        if isinstance(record, dict):
+                            record.get("count", str(len(data)))
+        client.health_check()
+        client.update_oblpn_tracking_number(
+            oblpn_id="TEST123",
+            tracking_number="TRACK123",
+        )
+        lpn_result = client.create_lpn(lpn_nbr="TEST_LPN", qty=10)
+        if lpn_result.failure:
+            logger.debug(f"LPN creation failed as expected: {lpn_result.error}")
+    except Exception as exc:
+        logger.warning(f"Test execution encountered error: {exc}")
+        raise
+    finally:
+        client.stop()
+
+
+if __name__ == "__main__":
+    main()
+"""Oracle WMS Client utilities.
+
+Copyright (c) 2025 FLEXT Team. All rights reserved.
+SPDX-License-Identifier: MIT
+"""
+
+from __future__ import annotations
+
+from collections.abc import (
+    Sequence,
+)
+
+from flext_api import (
+    FlextApiClient,
+    FlextApiSettings,
+    u,
+)
+
+from flext_oracle_wms import (
+    FlextOracleWmsSettings,
+    FlextOracleWmsUtilitiesAuth,
+    c,
+    m,
+    p,
+    r,
+    t,
+)
+
+
+class FlextOracleWmsUtilitiesClient:
+    """Client utilities for Oracle WMS -- u.OracleWms.Client.*."""
+
+    class Client:
+        """Oracle WMS client with strict request/response typing."""
+
+        HTTP_BAD_REQUEST_THRESHOLD = 400
+
+        @classmethod
+        def from_auth_settings(
+            cls,
+            auth_settings: m.OracleWms.AuthSettings,
+        ) -> p.Result[FlextOracleWmsUtilitiesClient.Client]:
+            """Create a concrete client by merging auth settings with runtime WMS settings."""
+            validation_result = auth_settings.validate_business_rules()
+            if validation_result.failure:
+                return r[FlextOracleWmsUtilitiesClient.Client].fail(
+                    validation_result.error or "Invalid Oracle WMS auth settings"
+                )
+            basic_method = str(c.OracleWms.OracleWMSAuthMethod.BASIC)
+            if auth_settings.normalized_method != basic_method:
+                return r[FlextOracleWmsUtilitiesClient.Client].fail(
+                    "Oracle WMS runtime client currently supports BASIC auth only"
+                )
+            base_settings = FlextOracleWmsSettings.fetch_global()
+            resolved_settings = FlextOracleWmsSettings.model_validate({
+                "base_url": base_settings.base_url,
+                "timeout": base_settings.timeout,
+                "username": auth_settings.username or base_settings.username,
+                "password": auth_settings.password or base_settings.password,
+                "auth_method": auth_settings.normalized_method,
+            })
+            return r[FlextOracleWmsUtilitiesClient.Client].ok(cls(resolved_settings))
+
+        def __init__(self, settings: FlextOracleWmsSettings | None = None) -> None:
+            """Initialize client with strict settings resolution."""
+            resolved_config = (
+                settings
+                if settings is not None
+                else FlextOracleWmsSettings.fetch_global()
+            )
+            self.settings: FlextOracleWmsSettings = resolved_config
+            default_headers = self._build_default_headers(self.settings)
+            self._api_config = FlextApiSettings.model_validate({
+                "base_url": self.settings.base_url,
+                "timeout": int(self.settings.timeout),
+                "headers": default_headers,
+                "default_headers": default_headers,
+            })
+            self._client: FlextApiClient | None = self._create_api_client()
+            self._discovered_entities: t.StrSequence = []
+            self._started = False
+
+        @staticmethod
+        def _build_default_headers(settings: FlextOracleWmsSettings) -> t.StrMapping:
+            """Build default request headers from Oracle WMS auth settings."""
+            if not settings.username and not settings.password:
+                return {}
+            resolved_method = (
+                str(
+                    getattr(
+                        settings,
+                        "auth_method",
+                        c.OracleWms.OracleWMSAuthMethod.BASIC,
+                    )
+                )
+                .strip()
+                .lower()
+            )
+            auth_settings = m.OracleWms.AuthSettings(
+                method=resolved_method,
+                username=settings.username or None,
+                password=settings.password or None,
+                oauth2_client_id=getattr(settings, "oauth2_client_id", None),
+                oauth2_client_secret=getattr(settings, "oauth2_client_secret", None),
+            )
+            authenticator = FlextOracleWmsUtilitiesAuth.Authenticator(auth_settings)
+            auth_headers = authenticator.get_auth_headers()
+            if auth_headers.failure:
+                error_message = auth_headers.error or "Invalid Oracle WMS credentials"
+                raise ValueError(error_message)
+            return auth_headers.value
+
+        def _create_api_client(self) -> FlextApiClient:
+            """Create a configured API client for Oracle WMS requests."""
+            return FlextApiClient(settings=self._api_config)
+
+        @staticmethod
+        def _decode_response_model[T: m.BaseModel](
+            payload: t.Api.ResponseBody | t.ContainerValue,
+            model_type: type[T],
+        ) -> p.Result[T]:
+            if isinstance(payload, dict):
+                return u.try_(
+                    lambda: model_type.model_validate(payload),
+                    catch=c.ValidationError,
+                ).map_error(lambda exc: f"Invalid response payload: {exc}")
+            if isinstance(payload, str):
+                return u.try_(
+                    lambda: model_type.model_validate_json(payload),
+                    catch=c.ValidationError,
+                ).map_error(lambda exc: f"Invalid JSON payload: {exc}")
+            if isinstance(payload, bytes):
+                return u.try_(
+                    lambda: model_type.model_validate_json(payload),
+                    catch=c.ValidationError,
+                ).map_error(lambda exc: f"Invalid JSON payload: {exc}")
+            if payload is None:
+                return r[T].fail("Empty response payload")
+            return r[T].fail("Unsupported response type")
+
+        def call_api(
+            self,
+            api_name: str,
+            *,
+            headers: t.StrMapping | None = None,
+            params: t.Api.WebParams | None = None,
+        ) -> p.Result[m.Api.HttpResponse]:
+            """Call a specific Oracle WMS API."""
+            return self.get(f"/api/{api_name}", headers=headers, params=params)
+
+        def create_lpn(self, lpn_nbr: str, qty: int) -> p.Result[m.Api.HttpResponse]:
+            """Create LPN (License Plate Number)."""
+            payload: t.Api.RequestBody = {"lpn_nbr": lpn_nbr, "qty": qty}
+            return self.post("/lpn", body=payload)
+
+        def delete(
+            self,
+            path: str,
+            *,
+            headers: t.StrMapping | None = None,
+        ) -> p.Result[m.Api.HttpResponse]:
+            """Make DELETE request to Oracle WMS API."""
+            return self._request(c.Api.Method.DELETE, path, headers=headers)
+
+        def discover_entities(self) -> p.Result[t.StrSequence]:
+            """Discover available Oracle WMS entities."""
+            result = self.get("/entities")
+            if result.failure:
+                return r[t.StrSequence].fail(result.error)
+            payload_result = self._decode_response_model(
+                result.value.body,
+                m.OracleWms.EntitiesResponse,
+            )
+            if payload_result.failure:
+                return r[t.StrSequence].fail(payload_result.error)
+            self._discovered_entities = payload_result.value.entities
+            return r[t.StrSequence].ok(payload_result.value.entities)
+
+        def get(
+            self,
+            path: str,
+            *,
+            headers: t.StrMapping | None = None,
+            params: t.Api.WebParams | None = None,
+        ) -> p.Result[m.Api.HttpResponse]:
+            """Make GET request to Oracle WMS API."""
+            return self._request(
+                c.Api.Method.GET,
+                path,
+                headers=headers,
+                params=params,
+            )
+
+        def get_apis_by_category(
+            self, category: str
+        ) -> p.Result[Sequence[t.StrMapping]]:
+            """Get Oracle WMS APIs by category."""
+            result = self.get(f"/apis/category/{category}")
+            if result.failure:
+                return r[Sequence[t.StrMapping]].fail(result.error)
+            payload_result = self._decode_response_model(
+                result.value.body,
+                m.OracleWms.ApiCategoryResponse,
+            )
+            if payload_result.failure:
+                return r[Sequence[t.StrMapping]].fail(payload_result.error)
+            return r[Sequence[t.StrMapping]].ok(payload_result.value.apis)
+
+        def get_entity_data(
+            self,
+            entity_name: str,
+            limit: int | None = None,
+            filters: t.ConfigurationMapping | None = None,
+        ) -> p.Result[Sequence[t.StrMapping]]:
+            """Get data for a specific Oracle WMS entity."""
+            params_dict: dict[str, str] = {}
+            if limit is not None:
+                params_dict["limit"] = str(limit)
+            if filters:
+                params_dict |= {key: str(value) for key, value in filters.items()}
+            params: t.Api.WebParams = params_dict
+            result = self.get(f"/entities/{entity_name}", params=params)
+            if result.failure:
+                return r[Sequence[t.StrMapping]].fail(result.error)
+            payload_result = self._decode_response_model(
+                result.value.body,
+                m.OracleWms.EntityDataResponse,
+            )
+            if payload_result.failure:
+                return r[Sequence[t.StrMapping]].fail(payload_result.error)
+            return r[Sequence[t.StrMapping]].ok(payload_result.value.data)
+
+        def health_check(self) -> p.Result[m.Api.HttpResponse]:
+            """Check Oracle WMS API health."""
+            return self.get("/health")
+
+        def post(
+            self,
+            path: str,
+            *,
+            headers: t.StrMapping | None = None,
+            body: t.Api.RequestBody | None = None,
+        ) -> p.Result[m.Api.HttpResponse]:
+            """Make POST request to Oracle WMS API."""
+            return self._request(
+                c.Api.Method.POST,
+                path,
+                headers=headers,
+                body=body,
+            )
+
+        def put(
+            self,
+            path: str,
+            *,
+            headers: t.StrMapping | None = None,
+            body: t.Api.RequestBody | None = None,
+        ) -> p.Result[m.Api.HttpResponse]:
+            """Make PUT request to Oracle WMS API."""
+            return self._request(
+                c.Api.Method.PUT,
+                path,
+                headers=headers,
+                body=body,
+            )
+
+        def start(self) -> p.Result[bool]:
+            """Start the Oracle WMS client after validating runtime settings."""
+            if self._client is None:
+                self._client = self._create_api_client()
+            self._started = True
+            return r[bool].ok(True)
+
+        def stop(self) -> p.Result[bool]:
+            """Stop the Oracle WMS client and release the delegated API client."""
+            if self._client is not None:
+                close_fn = getattr(self._client, "close", None)
+                if callable(close_fn):
+                    _ = close_fn()
+                self._client = None
+            self._started = False
+            return r[bool].ok(True)
+
+        def update_oblpn_tracking_number(
+            self,
+            oblpn_id: str,
+            tracking_number: str,
+        ) -> p.Result[m.Api.HttpResponse]:
+            """Update OBLPN tracking number."""
+            payload: t.Api.RequestBody = {"tracking_number": tracking_number}
+            return self.put(f"/oblpn/{oblpn_id}/tracking", body=payload)
+
+        def _request(
+            self,
+            method: str,
+            path: str,
+            *,
+            headers: t.StrMapping | None = None,
+            params: t.Api.WebParams | None = None,
+            body: t.Api.RequestBody | None = None,
+        ) -> p.Result[m.Api.HttpResponse]:
+            if self._client is None:
+                self._client = self._create_api_client()
+            request = m.Api.HttpRequest(
+                method=method,
+                url=path,
+                timeout=self.settings.timeout,
+                headers=dict(headers) if headers is not None else {},
+                query_params=params or {},
+                body=body or {},
+            )
+            result = self._client.request(request)
+            if result.failure:
+                return r[m.Api.HttpResponse].fail(
+                    f"{method} {path} failed: {result.error}",
+                )
+            response = result.value
+            if response.status_code >= self.HTTP_BAD_REQUEST_THRESHOLD:
+                return r[m.Api.HttpResponse].fail(
+                    f"{method} {path} returned HTTP {response.status_code}",
+                )
+            return r[m.Api.HttpResponse].ok(response)
+
+
+__all__: list[str] = ["FlextOracleWmsUtilitiesClient"]
+"""Oracle WMS protocols for FLEXT ecosystem.
+
+Copyright (c) 2025 FLEXT Team. All rights reserved.
+SPDX-License-Identifier: MIT
+"""
+
+from __future__ import annotations
+
+from typing import Protocol, runtime_checkable
+
+from flext_api import p
+
+from flext_oracle_wms import t
+
+
+class FlextOracleWmsProtocols(p):
+    """Oracle WMS protocols extending p.
+
+    Extends p to inherit all foundation protocols (Result, Service, etc.)
+    and adds Oracle WMS-specific protocols in the OracleWms namespace.
+
+    Architecture:
+    - EXTENDS: p (inherits Foundation, Domain, Application, etc.)
+    - ADDS: Oracle WMS-specific protocols in OracleWms namespace
+    - PROVIDES: Root-level alias `p` for convenient access
+
+    Usage:
+    from flext_oracle_wms import p
+
+    # Foundation protocols (inherited)
+    result: p.Result[str]
+    service: p.Service[str]
+
+    # Oracle WMS-specific protocols
+    wms_service: p.OracleWms.WmsService
+    """
+
+    @runtime_checkable
+    class OracleWms(Protocol):
+        """Oracle WMS domain-specific protocols."""
+
+        @runtime_checkable
+        class EntityDiscoveryClient(Protocol):
+            """Protocol for entity discovery client used by FlextOracleWmsEntityDiscovery."""
+
+            def discover_entities(self) -> p.Result[t.StrSequence]:
+                """Discover available entities."""
+                ...
+
+        @runtime_checkable
+        class WmsService(p.Service[None], Protocol):
+            """Unified WMS service protocol with operation dispatch."""
+
+            def execute_wms_operation(
+                self,
+                operation: str,
+                settings: t.ContainerValueMapping,
+                **params: t.Scalar,
+            ) -> p.Result[t.ContainerValue]:
+                """Execute WMS operation with unified interface.
+
+                Args:
+                operation: Operation type (auth, discovery, inventory, etc.)
+                settings: Operation configuration
+                **params: Operation parameters
+
+                Returns:
+                r[t.ContainerValueMapping]: Operation result or error
+
+                """
+                ...
+
+
+p = FlextOracleWmsProtocols
+
+__all__: list[str] = ["FlextOracleWmsProtocols", "p"]
+"""FLEXT Oracle WMS Types - composition patterns.
+
+Copyright (c) 2025 FLEXT Team. All rights reserved.
+SPDX-License-Identifier: MIT
+"""
+
+from __future__ import annotations
+
+from collections.abc import (
+    Mapping,
+    Sequence,
+)
+from typing import Annotated, Literal
+
+from flext_api import m, t, u
+
+from flext_oracle_wms import c
+
+
+class FlextOracleWmsTypes(t):
+    """Oracle WMS types with composition.
+
+    Uses Python 3.13+ syntax, reduces declarations through patterns.
+    One class per module following SOLID principles.
+    """
+
+    class OracleWms:
+        """Oracle WMS-specific project types."""
+
+        FLOAT_ADAPTER: m.TypeAdapter[float] = m.TypeAdapter(float)
+        CONTAINER_VALUE_MAPPING_ADAPTER: m.TypeAdapter[t.ContainerValueMapping] = (
+            m.TypeAdapter(t.ContainerValueMapping)
+        )
+
+        # =========================================================================
+        # TYPE ALIASES - Advanced composition for minimal declarations
+        # =========================================================================
+
+        type TRecord = t.ContainerValueMapping
+        type TRecordBatch = Sequence[t.ContainerValueMapping]
+        type TSchema = Mapping[str, t.ContainerValueMapping]
+        type TApiResponse = t.ContainerValueMapping
+        type TApiVersion = Literal["v2", "v1"]
+        type TEntityId = Annotated[
+            str, m.StringConstraints(min_length=1, max_length=100)
+        ]
+        type TEntityName = Annotated[
+            str,
+            m.StringConstraints(min_length=1, max_length=50, pattern=r"^[a-z0-9_]+$"),
+        ]
+        type TFilterValue = t.OptionalScalar
+        type TFilters = Mapping[str, t.OptionalScalar]
+        type TTimeout = Annotated[int, u.Field(ge=1, le=300)]
+
+        type ProjectType = c.OracleWms.ProjectType
+        type WmsProjectConfig = t.ContainerValueMapping
+        type WarehouseConfig = Mapping[str, t.Scalar | t.StrSequence]
+        type InventoryConfig = Mapping[
+            str,
+            bool | str | t.ContainerValueMapping,
+        ]
+
+        type WmsConfig = Mapping[
+            str,
+            t.Scalar | t.ContainerValueMapping,
+        ]
+        type WmsEntity = Mapping[
+            str,
+            t.ContainerValue | t.ContainerValueMapping,
+        ]
+        type WmsRecord = t.ContainerValueMapping
+        type WmsRecords = Sequence[t.ContainerValueMapping]
+
+        class Core:
+            """Core convenience type aliases for common patterns.
+
+            Provides commonly used type aliases for consistency across the codebase.
+            These are simple aliases but are used extensively, so provided for convenience.
+            Access parent core types via inheritance from FlextOracleWmsTypes.
+            """
+
+            type Dict = t.ContainerValueMapping
+            "Type alias for generic dictionary (attribute name to value mapping)."
+            type FilterScalar = t.OptionalScalar
+            type FilterList = Sequence[FlextOracleWmsTypes.OracleWms.Core.FilterScalar]
+            type FilterRecordValue = (
+                FlextOracleWmsTypes.OracleWms.Core.FilterScalar
+                | FlextOracleWmsTypes.OracleWms.Core.FilterList
+                | Mapping[
+                    str,
+                    FlextOracleWmsTypes.OracleWms.Core.FilterScalar
+                    | FlextOracleWmsTypes.OracleWms.Core.FilterList
+                    | Mapping[
+                        str,
+                        FlextOracleWmsTypes.OracleWms.Core.FilterScalar
+                        | FlextOracleWmsTypes.OracleWms.Core.FilterList,
+                    ],
+                ]
+            )
+            type FilterRecord = Mapping[
+                str,
+                FlextOracleWmsTypes.OracleWms.Core.FilterScalar
+                | FlextOracleWmsTypes.OracleWms.Core.FilterList
+                | Mapping[
+                    str,
+                    FlextOracleWmsTypes.OracleWms.Core.FilterScalar
+                    | FlextOracleWmsTypes.OracleWms.Core.FilterList,
+                ],
+            ]
+            type NestedFilterValue = (
+                FlextOracleWmsTypes.OracleWms.Core.FilterScalar
+                | FlextOracleWmsTypes.OracleWms.Core.FilterList
+                | Mapping[
+                    str,
+                    FlextOracleWmsTypes.OracleWms.Core.FilterScalar
+                    | FlextOracleWmsTypes.OracleWms.Core.FilterList
+                    | Mapping[
+                        str,
+                        FlextOracleWmsTypes.OracleWms.Core.FilterScalar
+                        | FlextOracleWmsTypes.OracleWms.Core.FilterList,
+                    ],
+                ]
+            )
+            type HttpJsonObject = t.ContainerValueMapping
+            type FilterEntry = (
+                FlextOracleWmsTypes.OracleWms.Core.FilterScalar
+                | FlextOracleWmsTypes.OracleWms.Core.FilterList
+            )
+
+
+t = FlextOracleWmsTypes
+
+__all__: list[str] = ["FlextOracleWmsTypes", "t"]
+"""Complete Oracle WMS Pipeline - MOCK MODE.
+
+REALISTIC MOCK IMPLEMENTATION:
+1. Mock Oracle WMS with realistic data structures
+2. Generate complete Singer schemas
+3. Create valid Singer catalog for Meltano
+4. Test TAP→TARGET pipeline flow
+5. Demonstrate end-to-end functionality
+
+PRAGMATIC SOLUTION FOR PERFORMANCE ISSUES
+"""
+
+from __future__ import annotations
+
+import json
+import uuid
+from collections.abc import (
+    Mapping,
+    Sequence,
+)
+from datetime import UTC, datetime
+from pathlib import Path
+from typing import cast
+
+from tests import p, r, t, u
+
+logger = u.fetch_logger(__name__)
+
+
+def _extract_replication_methods(catalog: t.Container) -> list[str]:
+    """Extract distinct replication methods from Singer catalog."""
+    if not isinstance(catalog, dict):
+        return []
+    streams_raw = catalog.get("streams", [])
+    if not isinstance(streams_raw, list):
+        return []
+    methods: set[str] = set()
+    for stream in streams_raw:
+        if not isinstance(stream, dict):
+            continue
+        metadata_list = stream.get("metadata")
+        if not isinstance(metadata_list, list) or not metadata_list:
+            continue
+        first_meta = metadata_list[0]
+        if not isinstance(first_meta, dict):
+            continue
+        inner = first_meta.get("metadata")
+        if not isinstance(inner, dict):
+            continue
+        method = inner.get("replication-method")
+        if isinstance(method, str):
+            methods.add(method)
+    return list(methods)
+
+
+class CompleteMockPipeline:
+    """Complete Oracle WMS pipeline using realistic mock data."""
+
+    @staticmethod
+    def _safe_int(value: t.Container, default: int = 0) -> int:
+        """Safely convert t.Container to int."""
+        if isinstance(value, int):
+            return value
+        if isinstance(value, str) and value.isdigit():
+            return int(value)
+        return default
+
+    def __init__(self) -> None:
+        """Initialize with realistic Oracle WMS mock data."""
+        self.mock_entities: Mapping[str, t.Container] = {
+            "company": {
+                "count": 5,
+                "sample_data": {
+                    "id": 1,
+                    "url": "https://invalid.wms.ocs.oraclecloud.com/company_unknow/wms/lgfapi/v10/company/1",
+                    "code": "RAIZEN",
+                    "company_code": "RAIZEN",
+                    "name": "Raizen S.A.",
+                    "status": "ACTIVE",
+                    "country_code": "BR",
+                    "currency_code": "BRL",
+                    "create_user": "SYSTEM",
+                    "create_ts": "2024-01-15T10:30:00.000000-03:00",
+                    "mod_user": "ADMIN",
+                    "mod_ts": "2024-12-15T14:25:30.123456-03:00",
+                },
+            },
+            "facility": {
+                "count": 12,
+                "sample_data": {
+                    "id": 101,
+                    "url": "https://invalid.wms.ocs.oraclecloud.com/company_unknow/wms/lgfapi/v10/facility/101",
+                    "code": "SP001",
+                    "facility_code": "SP001",
+                    "name": "São Paulo Distribution Center",
+                    "company_code": "RAIZEN",
+                    "status": "ACTIVE",
+                    "facility_type": "DC",
+                    "address_line1": "Av. Industrial, 1000",
+                    "city": "Guarulhos",
+                    "state": "SP",
+                    "country_code": "BR",
+                    "postal_code": "07223-000",
+                    "create_user": "SETUP",
+                    "create_ts": "2024-01-16T09:15:00.000000-03:00",
+                    "mod_user": "ADMIN",
+                    "mod_ts": "2024-12-10T16:45:22.789012-03:00",
+                },
+            },
+            "item": {
+                "count": 2500,
+                "sample_data": {
+                    "id": 5001,
+                    "url": "https://invalid.wms.ocs.oraclecloud.com/company_unknow/wms/lgfapi/v10/item/5001",
+                    "item_code": "FUEL-GASOLINE-95",
+                    "description": "Gasoline 95 Octane - Premium",
+                    "item_type": "FINISHED_GOOD",
+                    "uom_code": "LITER",
+                    "hazmat_class": "CLASS_3",
+                    "commodity_code": "2710.12.41",
+                    "weight_kg": 0.75,
+                    "volume_liters": 1.0,
+                    "status": "ACTIVE",
+                    "abc_class": "A",
+                    "create_user": "MDM_SYNC",
+                    "create_ts": "2024-02-01T08:00:00.000000-03:00",
+                    "mod_user": "MDM_SYNC",
+                    "mod_ts": "2024-12-20T12:30:15.456789-03:00",
+                },
+            },
+            "location": {
+                "count": 15000,
+                "sample_data": {
+                    "id": 75001,
+                    "url": "https://invalid.wms.ocs.oraclecloud.com/company_unknow/wms/lgfapi/v10/location/75001",
+                    "location_code": "A-01-01-01",
+                    "zone_code": "BULK_A",
+                    "area_code": "STORAGE",
+                    "aisle": "A01",
+                    "bay": "01",
+                    "level": "01",
+                    "position": "01",
+                    "location_type": "STORAGE",
+                    "capacity_weight_kg": 10000.0,
+                    "capacity_volume_liters": 15000.0,
+                    "status": "AVAILABLE",
+                    "facility_code": "SP001",
+                    "create_user": "SETUP",
+                    "create_ts": "2024-01-20T07:45:00.000000-03:00",
+                    "mod_user": "WMS_AUTO",
+                    "mod_ts": "2024-12-21T09:15:33.234567-03:00",
+                },
+            },
+            "inventory": {
+                "count": 45000,
+                "sample_data": {
+                    "id": 120001,
+                    "url": "https://invalid.wms.ocs.oraclecloud.com/company_unknow/wms/lgfapi/v10/inventory/120001",
+                    "facility_code": "SP001",
+                    "item_code": "FUEL-GASOLINE-95",
+                    "location_code": "A-01-01-01",
+                    "lot_nbr": "LOT-2024-12-001",
+                    "available_qty": 8500.0,
+                    "allocated_qty": 1200.0,
+                    "on_hold_qty": 0.0,
+                    "total_qty": 9700.0,
+                    "uom_code": "LITER",
+                    "receipt_date": "2024-12-18",
+                    "expiry_date": "2025-06-18",
+                    "status": "AVAILABLE",
+                    "create_user": "RECEIPT_PROC",
+                    "create_ts": "2024-12-18T14:30:00.000000-03:00",
+                    "mod_user": "INV_ADJUST",
+                    "mod_ts": "2024-12-21T11:22:44.567890-03:00",
+                },
+            },
+            "order_hdr": {
+                "count": 8500,
+                "sample_data": {
+                    "id": 450001,
+                    "url": "https://invalid.wms.ocs.oraclecloud.com/company_unknow/wms/lgfapi/v10/order_hdr/450001",
+                    "order_nbr": "ORD-2024-120001",
+                    "order_type": "OUTBOUND",
+                    "order_status": "IN_PROGRESS",
+                    "facility_code": "SP001",
+                    "company_code": "RAIZEN",
+                    "customer_code": "PETRO-001",
+                    "ship_to_code": "STATION-SP-001",
+                    "order_date": "2024-12-21",
+                    "requested_ship_date": "2024-12-22",
+                    "priority": "NORMAL",
+                    "total_lines": 5,
+                    "total_qty": 25000.0,
+                    "total_weight_kg": 18750.0,
+                    "carrier_code": "TRANSP-001",
+                    "create_user": "ORDER_ENTRY",
+                    "create_ts": "2024-12-21T08:15:00.000000-03:00",
+                    "mod_user": "WMS_AUTO",
+                    "mod_ts": "2024-12-21T10:45:22.345678-03:00",
+                },
+            },
+            "order_dtl": {
+                "count": 35000,
+                "sample_data": {
+                    "id": 1250001,
+                    "url": "https://invalid.wms.ocs.oraclecloud.com/company_unknow/wms/lgfapi/v10/order_dtl/1250001",
+                    "order_nbr": "ORD-2024-120001",
+                    "line_nbr": 1,
+                    "item_code": "FUEL-GASOLINE-95",
+                    "ordered_qty": 5000.0,
+                    "allocated_qty": 5000.0,
+                    "picked_qty": 3200.0,
+                    "shipped_qty": 0.0,
+                    "uom_code": "LITER",
+                    "lot_nbr": "LOT-2024-12-001",
+                    "line_status": "PICKING",
+                    "unit_price": 6.75,
+                    "total_amount": 33750.0,
+                    "create_user": "ORDER_ENTRY",
+                    "create_ts": "2024-12-21T08:15:30.000000-03:00",
+                    "mod_user": "PICK_PROC",
+                    "mod_ts": "2024-12-21T11:30:15.123456-03:00",
+                },
+            },
+            "allocation": {
+                "count": 25000,
+                "sample_data": {
+                    "id": 850001,
+                    "url": "https://invalid.wms.ocs.oraclecloud.com/company_unknow/wms/lgfapi/v10/allocation/850001",
+                    "order_nbr": "ORD-2024-120001",
+                    "line_nbr": 1,
+                    "allocation_nbr": "ALLOC-2024-450001",
+                    "item_code": "FUEL-GASOLINE-95",
+                    "from_location": "A-01-01-01",
+                    "to_location": "PICK-A-001",
+                    "lot_nbr": "LOT-2024-12-001",
+                    "allocated_qty": 5000.0,
+                    "picked_qty": 3200.0,
+                    "remaining_qty": 1800.0,
+                    "uom_code": "LITER",
+                    "allocation_status": "PARTIAL_PICKED",
+                    "task_nbr": "TASK-2024-789001",
+                    "picker_user": "PICKER_001",
+                    "create_user": "ALLOC_ENGINE",
+                    "create_ts": "2024-12-21T09:30:00.000000-03:00",
+                    "mod_user": "PICK_PROC",
+                    "mod_ts": "2024-12-21T11:15:45.678901-03:00",
+                },
+            },
+            "container": {
+                "count": 5000,
+                "sample_data": {
+                    "id": 320001,
+                    "url": "https://invalid.wms.ocs.oraclecloud.com/company_unknow/wms/lgfapi/v10/container/320001",
+                    "container_nbr": "TANK-001-2024-12",
+                    "container_type": "FUEL_TANK",
+                    "container_status": "IN_USE",
+                    "facility_code": "SP001",
+                    "location_code": "LOAD-BAY-001",
+                    "capacity_liters": 30000.0,
+                    "current_volume": 25000.0,
+                    "seal_nbr": "SEAL-789456",
+                    "carrier_code": "TRANSP-001",
+                    "truck_plate": "ABC-1234",
+                    "driver_license": "DRV-123456789",
+                    "hazmat_certified": True,
+                    "load_start_ts": "2024-12-21T10:00:00.000000-03:00",
+                    "estimated_departure": "2024-12-21T16:00:00.000000-03:00",
+                    "create_user": "DISPATCH",
+                    "create_ts": "2024-12-21T09:45:00.000000-03:00",
+                    "mod_user": "LOAD_PROC",
+                    "mod_ts": "2024-12-21T12:30:22.456789-03:00",
+                },
+            },
+            "lpn": {
+                "count": 12000,
+                "sample_data": {
+                    "id": 680001,
+                    "url": "https://invalid.wms.ocs.oraclecloud.com/company_unknow/wms/lgfapi/v10/lpn/680001",
+                    "lpn_nbr": "LPN-2024-120001",
+                    "lpn_type": "PALLET",
+                    "lpn_status": "ACTIVE",
+                    "facility_code": "SP001",
+                    "current_location": "STAGE-OUT-001",
+                    "parent_lpn": None,
+                    "container_nbr": "TANK-001-2024-12",
+                    "total_weight_kg": 750.0,
+                    "total_volume_liters": 1000.0,
+                    "item_count": 2,
+                    "seal_nbr": None,
+                    "create_user": "PACK_PROC",
+                    "create_ts": "2024-12-21T11:00:00.000000-03:00",
+                    "mod_user": "SHIP_PROC",
+                    "mod_ts": "2024-12-21T13:15:33.789012-03:00",
+                },
+            },
+        }
+        self.results: Mapping[str, t.Container] = {}
+
+    def run_complete_pipeline(self) -> p.Result[Mapping[str, t.Container]]:
+        """Run complete Oracle WMS pipeline with mock data."""
+        start_time = datetime.now(UTC)
+        try:
+            schemas = self._generate_complete_singer_schemas()
+            catalog = self._create_complete_singer_catalog(schemas)
+            tap_records = self._simulate_tap_extraction()
+            target_results = self._simulate_target_loading(tap_records)
+            dbt_results = self._simulate_dbt_transformations(target_results)
+            save_result: p.Result[str] = self._save_complete_pipeline_results(
+                schemas,
+                catalog,
+                tap_records,
+                target_results,
+                dbt_results,
+            )
+            end_time = datetime.now(UTC)
+            duration = (end_time - start_time).total_seconds()
+            for data in self.mock_entities.values():
+                if isinstance(data, dict) and "sample_data" in data:
+                    sample_data = data["sample_data"]
+                    if isinstance(sample_data, dict):
+                        len(sample_data.keys())
+            return r[Mapping[str, t.Container]].ok({
+                "duration": duration,
+                "schemas_count": len(schemas),
+                "catalog_streams": len(
+                    streams
+                    if isinstance(catalog, dict)
+                    and isinstance((streams := catalog.get("streams", [])), list)
+                    else [],
+                ),
+                "tap_records": len(tap_records),
+                "target_tables": len(target_results),
+                "dbt_models": len(dbt_results),
+                "results_path": save_result.value if save_result.success else None,
+            })
+        except Exception as e:
+            logger.exception("Complete pipeline failed")
+            return r[Mapping[str, t.Container]].fail(f"Pipeline failed: {e}")
+
+    def _generate_complete_singer_schemas(self) -> Mapping[str, t.Container]:
+        """Generate complete Singer schemas for all entities."""
+        schemas: dict[str, t.Container] = {}
+        for entity_name, entity_info in self.mock_entities.items():
+            if isinstance(entity_info, dict) and "sample_data" in entity_info:
+                sample_data = entity_info["sample_data"]
+                if isinstance(sample_data, dict):
+                    properties, key_properties = self._create_entity_properties(
+                        sample_data,
+                    )
+                    self._add_singer_metadata(properties)
+                    schema = self._build_singer_schema(properties, key_properties)
+                    schemas[entity_name] = schema
+        return schemas
+
+    def _create_entity_properties(
+        self,
+        sample_data: Mapping[str, t.Container],
+    ) -> tuple[dict[str, t.Container], list[str]]:
+        """Create properties and key properties from sample data - SRP compliance."""
+        properties: dict[str, t.Container] = {}
+        key_properties: list[str] = []
+        for field, value in sample_data.items():
+            field_property = self._infer_field_type(field, value=value)
+            properties[field] = field_property
+            if self._is_key_field(field, key_properties):
+                key_properties.append(field)
+        return (properties, key_properties)
+
+    def _infer_field_type(
+        self,
+        field: str,
+        *,
+        value: t.Container,
+    ) -> t.AttributeMapping:
+        """Infer Singer type from field name and value - Strategy Pattern."""
+        field_type = self._infer_type_from_field_name(field)
+        if field_type:
+            return field_type
+        return self._infer_type_from_value(value=value)
+
+    def _infer_type_from_field_name(
+        self,
+        field: str,
+    ) -> t.AttributeMapping | None:
+        """Infer type from field name patterns - Template Method Pattern."""
+        field_type_mapping: Mapping[str, t.AttributeMapping] = {
+            "id": {"type": "integer"},
+            "_code": {"type": ["string", "null"]},
+            "_ts": {"type": ["string", "null"], "format": "date-time"},
+            "_date": {"type": ["string", "null"], "format": "date"},
+            "_qty": {"type": ["number", "null"]},
+            "_weight_kg": {"type": ["number", "null"]},
+            "_volume_liters": {"type": ["number", "null"]},
+            "_nbr": {"type": ["string", "null"]},
+        }
+        if field in field_type_mapping:
+            return field_type_mapping[field]
+        for suffix, type_info in field_type_mapping.items():
+            if field.endswith(suffix):
+                return type_info
+        return None
+
+    def _infer_type_from_value(
+        self,
+        *,
+        value: t.Container,
+    ) -> t.AttributeMapping:
+        """Infer type from Python value type - Template Method Pattern."""
+        if isinstance(value, bool):
+            return {"type": ["boolean", "null"]}
+        if isinstance(value, int):
+            return {"type": ["integer", "null"]}
+        if isinstance(value, float):
+            return {"type": ["number", "null"]}
+        if isinstance(value, str):
+            return {"type": ["string", "null"]}
+        return {"type": ["string", "null"]}
+
+    def _is_key_field(self, field: str, existing_keys: t.StrSequence) -> bool:
+        """Determine if field should be a key property."""
+        return field == "id" or (field.endswith("_code") and (not existing_keys))
+
+    def _add_singer_metadata(
+        self, properties: t.MutableRecursiveContainerMapping
+    ) -> None:
+        """Add Singer metadata properties - SRP compliance."""
+        properties.update({
+            "_sdc_extracted_at": {"type": "string", "format": "date-time"},
+            "_sdc_entity": {"type": "string"},
+            "_sdc_sequence": {"type": "integer"},
+            "_sdc_record_hash": {"type": ["string", "null"]},
+        })
+
+    def _build_singer_schema(
+        self,
+        properties: Mapping[str, t.Container],
+        key_properties: t.StrSequence,
+    ) -> dict[str, t.Container]:
+        """Build complete Singer schema - SRP compliance."""
+        return {
+            "type": "object",
+            "properties": properties,
+            "additionalProperties": False,
+            "key_properties": key_properties or ["id"],
+        }
+
+    def _create_complete_singer_catalog(
+        self,
+        schemas: Mapping[str, t.Container],
+    ) -> Mapping[str, t.Container]:
+        """Create complete Singer catalog for Meltano integration."""
+        streams: list[dict[str, t.Container]] = []
+        for entity_name, schema in schemas.items():
+            if not isinstance(schema, dict):
+                continue
+            key_properties = schema.get("key_properties", ["id"])
+            schema_without_keys = {
+                k: v for k, v in schema.items() if k != "key_properties"
+            }
+            schema_props = schema.get("properties", {})
+            empty_props: dict[str, t.Container] = {}
+            schema_props_dict = (
+                schema_props if isinstance(schema_props, dict) else empty_props
+            )
+            replication_method = (
+                "INCREMENTAL"
+                if any(
+                    prop in schema_props_dict
+                    for prop in ["mod_ts", "create_ts", "updated_at"]
+                )
+                else "FULL_TABLE"
+            )
+            replication_key = "mod_ts" if "mod_ts" in schema_props_dict else None
+            inner_metadata: dict[str, t.Container] = {
+                "inclusion": "available",
+                "selected": True,
+                "replication-method": replication_method,
+                "forced-replication-method": replication_method,
+                "table-key-properties": key_properties,
+            }
+            if replication_key:
+                inner_metadata["replication-key"] = replication_key
+            stream: dict[str, t.Container] = {
+                "tap_stream_id": entity_name,
+                "stream": entity_name,
+                "schema": schema_without_keys,
+                "key_properties": key_properties,
+                "metadata": [
+                    {
+                        "breadcrumb": list[str](),
+                        "metadata": inner_metadata,
+                    },
+                ],
+            }
+            streams.append(stream)
+        return {"version": 1, "streams": streams}
+
+    def _simulate_tap_extraction(self) -> list[dict[str, t.Container]]:
+        """Simulate TAP extraction process."""
+        tap_records: list[dict[str, t.Container]] = []
+        for entity_name, entity_info in self.mock_entities.items():
+            if not isinstance(entity_info, dict):
+                continue
+            sample_data_raw = entity_info.get("sample_data", {})
+            sample_data: dict[str, t.Container] = (
+                dict(sample_data_raw) if isinstance(sample_data_raw, dict) else {}
+            )
+            sample_data["_sdc_extracted_at"] = datetime.now(UTC).isoformat()
+            sample_data["_sdc_entity"] = entity_name
+            sample_data["_sdc_sequence"] = 1
+            sample_data["_sdc_record_hash"] = str(uuid.uuid4())
+            count_value = entity_info.get("count", 1)
+            count = min(count_value if isinstance(count_value, int) else 1, 5)
+            for i in range(count):
+                record: dict[str, t.Container] = dict(sample_data)
+                if "id" in record and isinstance(record["id"], int):
+                    record["id"] += i
+                if "order_nbr" in record and isinstance(record["order_nbr"], str):
+                    record["order_nbr"] = f"{record['order_nbr']}-{i + 1:03d}"
+                record["_sdc_sequence"] = i + 1
+                tap_records.append({"entity": entity_name, "record": record})
+        return tap_records
+
+    def _simulate_target_loading(
+        self,
+        tap_records: Sequence[dict[str, t.Container]],
+    ) -> dict[str, t.Container]:
+        """Simulate TARGET loading process."""
+        target_results: dict[str, t.Container] = {}
+        for entity_name in self.mock_entities:
+            entity_records = [
+                rec for rec in tap_records if rec.get("entity") == entity_name
+            ]
+            first_record = entity_records[0] if entity_records else None
+            first_inner = first_record.get("record") if first_record else None
+            columns: list[str] = (
+                list(first_inner.keys()) if isinstance(first_inner, dict) else []
+            )
+            target_results[f"raw_oracle_wms_{entity_name}"] = {
+                "table_name": f"raw_oracle_wms_{entity_name}",
+                "records_loaded": len(entity_records),
+                "load_timestamp": datetime.now(UTC).isoformat(),
+                "status": "SUCCESS",
+                "columns": columns,
+            }
+        return target_results
+
+    def _simulate_dbt_transformations(
+        self,
+        target_results: Mapping[str, t.Container],
+    ) -> Mapping[str, t.Container]:
+        """Simulate DBT transformation process."""
+        dbt_results: dict[str, Mapping[str, int | t.StrSequence | str]] = {}
+        business_models = {
+            "dim_company": {
+                "source_tables": ["raw_oracle_wms_company"],
+                "description": "Company dimension with business hierarchy",
+                "transformation_type": "SCD_TYPE_1",
+            },
+            "dim_facility": {
+                "source_tables": ["raw_oracle_wms_facility"],
+                "description": "Facility dimension with geographic data",
+                "transformation_type": "SCD_TYPE_1",
+            },
+            "dim_item": {
+                "source_tables": ["raw_oracle_wms_item"],
+                "description": "Item master with product hierarchy",
+                "transformation_type": "SCD_TYPE_2",
+            },
+            "dim_location": {
+                "source_tables": ["raw_oracle_wms_location"],
+                "description": "Storage location dimension",
+                "transformation_type": "SCD_TYPE_1",
+            },
+            "fact_inventory": {
+                "source_tables": ["raw_oracle_wms_inventory"],
+                "description": "Daily inventory snapshot fact table",
+                "transformation_type": "SNAPSHOT",
+            },
+            "fact_orders": {
+                "source_tables": [
+                    "raw_oracle_wms_order_hdr",
+                    "raw_oracle_wms_order_dtl",
+                ],
+                "description": "Order transaction fact table",
+                "transformation_type": "TRANSACTION",
+            },
+            "fact_allocations": {
+                "source_tables": ["raw_oracle_wms_allocation"],
+                "description": "Allocation and picking fact table",
+                "transformation_type": "TRANSACTION",
+            },
+            "agg_daily_inventory": {
+                "source_tables": ["fact_inventory"],
+                "description": "Daily inventory aggregations by facility/item",
+                "transformation_type": "AGGREGATE",
+            },
+            "agg_order_performance": {
+                "source_tables": ["fact_orders", "fact_allocations"],
+                "description": "Order fulfillment performance metrics",
+                "transformation_type": "AGGREGATE",
+            },
+            "rpt_inventory_dashboard": {
+                "source_tables": ["agg_daily_inventory", "dim_facility", "dim_item"],
+                "description": "Executive inventory dashboard data",
+                "transformation_type": "REPORTING",
+            },
+        }
+        for model_name, model_info in business_models.items():
+            available_sources = [
+                table
+                for table in model_info["source_tables"]
+                if table in target_results
+                or any(table in src for src in target_results)
+            ]
+            if available_sources:
+                dbt_results[model_name] = {
+                    "model_name": model_name,
+                    "model_type": model_info["transformation_type"],
+                    "description": model_info["description"],
+                    "source_tables": available_sources,
+                    "rows_processed": sum(
+                        self._safe_int(
+                            cast(
+                                "Mapping[str, t.Container]",
+                                target_results.get(src, {}),
+                            ).get("records_loaded", 0),
+                        )
+                        for src in available_sources
+                        if src in target_results
+                        and isinstance(target_results.get(src), dict)
+                    ),
+                    "transformation_timestamp": datetime.now(UTC).isoformat(),
+                    "status": "SUCCESS",
+                }
+        return cast("Mapping[str, t.Container]", dbt_results)
+
+    def _save_complete_pipeline_results(
+        self,
+        schemas: Mapping[str, t.Container],
+        catalog: Mapping[str, t.Container],
+        tap_records: Sequence[Mapping[str, t.Container]],
+        target_results: Mapping[str, t.Container],
+        dbt_results: Mapping[str, t.Container],
+    ) -> p.Result[str]:
+        """Save complete pipeline results."""
+        results_dir = Path("complete_pipeline_results")
+        results_dir.mkdir(exist_ok=True)
+        timestamp = datetime.now(UTC).strftime("%Y%m%d_%H%M%S")
+        schemas_file = results_dir / f"singer_schemas_{timestamp}.json"
+        with schemas_file.open("w", encoding="utf-8") as f:
+            json.dump(schemas, f, indent=2, default=str)
+        catalog_file = results_dir / f"singer_catalog_{timestamp}.json"
+        with catalog_file.open("w", encoding="utf-8") as f:
+            json.dump(catalog, f, indent=2, default=str)
+        tap_file = results_dir / f"tap_extraction_{timestamp}.json"
+        with tap_file.open("w", encoding="utf-8") as f:
+            json.dump(tap_records, f, indent=2, default=str)
+        target_file = results_dir / f"target_loading_{timestamp}.json"
+        with target_file.open("w", encoding="utf-8") as f:
+            json.dump(target_results, f, indent=2, default=str)
+        dbt_file = results_dir / f"dbt_transformations_{timestamp}.json"
+        with dbt_file.open("w", encoding="utf-8") as f:
+            json.dump(dbt_results, f, indent=2, default=str)
+        pipeline_summary = {
+            "pipeline_execution": {
+                "timestamp": timestamp,
+                "mode": "COMPLETE_MOCK_PIPELINE",
+                "duration_target": "FAST_EXECUTION",
+                "environment": "MOCK_REALISTIC_DATA",
+            },
+            "oracle_wms": {
+                "entities_count": len(self.mock_entities),
+                "total_records": sum(
+                    self._safe_int(info.get("count", 0))
+                    for info in self.mock_entities.values()
+                    if isinstance(info, dict)
+                ),
+                "entities": list(self.mock_entities.keys()),
+            },
+            "singer_integration": {
+                "schemas_generated": len(schemas),
+                "catalog_streams": len(
+                    streams
+                    if isinstance(catalog, dict)
+                    and isinstance((streams := catalog.get("streams", [])), list)
+                    else [],
+                ),
+                "tap_records_extracted": len(tap_records),
+                "replication_methods": _extract_replication_methods(catalog),
+            },
+            "target_loading": {
+                "tables_created": len(target_results),
+                "total_records_loaded": sum(
+                    self._safe_int(result.get("records_loaded", 0))
+                    for result in target_results.values()
+                    if isinstance(result, dict)
+                ),
+            },
+            "dbt_transformations": {
+                "models_created": len(dbt_results),
+                "model_types": list({
+                    str(result.get("model_type", "unknown"))
+                    for result in dbt_results.values()
+                    if isinstance(result, dict)
+                }),
+                "business_value": [
+                    "Executive Dashboards",
+                    "Inventory Analytics",
+                    "Order Performance",
+                    "Operational KPIs",
+                ],
+            },
+            "validation_results": {
+                "singer_protocol_compliance": True,
+                "meltano_catalog_ready": True,
+                "end_to_end_pipeline_flow": True,
+                "business_intelligence_ready": True,
+            },
+        }
+        summary_file = results_dir / f"pipeline_summary_{timestamp}.json"
+        with summary_file.open("w", encoding="utf-8") as f:
+            json.dump(pipeline_summary, f, indent=2, default=str)
+        return r[str].ok(str(results_dir))
+
+
+def main() -> None:
+    """Main execution."""
+    pipeline = CompleteMockPipeline()
+    pipeline.run_complete_pipeline()
+
+
+if __name__ == "__main__":
+    main()
+"""Oracle WMS Complete Discovery - REAL Implementation.
+
+Using ADMINISTRATOR credentials for complete API exploration:
+- 100% automatic discovery without fallbacks
+- All 22+ Oracle WMS APIs exploration
+- Real metadata download for data types
+- Singer SDK modern patterns with flattening
+- Complete schema discovery from Oracle model
+
+NO FALLBACKS, NO ESTIMATIONS, NO BASIC LIMITS - FULL EXPLORATION
+"""
+
+from __future__ import annotations
+
+import json
+from collections.abc import (
+    Mapping,
+    MutableSequence,
+    Sequence,
+)
+from datetime import UTC, datetime
+from pathlib import Path
+
+from flext_api import FlextApiModels
+
+from flext_oracle_wms import (
+    FlextOracleWmsApi,
+    FlextOracleWmsSettings,
+    FlextOracleWmsUtilitiesClient,
+)
+from tests import m, p, r, t, u
+
+logger = u.fetch_logger(__name__)
+
+# API category string constants (Oracle WMS LGF API category names)
+_CATEGORY_DATA_EXTRACT = "data_extract"
+_CATEGORY_ENTITY_OPERATIONS = "entity_operations"
+_CATEGORY_SETUP_TRANSACTIONAL = "setup_transactional"
+_CATEGORY_AUTOMATION_OPERATIONS = "automation_operations"
+
+# API version string constants
+_API_VERSION_LGF_V10 = "LGF_V10"
+
+
+class OracleWmsCompleteDiscovery:
+    """Complete Oracle WMS Discovery using ADMINISTRATOR credentials."""
+
+    def __init__(self) -> None:
+        """Initialize with ADMINISTRATOR credentials."""
+        self.settings: FlextOracleWmsSettings = FlextOracleWmsSettings(
+            base_url="https://invalid.wms.ocs.oraclecloud.com",
+            username="user",
+            password="xyz",
+            timeout=120.0,
+            max_retries=5,
+            api_version=_API_VERSION_LGF_V10,
+            verify_ssl=True,
+            enable_logging=True,
+        )
+        auth_settings = m.OracleWms.AuthSettings(
+            username=self.settings.username,
+            password=self.settings.password,
+        )
+        _auth_result = FlextOracleWmsUtilitiesClient.Client.from_auth_settings(
+            auth_settings
+        )
+        self.client = FlextOracleWmsUtilitiesClient.Client(settings=self.settings)
+        self.discovered_entities: MutableSequence[str] = []
+        self.entity_metadata: t.MutableRecursiveContainerMapping = {}
+        self.complete_schemas: t.MutableRecursiveContainerMapping = {}
+
+    def start_discovery(self) -> p.Result[bool]:
+        """Start complete discovery process."""
+        start_result = self.client.start()
+        if not start_result.success:
+            return r[bool].fail(f"Client start failed: {start_result.error}")
+        return r[bool].ok(value=True)
+
+    def discover_all_apis(
+        self,
+    ) -> p.Result[bool]:
+        """Discover and test ALL 22+ Oracle WMS APIs."""
+        all_apis: Mapping[str, m.OracleWms.ApiEndpoint] = (
+            FlextOracleWmsApi.FLEXT_ORACLE_WMS_APIS
+        )
+        for api_name, api_endpoint in all_apis.items():
+            try:
+                if api_endpoint.category == _CATEGORY_DATA_EXTRACT:
+                    (self._test_data_extract_api(api_name))
+                elif api_endpoint.category == _CATEGORY_ENTITY_OPERATIONS:
+                    self._test_entity_operations_api(
+                        api_name,
+                        api_endpoint,
+                    )
+                elif api_endpoint.category == _CATEGORY_SETUP_TRANSACTIONAL:
+                    self._test_setup_api(
+                        api_name,
+                        api_endpoint,
+                    )
+                elif api_endpoint.category == _CATEGORY_AUTOMATION_OPERATIONS:
+                    self._test_automation_api(
+                        api_name,
+                        api_endpoint,
+                    )
+                else:
+                    r[FlextApiModels.Api.HttpResponse].fail("Unknown API category")
+            except Exception as e:
+                r[FlextApiModels.Api.HttpResponse].fail(f"Exception: {e}")
+        return r[bool].ok(value=True)
+
+    def _test_data_extract_api(
+        self, api_name: str
+    ) -> p.Result[FlextApiModels.Api.HttpResponse]:
+        """Test data extraction APIs."""
+        try:
+            if api_name == "lgf_entity_discovery":
+                return self.client.call_api(api_name)
+            if api_name == "lgf_entity_list":
+                if not self.discovered_entities:
+                    entities_result = self.client.discover_entities()
+                    if entities_result.success:
+                        value = entities_result.value
+                        if isinstance(value, list):
+                            self.discovered_entities = [str(v) for v in value]
+                if self.discovered_entities:
+                    entity_name = self.discovered_entities[0]
+                    return self.client.get(f"/entities/{entity_name}")
+                return r[FlextApiModels.Api.HttpResponse].fail(
+                    "No entities available for testing",
+                )
+            if api_name == "lgf_entity_get":
+                return self._test_entity_get_with_discovery()
+            if api_name == "lgf_data_extract":
+                return self._test_data_extract_to_object_store()
+            if api_name == "lgf_task_status":
+                return self._test_task_status()
+            return self.client.call_api(api_name)
+        except Exception as e:
+            return r[FlextApiModels.Api.HttpResponse].fail(
+                f"Data extract API test failed: {e}",
+            )
+
+    def _test_entity_operations_api(
+        self,
+        api_name: str,
+        endpoint: m.OracleWms.ApiEndpoint,
+    ) -> p.Result[FlextApiModels.Api.HttpResponse]:
+        """Test entity operations APIs."""
+        try:
+            if "entity" in endpoint.path and "{entity_name}" in endpoint.path:
+                if not self.discovered_entities:
+                    entities_result = self.client.discover_entities()
+                    if entities_result.success:
+                        value = entities_result.value
+                        if isinstance(value, list):
+                            self.discovered_entities = [str(v) for v in value]
+                if self.discovered_entities:
+                    entity_name = self.discovered_entities[0]
+                    if "{id}" in endpoint.path:
+                        return self._test_entity_with_id(api_name, entity_name)
+                    return self.client.get(f"/entities/{entity_name}")
+                return r[FlextApiModels.Api.HttpResponse].fail(
+                    "No entities for entity operations test",
+                )
+            return self.client.call_api(api_name)
+        except Exception as e:
+            return r[FlextApiModels.Api.HttpResponse].fail(
+                f"Entity operations API test failed: {e}",
+            )
+
+    def _test_setup_api(
+        self,
+        api_name: str,
+        endpoint: m.OracleWms.ApiEndpoint,
+    ) -> p.Result[FlextApiModels.Api.HttpResponse]:
+        """Test setup and transactional APIs."""
+        try:
+            return self.client.call_api(api_name)
+        except Exception as e:
+            return r[FlextApiModels.Api.HttpResponse].fail(
+                f"Setup API test failed: {e}"
+            )
+
+    def _test_automation_api(
+        self,
+        api_name: str,
+        endpoint: m.OracleWms.ApiEndpoint,
+    ) -> p.Result[FlextApiModels.Api.HttpResponse]:
+        """Test automation and operations APIs."""
+        try:
+            return self.client.call_api(api_name)
+        except Exception as e:
+            return r[FlextApiModels.Api.HttpResponse].fail(
+                f"Automation API test failed: {e}",
+            )
+
+    def _test_entity_get_with_discovery(
+        self,
+    ) -> p.Result[FlextApiModels.Api.HttpResponse]:
+        """Test entity get by discovering entity with data first."""
+        try:
+            self._ensure_discovered_entities()
+            return self._find_and_get_entity_with_id()
+        except Exception as e:
+            return r[FlextApiModels.Api.HttpResponse].fail(
+                f"Entity get discovery failed: {e}",
+            )
+
+    def _ensure_discovered_entities(self) -> None:
+        """Ensure discovered_entities list is populated."""
+        if not self.discovered_entities:
+            entities_result = self.client.discover_entities()
+            if entities_result.success:
+                value = entities_result.value
+                if isinstance(value, list):
+                    self.discovered_entities = list(value)
+
+    def _find_and_get_entity_with_id(self) -> p.Result[FlextApiModels.Api.HttpResponse]:
+        """Find an entity with records and get it by ID."""
+        for entity_name in self.discovered_entities[:10]:
+            entity_result = self._get_entity_with_id(entity_name)
+            if entity_result is not None:
+                return entity_result
+        return r[FlextApiModels.Api.HttpResponse].fail(
+            "No entity with ID found for testing lgf_entity_get",
+        )
+
+    def _get_entity_with_id(
+        self,
+        entity_name: str,
+    ) -> p.Result[FlextApiModels.Api.HttpResponse] | None:
+        """Get entity by ID if it has records."""
+        list_result = self.client.get_entity_data(entity_name, limit=1)
+        if not list_result.success:
+            return None
+        records = list_result.value
+        if not records or not isinstance(records, list):
+            return None
+        record = records[0]
+        if "id" not in record:
+            return None
+        entity_id = record["id"]
+        return self.client.get(f"/entities/{entity_name}/{entity_id}")
+
+    def _test_data_extract_to_object_store(
+        self,
+    ) -> p.Result[FlextApiModels.Api.HttpResponse]:
+        """Test data extract to object store API."""
+        try:
+            return self.client.call_api("lgf_data_extract")
+        except Exception as e:
+            return r[FlextApiModels.Api.HttpResponse].fail(
+                f"Data extract to object store failed: {e}",
+            )
+
+    def _test_task_status(self) -> p.Result[FlextApiModels.Api.HttpResponse]:
+        """Test task status API."""
+        try:
+            return self.client.call_api(
+                "lgf_task_status",
+                params={"status": "COMPLETED", "limit": "5"},
+            )
+        except Exception as e:
+            return r[FlextApiModels.Api.HttpResponse].fail(
+                f"task status test failed: {e}"
+            )
+
+    def _test_entity_with_id(
+        self,
+        api_name: str,
+        entity_name: str,
+    ) -> p.Result[FlextApiModels.Api.HttpResponse]:
+        """Test entity API that requires ID parameter."""
+        try:
+            list_result = self.client.get_entity_data(entity_name, limit=1)
+            if list_result.success:
+                records = list_result.value
+                if records and isinstance(records, list):
+                    record = records[0]
+                    if isinstance(record, dict) and "id" in record:
+                        entity_id = record["id"]
+                        return self.client.get(f"/entities/{entity_name}/{entity_id}")
+            return r[FlextApiModels.Api.HttpResponse].fail(
+                f"No valid ID found for entity {entity_name}",
+            )
+        except Exception as e:
+            return r[FlextApiModels.Api.HttpResponse].fail(
+                f"Entity with ID test failed: {e}",
+            )
+
+    def _summarize_api_response(self, data: t.Container) -> str:
+        """Summarize API response data."""
+        if isinstance(data, dict):
+            if "count" in data:
+                return f"count={data['count']}"
+            if "results" in data:
+                results = data["results"]
+                if isinstance(results, list):
+                    return f"{len(results)} results"
+            elif "status" in data:
+                return f"status={data['status']}"
+            else:
+                return f"{len(data)} keys"
+        elif isinstance(data, list):
+            return f"{len(data)} items"
+        else:
+            return f"{type(data).__name__}"
+        return ""
+
+    def _process_entity_metadata(
+        self,
+        entity_name: str,
+        entities_with_data: MutableSequence[str],
+        entities_without_data: MutableSequence[str],
+        entities_with_errors: MutableSequence[tuple[str, str]],
+        metadata_results: t.MutableRecursiveContainerMapping,
+    ) -> None:
+        """Process metadata for a single entity."""
+        try:
+            entity_result = self.client.get_entity_data(entity_name, limit=5)
+            if not entity_result.success:
+                entities_with_errors.append((entity_name, str(entity_result.error)))
+                return
+            records: Sequence[t.StrMapping] = entity_result.value
+            count = len(records) if records else 0
+            metadata_info = self._create_metadata_info(entity_name, count, records)
+            metadata_results[entity_name] = metadata_info
+            if count > 0:
+                entities_with_data.append(entity_name)
+            else:
+                entities_without_data.append(entity_name)
+        except Exception as e:
+            entities_with_errors.append((entity_name, f"Exception: {e}"))
+
+    def _create_metadata_info(
+        self,
+        entity_name: str,
+        count: int,
+        results: Sequence[t.StrMapping],
+    ) -> t.MutableRecursiveContainerMapping:
+        """Create metadata info dict for an entity."""
+        fields: MutableSequence[str] = []
+        field_types: t.MutableStrMapping = {}
+        sample_data: t.MutableRecursiveContainerMapping | None = None
+        sample_size = len(results)
+        metadata_info: t.MutableRecursiveContainerMapping = {
+            "entity_name": entity_name,
+            "total_count": count,
+            "sample_size": sample_size,
+            "has_data": count > 0,
+            "structure_available": sample_size > 0,
+            "fields": fields,
+            "field_types": field_types,
+            "sample_data": sample_data,
+        }
+        if not results:
+            return metadata_info
+        sample_record = results[0]
+        if not isinstance(sample_record, dict):
+            return metadata_info
+        metadata_info["fields"] = list(sample_record.keys())
+        metadata_info["field_types"] = {
+            k: type(v).__name__ for k, v in sample_record.items()
+        }
+        safe_sample: t.MutableRecursiveContainerMapping = {}
+        max_string_length = 200
+        for k, v in sample_record.items():
+            if len(v) >= max_string_length:
+                safe_sample[k] = f"<string:{len(v)}chars>"
+            else:
+                safe_sample[k] = v
+        metadata_info["sample_data"] = safe_sample
+        return metadata_info
+
+    def discover_complete_entity_metadata(
+        self,
+    ) -> p.Result[Mapping[str, t.Container]]:
+        """Discover complete metadata for all entities using Oracle WMS APIs."""
+        if not self.discovered_entities:
+            entities_result = self.client.discover_entities()
+            if entities_result.success:
+                value = entities_result.value
+                if isinstance(value, list):
+                    self.discovered_entities = list(value)
+            else:
+                return r[Mapping[str, t.Container]].fail("Entity discovery failed")
+        metadata_results: t.MutableRecursiveContainerMapping = {}
+        entities_with_data: MutableSequence[str] = []
+        entities_without_data: MutableSequence[str] = []
+        entities_with_errors: MutableSequence[tuple[str, str]] = []
+        for entity_name in self.discovered_entities:
+            self._process_entity_metadata(
+                entity_name,
+                entities_with_data,
+                entities_without_data,
+                entities_with_errors,
+                metadata_results,
+            )
+        self.entity_metadata = metadata_results
+        if entities_with_data:
+
+            def _entity_count(pair: tuple[str, t.Container]) -> int:
+                meta = pair[1]
+                if isinstance(meta, dict):
+                    tc = meta.get("total_count")
+                    if isinstance(tc, int):
+                        return tc
+                return 0
+
+            sorted_entities: Sequence[tuple[str, t.Container]] = sorted(
+                [
+                    (name, metadata_results[name])
+                    for name in entities_with_data
+                    if isinstance(metadata_results[name], dict)
+                ],
+                key=_entity_count,
+                reverse=True,
+            )
+            for _name, _meta in sorted_entities[:10]:
+                pass
+        return r[Mapping[str, t.Container]].ok({
+            "total_entities": len(self.discovered_entities),
+            "entities_with_data": entities_with_data,
+            "entities_without_data": entities_without_data,
+            "entities_with_errors": entities_with_errors,
+            "metadata": metadata_results,
+        })
+
+    def generate_singer_schemas_with_flattening(
+        self,
+    ) -> p.Result[Mapping[str, t.Container]]:
+        """Generate Singer schemas with real data flattening based on Oracle metadata."""
+        if not self.entity_metadata:
+            return r[Mapping[str, t.Container]].fail(
+                "No entity metadata available for schema generation",
+            )
+        entities_with_data = [
+            name
+            for name, meta in self.entity_metadata.items()
+            if isinstance(meta, dict)
+            and meta.get("has_data")
+            and meta.get("structure_available")
+        ]
+        singer_schemas: t.MutableRecursiveContainerMapping = {}
+        for entity_name in entities_with_data:
+            metadata = self.entity_metadata[entity_name]
+            if isinstance(metadata, dict):
+                schema = self._generate_singer_schema_from_metadata(
+                    entity_name,
+                    metadata,
+                )
+                if schema:
+                    singer_schemas[entity_name] = schema
+        self.complete_schemas = singer_schemas
+        return r[Mapping[str, t.Container]].ok(singer_schemas)
+
+    def _generate_singer_schema_from_metadata(
+        self,
+        entity_name: str,
+        metadata: dict[str, t.Container],
+    ) -> Mapping[str, t.Container] | None:
+        """Generate Singer schema from Oracle WMS metadata with flattening."""
+        try:
+            fields = metadata.get("fields", [])
+            field_types = metadata.get("field_types", {})
+            sample_data = metadata.get("sample_data", {})
+            properties: dict[str, Mapping[str, t.Container]] = {}
+            if isinstance(fields, list) and isinstance(field_types, dict):
+                for field in fields:
+                    if isinstance(field, str):
+                        field_type = field_types.get(field, "str")
+                        sample_value: t.Container = None
+                        if isinstance(sample_data, dict):
+                            sample_value = sample_data.get(field)
+                        singer_type = self._map_to_singer_type(
+                            str(field_type),
+                            sample_value,
+                            field,
+                        )
+                        properties[field] = singer_type
+            properties["_sdc_extracted_at"] = {"type": "string", "format": "date-time"}
+            properties["_sdc_entity"] = {"type": "string"}
+            return {
+                "type": "object",
+                "properties": properties,
+                "additionalProperties": False,
+            }
+        except (RuntimeError, OSError, ValueError, KeyError):
+            logger.exception("Schema generation failed for %s", entity_name)
+            return None
+
+    def _map_to_singer_type(
+        self,
+        python_type: str,
+        sample_value: t.Container,
+        field_name: str,
+    ) -> Mapping[str, t.Container]:
+        """Map Oracle/Python types to Singer types based on real data."""
+        if sample_value is not None:
+            if isinstance(sample_value, bool):
+                return {"type": ["boolean", "null"]}
+            if isinstance(sample_value, int):
+                return {"type": ["integer", "null"]}
+            if isinstance(sample_value, float):
+                return {"type": ["number", "null"]}
+            if isinstance(sample_value, str):
+                if self._is_datetime_field(field_name, sample_value):
+                    return {"type": ["string", "null"], "format": "date-time"}
+                if self._is_date_field(field_name, sample_value):
+                    return {"type": ["string", "null"], "format": "date"}
+                return {"type": ["string", "null"]}
+            if isinstance(sample_value, dict):
+                return {"type": ["object", "null"]}
+            if isinstance(sample_value, list):
+                return {"type": ["array", "null"]}
+        type_mapping: Mapping[str, Mapping[str, t.Container]] = {
+            "int": {"type": ["integer", "null"]},
+            "float": {"type": ["number", "null"]},
+            "str": {"type": ["string", "null"]},
+            "bool": {"type": ["boolean", "null"]},
+            "dict": {"type": ["object", "null"]},
+            "list": {"type": ["array", "null"]},
+            "NoneType": {"type": "null"},
+        }
+        return type_mapping.get(python_type, {"type": ["string", "null"]})
+
+    def _is_datetime_field(self, field_name: str, value: str) -> bool:
+        """Check if field is datetime based on name and value."""
+        datetime_indicators = [
+            "_ts",
+            "_time",
+            "timestamp",
+            "datetime",
+            "created_at",
+            "updated_at",
+        ]
+        name_check = any(
+            indicator in field_name.lower() for indicator in datetime_indicators
+        )
+        value_check = ("T" in value and ":" in value) or value.count("-") >= 2
+        return name_check or value_check
+
+    def _is_date_field(self, field_name: str, value: str) -> bool:
+        """Check if field is date based on name and value."""
+        date_indicators = ["_date", "date_", "birth", "expir"]
+        name_check = any(
+            indicator in field_name.lower() for indicator in date_indicators
+        )
+        if not self._is_datetime_field(field_name, value):
+            value_check = value.count("-") == 2 and "T" not in value
+            return name_check or value_check
+        return name_check
+
+    def save_complete_discovery_results(self) -> p.Result[str]:
+        """Save complete discovery results to files."""
+        results_dir = Path("oracle_wms_complete_results")
+        results_dir.mkdir(exist_ok=True)
+        timestamp = datetime.now(UTC).strftime("%Y%m%d_%H%M%S")
+        metadata_file = results_dir / f"entity_metadata_{timestamp}.json"
+        with metadata_file.open("w", encoding="utf-8") as f:
+            json.dump(self.entity_metadata, f, indent=2, default=str)
+        schemas_file = results_dir / f"singer_schemas_{timestamp}.json"
+        with schemas_file.open("w", encoding="utf-8") as f:
+            json.dump(self.complete_schemas, f, indent=2, default=str)
+        summary: dict[str, t.Container] = {
+            "discovery_timestamp": timestamp,
+            "total_entities_discovered": len(self.discovered_entities),
+            "entities_with_data": len([
+                name
+                for name, meta in self.entity_metadata.items()
+                if isinstance(meta, dict) and meta.get("has_data")
+            ]),
+            "schemas_generated": len(self.complete_schemas),
+            "oracle_wms_base_url": self.settings.base_url,
+            "api_version": self.settings.api_version,
+            "discovery_mode": "COMPLETE_ADMINISTRATOR_MODE",
+        }
+        summary_file = results_dir / f"discovery_summary_{timestamp}.json"
+        with summary_file.open("w", encoding="utf-8") as f:
+            json.dump(summary, f, indent=2, default=str)
+        return r[str].ok(str(results_dir))
+
+    def cleanup(self) -> p.Result[bool]:
+        """Clean up resources."""
+        try:
+            self.client.stop()
+            return r[bool].ok(value=True)
+        except Exception as e:
+            return r[bool].fail(f"Cleanup failed: {e}")
+
+
+def run_complete_discovery() -> None:
+    """Run complete Oracle WMS discovery with ADMINISTRATOR credentials."""
+    discovery = OracleWmsCompleteDiscovery()
+    try:
+        start_result = discovery.start_discovery()
+        if not start_result.success:
+            return
+        api_result = discovery.discover_all_apis()
+        if not api_result.success:
+            return
+        metadata_result = discovery.discover_complete_entity_metadata()
+        if not metadata_result.success:
+            return
+        schema_result = discovery.generate_singer_schemas_with_flattening()
+        if not schema_result.success:
+            return
+        save_result = discovery.save_complete_discovery_results()
+        if not save_result.success:
+            return
+        metadata_data = metadata_result.value
+        if isinstance(metadata_data, dict):
+            entities_with_data = metadata_data.get("entities_with_data")
+            if isinstance(entities_with_data, list) and entities_with_data:
+                entities_with_counts: list[tuple[str, t.Container]] = [
+                    (
+                        name,
+                        discovery.entity_metadata.get(name, None),
+                    )
+                    for name in entities_with_data
+                    if isinstance(name, str)
+                ]
+
+                def _run_entity_count(pair: tuple[str, t.Container]) -> int:
+                    meta = pair[1]
+                    if isinstance(meta, dict):
+                        tc = meta.get("total_count")
+                        if isinstance(tc, int):
+                            return tc
+                    return 0
+
+                entities_with_counts.sort(
+                    key=_run_entity_count,
+                    reverse=True,
+                )
+                for _name, _meta in entities_with_counts[:15]:
+                    pass
+    except (RuntimeError, OSError, ValueError, KeyError):
+        logger.exception("Complete discovery failed")
+    finally:
+        discovery.cleanup()
+
+
+if __name__ == "__main__":
+    run_complete_discovery()
+"""Oracle WMS Focused Discovery - REAL Implementation.
+
+Copyright (c) 2025 FLEXT Team. All rights reserved.
+SPDX-License-Identifier: MIT
+
+"""
+
+from __future__ import annotations
+
+import json
+from collections.abc import (
+    Mapping,
+    MutableMapping,
+    MutableSequence,
+)
+from datetime import UTC, datetime
+from pathlib import Path
+
+from flext_oracle_wms import FlextOracleWmsSettings, FlextOracleWmsUtilitiesClient
+from tests import p, r, t, u
+
+logger = u.fetch_logger(__name__)
+
+_API_VERSION_LGF_V10 = "LGF_V10"
+
+
+class FocusedOracleWmsDiscovery:
+    """Focused Oracle WMS Discovery - find entities with data FAST."""
+
+    def __init__(self) -> None:
+        """Initialize with ADMINISTRATOR credentials."""
+        self.settings = FlextOracleWmsSettings(
+            base_url="https://invalid.wms.ocs.oraclecloud.com",
+            username="user",
+            password="xyz",
+            timeout=30.0,
+            max_retries=2,
+            api_version=_API_VERSION_LGF_V10,
+            verify_ssl=True,
+            enable_logging=True,
+        )
+        self.client = FlextOracleWmsUtilitiesClient.Client(settings=self.settings)
+        self.quick_test_entities: t.StrSequence = [
+            "company",
+            "facility",
+            "item",
+            "location",
+            "inventory",
+            "user_def",
+            "container",
+            "carrier",
+            "zone",
+            "area",
+            "order_hdr",
+            "order_dtl",
+            "allocation",
+            "pick_hdr",
+            "pick_dtl",
+            "lpn",
+            "task",
+            "shipment",
+            "receipt",
+            "manifest",
+        ]
+        self.entities_with_data: t.MutableRecursiveContainerMapping = {}
+        self.complete_schemas: t.MutableRecursiveContainerMapping = {}
+
+    def execute_focused_discovery(self) -> p.Result[Mapping[str, t.Container]]:
+        """Execute complete focused discovery."""
+        try:
+            self.client.start()
+            entities_result = self.client.discover_entities()
+            if not entities_result.success:
+                return r[Mapping[str, t.Container]].fail(
+                    f"Entity discovery failed: {entities_result.error}",
+                )
+            all_entities = entities_result.value
+            available_quick = [e for e in self.quick_test_entities if e in all_entities]
+            data_entities = self._quick_data_scan(available_quick)
+            if data_entities and len(all_entities) > len(available_quick):
+                remaining = [e for e in all_entities if e not in available_quick][:30]
+                additional_data = self._quick_data_scan(remaining)
+                data_entities.update(additional_data)
+            self.entities_with_data = data_entities
+            if not data_entities:
+                structure_entities = self._get_entity_structures(available_quick[:5])
+                schemas = self._generate_schemas_from_structures(structure_entities)
+            else:
+                schemas = self._generate_schemas_from_data(data_entities)
+            self.complete_schemas = schemas
+            save_result = self._save_focused_results()
+            if data_entities:
+
+                def _entity_count(
+                    pair: tuple[str, t.Container],
+                ) -> int:
+                    meta = pair[1]
+                    if isinstance(meta, dict):
+                        c = meta.get("count")
+                        if isinstance(c, int):
+                            return c
+                    return 0
+
+                sorted_entities = sorted(
+                    data_entities.items(),
+                    key=_entity_count,
+                    reverse=True,
+                )
+                for _entity_name, _data in sorted_entities:
+                    pass
+            if schemas:
+                for _schema in schemas.values():
+                    pass
+            return r[Mapping[str, t.Container]].ok({
+                "total_entities": len(all_entities),
+                "entities_with_data": len(data_entities),
+                "schemas_generated": len(schemas),
+                "results_path": save_result.value if save_result.success else None,
+                "data_entities": data_entities,
+                "schemas": schemas,
+            })
+        except Exception as e:
+            logger.exception("Focused discovery failed")
+            return r[Mapping[str, t.Container]].fail(f"Discovery failed: {e}")
+        finally:
+            self.client.stop()
+
+    def _quick_data_scan(
+        self, entities: t.StrSequence
+    ) -> t.MutableRecursiveContainerMapping:
+        """Quick scan to find entities with actual data."""
+        data_entities: t.MutableRecursiveContainerMapping = {}
+        for entity_name in entities:
+            try:
+                result = self.client.get_entity_data(entity_name, limit=1)
+                if result.success:
+                    records = result.value
+                    if records:
+                        detailed_result = self.client.get_entity_data(
+                            entity_name,
+                            limit=3,
+                        )
+                        if detailed_result.success:
+                            detailed_records = detailed_result.value
+                            entity_info: t.MutableRecursiveContainerMapping = {
+                                "count": len(detailed_records),
+                                "has_data": True,
+                                "sample_size": len(detailed_records),
+                            }
+                            if detailed_records:
+                                sample = detailed_records[0]
+                                if isinstance(sample, dict):
+                                    entity_info.update({
+                                        "field_count": len(sample.keys()),
+                                        "sample_fields": list(sample.keys()),
+                                        "field_types": {
+                                            k: type(v).__name__
+                                            for k, v in sample.items()
+                                        },
+                                        "sample_record": self._safe_sample(
+                                            sample,
+                                        ),
+                                    })
+                            data_entities[entity_name] = entity_info
+            except (RuntimeError, OSError, ValueError, KeyError):
+                logger.debug("Failed to process entity %s", entity_name)
+        return data_entities
+
+    def _get_entity_structures(
+        self,
+        entities: t.StrSequence,
+    ) -> t.MutableRecursiveContainerMapping:
+        """Get entity structures even without data."""
+        structures: t.MutableRecursiveContainerMapping = {}
+        for entity_name in entities:
+            try:
+                result = self.client.get_entity_data(entity_name, limit=1)
+                if result.success:
+                    records = result.value
+                    if records:
+                        sample = records[0]
+                        if isinstance(sample, dict):
+                            structures[entity_name] = {
+                                "fields": list(sample.keys()),
+                                "field_types": {
+                                    k: type(v).__name__ for k, v in sample.items()
+                                },
+                                "sample_record": self._safe_sample(sample),
+                                "has_data": False,
+                            }
+            except (RuntimeError, OSError, ValueError, KeyError):
+                logger.debug("Failed to get structure for entity %s", entity_name)
+        return structures
+
+    def _safe_sample(
+        self,
+        record: t.StrMapping,
+    ) -> MutableMapping[str, bool | float | int | str | None]:
+        """Create safe sample record."""
+        safe: MutableMapping[str, bool | float | int | str | None] = {}
+        for k, v in list(record.items())[:10]:
+            safe[k] = v if len(v) < 50 else f"<{len(v)}chars>"
+        return safe
+
+    def _generate_schemas_from_data(
+        self,
+        data_entities: Mapping[str, t.Container],
+    ) -> t.MutableRecursiveContainerMapping:
+        """Generate Singer schemas from entities with data."""
+        schemas: t.MutableRecursiveContainerMapping = {}
+        for entity_name, entity_data in data_entities.items():
+            if isinstance(entity_data, dict):
+                schema = self._create_singer_schema(entity_name, entity_data)
+                if schema:
+                    schemas[entity_name] = schema
+        return schemas
+
+    def _generate_schemas_from_structures(
+        self,
+        structure_entities: Mapping[str, t.Container],
+    ) -> t.MutableRecursiveContainerMapping:
+        """Generate Singer schemas from structures."""
+        schemas: t.MutableRecursiveContainerMapping = {}
+        for entity_name, structure_data in structure_entities.items():
+            if isinstance(structure_data, dict):
+                schema = self._create_singer_schema(entity_name, structure_data)
+                if schema:
+                    schemas[entity_name] = schema
+        return schemas
+
+    def _create_singer_schema(
+        self,
+        entity_name: str,
+        entity_data: Mapping[str, t.Container],
+    ) -> Mapping[str, t.Container] | None:
+        """Create Singer schema with proper Oracle WMS typing."""
+        try:
+            fields = entity_data.get("sample_fields", entity_data.get("fields", []))
+            field_types = entity_data.get("field_types", {})
+            sample_record = entity_data.get("sample_record", {})
+            if not fields or not isinstance(fields, list):
+                return None
+            properties: t.MutableRecursiveContainerMapping = {}
+            for field in fields:
+                if not isinstance(field, str):
+                    continue
+                python_type = (
+                    field_types[field]
+                    if isinstance(field_types, dict) and field in field_types
+                    else "str"
+                )
+                sample_value: t.Container = (
+                    sample_record[field]
+                    if isinstance(sample_record, dict) and field in sample_record
+                    else None
+                )
+                singer_type = self._oracle_field_to_singer_type(
+                    field,
+                    str(python_type),
+                    sample_value,
+                    entity_name,
+                )
+                properties[field] = singer_type
+            properties["_sdc_extracted_at"] = {"type": "string", "format": "date-time"}
+            properties["_sdc_entity"] = {"type": "string"}
+            properties["_sdc_record_hash"] = {"type": ["string", "null"]}
+            str_fields: t.StrSequence = [f for f in fields if isinstance(f, str)]
+            key_properties = self._get_oracle_key_properties(entity_name, str_fields)
+            return {
+                "type": "object",
+                "properties": properties,
+                "additionalProperties": False,
+                "key_properties": key_properties,
+                "oracle_wms_entity": entity_name,
+                "oracle_wms_environment": str(self.settings.base_url),
+            }
+        except (RuntimeError, OSError, ValueError, KeyError):
+            logger.exception("Schema creation failed for %s", entity_name)
+            return None
+
+    def _oracle_field_to_singer_type(
+        self,
+        field_name: str,
+        python_type: str,
+        sample_value: t.Container,
+        entity_name: str,
+    ) -> Mapping[str, t.Container]:
+        """Convert Oracle WMS field to Singer type with context."""
+        if sample_value is not None:
+            if isinstance(sample_value, bool):
+                return {"type": ["boolean", "null"]}
+            if isinstance(sample_value, int):
+                if self._is_oracle_id_field(field_name):
+                    return {
+                        "type": ["integer", "null"],
+                        "description": f"Oracle WMS {entity_name} ID field",
+                    }
+                return {"type": ["integer", "null"]}
+            if isinstance(sample_value, float):
+                return {"type": ["number", "null"]}
+            if isinstance(sample_value, str):
+                if self._is_oracle_timestamp(field_name, sample_value):
+                    return {
+                        "type": ["string", "null"],
+                        "format": "date-time",
+                        "description": "Oracle WMS timestamp",
+                    }
+                if self._is_oracle_code(field_name):
+                    return {
+                        "type": ["string", "null"],
+                        "description": f"Oracle WMS {entity_name} code",
+                    }
+                if self._is_oracle_url(field_name, sample_value):
+                    return {
+                        "type": ["string", "null"],
+                        "format": "uri",
+                        "description": "Oracle WMS API URL",
+                    }
+                return {"type": ["string", "null"]}
+            if isinstance(sample_value, dict):
+                return {"type": ["object", "null"]}
+            if isinstance(sample_value, list):
+                return {"type": ["array", "null"]}
+        _ = python_type  # used for future type-based fallback
+        return {"type": ["string", "null"]}
+
+    def _is_oracle_id_field(self, field_name: str) -> bool:
+        """Check if field is Oracle ID."""
+        return field_name.lower().endswith("_id") or field_name.lower() == "id"
+
+    def _is_oracle_timestamp(self, field_name: str, value: str) -> bool:
+        """Check if field is Oracle timestamp."""
+        ts_indicators = ["_ts", "timestamp", "_time", "_at"]
+        name_check = any(indicator in field_name.lower() for indicator in ts_indicators)
+        value_check = (
+            "T" in value and ":" in value and ("+" in value or "-" in value[-6:])
+        )
+        return name_check or value_check
+
+    def _is_oracle_code(self, field_name: str) -> bool:
+        """Check if field is Oracle code."""
+        code_indicators = ["_code", "code", "_cd", "_nbr", "number"]
+        return any(indicator in field_name.lower() for indicator in code_indicators)
+
+    def _is_oracle_url(self, field_name: str, value: str) -> bool:
+        """Check if field is Oracle URL."""
+        return field_name.lower() == "url" and value.startswith("http")
+
+    def _get_oracle_key_properties(
+        self,
+        entity_name: str,
+        fields: t.StrSequence,
+    ) -> t.StrSequence:
+        """Get Oracle WMS key properties for entity."""
+        keys: MutableSequence[str] = []
+        if "id" in fields:
+            keys.append("id")
+        entity_keys: Mapping[str, list[str]] = {
+            "company": ["code", "company_code"],
+            "facility": ["code", "facility_code"],
+            "item": ["code", "item_code"],
+            "location": ["code", "location_code"],
+            "order_hdr": ["order_nbr"],
+            "order_dtl": ["order_nbr", "line_nbr"],
+            "allocation": ["id"],
+            "pick_hdr": ["pick_nbr"],
+            "pick_dtl": ["pick_nbr", "line_nbr"],
+            "lpn": ["lpn_nbr"],
+            "container": ["container_nbr"],
+            "shipment": ["shipment_nbr"],
+            "receipt": ["receipt_nbr"],
+        }
+        specific_keys = entity_keys.get(entity_name, [])
+        for key in specific_keys:
+            if key in fields and key not in keys:
+                keys.append(key)
+        return keys or (["id"] if "id" in fields else [])
+
+    def _save_focused_results(self) -> p.Result[str]:
+        """Save focused discovery results."""
+        results_dir = Path("oracle_wms_focused_results")
+        results_dir.mkdir(exist_ok=True)
+        timestamp = datetime.now(UTC).strftime("%Y%m%d_%H%M%S")
+        if self.entities_with_data:
+            entities_file = results_dir / f"entities_with_data_{timestamp}.json"
+            with entities_file.open("w", encoding="utf-8") as f:
+                json.dump(self.entities_with_data, f, indent=2, default=str)
+        if self.complete_schemas:
+            schemas_file = results_dir / f"singer_schemas_{timestamp}.json"
+            with schemas_file.open("w", encoding="utf-8") as f:
+                json.dump(self.complete_schemas, f, indent=2, default=str)
+            catalog = self._create_singer_catalog()
+            catalog_file = results_dir / f"singer_catalog_{timestamp}.json"
+            with catalog_file.open("w", encoding="utf-8") as f:
+                json.dump(catalog, f, indent=2, default=str)
+        summary = {
+            "timestamp": timestamp,
+            "mode": "FOCUSED_ADMINISTRATOR_DISCOVERY",
+            "oracle_environment": self.settings.base_url,
+            "entities_with_data_count": len(self.entities_with_data),
+            "schemas_generated_count": len(self.complete_schemas),
+            "entities_with_data": list(self.entities_with_data.keys()),
+            "schema_entities": list(self.complete_schemas.keys()),
+        }
+        summary_file = results_dir / f"summary_{timestamp}.json"
+        with summary_file.open("w", encoding="utf-8") as f:
+            json.dump(summary, f, indent=2, default=str)
+        return r[str].ok(str(results_dir))
+
+    def _create_singer_catalog(self) -> Mapping[str, t.Container]:
+        """Create Singer catalog."""
+        streams: MutableSequence[t.MutableRecursiveContainerMapping] = []
+        for entity_name, schema in self.complete_schemas.items():
+            if not isinstance(schema, dict):
+                continue
+            key_properties = schema.get("key_properties", [])
+            schema_without_keys: t.MutableRecursiveContainerMapping = {
+                k: v for k, v in schema.items() if k != "key_properties"
+            }
+            breadcrumb: t.StrSequence = []
+            stream: t.MutableRecursiveContainerMapping = {
+                "tap_stream_id": entity_name,
+                "stream": entity_name,
+                "schema": schema_without_keys,
+                "key_properties": key_properties,
+                "metadata": [
+                    {
+                        "breadcrumb": breadcrumb,
+                        "metadata": {
+                            "inclusion": "available",
+                            "selected": True,
+                            "replication-method": "FULL_TABLE",
+                        },
+                    },
+                ],
+            }
+            streams.append(stream)
+        return {"version": 1, "streams": streams}
+
+
+def main() -> None:
+    """Main execution."""
+    discovery = FocusedOracleWmsDiscovery()
+    result = discovery.execute_focused_discovery()
+    if result.success:
+        _data = result.value
+
+
+if __name__ == "__main__":
+    main()

@@ -12,8 +12,7 @@ from __future__ import annotations
 from typing import Annotated, ClassVar
 
 from flext_api import m, u
-
-from flext_oracle_wms import c, p, r, t
+from flext_oracle_wms import c, t
 
 
 class FlextOracleWmsModels(m):
@@ -37,6 +36,18 @@ class FlextOracleWmsModels(m):
             operator: str
             value: t.OracleWms.FilterScalar | t.OracleWms.FilterList
 
+        class EnvironmentConfig(m.BaseModel):
+            """Oracle WMS environment configuration."""
+
+            model_config: ClassVar[m.ConfigDict] = m.ConfigDict(
+                extra="forbid", validate_assignment=True
+            )
+
+            name: str = u.Field(description="Environment display name")
+            base_url: str = u.Field(description="Oracle WMS base URL")
+            timeout: int = u.Field(ge=1, description="Request timeout in seconds")
+            retry_attempts: int = u.Field(ge=0, description="Retry attempts")
+
         class Entity(m.BaseModel):
             """Oracle WMS entity definition."""
 
@@ -44,26 +55,19 @@ class FlextOracleWmsModels(m):
 
             name: Annotated[str, u.Field(min_length=1, description="Entity name")]
             endpoint: Annotated[
-                str,
-                u.Field(min_length=1, description="API endpoint path"),
+                str, u.Field(min_length=1, description="API endpoint path")
             ]
             description: Annotated[
-                str | None,
-                u.Field(description="Entity description"),
+                str | None, u.Field(description="Entity description")
             ] = None
             primary_key: Annotated[
-                str | None,
-                u.Field(description="Primary key field"),
+                str | None, u.Field(description="Primary key field")
             ] = None
             replication_key: Annotated[
-                str | None,
-                u.Field(description="Replication key field"),
+                str | None, u.Field(description="Replication key field")
             ] = None
             supports_incremental: Annotated[
-                bool,
-                u.Field(
-                    description="Whether entity supports incremental sync",
-                ),
+                bool, u.Field(description="Whether entity supports incremental sync")
             ] = False
 
             @u.field_validator("endpoint")
@@ -73,16 +77,6 @@ class FlextOracleWmsModels(m):
                     msg = "Endpoint must start with '/'"
                     raise ValueError(msg)
                 return v
-
-            def validate_entity(self) -> p.Result[bool]:
-                """Validate entity configuration."""
-                if not self.name:
-                    return r[bool].fail("Entity name is required")
-                if len(self.name) > c.OracleWms.WmsEntities.MAX_ENTITY_NAME_LENGTH:
-                    return r[bool].fail("Entity name is too long")
-                if not self.endpoint:
-                    return r[bool].fail("Entity endpoint is required")
-                return r[bool].ok(True)
 
         class ApiEndpoint(m.BaseModel):
             """Typed Oracle WMS API endpoint definition."""
@@ -106,26 +100,11 @@ class FlextOracleWmsModels(m):
             oauth2_scope: str = "wms.read wms.write"
             token_refresh_threshold: t.PositiveInt = 300
 
+            @u.computed_field(return_type=str)
             @property
             def normalized_method(self) -> str:
-                """Return auth method in canonical lowercase form."""
+                """The auth method in canonical lowercase form."""
                 return self.method.strip().lower()
-
-            def validate_business_rules(self) -> p.Result[bool]:
-                """Validate authentication configuration business rules."""
-                basic_method = str(c.OracleWms.OracleWMSAuthMethod.BASIC)
-                oauth2_method = str(c.OracleWms.OracleWMSAuthMethod.OAUTH2)
-                if self.normalized_method == basic_method:
-                    if not self.username or not self.password:
-                        return r[bool].fail("Basic auth requires username and password")
-                    return r[bool].ok(True)
-                if self.normalized_method == oauth2_method:
-                    if not self.oauth2_client_id or not self.oauth2_client_secret:
-                        return r[bool].fail(
-                            "OAuth2 requires client_id and client_secret",
-                        )
-                    return r[bool].ok(True)
-                return r[bool].fail(f"Unsupported auth method: {self.method}")
 
         class EntitiesResponse(m.BaseModel):
             """Oracle WMS entities list response."""
@@ -160,12 +139,10 @@ class FlextOracleWmsModels(m):
             id: Annotated[str, u.Field(description="Entity identifier")] = ""
             name: Annotated[str, u.Field(description="Entity name")] = ""
             created_at: Annotated[
-                str | None,
-                u.Field(description="Creation timestamp"),
+                str | None, u.Field(description="Creation timestamp")
             ] = None
             updated_at: Annotated[
-                str | None,
-                u.Field(description="Last update timestamp"),
+                str | None, u.Field(description="Last update timestamp")
             ] = None
 
         class InventoryItem(WmsEntity):
@@ -173,12 +150,10 @@ class FlextOracleWmsModels(m):
 
             sku: Annotated[str, u.Field(description="Stock keeping unit")] = ""
             quantity: Annotated[
-                t.NonNegativeInt,
-                u.Field(description="Item quantity"),
+                t.NonNegativeInt, u.Field(description="Item quantity")
             ] = 0
             location_id: Annotated[
-                str,
-                u.Field(description="Storage location identifier"),
+                str, u.Field(description="Storage location identifier")
             ] = ""
             status: Annotated[str, u.Field(description="Item status")] = "active"
 
@@ -186,17 +161,14 @@ class FlextOracleWmsModels(m):
             """Shipment domain entity."""
 
             order_id: Annotated[
-                str,
-                u.Field(description="Associated order identifier"),
+                str, u.Field(description="Associated order identifier")
             ] = ""
             status: Annotated[str, u.Field(description="Shipment status")] = "pending"
             carrier: Annotated[
-                str | None,
-                u.Field(description="Shipping carrier name"),
+                str | None, u.Field(description="Shipping carrier name")
             ] = None
             tracking_number: Annotated[
-                str | None,
-                u.Field(description="Shipment tracking number"),
+                str | None, u.Field(description="Shipment tracking number")
             ] = None
 
         class Location(WmsEntity):
@@ -214,31 +186,6 @@ class FlextOracleWmsModels(m):
         # =====================================================================
         # AGGREGATE ROOTS - Consistency boundaries
         # =====================================================================
-
-        # =========================================================================
-        # DOMAIN SERVICES - Business logic composition
-        # =========================================================================
-
-        # Domain constants
-        MAX_ENTITY_NAME_LENGTH: int = 50
-
-        @staticmethod
-        def calculate_inventory_value(
-            item: FlextOracleWmsModels.OracleWms.InventoryItem, price: float
-        ) -> float:
-            """Calculate inventory value using domain logic."""
-            value: float = item.quantity * price
-            return value
-
-        @staticmethod
-        def validate_entity_name(name: str) -> p.Result[str]:
-            """Validate entity name using domain rules."""
-            if (
-                not name
-                or len(name) > FlextOracleWmsModels.OracleWms.MAX_ENTITY_NAME_LENGTH
-            ):
-                return r[str].fail("Invalid entity name")
-            return r[str].ok(name)
 
 
 m = FlextOracleWmsModels

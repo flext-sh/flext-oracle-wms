@@ -7,8 +7,6 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 from flext_api import u
-
-from flext_core import FlextUtilitiesConversion, FlextUtilitiesReliability
 from flext_oracle_wms._utilities.auth import FlextOracleWmsUtilitiesAuth
 from flext_oracle_wms._utilities.client import FlextOracleWmsUtilitiesClient
 from flext_oracle_wms._utilities.discovery import FlextOracleWmsUtilitiesDiscovery
@@ -16,7 +14,14 @@ from flext_oracle_wms._utilities.filtering import FlextOracleWmsUtilitiesFilteri
 from flext_oracle_wms._utilities.http_client import FlextOracleWmsUtilitiesHttpClient
 
 
-class FlextOracleWmsUtilities(u, FlextUtilitiesConversion, FlextUtilitiesReliability):
+class FlextOracleWmsUtilities(
+    u,
+    FlextOracleWmsUtilitiesAuth,
+    FlextOracleWmsUtilitiesClient,
+    FlextOracleWmsUtilitiesDiscovery,
+    FlextOracleWmsUtilitiesFiltering,
+    FlextOracleWmsUtilitiesHttpClient,
+):
     """Oracle WMS utilities composing all domain-specific utility mixins via MRO."""
 
     class OracleWms(
@@ -30,4 +35,12 @@ class FlextOracleWmsUtilities(u, FlextUtilitiesConversion, FlextUtilitiesReliabi
 
 
 u = FlextOracleWmsUtilities
-__all__: list[str] = ["FlextOracleWmsUtilities", "u"]
+__all__: list[str] = [
+    "FlextOracleWmsUtilities",
+    "FlextOracleWmsUtilitiesAuth",
+    "FlextOracleWmsUtilitiesClient",
+    "FlextOracleWmsUtilitiesDiscovery",
+    "FlextOracleWmsUtilitiesFiltering",
+    "FlextOracleWmsUtilitiesHttpClient",
+    "u",
+]

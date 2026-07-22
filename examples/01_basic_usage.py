@@ -22,23 +22,23 @@ Usage:
 from __future__ import annotations
 
 import os
-from collections.abc import (
-    Sequence,
-)
 from pathlib import Path
-from typing import Final
+from typing import TYPE_CHECKING, Final
 
 from dotenv import load_dotenv
 
 from flext_core import FlextContainer
 from flext_oracle_wms import (
     FlextOracleWmsSettings,
+    FlextOracleWmsUtilitiesClient,
     p,
     t,
     u,
 )
-from flext_oracle_wms.errors import FlextOracleWmsError
-from flext_oracle_wms.utilities import FlextOracleWmsUtilitiesClient
+from flext_oracle_wms.errors import FlextOracleWmsErrors
+
+if TYPE_CHECKING:
+    from collections.abc import Sequence
 
 FlextOracleWmsClient = FlextOracleWmsUtilitiesClient.Client
 
@@ -58,20 +58,21 @@ def setup_client_config() -> None:
     with environment variables and parameter overrides.
     """
     container = FlextContainer.shared()
-    settings = FlextOracleWmsSettings(
-        base_url=os.getenv("FLEXT_ORACLE_WMS_BASE_URL", "https://wms.oraclecloud.com"),
-        username=os.getenv("FLEXT_ORACLE_WMS_USERNAME", ""),
-        password=os.getenv("FLEXT_ORACLE_WMS_PASSWORD", ""),
-    )
-    _ = container.bind(
-        "FlextOracleWmsSettings",
-        settings.model_dump(mode="python"),
-    )
+    # NOTE (multi-agent): ADR-005 — project scalars are namespaced under the
+    # ``OracleWms`` group; env vars use the nested ``ORACLEWMS__`` delimiter.
+    settings = FlextOracleWmsSettings.model_validate({
+        "OracleWms": {
+            "base_url": os.getenv(
+                "FLEXT_ORACLE_WMS_ORACLEWMS__BASE_URL", "https://wms.oraclecloud.com"
+            ),
+            "username": os.getenv("FLEXT_ORACLE_WMS_ORACLEWMS__USERNAME", ""),
+            "password": os.getenv("FLEXT_ORACLE_WMS_ORACLEWMS__PASSWORD", ""),
+        }
+    })
+    _ = container.bind("FlextOracleWmsSettings", settings.model_dump(mode="python"))
 
 
-def discover_wms_entities(
-    client: FlextOracleWmsClient,
-) -> p.Result[t.StrSequence]:
+def discover_wms_entities(client: FlextOracleWmsClient) -> p.Result[t.StrSequence]:
     """Discover available Oracle WMS entities.
 
     Args:
@@ -96,8 +97,7 @@ def discover_wms_entities(
 
 
 def query_entity_data(
-    client: FlextOracleWmsClient,
-    entity_name: str,
+    client: FlextOracleWmsClient, entity_name: str
 ) -> p.Result[Sequence[t.StrMapping]]:
     """Query data from a specific Oracle WMS entity.
 
@@ -123,7 +123,7 @@ def query_entity_data(
                     else:
                         _ = value_str
                 except (KeyError, ValueError, TypeError) as e:
-                    logger.debug(f"Display formatting failed: {e}")
+                    logger.debug("Display formatting failed: %s", e)
         return result
     return result
 
@@ -143,8 +143,23 @@ def demonstrate_error_handling(client: FlextOracleWmsClient) -> None:
         logger.info(f"Expected error handled: {result.error}")
 
 
+def run_basic_usage() -> None:
+    """Run the basic Oracle WMS usage flow."""
+    setup_client_config()
+    client = FlextOracleWmsClient()
+    start_result = client.start()
+    if not start_result.success:
+        return
+    entities_result = discover_wms_entities(client)
+    if entities_result.success:
+        entities = entities_result.value
+        if entities:
+            query_entity_data(client, entities[0])
+    demonstrate_error_handling(client)
+
+
 def main() -> None:
-    """Main example function demonstrating basic Oracle WMS usage patterns.
+    """Demonstrate basic Oracle WMS usage patterns.
 
     This function demonstrates:
     1. Configuration using singleton pattern
@@ -154,21 +169,8 @@ def main() -> None:
     5. Error handling patterns
     """
     try:
-        setup_client_config()
-        client = FlextOracleWmsClient()
-        start_result = client.start()
-        if start_result.success:
-            pass
-        else:
-            return
-        entities_result = discover_wms_entities(client)
-        if entities_result.success:
-            entities = entities_result.value
-            if entities:
-                first_entity = entities[0]
-                query_entity_data(client, first_entity)
-        demonstrate_error_handling(client)
-    except FlextOracleWmsError:
+        run_basic_usage()
+    except FlextOracleWmsErrors.Error:
         logger.exception("Error in basic usage example")
     except ValueError:
         logger.exception("Configuration error")

@@ -9,9 +9,8 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from flext_tests import FlextTestsModels
-
 from flext_oracle_wms import m
+from flext_tests import FlextTestsModels
 
 
 class TestsFlextOracleWmsModels(FlextTestsModels, m):
@@ -26,7 +25,4 @@ class TestsFlextOracleWmsModels(FlextTestsModels, m):
 
 m = TestsFlextOracleWmsModels
 
-__all__: list[str] = [
-    "TestsFlextOracleWmsModels",
-    "m",
-]
+__all__: list[str] = ["TestsFlextOracleWmsModels", "m"]
