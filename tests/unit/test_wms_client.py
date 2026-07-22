@@ -16,9 +16,8 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 import pytest
-from flext_api import FlextApi
-from flext_tests import tm
 
+from flext_api import FlextApi
 from flext_oracle_wms import (
     FlextOracleWmsSettings,
     FlextOracleWmsUtilitiesClient,
@@ -26,6 +25,7 @@ from flext_oracle_wms import (
     p,
     r,
 )
+from flext_tests import tm
 from tests import t
 
 
@@ -33,10 +33,7 @@ class TestsFlextOracleWmsWmsClient:
     """Behavioral contract tests for the Oracle WMS client."""
 
     @staticmethod
-    def _response(
-        status_code: int,
-        body: t.Api.ResponseBody,
-    ) -> m.Api.HttpResponse:
+    def _response(status_code: int, body: t.Api.ResponseBody) -> m.Api.HttpResponse:
         """Build a real HTTP response model as the boundary would return."""
         return m.Api.HttpResponse.model_validate({
             "status_code": status_code,
@@ -45,15 +42,12 @@ class TestsFlextOracleWmsWmsClient:
 
     @classmethod
     def _stub_boundary(
-        cls,
-        monkeypatch: pytest.MonkeyPatch,
-        outcome: p.Result[m.Api.HttpResponse],
+        cls, monkeypatch: pytest.MonkeyPatch, outcome: p.Result[m.Api.HttpResponse]
     ) -> None:
         """Stub the external HTTP boundary FlextApi.request with an outcome."""
 
         def _request(
-            _self: FlextApi,
-            _request: m.Api.HttpRequest,
+            _self: FlextApi, _request: m.Api.HttpRequest
         ) -> p.Result[m.Api.HttpResponse]:
             return outcome
 
@@ -61,14 +55,10 @@ class TestsFlextOracleWmsWmsClient:
 
     @classmethod
     def _stub_ok(
-        cls,
-        monkeypatch: pytest.MonkeyPatch,
-        status_code: int,
-        body: t.Api.ResponseBody,
+        cls, monkeypatch: pytest.MonkeyPatch, status_code: int, body: t.Api.ResponseBody
     ) -> None:
         cls._stub_boundary(
-            monkeypatch,
-            r[m.Api.HttpResponse].ok(cls._response(status_code, body)),
+            monkeypatch, r[m.Api.HttpResponse].ok(cls._response(status_code, body))
         )
 
     @pytest.fixture
@@ -81,8 +71,8 @@ class TestsFlextOracleWmsWmsClient:
                     "timeout": 30.0,
                     "username": "test_user",
                     "password": "test_password",
-                },
-            }),
+                }
+            })
         )
 
     # -- construction contract ------------------------------------------
@@ -93,10 +83,7 @@ class TestsFlextOracleWmsWmsClient:
 
     def test_explicit_settings_are_exposed_unchanged(self) -> None:
         settings = FlextOracleWmsSettings.model_validate({
-            "OracleWms": {
-                "base_url": "https://custom-wms.example.com",
-                "timeout": 60,
-            },
+            "OracleWms": {"base_url": "https://custom-wms.example.com", "timeout": 60}
         })
         client = FlextOracleWmsUtilitiesClient.Client(settings=settings)
         assert client.settings is settings
@@ -106,9 +93,7 @@ class TestsFlextOracleWmsWmsClient:
     # -- verb methods return the response payload -----------------------
 
     def test_get_success_returns_response_body(
-        self,
-        client: t.OracleWms.Tests.Client,
-        monkeypatch: pytest.MonkeyPatch,
+        self, client: t.OracleWms.Tests.Client, monkeypatch: pytest.MonkeyPatch
     ) -> None:
         self._stub_ok(monkeypatch, 200, {"data": "test"})
         result = client.get("/test-endpoint")
@@ -117,14 +102,9 @@ class TestsFlextOracleWmsWmsClient:
         tm.that(result.value.body, eq={"data": "test"})
 
     def test_get_boundary_failure_is_wrapped_with_context(
-        self,
-        client: t.OracleWms.Tests.Client,
-        monkeypatch: pytest.MonkeyPatch,
+        self, client: t.OracleWms.Tests.Client, monkeypatch: pytest.MonkeyPatch
     ) -> None:
-        self._stub_boundary(
-            monkeypatch,
-            r[m.Api.HttpResponse].fail("Network error"),
-        )
+        self._stub_boundary(monkeypatch, r[m.Api.HttpResponse].fail("Network error"))
         result = client.get("/test-endpoint")
         tm.fail(result)
         tm.that(result.error, none=False)
@@ -167,9 +147,7 @@ class TestsFlextOracleWmsWmsClient:
         tm.that(result.value.body, eq=body)
 
     def test_health_check_returns_health_payload(
-        self,
-        client: t.OracleWms.Tests.Client,
-        monkeypatch: pytest.MonkeyPatch,
+        self, client: t.OracleWms.Tests.Client, monkeypatch: pytest.MonkeyPatch
     ) -> None:
         self._stub_ok(monkeypatch, 200, {"status": "healthy"})
         result = client.health_check()
@@ -177,9 +155,7 @@ class TestsFlextOracleWmsWmsClient:
         tm.that(result.value.body, eq={"status": "healthy"})
 
     def test_call_api_returns_response(
-        self,
-        client: t.OracleWms.Tests.Client,
-        monkeypatch: pytest.MonkeyPatch,
+        self, client: t.OracleWms.Tests.Client, monkeypatch: pytest.MonkeyPatch
     ) -> None:
         self._stub_ok(monkeypatch, 200, {"result": "success"})
         result = client.call_api("test_api")
@@ -187,9 +163,7 @@ class TestsFlextOracleWmsWmsClient:
         tm.that(result.value.body, eq={"result": "success"})
 
     def test_update_oblpn_tracking_number_returns_response(
-        self,
-        client: t.OracleWms.Tests.Client,
-        monkeypatch: pytest.MonkeyPatch,
+        self, client: t.OracleWms.Tests.Client, monkeypatch: pytest.MonkeyPatch
     ) -> None:
         self._stub_ok(monkeypatch, 200, {"updated": True})
         result = client.update_oblpn_tracking_number("oblpn123", "track456")
@@ -197,9 +171,7 @@ class TestsFlextOracleWmsWmsClient:
         tm.that(result.value.body, eq={"updated": True})
 
     def test_create_lpn_returns_response(
-        self,
-        client: t.OracleWms.Tests.Client,
-        monkeypatch: pytest.MonkeyPatch,
+        self, client: t.OracleWms.Tests.Client, monkeypatch: pytest.MonkeyPatch
     ) -> None:
         self._stub_ok(monkeypatch, 201, {"created": True})
         result = client.create_lpn("lpn123", 5)
@@ -209,9 +181,7 @@ class TestsFlextOracleWmsWmsClient:
     # -- discovery/extraction contract ----------------------------------
 
     def test_discover_entities_extracts_entity_names(
-        self,
-        client: t.OracleWms.Tests.Client,
-        monkeypatch: pytest.MonkeyPatch,
+        self, client: t.OracleWms.Tests.Client, monkeypatch: pytest.MonkeyPatch
     ) -> None:
         self._stub_ok(monkeypatch, 200, {"entities": ["entity1", "entity2"]})
         result = client.discover_entities()
@@ -219,23 +189,16 @@ class TestsFlextOracleWmsWmsClient:
         tm.that(list(result.value), eq=["entity1", "entity2"])
 
     def test_discover_entities_propagates_boundary_failure(
-        self,
-        client: t.OracleWms.Tests.Client,
-        monkeypatch: pytest.MonkeyPatch,
+        self, client: t.OracleWms.Tests.Client, monkeypatch: pytest.MonkeyPatch
     ) -> None:
-        self._stub_boundary(
-            monkeypatch,
-            r[m.Api.HttpResponse].fail("Network error"),
-        )
+        self._stub_boundary(monkeypatch, r[m.Api.HttpResponse].fail("Network error"))
         result = client.discover_entities()
         tm.fail(result)
         tm.that(result.error, none=False)
         tm.that(result.error, has="GET /entities failed")
 
     def test_get_entity_data_extracts_data_rows(
-        self,
-        client: t.OracleWms.Tests.Client,
-        monkeypatch: pytest.MonkeyPatch,
+        self, client: t.OracleWms.Tests.Client, monkeypatch: pytest.MonkeyPatch
     ) -> None:
         self._stub_ok(monkeypatch, 200, {"data": [{"id": "1"}, {"id": "2"}]})
         result = client.get_entity_data("test_entity", limit=10)
@@ -243,15 +206,9 @@ class TestsFlextOracleWmsWmsClient:
         tm.that(list(result.value), eq=[{"id": "1"}, {"id": "2"}])
 
     def test_get_apis_by_category_extracts_api_list(
-        self,
-        client: t.OracleWms.Tests.Client,
-        monkeypatch: pytest.MonkeyPatch,
+        self, client: t.OracleWms.Tests.Client, monkeypatch: pytest.MonkeyPatch
     ) -> None:
-        self._stub_ok(
-            monkeypatch,
-            200,
-            {"apis": [{"name": "api1"}, {"name": "api2"}]},
-        )
+        self._stub_ok(monkeypatch, 200, {"apis": [{"name": "api1"}, {"name": "api2"}]})
         result = client.get_apis_by_category("inventory")
         tm.ok(result)
         tm.that([row["name"] for row in result.value], eq=["api1", "api2"])
@@ -259,8 +216,7 @@ class TestsFlextOracleWmsWmsClient:
     # -- lifecycle contract ---------------------------------------------
 
     def test_start_is_idempotent_and_reports_running(
-        self,
-        client: t.OracleWms.Tests.Client,
+        self, client: t.OracleWms.Tests.Client
     ) -> None:
         first = client.start()
         second = client.start()
@@ -270,8 +226,7 @@ class TestsFlextOracleWmsWmsClient:
         tm.that(second.value, eq=True)
 
     def test_stop_is_idempotent_and_reports_stopped(
-        self,
-        client: t.OracleWms.Tests.Client,
+        self, client: t.OracleWms.Tests.Client
     ) -> None:
         first = client.stop()
         second = client.stop()

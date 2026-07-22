@@ -12,9 +12,9 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 import pytest
-from flext_tests import tm
 
 from flext_oracle_wms import FlextOracleWmsUtilitiesDiscovery
+from flext_tests import tm
 from tests import c, m
 
 _MAX_NAME_LENGTH = c.OracleWms.WmsEntities.MAX_ENTITY_NAME_LENGTH
@@ -59,16 +59,10 @@ class TestsFlextOracleWmsSingerFlattening:
 
     @pytest.mark.parametrize(
         ("name", "endpoint"),
-        [
-            ("", "/valid"),
-            ("valid", "no-leading-slash"),
-            ("valid", ""),
-        ],
+        [("", "/valid"), ("valid", "no-leading-slash"), ("valid", "")],
     )
     def test_invalid_construction_raises_validation_error(
-        self,
-        name: str,
-        endpoint: str,
+        self, name: str, endpoint: str
     ) -> None:
         """Boundary violations reject construction with a ValidationError."""
         with pytest.raises(c.ValidationError):
@@ -78,9 +72,7 @@ class TestsFlextOracleWmsSingerFlattening:
         """extra="forbid" rejects fields outside the public schema."""
         with pytest.raises(c.ValidationError):
             m.OracleWms.Entity(
-                name="inventory",
-                endpoint="/inventory",
-                unexpected="value",
+                name="inventory", endpoint="/inventory", unexpected="value"
             )
 
     def test_validate_entity_succeeds_for_valid_entity(self) -> None:

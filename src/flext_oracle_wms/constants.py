@@ -13,9 +13,7 @@ from typing import TYPE_CHECKING, ClassVar, Final
 from flext_api import c
 
 if TYPE_CHECKING:
-    from collections.abc import (
-        Mapping,
-    )
+    from collections.abc import Mapping
 
     from flext_oracle_wms import t
 
@@ -41,7 +39,7 @@ class FlextOracleWmsConstants(c):
                 "category": "test",
                 "description": "Test endpoint",
                 "since_version": "6.1",
-            },
+            }
         })
 
         API_CONFIG: ClassVar[t.HeaderMapping] = MappingProxyType({

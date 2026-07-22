@@ -35,15 +35,13 @@ Main client interface for Oracle WMS integration.
 from flext_oracle_wms import FlextOracleWmsApi, FlextOracleWmsSettings
 
 # Initialize the API facade
-settings = FlextOracleWmsSettings.model_validate(
-    {
-        "OracleWms": {
-            "base_url": "https://test.example.com",
-            "username": "test_user",
-            "password": "test_password",
-        }
+settings = FlextOracleWmsSettings.model_validate({
+    "OracleWms": {
+        "base_url": "https://test.example.com",
+        "username": "test_user",
+        "password": "test_password",
     }
-)
+})
 api = FlextOracleWmsApi(settings=settings)
 ```
 

@@ -14,8 +14,8 @@ from __future__ import annotations
 from pathlib import Path
 
 import pytest
-from flext_tests import tm
 
+from flext_tests import tm
 from tests import u
 
 
@@ -28,50 +28,31 @@ class TestsFlextOracleWmsHelpersCore:
         assert issubclass(u, u)
 
     @pytest.mark.parametrize(
-        ("raw", "expected"),
-        [(123, "123"), ("abc", "abc"), (True, "True")],
+        ("raw", "expected"), [(123, "123"), ("abc", "abc"), (True, "True")]
     )
     def test_to_str_coerces_values_to_string(
-        self,
-        raw: str | int | bool,
-        expected: str,
+        self, raw: str | int | bool, expected: str
     ) -> None:
         tm.that(u.to_str(raw, default=""), eq=expected)
 
     @pytest.mark.parametrize(
-        ("raw", "expected"),
-        [("5", 5), (7, 7), ("not-a-number", 0)],
+        ("raw", "expected"), [("5", 5), (7, 7), ("not-a-number", 0)]
     )
     def test_to_int_coerces_or_falls_back_to_default(
-        self,
-        raw: str | int,
-        expected: int,
+        self, raw: str | int, expected: int
     ) -> None:
         tm.that(u.to_int(raw, default=0), eq=expected)
 
     @pytest.mark.parametrize(
-        ("raw", "expected"),
-        [("true", True), (True, True), (False, False)],
+        ("raw", "expected"), [("true", True), (True, True), (False, False)]
     )
-    def test_to_bool_coerces_values(
-        self,
-        raw: str | bool,
-        *,
-        expected: bool,
-    ) -> None:
+    def test_to_bool_coerces_values(self, raw: str | bool, *, expected: bool) -> None:
         assert u.to_bool(raw, default=False) is expected
 
     def test_sample_entities_returns_canonical_entity_list(self) -> None:
         tm.that(
             u.OracleWms.Tests.sample_entities(),
-            eq=[
-                "action_code",
-                "company",
-                "facility",
-                "item",
-                "order_hdr",
-                "order_dtl",
-            ],
+            eq=["action_code", "company", "facility", "item", "order_hdr", "order_dtl"],
         )
 
     def test_sample_entity_data_exposes_paged_result_envelope(self) -> None:
@@ -137,14 +118,13 @@ class TestsFlextOracleWmsHelpersCore:
         tm.that(u.OracleWms.Tests.find_env_file(nested / "z.py"), none=True)
 
     def test_load_env_config_parses_env_and_ignores_comments(
-        self,
-        tmp_path: Path,
+        self, tmp_path: Path
     ) -> None:
         (tmp_path / ".env").write_text(
             "ORACLE_WMS_BASE_URL=https://h/production\n"
             "ORACLE_WMS_USERNAME=u1\n"
             "# a comment line\n"
-            "ORACLE_WMS_TIMEOUT=50\n",
+            "ORACLE_WMS_TIMEOUT=50\n"
         )
         start = tmp_path / "a"
         start.mkdir()
@@ -180,14 +160,9 @@ class TestsFlextOracleWmsHelpersCore:
         ],
     )
     def test_load_env_config_resolves_environment_from_base_url(
-        self,
-        tmp_path: Path,
-        url_tail: str,
-        expected_env: str,
+        self, tmp_path: Path, url_tail: str, expected_env: str
     ) -> None:
-        (tmp_path / ".env").write_text(
-            f"ORACLE_WMS_BASE_URL=https://host/{url_tail}\n",
-        )
+        (tmp_path / ".env").write_text(f"ORACLE_WMS_BASE_URL=https://host/{url_tail}\n")
         start = tmp_path / "a"
         start.mkdir()
 
@@ -203,8 +178,7 @@ class TestsFlextOracleWmsHelpersCore:
         tm.that(u.OracleWms.Tests.load_test_env(tmp_path), eq=True)
 
     def test_create_real_settings_fails_without_credentials(
-        self,
-        monkeypatch: pytest.MonkeyPatch,
+        self, monkeypatch: pytest.MonkeyPatch
     ) -> None:
         for var in (
             "ORACLE_WMS_BASE_URL",
@@ -223,8 +197,7 @@ class TestsFlextOracleWmsHelpersCore:
         tm.that(result.error, has="credentials not available")
 
     def test_create_real_settings_builds_settings_from_environment(
-        self,
-        monkeypatch: pytest.MonkeyPatch,
+        self, monkeypatch: pytest.MonkeyPatch
     ) -> None:
         monkeypatch.setenv("ORACLE_WMS_BASE_URL", "https://wms.example/prod")
         monkeypatch.setenv("ORACLE_WMS_USERNAME", "svc_user")

@@ -30,7 +30,7 @@ def mock_config() -> FlextOracleWmsSettings:
             "timeout": 30.0,
             "username": "test_user",
             "password": "test_password",
-        },
+        }
     })
 
 
@@ -49,10 +49,7 @@ def pytest_runtest_setup(item: pytest.Item) -> None:
         os.environ.pop(key, None)
 
 
-def pytest_runtest_teardown(
-    item: pytest.Item,
-    nextitem: pytest.Item | None,
-) -> None:
+def pytest_runtest_teardown(item: pytest.Item, nextitem: pytest.Item | None) -> None:
     """Restore Oracle WMS test isolation state after each test."""
     del nextitem
     snapshot = _ORACLE_WMS_ENV_SNAPSHOTS.pop(item.nodeid, None)
@@ -68,5 +65,5 @@ def pytest_runtest_teardown(
 def _uses_real_or_integration_marker(item: pytest.Item) -> bool:
     """Return whether a test intentionally uses real integration configuration."""
     return bool(
-        item.get_closest_marker("real") or item.get_closest_marker("integration"),
+        item.get_closest_marker("real") or item.get_closest_marker("integration")
     )

@@ -19,7 +19,6 @@ from flext_oracle_wms.__version__ import (
 
 if TYPE_CHECKING:
     from flext_api import d as d, e as e, h as h, r as r, s as s, x as x
-
     from flext_oracle_wms._config import (
         FlextOracleWmsConfig as FlextOracleWmsConfig,
         config as config,
@@ -57,49 +56,25 @@ if TYPE_CHECKING:
         FlextOracleWmsUtilitiesHttpClient as FlextOracleWmsUtilitiesHttpClient,
         u,
     )
-_LAZY_IMPORTS = build_lazy_import_map(
-    {
-        "._config": ("FlextOracleWmsConfig", "config"),
-        "._settings": ("FlextOracleWmsSettings", "settings"),
-        ".api": (
-            "FlextOracleWmsApi",
-            "oracle_wms",
-        ),
-        ".constants": (
-            "FlextOracleWmsConstants",
-            "c",
-        ),
-        ".models": (
-            "FlextOracleWmsModels",
-            "m",
-        ),
-        ".protocols": (
-            "FlextOracleWmsProtocols",
-            "p",
-        ),
-        ".typings": (
-            "FlextOracleWmsTypes",
-            "t",
-        ),
-        ".utilities": (
-            "FlextOracleWmsUtilities",
-            "FlextOracleWmsUtilitiesAuth",
-            "FlextOracleWmsUtilitiesClient",
-            "FlextOracleWmsUtilitiesDiscovery",
-            "FlextOracleWmsUtilitiesFiltering",
-            "FlextOracleWmsUtilitiesHttpClient",
-            "u",
-        ),
-        "flext_api": (
-            "d",
-            "e",
-            "h",
-            "r",
-            "s",
-            "x",
-        ),
-    },
-)
+_LAZY_IMPORTS = build_lazy_import_map({
+    "._config": ("FlextOracleWmsConfig", "config"),
+    "._settings": ("FlextOracleWmsSettings", "settings"),
+    ".api": ("FlextOracleWmsApi", "oracle_wms"),
+    ".constants": ("FlextOracleWmsConstants", "c"),
+    ".models": ("FlextOracleWmsModels", "m"),
+    ".protocols": ("FlextOracleWmsProtocols", "p"),
+    ".typings": ("FlextOracleWmsTypes", "t"),
+    ".utilities": (
+        "FlextOracleWmsUtilities",
+        "FlextOracleWmsUtilitiesAuth",
+        "FlextOracleWmsUtilitiesClient",
+        "FlextOracleWmsUtilitiesDiscovery",
+        "FlextOracleWmsUtilitiesFiltering",
+        "FlextOracleWmsUtilitiesHttpClient",
+        "u",
+    ),
+    "flext_api": ("d", "e", "h", "r", "s", "x"),
+})
 
 
 __all__: tuple[str, ...] = (
@@ -141,9 +116,4 @@ __all__: tuple[str, ...] = (
 )
 
 
-install_lazy_exports(
-    __name__,
-    globals(),
-    _LAZY_IMPORTS,
-    public_exports=__all__,
-)
+install_lazy_exports(__name__, globals(), _LAZY_IMPORTS, public_exports=__all__)

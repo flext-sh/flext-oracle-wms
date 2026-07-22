@@ -34,9 +34,7 @@ class FlextOracleWmsUtilitiesAuth:
             ):
                 return r[bool].fail("OAuth2 requires client_id and client_secret")
             return r[bool].ok(True)
-        return r[bool].fail(
-            f"Unsupported auth method: {auth_settings.method}",
-        )
+        return r[bool].fail(f"Unsupported auth method: {auth_settings.method}")
 
     class Authenticator:
         """Oracle WMS authenticator with enterprise patterns."""

@@ -11,9 +11,9 @@ SPDX-License-Identifier: MIT.
 from __future__ import annotations
 
 import pytest
-from flext_tests import tm
 
 from flext_oracle_wms import FlextOracleWmsSettings
+from flext_tests import tm
 
 __all__ = ["TestsFlextOracleWmsUnifiedConfig"]
 
@@ -45,7 +45,7 @@ class TestsFlextOracleWmsUnifiedConfig:
                 "password": "test_password",
                 "timeout": 45.0,
                 "retry_attempts": 5,
-            },
+            }
         })
         ns = settings.OracleWms
 
@@ -58,7 +58,7 @@ class TestsFlextOracleWmsUnifiedConfig:
     def test_model_dump_exposes_full_public_state(self) -> None:
         """model_dump reflects the exact public field state."""
         settings = FlextOracleWmsSettings.model_validate({
-            "OracleWms": {"base_url": "https://wms.example.com"},
+            "OracleWms": {"base_url": "https://wms.example.com"}
         })
         dumped = settings.model_dump()
 
@@ -70,7 +70,7 @@ class TestsFlextOracleWmsUnifiedConfig:
     def test_timeout_scalars_are_carried_raw(self, timeout: float) -> None:
         """Timeout scalars are stored verbatim (no range checks at this layer)."""
         settings = FlextOracleWmsSettings.model_validate({
-            "OracleWms": {"timeout": timeout},
+            "OracleWms": {"timeout": timeout}
         })
         tm.that(settings.OracleWms.timeout, eq=timeout)
 
@@ -78,7 +78,7 @@ class TestsFlextOracleWmsUnifiedConfig:
     def test_out_of_range_timeouts_are_accepted_raw(self, timeout: float) -> None:
         """Out-of-range timeouts are accepted (ADR-005: raw scalars in settings)."""
         settings = FlextOracleWmsSettings.model_validate({
-            "OracleWms": {"timeout": timeout},
+            "OracleWms": {"timeout": timeout}
         })
         tm.that(settings.OracleWms.timeout, eq=timeout)
 
@@ -88,7 +88,7 @@ class TestsFlextOracleWmsUnifiedConfig:
     ) -> None:
         """retry_attempts >= 0 are accepted."""
         settings = FlextOracleWmsSettings.model_validate({
-            "OracleWms": {"retry_attempts": retry_attempts},
+            "OracleWms": {"retry_attempts": retry_attempts}
         })
         tm.that(settings.OracleWms.retry_attempts, eq=retry_attempts)
 
@@ -96,14 +96,14 @@ class TestsFlextOracleWmsUnifiedConfig:
     def test_negative_retry_attempts_are_carried_raw(self, retry_attempts: int) -> None:
         """Negative retry_attempts are stored raw (no range checks at this layer)."""
         settings = FlextOracleWmsSettings.model_validate({
-            "OracleWms": {"retry_attempts": retry_attempts},
+            "OracleWms": {"retry_attempts": retry_attempts}
         })
         tm.that(settings.OracleWms.retry_attempts, eq=retry_attempts)
 
     def test_empty_base_url_is_carried_raw(self) -> None:
         """An empty base_url is stored raw (no min_length at the settings layer)."""
         settings = FlextOracleWmsSettings.model_validate({
-            "OracleWms": {"base_url": ""},
+            "OracleWms": {"base_url": ""}
         })
         tm.that(settings.OracleWms.base_url, eq="")
 
@@ -113,14 +113,14 @@ class TestsFlextOracleWmsUnifiedConfig:
     ) -> None:
         """connection_pool_size scalars are stored raw."""
         settings = FlextOracleWmsSettings.model_validate({
-            "OracleWms": {"connection_pool_size": pool_size},
+            "OracleWms": {"connection_pool_size": pool_size}
         })
         tm.that(settings.OracleWms.connection_pool_size, eq=pool_size)
 
     def test_negative_cache_duration_is_carried_raw(self) -> None:
         """cache_duration scalars are stored raw."""
         settings = FlextOracleWmsSettings.model_validate({
-            "OracleWms": {"cache_duration": -1},
+            "OracleWms": {"cache_duration": -1}
         })
         tm.that(settings.OracleWms.cache_duration, eq=-1)
 

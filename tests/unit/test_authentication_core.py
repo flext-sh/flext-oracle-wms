@@ -10,12 +10,9 @@ from __future__ import annotations
 import base64
 
 import pytest
-from flext_tests import tm
 
-from flext_oracle_wms import (
-    FlextOracleWmsUtilitiesAuth,
-    FlextOracleWmsUtilitiesClient,
-)
+from flext_oracle_wms import FlextOracleWmsUtilitiesAuth, FlextOracleWmsUtilitiesClient
+from flext_tests import tm
 from tests import c, m
 
 _AuthMethod = c.OracleWms.OracleWMSAuthMethod
@@ -30,9 +27,7 @@ class TestsFlextOracleWmsAuthenticationCore:
     def basic_settings(self) -> m.OracleWms.AuthSettings:
         """Return valid BASIC auth settings."""
         return m.OracleWms.AuthSettings(
-            method=_AuthMethod.BASIC,
-            username="test_user",
-            password="test_password",
+            method=_AuthMethod.BASIC, username="test_user", password="test_password"
         )
 
     # --- Auth method enum contract ---------------------------------------

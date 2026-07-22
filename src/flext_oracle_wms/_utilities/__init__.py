@@ -23,20 +23,13 @@ if TYPE_CHECKING:
     from flext_oracle_wms._utilities.http_client import (
         FlextOracleWmsUtilitiesHttpClient as FlextOracleWmsUtilitiesHttpClient,
     )
-_LAZY_IMPORTS = build_lazy_import_map(
-    {
-        ".auth": ("FlextOracleWmsUtilitiesAuth",),
-        ".client": ("FlextOracleWmsUtilitiesClient",),
-        ".discovery": ("FlextOracleWmsUtilitiesDiscovery",),
-        ".filtering": ("FlextOracleWmsUtilitiesFiltering",),
-        ".http_client": ("FlextOracleWmsUtilitiesHttpClient",),
-    },
-)
+_LAZY_IMPORTS = build_lazy_import_map({
+    ".auth": ("FlextOracleWmsUtilitiesAuth",),
+    ".client": ("FlextOracleWmsUtilitiesClient",),
+    ".discovery": ("FlextOracleWmsUtilitiesDiscovery",),
+    ".filtering": ("FlextOracleWmsUtilitiesFiltering",),
+    ".http_client": ("FlextOracleWmsUtilitiesHttpClient",),
+})
 
 
-install_lazy_exports(
-    __name__,
-    globals(),
-    _LAZY_IMPORTS,
-    publish_all=False,
-)
+install_lazy_exports(__name__, globals(), _LAZY_IMPORTS, publish_all=False)

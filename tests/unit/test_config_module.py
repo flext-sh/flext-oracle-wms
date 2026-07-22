@@ -12,9 +12,9 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 import pytest
-from flext_tests import tm
 
 from flext_oracle_wms import FlextOracleWmsSettings
+from flext_tests import tm
 
 __all__ = ["TestsFlextOracleWmsConfigModule"]
 
@@ -51,7 +51,7 @@ class TestsFlextOracleWmsConfigModule:
                 "base_url": "https://example.com",
                 "username": "test_user",
                 "password": "test_password",
-            },
+            }
         })
 
         tm.that(settings.OracleWms.base_url, eq="https://example.com")
@@ -61,7 +61,7 @@ class TestsFlextOracleWmsConfigModule:
     def test_model_dump_round_trips_public_state(self) -> None:
         """model_dump() reflects the constructed public field state."""
         settings = FlextOracleWmsSettings.model_validate({
-            "OracleWms": {"base_url": "https://wms.example.com"},
+            "OracleWms": {"base_url": "https://wms.example.com"}
         })
         dumped = settings.model_dump()
 
@@ -79,7 +79,7 @@ class TestsFlextOracleWmsConfigModule:
                 "retry_attempts": -1,
                 "connection_pool_size": 0,
                 "cache_duration": -1,
-            },
+            }
         })
         ns = settings.OracleWms
 

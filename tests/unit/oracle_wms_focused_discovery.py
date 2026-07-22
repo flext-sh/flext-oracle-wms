@@ -12,16 +12,12 @@ from datetime import UTC, datetime
 from pathlib import Path
 from typing import TYPE_CHECKING, cast
 
-from flext_tests import r
-
 from flext_oracle_wms import FlextOracleWmsSettings, FlextOracleWmsUtilitiesClient
+from flext_tests import r
 from tests import t, u
 
 if TYPE_CHECKING:
-    from collections.abc import (
-        MutableMapping,
-        MutableSequence,
-    )
+    from collections.abc import MutableMapping, MutableSequence
 
     from tests import p
 
@@ -47,7 +43,7 @@ class FocusedOracleWmsDiscovery:
                 "api_version": _API_VERSION_LGF_V10,
                 "verify_ssl": True,
                 "enable_logging": True,
-            },
+            }
         })
         self.client = FlextOracleWmsUtilitiesClient.Client(settings=self.settings)
         self.quick_test_entities: t.StrSequence = [
@@ -91,7 +87,7 @@ class FocusedOracleWmsDiscovery:
         entities_result = self.client.discover_entities()
         if not entities_result.success:
             return r[t.JsonMapping].fail(
-                f"Entity discovery failed: {entities_result.error}",
+                f"Entity discovery failed: {entities_result.error}"
             )
         all_entities = entities_result.value
         available_quick = [e for e in self.quick_test_entities if e in all_entities]
@@ -116,9 +112,7 @@ class FocusedOracleWmsDiscovery:
         return r[t.JsonMapping].ok(summary_payload)
 
     def _generate_focused_schemas(
-        self,
-        data_entities: t.JsonMapping,
-        available_quick: t.StrSequence,
+        self, data_entities: t.JsonMapping, available_quick: t.StrSequence
     ) -> t.MutableJsonMapping:
         """Generate focused schemas from available data or structure probes."""
         if data_entities:
@@ -141,9 +135,7 @@ class FocusedOracleWmsDiscovery:
         if not data_entities:
             return
         sorted_entities = sorted(
-            data_entities.items(),
-            key=self._entity_count,
-            reverse=True,
+            data_entities.items(), key=self._entity_count, reverse=True
         )
         for _entity_name, _data in sorted_entities:
             pass
@@ -193,16 +185,12 @@ class FocusedOracleWmsDiscovery:
             "field_count": len(sample.keys()),
             "sample_fields": cast("t.JsonValue", list(sample.keys())),
             "field_types": cast(
-                "t.JsonValue",
-                {k: type(v).__name__ for k, v in sample.items()},
+                "t.JsonValue", {k: type(v).__name__ for k, v in sample.items()}
             ),
             "sample_record": cast("t.JsonValue", self._safe_sample(sample)),
         }
 
-    def _get_entity_structures(
-        self,
-        entities: t.StrSequence,
-    ) -> t.MutableJsonMapping:
+    def _get_entity_structures(self, entities: t.StrSequence) -> t.MutableJsonMapping:
         """Get entity structures even without data."""
         structures: t.MutableJsonMapping = {}
         for entity_name in entities:
@@ -225,16 +213,14 @@ class FocusedOracleWmsDiscovery:
         return {
             "fields": cast("t.JsonValue", list(sample.keys())),
             "field_types": cast(
-                "t.JsonValue",
-                {k: type(v).__name__ for k, v in sample.items()},
+                "t.JsonValue", {k: type(v).__name__ for k, v in sample.items()}
             ),
             "sample_record": cast("t.JsonValue", self._safe_sample(sample)),
             "has_data": False,
         }
 
     def _safe_sample(
-        self,
-        record: t.StrMapping,
+        self, record: t.StrMapping
     ) -> MutableMapping[str, bool | float | int | str | None]:
         """Create safe sample record."""
         safe: MutableMapping[str, bool | float | int | str | None] = {}
@@ -243,8 +229,7 @@ class FocusedOracleWmsDiscovery:
         return safe
 
     def _generate_schemas_from_data(
-        self,
-        data_entities: t.JsonMapping,
+        self, data_entities: t.JsonMapping
     ) -> t.MutableJsonMapping:
         """Generate Singer schemas from entities with data."""
         schemas: t.MutableJsonMapping = {}
@@ -256,8 +241,7 @@ class FocusedOracleWmsDiscovery:
         return schemas
 
     def _generate_schemas_from_structures(
-        self,
-        structure_entities: t.JsonMapping,
+        self, structure_entities: t.JsonMapping
     ) -> t.MutableJsonMapping:
         """Generate Singer schemas from structures."""
         schemas: t.MutableJsonMapping = {}
@@ -269,9 +253,7 @@ class FocusedOracleWmsDiscovery:
         return schemas
 
     def _create_singer_schema(
-        self,
-        entity_name: str,
-        entity_data: t.JsonMapping,
+        self, entity_name: str, entity_data: t.JsonMapping
     ) -> t.JsonMapping | None:
         """Create Singer schema with proper Oracle WMS typing."""
         try:
@@ -281,9 +263,7 @@ class FocusedOracleWmsDiscovery:
             return None
 
     def _create_singer_schema_unchecked(
-        self,
-        entity_name: str,
-        entity_data: t.JsonMapping,
+        self, entity_name: str, entity_data: t.JsonMapping
     ) -> t.JsonMapping | None:
         """Create a Singer schema while allowing data errors upward."""
         fields = entity_data.get("sample_fields", entity_data.get("fields", []))
@@ -292,14 +272,10 @@ class FocusedOracleWmsDiscovery:
         if not fields or not isinstance(fields, list):
             return None
         properties = self._create_schema_properties(
-            entity_name,
-            fields,
-            field_types,
-            sample_record,
+            entity_name, fields, field_types, sample_record
         )
         key_properties = self._get_oracle_key_properties(
-            entity_name,
-            [f for f in fields if isinstance(f, str)],
+            entity_name, [f for f in fields if isinstance(f, str)]
         )
         schema_result: t.MutableJsonMapping = {
             "type": "object",
@@ -334,10 +310,7 @@ class FocusedOracleWmsDiscovery:
                 else None
             )
             singer_type = self._oracle_field_to_singer_type(
-                field,
-                str(python_type),
-                sample_value,
-                entity_name,
+                field, str(python_type), sample_value, entity_name
             )
             properties[field] = cast("t.JsonValue", singer_type)
         self._add_schema_metadata_properties(properties)
@@ -347,13 +320,11 @@ class FocusedOracleWmsDiscovery:
     def _add_schema_metadata_properties(properties: t.MutableJsonMapping) -> None:
         """Add Singer metadata properties."""
         properties["_sdc_extracted_at"] = cast(
-            "t.JsonValue",
-            {"type": "string", "format": "date-time"},
+            "t.JsonValue", {"type": "string", "format": "date-time"}
         )
         properties["_sdc_entity"] = cast("t.JsonValue", {"type": "string"})
         properties["_sdc_record_hash"] = cast(
-            "t.JsonValue",
-            {"type": ["string", "null"]},
+            "t.JsonValue", {"type": ["string", "null"]}
         )
 
     def _oracle_field_to_singer_type(
@@ -425,9 +396,7 @@ class FocusedOracleWmsDiscovery:
         return field_name.lower() == "url" and value.startswith("http")
 
     def _get_oracle_key_properties(
-        self,
-        entity_name: str,
-        fields: t.StrSequence,
+        self, entity_name: str, fields: t.StrSequence
     ) -> t.StrSequence:
         """Get Oracle WMS key properties for entity."""
         keys: MutableSequence[str] = []
@@ -511,7 +480,7 @@ class FocusedOracleWmsDiscovery:
                                 "selected": True,
                                 "replication-method": "FULL_TABLE",
                             },
-                        },
+                        }
                     ],
                 ),
             }

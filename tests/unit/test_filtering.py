@@ -19,10 +19,10 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 import pytest
-from flext_tests import e, tm
 
 from flext_oracle_wms import FlextOracleWmsUtilitiesFiltering
 from flext_oracle_wms.errors import FlextOracleWmsErrors
+from flext_tests import e, tm
 from tests import c, m, t
 
 Filter = FlextOracleWmsUtilitiesFiltering.Filter
@@ -69,23 +69,19 @@ class TestsFlextOracleWmsFiltering:
         tm.that(engine.max_conditions, eq=c.OracleWms.Filtering.MAX_FILTER_CONDITIONS)
 
     @pytest.mark.parametrize(
-        "max_conditions",
-        [0, -1, c.OracleWms.Filtering.MAX_FILTER_CONDITIONS + 1],
+        "max_conditions", [0, -1, c.OracleWms.Filtering.MAX_FILTER_CONDITIONS + 1]
     )
     def test_construction_rejects_invalid_max_conditions(
-        self,
-        max_conditions: int,
+        self, max_conditions: int
     ) -> None:
         with pytest.raises(e.BaseError, match="Invalid max_conditions"):
             Filter(max_conditions=max_conditions)
 
     @pytest.mark.parametrize(
-        "max_conditions",
-        [0, c.OracleWms.Filtering.MAX_FILTER_CONDITIONS + 1],
+        "max_conditions", [0, c.OracleWms.Filtering.MAX_FILTER_CONDITIONS + 1]
     )
     def test_create_filter_rejects_invalid_max_conditions(
-        self,
-        max_conditions: int,
+        self, max_conditions: int
     ) -> None:
         with pytest.raises(e.BaseError, match="Invalid max_conditions"):
             Filter.create_filter(max_conditions=max_conditions)
@@ -135,8 +131,7 @@ class TestsFlextOracleWmsFiltering:
     def test_list_value_matches_membership(self) -> None:
         engine = Filter()
         result = engine.filter_records(
-            self.sample_records,
-            {"status": ["active", "pending"]},
+            self.sample_records, {"status": ["active", "pending"]}
         )
         tm.ok(result)
         tm.that(self._ids(result.value), eq={1, 3, 4})
@@ -150,9 +145,7 @@ class TestsFlextOracleWmsFiltering:
     def test_limit_truncates_result_set(self) -> None:
         engine = Filter()
         result = engine.filter_records(
-            self.sample_records,
-            {"status": "active"},
-            limit=1,
+            self.sample_records, {"status": "active"}, limit=1
         )
         tm.ok(result)
         tm.that(len(result.value), eq=1)
@@ -204,15 +197,11 @@ class TestsFlextOracleWmsFiltering:
         ],
     )
     def test_numeric_comparison_operators_select_range(
-        self,
-        operator: str,
-        value: float,
-        expected_ids: set[int],
+        self, operator: str, value: float, expected_ids: set[int]
     ) -> None:
         engine = Filter()
         result = engine.filter_records(
-            self.sample_records,
-            {"score": Operator(operator=operator, value=value)},
+            self.sample_records, {"score": Operator(operator=operator, value=value)}
         )
         tm.ok(result)
         tm.that(self._ids(result.value), eq=expected_ids)
@@ -220,8 +209,7 @@ class TestsFlextOracleWmsFiltering:
     def test_eq_operator_dict_matches_value(self) -> None:
         engine = Filter()
         result = engine.filter_records(
-            self.sample_records,
-            {"status": Operator(operator="eq", value="active")},
+            self.sample_records, {"status": Operator(operator="eq", value="active")}
         )
         tm.ok(result)
         tm.that(self._ids(result.value), eq={1, 3})
@@ -229,8 +217,7 @@ class TestsFlextOracleWmsFiltering:
     def test_ne_operator_dict_excludes_value(self) -> None:
         engine = Filter()
         result = engine.filter_records(
-            self.sample_records,
-            {"status": Operator(operator="ne", value="inactive")},
+            self.sample_records, {"status": Operator(operator="ne", value="inactive")}
         )
         tm.ok(result)
         tm.that(self._ids(result.value), eq={1, 3, 4})
@@ -267,8 +254,7 @@ class TestsFlextOracleWmsFiltering:
         engine = Filter()
         records: list[t.OracleWms.FilterRecord] = [{"id": 1, "score": "10"}]
         result = engine.filter_records(
-            records,
-            {"score": Operator(operator="gt", value=5.0)},
+            records, {"score": Operator(operator="gt", value=5.0)}
         )
         tm.ok(result)
         assert not result.value
@@ -277,8 +263,7 @@ class TestsFlextOracleWmsFiltering:
         engine = Filter()
         records: list[t.OracleWms.FilterRecord] = [{"id": 1, "score": None}]
         result = engine.filter_records(
-            records,
-            {"score": Operator(operator="gt", value=5.0)},
+            records, {"score": Operator(operator="gt", value=5.0)}
         )
         tm.ok(result)
         assert not result.value
@@ -309,19 +294,13 @@ class TestsFlextOracleWmsFiltering:
             {"id": 1, "company_address_city": "New York"},
             {"id": 2, "company_address_city": "London"},
         ]
-        result = engine.filter_records(
-            records,
-            {"company.address.city": "London"},
-        )
+        result = engine.filter_records(records, {"company.address.city": "London"})
         tm.ok(result)
         tm.that(self._ids(result.value), eq={2})
 
     def test_missing_field_matches_no_records(self) -> None:
         engine = Filter()
-        result = engine.filter_records(
-            self.sample_records,
-            {"nonexistent": "whatever"},
-        )
+        result = engine.filter_records(self.sample_records, {"nonexistent": "whatever"})
         tm.ok(result)
         assert not result.value
 
@@ -337,10 +316,7 @@ class TestsFlextOracleWmsFiltering:
 
     def test_list_condition_counted_by_length(self) -> None:
         engine = Filter(max_conditions=2)
-        result = engine.filter_records(
-            self.sample_records,
-            {"status": ["a", "b", "c"]},
-        )
+        result = engine.filter_records(self.sample_records, {"status": ["a", "b", "c"]})
         tm.fail(result)
         tm.that(result.error, none=False)
         tm.that(result.error, has="Too many")
@@ -360,10 +336,7 @@ class TestsFlextOracleWmsFiltering:
 
     def test_filter_by_field_explicit_operator(self) -> None:
         result = Filter.filter_by_field(
-            self.sample_records,
-            "status",
-            "inactive",
-            Op.NE,
+            self.sample_records, "status", "inactive", Op.NE
         )
         tm.ok(result)
         tm.that(self._ids(result.value), eq={1, 3, 4})
@@ -373,10 +346,7 @@ class TestsFlextOracleWmsFiltering:
     # ------------------------------------------------------------------ #
     def test_id_range_both_bounds_inclusive(self) -> None:
         result = Filter.filter_by_id_range(
-            self.sample_records,
-            "id",
-            min_id=2,
-            max_id=3,
+            self.sample_records, "id", min_id=2, max_id=3
         )
         tm.ok(result)
         tm.that(self._ids(result.value), eq={2, 3})
@@ -398,9 +368,7 @@ class TestsFlextOracleWmsFiltering:
 
     def test_id_range_on_string_field(self) -> None:
         result = Filter.filter_by_id_range(
-            self.sample_records,
-            "name",
-            min_id="Company C",
+            self.sample_records, "name", min_id="Company C"
         )
         tm.ok(result)
         tm.that(self._ids(result.value), eq={3, 4})
@@ -429,10 +397,7 @@ class TestsFlextOracleWmsFiltering:
         ],
     )
     def test_sort_by_string_field(
-        self,
-        field: str,
-        ascending: bool,
-        expected: list[str],
+        self, field: str, ascending: bool, expected: list[str]
     ) -> None:
         engine = Filter()
         result = engine.sort_records(self.unsorted_records, field, ascending=ascending)
@@ -441,16 +406,10 @@ class TestsFlextOracleWmsFiltering:
 
     @pytest.mark.parametrize(
         ("field", "ascending", "expected"),
-        [
-            ("id", True, [1, 2, 3]),
-            ("score", False, [90.0, 85.0, 75.5]),
-        ],
+        [("id", True, [1, 2, 3]), ("score", False, [90.0, 85.0, 75.5])],
     )
     def test_sort_by_numeric_field(
-        self,
-        field: str,
-        ascending: bool,
-        expected: list[float],
+        self, field: str, ascending: bool, expected: list[float]
     ) -> None:
         engine = Filter()
         result = engine.sort_records(self.unsorted_records, field, ascending=ascending)

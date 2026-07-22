@@ -11,9 +11,9 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 import pytest
-from flext_tests import tm
 
 from flext_oracle_wms import config
+from flext_tests import tm
 
 __all__ = ["TestsFlextOracleWmsConfigDomains"]
 

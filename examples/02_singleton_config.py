@@ -33,7 +33,7 @@ def demonstrate_singleton_config() -> None:
     logger.info("   Config Type: %s", type(settings).__name__)
     logger.info("2. Updating global singleton with new parameters...")
     updated_config = FlextOracleWmsSettings.update_global(
-        OracleWms={"timeout": 60, "retry_attempts": 5},
+        OracleWms={"timeout": 60, "retry_attempts": 5}
     )
     logger.info("   Updated Timeout: %s", updated_config.OracleWms.timeout)
     logger.info("   Updated Max Retries: %s", updated_config.OracleWms.retry_attempts)
@@ -42,9 +42,9 @@ def demonstrate_singleton_config() -> None:
     env_config = FlextOracleWmsSettings.fetch_global(
         overrides={
             "OracleWms": {
-                "timeout": float(FlextOracleWmsConstants.OracleWms.DEFAULT_TIMEOUT * 3),
-            },
-        },
+                "timeout": float(FlextOracleWmsConstants.OracleWms.DEFAULT_TIMEOUT * 3)
+            }
+        }
     )
     logger.info("   Oracle WMS URL: %s", env_config.OracleWms.base_url)
     logger.info("   Username: %s", env_config.OracleWms.username)
@@ -56,11 +56,9 @@ def demonstrate_singleton_config() -> None:
                 "base_url": "https://new-environment.wms.oraclecloud.com/test",
                 "username": "NEW_USER",
                 "password": "NEW_PASSWORD",
-                "timeout": float(
-                    FlextOracleWmsConstants.OracleWms.DEFAULT_TIMEOUT * 4,
-                ),
-            },
-        },
+                "timeout": float(FlextOracleWmsConstants.OracleWms.DEFAULT_TIMEOUT * 4),
+            }
+        }
     )
     logger.info("   New Base URL: %s", new_config.OracleWms.base_url)
     logger.info("   New Username: %s", new_config.OracleWms.username)
@@ -73,8 +71,8 @@ def demonstrate_singleton_config() -> None:
                 "base_url": "https://fresh.wms.oraclecloud.com/fresh",
                 "username": "FRESH_USER",
                 "password": "FRESH_PASSWORD",
-            },
-        },
+            }
+        }
     )
     logger.info("   Fresh Base URL: %s", fresh_config.OracleWms.base_url)
     logger.info("   Fresh Username: %s", fresh_config.OracleWms.username)
@@ -85,7 +83,7 @@ def demonstrate_singleton_config() -> None:
             "timeout": 30.0,
             "username": "test_user",
             "password": "test_password",
-        },
+        }
     })
     logger.info("   Test URL: %s", test_config.OracleWms.base_url)
     logger.info("   Test Username: %s", test_config.OracleWms.username)
@@ -124,7 +122,7 @@ def demonstrate_environment_variables() -> None:
         logger.info("   No Oracle WMS environment variables found")
     logger.info("\nTo set Oracle WMS environment variables:")
     logger.info(
-        "   export FLEXT_ORACLE_WMS_ORACLEWMS__BASE_URL='https://your-wms.oraclecloud.com'",
+        "   export FLEXT_ORACLE_WMS_ORACLEWMS__BASE_URL='https://your-wms.oraclecloud.com'"
     )
     logger.info("   export FLEXT_ORACLE_WMS_ORACLEWMS__USERNAME='your_username'")
     logger.info("   export FLEXT_ORACLE_WMS_ORACLEWMS__PASSWORD='your_password'")

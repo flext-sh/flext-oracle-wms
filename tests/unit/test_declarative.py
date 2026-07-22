@@ -17,7 +17,6 @@ from pathlib import Path
 from typing import TYPE_CHECKING
 
 import pytest
-from flext_tests import tm
 
 from flext_oracle_wms import (
     FlextOracleWmsApi,
@@ -25,6 +24,7 @@ from flext_oracle_wms import (
     FlextOracleWmsUtilitiesClient,
     m,
 )
+from flext_tests import tm
 from tests import t, u
 
 if TYPE_CHECKING:
@@ -115,8 +115,7 @@ class TestsFlextOracleWmsDeclarative:
     # ------------------------------------------------------------------
 
     def test_health_check_returns_result_contract(
-        self,
-        oracle_wms_client: FlextOracleWmsUtilitiesClient.Client,
+        self, oracle_wms_client: FlextOracleWmsUtilitiesClient.Client
     ) -> None:
         """health_check() returns a well-formed r[T]; on success reports service."""
         result = oracle_wms_client.health_check()
@@ -128,8 +127,7 @@ class TestsFlextOracleWmsDeclarative:
             tm.that({"healthy", "unhealthy"}, has=payload.get("status"))
 
     def test_discover_entities_returns_sequence_on_success(
-        self,
-        oracle_wms_client: FlextOracleWmsUtilitiesClient.Client,
+        self, oracle_wms_client: FlextOracleWmsUtilitiesClient.Client
     ) -> None:
         """discover_entities() yields a list of entities when it succeeds."""
         result = oracle_wms_client.discover_entities()
@@ -139,9 +137,7 @@ class TestsFlextOracleWmsDeclarative:
 
     @pytest.mark.parametrize("entity_name", ["company", "facility", "item"])
     def test_get_entity_data_returns_record_sequence(
-        self,
-        oracle_wms_client: FlextOracleWmsUtilitiesClient.Client,
-        entity_name: str,
+        self, oracle_wms_client: FlextOracleWmsUtilitiesClient.Client, entity_name: str
     ) -> None:
         """get_entity_data() honours the r[T] contract and returns a sequence."""
         result = oracle_wms_client.get_entity_data(entity_name=entity_name, limit=5)
@@ -150,27 +146,19 @@ class TestsFlextOracleWmsDeclarative:
             tm.that(result.value, is_=(list, tuple))
 
     def test_get_entity_data_with_filters_returns_result_contract(
-        self,
-        oracle_wms_client: FlextOracleWmsUtilitiesClient.Client,
+        self, oracle_wms_client: FlextOracleWmsUtilitiesClient.Client
     ) -> None:
         """Filtered queries still satisfy the r[T] contract."""
         result = oracle_wms_client.get_entity_data(
-            entity_name="company",
-            limit=10,
-            filters={"active": "Y"},
+            entity_name="company", limit=10, filters={"active": "Y"}
         )
         self._assert_result_contract(result)
         if result.success:
             tm.that(result.value, is_=(list, tuple))
 
-    @pytest.mark.parametrize(
-        "limit",
-        [1, 5, 10],
-    )
+    @pytest.mark.parametrize("limit", [1, 5, 10])
     def test_pagination_never_exceeds_requested_limit(
-        self,
-        oracle_wms_client: FlextOracleWmsUtilitiesClient.Client,
-        limit: int,
+        self, oracle_wms_client: FlextOracleWmsUtilitiesClient.Client, limit: int
     ) -> None:
         """A successful paged query never returns more records than requested."""
         result = oracle_wms_client.get_entity_data(entity_name="company", limit=limit)
@@ -179,8 +167,7 @@ class TestsFlextOracleWmsDeclarative:
             assert len(result.value) <= limit
 
     def test_concurrent_entity_requests_all_honour_contract(
-        self,
-        oracle_wms_client: FlextOracleWmsUtilitiesClient.Client,
+        self, oracle_wms_client: FlextOracleWmsUtilitiesClient.Client
     ) -> None:
         """Sequential requests to distinct entities each return a valid r[T]."""
         entities = ["company", "facility", "item"]
@@ -197,9 +184,7 @@ class TestsFlextOracleWmsDeclarative:
 
     @pytest.mark.parametrize("entity_name", ["invalid_entity_xyz", ""])
     def test_unknown_entity_fails_with_error(
-        self,
-        oracle_wms_client: FlextOracleWmsUtilitiesClient.Client,
-        entity_name: str,
+        self, oracle_wms_client: FlextOracleWmsUtilitiesClient.Client, entity_name: str
     ) -> None:
         """Requesting an unknown entity fails with a populated error message."""
         result = oracle_wms_client.get_entity_data(entity_name)
@@ -208,9 +193,7 @@ class TestsFlextOracleWmsDeclarative:
 
     @pytest.mark.parametrize("api_name", ["unknown_api_xyz", "invalid_api_name"])
     def test_unknown_api_call_fails_with_error(
-        self,
-        oracle_wms_client: FlextOracleWmsUtilitiesClient.Client,
-        api_name: str,
+        self, oracle_wms_client: FlextOracleWmsUtilitiesClient.Client, api_name: str
     ) -> None:
         """Calling an unknown API name fails with a populated error message."""
         result = oracle_wms_client.call_api(api_name)
@@ -218,21 +201,18 @@ class TestsFlextOracleWmsDeclarative:
         assert result.error
 
     def test_update_oblpn_tracking_failure_is_not_initialization_error(
-        self,
-        oracle_wms_client: FlextOracleWmsUtilitiesClient.Client,
+        self, oracle_wms_client: FlextOracleWmsUtilitiesClient.Client
     ) -> None:
         """A started client never fails OBLPN updates for being uninitialized."""
         result = oracle_wms_client.update_oblpn_tracking_number(
-            oblpn_id="TEST123",
-            tracking_number="TRACK123",
+            oblpn_id="TEST123", tracking_number="TRACK123"
         )
         self._assert_result_contract(result)
         if result.failure and result.error:
             tm.that(result.error, lacks="Client not initialized")
 
     def test_create_lpn_failure_is_not_initialization_error(
-        self,
-        oracle_wms_client: FlextOracleWmsUtilitiesClient.Client,
+        self, oracle_wms_client: FlextOracleWmsUtilitiesClient.Client
     ) -> None:
         """A started client never fails LPN creation for being uninitialized."""
         result = oracle_wms_client.create_lpn(lpn_nbr="TEST_LPN_001", qty=10)

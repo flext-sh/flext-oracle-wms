@@ -8,9 +8,9 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 import pytest
-from flext_tests import tm
 
 from flext_oracle_wms.errors import FlextOracleWmsErrors
+from flext_tests import tm
 from tests import c, e, m, t, u
 
 __all__: list[str] = ["TestsFlextOracleWmsHelpers"]
@@ -43,17 +43,10 @@ class TestsFlextOracleWmsHelpers:
 
     @pytest.mark.parametrize(
         ("value", "default", "expected"),
-        [
-            (123, "", "123"),
-            (None, "fallback", "fallback"),
-            ("kept", "", "kept"),
-        ],
+        [(123, "", "123"), (None, "fallback", "fallback"), ("kept", "", "kept")],
     )
     def test_to_str_returns_string_or_default(
-        self,
-        value: str | int | None,
-        default: str,
-        expected: str,
+        self, value: str | int | None, default: str, expected: str
     ) -> None:
         """to_str stringifies present values and substitutes the default for None."""
         tm.that(u.to_str(value, default=default), eq=expected)
@@ -61,8 +54,7 @@ class TestsFlextOracleWmsHelpers:
     # ---- filter_by_field -------------------------------------------------
 
     def test_filter_by_field_keeps_only_matching_records(
-        self,
-        records: list[t.OracleWms.Tests.Record],
+        self, records: list[t.OracleWms.Tests.Record]
     ) -> None:
         """Equality filtering yields exactly the records whose field matches."""
         result = u.Filter.filter_by_field(records, "name", "beta")
@@ -71,15 +63,11 @@ class TestsFlextOracleWmsHelpers:
         tm.that([row["id"] for row in result.unwrap()], eq=[2])
 
     def test_filter_by_field_with_operator_applies_comparison(
-        self,
-        records: list[t.OracleWms.Tests.Record],
+        self, records: list[t.OracleWms.Tests.Record]
     ) -> None:
         """A GTE operator keeps records at or above the threshold."""
         result = u.Filter.filter_by_field(
-            records,
-            "id",
-            2,
-            operator=c.OracleWms.WmsFilterOperator.GTE,
+            records, "id", 2, operator=c.OracleWms.WmsFilterOperator.GTE
         )
 
         tm.ok(result)
@@ -89,12 +77,7 @@ class TestsFlextOracleWmsHelpers:
 
     @pytest.mark.parametrize(
         ("min_id", "max_id", "expected"),
-        [
-            (2, None, [2, 5]),
-            (None, 2, [1, 2]),
-            (2, 2, [2]),
-            (None, None, [1, 2, 5]),
-        ],
+        [(2, None, [2, 5]), (None, 2, [1, 2]), (2, 2, [2]), (None, None, [1, 2, 5])],
     )
     def test_filter_by_id_range_is_inclusive(
         self,
@@ -105,10 +88,7 @@ class TestsFlextOracleWmsHelpers:
     ) -> None:
         """Identifier range filtering is inclusive on both bounds."""
         result = u.Filter.filter_by_id_range(
-            records,
-            "id",
-            min_id=min_id,
-            max_id=max_id,
+            records, "id", min_id=min_id, max_id=max_id
         )
 
         tm.ok(result)
@@ -135,8 +115,7 @@ class TestsFlextOracleWmsHelpers:
         "max_conditions", [0, -1, c.OracleWms.Filtering.MAX_FILTER_CONDITIONS + 1]
     )
     def test_create_filter_rejects_out_of_range_limits(
-        self,
-        max_conditions: int,
+        self, max_conditions: int
     ) -> None:
         """Out-of-range condition limits fail loudly via the exception family."""
         with pytest.raises(e.BaseError):
@@ -148,9 +127,8 @@ class TestsFlextOracleWmsHelpers:
             u.Filter(
                 filters={
                     "id": m.OracleWms.FlextOracleWmsOperatorFilter(
-                        operator=c.OracleWms.WmsFilterOperator.IN,
-                        value=[1, 2, 3],
-                    ),
+                        operator=c.OracleWms.WmsFilterOperator.IN, value=[1, 2, 3]
+                    )
                 },
                 max_conditions=1,
             )
@@ -158,8 +136,7 @@ class TestsFlextOracleWmsHelpers:
     # ---- case sensitivity ------------------------------------------------
 
     def test_case_insensitive_engine_matches_regardless_of_case(
-        self,
-        records: list[t.OracleWms.Tests.Record],
+        self, records: list[t.OracleWms.Tests.Record]
     ) -> None:
         """Default (case-insensitive) matching ignores letter case."""
         engine = u.Filter.create_filter()
@@ -170,8 +147,7 @@ class TestsFlextOracleWmsHelpers:
         tm.that([row["id"] for row in result.unwrap()], eq=[1])
 
     def test_case_sensitive_engine_requires_exact_case(
-        self,
-        records: list[t.OracleWms.Tests.Record],
+        self, records: list[t.OracleWms.Tests.Record]
     ) -> None:
         """A case-sensitive engine rejects a case mismatch."""
         engine = u.Filter.create_filter(case_sensitive=True)
@@ -184,8 +160,7 @@ class TestsFlextOracleWmsHelpers:
     # ---- filter_records limit and validation ----------------------------
 
     def test_filter_records_respects_limit(
-        self,
-        records: list[t.OracleWms.Tests.Record],
+        self, records: list[t.OracleWms.Tests.Record]
     ) -> None:
         """The optional limit truncates the matched records."""
         engine = u.Filter.create_filter()
@@ -196,8 +171,7 @@ class TestsFlextOracleWmsHelpers:
         tm.that(len(result.unwrap()), eq=2)
 
     def test_filter_records_reports_condition_overflow_as_failure(
-        self,
-        records: list[t.OracleWms.Tests.Record],
+        self, records: list[t.OracleWms.Tests.Record]
     ) -> None:
         """Exceeding max_conditions returns a failure result, not a raise."""
         engine = u.Filter.create_filter(max_conditions=1)
@@ -206,9 +180,8 @@ class TestsFlextOracleWmsHelpers:
             records,
             {
                 "id": m.OracleWms.FlextOracleWmsOperatorFilter(
-                    operator=c.OracleWms.WmsFilterOperator.IN,
-                    value=[1, 2, 5],
-                ),
+                    operator=c.OracleWms.WmsFilterOperator.IN, value=[1, 2, 5]
+                )
             },
         )
 
@@ -218,11 +191,7 @@ class TestsFlextOracleWmsHelpers:
     # ---- sort_records ----------------------------------------------------
 
     @pytest.mark.parametrize(
-        ("ascending", "expected"),
-        [
-            (True, [1, 5, 2]),
-            (False, [2, 5, 1]),
-        ],
+        ("ascending", "expected"), [(True, [1, 5, 2]), (False, [2, 5, 1])]
     )
     def test_sort_records_orders_by_field(
         self,

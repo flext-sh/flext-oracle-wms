@@ -8,9 +8,9 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 import pytest
-from flext_tests import tm
 
 from flext_oracle_wms import FlextOracleWmsUtilitiesDiscovery
+from flext_tests import tm
 from tests import c, m, t
 
 
@@ -53,18 +53,8 @@ class TestsFlextOracleWmsModelsUnit:
             },
         )
 
-    @pytest.mark.parametrize(
-        ("field", "value"),
-        [
-            ("name", ""),
-            ("endpoint", ""),
-        ],
-    )
-    def test_entity_rejects_empty_required_string(
-        self,
-        field: str,
-        value: str,
-    ) -> None:
+    @pytest.mark.parametrize(("field", "value"), [("name", ""), ("endpoint", "")])
+    def test_entity_rejects_empty_required_string(self, field: str, value: str) -> None:
         """Empty required strings violate min_length and raise ValidationError."""
         kwargs: t.MutableMappingKV[str, str] = {
             "name": "item",
@@ -74,14 +64,8 @@ class TestsFlextOracleWmsModelsUnit:
         with pytest.raises(c.ValidationError):
             m.OracleWms.Entity(**kwargs)
 
-    @pytest.mark.parametrize(
-        "endpoint",
-        ["api/items", "items", "http://x/api"],
-    )
-    def test_entity_rejects_endpoint_without_leading_slash(
-        self,
-        endpoint: str,
-    ) -> None:
+    @pytest.mark.parametrize("endpoint", ["api/items", "items", "http://x/api"])
+    def test_entity_rejects_endpoint_without_leading_slash(self, endpoint: str) -> None:
         """Endpoint validator enforces a leading slash contract."""
         with pytest.raises(c.ValidationError):
             m.OracleWms.Entity(name="item", endpoint=endpoint)
@@ -89,11 +73,7 @@ class TestsFlextOracleWmsModelsUnit:
     def test_entity_forbids_unknown_fields(self) -> None:
         """extra='forbid' rejects fields outside the declared contract."""
         with pytest.raises(c.ValidationError):
-            m.OracleWms.Entity(
-                name="item",
-                endpoint="/api/items",
-                unexpected="x",
-            )
+            m.OracleWms.Entity(name="item", endpoint="/api/items", unexpected="x")
 
     def test_validate_entity_succeeds_for_valid_entity(self) -> None:
         """validate_entity returns a success result carrying True."""

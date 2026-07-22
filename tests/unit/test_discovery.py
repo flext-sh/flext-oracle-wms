@@ -7,8 +7,8 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 import pytest
-from flext_tests import tm
 
+from flext_tests import tm
 from tests import c
 
 
@@ -29,9 +29,7 @@ class TestsFlextOracleWmsDiscovery:
         ],
     )
     def test_discovery_token_exposes_published_string_value(
-        self,
-        attribute: str,
-        expected_token: str,
+        self, attribute: str, expected_token: str
     ) -> None:
         """Each discovery outcome token is published with its exact string."""
         token: str = getattr(c.OracleWms, attribute)

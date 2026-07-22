@@ -36,7 +36,7 @@ class FlextOracleWmsConfig(FlextConfig):
     def OracleWms(self) -> FlextOracleWmsProtocolsConfig.Config:
         """Validated ``OracleWms`` config domains from the model-less YAML."""
         return FlextOracleWmsConfigModels.Root.model_validate(
-            dict(self.model_extra or {}),
+            dict(self.model_extra or {})
         )
 
 

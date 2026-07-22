@@ -12,8 +12,6 @@ from flext_core.lazy import (
 )
 
 if TYPE_CHECKING:
-    from flext_tests import td as td, tf as tf, tk as tk, tm as tm, tv as tv
-
     from flext_oracle_wms import (
         c as c,
         d as d,
@@ -27,33 +25,14 @@ if TYPE_CHECKING:
         u,
         x as x,
     )
+    from flext_tests import td as td, tf as tf, tk as tk, tm as tm, tv as tv
 _LAZY_IMPORTS = merge_lazy_imports(
     (".tests",),
-    build_lazy_import_map(
-        {
-            ".tests": ("tests",),
-            "flext_oracle_wms": (
-                "c",
-                "d",
-                "e",
-                "h",
-                "m",
-                "p",
-                "r",
-                "s",
-                "t",
-                "u",
-                "x",
-            ),
-            "flext_tests": (
-                "td",
-                "tf",
-                "tk",
-                "tm",
-                "tv",
-            ),
-        },
-    ),
+    build_lazy_import_map({
+        ".tests": ("tests",),
+        "flext_oracle_wms": ("c", "d", "e", "h", "m", "p", "r", "s", "t", "u", "x"),
+        "flext_tests": ("td", "tf", "tk", "tm", "tv"),
+    }),
     exclude_names=(
         "cleanup_submodule_namespace",
         "install_lazy_exports",
@@ -77,9 +56,4 @@ _LAZY_IMPORTS = merge_lazy_imports(
 )
 
 
-install_lazy_exports(
-    __name__,
-    globals(),
-    _LAZY_IMPORTS,
-    publish_all=False,
-)
+install_lazy_exports(__name__, globals(), _LAZY_IMPORTS, publish_all=False)

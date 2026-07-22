@@ -19,9 +19,8 @@ from datetime import UTC, datetime
 from pathlib import Path
 from typing import TYPE_CHECKING, cast
 
-from flext_tests import r
-
 from flext_oracle_wms import FlextOracleWmsSettings, FlextOracleWmsUtilitiesClient
+from flext_tests import r
 from tests import t, u
 
 if TYPE_CHECKING:
@@ -49,7 +48,7 @@ class OptimizedOracleWmsDiscovery:
                 "api_version": _API_VERSION_LGF_V10,
                 "verify_ssl": True,
                 "enable_logging": True,
-            },
+            }
         })
         self.client = FlextOracleWmsUtilitiesClient.Client(settings=self.settings)
         self.priority_entities: set[str] = {
@@ -93,22 +92,17 @@ class OptimizedOracleWmsDiscovery:
             return r[bool].fail(f"Client start failed: {start_result.error}")
         return r[bool].ok(value=True)
 
-    def discover_priority_entities_fast(
-        self,
-    ) -> p.Result[t.JsonMapping]:
+    def discover_priority_entities_fast(self) -> p.Result[t.JsonMapping]:
         """Fast discovery of priority entities with data."""
         entities_result = self.client.discover_entities()
         if not entities_result.success:
             return r[t.JsonMapping].fail(
-                f"Entity discovery failed: {entities_result.error}",
+                f"Entity discovery failed: {entities_result.error}"
             )
         all_entities = entities_result.value
         available_priority = [e for e in all_entities if e in self.priority_entities]
         other_entities = [e for e in all_entities if e not in self.priority_entities]
-        priority_results = self._process_entity_batch(
-            available_priority,
-            batch_size=10,
-        )
+        priority_results = self._process_entity_batch(available_priority, batch_size=10)
         entities_with_data: list[str] = [
             entity_name
             for entity_name, result in priority_results.items()
@@ -117,8 +111,7 @@ class OptimizedOracleWmsDiscovery:
         all_results = priority_results
         if entities_with_data and other_entities:
             additional_results = self._process_entity_batch(
-                other_entities[:50],
-                batch_size=15,
+                other_entities[:50], batch_size=15
             )
             all_results = {**priority_results, **additional_results}
             entities_with_data.extend([
@@ -135,17 +128,14 @@ class OptimizedOracleWmsDiscovery:
             "total_processed": len(all_results),
             "entities_with_data": len(self.high_value_entities),
             "high_value_entities": cast(
-                "t.JsonValue",
-                list(self.high_value_entities.keys()),
+                "t.JsonValue", list(self.high_value_entities.keys())
             ),
             "detailed_results": cast("t.JsonValue", all_results),
         }
         return r[t.JsonMapping].ok(summary_payload)
 
     def _process_entity_batch(
-        self,
-        entities: t.StrSequence,
-        batch_size: int = 10,
+        self, entities: t.StrSequence, batch_size: int = 10
     ) -> t.MutableMappingKV[str, t.MutableJsonMapping]:
         """Process entity batch with parallel requests."""
         results: t.MutableMappingKV[str, t.MutableJsonMapping] = {}
@@ -184,8 +174,7 @@ class OptimizedOracleWmsDiscovery:
             }
 
     def _analyze_single_entity_unchecked(
-        self,
-        entity_name: str,
+        self, entity_name: str
     ) -> t.MutableJsonMapping:
         """Analyze one entity while allowing client errors upward."""
         data_result = self.client.get_entity_data(entity_name, limit=3)
@@ -214,18 +203,15 @@ class OptimizedOracleWmsDiscovery:
             "field_count": len(sample_record.keys()),
             "fields": cast("t.JsonValue", list(sample_record.keys())),
             "field_types": cast(
-                "t.JsonValue",
-                {k: type(v).__name__ for k, v in sample_record.items()},
+                "t.JsonValue", {k: type(v).__name__ for k, v in sample_record.items()}
             ),
             "sample_record": cast(
-                "t.JsonValue",
-                self._safe_sample_record(sample_record),
+                "t.JsonValue", self._safe_sample_record(sample_record)
             ),
         }
 
     def _safe_sample_record(
-        self,
-        record: t.StrMapping,
+        self, record: t.StrMapping
     ) -> t.MutableMappingKV[str, bool | float | int | str | None]:
         """Create safe sample record for storage."""
         safe_record: t.MutableMappingKV[str, bool | float | int | str | None] = {}
@@ -233,19 +219,16 @@ class OptimizedOracleWmsDiscovery:
             safe_record[k] = v if len(v) < 100 else f"<string:{len(v)}chars>"
         return safe_record
 
-    def generate_complete_singer_schemas(
-        self,
-    ) -> p.Result[t.JsonMapping]:
+    def generate_complete_singer_schemas(self) -> p.Result[t.JsonMapping]:
         """Generate complete Singer schemas for high-value entities."""
         if not self.high_value_entities:
             return r[t.JsonMapping].fail(
-                "No high-value entities available for schema generation",
+                "No high-value entities available for schema generation"
             )
         singer_schemas: t.MutableMappingKV[str, t.JsonMapping] = {}
         for entity_name, entity_data in self.high_value_entities.items():
             schema = self._generate_singer_schema_from_entity_data(
-                entity_name,
-                entity_data,
+                entity_name, entity_data
             )
             if schema:
                 singer_schemas[entity_name] = schema
@@ -259,24 +242,19 @@ class OptimizedOracleWmsDiscovery:
         return r[t.JsonMapping].ok(schemas_payload)
 
     def _generate_singer_schema_from_entity_data(
-        self,
-        entity_name: str,
-        entity_data: t.JsonMapping,
+        self, entity_name: str, entity_data: t.JsonMapping
     ) -> t.JsonMapping | None:
         """Generate Singer schema from entity data with proper typing."""
         try:
             return self._generate_singer_schema_from_entity_data_unchecked(
-                entity_name,
-                entity_data,
+                entity_name, entity_data
             )
         except (RuntimeError, OSError, ValueError, KeyError):
             logger.exception("Schema generation failed for %s", entity_name)
             return None
 
     def _generate_singer_schema_from_entity_data_unchecked(
-        self,
-        entity_name: str,
-        entity_data: t.JsonMapping,
+        self, entity_name: str, entity_data: t.JsonMapping
     ) -> t.JsonMapping | None:
         """Generate Singer schema while allowing data errors upward."""
         fields = entity_data.get("fields", [])
@@ -285,13 +263,10 @@ class OptimizedOracleWmsDiscovery:
         if not fields or not isinstance(fields, list):
             return None
         properties = self._generate_singer_properties(
-            fields,
-            field_types,
-            sample_record,
+            fields, field_types, sample_record
         )
         key_properties = self._determine_key_properties(
-            entity_name,
-            [f for f in fields if isinstance(f, str)],
+            entity_name, [f for f in fields if isinstance(f, str)]
         )
         schema_payload: t.MutableJsonMapping = {
             "type": "object",
@@ -347,10 +322,7 @@ class OptimizedOracleWmsDiscovery:
         }
 
     def _oracle_to_singer_type(
-        self,
-        field_name: str,
-        python_type: str,
-        sample_value: t.JsonValue,
+        self, field_name: str, python_type: str, sample_value: t.JsonValue
     ) -> t.JsonMapping:
         """Convert Oracle field to Singer type with real data analysis."""
         if sample_value is not None:
@@ -439,9 +411,7 @@ class OptimizedOracleWmsDiscovery:
         return any(pattern in field_name.lower() for pattern in code_patterns)
 
     def _determine_key_properties(
-        self,
-        entity_name: str,
-        fields: t.StrSequence,
+        self, entity_name: str, fields: t.StrSequence
     ) -> list[str]:
         """Determine key properties for Oracle WMS entity."""
         potential_keys: list[str] = []
@@ -472,8 +442,7 @@ class OptimizedOracleWmsDiscovery:
         return potential_keys[:3]
 
     def _generate_singer_catalog(
-        self,
-        schemas: t.MappingKV[str, t.JsonMapping],
+        self, schemas: t.MappingKV[str, t.JsonMapping]
     ) -> t.JsonMapping:
         """Generate Singer catalog from schemas."""
         streams: t.MutableSequenceOf[t.JsonMapping] = []
@@ -497,7 +466,7 @@ class OptimizedOracleWmsDiscovery:
                                 "forced-replication-method": "FULL_TABLE",
                                 "table-key-properties": key_properties,
                             },
-                        },
+                        }
                     ],
                 ),
             }
@@ -529,8 +498,7 @@ class OptimizedOracleWmsDiscovery:
             "oracle_wms_base_url": self.settings.OracleWms.base_url,
             "api_version": self.settings.OracleWms.api_version,
             "high_value_entities": cast(
-                "t.JsonValue",
-                list(self.high_value_entities.keys()),
+                "t.JsonValue", list(self.high_value_entities.keys())
             ),
         }
         summary_file = results_dir / f"discovery_summary_{timestamp}.json"
@@ -579,9 +547,7 @@ class OptimizedOracleWmsDiscoveryRunner:
         OptimizedOracleWmsDiscoveryRunner._summarize_high_value_entities(discovery)
 
     @staticmethod
-    def _summarize_high_value_entities(
-        discovery: OptimizedOracleWmsDiscovery,
-    ) -> None:
+    def _summarize_high_value_entities(discovery: OptimizedOracleWmsDiscovery) -> None:
         """Sort high-value entities by total count."""
         if not discovery.high_value_entities:
             return

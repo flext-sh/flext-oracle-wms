@@ -40,15 +40,13 @@ Current implementation provides test configuration with fake URLs:
 ```python
 from flext_oracle_wms import FlextOracleWmsSettings
 
-settings = FlextOracleWmsSettings.model_validate(
-    {
-        "OracleWms": {
-            "base_url": "https://test.example.com",
-            "username": "test_user",
-            "password": "test_password",
-        }
+settings = FlextOracleWmsSettings.model_validate({
+    "OracleWms": {
+        "base_url": "https://test.example.com",
+        "username": "test_user",
+        "password": "test_password",
     }
-)
+})
 print(settings.OracleWms.base_url)  # "https://test.example.com"
 print(settings.OracleWms.username)  # "test_user"
 print(settings.OracleWms.api_version)  # Current API version
@@ -135,9 +133,7 @@ from flext_oracle_wms import FlextOracleWmsSettings
 
 # Configuration validation is implemented
 settings = FlextOracleWmsSettings(
-    base_url="https://test.example.com",
-    username="test_user",
-    password="test_password",
+    base_url="https://test.example.com", username="test_user", password="test_password"
 )
 # Pydantic automatically validates configuration structure
 ```
