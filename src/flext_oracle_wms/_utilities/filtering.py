@@ -87,7 +87,8 @@ class FlextOracleWmsUtilitiesFiltering:
         ) -> p.Result[Sequence[t.OracleWms.FilterRecord]]:
             """Filter records by inclusive identifier range."""
             if not records:
-                return r[Sequence[t.OracleWms.FilterRecord]].ok([])
+                empty: Sequence[t.OracleWms.FilterRecord] = []
+                return r[Sequence[t.OracleWms.FilterRecord]].ok(empty)
             filtered: MutableSequence[t.OracleWms.FilterRecord] = []
             for record in records:
                 field_value = record.get(id_field)

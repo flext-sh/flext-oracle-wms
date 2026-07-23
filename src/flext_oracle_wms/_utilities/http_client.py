@@ -165,7 +165,7 @@ class FlextOracleWmsUtilitiesHttpClient:
                     "log_requests": False,
                     "log_responses": False,
                 })
-                self._client = FlextApi(settings=settings)
+                self._client = FlextApi(runtime_settings=settings)
 
         def _execute_request(
             self,
