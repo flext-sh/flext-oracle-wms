@@ -64,14 +64,14 @@ settings = FlextOracleWmsSettings.model_validate({
         "password": "test_password",
     }
 })
-print(f"Test Base URL: {settings.OracleWms.base_url}")
+u.Cli.print(f"Test Base URL: {settings.OracleWms.base_url}")
 
 # Build the API facade from the settings
 api = FlextOracleWmsApi(settings=settings)
 
 # execute() returns a FlextResult — inspect .success / .value
 result = api.execute()
-print(f"Execute success: {result.success}")
+u.Cli.print(f"Execute success: {result.success}")
 ```
 
 ## Implementation Status

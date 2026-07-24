@@ -54,9 +54,9 @@ Tests connection to Oracle WMS (currently uses fake URLs).
 ```python notest
 result = client.test_connection()
 if result.success:
-    print("Connection structure verified")
+    u.Cli.print("Connection structure verified")
 else:
-    print(f"Connection failed: {result.error}")
+    u.Cli.print(f"Connection failed: {result.error}")
 ```
 
 ##### `discover_entities() -> p.Result[List[Dict]]`
@@ -67,7 +67,7 @@ Discovers available Oracle WMS entities.
 result = client.discover_entities()
 if result.success:
     entities = result.value
-    print(f"Found {len(entities)} entities")
+    u.Cli.print(f"Found {len(entities)} entities")
 ```
 
 ## Configuration API

@@ -47,10 +47,10 @@ settings = FlextOracleWmsSettings.model_validate({
         "password": "test_password",
     }
 })
-print(settings.OracleWms.base_url)  # "https://test.example.com"
-print(settings.OracleWms.username)  # "test_user"
-print(settings.OracleWms.api_version)  # Current API version
-print(settings.OracleWms.timeout)  # Default timeout
+u.Cli.print(settings.OracleWms.base_url)  # "https://test.example.com"
+u.Cli.print(settings.OracleWms.username)  # "test_user"
+u.Cli.print(settings.OracleWms.api_version)  # Current API version
+u.Cli.print(settings.OracleWms.timeout)  # Default timeout
 ```
 
 ## Environment Variables

@@ -107,9 +107,9 @@ result = api.create_oracle_wms_client(settings)
 # Railway-oriented programming with FlextResult
 if result.success:
     client = result.value
-    print("Client created")
+    u.Cli.print("Client created")
 else:
-    print(f"Discovery failed: {result.error}")
+    u.Cli.print(f"Discovery failed: {result.error}")
 ```
 
 ### Configuration Management
@@ -130,7 +130,7 @@ settings = FlextOracleWmsSettings.model_validate({
         "retry_attempts": 3,
     }
 })
-print(settings.OracleWms.base_url)
+u.Cli.print(settings.OracleWms.base_url)
 ```
 
 ### Error Handling
