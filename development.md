@@ -104,6 +104,8 @@ Current compliance gaps requiring implementation:
 #### 1. HTTP Client Compliance (Critical)
 
 ```python
+from __future__ import annotations
+
 # Current: Non-compliant httpx usage
 import httpx  # ❌ VIOLATION
 
@@ -117,7 +119,10 @@ client = FlextApiClient()
 
 #### 2. Class Architecture Compliance (Critical)
 
-```python notest
+```python
+from __future__ import annotations
+
+
 # Current: Multiple classes per module (71 classes total)
 class WmsClient:
     pass
@@ -135,7 +140,10 @@ class FlextOracleWmsClient(s):
 
 #### 3. Authentication Integration (High Priority)
 
-```python notest
+```python
+from __future__ import annotations
+
+
 # Current: Custom authentication
 class CustomAuth:
     pass  # ❌ VIOLATION
@@ -196,7 +204,10 @@ tests/
 
 Tests currently use fake URLs and expect failures:
 
-```python notest
+```python
+from __future__ import annotations
+
+
 def test_real_connection():
     settings = FlextOracleWmsModuleSettings.for_testing()  # Uses test.example.com
     # Connection tests expect network failures with test settings

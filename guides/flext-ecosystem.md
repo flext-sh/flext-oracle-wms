@@ -35,6 +35,8 @@ flext-oracle-wms has partial FLEXT ecosystem integration with significant compli
 #### HTTP Client Compliance (Critical)
 
 ```python
+from __future__ import annotations
+
 # Current: Non-compliant httpx usage
 import httpx
 

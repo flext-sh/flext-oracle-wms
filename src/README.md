@@ -90,7 +90,8 @@ src/flext_oracle_wms/
 
 ### Core Client Interface
 
-```python notest
+```python
+from __future__ import annotations
 from flext_oracle_wms import FlextOracleWmsApi, FlextOracleWmsSettings
 
 # Type-safe configuration
@@ -107,14 +108,15 @@ result = api.create_oracle_wms_client(settings)
 # Railway-oriented programming with FlextResult
 if result.success:
     client = result.value
-    u.Cli.print("Client created")
+    print("Client created")
 else:
-    u.Cli.print(f"Discovery failed: {result.error}")
+    print(f"Discovery failed: {result.error}")
 ```
 
 ### Configuration Management
 
 ```python
+from __future__ import annotations
 import os
 
 from flext_oracle_wms import FlextOracleWmsSettings
@@ -130,12 +132,13 @@ settings = FlextOracleWmsSettings.model_validate({
         "retry_attempts": 3,
     }
 })
-u.Cli.print(settings.OracleWms.base_url)
+print(settings.OracleWms.base_url)
 ```
 
 ### Error Handling
 
-```python notest
+```python
+from __future__ import annotations
 from flext_oracle_wms import FlextOracleWmsErrors
 
 try:

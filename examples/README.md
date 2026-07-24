@@ -71,7 +71,8 @@ This directory contains comprehensive examples demonstrating Oracle WMS Cloud in
 
 ### Basic Client Setup
 
-```python notest
+```python
+from __future__ import annotations
 from flext_oracle_wms import FlextOracleWmsClient, FlextOracleWmsClientSettings
 
 # Configure Oracle WMS connection
@@ -87,9 +88,9 @@ client = FlextOracleWmsClient(settings)
 # Discover available entities
 result = client.discover_entities()
 if result.success:
-    u.Cli.print(f"Found {len(result.data)} WMS entities")
+    print(f"Found {len(result.data)} WMS entities")
     for entity in result.data:
-        u.Cli.print(f"- {entity.name}: {entity.description}")
+        print(f"- {entity.name}: {entity.description}")
 ```
 
 ### Environment Configuration
@@ -106,7 +107,9 @@ export FLEXT_ORACLE_WMS_AUTH_METHOD="basic"
 
 Each example follows a consistent structure:
 
-```python notest
+```python
+from __future__ import annotations
+
 """
 Example: [Description]
 

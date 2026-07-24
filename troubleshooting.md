@@ -35,7 +35,9 @@ ______________________________________________________________________
 
 **Symptom**: Connection tests fail with network errors
 
-```python notest
+```python
+from __future__ import annotations
+
 # Expected behavior with current implementation
 settings = FlextOracleWmsModuleSettings.for_testing()
 client = FlextOracleWmsClient(settings)
@@ -54,7 +56,8 @@ result = client.test_connection()  # Expected to fail
 
 **Symptom**: Cannot import flext_core components
 
-```python notest
+```python
+from __future__ import annotations
 from flext_core import get_logger  # ImportError
 ```
 
@@ -63,6 +66,7 @@ from flext_core import get_logger  # ImportError
 **Solution**: Use correct flext_core imports:
 
 ```python
+from __future__ import annotations
 from flext_core import u
 
 logger = u.fetch_logger(__name__)
@@ -74,14 +78,18 @@ logger = u.fetch_logger(__name__)
 
 **Symptom**: MyPy reports missing attributes on exception classes
 
-```python notest
+```python
+from __future__ import annotations
+
 error = FlextOracleWmsError("message", field="username")
 assert error.field == "username"  # MyPy error: attribute not found
 ```
 
 **Solution**: Exception classes now declare attributes explicitly:
 
-```python notest
+```python
+from __future__ import annotations
+
 # Exception classes have been updated with proper type annotations
 error = FlextOracleWmsError("message", field="username")
 assert error.field == "username"  # Now works with MyPy
@@ -93,7 +101,8 @@ assert error.field == "username"  # Now works with MyPy
 
 **Solution**: Use proper configuration types:
 
-```python notest
+```python
+from __future__ import annotations
 from flext_oracle_wms import FlextOracleWmsModuleSettings, FlextOracleWmsApiVersion
 
 settings = FlextOracleWmsModuleSettings(
@@ -109,6 +118,7 @@ settings = FlextOracleWmsModuleSettings(
 **Symptom**: Code uses httpx directly instead of flext-api
 
 ```python
+from __future__ import annotations
 import httpx  # FLEXT compliance violation
 ```
 
@@ -138,7 +148,10 @@ import httpx  # FLEXT compliance violation
 
 **Symptom**: Tests are designed to expect network failures
 
-```python notest
+```python
+from __future__ import annotations
+
+
 def test_real_connection():
     # This test expects to fail with test settings
     try:
@@ -153,7 +166,9 @@ def test_real_connection():
 
 **Symptom**: Tests intentionally pass wrong types to test validation
 
-```python notest
+```python
+from __future__ import annotations
+
 filter_engine.filter_records("not_a_list", {})  # Intentionally wrong type
 ```
 
@@ -234,7 +249,8 @@ make val
 
 #### "ValidationError in configuration"
 
-```python notest
+```python
+from __future__ import annotations
 # Pydantic validation error
 ValidationError: field required (type=value_error.missing)
 ```
@@ -243,14 +259,18 @@ ValidationError: field required (type=value_error.missing)
 
 #### "FlextOracleWmsConnectionError with retry_count"
 
-```python notest
+```python
+from __future__ import annotations
+
 error = FlextOracleWmsConnectionError("failed", retry_count=3)
 assert error.retry_count == 3  # Now works after exception class updates
 ```
 
 #### "Entity not found" errors
 
-```python notest
+```python
+from __future__ import annotations
+
 error = FlextOracleWmsEntityNotFoundError("Entity missing", entity_name="test")
 assert error.entity_name == "test"  # Properly handled
 ```
@@ -260,6 +280,7 @@ assert error.entity_name == "test"  # Properly handled
 ### Enable Debug Logging
 
 ```python
+from __future__ import annotations
 import logging
 
 from flext_core import u

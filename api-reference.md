@@ -32,6 +32,7 @@ ______________________________________________________________________
 Main client interface for Oracle WMS integration.
 
 ```python
+from __future__ import annotations
 from flext_oracle_wms import FlextOracleWmsApi, FlextOracleWmsSettings
 
 # Initialize the API facade
@@ -51,23 +52,27 @@ api = FlextOracleWmsApi(settings=settings)
 
 Tests connection to Oracle WMS (currently uses fake URLs).
 
-```python notest
+```python
+from __future__ import annotations
+
 result = client.test_connection()
 if result.success:
-    u.Cli.print("Connection structure verified")
+    print("Connection structure verified")
 else:
-    u.Cli.print(f"Connection failed: {result.error}")
+    print(f"Connection failed: {result.error}")
 ```
 
 ##### `discover_entities() -> p.Result[List[Dict]]`
 
 Discovers available Oracle WMS entities.
 
-```python notest
+```python
+from __future__ import annotations
+
 result = client.discover_entities()
 if result.success:
     entities = result.value
-    u.Cli.print(f"Found {len(entities)} entities")
+    print(f"Found {len(entities)} entities")
 ```
 
 ## Configuration API
@@ -83,6 +88,7 @@ Configuration class for Oracle WMS connection settings.
 Returns test configuration with fake URLs.
 
 ```python
+from __future__ import annotations
 from flext_oracle_wms import FlextOracleWmsSettings
 
 settings = FlextOracleWmsSettings(base_url="https://test.example.com")
@@ -126,6 +132,7 @@ Based on Oracle WMS best practices research:
 ### Exception Hierarchy
 
 ```python
+from __future__ import annotations
 from flext_oracle_wms.errors import FlextOracleWmsErrors
 
 base_error = FlextOracleWmsErrors.Error
@@ -136,7 +143,9 @@ validation_error = FlextOracleWmsErrors.ValidationError
 
 All operations return `r[T]` for type-safe error handling:
 
-```python notest
+```python
+from __future__ import annotations
+
 result = client.some_operation()
 if result.success:
     data = result.value  # Type-safe access
@@ -151,6 +160,7 @@ else:
 Represents Oracle WMS entity with metadata.
 
 ```python
+from __future__ import annotations
 from flext_oracle_wms import m
 
 entity = m.OracleWms.Entity(

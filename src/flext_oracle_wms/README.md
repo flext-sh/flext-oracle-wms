@@ -99,7 +99,8 @@ This directory contains the core implementation of the **flext-oracle-wms** libr
 
 ### Basic Client Setup
 
-```python notest
+```python
+from __future__ import annotations
 from flext_oracle_wms import FlextOracleWmsClient, FlextOracleWmsClientSettings
 
 # Create configuration
@@ -128,7 +129,8 @@ if result.success:
 
 ### Entity Data Querying
 
-```python notest
+```python
+from __future__ import annotations
 # Query entity data with filtering
 result = client.get_entity_data(
     entity_name="item",
@@ -146,7 +148,8 @@ from flext_core import FlextSettings
 
 ### Error Handling with r
 
-```python notest
+```python
+from __future__ import annotations
 from flext_oracle_wms import FlextOracleWmsConnectionError
 
 try:

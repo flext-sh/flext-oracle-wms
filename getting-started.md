@@ -54,6 +54,7 @@ export FLEXT_ORACLE_WMS_PASSWORD="test_password"
 ### Basic Usage Example
 
 ```python
+from __future__ import annotations
 from flext_oracle_wms import FlextOracleWmsApi, FlextOracleWmsSettings
 
 # Using test configuration (not real Oracle WMS)
@@ -64,14 +65,14 @@ settings = FlextOracleWmsSettings.model_validate({
         "password": "test_password",
     }
 })
-u.Cli.print(f"Test Base URL: {settings.OracleWms.base_url}")
+print(f"Test Base URL: {settings.OracleWms.base_url}")
 
 # Build the API facade from the settings
 api = FlextOracleWmsApi(settings=settings)
 
 # execute() returns a FlextResult — inspect .success / .value
 result = api.execute()
-u.Cli.print(f"Execute success: {result.success}")
+print(f"Execute success: {result.success}")
 ```
 
 ## Implementation Status
