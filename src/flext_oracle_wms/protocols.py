@@ -53,10 +53,7 @@ class FlextOracleWmsProtocols(p):
             """Unified WMS service protocol with operation dispatch."""
 
             def execute_wms_operation(
-                self,
-                operation: str,
-                settings: t.JsonMapping,
-                **params: t.Scalar,
+                self, operation: str, settings: t.JsonMapping, **params: t.Scalar
             ) -> p.Result[t.JsonValue]:
                 """Execute WMS operation with unified interface.
 

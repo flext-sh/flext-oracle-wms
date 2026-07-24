@@ -120,8 +120,7 @@ def showcase_2_entity_discovery(client: FlextOracleWmsClient) -> list[str]:
 
 
 def showcase_3_data_retrieval(
-    client: FlextOracleWmsClient,
-    entities: list[str],
+    client: FlextOracleWmsClient, entities: list[str]
 ) -> t.MutableJsonMapping:
     """Feature 3: Data Retrieval and Querying."""
     sample_data: t.MutableJsonMapping = {}
@@ -138,11 +137,7 @@ def showcase_3_data_retrieval(
                     len(first_record)
                 sample_data[entity_name] = str(len(data))
     if "company" in sample_data:
-        client.get_entity_data(
-            entity_name="company",
-            limit=3,
-            filters={"active": "Y"},
-        )
+        client.get_entity_data(entity_name="company", limit=3, filters={"active": "Y"})
     return sample_data
 
 
@@ -199,7 +194,7 @@ def showcase_6_error_handling(client: FlextOracleWmsClient) -> None:
                 "retry_attempts": 3,
                 "verify_ssl": True,
                 "enable_logging": True,
-            },
+            }
         })
         invalid_auth = m.OracleWms.AuthSettings(
             username=invalid_config.OracleWms.username,
@@ -212,9 +207,7 @@ def showcase_6_error_handling(client: FlextOracleWmsClient) -> None:
         logger.warning("Error handling demonstration: %s", exc)
 
 
-def showcase_7_health_monitoring(
-    client: FlextOracleWmsClient,
-) -> t.MutableJsonMapping:
+def showcase_7_health_monitoring(client: FlextOracleWmsClient) -> t.MutableJsonMapping:
     """Feature 7: Health Monitoring."""
     health_result = client.health_check()
     if health_result.failure:
@@ -226,8 +219,7 @@ def showcase_7_health_monitoring(
 
 
 def showcase_8_performance_tracking(
-    client: FlextOracleWmsClient,
-    entities: list[str],
+    client: FlextOracleWmsClient, entities: list[str]
 ) -> None:
     """Feature 8: Performance Tracking."""
     min_entities_for_concurrent_test = c.OracleWms.DEFAULT_MAX_RETRIES
@@ -265,8 +257,7 @@ def showcase_9_cache_management(client: FlextOracleWmsClient) -> None:
 
 
 def showcase_10_enterprise_features(
-    _client: FlextOracleWmsClient,
-    settings: FlextOracleWmsSettings,
+    _client: FlextOracleWmsClient, settings: FlextOracleWmsSettings
 ) -> None:
     """Feature 10: Enterprise Features."""
 

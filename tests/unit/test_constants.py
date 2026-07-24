@@ -55,8 +55,7 @@ class TestsFlextOracleWmsConstantsUnit:
         tm.that(c.OracleWms.API_CONFIG[key], eq=expected)
 
     @pytest.mark.parametrize(
-        "key",
-        ["default_batch_size", "max_batch_size", "default_page_size"],
+        "key", ["default_batch_size", "max_batch_size", "default_page_size"]
     )
     def test_processing_config_exposes_positive_int_defaults(self, key: str) -> None:
         """PROCESSING_CONFIG advertises positive integer sizing defaults."""
@@ -139,11 +138,7 @@ class TestsFlextOracleWmsConstantsUnit:
 
     @pytest.mark.parametrize(
         ("name", "value"),
-        [
-            ("DEVELOPMENT", "dev"),
-            ("STAGING", "staging"),
-            ("PRODUCTION", "prod"),
-        ],
+        [("DEVELOPMENT", "dev"), ("STAGING", "staging"), ("PRODUCTION", "prod")],
     )
     def test_environment_enum_values(self, name: str, value: str) -> None:
         """Environment enum publishes deployment-tier tokens."""
@@ -156,8 +151,7 @@ class TestsFlextOracleWmsConstantsUnit:
         assert c.OracleWms.Filtering.MAX_FILTER_CONDITIONS > 0
 
     @pytest.mark.parametrize(
-        "attr",
-        ["API_CONFIG", "PROCESSING_CONFIG", "ENVIRONMENTS", "AUTH_CONFIG"],
+        "attr", ["API_CONFIG", "PROCESSING_CONFIG", "ENVIRONMENTS", "AUTH_CONFIG"]
     )
     def test_config_mappings_are_immutable(self, attr: str) -> None:
         """Published config mappings reject mutation (frozen contract)."""

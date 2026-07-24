@@ -31,9 +31,7 @@ class TestsFlextOracleWmsAuthenticationCore:
     def basic_settings(self) -> p.OracleWms.AuthSettings:
         """Return valid BASIC auth settings."""
         return m.OracleWms.AuthSettings(
-            method=_AuthMethod.BASIC,
-            username="test_user",
-            password="test_password",
+            method=_AuthMethod.BASIC, username="test_user", password="test_password"
         )
 
     # --- Auth method enum contract ---------------------------------------

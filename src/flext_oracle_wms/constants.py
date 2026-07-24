@@ -39,7 +39,7 @@ class FlextOracleWmsConstants(c):
                 "category": "test",
                 "description": "Test endpoint",
                 "since_version": "6.1",
-            },
+            }
         })
 
         API_CONFIG: ClassVar[t.HeaderMapping] = MappingProxyType({

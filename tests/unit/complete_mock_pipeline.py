@@ -304,8 +304,7 @@ class CompleteMockPipeline:
             return r[t.JsonMapping].fail(f"Pipeline failed: {e}")
 
     def _run_complete_pipeline_unchecked(
-        self,
-        start_time: datetime,
+        self, start_time: datetime
     ) -> p.Result[t.JsonMapping]:
         """Run the complete mock pipeline while allowing failures upward."""
         schemas = self._generate_complete_singer_schemas()
@@ -314,11 +313,7 @@ class CompleteMockPipeline:
         target_results = self._simulate_target_loading(tap_records)
         dbt_results = self._simulate_dbt_transformations(target_results)
         save_result: p.Result[str] = self._save_complete_pipeline_results(
-            schemas,
-            catalog,
-            tap_records,
-            target_results,
-            dbt_results,
+            schemas, catalog, tap_records, target_results, dbt_results
         )
         self._inspect_mock_sample_data()
         duration = (datetime.now(UTC) - start_time).total_seconds()
@@ -354,7 +349,7 @@ class CompleteMockPipeline:
                 sample_data = entity_info["sample_data"]
                 if isinstance(sample_data, dict):
                     properties, key_properties = self._create_entity_properties(
-                        sample_data,
+                        sample_data
                     )
                     self._add_singer_metadata(properties)
                     schema = self._build_singer_schema(properties, key_properties)
@@ -362,8 +357,7 @@ class CompleteMockPipeline:
         return schemas
 
     def _create_entity_properties(
-        self,
-        sample_data: t.JsonMapping,
+        self, sample_data: t.JsonMapping
     ) -> tuple[t.MutableJsonMapping, t.MutableSequenceOf[str]]:
         """Create properties and key properties from sample data - SRP compliance."""
         properties: t.MutableJsonMapping = {}
@@ -376,10 +370,7 @@ class CompleteMockPipeline:
         return (properties, key_properties)
 
     def _infer_field_type(
-        self,
-        field: str,
-        *,
-        value: t.JsonValue,
+        self, field: str, *, value: t.JsonValue
     ) -> t.AttributeMapping:
         """Infer Singer type from field name and value - Strategy Pattern."""
         field_type = self._infer_type_from_field_name(field)
@@ -387,10 +378,7 @@ class CompleteMockPipeline:
             return field_type
         return self._infer_type_from_value(value=value)
 
-    def _infer_type_from_field_name(
-        self,
-        field: str,
-    ) -> t.AttributeMapping | None:
+    def _infer_type_from_field_name(self, field: str) -> t.AttributeMapping | None:
         """Infer type from field name patterns - Template Method Pattern."""
         field_type_mapping: t.MappingKV[str, t.AttributeMapping] = {
             "id": {"type": "integer"},
@@ -409,11 +397,7 @@ class CompleteMockPipeline:
                 return type_info
         return None
 
-    def _infer_type_from_value(
-        self,
-        *,
-        value: t.JsonValue,
-    ) -> t.AttributeMapping:
+    def _infer_type_from_value(self, *, value: t.JsonValue) -> t.AttributeMapping:
         """Infer type from Python value type - Template Method Pattern."""
         if isinstance(value, bool):
             return {"type": ["boolean", "null"]}
@@ -439,9 +423,7 @@ class CompleteMockPipeline:
         })
 
     def _build_singer_schema(
-        self,
-        properties: t.JsonMapping,
-        key_properties: t.StrSequence,
+        self, properties: t.JsonMapping, key_properties: t.StrSequence
     ) -> t.MutableJsonMapping:
         """Build complete Singer schema - SRP compliance."""
         schema: t.MutableJsonMapping = {
@@ -453,8 +435,7 @@ class CompleteMockPipeline:
         return schema
 
     def _create_complete_singer_catalog(
-        self,
-        schemas: t.MappingKV[str, t.JsonMapping],
+        self, schemas: t.MappingKV[str, t.JsonMapping]
     ) -> t.JsonMapping:
         """Create complete Singer catalog for Meltano integration."""
         streams: t.MutableSequenceOf[t.JsonMapping] = []
@@ -495,12 +476,7 @@ class CompleteMockPipeline:
                 "key_properties": key_properties,
                 "metadata": cast(
                     "t.JsonValue",
-                    [
-                        {
-                            "breadcrumb": list[str](),
-                            "metadata": inner_metadata,
-                        },
-                    ],
+                    [{"breadcrumb": list[str](), "metadata": inner_metadata}],
                 ),
             }
             streams.append(stream)
@@ -534,8 +510,7 @@ class CompleteMockPipeline:
         return tap_records
 
     def _simulate_target_loading(
-        self,
-        tap_records: t.SequenceOf[t.JsonMapping],
+        self, tap_records: t.SequenceOf[t.JsonMapping]
     ) -> t.MutableJsonMapping:
         """Simulate TARGET loading process."""
         target_results: t.MutableJsonMapping = {}
@@ -561,13 +536,11 @@ class CompleteMockPipeline:
         return target_results
 
     def _simulate_dbt_transformations(
-        self,
-        target_results: t.JsonMapping,
+        self, target_results: t.JsonMapping
     ) -> t.JsonMapping:
         """Simulate DBT transformation process."""
         dbt_results: t.MutableMappingKV[
-            str,
-            t.MappingKV[str, int | t.StrSequence | str],
+            str, t.MappingKV[str, int | t.StrSequence | str]
         ] = {}
         business_models = {
             "dim_company": {
@@ -639,10 +612,9 @@ class CompleteMockPipeline:
                     "source_tables": available_sources,
                     "rows_processed": sum(
                         self._safe_int(
-                            cast(
-                                "t.JsonMapping",
-                                target_results.get(src, {}),
-                            ).get("records_loaded", 0),
+                            cast("t.JsonMapping", target_results.get(src, {})).get(
+                                "records_loaded", 0
+                            )
                         )
                         for src in available_sources
                         if src in target_results
@@ -674,7 +646,7 @@ class CompleteMockPipeline:
         tap_file = results_dir / f"tap_extraction_{timestamp}.json"
         with tap_file.open("w", encoding="utf-8") as f:
             f.write(
-                _stdlib_json.dumps([dict(record) for record in tap_records], indent=2),
+                _stdlib_json.dumps([dict(record) for record in tap_records], indent=2)
             )
         target_file = results_dir / f"target_loading_{timestamp}.json"
         with target_file.open("w", encoding="utf-8") as f:
@@ -703,11 +675,11 @@ class CompleteMockPipeline:
                     streams
                     if isinstance(catalog, dict)
                     and isinstance((streams := catalog.get("streams", [])), list)
-                    else [],
+                    else []
                 ),
                 "tap_records_extracted": len(tap_records),
                 "replication_methods": _extract_replication_methods(
-                    cast("t.JsonValue", catalog),
+                    cast("t.JsonValue", catalog)
                 ),
             },
             "target_loading": {

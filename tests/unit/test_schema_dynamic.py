@@ -49,8 +49,7 @@ class TestsFlextOracleWmsSchemaDynamic:
         tm.that(c.OracleWms.API_CONFIG, is_=MappingProxyType)
 
     @pytest.mark.parametrize(
-        "key",
-        ["default_batch_size", "max_batch_size", "default_page_size"],
+        "key", ["default_batch_size", "max_batch_size", "default_page_size"]
     )
     def test_processing_config_keys_are_positive_ints(self, key: str) -> None:
         """PROCESSING_CONFIG exposes positive integer sizing defaults."""
@@ -96,17 +95,7 @@ class TestsFlextOracleWmsSchemaDynamic:
         """WmsFilterOperator exposes exactly the documented operator set."""
         tm.that(
             {op.value for op in c.OracleWms.WmsFilterOperator},
-            eq={
-                "eq",
-                "ne",
-                "gt",
-                "gte",
-                "lt",
-                "lte",
-                "in",
-                "not_in",
-                "contains",
-            },
+            eq={"eq", "ne", "gt", "gte", "lt", "lte", "in", "not_in", "contains"},
         )
 
     @pytest.mark.parametrize(
@@ -128,12 +117,7 @@ class TestsFlextOracleWmsSchemaDynamic:
         """OracleWMSAuthMethod exposes exactly the four supported methods."""
         tm.that(
             {m.value for m in c.OracleWms.OracleWMSAuthMethod},
-            eq={
-                "basic",
-                "oauth2",
-                "api_key",
-                "bearer",
-            },
+            eq={"basic", "oauth2", "api_key", "bearer"},
         )
 
     def test_filtering_max_conditions_limit(self) -> None:

@@ -26,7 +26,4 @@ class TestsFlextOracleWmsModels(FlextTestsModels, m):
 
 m = TestsFlextOracleWmsModels
 
-__all__: list[str] = [
-    "TestsFlextOracleWmsModels",
-    "m",
-]
+__all__: list[str] = ["TestsFlextOracleWmsModels", "m"]

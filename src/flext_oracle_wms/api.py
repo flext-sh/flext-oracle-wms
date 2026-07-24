@@ -64,10 +64,7 @@ class FlextOracleWmsApi(s[bool]):
     ) -> u.OracleWms.HttpClient:
         """Create FlextHttpClient instance."""
         return u.OracleWms.HttpClient(
-            base_url=base_url,
-            timeout=timeout,
-            headers=headers,
-            verify_ssl=verify_ssl,
+            base_url=base_url, timeout=timeout, headers=headers, verify_ssl=verify_ssl
         )
 
     @staticmethod
@@ -75,8 +72,8 @@ class FlextOracleWmsApi(s[bool]):
         settings: p.OracleWms.AuthSettings,
     ) -> p.Result[u.OracleWms.Client]:
         """Create a runtime Oracle WMS client from auth settings."""
-        result: p.Result[u.OracleWms.Client] = (
-            u.OracleWms.Client.from_auth_settings(settings)
+        result: p.Result[u.OracleWms.Client] = u.OracleWms.Client.from_auth_settings(
+            settings
         )
         return result
 

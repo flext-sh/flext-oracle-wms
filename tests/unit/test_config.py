@@ -32,7 +32,7 @@ class TestsFlextOracleWmsConfig:
                 "password": "test_password",
                 "timeout": 30.0,
                 "retry_attempts": 3,
-            },
+            }
         })
         ns = settings.OracleWms
         tm.that(ns.base_url, eq="https://wms.oraclecloud.com/test")
@@ -62,7 +62,7 @@ class TestsFlextOracleWmsConfig:
     def test_settings_accept_unvalidated_scalars(self) -> None:
         """Settings carry raw scalars; range checks live at the domain boundary."""
         settings = FlextOracleWmsSettings.model_validate({
-            "OracleWms": {"timeout": -1, "retry_attempts": -5},
+            "OracleWms": {"timeout": -1, "retry_attempts": -5}
         })
 
         tm.that(settings.OracleWms.timeout, eq=-1)
@@ -77,7 +77,7 @@ class TestsFlextOracleWmsConfig:
                 "username": "alice",
                 "timeout": 45.0,
                 "retry_attempts": 5,
-            },
+            }
         })
         dumped = original.model_dump()
         tm.that(dumped["OracleWms"]["base_url"], eq="https://wms.example.com")
@@ -89,7 +89,7 @@ class TestsFlextOracleWmsConfig:
     def test_settings_ignore_unknown_keys(self) -> None:
         """Unknown keys are ignored per the extra=ignore contract."""
         settings = FlextOracleWmsSettings.model_validate({
-            "not_a_real_setting": "value",
+            "not_a_real_setting": "value"
         })
 
         tm.that(settings.model_dump(), lacks="not_a_real_setting")

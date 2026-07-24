@@ -26,6 +26,4 @@ class FlextOracleWmsUtilitiesDiscovery:
         return r[bool].ok(True)
 
 
-__all__: list[str] = [
-    "FlextOracleWmsUtilitiesDiscovery",
-]
+__all__: list[str] = ["FlextOracleWmsUtilitiesDiscovery"]

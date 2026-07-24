@@ -25,28 +25,22 @@ class TestsFlextOracleWmsApi:
                     "base_url": "http://wms.example",
                     "username": "user",
                     "password": "secret",
-                },
-            }),
+                }
+            })
         )
 
     def test_is_flext_service(self) -> None:
         """The facade honors the FlextService contract via subclassing."""
         assert issubclass(FlextOracleWmsApi, s)
 
-    def test_execute_returns_ready_success(
-        self,
-        api: FlextOracleWmsApi,
-    ) -> None:
+    def test_execute_returns_ready_success(self, api: FlextOracleWmsApi) -> None:
         """execute() signals readiness as a successful r[bool] carrying True."""
         result = api.execute()
 
         tm.ok(result)
         tm.that(result.unwrap(), eq=True)
 
-    def test_execute_is_idempotent(
-        self,
-        api: FlextOracleWmsApi,
-    ) -> None:
+    def test_execute_is_idempotent(self, api: FlextOracleWmsApi) -> None:
         """Repeated execute() calls yield the same successful readiness value."""
         first = api.execute()
         second = api.execute()
@@ -73,23 +67,14 @@ class TestsFlextOracleWmsApi:
 
     @pytest.mark.parametrize(
         ("base_url", "timeout", "verify_ssl"),
-        [
-            ("http://wms.example", 30.0, True),
-            ("https://secure.wms", 5.5, False),
-        ],
+        [("http://wms.example", 30.0, True), ("https://secure.wms", 5.5, False)],
     )
     def test_create_flext_http_client_honors_arguments(
-        self,
-        base_url: str,
-        timeout: float,
-        *,
-        verify_ssl: bool,
+        self, base_url: str, timeout: float, *, verify_ssl: bool
     ) -> None:
         """create_flext_http_client builds a client reflecting given config."""
         client = FlextOracleWmsApi.create_flext_http_client(
-            base_url,
-            timeout=timeout,
-            verify_ssl=verify_ssl,
+            base_url, timeout=timeout, verify_ssl=verify_ssl
         )
 
         tm.that(client, is_=u.OracleWms.HttpClient)

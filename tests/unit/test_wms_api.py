@@ -94,19 +94,14 @@ class TestsFlextOracleWmsWmsApi:
     def test_api_endpoint_applies_documented_defaults(self) -> None:
         """Description field defaults to '' and since_version to '6.1' baseline."""
         endpoint = m.OracleWms.ApiEndpoint(
-            name="x",
-            method="GET",
-            path="/x/",
-            version="v1",
-            category="test",
+            name="x", method="GET", path="/x/", version="v1", category="test"
         )
 
         tm.that(endpoint.description, eq="")
         tm.that(endpoint.since_version, eq="6.1")
 
     @pytest.mark.parametrize(
-        "blank_field",
-        ["name", "method", "path", "version", "category"],
+        "blank_field", ["name", "method", "path", "version", "category"]
     )
     def test_api_endpoint_rejects_blank_required_field(self, blank_field: str) -> None:
         """Each required identifier field must be non-empty (min_length=1)."""
@@ -129,7 +124,7 @@ class TestsFlextOracleWmsWmsApi:
     def test_create_client_succeeds_for_basic_auth_with_credentials(self) -> None:
         """Valid BASIC credentials yield a success result carrying a Client."""
         result = FlextOracleWmsApi.create_oracle_wms_client(
-            m.OracleWms.AuthSettings(username="test_user", password="test_password"),
+            m.OracleWms.AuthSettings(username="test_user", password="test_password")
         )
 
         tm.ok(result)
@@ -138,7 +133,7 @@ class TestsFlextOracleWmsWmsApi:
     def test_create_client_fails_when_basic_credentials_incomplete(self) -> None:
         """BASIC auth without a password fails with the business-rule error."""
         result = FlextOracleWmsApi.create_oracle_wms_client(
-            m.OracleWms.AuthSettings(username="only_user"),
+            m.OracleWms.AuthSettings(username="only_user")
         )
 
         tm.fail(result)
@@ -151,7 +146,7 @@ class TestsFlextOracleWmsWmsApi:
                 method="oauth2",
                 oauth2_client_id="client",
                 oauth2_client_secret="secret",
-            ),
+            )
         )
 
         tm.fail(result)

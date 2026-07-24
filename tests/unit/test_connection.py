@@ -34,7 +34,7 @@ class TestsFlextOracleWmsConnection:
                 "timeout": 30.0,
                 "username": "test_user",
                 "password": "test_password",
-            },
+            }
         })
 
     @pytest.fixture
@@ -55,10 +55,7 @@ class TestsFlextOracleWmsConnection:
         ],
     )
     def test_testing_config_exposes_expected_field(
-        self,
-        settings: FlextOracleWmsSettings,
-        field: str,
-        expected: str | float,
+        self, settings: FlextOracleWmsSettings, field: str, expected: str | float
     ) -> None:
         """Deterministic settings publish stable, documented field values."""
         tm.that(settings.model_dump()["OracleWms"][field], eq=expected)
@@ -66,17 +63,15 @@ class TestsFlextOracleWmsConnection:
     def test_testing_config_is_deterministic(self) -> None:
         """Two independent factory calls yield equal public state."""
         first = FlextOracleWmsSettings.model_validate({
-            "OracleWms": {"base_url": "https://test-wms.example.com"},
+            "OracleWms": {"base_url": "https://test-wms.example.com"}
         })
         second = FlextOracleWmsSettings.model_validate({
-            "OracleWms": {"base_url": "https://test-wms.example.com"},
+            "OracleWms": {"base_url": "https://test-wms.example.com"}
         })
         tm.that(first.model_dump(), eq=second.model_dump())
 
     def test_client_publishes_its_settings(
-        self,
-        client: Client,
-        settings: FlextOracleWmsSettings,
+        self, client: Client, settings: FlextOracleWmsSettings
     ) -> None:
         """The client exposes exactly the settings it was built with."""
         assert client.settings is settings
@@ -84,9 +79,7 @@ class TestsFlextOracleWmsConnection:
     def test_from_auth_settings_builds_client(self) -> None:
         """from_auth_settings returns a ready client carrying the credentials."""
         auth = m.OracleWms.AuthSettings(
-            method="basic",
-            username="alice",
-            password="secret",
+            method="basic", username="alice", password="secret"
         )
         result = Client.from_auth_settings(auth)
         tm.ok(result)
@@ -95,8 +88,7 @@ class TestsFlextOracleWmsConnection:
         tm.that(built.settings.OracleWms.password, eq="secret")
 
     def test_discover_entities_returns_result_on_unreachable_host(
-        self,
-        client: Client,
+        self, client: Client
     ) -> None:
         """Network discovery surfaces failure as r[T], never raises."""
         result = client.discover_entities()
@@ -106,8 +98,7 @@ class TestsFlextOracleWmsConnection:
         assert result.error
 
     def test_get_apis_by_category_returns_result_on_unreachable_host(
-        self,
-        client: Client,
+        self, client: Client
     ) -> None:
         """Category lookup returns a failing result rather than throwing."""
         result = client.get_apis_by_category("entity")

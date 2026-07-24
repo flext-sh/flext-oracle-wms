@@ -28,14 +28,13 @@ class TestsFlextOracleWmsClient:
                 "username": "test_user",
                 "password": "test_pass",
                 "timeout": 30,
-            },
+            }
         })
 
     # ---- constructor settings resolution -----------------------------------
 
     def test_constructor_honors_provided_settings(
-        self,
-        settings: FlextOracleWmsSettings,
+        self, settings: FlextOracleWmsSettings
     ) -> None:
         """The client exposes exactly the settings object it was built with."""
         client = FlextOracleWmsUtilitiesClient.Client(settings)
@@ -53,7 +52,7 @@ class TestsFlextOracleWmsClient:
                 "password": "custom_pass",
                 "timeout": 60,
                 "retry_attempts": 5,
-            },
+            }
         })
 
         client = FlextOracleWmsUtilitiesClient.Client(custom)
@@ -71,10 +70,7 @@ class TestsFlextOracleWmsClient:
 
     # ---- start/stop lifecycle ----------------------------------------------
 
-    def test_start_returns_success(
-        self,
-        settings: FlextOracleWmsSettings,
-    ) -> None:
+    def test_start_returns_success(self, settings: FlextOracleWmsSettings) -> None:
         """``start`` reports a successful ``r[bool]`` carrying ``True``."""
         client = FlextOracleWmsUtilitiesClient.Client(settings)
 
@@ -83,10 +79,7 @@ class TestsFlextOracleWmsClient:
         tm.ok(result)
         tm.that(result.unwrap(), eq=True)
 
-    def test_stop_returns_success(
-        self,
-        settings: FlextOracleWmsSettings,
-    ) -> None:
+    def test_stop_returns_success(self, settings: FlextOracleWmsSettings) -> None:
         """``stop`` reports a successful ``r[bool]`` carrying ``True``."""
         client = FlextOracleWmsUtilitiesClient.Client(settings)
 
@@ -96,8 +89,7 @@ class TestsFlextOracleWmsClient:
         tm.that(result.unwrap(), eq=True)
 
     def test_start_stop_lifecycle_is_idempotent(
-        self,
-        settings: FlextOracleWmsSettings,
+        self, settings: FlextOracleWmsSettings
     ) -> None:
         """Repeated start/stop cycles keep succeeding without error."""
         client = FlextOracleWmsUtilitiesClient.Client(settings)
@@ -114,9 +106,7 @@ class TestsFlextOracleWmsClient:
     def test_from_auth_settings_valid_basic_builds_client(self) -> None:
         """Valid BASIC auth settings produce a usable client honoring creds."""
         auth = m.OracleWms.AuthSettings(
-            method="basic",
-            username="alice",
-            password="secret",
+            method="basic", username="alice", password="secret"
         )
 
         result = FlextOracleWmsUtilitiesClient.Client.from_auth_settings(auth)
@@ -137,9 +127,7 @@ class TestsFlextOracleWmsClient:
         tm.that(result.error, none=False)
         tm.that(result.error, has="username and password")
 
-    def test_from_auth_settings_oauth2_rejected_as_unsupported_runtime(
-        self,
-    ) -> None:
+    def test_from_auth_settings_oauth2_rejected_as_unsupported_runtime(self) -> None:
         """A validly-configured OAuth2 method is rejected: runtime is BASIC-only."""
         auth = m.OracleWms.AuthSettings(
             method="oauth2",
@@ -156,9 +144,7 @@ class TestsFlextOracleWmsClient:
     def test_from_auth_settings_unknown_method_fails(self) -> None:
         """An unsupported auth method fails validation before client creation."""
         auth = m.OracleWms.AuthSettings(
-            method="kerberos",
-            username="bob",
-            password="pw",
+            method="kerberos", username="bob", password="pw"
         )
 
         result = FlextOracleWmsUtilitiesClient.Client.from_auth_settings(auth)

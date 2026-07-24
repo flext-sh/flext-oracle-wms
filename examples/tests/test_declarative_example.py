@@ -56,8 +56,7 @@ def load_env_config() -> t.MutableJsonMapping | None:
         "oracle_wms_verify_ssl": settings.get("ORACLE_WMS_VERIFY_SSL", "true").lower()
         == "true",
         "oracle_wms_enable_logging": settings.get(
-            "ORACLE_WMS_ENABLE_REQUEST_LOGGING",
-            "true",
+            "ORACLE_WMS_ENABLE_REQUEST_LOGGING", "true"
         ).lower()
         == "true",
     }
@@ -115,10 +114,7 @@ def run_client_flow(client: FlextOracleWmsClient) -> None:
                     if isinstance(record, dict):
                         record.get("count", str(len(data)))
     client.health_check()
-    client.update_oblpn_tracking_number(
-        oblpn_id="TEST123",
-        tracking_number="TRACK123",
-    )
+    client.update_oblpn_tracking_number(oblpn_id="TEST123", tracking_number="TRACK123")
     lpn_result = client.create_lpn(lpn_nbr="TEST_LPN", qty=10)
     if lpn_result.failure:
         logger.debug(f"LPN creation failed as expected: {lpn_result.error}")

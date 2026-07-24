@@ -63,22 +63,16 @@ def setup_client_config() -> None:
     settings = FlextOracleWmsSettings.model_validate({
         "OracleWms": {
             "base_url": os.getenv(
-                "FLEXT_ORACLE_WMS_ORACLEWMS__BASE_URL",
-                "https://wms.oraclecloud.com",
+                "FLEXT_ORACLE_WMS_ORACLEWMS__BASE_URL", "https://wms.oraclecloud.com"
             ),
             "username": os.getenv("FLEXT_ORACLE_WMS_ORACLEWMS__USERNAME", ""),
             "password": os.getenv("FLEXT_ORACLE_WMS_ORACLEWMS__PASSWORD", ""),
-        },
+        }
     })
-    _ = container.bind(
-        "FlextOracleWmsSettings",
-        settings.model_dump(mode="python"),
-    )
+    _ = container.bind("FlextOracleWmsSettings", settings.model_dump(mode="python"))
 
 
-def discover_wms_entities(
-    client: FlextOracleWmsClient,
-) -> p.Result[t.StrSequence]:
+def discover_wms_entities(client: FlextOracleWmsClient) -> p.Result[t.StrSequence]:
     """Discover available Oracle WMS entities.
 
     Args:
@@ -103,8 +97,7 @@ def discover_wms_entities(
 
 
 def query_entity_data(
-    client: FlextOracleWmsClient,
-    entity_name: str,
+    client: FlextOracleWmsClient, entity_name: str
 ) -> p.Result[Sequence[t.StrMapping]]:
     """Query data from a specific Oracle WMS entity.
 

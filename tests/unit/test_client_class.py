@@ -29,12 +29,11 @@ class TestsFlextOracleWmsClientClass:
                 "timeout": 30.0,
                 "username": "test_user",
                 "password": "test_password",
-            },
+            }
         })
 
     def test_construction_exposes_supplied_settings(
-        self,
-        settings: FlextOracleWmsSettings,
+        self, settings: FlextOracleWmsSettings
     ) -> None:
         """Constructing with explicit settings surfaces them on the public field."""
         client = Client(settings)
@@ -50,30 +49,21 @@ class TestsFlextOracleWmsClientClass:
         tm.that(client.settings, is_=FlextOracleWmsSettings)
         assert client.settings.OracleWms.base_url
 
-    def test_start_reports_success(
-        self,
-        settings: FlextOracleWmsSettings,
-    ) -> None:
+    def test_start_reports_success(self, settings: FlextOracleWmsSettings) -> None:
         """start() returns a successful result carrying True."""
         result = Client(settings).start()
 
         tm.ok(result)
         tm.that(result.unwrap(), eq=True)
 
-    def test_stop_reports_success(
-        self,
-        settings: FlextOracleWmsSettings,
-    ) -> None:
+    def test_stop_reports_success(self, settings: FlextOracleWmsSettings) -> None:
         """stop() returns a successful result carrying True."""
         result = Client(settings).stop()
 
         tm.ok(result)
         tm.that(result.unwrap(), eq=True)
 
-    def test_lifecycle_is_idempotent(
-        self,
-        settings: FlextOracleWmsSettings,
-    ) -> None:
+    def test_lifecycle_is_idempotent(self, settings: FlextOracleWmsSettings) -> None:
         """Repeated start/stop cycles keep reporting success."""
         client = Client(settings)
 
@@ -106,9 +96,7 @@ class TestsFlextOracleWmsClientClass:
     def test_from_auth_settings_builds_client_for_valid_basic(self) -> None:
         """Valid BASIC auth produces a client that adopts the supplied credentials."""
         auth = m.OracleWms.AuthSettings(
-            method="basic",
-            username="wms-user",
-            password="wms-secret",
+            method="basic", username="wms-user", password="wms-secret"
         )
 
         result = Client.from_auth_settings(auth)
@@ -128,9 +116,7 @@ class TestsFlextOracleWmsClientClass:
         ],
     )
     def test_from_auth_settings_failure_messages(
-        self,
-        method: str,
-        expected_fragment: str,
+        self, method: str, expected_fragment: str
     ) -> None:
         """Invalid auth configurations report a descriptive, method-specific error."""
         auth = m.OracleWms.AuthSettings(method=method)
