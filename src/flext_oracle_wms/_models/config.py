@@ -3,7 +3,7 @@
 Typed, frozen shapes for the ``config/*.yaml`` business-rule SSOT. This module
 imports **nothing** but ``pydantic`` — the ``_config.py`` facade validates the
 model-less YAML slices into these classes and exposes the ready objects under
-``config.OracleWms.<domain>``. Adding a new config domain = add a nested model
+``config.oracle_wms.<domain>``. Adding a new config domain = add a nested model
 here and a validated field on ``Root`` (cosmos-main ``_models/config.py`` shape).
 
 Copyright (c) 2025 FLEXT Team. All rights reserved.

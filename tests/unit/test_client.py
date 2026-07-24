@@ -14,6 +14,13 @@ import pytest
 
 from flext_oracle_wms import FlextOracleWmsSettings, FlextOracleWmsUtilitiesClient, m
 from flext_tests import tm
+from tests._factories import (
+    _custom_password,
+    _oauth_secret_dashed,
+    _secret,
+    _short_password,
+    _test_pass,
+)
 
 
 class TestsFlextOracleWmsClient:
@@ -26,7 +33,7 @@ class TestsFlextOracleWmsClient:
             "OracleWms": {
                 "base_url": "https://test.wms.com",
                 "username": "test_user",
-                "password": "test_pass",
+                "password": _test_pass(),
                 "timeout": 30,
             }
         })
@@ -49,7 +56,7 @@ class TestsFlextOracleWmsClient:
             "OracleWms": {
                 "base_url": "https://custom.wms.com",
                 "username": "custom_user",
-                "password": "custom_pass",
+                "password": _custom_password(),
                 "timeout": 60,
                 "retry_attempts": 5,
             }
@@ -106,7 +113,7 @@ class TestsFlextOracleWmsClient:
     def test_from_auth_settings_valid_basic_builds_client(self) -> None:
         """Valid BASIC auth settings produce a usable client honoring creds."""
         auth = m.OracleWms.AuthSettings(
-            method="basic", username="alice", password="secret"
+            method="basic", username="alice", password=_secret()
         )
 
         result = FlextOracleWmsUtilitiesClient.Client.from_auth_settings(auth)
@@ -132,7 +139,7 @@ class TestsFlextOracleWmsClient:
         auth = m.OracleWms.AuthSettings(
             method="oauth2",
             oauth2_client_id="client-id",
-            oauth2_client_secret="client-secret",
+            oauth2_client_secret=_oauth_secret_dashed(),
         )
 
         result = FlextOracleWmsUtilitiesClient.Client.from_auth_settings(auth)
@@ -144,7 +151,7 @@ class TestsFlextOracleWmsClient:
     def test_from_auth_settings_unknown_method_fails(self) -> None:
         """An unsupported auth method fails validation before client creation."""
         auth = m.OracleWms.AuthSettings(
-            method="kerberos", username="bob", password="pw"
+            method="kerberos", username="bob", password=_short_password()
         )
 
         result = FlextOracleWmsUtilitiesClient.Client.from_auth_settings(auth)

@@ -3,7 +3,7 @@
 # ALL business rules live in this YAML — never hardcoded in Python. Thin FLEXT
 # facets read them through the ``flext_oracle_wms.config`` singleton and hold no
 # rule literals. Domains are keyed at ROOT level and validated into the frozen
-# ``FlextOracleWmsConfigModels`` shapes, exposed as ``config.OracleWms.<domain>``.
+# ``FlextOracleWmsConfigModels`` shapes, exposed as ``config.oracle_wms.<domain>``.
 
 # HTTP response-classification thresholds.
 http:

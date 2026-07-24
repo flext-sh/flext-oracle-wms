@@ -3,7 +3,7 @@
 Every ``config/*.yaml`` file is auto-discovered and deep-merged at first
 ``fetch_global`` call (model-less, ``extra=allow`` at the FlextConfig base). The
 flat YAML is then validated into the pure-Pydantic ``_models.config`` shapes and
-exposed as typed domain objects under ``config.OracleWms.<domain>`` — never a
+exposed as typed domain objects under ``config.oracle_wms.<domain>`` — never a
 model-less dict subscript.
 
 Copyright (c) 2025 FLEXT Team. All rights reserved.
@@ -33,7 +33,7 @@ class FlextOracleWmsConfig(FlextConfig):
     CONFIG_DIR: ClassVar[str] = str(Path(__file__).resolve().parent / "config")
 
     @cached_property
-    def OracleWms(self) -> FlextOracleWmsProtocolsConfig.Config:
+    def oracle_wms(self) -> FlextOracleWmsProtocolsConfig.Config:
         """Validated ``OracleWms`` config domains from the model-less YAML."""
         return FlextOracleWmsConfigModels.Root.model_validate(
             dict(self.model_extra or {})

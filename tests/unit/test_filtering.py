@@ -397,7 +397,7 @@ class TestsFlextOracleWmsFiltering:
         ],
     )
     def test_sort_by_string_field(
-        self, field: str, ascending: bool, expected: list[str]
+        self, field: str, *, ascending: bool, expected: list[str]
     ) -> None:
         engine = Filter()
         result = engine.sort_records(self.unsorted_records, field, ascending=ascending)
@@ -409,7 +409,7 @@ class TestsFlextOracleWmsFiltering:
         [("id", True, [1, 2, 3]), ("score", False, [90.0, 85.0, 75.5])],
     )
     def test_sort_by_numeric_field(
-        self, field: str, ascending: bool, expected: list[float]
+        self, field: str, *, ascending: bool, expected: list[float]
     ) -> None:
         engine = Filter()
         result = engine.sort_records(self.unsorted_records, field, ascending=ascending)

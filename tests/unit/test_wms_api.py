@@ -12,6 +12,7 @@ import pytest
 from flext_oracle_wms import FlextOracleWmsApi, FlextOracleWmsUtilitiesClient, m
 from flext_tests import tm
 from tests import t
+from tests._factories import _basic_password, _secret
 
 
 class TestsFlextOracleWmsWmsApi:
@@ -120,7 +121,7 @@ class TestsFlextOracleWmsWmsApi:
     def test_create_client_succeeds_for_basic_auth_with_credentials(self) -> None:
         """Valid BASIC credentials yield a success result carrying a Client."""
         result = FlextOracleWmsApi.create_oracle_wms_client(
-            m.OracleWms.AuthSettings(username="test_user", password="test_password")
+            m.OracleWms.AuthSettings(username="test_user", password=_basic_password())
         )
 
         tm.ok(result)
@@ -141,7 +142,7 @@ class TestsFlextOracleWmsWmsApi:
             m.OracleWms.AuthSettings(
                 method="oauth2",
                 oauth2_client_id="client",
-                oauth2_client_secret="secret",
+                oauth2_client_secret=_secret(),
             )
         )
 

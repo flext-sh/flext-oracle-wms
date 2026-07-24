@@ -16,6 +16,7 @@ from flext_oracle_wms import (
     FlextOracleWmsUtilitiesClient,
 )
 from flext_tests import tm
+from tests._factories import _basic_password, _secret
 
 __all__ = ["TestsFlextOracleWmsConnection"]
 
@@ -33,7 +34,7 @@ class TestsFlextOracleWmsConnection:
                 "base_url": "https://test-wms.example.com",
                 "timeout": 30.0,
                 "username": "test_user",
-                "password": "test_password",
+                "password": _basic_password(),
             }
         })
 
@@ -79,7 +80,7 @@ class TestsFlextOracleWmsConnection:
     def test_from_auth_settings_builds_client(self) -> None:
         """from_auth_settings returns a ready client carrying the credentials."""
         auth = m.OracleWms.AuthSettings(
-            method="basic", username="alice", password="secret"
+            method="basic", username="alice", password=_secret()
         )
         result = Client.from_auth_settings(auth)
         tm.ok(result)

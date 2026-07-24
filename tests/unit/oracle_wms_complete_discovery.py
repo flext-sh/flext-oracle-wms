@@ -162,22 +162,22 @@ class OracleWmsCompleteDiscovery:
         return self.client.call_api(api_name)
 
     def _test_setup_api(
-        self, api_name: str, endpoint: m.OracleWms.ApiEndpoint
+        self, _api_name: str, _endpoint: m.OracleWms.ApiEndpoint
     ) -> p.Result[FlextApiModels.Api.HttpResponse]:
         """Test setup and transactional APIs."""
         try:
-            return self.client.call_api(api_name)
+            return self.client.call_api(_api_name)
         except Exception as e:
             return r[FlextApiModels.Api.HttpResponse].fail(
                 f"Setup API test failed: {e}"
             )
 
     def _test_automation_api(
-        self, api_name: str, endpoint: m.OracleWms.ApiEndpoint
+        self, _api_name: str, _endpoint: m.OracleWms.ApiEndpoint
     ) -> p.Result[FlextApiModels.Api.HttpResponse]:
         """Test automation and operations APIs."""
         try:
-            return self.client.call_api(api_name)
+            return self.client.call_api(_api_name)
         except Exception as e:
             return r[FlextApiModels.Api.HttpResponse].fail(
                 f"Automation API test failed: {e}"
@@ -253,7 +253,7 @@ class OracleWmsCompleteDiscovery:
             )
 
     def _test_entity_with_id(
-        self, api_name: str, entity_name: str
+        self, _api_name: str, entity_name: str
     ) -> p.Result[FlextApiModels.Api.HttpResponse]:
         """Test entity API that requires ID parameter."""
         try:

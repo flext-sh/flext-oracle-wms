@@ -31,7 +31,7 @@ class TestsFlextOracleWmsHelpersCore:
         ("raw", "expected"), [(123, "123"), ("abc", "abc"), (True, "True")]
     )
     def test_to_str_coerces_values_to_string(
-        self, raw: str | int | bool, expected: str
+        self, *, raw: str | int | bool, expected: str
     ) -> None:
         tm.that(u.to_str(raw, default=""), eq=expected)
 
@@ -46,7 +46,7 @@ class TestsFlextOracleWmsHelpersCore:
     @pytest.mark.parametrize(
         ("raw", "expected"), [("true", True), (True, True), (False, False)]
     )
-    def test_to_bool_coerces_values(self, raw: str | bool, *, expected: bool) -> None:
+    def test_to_bool_coerces_values(self, *, raw: str | bool, expected: bool) -> None:
         assert u.to_bool(raw, default=False) is expected
 
     def test_sample_entities_returns_canonical_entity_list(self) -> None:

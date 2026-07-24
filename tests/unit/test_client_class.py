@@ -11,6 +11,7 @@ import pytest
 
 from flext_oracle_wms import FlextOracleWmsSettings, FlextOracleWmsUtilitiesClient, m
 from flext_tests import tm
+from tests._factories import _basic_password, _oauth_secret_dashed, _wms_password
 
 Client = FlextOracleWmsUtilitiesClient.Client
 
@@ -28,7 +29,7 @@ class TestsFlextOracleWmsClientClass:
                 "base_url": "https://test-wms.example.com",
                 "timeout": 30.0,
                 "username": "test_user",
-                "password": "test_password",
+                "password": _basic_password(),
             }
         })
 
@@ -85,7 +86,7 @@ class TestsFlextOracleWmsClientClass:
         auth = m.OracleWms.AuthSettings(
             method="oauth2",
             oauth2_client_id="client-id",
-            oauth2_client_secret="client-secret",
+            oauth2_client_secret=_oauth_secret_dashed(),
         )
 
         result = Client.from_auth_settings(auth)
@@ -96,7 +97,7 @@ class TestsFlextOracleWmsClientClass:
     def test_from_auth_settings_builds_client_for_valid_basic(self) -> None:
         """Valid BASIC auth produces a client that adopts the supplied credentials."""
         auth = m.OracleWms.AuthSettings(
-            method="basic", username="wms-user", password="wms-secret"
+            method="basic", username="wms-user", password=_wms_password()
         )
 
         result = Client.from_auth_settings(auth)

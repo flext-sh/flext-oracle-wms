@@ -14,6 +14,7 @@ import pytest
 from flext_oracle_wms import FlextOracleWmsUtilitiesAuth, FlextOracleWmsUtilitiesClient
 from flext_tests import tm
 from tests import c, m
+from tests._factories import _basic_password, _oauth_secret, _secret
 
 _AuthMethod = c.OracleWms.OracleWMSAuthMethod
 _BASIC_TOKEN = base64.b64encode(b"test_user:test_password").decode("ascii")
@@ -27,7 +28,7 @@ class TestsFlextOracleWmsAuthenticationCore:
     def basic_settings(self) -> m.OracleWms.AuthSettings:
         """Return valid BASIC auth settings."""
         return m.OracleWms.AuthSettings(
-            method=_AuthMethod.BASIC, username="test_user", password="test_password"
+            method=_AuthMethod.BASIC, username="test_user", password=_basic_password()
         )
 
     # --- Auth method enum contract ---------------------------------------
@@ -75,7 +76,7 @@ class TestsFlextOracleWmsAuthenticationCore:
         settings = m.OracleWms.AuthSettings(
             method=_AuthMethod.OAUTH2,
             oauth2_client_id="client_id",
-            oauth2_client_secret="client_secret",
+            oauth2_client_secret=_oauth_secret(),
         )
         tm.that(settings.method, eq=_AuthMethod.OAUTH2)
         tm.that(settings.oauth2_client_id, eq="client_id")
@@ -104,7 +105,7 @@ class TestsFlextOracleWmsAuthenticationCore:
         settings = m.OracleWms.AuthSettings(
             method=_AuthMethod.OAUTH2,
             oauth2_client_id="id",
-            oauth2_client_secret="secret",
+            oauth2_client_secret=_secret(),
         )
         result = FlextOracleWmsUtilitiesAuth.validate_auth_settings(settings)
         tm.ok(result)
@@ -190,7 +191,7 @@ class TestsFlextOracleWmsAuthenticationCore:
                 m.OracleWms.AuthSettings(
                     method=_AuthMethod.OAUTH2,
                     oauth2_client_id="id",
-                    oauth2_client_secret="secret",
+                    oauth2_client_secret=_secret(),
                 ),
                 "OAuth2 not configured",
             ),
@@ -251,7 +252,7 @@ class TestsFlextOracleWmsAuthenticationCore:
         settings = m.OracleWms.AuthSettings(
             method=_AuthMethod.OAUTH2,
             oauth2_client_id="id",
-            oauth2_client_secret="secret",
+            oauth2_client_secret=_secret(),
         )
         result = FlextOracleWmsUtilitiesClient.Client.from_auth_settings(settings)
         tm.fail(result)
