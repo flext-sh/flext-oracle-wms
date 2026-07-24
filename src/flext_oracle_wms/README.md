@@ -2,33 +2,34 @@
 
 <!-- TOC START -->
 
-- [📁 Module Structure](#-module-structure)
-  - [🎯 **Core Interface**](#-core-interface)
-  - [🔧 **Infrastructure Components**](#-infrastructure-components)
-  - [🏗️ **API & Discovery**](#-api-discovery)
-  - [⚡ **Performance & Utilities**](#-performance-utilities)
-  - [🧪 **Testing & Development**](#-testing-development)
-- [🎯 **Key Features**](#-key-features)
-  - [Oracle WMS Cloud Integration](#oracle-wms-cloud-integration)
-  - [FLEXT Ecosystem Integration](#flext-ecosystem-integration)
-  - [Performance & Reliability](#performance-reliability)
-- [📖 **Usage Examples**](#-usage-examples)
-  - [Basic Client Setup](#basic-client-setup)
-  - [Entity Data Querying](#entity-data-querying)
-  - [Error Handling with r](#error-handling-with-flextresult)
-- [🔧 **Development Guidelines**](#-development-guidelines)
-  - [Code Quality Standards](#code-quality-standards)
-  - [Architecture Compliance](#architecture-compliance)
-  - [Performance Requirements](#performance-requirements)
-- [🧪 **Testing**](#-testing)
-  - [Module Testing](#module-testing)
-  - [Quality Gates](#quality-gates)
-- [🔗 **Dependencies**](#-dependencies)
-  - [FLEXT Ecosystem Dependencies](#flext-ecosystem-dependencies)
-  - [External Dependencies](#external-dependencies)
-- [📚 **Additional Resources**](#-additional-resources)
-  - [Documentation](#documentation)
-  - [Oracle WMS Resources](#oracle-wms-resources)
+- [FLEXT Oracle WMS - Core Module](#flext-oracle-wms---core-module)
+  - [📁 Module Structure](#-module-structure)
+    - [🎯 **Core Interface**](#-core-interface)
+    - [🔧 **Infrastructure Components**](#-infrastructure-components)
+    - [🏗️ **API \& Discovery**](#️-api--discovery)
+    - [⚡ **Performance \& Utilities**](#-performance--utilities)
+    - [🧪 **Testing \& Development**](#-testing--development)
+  - [🎯 **Key Features**](#-key-features)
+    - [Oracle WMS Cloud Integration](#oracle-wms-cloud-integration)
+    - [FLEXT Ecosystem Integration](#flext-ecosystem-integration)
+    - [Performance \& Reliability](#performance--reliability)
+  - [📖 **Usage Examples**](#-usage-examples)
+    - [Basic Client Setup](#basic-client-setup)
+    - [Entity Data Querying](#entity-data-querying)
+    - [Error Handling with r](#error-handling-with-r)
+  - [🔧 **Development Guidelines**](#-development-guidelines)
+    - [Code Quality Standards](#code-quality-standards)
+    - [Architecture Compliance](#architecture-compliance)
+    - [Performance Requirements](#performance-requirements)
+  - [🧪 **Testing**](#-testing)
+    - [Module Testing](#module-testing)
+    - [Quality Gates](#quality-gates)
+  - [🔗 **Dependencies**](#-dependencies)
+    - [FLEXT Ecosystem Dependencies](#flext-ecosystem-dependencies)
+    - [External Dependencies](#external-dependencies)
+  - [📚 **Additional Resources**](#-additional-resources)
+    - [Documentation](#documentation)
+    - [Oracle WMS Resources](#oracle-wms-resources)
 
 <!-- TOC END -->
 
@@ -115,25 +116,8 @@ client.start()
 
 # Discover entities
 result = client.discover_entities()
-from flext_core import FlextBus
+from flext_cli import u
 from flext_core import FlextSettings
-from flext_core import FlextConstants
-from flext_core import FlextContainer
-from flext_core import FlextContext
-from flext_core import d
-from flext_core import FlextDispatcher
-from flext_core import e
-from flext_core import h
-from flext_core import x
-from flext_core import FlextModels
-from flext_core import FlextProcessors
-from flext_core import p
-from flext_core import FlextRegistry
-from flext_core import r, p
-from flext_core import u
-from flext_core import s
-from flext_core import t
-from flext_core import u
 
 if result.success:
     logger = u.fetch_logger(__name__)
@@ -155,25 +139,8 @@ result = client.get_entity_data(
 
 if result.success:
     data = result.data
-from flext_core import FlextBus
+from flext_cli import u
 from flext_core import FlextSettings
-from flext_core import FlextConstants
-from flext_core import FlextContainer
-from flext_core import FlextContext
-from flext_core import d
-from flext_core import FlextDispatcher
-from flext_core import e
-from flext_core import h
-from flext_core import x
-from flext_core import FlextModels
-from flext_core import FlextProcessors
-from flext_core import p
-from flext_core import FlextRegistry
-from flext_core import r, p
-from flext_core import u
-from flext_core import s
-from flext_core import t
-from flext_core import u
     u.fetch_logger(__name__).info("Records retrieved", count=len(data.get('results', [])))
 ```
 
@@ -196,25 +163,8 @@ try:
 
 except FlextOracleWmsConnectionError as e:
     # Handle connection-specific errors
-from flext_core import FlextBus
+from flext_cli import u
 from flext_core import FlextSettings
-from flext_core import FlextConstants
-from flext_core import FlextContainer
-from flext_core import FlextContext
-from flext_core import d
-from flext_core import FlextDispatcher
-from flext_core import e
-from flext_core import h
-from flext_core import x
-from flext_core import FlextModels
-from flext_core import FlextProcessors
-from flext_core import p
-from flext_core import FlextRegistry
-from flext_core import r, p
-from flext_core import u
-from flext_core import s
-from flext_core import t
-from flext_core import u
     u.fetch_logger(__name__).error("Connection failed", error=str(e))
 ```
 
