@@ -122,6 +122,8 @@ client = FlextApiClient()
 ```python
 from __future__ import annotations
 
+from flext_core import s
+
 
 # Current: Multiple classes per module (71 classes total)
 class WmsClient:
@@ -150,7 +152,9 @@ class CustomAuth:
 
 
 # Required: flext-auth integration
-from flext_auth import FlextAuthenticator  # ✅ REQUIRED
+from flext_auth import FlextAuth  # ✅ REQUIRED
+
+_ = FlextAuth  # reference without instantiating the auth facade
 ```
 
 ### Error Handling Standards
