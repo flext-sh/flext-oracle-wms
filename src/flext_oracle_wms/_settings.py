@@ -4,10 +4,9 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from pydantic import BaseModel, Field
 from pydantic_settings import SettingsConfigDict
 
-from flext_cli import FlextCliSettings
+from flext_cli import FlextCliSettings, m
 
 
 class FlextOracleWmsSettings(FlextCliSettings):
@@ -23,7 +22,7 @@ class FlextOracleWmsSettings(FlextCliSettings):
         env_prefix="FLEXT_ORACLE_WMS_", env_nested_delimiter="__", extra="ignore"
     )
 
-    class _OracleWms(BaseModel):
+    class _OracleWms(m.BaseModel):
         """Oracle WMS connection and runtime scalar settings."""
 
         base_url: str = "http://localhost:8080"
@@ -41,7 +40,7 @@ class FlextOracleWmsSettings(FlextCliSettings):
     if TYPE_CHECKING:
         OracleWms: _OracleWms
     else:
-        OracleWms: _OracleWms = Field(default_factory=_OracleWms)
+        OracleWms: _OracleWms = m.Field(default_factory=_OracleWms)
 
 
 settings: FlextOracleWmsSettings = FlextOracleWmsSettings.fetch_global()
