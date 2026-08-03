@@ -6,9 +6,6 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from collections.abc import (
-    Mapping,
-)
 from enum import StrEnum, unique
 from types import MappingProxyType
 from typing import TYPE_CHECKING, ClassVar, Final
@@ -16,6 +13,8 @@ from typing import TYPE_CHECKING, ClassVar, Final
 from flext_api import c
 
 if TYPE_CHECKING:
+    from collections.abc import Mapping
+
     from flext_oracle_wms import t
 
 
@@ -30,6 +29,18 @@ class FlextOracleWmsConstants(c):
         """WMS connection constants - composed from base."""
 
         FLEXT_WMS_VERSION: Final[str] = "1.0.0"
+        HTTP_BAD_REQUEST_THRESHOLD: Final[int] = 400
+        API_ENDPOINTS: ClassVar[t.MappingKV[str, t.StrMapping]] = MappingProxyType({
+            "test": {
+                "name": "test",
+                "method": "GET",
+                "path": "/test/",
+                "version": "v1",
+                "category": "test",
+                "description": "Test endpoint",
+                "since_version": "6.1",
+            }
+        })
 
         API_CONFIG: ClassVar[t.HeaderMapping] = MappingProxyType({
             "version_default": "v1",
@@ -53,6 +64,8 @@ class FlextOracleWmsConstants(c):
         DEFAULT_TIMEOUT: Final[int] = c.DEFAULT_TIMEOUT_SECONDS
         DEFAULT_MAX_RETRIES: Final[int] = c.MAX_RETRY_ATTEMPTS
         DEFAULT_RETRY_DELAY: Final[int] = c.DEFAULT_RETRY_DELAY_SECONDS
+        DISCOVERY_SUCCESS: Final[str] = "discovery_success"
+        DISCOVERY_FAILURE: Final[str] = "discovery_failure"
 
         @unique
         class WmsFilterOperator(StrEnum):
@@ -84,6 +97,14 @@ class FlextOracleWmsConstants(c):
             OAUTH2 = "oauth2"
             API_KEY = "api_key"
             BEARER = "bearer"
+
+        @unique
+        class Environment(StrEnum):
+            """Oracle WMS deployment environments."""
+
+            DEVELOPMENT = "dev"
+            STAGING = "staging"
+            PRODUCTION = "prod"
 
         AUTH_CONFIG: ClassVar[Mapping[str, str | OracleWMSAuthMethod]] = (
             MappingProxyType({

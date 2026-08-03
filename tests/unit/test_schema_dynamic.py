@@ -1,6 +1,10 @@
-"""Test Oracle WMS constants and enum functionality.
+# mypy: warn-unused-ignores=False
+"""Behavioral tests for Oracle WMS public constants and enum contracts.
 
-Replaces legacy dynamic schema tests (module removed).
+Asserts the observable public contract exposed via ``c.OracleWms`` — enum
+member values, enum completeness, StrEnum string-equality semantics, mapping
+immutability, and the exact numeric limits promised to consumers. No private
+attributes, no internal collaborators, no implementation details.
 
 Copyright (c) 2025 FLEXT Team. All rights reserved.
 SPDX-License-Identifier: MIT
@@ -9,62 +13,124 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from tests.constants import c
+from enum import StrEnum
+from types import MappingProxyType
+
+import pytest
+
+from flext_tests import tm
+from tests import c
 
 
 class TestsFlextOracleWmsSchemaDynamic:
-    """Test the Oracle WMS constants class."""
+    """Public-contract tests for the Oracle WMS constants namespace."""
 
-    def test_version_constant(self) -> None:
-        """Test WMS version is defined."""
-        assert isinstance(c.OracleWms.FLEXT_WMS_VERSION, str)
-        assert c.OracleWms.FLEXT_WMS_VERSION
+    def test_version_is_nonempty_string(self) -> None:
+        """FLEXT_WMS_VERSION is exposed as a concrete non-empty version string."""
+        tm.that(c.OracleWms.FLEXT_WMS_VERSION, eq="1.0.0")
 
-    def test_api_config(self) -> None:
-        """Test API settings dict is populated."""
-        cfg = c.OracleWms.API_CONFIG
-        assert "version_default" in cfg
-        assert "base_url_default" in cfg
-        assert "timeout_default" in cfg
-        assert "max_retries" in cfg
+    @pytest.mark.parametrize(
+        ("key", "expected"),
+        [
+            ("version_default", "v1"),
+            ("base_url_default", "http://localhost:8080"),
+            ("timeout_default", 30),
+            ("max_retries", 3),
+        ],
+    )
+    def test_api_config_exposes_expected_values(
+        self, key: str, expected: str | int
+    ) -> None:
+        """API_CONFIG maps each documented key to its promised default value."""
+        tm.that(c.OracleWms.API_CONFIG[key], eq=expected)
 
-    def test_processing_config(self) -> None:
-        """Test processing settings dict is populated."""
-        cfg = c.OracleWms.PROCESSING_CONFIG
-        assert "default_batch_size" in cfg
-        assert "max_batch_size" in cfg
-        assert "default_page_size" in cfg
+    def test_api_config_is_immutable(self) -> None:
+        """API_CONFIG is a read-only mappingproxy; consumers cannot mutate it."""
+        tm.that(c.OracleWms.API_CONFIG, is_=MappingProxyType)
 
-    def test_environments(self) -> None:
-        """Test environment dict is populated."""
-        envs = c.OracleWms.ENVIRONMENTS
-        assert "default" in envs
-        assert "test" in envs
-        assert "production" in envs
+    @pytest.mark.parametrize(
+        "key", ["default_batch_size", "max_batch_size", "default_page_size"]
+    )
+    def test_processing_config_keys_are_positive_ints(self, key: str) -> None:
+        """PROCESSING_CONFIG exposes positive integer sizing defaults."""
+        value = c.OracleWms.PROCESSING_CONFIG[key]
+        tm.that(value, is_=int)
+        assert value > 0
 
-    def test_wms_filter_operator_values(self) -> None:
-        """Test WmsFilterOperator has expected members."""
-        fo = c.OracleWms.WmsFilterOperator
-        assert fo.EQ == "eq"
-        assert fo.NE == "ne"
-        assert fo.GT == "gt"
-        assert fo.IN == "in"
+    @pytest.mark.parametrize(
+        ("env", "expected_url"),
+        [
+            ("default", "http://localhost:8080"),
+            ("test", "https://test-wms.example.com"),
+            ("production", "https://prod-wms.example.com"),
+        ],
+    )
+    def test_environments_map_to_expected_urls(
+        self, env: str, expected_url: str
+    ) -> None:
+        """ENVIRONMENTS resolves each named environment to its endpoint URL."""
+        tm.that(c.OracleWms.ENVIRONMENTS[env], eq=expected_url)
 
-    def test_oracle_wms_auth_method(self) -> None:
-        """Test OracleWMSAuthMethod has expected members."""
-        assert c.OracleWms.OracleWMSAuthMethod.BASIC == "basic"
-        assert c.OracleWms.OracleWMSAuthMethod.OAUTH2 == "oauth2"
-        assert c.OracleWms.OracleWMSAuthMethod.API_KEY == "api_key"
-        assert c.OracleWms.OracleWMSAuthMethod.BEARER == "bearer"
+    @pytest.mark.parametrize(
+        ("member", "value"),
+        [
+            ("EQ", "eq"),
+            ("NE", "ne"),
+            ("GT", "gt"),
+            ("GTE", "gte"),
+            ("LT", "lt"),
+            ("LTE", "lte"),
+            ("IN", "in"),
+            ("NOT_IN", "not_in"),
+            ("CONTAINS", "contains"),
+        ],
+    )
+    def test_filter_operator_member_values(self, member: str, value: str) -> None:
+        """WmsFilterOperator members carry their documented string values."""
+        operator = c.OracleWms.WmsFilterOperator[member]
+        tm.that(operator, eq=value)
+        tm.that(operator, is_=StrEnum)
 
-    def test_filtering_max_conditions(self) -> None:
-        """Test filtering constants."""
-        assert c.OracleWms.Filtering.MAX_FILTER_CONDITIONS == 50
+    def test_filter_operator_is_complete(self) -> None:
+        """WmsFilterOperator exposes exactly the documented operator set."""
+        tm.that(
+            {op.value for op in c.OracleWms.WmsFilterOperator},
+            eq={"eq", "ne", "gt", "gte", "lt", "lte", "in", "not_in", "contains"},
+        )
 
-    def test_wms_entities_max_name(self) -> None:
-        """Test entity name length limit."""
-        assert c.OracleWms.WmsEntities.MAX_ENTITY_NAME_LENGTH == 100
+    @pytest.mark.parametrize(
+        ("member", "value"),
+        [
+            ("BASIC", "basic"),
+            ("OAUTH2", "oauth2"),
+            ("API_KEY", "api_key"),
+            ("BEARER", "bearer"),
+        ],
+    )
+    def test_auth_method_member_values(self, member: str, value: str) -> None:
+        """OracleWMSAuthMethod members carry their documented string values."""
+        method = c.OracleWms.OracleWMSAuthMethod[member]
+        tm.that(method, eq=value)
+        tm.that(method, is_=StrEnum)
 
-    def test_wms_processing_defaults(self) -> None:
-        """Test processing defaults."""
-        assert c.OracleWms.WmsProcessing.MAX_SCHEMA_DEPTH == 10
+    def test_auth_method_is_complete(self) -> None:
+        """OracleWMSAuthMethod exposes exactly the four supported methods."""
+        tm.that(
+            {m.value for m in c.OracleWms.OracleWMSAuthMethod},
+            eq={"basic", "oauth2", "api_key", "bearer"},
+        )
+
+    def test_filtering_max_conditions_limit(self) -> None:
+        """Filtering caps filter conditions at the documented maximum."""
+        tm.that(c.OracleWms.Filtering.MAX_FILTER_CONDITIONS, eq=50)
+
+    def test_entity_name_length_limit(self) -> None:
+        """WmsEntities bounds entity names to the documented maximum length."""
+        tm.that(c.OracleWms.WmsEntities.MAX_ENTITY_NAME_LENGTH, eq=100)
+
+    def test_processing_schema_depth_limit(self) -> None:
+        """WmsProcessing bounds schema nesting to the documented maximum depth."""
+        tm.that(c.OracleWms.WmsProcessing.MAX_SCHEMA_DEPTH, eq=10)
+
+
+__all__: list[str] = ["TestsFlextOracleWmsSchemaDynamic"]

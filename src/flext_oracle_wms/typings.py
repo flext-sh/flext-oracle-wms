@@ -6,7 +6,12 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 from flext_api import t
+
+if TYPE_CHECKING:
+    from flext_oracle_wms import m
 
 
 class FlextOracleWmsTypes(t):
@@ -17,6 +22,11 @@ class FlextOracleWmsTypes(t):
 
         type FilterScalar = t.Scalar | None
         type FilterList = t.SequenceOf[FlextOracleWmsTypes.OracleWms.FilterScalar]
+        type FilterEntry = (
+            FlextOracleWmsTypes.OracleWms.FilterScalar
+            | FlextOracleWmsTypes.OracleWms.FilterList
+            | m.OracleWms.FlextOracleWmsOperatorFilter
+        )
         type FilterRecordValue = (
             FlextOracleWmsTypes.OracleWms.FilterScalar
             | FlextOracleWmsTypes.OracleWms.FilterList
