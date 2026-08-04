@@ -17,11 +17,17 @@
   Software Development :: Libraries :: Python Modules` (+1 more)
 - Project class: `domain`
 - Keywords: `adapter`, `enterprise`, `flext`, `integration`, `typed`
-- Main facades: _none_
-- Alias exports: _none_
-- Public symbol exports: _none_
+- Main facades: `FlextOracleWmsApi`, `FlextOracleWmsConfig`,
+  `FlextOracleWmsConstants`, `FlextOracleWmsModels`, `FlextOracleWmsProtocols`,
+  `FlextOracleWmsSettings`, `FlextOracleWmsTypes`, `FlextOracleWmsUtilities` (+5
+  more)
+- Alias exports: `c`, `d`, `e`, `h`, `m`, `p`, `r`, `s`, `t`, `u`, `x`
+- Public symbol exports: `FlextOracleWmsApi`, `FlextOracleWmsConfig`,
+  `FlextOracleWmsConstants`, `FlextOracleWmsModels`, `FlextOracleWmsProtocols`,
+  `FlextOracleWmsSettings`, `FlextOracleWmsTypes`, `FlextOracleWmsUtilities`,
+  `FlextOracleWmsUtilitiesAuth`, `FlextOracleWmsUtilitiesClient` (+6 more)
 - Exported module shortcuts: _none_
-- Generated module pages: `0`
+- Generated module pages: `6`
 
 ## Next Pages
 
