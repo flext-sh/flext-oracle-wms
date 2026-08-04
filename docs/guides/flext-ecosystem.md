@@ -45,9 +45,7 @@ client = httpx.Client()
 # Required: flext-api integration
 from flext_api import FlextApiClient
 
-client = FlextApiClient()
-```
-
+client = FlextApiClient()```
 #### Class Architecture Compliance (Critical)
 
 - **Current**: 71 classes across 17 modules
