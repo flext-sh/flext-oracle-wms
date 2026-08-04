@@ -105,7 +105,6 @@ Configure FLEXT programmatically in your code:
 
 ```python
 from __future__ import annotations
-from flext_cli import u
 from flext_core import FlextSettings
 from flext_ldif import FlextLdifSettings
 
@@ -118,9 +117,7 @@ ldif_config = FlextLdifSettings(
     strict_validation=True,
     servers_enabled=True,
     batch_size=1000,
-)
-```
-
+)```
 ## Project-Specific Configuration
 
 ### flext-ldif Configuration
@@ -141,9 +138,7 @@ settings = FlextLdifSettings(
     batch_size=1000,
     parallel_processing=True,
     max_workers=4,
-)
-```
-
+)```
 ### flext-api Configuration
 
 ```python
@@ -156,9 +151,7 @@ settings = FlextApiSettings(
     retry_attempts=3,
     verify_ssl=True,
     headers={"User-Agent": "FLEXT-API/1.0"},
-)
-```
-
+)```
 ### flext-auth Configuration
 
 ```python
@@ -170,9 +163,7 @@ settings = FlextAuthSettings(
     algorithm=c.Auth.Algorithms.HS256,
     access_token_expire_minutes=30,
     refresh_token_expire_days=7,
-)
-```
-
+)```
 ## Environment-Specific Configuration
 
 ### Development Environment
@@ -217,7 +208,6 @@ All configuration is validated using Pydantic v2 models:
 
 ```python
 from __future__ import annotations
-from flext_cli import u
 from flext_core import FlextSettings
 
 try:
@@ -225,16 +215,13 @@ try:
         log_level="INVALID_LEVEL"  # This will raise ValidationError
     )
 except c.ValidationError as e:
-    print(f"Configuration error: {e}")
-```
-
+    print(f"Configuration error: {e}")```
 ## Configuration Inheritance
 
 FLEXT supports configuration inheritance for complex setups:
 
 ```python
 from __future__ import annotations
-from flext_cli import u
 from flext_core import FlextSettings
 
 # Base configuration
@@ -245,9 +232,7 @@ extended_config = FlextSettings(
     **base_config.dict(),
     debug=True,  # Override for development
     custom_setting="value",
-)
-```
-
+)```
 ## Best Practices
 
 ### 1. Use Environment Variables for Secrets
@@ -262,7 +247,6 @@ export FLEXT_API_KEY=your_api_key
 
 ```python
 from __future__ import annotations
-from flext_cli import u
 from flext_core import FlextSettings
 
 
@@ -275,9 +259,7 @@ def main():
         return 1
 
     # Continue with application logic
-    return 0
-```
-
+    return 0```
 ### 3. Use Configuration Classes
 
 ```python
@@ -295,9 +277,7 @@ class MyAppConfig(FlextSettings):
     def validate_another_setting(cls, v):
         if v < 0:
             raise ValueError("another_setting must be positive")
-        return v
-```
-
+        return v```
 ### 4. Document Configuration Options
 
 ```python
@@ -313,9 +293,7 @@ class FlextLdifSettings(m.BaseModel):
 
     strict_validation: bool = u.Field(
         default=True, description="Enable strict RFC validation"
-    )
-```
-
+    )```
 ## Troubleshooting
 
 ### Common Configuration Issues
@@ -342,7 +320,6 @@ class FlextLdifSettings(m.BaseModel):
 
 ```python
 from __future__ import annotations
-from flext_cli import u
 from flext_core import FlextSettings
 
 # Enable debug logging
@@ -355,9 +332,7 @@ print(settings.dict())
 if settings.is_valid():
     print("Configuration is valid")
 else:
-    print("Configuration has errors")
-```
-
+    print("Configuration has errors")```
 ## Examples
 
 ### Complete Configuration Example
@@ -365,11 +340,10 @@ else:
 ```python
 from __future__ import annotations
 
-#!/usr/bin/env python3
+# !/usr/bin/env python3
 """Complete FLEXT configuration example."""
 
 import os
-from flext_cli import u
 from flext_core import FlextSettings
 from flext_ldif import FlextLdifSettings
 from flext_api import FlextApiSettings
@@ -399,9 +373,7 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
-```
-
+    main()```
 ## Reference
 
 - FLEXT Core Configuration

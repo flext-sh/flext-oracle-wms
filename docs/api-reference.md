@@ -43,9 +43,7 @@ settings = FlextOracleWmsSettings.model_validate({
         "password": "test_password",
     }
 })
-api = FlextOracleWmsApi(settings=settings)
-```
-
+api = FlextOracleWmsApi(settings=settings)```
 #### Methods
 
 ##### `test_connection() -> p.Result[bool]`
@@ -59,9 +57,7 @@ result = client.test_connection()
 if result.success:
     print("Connection structure verified")
 else:
-    print(f"Connection failed: {result.error}")
-```
-
+    print(f"Connection failed: {result.error}")```
 ##### `discover_entities() -> p.Result[List[Dict]]`
 
 Discovers available Oracle WMS entities.
@@ -72,9 +68,7 @@ from __future__ import annotations
 result = client.discover_entities()
 if result.success:
     entities = result.value
-    print(f"Found {len(entities)} entities")
-```
-
+    print(f"Found {len(entities)} entities")```
 ## Configuration API
 
 ### FlextOracleWmsModuleSettings
@@ -92,9 +86,7 @@ from __future__ import annotations
 from flext_oracle_wms import FlextOracleWmsSettings
 
 settings = FlextOracleWmsSettings(base_url="https://test.example.com")
-# Uses "https://test.example.com" as base URL
-```
-
+# Uses "https://test.example.com" as base URL```
 ## API Endpoints (Framework)
 
 ### Implemented Endpoints (22 total)
@@ -136,9 +128,7 @@ from __future__ import annotations
 from flext_oracle_wms.errors import FlextOracleWmsErrors
 
 base_error = FlextOracleWmsErrors.Error
-validation_error = FlextOracleWmsErrors.ValidationError
-```
-
+validation_error = FlextOracleWmsErrors.ValidationError```
 ### r Pattern
 
 All operations return `r[T]` for type-safe error handling:
@@ -150,9 +140,7 @@ result = client.some_operation()
 if result.success:
     data = result.value  # Type-safe access
 else:
-    error = result.error  # Error message
-```
-
+    error = result.error  # Error message```
 ## Models
 
 ### FlextOracleWmsEntity
@@ -168,9 +156,7 @@ entity = m.OracleWms.Entity(
     endpoint="/entity/inventory_item",
     description="Inventory item entity",
     # Additional metadata
-)
-```
-
+)```
 ## Implementation Status
 
 ### Completed Components
@@ -202,9 +188,9 @@ ______________________________________________________________________
 
 **Across Projects**:
 
-- [flext-core Foundation](https://github.com/organization/flext/tree/main/flext-core/docs/api-reference/foundation.md) - Core APIs and patterns
-- [flext-core Railway-Oriented Programming](https://github.com/organization/flext/tree/main/flext-core/docs/guides/railway-oriented-programming.md) - r patterns
-- [flext-db-oracle Integration](https://github.com/organization/flext/tree/main/flext-db-oracle/AGENTS.md) - Oracle database integration
+- [flext-core Foundation](https://github.com/flext-sh/flext/tree/0.12.0-dev/flext-core/docs/api-reference/foundation.md) - Core APIs and patterns
+- [flext-core Railway-Oriented Programming](https://github.com/flext-sh/flext/tree/0.12.0-dev/flext-core/docs/guides/railway-oriented-programming.md) - r patterns
+- [flext-db-oracle Integration](https://github.com/flext-sh/flext/tree/0.12.0-dev/flext-db-oracle/AGENTS.md) - Oracle database integration
 
 **External Resources**:
 

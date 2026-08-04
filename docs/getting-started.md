@@ -72,9 +72,7 @@ api = FlextOracleWmsApi(settings=settings)
 
 # execute() returns a FlextResult — inspect .success / .value
 result = api.execute()
-print(f"Execute success: {result.success}")
-```
-
+print(f"Execute success: {result.success}")```
 ## Implementation Status
 
 ### What Works
@@ -113,9 +111,9 @@ ______________________________________________________________________
 
 **Across Projects**:
 
-- [flext-core Foundation](https://github.com/organization/flext/tree/main/flext-core/docs/architecture/overview.md) - Clean architecture and CQRS patterns
-- [flext-core Service Patterns](https://github.com/organization/flext/tree/main/flext-core/docs/guides/service-patterns.md) - Service patterns and dependency injection
-- [flext-db-oracle Integration](https://github.com/organization/flext/tree/main/flext-db-oracle/AGENTS.md) - Oracle database integration
+- [flext-core Foundation](https://github.com/flext-sh/flext/tree/0.12.0-dev/flext-core/docs/architecture/overview.md) - Clean architecture and CQRS patterns
+- [flext-core Service Patterns](https://github.com/flext-sh/flext/tree/0.12.0-dev/flext-core/docs/guides/service-patterns.md) - Service patterns and dependency injection
+- [flext-db-oracle Integration](https://github.com/flext-sh/flext/tree/0.12.0-dev/flext-db-oracle/AGENTS.md) - Oracle database integration
 
 **External Resources**:
 

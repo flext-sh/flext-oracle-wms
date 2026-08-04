@@ -43,9 +43,23 @@ if TYPE_CHECKING:
 
     t: type[FlextOracleWmsTypes]
     from .utilities import FlextOracleWmsUtilities as FlextOracleWmsUtilities
+    from .utilities import FlextOracleWmsUtilitiesAuth as FlextOracleWmsUtilitiesAuth
+    from .utilities import (
+        FlextOracleWmsUtilitiesClient as FlextOracleWmsUtilitiesClient,
+    )
+    from .utilities import (
+        FlextOracleWmsUtilitiesDiscovery as FlextOracleWmsUtilitiesDiscovery,
+    )
+    from .utilities import (
+        FlextOracleWmsUtilitiesFiltering as FlextOracleWmsUtilitiesFiltering,
+    )
+    from .utilities import (
+        FlextOracleWmsUtilitiesHttpClient as FlextOracleWmsUtilitiesHttpClient,
+    )
 
     u: type[FlextOracleWmsUtilities]
 
+# Why: mro-4p0t — export utility mixins at package root for public imports.
 _LAZY_MODULES: dict[str, tuple[str, ...]] = {
     "._config": ("FlextOracleWmsConfig", "config"),
     "._settings": ("FlextOracleWmsSettings", "settings"),
@@ -54,7 +68,15 @@ _LAZY_MODULES: dict[str, tuple[str, ...]] = {
     ".models": ("FlextOracleWmsModels", "m"),
     ".protocols": ("FlextOracleWmsProtocols", "p"),
     ".typings": ("FlextOracleWmsTypes", "t"),
-    ".utilities": ("FlextOracleWmsUtilities", "u"),
+    ".utilities": (
+        "FlextOracleWmsUtilities",
+        "FlextOracleWmsUtilitiesAuth",
+        "FlextOracleWmsUtilitiesClient",
+        "FlextOracleWmsUtilitiesDiscovery",
+        "FlextOracleWmsUtilitiesFiltering",
+        "FlextOracleWmsUtilitiesHttpClient",
+        "u",
+    ),
     "flext_api": ("d", "e", "h", "r", "s", "x"),
 }
 
@@ -75,6 +97,11 @@ _PUBLIC_EXPORTS: tuple[str, ...] = (
     "FlextOracleWmsSettings",
     "FlextOracleWmsTypes",
     "FlextOracleWmsUtilities",
+    "FlextOracleWmsUtilitiesAuth",
+    "FlextOracleWmsUtilitiesClient",
+    "FlextOracleWmsUtilitiesDiscovery",
+    "FlextOracleWmsUtilitiesFiltering",
+    "FlextOracleWmsUtilitiesHttpClient",
     "__author__",
     "__author_email__",
     "__description__",

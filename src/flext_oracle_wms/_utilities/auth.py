@@ -51,7 +51,9 @@ class FlextOracleWmsUtilitiesAuth:
             """The auth method in canonical lowercase form (from the model)."""
             # NOTE (multi-agent): DRY — consume the model's computed_field, do not
             # re-derive (was a duplicate of m.OracleWms.AuthSettings.normalized_method).
-            return str(self._settings.normalized_method)
+            # Why: mro-4p0t — computed_field return is str; bind for mypy.
+            method: str = self._settings.normalized_method
+            return method
 
         def authenticate(self) -> p.Result[str]:
             """Perform authentication."""
