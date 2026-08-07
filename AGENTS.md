@@ -36,6 +36,8 @@ src/flext_oracle_wms/
 
 - Client creation resolves base URL, timeout, headers, and SSL verification **from settings** — never embed transport defaults inline.
 - Requests/responses are typed `m.*` models.
+- Config/settings canonical pattern: ADR-012.
+- Codemod governance (ast-grep + make mod): ADR-014.
 
 ## Anti-Patterns / Gotchas
 
