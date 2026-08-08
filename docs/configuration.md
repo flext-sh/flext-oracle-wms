@@ -62,9 +62,7 @@ export FLEXT_ORACLE_WMS_BASE_URL="https://test.example.com"
 export FLEXT_ORACLE_WMS_USERNAME="test_user"
 export FLEXT_ORACLE_WMS_PASSWORD="test_password"
 export FLEXT_ORACLE_WMS_TIMEOUT="30"
-export FLEXT_ORACLE_WMS_API_VERSION="v1"
-```
-
+export FLEXT_ORACLE_WMS_API_VERSION="v1"```
 ### Required for Production (Not Implemented)
 
 ```bash
@@ -83,9 +81,7 @@ export FLEXT_ORACLE_WMS_CACHE_TTL="3600"
 
 # FLEXT integration (requires implementation)
 export FLEXT_LOG_LEVEL="info"
-export FLEXT_ENABLE_METRICS="true"
-```
-
+export FLEXT_ENABLE_METRICS="true"```
 ## Configuration Classes
 
 ### FlextOracleWmsClientSettings

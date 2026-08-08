@@ -148,7 +148,7 @@ class OptimizedOracleWmsDiscovery:
             for task in batch_tasks:
                 try:
                     batch_results.append(task)
-                except Exception as e:
+                except (RuntimeError, OSError, ValueError, KeyError) as e:
                     batch_results.append(e)
             for entity_name, result in zip(batch, batch_results, strict=False):
                 if isinstance(result, Exception):
@@ -166,7 +166,7 @@ class OptimizedOracleWmsDiscovery:
         """Analyze single entity for data and structure."""
         try:
             return self._analyze_single_entity_unchecked(entity_name)
-        except Exception as e:
+        except (RuntimeError, OSError, ValueError, KeyError) as e:
             return {
                 "has_data": False,
                 "error": f"Exception: {e}",
@@ -511,7 +511,7 @@ class OptimizedOracleWmsDiscovery:
         try:
             self.client.stop()
             return r[bool].ok(value=True)
-        except Exception as e:
+        except (RuntimeError, OSError, ValueError, KeyError) as e:
             return r[bool].fail(f"Cleanup failed: {e}")
 
 

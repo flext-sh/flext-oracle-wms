@@ -165,9 +165,7 @@ filter_engine.filter_records("not_a_list", {})  # Intentionally wrong type```
 ```bash
 # Clean installation
 rm -rf .venv poetry.lock
-poetry install
-```
-
+poetry install```
 #### PYTHONPATH issues
 
 **Symptom**: Cannot import project modules
@@ -177,9 +175,7 @@ poetry install
 ```bash
 export PYTHONPATH=src
 # Or use make commands which set this automatically
-make test
-```
-
+make test```
 ### Oracle WMS Specific Issues
 
 #### Missing modern API endpoints
@@ -271,9 +267,7 @@ mypy src/
 pyright
 
 # Check specific file
-mypy src/flext_oracle_wms/wms_client.py
-```
-
+mypy src/flext_oracle_wms/wms_client.py```
 ### Test Debugging
 
 ```bash
@@ -281,9 +275,7 @@ mypy src/flext_oracle_wms/wms_client.py
 pytest tests/test_client.py::test_specific_function -v
 
 # Debug test with pdb
-pytest --pdb tests/test_client.py
-```
-
+pytest --pdb tests/test_client.py```
 ## Getting Help
 
 ### Documentation Resources

@@ -13,7 +13,7 @@
   - [Error Handling Standards](#error-handling-standards)
   - [Type Safety Requirements](#type-safety-requirements)
 - [Testing Strategy](#testing-strategy)
-  - [Current Test Structure](#current-test-structure)
+  - [Current Test Structure```](#current-test-structure)
   - [Test Requirements](#test-requirements)
   - [Current Test Limitations](#current-test-limitations)
 - [Implementation Priorities](#implementation-priorities)
@@ -177,18 +177,14 @@ def operation() -> p.Result[str]:
 
 ## Testing Strategy
 
-### Current Test Structure
-
-```
+### Current Test Structure```
 tests/
 ├── test_client.py         # Client functionality tests
 ├── test_config.py         # Configuration tests
 ├── test_discovery.py      # Entity discovery tests
 ├── test_exceptions.py     # Exception handling tests
 ├── test_filtering.py      # Data filtering tests
-└── ...                    # Additional test modules
-```
-
+└── ...                    # Additional test modules```
 ### Test Requirements
 
 - **90%+ coverage** - Minimum coverage target
@@ -259,9 +255,7 @@ def test_real_connection():
 ```bash
 # Required before committing
 make val              # All quality gates must pass
-make test                  # All tests must pass
-```
-
+make test                  # All tests must pass```
 ### Review Checklist
 
 - [ ] **FLEXT compliance** - No httpx usage, unified classes
@@ -282,9 +276,7 @@ Recommended VS Code settings:
   "python.linting.enabled": true,
   "python.linting.mypyEnabled": true,
   "python.formatting.provider": "black"
-}
-```
-
+}```
 ### Environment Variables
 
 ```bash

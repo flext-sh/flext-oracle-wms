@@ -95,16 +95,12 @@ ModuleNotFoundError: No module named 'flext_core'```
 
 ```bash
 export PYTHONPATH=src
-python -c "import flext_core; print(flext_core.__file__)"
-```
-
+python -c "import flext_core; print(flext_core.__file__)"```
 **Reinstall dependencies:**
 
 ```bash
 make clean
-make setup
-```
-
+make setup```
 **Check Poetry environment:**
 
 ```bash
@@ -158,15 +154,11 @@ def process(data: t.JsonMapping) -> p.Result[ProcessedData]:
 **Run MyPy with details:**
 
 ```bash
-mypy src/module.py --show-error-codes --show-traceback
-```
-
+mypy src/module.py --show-error-codes --show-traceback```
 **Check specific error:**
 
 ```bash
-mypy src/ --show-error-codes | grep "error-code"
-```
-
+mypy src/ --show-error-codes | grep "error-code"```
 ### 3. Test Failures
 
 #### Problem: Tests failing
@@ -180,15 +172,11 @@ AssertionError: Expected success but got failure```
 **Run with verbose output:**
 
 ```bash
-pytest tests/unit/test_module.py -vv --tb=long
-```
-
+pytest tests/unit/test_module.py -vv --tb=long```
 **Debug specific test:**
 
 ```bash
-pytest tests/unit/test_module.py::TestClass::test_method -v --pdb
-```
-
+pytest tests/unit/test_module.py::TestClass::test_method -v --pdb```
 **Check test data:**
 
 ```python
@@ -215,9 +203,7 @@ ValidationError: field required```
 **Check environment variables:**
 
 ```bash
-env | grep FLEXT_
-```
-
+env | grep FLEXT_```
 **Validate configuration:**
 
 ```python
@@ -616,9 +602,9 @@ When reporting issues, include:
 
    ```python
 
-from **future** import annotations
+   from __future__ import annotations
 
-# Full error traceback
+   # Full error traceback
 
    import traceback
    try:
@@ -631,7 +617,7 @@ from **future** import annotations
 1. **Minimal Reproduction**
 
    ```python
-from __future__ import annotations
+   from __future__ import annotations
    # Minimal code that reproduces the issue
    from flext_core import FlextBus
    ```
@@ -685,7 +671,7 @@ def process(data: dict) -> ProcessedData:
 
    ```python
 
-from **future** import annotations
+from __future__ import annotations
    def process_data(data: dict) -> p.Result[dict]:
        if not data:
            return r.fail("Data required")
@@ -698,11 +684,10 @@ from **future** import annotations
 1. **Use Type Hints**
 
    ```python
-from __future__ import annotations
+   from __future__ import annotations
    # ✅ GOOD
    def process(items: t.SequenceOf[Item]) -> p.Result[Sequence[ProcessedItem]]:
        pass
-
 
    # ❌ BAD
    def process(items):
@@ -713,7 +698,7 @@ from __future__ import annotations
 
    ```python
 
-from **future** import annotations
+   from __future__ import annotations
    def test_process_data():
        # Test success case
        result = process_data({"key": "value"})
