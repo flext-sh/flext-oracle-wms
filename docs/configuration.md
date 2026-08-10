@@ -3,7 +3,7 @@
 <!-- TOC START -->
 - [Configuration Overview](#configuration-overview)
 - [Test Configuration](#test-configuration)
-  - [FlextOracleWmsModuleSettings.for_testing()](#flextoraclewmsmodulesettingsfortesting)
+  - [FlextOracleWmsModuleSettings.for_testing()](#flextoraclewmsmodulesettingsfor_testing)
 - [Environment Variables](#environment-variables)
   - [Test Environment](#test-environment)
   - [Required for Production (Not Implemented)](#required-for-production-not-implemented)
@@ -51,7 +51,9 @@ settings = FlextOracleWmsSettings.model_validate({
 print(settings.OracleWms.base_url)  # "https://test.example.com"
 print(settings.OracleWms.username)  # "test_user"
 print(settings.OracleWms.api_version)  # Current API version
-print(settings.OracleWms.timeout)  # Default timeout```
+print(settings.OracleWms.timeout)  # Default timeout
+```
+
 ## Environment Variables
 
 ### Test Environment
@@ -62,7 +64,9 @@ export FLEXT_ORACLE_WMS_BASE_URL="https://test.example.com"
 export FLEXT_ORACLE_WMS_USERNAME="test_user"
 export FLEXT_ORACLE_WMS_PASSWORD="test_password"
 export FLEXT_ORACLE_WMS_TIMEOUT="30"
-export FLEXT_ORACLE_WMS_API_VERSION="v1"```
+export FLEXT_ORACLE_WMS_API_VERSION="v1"
+```
+
 ### Required for Production (Not Implemented)
 
 ```bash
@@ -81,7 +85,9 @@ export FLEXT_ORACLE_WMS_CACHE_TTL="3600"
 
 # FLEXT integration (requires implementation)
 export FLEXT_LOG_LEVEL="info"
-export FLEXT_ENABLE_METRICS="true"```
+export FLEXT_ENABLE_METRICS="true"
+```
+
 ## Configuration Classes
 
 ### FlextOracleWmsClientSettings
@@ -99,7 +105,9 @@ settings = FlextOracleWmsSettings(
     password="test_password",
     timeout=30,
     # Additional configuration options
-)```
+)
+```
+
 ### Authentication Configuration (Framework)
 
 Based on source code analysis, authentication framework exists but requires implementation:
@@ -114,7 +122,9 @@ auth_methods = [
     OracleWMSAuthMethod.BASIC,  # Username/password
     OracleWMSAuthMethod.OAUTH2,  # Token-based (not implemented)
     OracleWMSAuthMethod.API_KEY,  # API key (not implemented)
-]```
+]
+```
+
 ## Configuration Validation
 
 ### Current Validation
@@ -129,7 +139,10 @@ from flext_oracle_wms import FlextOracleWmsSettings
 settings = FlextOracleWmsSettings(
     base_url="https://test.example.com", username="test_user", password="test_password"
 )
-# Pydantic automatically validates configuration structure```
+# Pydantic automatically validates configuration structure
+
+```
+
 ### Required Implementation
 
 For production Oracle WMS Cloud integration:

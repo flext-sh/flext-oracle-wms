@@ -72,7 +72,9 @@ api = FlextOracleWmsApi(settings=settings)
 
 # execute() returns a FlextResult — inspect .success / .value
 result = api.execute()
-print(f"Execute success: {result.success}")```
+print(f"Execute success: {result.success}")
+```
+
 ## Implementation Status
 
 ### What Works
@@ -94,7 +96,7 @@ print(f"Execute success: {result.success}")```
 1. **Review Architecture** - [Architecture documentation](architecture.md)
 1. **Check Integration Status** - [Integration guide](guides/integration.md)
 1. **Development Setup** - [Development guidelines](development.md)
-1. **Implementation Roadmap** - [TODO.md](../TODO.md)
+1. **Implementation Roadmap** - tracked in the workspace-root Beads ledger
 
 ______________________________________________________________________
 
