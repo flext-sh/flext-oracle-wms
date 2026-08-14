@@ -13,7 +13,7 @@
   - [Error Handling Standards](#error-handling-standards)
   - [Type Safety Requirements](#type-safety-requirements)
 - [Testing Strategy](#testing-strategy)
-  - [Current Test Structure](#current-test-structure)
+  - [Current Test Structure```](#current-test-structure)
   - [Test Requirements](#test-requirements)
   - [Current Test Limitations](#current-test-limitations)
 - [Implementation Priorities](#implementation-priorities)
@@ -114,7 +114,9 @@ client = httpx.Client()
 # Required: flext-api integration
 from flext_api import FlextApiClient  # ✅ REQUIRED
 
-client = FlextApiClient()```
+client = FlextApiClient()
+```
+
 #### 2. Class Architecture Compliance (Critical)
 
 ```python
@@ -135,7 +137,9 @@ class WmsHelper:
 # Required: Single unified class per module
 class FlextOracleWmsClient(s):
     class _ClientHelper:  # ✅ NESTED HELPER
-        pass```
+        pass
+```
+
 #### 3. Authentication Integration (High Priority)
 
 ```python
@@ -150,7 +154,9 @@ class CustomAuth:
 # Required: flext-auth integration
 from flext_auth import FlextAuth  # ✅ REQUIRED
 
-_ = FlextAuth  # reference without instantiating the auth facade```
+_ = FlextAuth  # reference without instantiating the auth facade
+```
+
 ### Error Handling Standards
 
 All operations must use r pattern:
@@ -167,7 +173,9 @@ def operation() -> p.Result[str]:
         result = "ok"
         return r.ok(result)
     except Exception as e:
-        return r.fail(f"Operation failed: {e}")```
+        return r.fail(f"Operation failed: {e}")
+```
+
 ### Type Safety Requirements
 
 - **100% MyPy compliance** - Zero type errors tolerated
@@ -180,6 +188,7 @@ def operation() -> p.Result[str]:
 ### Current Test Structure
 
 ```
+
 tests/
 ├── test_client.py         # Client functionality tests
 ├── test_config.py         # Configuration tests
@@ -206,7 +215,10 @@ from __future__ import annotations
 
 def test_real_connection():
     settings = FlextOracleWmsModuleSettings.for_testing()  # Uses test.example.com
-    # Connection tests expect network failures with test settings```
+    # Connection tests expect network failures with test settings
+
+```
+
 ## Implementation Priorities
 
 ### Phase 1: FLEXT Compliance (Weeks 1-2)
