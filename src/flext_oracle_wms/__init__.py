@@ -1,9 +1,11 @@
-# @generated AUTO-GENERATED FILE — Regenerate with: make gen
+# AUTO-GENERATED FILE — Regenerate with: make gen
 """Flext Oracle Wms package."""
 
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
+
+from types import MappingProxyType
 
 from flext_core.lazy import build_lazy_import_map, install_lazy_exports
 
@@ -17,78 +19,17 @@ from .__version__ import __version__ as __version__
 from .__version__ import __version_info__ as __version_info__
 
 if TYPE_CHECKING:
-    from flext_api import d as d
-    from flext_api import e as e
-    from flext_api import h as h
-    from flext_api import r as r
-    from flext_api import s as s
-    from flext_api import x as x
+    from flext_api import d, e, h, r, s, x
 
-    from ._config import FlextOracleWmsConfig as FlextOracleWmsConfig
-    from ._config import config as config
-    from ._settings import FlextOracleWmsSettings as FlextOracleWmsSettings
-    from ._settings import settings as settings
-    from .api import FlextOracleWmsApi as FlextOracleWmsApi
-    from .api import oracle_wms as oracle_wms
-    from .constants import FlextOracleWmsConstants as FlextOracleWmsConstants
-
-    c: type[FlextOracleWmsConstants]
-    from .models import FlextOracleWmsModels as FlextOracleWmsModels
-
-    m: type[FlextOracleWmsModels]
-    from .protocols import FlextOracleWmsProtocols as FlextOracleWmsProtocols
-
-    p: type[FlextOracleWmsProtocols]
-    from .typings import FlextOracleWmsTypes as FlextOracleWmsTypes
-
-    t: type[FlextOracleWmsTypes]
-    from .utilities import FlextOracleWmsUtilities as FlextOracleWmsUtilities
-    from .utilities import FlextOracleWmsUtilitiesAuth as FlextOracleWmsUtilitiesAuth
-    from .utilities import (
-        FlextOracleWmsUtilitiesClient as FlextOracleWmsUtilitiesClient,
-    )
-    from .utilities import (
-        FlextOracleWmsUtilitiesDiscovery as FlextOracleWmsUtilitiesDiscovery,
-    )
-    from .utilities import (
-        FlextOracleWmsUtilitiesFiltering as FlextOracleWmsUtilitiesFiltering,
-    )
-    from .utilities import (
-        FlextOracleWmsUtilitiesHttpClient as FlextOracleWmsUtilitiesHttpClient,
-    )
-
-    u: type[FlextOracleWmsUtilities]
-
-# Why: mro-4p0t — export utility mixins at package root for public imports.
-_LAZY_MODULES: dict[str, tuple[str, ...]] = {
-    "._config": ("FlextOracleWmsConfig", "config"),
-    "._settings": ("FlextOracleWmsSettings", "settings"),
-    ".api": ("FlextOracleWmsApi", "oracle_wms"),
-    ".constants": ("FlextOracleWmsConstants", "c"),
-    ".models": ("FlextOracleWmsModels", "m"),
-    ".protocols": ("FlextOracleWmsProtocols", "p"),
-    ".typings": ("FlextOracleWmsTypes", "t"),
-    ".utilities": (
-        "FlextOracleWmsUtilities",
-        "FlextOracleWmsUtilitiesAuth",
-        "FlextOracleWmsUtilitiesClient",
-        "FlextOracleWmsUtilitiesDiscovery",
-        "FlextOracleWmsUtilitiesFiltering",
-        "FlextOracleWmsUtilitiesHttpClient",
-        "u",
-    ),
-    "flext_api": ("d", "e", "h", "r", "s", "x"),
-}
-
-
-_LAZY_ALIAS_GROUPS: dict[str, tuple[tuple[str, str], ...]] = {}
-
-
-_LAZY_IMPORTS = build_lazy_import_map(
-    _LAZY_MODULES, alias_groups=_LAZY_ALIAS_GROUPS, sort_keys=False
-)
-
-_PUBLIC_EXPORTS: tuple[str, ...] = (
+    from ._config import FlextOracleWmsConfig, config
+    from ._settings import FlextOracleWmsSettings, settings
+    from .api import FlextOracleWmsApi, oracle_wms
+    from .constants import FlextOracleWmsConstants, FlextOracleWmsConstants as c
+    from .models import FlextOracleWmsModels, FlextOracleWmsModels as m
+    from .protocols import FlextOracleWmsProtocols, FlextOracleWmsProtocols as p
+    from .typings import FlextOracleWmsTypes, FlextOracleWmsTypes as t
+    from .utilities import FlextOracleWmsUtilities, FlextOracleWmsUtilities as u
+__all__: tuple[str, ...] = (
     "FlextOracleWmsApi",
     "FlextOracleWmsConfig",
     "FlextOracleWmsConstants",
@@ -126,6 +67,33 @@ _PUBLIC_EXPORTS: tuple[str, ...] = (
     "x",
 )
 
-__all__: tuple[str, ...] = tuple(_PUBLIC_EXPORTS)
-
-install_lazy_exports(__name__, globals(), _LAZY_IMPORTS, public_exports=__all__)
+install_lazy_exports(
+    __name__,
+    globals(),
+    MappingProxyType(
+        build_lazy_import_map(
+            MappingProxyType({
+                "._config": ("FlextOracleWmsConfig", "config"),
+                "._settings": ("FlextOracleWmsSettings", "settings"),
+                ".api": ("FlextOracleWmsApi", "oracle_wms"),
+                ".constants": ("FlextOracleWmsConstants", "c"),
+                ".models": ("FlextOracleWmsModels", "m"),
+                ".protocols": ("FlextOracleWmsProtocols", "p"),
+                ".typings": ("FlextOracleWmsTypes", "t"),
+                ".utilities": (
+                    "FlextOracleWmsUtilities",
+                    "FlextOracleWmsUtilitiesAuth",
+                    "FlextOracleWmsUtilitiesClient",
+                    "FlextOracleWmsUtilitiesDiscovery",
+                    "FlextOracleWmsUtilitiesFiltering",
+                    "FlextOracleWmsUtilitiesHttpClient",
+                    "u",
+                ),
+                "flext_api": ("d", "e", "h", "r", "s", "x"),
+            }),
+            alias_groups=MappingProxyType({}),
+            sort_keys=False,
+        )
+    ),
+    public_exports=__all__,
+)
