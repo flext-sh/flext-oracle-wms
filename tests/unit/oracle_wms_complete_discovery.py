@@ -80,7 +80,7 @@ class OracleWmsCompleteDiscovery:
         for api_name, api_endpoint in all_apis.items():
             try:
                 self._test_api_by_category(api_name, api_endpoint)
-            except Exception as e:
+            except (RuntimeError, OSError, ValueError, KeyError) as e:
                 r[FlextApiModels.Api.HttpResponse].fail(f"Exception: {e}")
         return r[bool].ok(value=True)
 
@@ -107,7 +107,7 @@ class OracleWmsCompleteDiscovery:
         """Test data extraction APIs."""
         try:
             return self._test_data_extract_api_unchecked(api_name)
-        except Exception as e:
+        except (RuntimeError, OSError, ValueError, KeyError) as e:
             return r[FlextApiModels.Api.HttpResponse].fail(
                 f"Data extract API test failed: {e}"
             )
@@ -140,7 +140,7 @@ class OracleWmsCompleteDiscovery:
         """Test entity operations APIs."""
         try:
             return self._test_entity_operations_api_unchecked(api_name, endpoint)
-        except Exception as e:
+        except (RuntimeError, OSError, ValueError, KeyError) as e:
             return r[FlextApiModels.Api.HttpResponse].fail(
                 f"Entity operations API test failed: {e}"
             )
@@ -167,7 +167,7 @@ class OracleWmsCompleteDiscovery:
         """Test setup and transactional APIs."""
         try:
             return self.client.call_api(_api_name)
-        except Exception as e:
+        except (RuntimeError, OSError, ValueError, KeyError) as e:
             return r[FlextApiModels.Api.HttpResponse].fail(
                 f"Setup API test failed: {e}"
             )
@@ -178,7 +178,7 @@ class OracleWmsCompleteDiscovery:
         """Test automation and operations APIs."""
         try:
             return self.client.call_api(_api_name)
-        except Exception as e:
+        except (RuntimeError, OSError, ValueError, KeyError) as e:
             return r[FlextApiModels.Api.HttpResponse].fail(
                 f"Automation API test failed: {e}"
             )
@@ -190,7 +190,7 @@ class OracleWmsCompleteDiscovery:
         try:
             self._ensure_discovered_entities()
             return self._find_and_get_entity_with_id()
-        except Exception as e:
+        except (RuntimeError, OSError, ValueError, KeyError) as e:
             return r[FlextApiModels.Api.HttpResponse].fail(
                 f"Entity get discovery failed: {e}"
             )
@@ -236,7 +236,7 @@ class OracleWmsCompleteDiscovery:
         """Test data extract to object store API."""
         try:
             return self.client.call_api("lgf_data_extract")
-        except Exception as e:
+        except (RuntimeError, OSError, ValueError, KeyError) as e:
             return r[FlextApiModels.Api.HttpResponse].fail(
                 f"Data extract to object store failed: {e}"
             )
@@ -247,7 +247,7 @@ class OracleWmsCompleteDiscovery:
             return self.client.call_api(
                 "lgf_task_status", params={"status": "COMPLETED", "limit": "5"}
             )
-        except Exception as e:
+        except (RuntimeError, OSError, ValueError, KeyError) as e:
             return r[FlextApiModels.Api.HttpResponse].fail(
                 f"task status test failed: {e}"
             )
@@ -258,7 +258,7 @@ class OracleWmsCompleteDiscovery:
         """Test entity API that requires ID parameter."""
         try:
             return self._test_entity_with_id_unchecked(entity_name)
-        except Exception as e:
+        except (RuntimeError, OSError, ValueError, KeyError) as e:
             return r[FlextApiModels.Api.HttpResponse].fail(
                 f"Entity with ID test failed: {e}"
             )
@@ -315,7 +315,7 @@ class OracleWmsCompleteDiscovery:
                 entities_with_errors,
                 metadata_results,
             )
-        except Exception as e:
+        except (RuntimeError, OSError, ValueError, KeyError) as e:
             entities_with_errors.append((entity_name, f"Exception: {e}"))
 
     def _process_entity_metadata_unchecked(
@@ -586,7 +586,7 @@ class OracleWmsCompleteDiscovery:
         try:
             self.client.stop()
             return r[bool].ok(value=True)
-        except Exception as e:
+        except (RuntimeError, OSError, ValueError, KeyError) as e:
             return r[bool].fail(f"Cleanup failed: {e}")
 
 
