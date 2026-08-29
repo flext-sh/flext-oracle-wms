@@ -41,7 +41,9 @@ from __future__ import annotations
 # Expected behavior with current implementation
 settings = FlextOracleWmsModuleSettings.for_testing()
 client = FlextOracleWmsClient(settings)
-result = client.test_connection()  # Expected to fail```
+result = client.test_connection()  # Expected to fail
+```
+
 **Cause**: Tests use fake URL `"https://test.example.com"`
 
 **Solution**: This is expected behavior. For real Oracle WMS connectivity:
@@ -55,7 +57,9 @@ result = client.test_connection()  # Expected to fail```
 **Symptom**: Cannot import flext_core components
 
 ```python
-from __future__ import annotations```
+from __future__ import annotations
+```
+
 **Cause**: `get_logger` doesn't exist in flext_core
 
 **Solution**: Use correct flext_core imports:
@@ -64,7 +68,9 @@ from __future__ import annotations```
 from __future__ import annotations
 from flext_core import u
 
-logger = u.fetch_logger(__name__)```
+logger = u.fetch_logger(__name__)
+```
+
 ### Type Safety Issues
 
 #### MyPy errors with dynamic attributes
@@ -75,7 +81,9 @@ logger = u.fetch_logger(__name__)```
 from __future__ import annotations
 
 error = FlextOracleWmsError("message", field="username")
-assert error.field == "username"  # MyPy error: attribute not found```
+assert error.field == "username"  # MyPy error: attribute not found
+```
+
 **Solution**: Exception classes now declare attributes explicitly:
 
 ```python
@@ -83,7 +91,9 @@ from __future__ import annotations
 
 # Exception classes have been updated with proper type annotations
 error = FlextOracleWmsError("message", field="username")
-assert error.field == "username"  # Now works with MyPy```
+assert error.field == "username"  # Now works with MyPy
+```
+
 #### Configuration type mismatches
 
 **Symptom**: Type errors with configuration objects
@@ -97,7 +107,9 @@ from flext_oracle_wms import FlextOracleWmsModuleSettings, FlextOracleWmsApiVers
 settings = FlextOracleWmsModuleSettings(
     api_version=FlextOracleWmsApiVersion.V1,  # Use enum, not string
     oracle_wms_timeout=30,  # Use int, not float
-)```
+)
+```
+
 ### FLEXT Compliance Issues
 
 #### httpx usage violations
@@ -105,7 +117,9 @@ settings = FlextOracleWmsModuleSettings(
 **Symptom**: Code uses httpx directly instead of flext-api
 
 ```python
-from __future__ import annotations```
+from __future__ import annotations
+```
+
 **Solution**: This requires implementation work:
 
 1. Replace httpx imports with flext-api
@@ -141,7 +155,9 @@ def test_real_connection():
     try:
         result = client.test_connection()
     except Exception:
-        pass  # Expected with fake URLs```
+        pass  # Expected with fake URLs
+```
+
 **Solution**: This is expected behavior with current test configuration
 
 #### Invalid type arguments in tests
@@ -151,7 +167,9 @@ def test_real_connection():
 ```python
 from __future__ import annotations
 
-filter_engine.filter_records("not_a_list", {})  # Intentionally wrong type```
+filter_engine.filter_records("not_a_list", {})  # Intentionally wrong type
+```
+
 **Solution**: These are negative tests. Use `# type: ignore` if needed for intentional type violations in tests
 
 ### Development Environment Issues
@@ -232,7 +250,9 @@ make val
 ```python
 from __future__ import annotations
 # Pydantic validation error
-ValidationError: field required (type=value_error.missing)```
+ValidationError: field required (type=value_error.missing)
+```
+
 **Solution**: Ensure all required configuration fields are provided
 
 #### "FlextOracleWmsConnectionError with retry_count"
@@ -241,14 +261,18 @@ ValidationError: field required (type=value_error.missing)```
 from __future__ import annotations
 
 error = FlextOracleWmsConnectionError("failed", retry_count=3)
-assert error.retry_count == 3  # Now works after exception class updates```
+assert error.retry_count == 3  # Now works after exception class updates
+```
+
 #### "Entity not found" errors
 
 ```python
 from __future__ import annotations
 
 error = FlextOracleWmsEntityNotFoundError("Entity missing", entity_name="test")
-assert error.entity_name == "test"  # Properly handled```
+assert error.entity_name == "test"  # Properly handled
+```
+
 ## Debugging Tips
 
 ### Enable Debug Logging
@@ -262,7 +286,9 @@ from flext_core import u
 logging.basicConfig(level=logging.DEBUG)
 
 logger = u.fetch_logger(__name__)
-logger.debug("Debug message")```
+logger.debug("Debug message")
+```
+
 ### Type Checking
 
 ```bash

@@ -28,7 +28,7 @@
   - [Load Testing](#load-testing)
   - [Memory Testing](#memory-testing)
 - [Test Data Management](#test-data-management)
-  - [Test Fixtures Directory](#test-fixtures-directory)
+  - [Test Fixtures Directory```](#test-fixtures-directory)
   - [Loading Test Data](#loading-test-data)
 - [Continuous Integration](#continuous-integration)
   - [GitHub Actions Workflow](#github-actions-workflow)
@@ -102,7 +102,9 @@ objectClass: inetOrgPerson"""
         result = ldif.parse(content)
 
         assert result.failure
-        assert "parsing" in str(result.failure()).lower()```
+        assert "parsing" in str(result.failure()).lower()
+```
+
 ### Integration Tests
 
 Test component interactions and workflows:
@@ -129,7 +131,9 @@ class TestLdifIntegration:
         ldif_service = ldif_result.unwrap()
         # Test LDIF operations
         result = ldif_service.parse("dn: test")
-        assert result.success```
+        assert result.success
+```
+
 ### End-to-End Tests
 
 Test complete workflows and user scenarios:
@@ -169,7 +173,9 @@ objectClass: inetOrgPerson"""
         assert result.success
         report = result.unwrap()
         assert report.successful_entries > 0
-        assert (output_dir / "test.ldif").exists()```
+        assert (output_dir / "test.ldif").exists()
+```
+
 ## Test Markers
 
 FLEXT uses pytest markers to categorize tests:
@@ -200,7 +206,9 @@ def test_end_to_end_scenario():
 @pytest.mark.slow
 def test_performance_benchmark():
     """Slow test - performance or load testing."""
-    pass```
+    pass
+```
+
 ## Running Tests
 
 ### Basic Test Execution
@@ -282,7 +290,9 @@ def temp_directories(tmp_path):
     input_dir.mkdir()
     output_dir.mkdir()
 
-    return input_dir, output_dir```
+    return input_dir, output_dir
+```
+
 ### Using Fixtures
 
 ```python
@@ -305,7 +315,9 @@ def test_file_migration(ldif_service, temp_directories):
 
     # Run migration
     result = ldif_service.migrate(input_dir, output_dir, "oid", "oud")
-    assert result.success```
+    assert result.success
+```
+
 ## Mocking and Stubbing
 
 ### Unit Test Mocking
@@ -326,7 +338,9 @@ def test_with_mocked_dependency():
 
         # Verify mock was called
         mock_service.process.assert_called_once()
-        assert result.success```
+        assert result.success
+```
+
 ### Integration Test Stubbing
 
 ```python
@@ -347,7 +361,9 @@ def test_with_stubbed_service():
 
     # Test integration
     result = integration_function()
-    assert result.success```
+    assert result.success
+```
+
 ## Performance Testing
 
 ### Load Testing
@@ -380,7 +396,9 @@ def test_concurrent_processing():
     assert all(result.success for result in results)
 
     # Verify performance (should complete in < 1 second)
-    assert (end_time - start_time) < 1.0```
+    assert (end_time - start_time) < 1.0
+```
+
 ### Memory Testing
 
 ```python
@@ -406,12 +424,15 @@ def test_memory_usage():
     current_memory = process.memory_info().rss
     memory_used = current_memory - initial_memory
 
-    assert memory_used < 100 * 1024 * 1024  # 100MB```
+    assert memory_used < 100 * 1024 * 1024  # 100MB
+```
+
 ## Test Data Management
 
 ### Test Fixtures Directory
 
 ```
+
 tests/
 ├── fixtures/
 │   ├── ldif/
@@ -454,7 +475,9 @@ def test_with_fixture():
 
     # Use fixture data in test
     result = process_ldif(ldif_content, config_data)
-    assert result.success```
+    assert result.success
+```
+
 ## Continuous Integration
 
 ### GitHub Actions Workflow
@@ -519,7 +542,9 @@ def test_parse():
 
 
 def test_ldif():
-    pass```
+    pass
+```
+
 ### 2. Test Organization
 
 ```python
@@ -547,7 +572,9 @@ class TestLdifMigration:
 
     def test_migrate_oid_to_oud(self):
         """Test OID to OUD migration."""
-        pass```
+        pass
+```
+
 ### 3. Assertion Quality
 
 ```python
@@ -568,7 +595,9 @@ def test_parse_result():
 # ❌ BAD - Vague assertions
 def test_parse_result():
     result = ldif.parse(content)
-    assert result  # Too vague```
+    assert result  # Too vague
+```
+
 ### 4. Test Independence
 
 ```python
@@ -599,7 +628,9 @@ def test_parse_valid_ldif():
 
 def test_parse_invalid_ldif():
     result = ldif.parse("invalid")
-    assert result.failure```
+    assert result.failure
+```
+
 ## Troubleshooting
 
 ### Common Test Issues
@@ -616,9 +647,9 @@ def test_parse_invalid_ldif():
 
    ```python
 
-from **future** import annotations
+   from __future__ import annotations
 
-# Check fixture scope and dependencies
+   # Check fixture scope and dependencies
 
    @pytest.fixture(scope="function")
    def my_fixture():
