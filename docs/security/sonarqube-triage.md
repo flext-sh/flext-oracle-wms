@@ -45,7 +45,7 @@ Cada issue traz a **mensagem do SonarQube** (descreve o problema e o impacto), o
        79        client: Configured Oracle WMS client
 ```
 
-**Decisão**: 
+**Decisão**: pendente
 
 ### 2 · 🔴 BLOCKER · CODE_SMELL · `python:S3516`
 **Local**: `examples/01_basic_usage.py:99` · **Effort**: 2min
@@ -64,7 +64,7 @@ Cada issue traz a **mensagem do SonarQube** (descreve o problema e o impacto), o
       103  
 ```
 
-**Decisão**: 
+**Decisão**: pendente
 
 ### 3 · 🟡 MAJOR · VULNERABILITY · `githubactions:S8264`
 **Local**: `.github/workflows/docs.yml:18` · **Effort**: 5min
@@ -83,7 +83,7 @@ Cada issue traz a **mensagem do SonarQube** (descreve o problema e o impacto), o
        22  concurrency:
 ```
 
-**Decisão**: 
+**Decisão**: pendente
 
 ### 4 · 🟡 MAJOR · VULNERABILITY · `githubactions:S8233`
 **Local**: `.github/workflows/docs.yml:19` · **Effort**: 5min
@@ -102,7 +102,7 @@ Cada issue traz a **mensagem do SonarQube** (descreve o problema e o impacto), o
        23    group: pages
 ```
 
-**Decisão**: 
+**Decisão**: pendente
 
 ### 5 · 🟡 MAJOR · VULNERABILITY · `githubactions:S8233`
 **Local**: `.github/workflows/docs.yml:20` · **Effort**: 5min
@@ -121,7 +121,7 @@ Cada issue traz a **mensagem do SonarQube** (descreve o problema e o impacto), o
        24    cancel-in-progress: false
 ```
 
-**Decisão**: 
+**Decisão**: pendente
 
 ### 6 · 🟡 MAJOR · CODE_SMELL · `python:S108`
 **Local**: `examples/02_configuration.py:215` · **Effort**: 5min
@@ -140,7 +140,7 @@ Cada issue traz a **mensagem do SonarQube** (descreve o problema e o impacto), o
       219          errors = validation.get("errors", [])
 ```
 
-**Decisão**: 
+**Decisão**: pendente
 
 ### 7 · 🟡 MAJOR · CODE_SMELL · `python:S108`
 **Local**: `examples/02_configuration.py:217` · **Effort**: 5min
@@ -159,7 +159,7 @@ Cada issue traz a **mensagem do SonarQube** (descreve o problema e o impacto), o
       221              for _error in errors:
 ```
 
-**Decisão**: 
+**Decisão**: pendente
 
 ### 8 · 🟡 MAJOR · CODE_SMELL · `python:S108`
 **Local**: `examples/02_configuration.py:222` · **Effort**: 5min
@@ -178,7 +178,7 @@ Cada issue traz a **mensagem do SonarQube** (descreve o problema e o impacto), o
       226      """Demonstrate demo configuration validation."""
 ```
 
-**Decisão**: 
+**Decisão**: pendente
 
 ### 9 · 🟡 MAJOR · CODE_SMELL · `python:S108`
 **Local**: `examples/02_configuration.py:232` · **Effort**: 5min
@@ -197,7 +197,7 @@ Cada issue traz a **mensagem do SonarQube** (descreve o problema e o impacto), o
       236      """Demonstrate working Oracle WMS configuration patterns."""
 ```
 
-**Decisão**: 
+**Decisão**: pendente
 
 ### 10 · 🟡 MAJOR · CODE_SMELL · `python:S108`
 **Local**: `examples/02_configuration.py:247` · **Effort**: 5min
@@ -216,7 +216,7 @@ Cada issue traz a **mensagem do SonarQube** (descreve o problema e o impacto), o
       251      """Demonstrate Oracle WMS configuration patterns."""
 ```
 
-**Decisão**: 
+**Decisão**: pendente
 
 ### 11 · 🟡 MAJOR · CODE_SMELL · `python:S108`
 **Local**: `examples/03_complete_functionality_showcase.py:93` · **Effort**: 5min
@@ -235,7 +235,7 @@ Cada issue traz a **mensagem do SonarQube** (descreve o problema e o impacto), o
        97      return client
 ```
 
-**Decisão**: 
+**Decisão**: pendente
 
 ### 12 · 🟡 MAJOR · VULNERABILITY · `text:S8565`
 **Local**: `pyproject.toml:-` · **Effort**: 5min
@@ -243,7 +243,7 @@ Cada issue traz a **mensagem do SonarQube** (descreve o problema e o impacto), o
 > Dependency versions are not predictable if the lock file (uv.lock, poetry.lock, pdm.lock or pylock.toml) is missing.
 
 
-**Decisão**: 
+**Decisão**: pendente
 
 ### 13 · 🟡 MAJOR · CODE_SMELL · `python:S3358`
 **Local**: `src/flext_oracle_wms/_utilities/filtering.py:205` · **Effort**: 5min
@@ -262,7 +262,7 @@ Cada issue traz a **mensagem do SonarQube** (descreve o problema e o impacto), o
       209                      sorted(records, key=key_func, reverse=not ascending)
 ```
 
-**Decisão**: 
+**Decisão**: pendente
 
 ### 14 · 🟡 MAJOR · CODE_SMELL · `python:S5778`
 **Local**: `tests/unit/test_helpers.py:126` · **Effort**: 5min
@@ -281,7 +281,7 @@ Cada issue traz a **mensagem do SonarQube** (descreve o problema e o impacto), o
       130                          operator=c.OracleWms.WmsFilterOperator.IN, value=[1, 2, 3]
 ```
 
-**Decisão**: 
+**Decisão**: pendente
 
 ### 15 · ⚪ MINOR · CODE_SMELL · `python:S7504`
 **Local**: `conftest.py:20` · **Effort**: 5min
@@ -300,7 +300,7 @@ Cada issue traz a **mensagem do SonarQube** (descreve o problema e o impacto), o
        24                  sys.modules.pop(module_name, None)
 ```
 
-**Decisão**: 
+**Decisão**: pendente
 
 ### 16 · ⚪ MINOR · CODE_SMELL · `python:S7500`
 **Local**: `src/flext_oracle_wms/_utilities/http_client.py:68` · **Effort**: 5min
@@ -319,5 +319,4 @@ Cada issue traz a **mensagem do SonarQube** (descreve o problema e o impacto), o
        72              return normalized
 ```
 
-**Decisão**: 
-
+**Decisão**: pendente
