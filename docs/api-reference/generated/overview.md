@@ -27,7 +27,7 @@
   `FlextOracleWmsSettings`, `FlextOracleWmsTypes`, `FlextOracleWmsUtilities`,
   `FlextOracleWmsUtilitiesAuth`, `FlextOracleWmsUtilitiesClient` (+6 more)
 - Exported module shortcuts: _none_
-- Generated module pages: `6`
+- Generated module pages: `1`
 
 ## Next Pages
 
