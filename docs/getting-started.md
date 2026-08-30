@@ -96,7 +96,7 @@ print(f"Execute success: {result.success}")
 1. **Review Architecture** - [Architecture documentation](architecture.md)
 1. **Check Integration Status** - [Integration guide](guides/integration.md)
 1. **Development Setup** - [Development guidelines](development.md)
-1. **Implementation Roadmap** - tracked in the workspace-root Beads ledger
+1. **Implementation Roadmap** - tracked in the workspace Beads ledger
 
 ______________________________________________________________________
 
