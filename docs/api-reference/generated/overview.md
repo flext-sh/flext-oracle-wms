@@ -18,16 +18,16 @@
 - Project class: `domain`
 - Keywords: `adapter`, `enterprise`, `flext`, `integration`, `typed`
 - Main facades: `FlextOracleWmsApi`, `FlextOracleWmsConfig`,
-  `FlextOracleWmsConstants`, `FlextOracleWmsModels`, `FlextOracleWmsProtocols`,
-  `FlextOracleWmsSettings`, `FlextOracleWmsTypes`, `FlextOracleWmsUtilities` (+5
+  `FlextOracleWmsConstants`, `FlextOracleWmsErrors`, `FlextOracleWmsModels`,
+  `FlextOracleWmsProtocols`, `FlextOracleWmsSettings`, `FlextOracleWmsTypes` (+1
   more)
 - Alias exports: `c`, `d`, `e`, `h`, `m`, `p`, `r`, `s`, `t`, `u`, `x`
 - Public symbol exports: `FlextOracleWmsApi`, `FlextOracleWmsConfig`,
-  `FlextOracleWmsConstants`, `FlextOracleWmsModels`, `FlextOracleWmsProtocols`,
-  `FlextOracleWmsSettings`, `FlextOracleWmsTypes`, `FlextOracleWmsUtilities`,
-  `FlextOracleWmsUtilitiesAuth`, `FlextOracleWmsUtilitiesClient` (+6 more)
+  `FlextOracleWmsConstants`, `FlextOracleWmsErrors`, `FlextOracleWmsModels`,
+  `FlextOracleWmsProtocols`, `FlextOracleWmsSettings`, `FlextOracleWmsTypes`,
+  `FlextOracleWmsUtilities`, `config` (+2 more)
 - Exported module shortcuts: _none_
-- Generated module pages: `1`
+- Generated module pages: `7`
 
 ## Next Pages
 
