@@ -19,30 +19,34 @@ from .__version__ import __version__ as __version__
 from .__version__ import __version_info__ as __version_info__
 
 if TYPE_CHECKING:
-    from flext_api import d, e, h, r, s, x
+    from enum import StrEnum, unique
+    from flext_api import d, h, r, s, x
+    from typing import ClassVar, Final, TYPE_CHECKING
 
     from ._config import FlextOracleWmsConfig, config
     from ._settings import FlextOracleWmsSettings, settings
     from .api import FlextOracleWmsApi, oracle_wms
     from .constants import FlextOracleWmsConstants, FlextOracleWmsConstants as c
+    from .errors import FlextOracleWmsErrors, e
     from .models import FlextOracleWmsModels, FlextOracleWmsModels as m
     from .protocols import FlextOracleWmsProtocols, FlextOracleWmsProtocols as p
     from .typings import FlextOracleWmsTypes, FlextOracleWmsTypes as t
     from .utilities import FlextOracleWmsUtilities, FlextOracleWmsUtilities as u
 __all__: tuple[str, ...] = (
+    "TYPE_CHECKING",
+    "ClassVar",
+    "Final",
     "FlextOracleWmsApi",
     "FlextOracleWmsConfig",
     "FlextOracleWmsConstants",
+    "FlextOracleWmsErrors",
     "FlextOracleWmsModels",
     "FlextOracleWmsProtocols",
     "FlextOracleWmsSettings",
     "FlextOracleWmsTypes",
     "FlextOracleWmsUtilities",
-    "FlextOracleWmsUtilitiesAuth",
-    "FlextOracleWmsUtilitiesClient",
-    "FlextOracleWmsUtilitiesDiscovery",
-    "FlextOracleWmsUtilitiesFiltering",
-    "FlextOracleWmsUtilitiesHttpClient",
+    "MappingProxyType",
+    "StrEnum",
     "__author__",
     "__author_email__",
     "__description__",
@@ -64,36 +68,30 @@ __all__: tuple[str, ...] = (
     "settings",
     "t",
     "u",
+    "unique",
     "x",
 )
 
-install_lazy_exports(
-    __name__,
-    globals(),
-    MappingProxyType(
-        build_lazy_import_map(
-            MappingProxyType({
-                "._config": ("FlextOracleWmsConfig", "config"),
-                "._settings": ("FlextOracleWmsSettings", "settings"),
-                ".api": ("FlextOracleWmsApi", "oracle_wms"),
-                ".constants": ("FlextOracleWmsConstants", "c"),
-                ".models": ("FlextOracleWmsModels", "m"),
-                ".protocols": ("FlextOracleWmsProtocols", "p"),
-                ".typings": ("FlextOracleWmsTypes", "t"),
-                ".utilities": (
-                    "FlextOracleWmsUtilities",
-                    "FlextOracleWmsUtilitiesAuth",
-                    "FlextOracleWmsUtilitiesClient",
-                    "FlextOracleWmsUtilitiesDiscovery",
-                    "FlextOracleWmsUtilitiesFiltering",
-                    "FlextOracleWmsUtilitiesHttpClient",
-                    "u",
-                ),
-                "flext_api": ("d", "e", "h", "r", "s", "x"),
-            }),
-            alias_groups=MappingProxyType({}),
-            sort_keys=False,
-        )
-    ),
-    public_exports=__all__,
+_LAZY_IMPORTS = MappingProxyType(
+    build_lazy_import_map(
+        MappingProxyType({
+            "._config": ("FlextOracleWmsConfig", "config"),
+            "._settings": ("FlextOracleWmsSettings", "settings"),
+            ".api": ("FlextOracleWmsApi", "oracle_wms"),
+            ".constants": ("FlextOracleWmsConstants", "c"),
+            ".errors": ("FlextOracleWmsErrors", "e"),
+            ".models": ("FlextOracleWmsModels", "m"),
+            ".protocols": ("FlextOracleWmsProtocols", "p"),
+            ".typings": ("FlextOracleWmsTypes", "t"),
+            ".utilities": ("FlextOracleWmsUtilities", "u"),
+            "enum": ("StrEnum", "unique"),
+            "flext_api": ("d", "h", "r", "s", "x"),
+            "types": ("MappingProxyType",),
+            "typing": ("ClassVar", "Final", "TYPE_CHECKING"),
+        }),
+        alias_groups=MappingProxyType({}),
+        sort_keys=False,
+    )
 )
+
+install_lazy_exports(__name__, globals(), _LAZY_IMPORTS, public_exports=__all__)

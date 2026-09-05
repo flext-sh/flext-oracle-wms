@@ -1,42 +1,21 @@
-# @generated AUTO-GENERATED FILE — Regenerate with: make gen
+# AUTO-GENERATED FILE — Regenerate with: make gen
 """Flext Oracle Wms. Utilities package."""
 
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+from types import MappingProxyType
+
 from flext_core.lazy import build_lazy_import_map, install_lazy_exports
 
 if TYPE_CHECKING:
-    from .auth import FlextOracleWmsUtilitiesAuth as FlextOracleWmsUtilitiesAuth
-    from .client import FlextOracleWmsUtilitiesClient as FlextOracleWmsUtilitiesClient
-    from .discovery import (
-        FlextOracleWmsUtilitiesDiscovery as FlextOracleWmsUtilitiesDiscovery,
-    )
-    from .filtering import (
-        FlextOracleWmsUtilitiesFiltering as FlextOracleWmsUtilitiesFiltering,
-    )
-    from .http_client import (
-        FlextOracleWmsUtilitiesHttpClient as FlextOracleWmsUtilitiesHttpClient,
-    )
-
-_LAZY_MODULES: dict[str, tuple[str, ...]] = {
-    ".auth": ("FlextOracleWmsUtilitiesAuth",),
-    ".client": ("FlextOracleWmsUtilitiesClient",),
-    ".discovery": ("FlextOracleWmsUtilitiesDiscovery",),
-    ".filtering": ("FlextOracleWmsUtilitiesFiltering",),
-    ".http_client": ("FlextOracleWmsUtilitiesHttpClient",),
-}
-
-
-_LAZY_ALIAS_GROUPS: dict[str, tuple[tuple[str, str], ...]] = {}
-
-
-_LAZY_IMPORTS = build_lazy_import_map(
-    _LAZY_MODULES, alias_groups=_LAZY_ALIAS_GROUPS, sort_keys=False
-)
-
-_PUBLIC_EXPORTS: tuple[str, ...] = (
+    from .auth import FlextOracleWmsUtilitiesAuth
+    from .client import FlextOracleWmsUtilitiesClient
+    from .discovery import FlextOracleWmsUtilitiesDiscovery
+    from .filtering import FlextOracleWmsUtilitiesFiltering
+    from .http_client import FlextOracleWmsUtilitiesHttpClient
+__all__: tuple[str, ...] = (
     "FlextOracleWmsUtilitiesAuth",
     "FlextOracleWmsUtilitiesClient",
     "FlextOracleWmsUtilitiesDiscovery",
@@ -44,6 +23,18 @@ _PUBLIC_EXPORTS: tuple[str, ...] = (
     "FlextOracleWmsUtilitiesHttpClient",
 )
 
-__all__: tuple[str, ...] = tuple(_PUBLIC_EXPORTS)
+_LAZY_IMPORTS = MappingProxyType(
+    build_lazy_import_map(
+        MappingProxyType({
+            ".auth": ("FlextOracleWmsUtilitiesAuth",),
+            ".client": ("FlextOracleWmsUtilitiesClient",),
+            ".discovery": ("FlextOracleWmsUtilitiesDiscovery",),
+            ".filtering": ("FlextOracleWmsUtilitiesFiltering",),
+            ".http_client": ("FlextOracleWmsUtilitiesHttpClient",),
+        }),
+        alias_groups=MappingProxyType({}),
+        sort_keys=False,
+    )
+)
 
 install_lazy_exports(__name__, globals(), _LAZY_IMPORTS, public_exports=__all__)

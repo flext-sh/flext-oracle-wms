@@ -5,55 +5,80 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from flext_core.lazy import (
-    build_lazy_import_map,
-    install_lazy_exports,
-    merge_lazy_imports,
-)
+from types import MappingProxyType
+
+from flext_core.lazy import build_lazy_import_map, install_lazy_exports
 
 if TYPE_CHECKING:
-    from flext_oracle_wms import (
-        c as c,
-        d as d,
-        e as e,
-        h as h,
-        m as m,
+    from . import tests as tests
+    from flext_core import (
+        FlextOracleWmsConstants,
+        FlextOracleWmsConstants as c,
+        d,
+        e,
+        h,
+        m,
         p,
-        r as r,
-        s as s,
-        t as t,
+        r,
+        s,
+        t,
         u,
-        x as x,
+        x,
     )
-    from flext_tests import td as td, tf as tf, tk as tk, tm as tm, tv as tv
-_LAZY_IMPORTS = merge_lazy_imports(
-    (".tests",),
-    build_lazy_import_map({
-        ".tests": ("tests",),
-        "flext_oracle_wms": ("c", "d", "e", "h", "m", "p", "r", "s", "t", "u", "x"),
-        "flext_tests": ("td", "tf", "tk", "tm", "tv"),
-    }),
-    exclude_names=(
-        "cleanup_submodule_namespace",
-        "install_lazy_exports",
-        "lazy_getattr",
-        "logger",
-        "merge_lazy_imports",
-        "output",
-        "output_reporting",
-        "pytest_addoption",
-        "pytest_collect_file",
-        "pytest_collection_modifyitems",
-        "pytest_configure",
-        "pytest_runtest_setup",
-        "pytest_runtest_teardown",
-        "pytest_sessionfinish",
-        "pytest_sessionstart",
-        "pytest_terminal_summary",
-        "pytest_warning_recorded",
-    ),
-    module_name=__name__,
+
+    from .constants import ExamplesFlextOracleWmsConstants
+    from .models import ExamplesFlextOracleWmsModels
+    from .protocols import ExamplesFlextOracleWmsProtocols
+    from .typings import ExamplesFlextOracleWmsTypes
+    from .utilities import ExamplesFlextOracleWmsUtilities
+__all__: tuple[str, ...] = (
+    "ExamplesFlextOracleWmsConstants",
+    "ExamplesFlextOracleWmsModels",
+    "ExamplesFlextOracleWmsProtocols",
+    "ExamplesFlextOracleWmsTypes",
+    "ExamplesFlextOracleWmsUtilities",
+    "FlextOracleWmsConstants",
+    "c",
+    "d",
+    "e",
+    "h",
+    "m",
+    "p",
+    "r",
+    "s",
+    "t",
+    "tests",
+    "u",
+    "x",
 )
 
+_LAZY_IMPORTS = MappingProxyType(
+    build_lazy_import_map(
+        MappingProxyType({
+            ".constants": ("ExamplesFlextOracleWmsConstants",),
+            ".models": ("ExamplesFlextOracleWmsModels",),
+            ".protocols": ("ExamplesFlextOracleWmsProtocols",),
+            ".tests": ("tests",),
+            ".typings": ("ExamplesFlextOracleWmsTypes",),
+            ".utilities": ("ExamplesFlextOracleWmsUtilities",),
+            "flext_core": (
+                "FlextOracleWmsConstants",
+                "c",
+                "d",
+                "e",
+                "h",
+                "m",
+                "p",
+                "r",
+                "s",
+                "t",
+                "u",
+                "x",
+            ),
+        }),
+        alias_groups=MappingProxyType({}),
+        sort_keys=False,
+    )
+)
 
-install_lazy_exports(__name__, globals(), _LAZY_IMPORTS, publish_all=False)
+install_lazy_exports(__name__, globals(), _LAZY_IMPORTS, public_exports=__all__)
