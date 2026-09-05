@@ -12,7 +12,7 @@ from datetime import UTC, datetime
 from pathlib import Path
 from typing import TYPE_CHECKING, cast
 
-from flext_oracle_wms import FlextOracleWmsSettings, FlextOracleWmsUtilitiesClient
+from flext_oracle_wms import FlextOracleWmsSettings
 from flext_tests import r
 from tests import t, u
 
@@ -45,7 +45,9 @@ class FocusedOracleWmsDiscovery:
                 "enable_logging": True,
             }
         })
-        self.client = FlextOracleWmsUtilitiesClient.Client(settings=self.settings)
+        # Why: mro-4p0t — public facade access is u.OracleWms.Client, not the
+        # private _utilities.client module (flext-oracle-wms-1sm3w sync fix).
+        self.client = u.OracleWms.Client(settings=self.settings)
         self.quick_test_entities: t.StrSequence = [
             "company",
             "facility",

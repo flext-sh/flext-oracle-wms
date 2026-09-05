@@ -9,17 +9,19 @@ from __future__ import annotations
 
 import pytest
 
-from flext_oracle_wms import FlextOracleWmsSettings, FlextOracleWmsUtilitiesClient, m
+from flext_oracle_wms import FlextOracleWmsSettings, m, u
 from flext_tests import tm
 from tests._factories import _basic_password, _oauth_secret_dashed, _wms_password
 
-Client = FlextOracleWmsUtilitiesClient.Client
+# Why: mro-4p0t — public facade access is u.OracleWms.Client, not the private
+# _utilities.client module (flext-oracle-wms-1sm3w sync fix).
+Client = u.OracleWms.Client
 
 __all__: list[str] = ["TestsFlextOracleWmsClientClass"]
 
 
 class TestsFlextOracleWmsClientClass:
-    """Observable public behavior of FlextOracleWmsUtilitiesClient.Client."""
+    """Observable public behavior of u.OracleWms.Client."""
 
     @pytest.fixture
     def settings(self) -> FlextOracleWmsSettings:

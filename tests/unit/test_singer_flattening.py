@@ -13,9 +13,8 @@ from __future__ import annotations
 
 import pytest
 
-from flext_oracle_wms import FlextOracleWmsUtilitiesDiscovery
 from flext_tests import tm
-from tests import c, m
+from tests import c, m, u
 
 _MAX_NAME_LENGTH = c.OracleWms.WmsEntities.MAX_ENTITY_NAME_LENGTH
 
@@ -79,7 +78,7 @@ class TestsFlextOracleWmsSingerFlattening:
         """A valid entity validates to a successful r[bool] carrying True."""
         entity = m.OracleWms.Entity(name="inventory", endpoint="/inventory")
 
-        result = FlextOracleWmsUtilitiesDiscovery.validate_wms_entity(entity)
+        result = u.OracleWms.validate_wms_entity(entity)
 
         tm.ok(result)
         tm.that(result.unwrap(), eq=True)
@@ -88,7 +87,7 @@ class TestsFlextOracleWmsSingerFlattening:
         """A name exactly at the length ceiling still validates."""
         entity = m.OracleWms.Entity(name="x" * _MAX_NAME_LENGTH, endpoint="/e")
 
-        result = FlextOracleWmsUtilitiesDiscovery.validate_wms_entity(entity)
+        result = u.OracleWms.validate_wms_entity(entity)
 
         tm.ok(result)
         tm.that(result.unwrap(), eq=True)
@@ -97,7 +96,7 @@ class TestsFlextOracleWmsSingerFlattening:
         """A name past the ceiling fails with a descriptive error."""
         entity = m.OracleWms.Entity(name="x" * (_MAX_NAME_LENGTH + 1), endpoint="/e")
 
-        result = FlextOracleWmsUtilitiesDiscovery.validate_wms_entity(entity)
+        result = u.OracleWms.validate_wms_entity(entity)
 
         tm.fail(result)
         tm.that(result.error, none=False)

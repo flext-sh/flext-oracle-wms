@@ -1,6 +1,6 @@
 """Behavioral tests for the Oracle WMS filtering utility.
 
-Exercises the PUBLIC contract of ``FlextOracleWmsUtilitiesFiltering.Filter``
+Exercises the PUBLIC contract of ``u.OracleWms.Filter``
 through its observable surface only:
 
 - construction / configuration validation (raised FlextExceptions family)
@@ -20,12 +20,13 @@ from __future__ import annotations
 
 import pytest
 
-from flext_oracle_wms import FlextOracleWmsUtilitiesFiltering
 from flext_oracle_wms.errors import FlextOracleWmsErrors
 from flext_tests import e, tm
-from tests import c, m, t
+from tests import c, m, t, u
 
-Filter = FlextOracleWmsUtilitiesFiltering.Filter
+# Why: mro-4p0t — public facade access is u.OracleWms.Filter, not the private
+# _utilities.filtering module (flext-oracle-wms-1sm3w sync fix).
+Filter = u.OracleWms.Filter
 Operator = m.OracleWms.FlextOracleWmsOperatorFilter
 Op = c.OracleWms.WmsFilterOperator
 

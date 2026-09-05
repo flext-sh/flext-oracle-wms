@@ -1,6 +1,6 @@
 """Behavioral unit tests for the Oracle WMS runtime client.
 
-Exercises the PUBLIC contract of ``FlextOracleWmsUtilitiesClient.Client``:
+Exercises the PUBLIC contract of ``u.OracleWms.Client``:
 return values, ``r[T]`` success/failure outcomes, error messages, HTTP
 error propagation, entity/data extraction and lifecycle idempotence.
 
@@ -18,15 +18,9 @@ from __future__ import annotations
 import pytest
 
 from flext_api import FlextApi
-from flext_oracle_wms import (
-    FlextOracleWmsSettings,
-    FlextOracleWmsUtilitiesClient,
-    m,
-    p,
-    r,
-)
+from flext_oracle_wms import FlextOracleWmsSettings, m, p, r
 from flext_tests import tm
-from tests import t
+from tests import t, u
 
 
 class TestsFlextOracleWmsWmsClient:
@@ -64,7 +58,7 @@ class TestsFlextOracleWmsWmsClient:
     @pytest.fixture
     def client(self) -> t.OracleWms.Tests.Client:
         """Return a client bound to the deterministic testing configuration."""
-        return FlextOracleWmsUtilitiesClient.Client(
+        return u.OracleWms.Client(
             FlextOracleWmsSettings.model_validate({
                 "OracleWms": {
                     "base_url": "https://test-wms.example.com",
@@ -78,14 +72,14 @@ class TestsFlextOracleWmsWmsClient:
     # -- construction contract ------------------------------------------
 
     def test_default_construction_exposes_settings_instance(self) -> None:
-        client = FlextOracleWmsUtilitiesClient.Client()
+        client = u.OracleWms.Client()
         tm.that(client.settings, is_=FlextOracleWmsSettings)
 
     def test_explicit_settings_are_exposed_unchanged(self) -> None:
         settings = FlextOracleWmsSettings.model_validate({
             "OracleWms": {"base_url": "https://custom-wms.example.com", "timeout": 60}
         })
-        client = FlextOracleWmsUtilitiesClient.Client(settings=settings)
+        client = u.OracleWms.Client(settings=settings)
         assert client.settings is settings
         tm.that(client.settings.OracleWms.base_url, eq="https://custom-wms.example.com")
         tm.that(client.settings.OracleWms.timeout, eq=60)

@@ -15,13 +15,14 @@ from dotenv import load_dotenv
 from flext_oracle_wms import (
     FlextOracleWmsConstants,
     FlextOracleWmsSettings,
-    FlextOracleWmsUtilitiesClient,
     m,
     t,
     u,
 )
 
-FlextOracleWmsClient = FlextOracleWmsUtilitiesClient.Client
+# Why: mro-4p0t — public facade access is u.OracleWms.Client, not the private
+# _utilities.client module (flext-oracle-wms-1sm3w toolchain sync fix).
+FlextOracleWmsClient = u.OracleWms.Client
 
 logger = u.fetch_logger(__name__)
 

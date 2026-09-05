@@ -15,7 +15,10 @@ class FlextOracleWmsErrors(e):
     class Error(e.BaseError):
         """Base Oracle WMS error."""
 
-    class ValidationError(Error):
+    # Why: mro-4p0t — inherit the parent's ValidationError (not the local
+    # Error sibling) to satisfy the FlextExceptions override contract
+    # (flext-oracle-wms-1sm3w sync fix; pattern per flext_grpc.errors).
+    class ValidationError(e.ValidationError):
         """Oracle WMS validation error."""
 
 

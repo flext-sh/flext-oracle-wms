@@ -9,9 +9,9 @@ from __future__ import annotations
 
 import pytest
 
-from flext_oracle_wms import FlextOracleWmsApi, FlextOracleWmsUtilitiesClient, m
+from flext_oracle_wms import FlextOracleWmsApi, m
 from flext_tests import tm
-from tests import t
+from tests import t, u
 from tests._factories import _basic_password, _secret
 
 
@@ -125,7 +125,7 @@ class TestsFlextOracleWmsWmsApi:
         )
 
         tm.ok(result)
-        tm.that(result.unwrap(), is_=FlextOracleWmsUtilitiesClient.Client)
+        tm.that(result.unwrap(), is_=u.OracleWms.Client)
 
     def test_create_client_fails_when_basic_credentials_incomplete(self) -> None:
         """BASIC auth without a password fails with the business-rule error."""

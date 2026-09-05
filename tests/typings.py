@@ -15,7 +15,7 @@ from flext_oracle_wms import t
 from flext_tests import FlextTestsTypes
 
 if TYPE_CHECKING:
-    from flext_oracle_wms import FlextOracleWmsUtilitiesClient
+    from flext_oracle_wms import FlextOracleWmsUtilities as _u
 
 
 class TestsFlextOracleWmsTypes(FlextTestsTypes, t):
@@ -27,7 +27,7 @@ class TestsFlextOracleWmsTypes(FlextTestsTypes, t):
         class Tests(FlextTestsTypes.Tests):
             """Oracle WMS-specific test type aliases."""
 
-            type Client = FlextOracleWmsUtilitiesClient.Client
+            type Client = _u.OracleWms.Client
             type EnvConfig = t.MetadataMapping
             type Record = t.MutableMappingKV[str, str | int]
 
