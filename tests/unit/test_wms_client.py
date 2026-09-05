@@ -35,10 +35,14 @@ class TestsFlextOracleWmsWmsClient:
     @staticmethod
     def _response(status_code: int, body: t.Api.ResponseBody) -> m.Api.HttpResponse:
         """Build a real HTTP response model as the boundary would return."""
-        return m.Api.HttpResponse.model_validate({
+        # flext-1wjg1.16: explicit typed local -- mypy cannot follow
+        # model_validate's Self return through the composed facade back to
+        # the concrete HttpResponse without a binding annotation here.
+        response: m.Api.HttpResponse = m.Api.HttpResponse.model_validate({
             "status_code": status_code,
             "body": body,
         })
+        return response
 
     @classmethod
     def _stub_boundary(

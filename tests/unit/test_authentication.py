@@ -106,20 +106,14 @@ class TestsFlextOracleWmsAuthentication:
         settings = m.OracleWms.AuthSettings(
             method=_Method.BASIC, username="test_user", password=_basic_password()
         )
-        assert (
-            u.validate_auth_settings(settings).unwrap()
-            is True
-        )
+        assert u.validate_auth_settings(settings).unwrap() is True
 
     def test_validate_business_rules_accepts_complete_oauth2(self) -> None:
         """Complete OAuth2 credentials validate successfully."""
         settings = m.OracleWms.AuthSettings(
             method=_Method.OAUTH2, oauth2_client_id="id", oauth2_client_secret=_secret()
         )
-        assert (
-            u.validate_auth_settings(settings).unwrap()
-            is True
-        )
+        assert u.validate_auth_settings(settings).unwrap() is True
 
     @pytest.mark.parametrize(
         ("settings", "expected_fragment"),

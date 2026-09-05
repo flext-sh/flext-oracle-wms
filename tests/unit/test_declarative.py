@@ -18,11 +18,7 @@ from typing import TYPE_CHECKING
 
 import pytest
 
-from flext_oracle_wms import (
-    FlextOracleWmsApi,
-    FlextOracleWmsSettings,
-    m,
-)
+from flext_oracle_wms import FlextOracleWmsApi, FlextOracleWmsSettings, m
 from flext_tests import tm
 from tests import t, u
 
@@ -48,9 +44,7 @@ def env_config() -> t.OracleWms.Tests.EnvConfig:
 
 
 @pytest.fixture
-def oracle_wms_client(
-    env_config: t.OracleWms.Tests.EnvConfig,
-) -> Generator[u.Client]:
+def oracle_wms_client(env_config: t.OracleWms.Tests.EnvConfig) -> Generator[u.Client]:
     settings = FlextOracleWmsSettings.model_validate({
         **env_config,
         "api_version": "LGF_V10",
