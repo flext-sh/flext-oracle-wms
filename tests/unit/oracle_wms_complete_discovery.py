@@ -18,11 +18,7 @@ from pathlib import Path
 from typing import TYPE_CHECKING, cast
 
 from flext_api import FlextApiModels
-from flext_oracle_wms import (
-    FlextOracleWmsApi,
-    FlextOracleWmsSettings,
-    FlextOracleWmsUtilitiesClient,
-)
+from flext_oracle_wms import FlextOracleWmsApi, FlextOracleWmsSettings
 from flext_tests import r
 from tests import c, m, t, u
 
@@ -57,10 +53,8 @@ class OracleWmsCompleteDiscovery:
             username=self.settings.OracleWms.username,
             password=self.settings.OracleWms.password,
         )
-        _auth_result = FlextOracleWmsUtilitiesClient.Client.from_auth_settings(
-            auth_settings
-        )
-        self.client = FlextOracleWmsUtilitiesClient.Client(settings=self.settings)
+        _auth_result = u.Client.from_auth_settings(auth_settings)
+        self.client = u.Client(settings=self.settings)
         self.discovered_entities: MutableSequence[str] = []
         self.entity_metadata: t.MutableJsonMapping = {}
         self.complete_schemas: t.MutableJsonMapping = {}
@@ -116,13 +110,22 @@ class OracleWmsCompleteDiscovery:
         self, api_name: str
     ) -> p.Result[FlextApiModels.Api.HttpResponse]:
         """Test data extraction APIs while allowing client exceptions upward."""
+        # flext-1wjg1.16: explicit typed locals -- mypy cannot follow
+        # call_api()/get()'s Result[HttpResponse] return through the composed
+        # facade without a binding annotation at each call boundary.
         if api_name == "lgf_entity_discovery":
-            return self.client.call_api(api_name)
+            discovery_result: p.Result[FlextApiModels.Api.HttpResponse] = (
+                self.client.call_api(api_name)
+            )
+            return discovery_result
         if api_name == "lgf_entity_list":
             self._ensure_discovered_entities()
             if self.discovered_entities:
                 entity_name = self.discovered_entities[0]
-                return self.client.get(f"/entities/{entity_name}")
+                list_result: p.Result[FlextApiModels.Api.HttpResponse] = (
+                    self.client.get(f"/entities/{entity_name}")
+                )
+                return list_result
             return r[FlextApiModels.Api.HttpResponse].fail(
                 "No entities available for testing"
             )
@@ -132,7 +135,10 @@ class OracleWmsCompleteDiscovery:
             return self._test_data_extract_to_object_store()
         if api_name == "lgf_task_status":
             return self._test_task_status()
-        return self.client.call_api(api_name)
+        fallback_result: p.Result[FlextApiModels.Api.HttpResponse] = (
+            self.client.call_api(api_name)
+        )
+        return fallback_result
 
     def _test_entity_operations_api(
         self, api_name: str, endpoint: m.OracleWms.ApiEndpoint
@@ -155,33 +161,47 @@ class OracleWmsCompleteDiscovery:
                 entity_name = self.discovered_entities[0]
                 if "{id}" in endpoint.path:
                     return self._test_entity_with_id(api_name, entity_name)
-                return self.client.get(f"/entities/{entity_name}")
+                entity_result: p.Result[FlextApiModels.Api.HttpResponse] = (
+                    self.client.get(f"/entities/{entity_name}")
+                )
+                return entity_result
             return r[FlextApiModels.Api.HttpResponse].fail(
                 "No entities for entity operations test"
             )
-        return self.client.call_api(api_name)
+        entity_ops_result: p.Result[FlextApiModels.Api.HttpResponse] = (
+            self.client.call_api(api_name)
+        )
+        return entity_ops_result
 
     def _test_setup_api(
         self, _api_name: str, _endpoint: m.OracleWms.ApiEndpoint
     ) -> p.Result[FlextApiModels.Api.HttpResponse]:
         """Test setup and transactional APIs."""
         try:
-            return self.client.call_api(_api_name)
+            setup_result: p.Result[FlextApiModels.Api.HttpResponse] = (
+                self.client.call_api(_api_name)
+            )
         except (RuntimeError, OSError, ValueError, KeyError) as e:
             return r[FlextApiModels.Api.HttpResponse].fail(
                 f"Setup API test failed: {e}"
             )
+        else:
+            return setup_result
 
     def _test_automation_api(
         self, _api_name: str, _endpoint: m.OracleWms.ApiEndpoint
     ) -> p.Result[FlextApiModels.Api.HttpResponse]:
         """Test automation and operations APIs."""
         try:
-            return self.client.call_api(_api_name)
+            automation_result: p.Result[FlextApiModels.Api.HttpResponse] = (
+                self.client.call_api(_api_name)
+            )
         except (RuntimeError, OSError, ValueError, KeyError) as e:
             return r[FlextApiModels.Api.HttpResponse].fail(
                 f"Automation API test failed: {e}"
             )
+        else:
+            return automation_result
 
     def _test_entity_get_with_discovery(
         self,
@@ -228,29 +248,40 @@ class OracleWmsCompleteDiscovery:
         if "id" not in record:
             return None
         entity_id = record["id"]
-        return self.client.get(f"/entities/{entity_name}/{entity_id}")
+        id_result: p.Result[FlextApiModels.Api.HttpResponse] = self.client.get(
+            f"/entities/{entity_name}/{entity_id}"
+        )
+        return id_result
 
     def _test_data_extract_to_object_store(
         self,
     ) -> p.Result[FlextApiModels.Api.HttpResponse]:
         """Test data extract to object store API."""
         try:
-            return self.client.call_api("lgf_data_extract")
+            extract_result: p.Result[FlextApiModels.Api.HttpResponse] = (
+                self.client.call_api("lgf_data_extract")
+            )
         except (RuntimeError, OSError, ValueError, KeyError) as e:
             return r[FlextApiModels.Api.HttpResponse].fail(
                 f"Data extract to object store failed: {e}"
             )
+        else:
+            return extract_result
 
     def _test_task_status(self) -> p.Result[FlextApiModels.Api.HttpResponse]:
         """Test task status API."""
         try:
-            return self.client.call_api(
-                "lgf_task_status", params={"status": "COMPLETED", "limit": "5"}
+            task_status_result: p.Result[FlextApiModels.Api.HttpResponse] = (
+                self.client.call_api(
+                    "lgf_task_status", params={"status": "COMPLETED", "limit": "5"}
+                )
             )
         except (RuntimeError, OSError, ValueError, KeyError) as e:
             return r[FlextApiModels.Api.HttpResponse].fail(
                 f"task status test failed: {e}"
             )
+        else:
+            return task_status_result
 
     def _test_entity_with_id(
         self, _api_name: str, entity_name: str
@@ -274,7 +305,10 @@ class OracleWmsCompleteDiscovery:
                 record = records[0]
                 if isinstance(record, dict) and "id" in record:
                     entity_id = record["id"]
-                    return self.client.get(f"/entities/{entity_name}/{entity_id}")
+                    with_id_result: p.Result[FlextApiModels.Api.HttpResponse] = (
+                        self.client.get(f"/entities/{entity_name}/{entity_id}")
+                    )
+                    return with_id_result
         return r[FlextApiModels.Api.HttpResponse].fail(
             f"No valid ID found for entity {entity_name}"
         )

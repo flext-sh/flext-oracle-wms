@@ -15,7 +15,7 @@ from __future__ import annotations
 
 import pytest
 
-from flext_oracle_wms import FlextOracleWmsUtilitiesAuth, FlextOracleWmsUtilitiesClient
+from flext_oracle_wms import FlextOracleWmsUtilities as u
 from flext_tests import tm
 from tests import c, m
 from tests._factories import _basic_password, _basic_token, _oauth_secret_456, _secret
@@ -106,20 +106,14 @@ class TestsFlextOracleWmsAuthentication:
         settings = m.OracleWms.AuthSettings(
             method=_Method.BASIC, username="test_user", password=_basic_password()
         )
-        assert (
-            FlextOracleWmsUtilitiesAuth.validate_auth_settings(settings).unwrap()
-            is True
-        )
+        assert u.validate_auth_settings(settings).unwrap() is True
 
     def test_validate_business_rules_accepts_complete_oauth2(self) -> None:
         """Complete OAuth2 credentials validate successfully."""
         settings = m.OracleWms.AuthSettings(
             method=_Method.OAUTH2, oauth2_client_id="id", oauth2_client_secret=_secret()
         )
-        assert (
-            FlextOracleWmsUtilitiesAuth.validate_auth_settings(settings).unwrap()
-            is True
-        )
+        assert u.validate_auth_settings(settings).unwrap() is True
 
     @pytest.mark.parametrize(
         ("settings", "expected_fragment"),
@@ -143,7 +137,7 @@ class TestsFlextOracleWmsAuthentication:
         self, settings: m.OracleWms.AuthSettings, expected_fragment: str
     ) -> None:
         """Incomplete/unsupported configs fail with an explanatory error."""
-        result = FlextOracleWmsUtilitiesAuth.validate_auth_settings(settings)
+        result = u.validate_auth_settings(settings)
         error = tm.fail(result)
         tm.that(error.lower(), has=expected_fragment)
 
@@ -154,7 +148,7 @@ class TestsFlextOracleWmsAuthentication:
         settings = m.OracleWms.AuthSettings(
             method=_Method.BASIC, username="test_user", password=_basic_password()
         )
-        authenticator = FlextOracleWmsUtilitiesAuth.Authenticator(settings)
+        authenticator = u.Authenticator(settings)
         # NOTE (multi-agent): auth lane keeps the injected settings private
         # (``_settings``); retention is asserted via observable public behavior.
         tm.that(authenticator.normalized_method, eq=settings.normalized_method)
@@ -165,7 +159,7 @@ class TestsFlextOracleWmsAuthentication:
         settings = m.OracleWms.AuthSettings(
             method=_Method.BASIC, username="test_user", password=_basic_password()
         )
-        authenticator = FlextOracleWmsUtilitiesAuth.Authenticator(settings)
+        authenticator = u.Authenticator(settings)
         result = authenticator.authenticate()
         tm.ok(result)
         tm.that(result.unwrap(), eq=_basic_token())
@@ -175,7 +169,7 @@ class TestsFlextOracleWmsAuthentication:
         settings = m.OracleWms.AuthSettings(
             method=_Method.BASIC, username="test_user", password=_basic_password()
         )
-        authenticator = FlextOracleWmsUtilitiesAuth.Authenticator(settings)
+        authenticator = u.Authenticator(settings)
         first = authenticator.authenticate()
         second = authenticator.authenticate()
         tm.that(first.unwrap(), eq=second.unwrap())
@@ -205,7 +199,7 @@ class TestsFlextOracleWmsAuthentication:
         self, settings: m.OracleWms.AuthSettings, expected_error: str
     ) -> None:
         """Failed authentication surfaces the precise reason."""
-        authenticator = FlextOracleWmsUtilitiesAuth.Authenticator(settings)
+        authenticator = u.Authenticator(settings)
         result = authenticator.authenticate()
         tm.fail(result)
         tm.that(result.error, eq=expected_error)
@@ -213,7 +207,7 @@ class TestsFlextOracleWmsAuthentication:
     def test_authenticate_rejects_unsupported_method(self) -> None:
         """A method that is neither basic nor oauth2 is rejected."""
         settings = m.OracleWms.AuthSettings(method=_Method.API_KEY)
-        result = FlextOracleWmsUtilitiesAuth.Authenticator(settings).authenticate()
+        result = u.Authenticator(settings).authenticate()
         error = tm.fail(result)
         tm.that(error.lower(), has="unsupported auth method")
 
@@ -224,7 +218,7 @@ class TestsFlextOracleWmsAuthentication:
         settings = m.OracleWms.AuthSettings(
             method=_Method.BASIC, username="test_user", password=_basic_password()
         )
-        authenticator = FlextOracleWmsUtilitiesAuth.Authenticator(settings)
+        authenticator = u.Authenticator(settings)
         result = authenticator.get_auth_headers()
         tm.ok(result)
         tm.that(result.unwrap(), eq={"Authorization": f"Basic {_basic_token()}"})
@@ -232,7 +226,7 @@ class TestsFlextOracleWmsAuthentication:
     def test_headers_fail_when_authentication_fails(self) -> None:
         """Header building propagates the underlying auth failure."""
         settings = m.OracleWms.AuthSettings(method=_Method.BASIC)
-        authenticator = FlextOracleWmsUtilitiesAuth.Authenticator(settings)
+        authenticator = u.Authenticator(settings)
         result = authenticator.get_auth_headers()
         tm.fail(result)
         tm.that(result.error, none=False)
@@ -244,14 +238,14 @@ class TestsFlextOracleWmsAuthentication:
         settings = m.OracleWms.AuthSettings(
             method=_Method.BASIC, username="test_user", password=_basic_password()
         )
-        result = FlextOracleWmsUtilitiesClient.Client.from_auth_settings(settings)
+        result = u.Client.from_auth_settings(settings)
         tm.ok(result)
-        tm.that(result.unwrap(), is_=FlextOracleWmsUtilitiesClient.Client)
+        tm.that(result.unwrap(), is_=u.Client)
 
     def test_client_rejects_invalid_basic_settings(self) -> None:
         """Basic settings missing credentials cannot build a client."""
         settings = m.OracleWms.AuthSettings(method=_Method.BASIC)
-        result = FlextOracleWmsUtilitiesClient.Client.from_auth_settings(settings)
+        result = u.Client.from_auth_settings(settings)
         tm.fail(result)
         tm.that(result.error, none=False)
 
@@ -260,7 +254,7 @@ class TestsFlextOracleWmsAuthentication:
         settings = m.OracleWms.AuthSettings(
             method=_Method.OAUTH2, oauth2_client_id="id", oauth2_client_secret=_secret()
         )
-        result = FlextOracleWmsUtilitiesClient.Client.from_auth_settings(settings)
+        result = u.Client.from_auth_settings(settings)
         error = tm.fail(result)
         tm.that(error.lower(), has="basic auth only")
 

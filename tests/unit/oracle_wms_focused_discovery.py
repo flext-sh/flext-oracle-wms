@@ -12,7 +12,7 @@ from datetime import UTC, datetime
 from pathlib import Path
 from typing import TYPE_CHECKING, cast
 
-from flext_oracle_wms import FlextOracleWmsSettings, FlextOracleWmsUtilitiesClient
+from flext_oracle_wms import FlextOracleWmsSettings
 from flext_tests import r
 from tests import t, u
 
@@ -45,7 +45,7 @@ class FocusedOracleWmsDiscovery:
                 "enable_logging": True,
             }
         })
-        self.client = FlextOracleWmsUtilitiesClient.Client(settings=self.settings)
+        self.client = u.Client(settings=self.settings)
         self.quick_test_entities: t.StrSequence = [
             "company",
             "facility",
@@ -460,7 +460,11 @@ class FocusedOracleWmsDiscovery:
         for entity_name, schema in self.complete_schemas.items():
             if not isinstance(schema, dict):
                 continue
-            key_properties = schema.get("key_properties", [])
+            # flext-1wjg1.16: type the boundary at the declaration instead of
+            # casting at the point of use -- mypy already treats this value
+            # as t.JsonValue-compatible, so a cast() here is redundant (and
+            # cast() outside flext-core is prohibited anyway).
+            key_properties: t.JsonValue = schema.get("key_properties", [])
             schema_without_keys: t.MutableJsonMapping = {
                 k: v for k, v in schema.items() if k != "key_properties"
             }
@@ -469,7 +473,7 @@ class FocusedOracleWmsDiscovery:
                 "tap_stream_id": entity_name,
                 "stream": entity_name,
                 "schema": cast("t.JsonValue", schema_without_keys),
-                "key_properties": cast("t.JsonValue", key_properties),
+                "key_properties": key_properties,
                 "metadata": cast(
                     "t.JsonValue",
                     [
