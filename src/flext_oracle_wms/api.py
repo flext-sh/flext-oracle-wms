@@ -77,7 +77,4 @@ class FlextOracleWmsApi(s[bool]):
         )
         return result
 
-
-oracle_wms = FlextOracleWmsApi
-
-__all__: list[str] = ["FlextOracleWmsApi", "oracle_wms"]
+__all__: list[str] = ["FlextOracleWmsApi", ]
