@@ -1,4 +1,4 @@
-"""Test fixtures for flext-oracle-wms.
+"""Typed fixtures backed by the public Oracle WMS owners.
 
 Copyright (c) 2025 FLEXT Team. All rights reserved.
 SPDX-License-Identifier: MIT
@@ -7,63 +7,46 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-import os
-from typing import TYPE_CHECKING
-
 import pytest
 
-from flext_oracle_wms import FlextOracleWmsSettings
-
-if TYPE_CHECKING:
-    from tests import t
-
-_ORACLE_WMS_ENV_PREFIX = "FLEXT_ORACLE_WMS_"
-_ORACLE_WMS_ENV_SNAPSHOTS: t.MutableMappingKV[str, t.StrMapping] = {}
+from flext_oracle_wms import (
+    FlextOracleWmsApi,
+    FlextOracleWmsSettings,
+    config,
+    p,
+    settings,
+    u,
+)
 
 
 @pytest.fixture
-def mock_config() -> FlextOracleWmsSettings:
-    """Deterministic Oracle WMS settings for unit testing."""
-    return FlextOracleWmsSettings.model_validate({
-        "OracleWms": {
-            "base_url": "https://test-wms.example.com",
-            "timeout": 30.0,
-            "username": "test_user",
-            "password": "test_password",
-        }
-    })
+def oracle_wms_settings() -> FlextOracleWmsSettings:
+    """Return the public runtime settings singleton."""
+    return settings
 
 
-def pytest_runtest_setup(item: pytest.Item) -> None:
-    """Keep unit tests deterministic before each test."""
-    FlextOracleWmsSettings.reset_for_testing()
-    if _uses_real_or_integration_marker(item):
-        return
-    snapshot: t.MutableStrMapping = {
-        key: value
-        for key, value in os.environ.items()
-        if key.startswith(_ORACLE_WMS_ENV_PREFIX)
-    }
-    _ORACLE_WMS_ENV_SNAPSHOTS[item.nodeid] = dict(snapshot)
-    for key in snapshot:
-        os.environ.pop(key, None)
+@pytest.fixture
+def oracle_wms_config() -> p.OracleWms.Config:
+    """Return the validated public business-rule configuration."""
+    return config.oracle_wms
 
 
-def pytest_runtest_teardown(item: pytest.Item, nextitem: pytest.Item | None) -> None:
-    """Restore Oracle WMS test isolation state after each test."""
-    del nextitem
-    snapshot = _ORACLE_WMS_ENV_SNAPSHOTS.pop(item.nodeid, None)
-    if snapshot is not None:
-        for key in [
-            key for key in os.environ if key.startswith(_ORACLE_WMS_ENV_PREFIX)
-        ]:
-            os.environ.pop(key, None)
-        os.environ.update(snapshot)
-    FlextOracleWmsSettings.reset_for_testing()
+@pytest.fixture
+def oracle_wms_api(
+    oracle_wms_settings: FlextOracleWmsSettings,
+) -> FlextOracleWmsApi:
+    """Return the real public composition root with injected settings."""
+    return FlextOracleWmsApi(settings=oracle_wms_settings)
 
 
-def _uses_real_or_integration_marker(item: pytest.Item) -> bool:
-    """Return whether a test intentionally uses real integration configuration."""
-    return bool(
-        item.get_closest_marker("real") or item.get_closest_marker("integration")
+@pytest.fixture
+def oracle_wms_http_client(
+    oracle_wms_settings: FlextOracleWmsSettings,
+) -> u.OracleWms.HttpClient:
+    """Create the public HTTP client from the runtime settings owner."""
+    runtime = oracle_wms_settings.OracleWms
+    return FlextOracleWmsApi.create_flext_http_client(
+        base_url=runtime.base_url,
+        timeout=runtime.timeout,
+        verify_ssl=runtime.verify_ssl,
     )

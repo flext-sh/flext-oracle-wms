@@ -27,45 +27,57 @@ class TestsFlextOracleWmsClientCore:
     """Public-contract behavior of the Oracle WMS utilities client."""
 
     def test_init_preserves_supplied_settings(
-        self, mock_config: FlextOracleWmsSettings
+        self, oracle_wms_settings: FlextOracleWmsSettings
     ) -> None:
-        client = u.OracleWms.Client(mock_config)
-        assert client.settings is mock_config
-        tm.that(client.settings.OracleWms.base_url, eq=mock_config.OracleWms.base_url)
-        tm.that(client.settings.OracleWms.timeout, eq=mock_config.OracleWms.timeout)
+        client = u.OracleWms.Client(oracle_wms_settings)
+        assert client.settings is oracle_wms_settings
+        tm.that(
+            client.settings.OracleWms.base_url,
+            eq=oracle_wms_settings.OracleWms.base_url,
+        )
+        tm.that(
+            client.settings.OracleWms.timeout,
+            eq=oracle_wms_settings.OracleWms.timeout,
+        )
 
     def test_init_without_settings_resolves_global_config(self) -> None:
         client = u.OracleWms.Client(None)
         tm.that(client.settings, is_=FlextOracleWmsSettings)
 
-    def test_start_reports_success(self, mock_config: FlextOracleWmsSettings) -> None:
-        result = u.OracleWms.Client(mock_config).start()
+    def test_start_reports_success(
+        self, oracle_wms_settings: FlextOracleWmsSettings
+    ) -> None:
+        result = u.OracleWms.Client(oracle_wms_settings).start()
         tm.ok(result)
         tm.that(result.unwrap(), eq=True)
 
-    def test_start_is_idempotent(self, mock_config: FlextOracleWmsSettings) -> None:
-        client = u.OracleWms.Client(mock_config)
+    def test_start_is_idempotent(
+        self, oracle_wms_settings: FlextOracleWmsSettings
+    ) -> None:
+        client = u.OracleWms.Client(oracle_wms_settings)
         tm.that(client.start().unwrap(), eq=True)
         tm.that(client.start().unwrap(), eq=True)
 
-    def test_stop_reports_success(self, mock_config: FlextOracleWmsSettings) -> None:
-        client = u.OracleWms.Client(mock_config)
+    def test_stop_reports_success(
+        self, oracle_wms_settings: FlextOracleWmsSettings
+    ) -> None:
+        client = u.OracleWms.Client(oracle_wms_settings)
         client.start()
         result = client.stop()
         tm.ok(result)
         tm.that(result.unwrap(), eq=True)
 
     def test_stop_before_start_still_succeeds(
-        self, mock_config: FlextOracleWmsSettings
+        self, oracle_wms_settings: FlextOracleWmsSettings
     ) -> None:
-        result = u.OracleWms.Client(mock_config).stop()
+        result = u.OracleWms.Client(oracle_wms_settings).stop()
         tm.ok(result)
         tm.that(result.unwrap(), eq=True)
 
     def test_restart_after_stop_succeeds(
-        self, mock_config: FlextOracleWmsSettings
+        self, oracle_wms_settings: FlextOracleWmsSettings
     ) -> None:
-        client = u.OracleWms.Client(mock_config)
+        client = u.OracleWms.Client(oracle_wms_settings)
         client.start()
         client.stop()
         tm.that(client.start().unwrap(), eq=True)
