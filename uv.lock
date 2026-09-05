@@ -836,7 +836,7 @@ dependencies = [
 
 [[package]]
 name = "flext-oracle-wms"
-version = "0.12.0rc0"
+version = "0.12.0"
 source = { editable = "." }
 dependencies = [
     { name = "flext-api" },
