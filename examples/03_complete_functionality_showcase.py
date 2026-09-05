@@ -38,8 +38,6 @@ from dotenv import load_dotenv
 from flext_oracle_wms import (
     FlextOracleWmsApi,
     FlextOracleWmsSettings,
-    FlextOracleWmsUtilitiesAuth,
-    FlextOracleWmsUtilitiesClient,
     c,
     m,
     p,
@@ -51,8 +49,8 @@ from flext_oracle_wms.errors import FlextOracleWmsErrors
 if TYPE_CHECKING:
     from collections.abc import Sequence
 
-FlextOracleWmsAuthenticator = FlextOracleWmsUtilitiesAuth.Authenticator
-FlextOracleWmsClient = FlextOracleWmsUtilitiesClient.Client
+FlextOracleWmsAuthenticator = u.Authenticator
+FlextOracleWmsClient = u.Client
 
 logger = u.fetch_logger(__name__)
 
@@ -148,7 +146,7 @@ def showcase_4_authentication(settings: FlextOracleWmsSettings) -> None:
         username=settings.OracleWms.username or "invalid",
         password=settings.OracleWms.password or "invalid",
     )
-    validation = FlextOracleWmsUtilitiesAuth.validate_auth_settings(auth_config)
+    validation = u.validate_auth_settings(auth_config)
     if validation.failure:
         raise ValueError(validation.error or "Authentication settings are invalid")
     authenticator = FlextOracleWmsAuthenticator(auth_config)
@@ -200,7 +198,7 @@ def showcase_6_error_handling(client: FlextOracleWmsClient) -> None:
             username=invalid_config.OracleWms.username,
             password=invalid_config.OracleWms.password,
         )
-        validation = FlextOracleWmsUtilitiesAuth.validate_auth_settings(invalid_auth)
+        validation = u.validate_auth_settings(invalid_auth)
         if validation.failure:
             logger.info("Expected validation failure: %s", validation.error)
     except Exception as exc:

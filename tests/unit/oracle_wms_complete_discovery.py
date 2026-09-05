@@ -21,7 +21,6 @@ from flext_api import FlextApiModels
 from flext_oracle_wms import (
     FlextOracleWmsApi,
     FlextOracleWmsSettings,
-    FlextOracleWmsUtilitiesClient,
 )
 from flext_tests import r
 from tests import c, m, t, u
@@ -57,10 +56,10 @@ class OracleWmsCompleteDiscovery:
             username=self.settings.OracleWms.username,
             password=self.settings.OracleWms.password,
         )
-        _auth_result = FlextOracleWmsUtilitiesClient.Client.from_auth_settings(
+        _auth_result = u.Client.from_auth_settings(
             auth_settings
         )
-        self.client = FlextOracleWmsUtilitiesClient.Client(settings=self.settings)
+        self.client = u.Client(settings=self.settings)
         self.discovered_entities: MutableSequence[str] = []
         self.entity_metadata: t.MutableJsonMapping = {}
         self.complete_schemas: t.MutableJsonMapping = {}
