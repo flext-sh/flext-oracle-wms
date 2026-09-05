@@ -3,16 +3,12 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
-
 from types import MappingProxyType
+from typing import TYPE_CHECKING
 
 from flext_core.lazy import build_lazy_import_map, install_lazy_exports
 
 if TYPE_CHECKING:
-    from . import tests as tests
-    # Why: mro-4p0t — these are flext_oracle_wms's own re-exports, not
-    # flext_core's (flext-oracle-wms-1sm3w toolchain sync fix).
     from flext_oracle_wms import (
         FlextOracleWmsConstants,
         FlextOracleWmsConstants as c,
@@ -28,6 +24,7 @@ if TYPE_CHECKING:
         x,
     )
 
+    from . import tests as tests
     from .constants import ExamplesFlextOracleWmsConstants
     from .models import ExamplesFlextOracleWmsModels
     from .protocols import ExamplesFlextOracleWmsProtocols
