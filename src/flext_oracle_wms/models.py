@@ -11,8 +11,6 @@ from __future__ import annotations
 
 from typing import Annotated, ClassVar
 
-from pydantic import computed_field
-
 from flext_api import m, u
 from flext_oracle_wms import c, t
 
@@ -102,10 +100,11 @@ class FlextOracleWmsModels(m):
             oauth2_scope: str = "wms.read wms.write"
             token_refresh_threshold: t.PositiveInt = 300
 
-            # Why: mro-4p0t — the u.* facade forward of computed_field loses
-            # its @overload set for the return_type= kwarg form; use pydantic's
-            # own export directly here (flext-oracle-wms-1sm3w sync fix).
-            @computed_field(return_type=str)
+            # return_type= kwarg dropped: it hit computed_field's kwargs-only
+            # overload, which flext-core's `staticmethod(computed_field)` wrap
+            # does not expose to pyrefly (flext-1wjg1.16 fleet defect); the
+            # bare form already infers the type from the property annotation.
+            @u.computed_field
             @property
             def normalized_method(self) -> str:
                 """The auth method in canonical lowercase form."""
