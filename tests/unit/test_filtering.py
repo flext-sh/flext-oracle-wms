@@ -20,12 +20,11 @@ from __future__ import annotations
 
 import pytest
 
-from flext_oracle_wms import FlextOracleWmsUtilitiesFiltering
 from flext_oracle_wms.errors import FlextOracleWmsErrors
 from flext_tests import e, tm
-from tests import c, m, t
+from tests import c, m, t, u
 
-Filter = FlextOracleWmsUtilitiesFiltering.Filter
+Filter = u.Filter
 Operator = m.OracleWms.FlextOracleWmsOperatorFilter
 Op = c.OracleWms.WmsFilterOperator
 

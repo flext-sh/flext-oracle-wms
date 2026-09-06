@@ -1,6 +1,6 @@
 """Behavioral unit tests for the Oracle WMS runtime client.
 
-Exercises the PUBLIC contract of ``FlextOracleWmsUtilitiesClient.Client``:
+Exercises the PUBLIC contract of ``u.Client``:
 return values, ``r[T]`` success/failure outcomes, error messages, HTTP
 error propagation, entity/data extraction and lifecycle idempotence.
 
@@ -20,7 +20,7 @@ import pytest
 from flext_api import FlextApi
 from flext_oracle_wms import (
     FlextOracleWmsSettings,
-    FlextOracleWmsUtilitiesClient,
+    FlextOracleWmsUtilities as u,
     m,
     p,
     r,
@@ -35,10 +35,14 @@ class TestsFlextOracleWmsWmsClient:
     @staticmethod
     def _response(status_code: int, body: t.Api.ResponseBody) -> m.Api.HttpResponse:
         """Build a real HTTP response model as the boundary would return."""
-        return m.Api.HttpResponse.model_validate({
+        # flext-1wjg1.16: explicit typed local -- mypy cannot follow
+        # model_validate's Self return through the composed facade back to
+        # the concrete HttpResponse without a binding annotation here.
+        response: m.Api.HttpResponse = m.Api.HttpResponse.model_validate({
             "status_code": status_code,
             "body": body,
         })
+        return response
 
     @classmethod
     def _stub_boundary(
@@ -64,7 +68,7 @@ class TestsFlextOracleWmsWmsClient:
     @pytest.fixture
     def client(self) -> t.OracleWms.Tests.Client:
         """Return a client bound to the deterministic testing configuration."""
-        return FlextOracleWmsUtilitiesClient.Client(
+        return u.Client(
             FlextOracleWmsSettings.model_validate({
                 "OracleWms": {
                     "base_url": "https://test-wms.example.com",
@@ -78,14 +82,14 @@ class TestsFlextOracleWmsWmsClient:
     # -- construction contract ------------------------------------------
 
     def test_default_construction_exposes_settings_instance(self) -> None:
-        client = FlextOracleWmsUtilitiesClient.Client()
+        client = u.Client()
         tm.that(client.settings, is_=FlextOracleWmsSettings)
 
     def test_explicit_settings_are_exposed_unchanged(self) -> None:
         settings = FlextOracleWmsSettings.model_validate({
             "OracleWms": {"base_url": "https://custom-wms.example.com", "timeout": 60}
         })
-        client = FlextOracleWmsUtilitiesClient.Client(settings=settings)
+        client = u.Client(settings=settings)
         assert client.settings is settings
         tm.that(client.settings.OracleWms.base_url, eq="https://custom-wms.example.com")
         tm.that(client.settings.OracleWms.timeout, eq=60)

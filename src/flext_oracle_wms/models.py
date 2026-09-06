@@ -100,7 +100,11 @@ class FlextOracleWmsModels(m):
             oauth2_scope: str = "wms.read wms.write"
             token_refresh_threshold: t.PositiveInt = 300
 
-            @u.computed_field(return_type=str)
+            # return_type= kwarg dropped: it hit computed_field's kwargs-only
+            # overload, which flext-core's `staticmethod(computed_field)` wrap
+            # does not expose to pyrefly (flext-1wjg1.16 fleet defect); the
+            # bare form already infers the type from the property annotation.
+            @u.computed_field
             @property
             def normalized_method(self) -> str:
                 """The auth method in canonical lowercase form."""

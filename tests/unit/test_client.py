@@ -12,7 +12,7 @@ from __future__ import annotations
 
 import pytest
 
-from flext_oracle_wms import FlextOracleWmsSettings, FlextOracleWmsUtilitiesClient, m
+from flext_oracle_wms import FlextOracleWmsSettings, FlextOracleWmsUtilities as u, m
 from flext_tests import tm
 from tests._factories import (
     _custom_password,
@@ -24,7 +24,7 @@ from tests._factories import (
 
 
 class TestsFlextOracleWmsClient:
-    """Public-contract tests for ``FlextOracleWmsUtilitiesClient.Client``."""
+    """Public-contract tests for ``u.Client``."""
 
     @pytest.fixture
     def settings(self) -> FlextOracleWmsSettings:
@@ -44,7 +44,7 @@ class TestsFlextOracleWmsClient:
         self, settings: FlextOracleWmsSettings
     ) -> None:
         """The client exposes exactly the settings object it was built with."""
-        client = FlextOracleWmsUtilitiesClient.Client(settings)
+        client = u.Client(settings)
 
         assert client.settings is settings
         tm.that(client.settings.OracleWms.base_url, eq="https://test.wms.com")
@@ -62,7 +62,7 @@ class TestsFlextOracleWmsClient:
             }
         })
 
-        client = FlextOracleWmsUtilitiesClient.Client(custom)
+        client = u.Client(custom)
 
         tm.that(client.settings.OracleWms.timeout, eq=pytest.approx(60.0))
         tm.that(client.settings.OracleWms.retry_attempts, eq=5)
@@ -70,7 +70,7 @@ class TestsFlextOracleWmsClient:
 
     def test_constructor_without_settings_yields_valid_settings(self) -> None:
         """Omitting settings resolves the global runtime settings contract."""
-        client = FlextOracleWmsUtilitiesClient.Client()
+        client = u.Client()
 
         tm.that(client.settings, is_=FlextOracleWmsSettings)
         assert client.settings.OracleWms.base_url
@@ -79,7 +79,7 @@ class TestsFlextOracleWmsClient:
 
     def test_start_returns_success(self, settings: FlextOracleWmsSettings) -> None:
         """``start`` reports a successful ``r[bool]`` carrying ``True``."""
-        client = FlextOracleWmsUtilitiesClient.Client(settings)
+        client = u.Client(settings)
 
         result = client.start()
 
@@ -88,7 +88,7 @@ class TestsFlextOracleWmsClient:
 
     def test_stop_returns_success(self, settings: FlextOracleWmsSettings) -> None:
         """``stop`` reports a successful ``r[bool]`` carrying ``True``."""
-        client = FlextOracleWmsUtilitiesClient.Client(settings)
+        client = u.Client(settings)
 
         result = client.stop()
 
@@ -99,7 +99,7 @@ class TestsFlextOracleWmsClient:
         self, settings: FlextOracleWmsSettings
     ) -> None:
         """Repeated start/stop cycles keep succeeding without error."""
-        client = FlextOracleWmsUtilitiesClient.Client(settings)
+        client = u.Client(settings)
 
         tm.ok(client.start())
         tm.ok(client.stop())
@@ -116,11 +116,11 @@ class TestsFlextOracleWmsClient:
             method="basic", username="alice", password=_secret()
         )
 
-        result = FlextOracleWmsUtilitiesClient.Client.from_auth_settings(auth)
+        result = u.Client.from_auth_settings(auth)
 
         tm.ok(result)
         client = result.unwrap()
-        tm.that(client, is_=FlextOracleWmsUtilitiesClient.Client)
+        tm.that(client, is_=u.Client)
         tm.that(client.settings.OracleWms.username, eq="alice")
         tm.that(client.settings.OracleWms.password, eq="secret")
 
@@ -128,7 +128,7 @@ class TestsFlextOracleWmsClient:
         """BASIC auth without credentials fails business-rule validation."""
         auth = m.OracleWms.AuthSettings(method="basic")
 
-        result = FlextOracleWmsUtilitiesClient.Client.from_auth_settings(auth)
+        result = u.Client.from_auth_settings(auth)
 
         tm.fail(result)
         tm.that(result.error, none=False)
@@ -142,7 +142,7 @@ class TestsFlextOracleWmsClient:
             oauth2_client_secret=_oauth_secret_dashed(),
         )
 
-        result = FlextOracleWmsUtilitiesClient.Client.from_auth_settings(auth)
+        result = u.Client.from_auth_settings(auth)
 
         tm.fail(result)
         tm.that(result.error, none=False)
@@ -154,7 +154,7 @@ class TestsFlextOracleWmsClient:
             method="kerberos", username="bob", password=_short_password()
         )
 
-        result = FlextOracleWmsUtilitiesClient.Client.from_auth_settings(auth)
+        result = u.Client.from_auth_settings(auth)
 
         tm.fail(result)
         tm.that(result.error, none=False)

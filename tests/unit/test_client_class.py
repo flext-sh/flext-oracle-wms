@@ -9,17 +9,17 @@ from __future__ import annotations
 
 import pytest
 
-from flext_oracle_wms import FlextOracleWmsSettings, FlextOracleWmsUtilitiesClient, m
+from flext_oracle_wms import FlextOracleWmsSettings, FlextOracleWmsUtilities as u, m
 from flext_tests import tm
 from tests._factories import _basic_password, _oauth_secret_dashed, _wms_password
 
-Client = FlextOracleWmsUtilitiesClient.Client
+Client = u.Client
 
 __all__: list[str] = ["TestsFlextOracleWmsClientClass"]
 
 
 class TestsFlextOracleWmsClientClass:
-    """Observable public behavior of FlextOracleWmsUtilitiesClient.Client."""
+    """Observable public behavior of u.Client."""
 
     @pytest.fixture
     def settings(self) -> FlextOracleWmsSettings:
