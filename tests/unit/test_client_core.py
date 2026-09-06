@@ -36,8 +36,7 @@ class TestsFlextOracleWmsClientCore:
             eq=oracle_wms_settings.OracleWms.base_url,
         )
         tm.that(
-            client.settings.OracleWms.timeout,
-            eq=oracle_wms_settings.OracleWms.timeout,
+            client.settings.OracleWms.timeout, eq=oracle_wms_settings.OracleWms.timeout
         )
 
     def test_init_without_settings_resolves_global_config(self) -> None:

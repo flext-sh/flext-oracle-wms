@@ -38,9 +38,7 @@ class TestsFlextOracleWmsHelpersCore:
         tm.that(config, is_=FlextOracleWmsConfig)
         assert oracle_wms_config is config.oracle_wms
 
-    def test_real_public_api_executes(
-        self, oracle_wms_api: FlextOracleWmsApi
-    ) -> None:
+    def test_real_public_api_executes(self, oracle_wms_api: FlextOracleWmsApi) -> None:
         """The injected public composition root reports readiness."""
         result = oracle_wms_api.execute()
 

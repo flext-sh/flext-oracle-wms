@@ -48,7 +48,9 @@ class FlextOracleWmsUtilitiesClient:
                 auth_settings
             )
             if validation_result.failure:
-                return r[FlextOracleWmsUtilitiesClient.Client].from_failure(validation_result)
+                return r[FlextOracleWmsUtilitiesClient.Client].from_failure(
+                    validation_result
+                )
             basic_method = str(c.OracleWms.OracleWMSAuthMethod.BASIC)
             if auth_settings.normalized_method != basic_method:
                 return r[FlextOracleWmsUtilitiesClient.Client].fail(

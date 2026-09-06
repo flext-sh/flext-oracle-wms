@@ -32,9 +32,7 @@ def oracle_wms_config() -> p.OracleWms.Config:
 
 
 @pytest.fixture
-def oracle_wms_api(
-    oracle_wms_settings: FlextOracleWmsSettings,
-) -> FlextOracleWmsApi:
+def oracle_wms_api(oracle_wms_settings: FlextOracleWmsSettings) -> FlextOracleWmsApi:
     """Return the real public composition root with injected settings."""
     return FlextOracleWmsApi(settings=oracle_wms_settings)
 

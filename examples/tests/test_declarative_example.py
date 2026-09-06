@@ -8,12 +8,7 @@ from __future__ import annotations
 from pathlib import Path
 from urllib.parse import urlparse
 
-from flext_oracle_wms import (
-    FlextOracleWmsApi,
-    FlextOracleWmsSettings,
-    t,
-    u,
-)
+from flext_oracle_wms import FlextOracleWmsApi, FlextOracleWmsSettings, t, u
 
 logger = u.fetch_logger(__name__)
 

@@ -28,12 +28,7 @@ from typing import TYPE_CHECKING, Final
 from dotenv import load_dotenv
 
 from flext_core import FlextContainer
-from flext_oracle_wms import (
-    FlextOracleWmsSettings,
-    p,
-    t,
-    u,
-)
+from flext_oracle_wms import FlextOracleWmsSettings, p, t, u
 from flext_oracle_wms.errors import FlextOracleWmsErrors
 
 if TYPE_CHECKING:
