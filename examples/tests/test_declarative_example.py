@@ -11,14 +11,13 @@ from urllib.parse import urlparse
 from flext_oracle_wms import (
     FlextOracleWmsApi,
     FlextOracleWmsSettings,
-    FlextOracleWmsUtilitiesClient,
     t,
     u,
 )
 
 logger = u.fetch_logger(__name__)
 
-FlextOracleWmsClient = FlextOracleWmsUtilitiesClient.Client
+FlextOracleWmsClient = u.Client
 
 
 def load_env_config() -> t.MutableJsonMapping | None:

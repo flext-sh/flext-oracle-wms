@@ -15,11 +15,10 @@ import os
 from flext_oracle_wms import (
     FlextOracleWmsConstants,
     FlextOracleWmsSettings,
-    FlextOracleWmsUtilitiesClient,
     u,
 )
 
-FlextOracleWmsClient = FlextOracleWmsUtilitiesClient.Client
+FlextOracleWmsClient = u.Client
 
 logger = u.fetch_logger(__name__)
 
