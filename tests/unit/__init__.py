@@ -3,24 +3,15 @@
 
 from __future__ import annotations
 
-from types import MappingProxyType
 from typing import TYPE_CHECKING
+
+from types import MappingProxyType
 
 from flext_core.lazy import build_lazy_import_map, install_lazy_exports
 
 if TYPE_CHECKING:
     from flext_tests import c, d, e, h, m, p, r, s, t, td, tf, tk, tm, tv, u, x
 
-    from .complete_mock_pipeline import CompleteMockPipeline, main
-    from .oracle_wms_complete_discovery import (
-        OracleWmsCompleteDiscovery,
-        OracleWmsCompleteDiscoveryRunner,
-    )
-    from .oracle_wms_focused_discovery import FocusedOracleWmsDiscovery
-    from .oracle_wms_optimized_discovery import (
-        OptimizedOracleWmsDiscovery,
-        OptimizedOracleWmsDiscoveryRunner,
-    )
     from .test_api import TestsFlextOracleWmsApi
     from .test_authentication import TestsFlextOracleWmsAuthentication
     from .test_authentication_core import TestsFlextOracleWmsAuthenticationCore
@@ -32,11 +23,6 @@ if TYPE_CHECKING:
     from .test_config_module import TestsFlextOracleWmsConfigModule
     from .test_connection import TestsFlextOracleWmsConnection
     from .test_constants import TestsFlextOracleWmsConstantsUnit
-    from .test_declarative import (
-        TestsFlextOracleWmsDeclarative,
-        env_config,
-        oracle_wms_client,
-    )
     from .test_discovery import TestsFlextOracleWmsDiscovery
     from .test_filtering import TestsFlextOracleWmsFiltering
     from .test_helpers import TestsFlextOracleWmsHelpers
@@ -47,12 +33,6 @@ if TYPE_CHECKING:
     from .test_unified_config import TestsFlextOracleWmsUnifiedConfig
     from .test_wms_client import TestsFlextOracleWmsWmsClient
 __all__: tuple[str, ...] = (
-    "CompleteMockPipeline",
-    "FocusedOracleWmsDiscovery",
-    "OptimizedOracleWmsDiscovery",
-    "OptimizedOracleWmsDiscoveryRunner",
-    "OracleWmsCompleteDiscovery",
-    "OracleWmsCompleteDiscoveryRunner",
     "TestsFlextOracleWmsApi",
     "TestsFlextOracleWmsAuthentication",
     "TestsFlextOracleWmsAuthenticationCore",
@@ -64,7 +44,6 @@ __all__: tuple[str, ...] = (
     "TestsFlextOracleWmsConfigModule",
     "TestsFlextOracleWmsConnection",
     "TestsFlextOracleWmsConstantsUnit",
-    "TestsFlextOracleWmsDeclarative",
     "TestsFlextOracleWmsDiscovery",
     "TestsFlextOracleWmsFiltering",
     "TestsFlextOracleWmsHelpers",
@@ -77,11 +56,8 @@ __all__: tuple[str, ...] = (
     "c",
     "d",
     "e",
-    "env_config",
     "h",
     "m",
-    "main",
-    "oracle_wms_client",
     "p",
     "r",
     "s",
@@ -98,16 +74,6 @@ __all__: tuple[str, ...] = (
 _LAZY_IMPORTS = MappingProxyType(
     build_lazy_import_map(
         MappingProxyType({
-            ".complete_mock_pipeline": ("CompleteMockPipeline", "main"),
-            ".oracle_wms_complete_discovery": (
-                "OracleWmsCompleteDiscovery",
-                "OracleWmsCompleteDiscoveryRunner",
-            ),
-            ".oracle_wms_focused_discovery": ("FocusedOracleWmsDiscovery",),
-            ".oracle_wms_optimized_discovery": (
-                "OptimizedOracleWmsDiscovery",
-                "OptimizedOracleWmsDiscoveryRunner",
-            ),
             ".test_api": ("TestsFlextOracleWmsApi",),
             ".test_authentication": ("TestsFlextOracleWmsAuthentication",),
             ".test_authentication_core": ("TestsFlextOracleWmsAuthenticationCore",),
@@ -119,11 +85,6 @@ _LAZY_IMPORTS = MappingProxyType(
             ".test_config_module": ("TestsFlextOracleWmsConfigModule",),
             ".test_connection": ("TestsFlextOracleWmsConnection",),
             ".test_constants": ("TestsFlextOracleWmsConstantsUnit",),
-            ".test_declarative": (
-                "TestsFlextOracleWmsDeclarative",
-                "env_config",
-                "oracle_wms_client",
-            ),
             ".test_discovery": ("TestsFlextOracleWmsDiscovery",),
             ".test_filtering": ("TestsFlextOracleWmsFiltering",),
             ".test_helpers": ("TestsFlextOracleWmsHelpers",),
