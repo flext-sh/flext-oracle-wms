@@ -25,7 +25,7 @@
 - Public symbol exports: `FlextOracleWmsApi`, `FlextOracleWmsConfig`,
   `FlextOracleWmsConstants`, `FlextOracleWmsErrors`, `FlextOracleWmsModels`,
   `FlextOracleWmsProtocols`, `FlextOracleWmsSettings`, `FlextOracleWmsTypes`,
-  `FlextOracleWmsUtilities`, `config` (+1 more)
+  `FlextOracleWmsUtilities`, `config` (+2 more)
 - Exported module shortcuts: _none_
 - Generated module pages: `7`
 
