@@ -195,7 +195,7 @@ def showcase_6_error_handling(client: FlextOracleWmsClient) -> None:
         validation = u.OracleWms.validate_auth_settings(invalid_auth)
         if validation.failure:
             logger.info("Expected validation failure: %s", validation.error)
-    except Exception as exc:
+    except ValueError as exc:
         logger.warning("Error handling demonstration: %s", exc)
 
 

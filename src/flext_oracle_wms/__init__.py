@@ -20,9 +20,6 @@ from .__version__ import (
 )
 
 if TYPE_CHECKING:
-    from enum import StrEnum, unique
-    from typing import TYPE_CHECKING, ClassVar, Final
-
     from flext_api import d, h, r, s, x
 
     from ._config import FlextOracleWmsConfig, config
@@ -35,9 +32,6 @@ if TYPE_CHECKING:
     from .typings import FlextOracleWmsTypes, FlextOracleWmsTypes as t
     from .utilities import FlextOracleWmsUtilities, FlextOracleWmsUtilities as u
 __all__: tuple[str, ...] = (
-    "TYPE_CHECKING",
-    "ClassVar",
-    "Final",
     "FlextOracleWmsApi",
     "FlextOracleWmsConfig",
     "FlextOracleWmsConstants",
@@ -47,8 +41,6 @@ __all__: tuple[str, ...] = (
     "FlextOracleWmsSettings",
     "FlextOracleWmsTypes",
     "FlextOracleWmsUtilities",
-    "MappingProxyType",
-    "StrEnum",
     "__author__",
     "__author_email__",
     "__description__",
@@ -70,7 +62,6 @@ __all__: tuple[str, ...] = (
     "settings",
     "t",
     "u",
-    "unique",
     "x",
 )
 
@@ -86,10 +77,7 @@ _LAZY_IMPORTS = MappingProxyType(
             ".protocols": ("FlextOracleWmsProtocols", "p"),
             ".typings": ("FlextOracleWmsTypes", "t"),
             ".utilities": ("FlextOracleWmsUtilities", "u"),
-            "enum": ("StrEnum", "unique"),
             "flext_api": ("d", "h", "r", "s", "x"),
-            "types": ("MappingProxyType",),
-            "typing": ("ClassVar", "Final", "TYPE_CHECKING"),
         }),
         alias_groups=MappingProxyType({}),
         sort_keys=False,

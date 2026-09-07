@@ -179,7 +179,7 @@ def test_configuration(settings: FlextOracleWmsSettings) -> t.MutableJsonMapping
     client = FlextOracleWmsClient(settings)
     try:
         _run_configuration_test(client, test_results)
-    except Exception as exc:
+    except ValueError as exc:
         test_results["error"] = str(exc)
     finally:
         client.stop()
@@ -235,7 +235,7 @@ def demonstrate_configuration_patterns() -> None:
         logger.info("Environment configuration unavailable: %s", exc)
     try:
         _demonstrate_demo_configuration()
-    except Exception as exc:
+    except ValueError as exc:
         logger.warning("Configuration validation failed: %s", exc)
     env_configs = get_environment_configs()
     for _config in env_configs.values():
