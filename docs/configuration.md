@@ -140,7 +140,6 @@ settings = FlextOracleWmsSettings(
     base_url="https://test.example.com", username="test_user", password="test_password"
 )
 # Pydantic automatically validates configuration structure
-
 ```
 
 ### Required Implementation
