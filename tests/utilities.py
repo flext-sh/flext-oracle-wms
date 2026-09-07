@@ -145,7 +145,7 @@ class TestsFlextOracleWmsUtilities(FlextTestsUtilities, u):
                                 settings[key.strip()] = value.strip()
                 except (OSError, ValueError, TypeError) as exc:
                     return r[TestsFlextOracleWmsTypes.OracleWms.Tests.EnvConfig].fail(
-                        f"Failed to load .env settings: {exc}"
+                        f"Failed to load .env settings: {exc}", exception=exc
                     )
                 base_url = settings.get("ORACLE_WMS_BASE_URL", "")
                 return r[TestsFlextOracleWmsTypes.OracleWms.Tests.EnvConfig].ok({

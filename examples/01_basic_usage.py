@@ -28,18 +28,15 @@ from typing import TYPE_CHECKING, Final
 from dotenv import load_dotenv
 
 from flext_core import FlextContainer
-from flext_oracle_wms import (
-    FlextOracleWmsSettings,
-    p,
-    t,
-    u,
-)
+from flext_oracle_wms import FlextOracleWmsSettings, p, t, u
 from flext_oracle_wms.errors import FlextOracleWmsErrors
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
 
-FlextOracleWmsClient = u.Client
+# Why: mro-4p0t — public facade access is u.OracleWms.Client, not the private
+# _utilities.client module (flext-oracle-wms-1sm3w toolchain sync fix).
+FlextOracleWmsClient = u.OracleWms.Client
 
 MAX_ENTITIES_TO_SHOW: Final[int] = 5
 MAX_VALUE_DISPLAY_LENGTH: Final[int] = 50
