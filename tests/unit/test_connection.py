@@ -12,7 +12,8 @@ import pytest
 from flext_core import r
 from flext_oracle_wms import FlextOracleWmsModels as m, FlextOracleWmsSettings, u
 from flext_tests import tm
-from tests._factories import _basic_password, _secret
+
+from .._factories import _basic_password, _secret
 
 __all__ = ["TestsFlextOracleWmsConnection"]
 

@@ -11,7 +11,8 @@ import pytest
 
 from flext_oracle_wms import FlextOracleWmsApi, FlextOracleWmsSettings, c, m, s, u
 from flext_tests import tm
-from tests._factories import _secret
+
+from .._factories import _secret
 
 
 class TestsFlextOracleWmsApi:

@@ -14,7 +14,8 @@ import pytest
 
 from flext_oracle_wms import FlextOracleWmsSettings, m, u
 from flext_tests import tm
-from tests._factories import (
+
+from .._factories import (
     _custom_password,
     _oauth_secret_dashed,
     _secret,

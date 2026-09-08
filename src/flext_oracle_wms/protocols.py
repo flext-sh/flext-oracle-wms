@@ -9,7 +9,8 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Protocol, runtime_checkable
 
 from flext_api import p
-from flext_oracle_wms._protocols.config import FlextOracleWmsProtocolsConfig
+
+from ._protocols.config import FlextOracleWmsProtocolsConfig
 
 if TYPE_CHECKING:
     from flext_oracle_wms import t

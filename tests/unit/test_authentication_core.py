@@ -13,7 +13,8 @@ import pytest
 
 from flext_tests import tm
 from tests import c, m, u
-from tests._factories import _basic_password, _oauth_secret, _secret
+
+from .._factories import _basic_password, _oauth_secret, _secret
 
 _AuthMethod = c.OracleWms.OracleWMSAuthMethod
 _BASIC_TOKEN = base64.b64encode(b"test_user:test_password").decode("ascii")

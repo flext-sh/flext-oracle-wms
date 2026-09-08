@@ -13,8 +13,6 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-import operator
-
 import pytest
 
 from flext_tests import tm
@@ -157,7 +155,7 @@ class TestsFlextOracleWmsConstantsUnit:
         """Published config mappings reject mutation (frozen contract)."""
         mapping = getattr(c.OracleWms, attr)
         with pytest.raises(TypeError):
-            operator.setitem(mapping, "__injected__", "x")
+            mapping["__injected__"] = "x"
 
     def test_test_facade_adds_oracle_wms_category_taxonomy(self) -> None:
         """The test facade extends the domain with WMS API categories."""

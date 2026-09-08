@@ -30,6 +30,7 @@ class FlextOracleWmsConstants(c):
 
         FLEXT_WMS_VERSION: Final[str] = "1.0.0"
         HTTP_BAD_REQUEST_THRESHOLD: Final[int] = 400
+        WMS_API_BASELINE_VERSION: Final[str] = "6.1"
         API_ENDPOINTS: ClassVar[t.MappingKV[str, t.StrMapping]] = MappingProxyType({
             "test": {
                 "name": "test",
@@ -38,7 +39,7 @@ class FlextOracleWmsConstants(c):
                 "version": "v1",
                 "category": "test",
                 "description": "Test endpoint",
-                "since_version": "6.1",
+                "since_version": WMS_API_BASELINE_VERSION,
             }
         })
 
@@ -47,6 +48,7 @@ class FlextOracleWmsConstants(c):
             "base_url_default": "http://localhost:8080",
             "timeout_default": 30,
             "max_retries": 3,
+            "oauth2_endpoint_path": "/oauth2/token",
         })
 
         PROCESSING_CONFIG: ClassVar[t.IntMapping] = MappingProxyType({
@@ -112,7 +114,6 @@ class FlextOracleWmsConstants(c):
                 "oauth2": OracleWMSAuthMethod.OAUTH2,
                 "api_key": OracleWMSAuthMethod.API_KEY,
                 "bearer": OracleWMSAuthMethod.BEARER,
-                "oauth2_token_endpoint": "/oauth2/token",
                 "oauth2_scope_default": "read write",
             })
         )

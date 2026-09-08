@@ -87,7 +87,7 @@ class FlextOracleWmsModels(m):
             version: Annotated[str, u.Field(min_length=1)]
             category: Annotated[str, u.Field(min_length=1)]
             description: str = ""
-            since_version: str = "6.1"
+            since_version: str = c.OracleWms.WMS_API_BASELINE_VERSION
 
         class AuthSettings(m.BaseModel):
             """Authentication configuration for Oracle WMS flows."""
