@@ -576,6 +576,8 @@ link-mode = "copy"
 
 [tool.uv.exclude-newer-package]
 cryptography = false
+faker = false
+ruff = false
 torch = false
 
 [tool.vulture]
