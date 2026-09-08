@@ -109,10 +109,9 @@ class TestsFlextOracleWmsConstantsUnit:
         assert c.OracleWms.AUTH_CONFIG[key] is expected
 
     def test_auth_config_carries_oauth2_endpoint_metadata(self) -> None:
-        """AUTH_CONFIG exposes the OAuth2 token endpoint and default scope."""
-        auth = c.OracleWms.AUTH_CONFIG
-        tm.that(auth["oauth2_token_endpoint"], eq="/oauth2/token")
-        tm.that(auth["oauth2_scope_default"], eq="read write")
+        """AUTH_CONFIG exposes the default scope; API_CONFIG the endpoint path."""
+        tm.that(c.OracleWms.API_CONFIG["oauth2_endpoint_path"], eq="/oauth2/token")
+        tm.that(c.OracleWms.AUTH_CONFIG["oauth2_scope_default"], eq="read write")
 
     @pytest.mark.parametrize(
         ("name", "value"),
