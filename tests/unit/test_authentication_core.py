@@ -10,8 +10,8 @@ from __future__ import annotations
 import base64
 
 import pytest
-
 from flext_tests import tm
+
 from tests import c, m, u
 
 from .._factories import _basic_password, _oauth_secret, _secret

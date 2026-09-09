@@ -14,13 +14,13 @@ from typing import TYPE_CHECKING, override
 from urllib.parse import urlparse
 
 from dotenv import load_dotenv
+from flext_tests import FlextTestsUtilities, r
 
 from flext_oracle_wms import (
     FlextOracleWmsApi,
     FlextOracleWmsSettings,
     FlextOracleWmsUtilities as u,
 )
-from flext_tests import FlextTestsUtilities, r
 from tests import TestsFlextOracleWmsTypes, t
 
 if TYPE_CHECKING:

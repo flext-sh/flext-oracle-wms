@@ -11,8 +11,9 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from flext_oracle_wms import t
 from flext_tests import FlextTestsTypes
+
+from flext_oracle_wms import t
 
 if TYPE_CHECKING:
     from flext_oracle_wms import FlextOracleWmsUtilities

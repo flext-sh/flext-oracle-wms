@@ -12,8 +12,8 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 import pytest
-
 from flext_tests import tm
+
 from tests import c, m, u
 
 _MAX_NAME_LENGTH = c.OracleWms.WmsEntities.MAX_ENTITY_NAME_LENGTH

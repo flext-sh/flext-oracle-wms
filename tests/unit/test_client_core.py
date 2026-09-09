@@ -16,9 +16,9 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 import pytest
+from flext_tests import tm
 
 from flext_oracle_wms import FlextOracleWmsSettings, m, u
-from flext_tests import tm
 
 from .._factories import _oauth_secret_dashed, _wms_password_underscore
 

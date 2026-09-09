@@ -17,9 +17,9 @@ from pathlib import Path
 from typing import TYPE_CHECKING
 
 import pytest
+from flext_tests import tm
 
 from flext_oracle_wms import FlextOracleWmsApi, FlextOracleWmsSettings, m
-from flext_tests import tm
 from tests import t, u
 
 if TYPE_CHECKING:
