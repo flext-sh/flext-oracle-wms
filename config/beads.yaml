@@ -1,4 +1,4 @@
 version: 1
-workspace: flext-oracle-wms
-database: flext-oracle-wms
-issue_prefix: flext-oracle-wms
+workspace: flext
+database: flext
+issue_prefix: flext

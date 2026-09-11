@@ -11,13 +11,11 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from flext_oracle_wms import t
 from flext_tests import FlextTestsTypes
 
+from flext_oracle_wms import t
+
 if TYPE_CHECKING:
-    # flext-1wjg1.16: FlextOracleWmsUtilitiesClient is not re-exported at the
-    # top-level facet anymore (single-facade convention); use the composed
-    # FlextOracleWmsUtilities facade, which inherits the nested Client class.
     from flext_oracle_wms import FlextOracleWmsUtilities
 
 
@@ -30,7 +28,7 @@ class TestsFlextOracleWmsTypes(FlextTestsTypes, t):
         class Tests(FlextTestsTypes.Tests):
             """Oracle WMS-specific test type aliases."""
 
-            type Client = FlextOracleWmsUtilities.Client
+            type Client = FlextOracleWmsUtilities.OracleWms.Client
             type EnvConfig = t.MetadataMapping
             type Record = t.MutableMappingKV[str, str | int]
 

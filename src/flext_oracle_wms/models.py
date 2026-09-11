@@ -12,6 +12,7 @@ from __future__ import annotations
 from typing import Annotated, ClassVar
 
 from flext_api import m, u
+
 from flext_oracle_wms import c, t
 
 
@@ -39,7 +40,7 @@ class FlextOracleWmsModels(m):
         class EnvironmentConfig(m.BaseModel):
             """Oracle WMS environment configuration."""
 
-            model_config: ClassVar[m.ConfigDict] = m.ConfigDict(
+            model_config: ClassVar[t.ConfigDict] = m.ConfigDict(
                 extra="forbid", validate_assignment=True
             )
 
@@ -51,7 +52,7 @@ class FlextOracleWmsModels(m):
         class Entity(m.BaseModel):
             """Oracle WMS entity definition."""
 
-            model_config: ClassVar[m.ConfigDict] = m.ConfigDict(extra="forbid")
+            model_config: ClassVar[t.ConfigDict] = m.ConfigDict(extra="forbid")
 
             name: Annotated[str, u.Field(min_length=1, description="Entity name")]
             endpoint: Annotated[
@@ -87,7 +88,7 @@ class FlextOracleWmsModels(m):
             version: Annotated[str, u.Field(min_length=1)]
             category: Annotated[str, u.Field(min_length=1)]
             description: str = ""
-            since_version: str = "6.1"
+            since_version: str = c.OracleWms.WMS_API_BASELINE_VERSION
 
         class AuthSettings(m.BaseModel):
             """Authentication configuration for Oracle WMS flows."""
@@ -113,21 +114,21 @@ class FlextOracleWmsModels(m):
         class EntitiesResponse(m.BaseModel):
             """Oracle WMS entities list response."""
 
-            model_config: ClassVar[m.ConfigDict] = m.ConfigDict(extra="ignore")
+            model_config: ClassVar[t.ConfigDict] = m.ConfigDict(extra="ignore")
 
             entities: t.StrSequence = u.Field(default_factory=tuple)
 
         class ApiCategoryResponse(m.BaseModel):
             """Oracle WMS API category response."""
 
-            model_config: ClassVar[m.ConfigDict] = m.ConfigDict(extra="ignore")
+            model_config: ClassVar[t.ConfigDict] = m.ConfigDict(extra="ignore")
 
             apis: t.SequenceOf[t.StrMapping] = u.Field(default_factory=tuple)
 
         class EntityDataResponse(m.BaseModel):
             """Oracle WMS entity data response."""
 
-            model_config: ClassVar[m.ConfigDict] = m.ConfigDict(extra="ignore")
+            model_config: ClassVar[t.ConfigDict] = m.ConfigDict(extra="ignore")
 
             data: t.SequenceOf[t.StrMapping] = u.Field(default_factory=tuple)
 
@@ -138,7 +139,7 @@ class FlextOracleWmsModels(m):
         class WmsEntity(m.BaseModel):
             """Base WMS entity with identity."""
 
-            model_config: ClassVar[m.ConfigDict] = m.ConfigDict(extra="forbid")
+            model_config: ClassVar[t.ConfigDict] = m.ConfigDict(extra="forbid")
 
             id: Annotated[str, u.Field(description="Entity identifier")] = ""
             name: Annotated[str, u.Field(description="Entity name")] = ""

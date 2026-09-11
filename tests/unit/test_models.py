@@ -8,8 +8,8 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 import pytest
-
 from flext_tests import tm
+
 from tests import c, m, t, u
 
 
@@ -77,7 +77,7 @@ class TestsFlextOracleWmsModelsUnit:
     def test_validate_entity_succeeds_for_valid_entity(self) -> None:
         """validate_entity returns a success result carrying True."""
         entity = m.OracleWms.Entity(name="item_master", endpoint="/api/items")
-        result = u.validate_wms_entity(entity)
+        result = u.OracleWms.validate_wms_entity(entity)
         tm.ok(result)
         tm.that(result.unwrap(), eq=True)
 
@@ -85,7 +85,7 @@ class TestsFlextOracleWmsModelsUnit:
         """A too-long name is a business-rule failure, not a construction error."""
         limit = c.OracleWms.WmsEntities.MAX_ENTITY_NAME_LENGTH
         entity = m.OracleWms.Entity(name="x" * (limit + 1), endpoint="/api/items")
-        result = u.validate_wms_entity(entity)
+        result = u.OracleWms.validate_wms_entity(entity)
         tm.fail(result)
         tm.that(result.error, none=False)
         tm.that(result.error, has="too long")
@@ -94,7 +94,7 @@ class TestsFlextOracleWmsModelsUnit:
         """Name exactly at the boundary is still valid (inclusive limit)."""
         limit = c.OracleWms.WmsEntities.MAX_ENTITY_NAME_LENGTH
         entity = m.OracleWms.Entity(name="x" * limit, endpoint="/api/items")
-        tm.ok(u.validate_wms_entity(entity))
+        tm.ok(u.OracleWms.validate_wms_entity(entity))
 
 
 __all__: list[str] = ["TestsFlextOracleWmsModelsUnit"]

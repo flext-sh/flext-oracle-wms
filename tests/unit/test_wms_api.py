@@ -8,11 +8,12 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 import pytest
-
-from flext_oracle_wms import FlextOracleWmsApi, FlextOracleWmsUtilities as u, m
 from flext_tests import tm
-from tests import t
-from tests._factories import _basic_password, _secret
+
+from flext_oracle_wms import FlextOracleWmsApi, m
+from tests import t, u
+
+from .._factories import _basic_password, _secret
 
 
 class TestsFlextOracleWmsWmsApi:
@@ -125,7 +126,7 @@ class TestsFlextOracleWmsWmsApi:
         )
 
         tm.ok(result)
-        tm.that(result.unwrap(), is_=u.Client)
+        tm.that(result.unwrap(), is_=u.OracleWms.Client)
 
     def test_create_client_fails_when_basic_credentials_incomplete(self) -> None:
         """BASIC auth without a password fails with the business-rule error."""

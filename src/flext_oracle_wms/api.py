@@ -78,6 +78,8 @@ class FlextOracleWmsApi(s[bool]):
         return result
 
 
-oracle_wms = FlextOracleWmsApi
+oracle_wms: FlextOracleWmsApi = FlextOracleWmsApi.fetch_global()
+"""Process-wide Oracle WMS API facade singleton resolved from the global container."""
+
 
 __all__: list[str] = ["FlextOracleWmsApi", "oracle_wms"]

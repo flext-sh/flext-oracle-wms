@@ -7,9 +7,11 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 from flext_api import FlextApi, FlextApiSettings, p, r, t, u
+
 from flext_oracle_wms import c, m
-from flext_oracle_wms._settings import FlextOracleWmsSettings
-from flext_oracle_wms._utilities.auth import FlextOracleWmsUtilitiesAuth
+
+from .._settings import FlextOracleWmsSettings
+from .auth import FlextOracleWmsUtilitiesAuth
 
 
 class FlextOracleWmsUtilitiesClient:
@@ -48,8 +50,8 @@ class FlextOracleWmsUtilitiesClient:
                 auth_settings
             )
             if validation_result.failure:
-                return r[FlextOracleWmsUtilitiesClient.Client].fail(
-                    validation_result.error or "Invalid Oracle WMS auth settings"
+                return r[FlextOracleWmsUtilitiesClient.Client].from_failure(
+                    validation_result
                 )
             basic_method = str(c.OracleWms.OracleWMSAuthMethod.BASIC)
             if auth_settings.normalized_method != basic_method:

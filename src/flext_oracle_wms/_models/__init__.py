@@ -11,6 +11,6 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from flext_oracle_wms._models.config import FlextOracleWmsConfigModels
+from .config import FlextOracleWmsConfigModels
 
 __all__: list[str] = ["FlextOracleWmsConfigModels"]

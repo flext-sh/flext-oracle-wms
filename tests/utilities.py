@@ -14,13 +14,13 @@ from typing import TYPE_CHECKING, override
 from urllib.parse import urlparse
 
 from dotenv import load_dotenv
+from flext_tests import FlextTestsUtilities, r
 
 from flext_oracle_wms import (
     FlextOracleWmsApi,
     FlextOracleWmsSettings,
     FlextOracleWmsUtilities as u,
 )
-from flext_tests import FlextTestsUtilities, r
 from tests import TestsFlextOracleWmsTypes, t
 
 if TYPE_CHECKING:
@@ -145,7 +145,7 @@ class TestsFlextOracleWmsUtilities(FlextTestsUtilities, u):
                                 settings[key.strip()] = value.strip()
                 except (OSError, ValueError, TypeError) as exc:
                     return r[TestsFlextOracleWmsTypes.OracleWms.Tests.EnvConfig].fail(
-                        f"Failed to load .env settings: {exc}"
+                        f"Failed to load .env settings: {exc}", exception=exc
                     )
                 base_url = settings.get("ORACLE_WMS_BASE_URL", "")
                 return r[TestsFlextOracleWmsTypes.OracleWms.Tests.EnvConfig].ok({

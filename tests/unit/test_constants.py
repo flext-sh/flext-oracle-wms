@@ -13,11 +13,9 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-import operator
-
 import pytest
-
 from flext_tests import tm
+
 from tests import c
 
 _AuthMethod = c.OracleWms.OracleWMSAuthMethod
@@ -111,10 +109,9 @@ class TestsFlextOracleWmsConstantsUnit:
         assert c.OracleWms.AUTH_CONFIG[key] is expected
 
     def test_auth_config_carries_oauth2_endpoint_metadata(self) -> None:
-        """AUTH_CONFIG exposes the OAuth2 token endpoint and default scope."""
-        auth = c.OracleWms.AUTH_CONFIG
-        tm.that(auth["oauth2_token_endpoint"], eq="/oauth2/token")
-        tm.that(auth["oauth2_scope_default"], eq="read write")
+        """AUTH_CONFIG exposes the default scope; API_CONFIG the endpoint path."""
+        tm.that(c.OracleWms.API_CONFIG["oauth2_endpoint_path"], eq="/oauth2/token")
+        tm.that(c.OracleWms.AUTH_CONFIG["oauth2_scope_default"], eq="read write")
 
     @pytest.mark.parametrize(
         ("name", "value"),
@@ -157,7 +154,7 @@ class TestsFlextOracleWmsConstantsUnit:
         """Published config mappings reject mutation (frozen contract)."""
         mapping = getattr(c.OracleWms, attr)
         with pytest.raises(TypeError):
-            operator.setitem(mapping, "__injected__", "x")
+            mapping["__injected__"] = "x"
 
     def test_test_facade_adds_oracle_wms_category_taxonomy(self) -> None:
         """The test facade extends the domain with WMS API categories."""
