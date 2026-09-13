@@ -180,6 +180,7 @@ from flext_core import FlextSettings
 - **Documentation**: Comprehensive docstrings following enterprise standards
 - **Testing**: 90%+ test coverage requirement with unit and integration tests
 - **Linting**: Comprehensive Ruff rules (ALL categories enabled) with zero tolerance
+- **WMS-Specific**: Oracle WMS Cloud connection lifecycle, authentication flows, and data transformation pipelines
 
 ### Architecture Compliance
 
