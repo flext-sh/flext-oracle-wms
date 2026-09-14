@@ -107,8 +107,9 @@ class TestsFlextOracleWmsConfigModule:
     def test_clone_overrides_isolated_copy_without_mutating_singleton(self) -> None:
         """clone() returns an isolated re-validated copy; the singleton is intact."""
         base = FlextOracleWmsSettings.fetch_global()
+        original = base.model_dump()
         cloned = base.clone(OracleWms={"base_url": "https://clone.example.com"})
 
         assert cloned is not base
         tm.that(cloned.OracleWms.base_url, eq="https://clone.example.com")
-        tm.that(base.OracleWms.base_url, eq="http://localhost:8080")
+        assert base.model_dump() == original
