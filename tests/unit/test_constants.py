@@ -16,10 +16,8 @@ from __future__ import annotations
 import pytest
 from flext_tests import tm
 
+from flext_oracle_wms import c as domain_c, config
 from tests import c
-
-from flext_oracle_wms import config
-from flext_oracle_wms import c as domain_c
 
 _AuthMethod = c.OracleWms.OracleWMSAuthMethod
 _FilterOp = c.OracleWms.WmsFilterOperator
