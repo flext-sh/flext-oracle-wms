@@ -61,7 +61,7 @@ class TestsFlextOracleWmsModelsUnit:
         }
         kwargs[field] = value
         with pytest.raises(c.ValidationError):
-            m.OracleWms.Entity(**kwargs)
+            m.OracleWms.Entity.model_validate(kwargs)
 
     @pytest.mark.parametrize("endpoint", ["api/items", "items", "http://x/api"])
     def test_entity_rejects_endpoint_without_leading_slash(self, endpoint: str) -> None:
