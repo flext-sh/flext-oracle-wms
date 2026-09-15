@@ -19,6 +19,7 @@ from flext_oracle_wms import FlextOracleWmsSettings
 __all__ = ["TestsFlextOracleWmsConfigModule"]
 
 
+@pytest.mark.usefixtures("_isolated_singleton")
 class TestsFlextOracleWmsConfigModule:
     """Behavior contract for FlextOracleWmsSettings public API."""
 

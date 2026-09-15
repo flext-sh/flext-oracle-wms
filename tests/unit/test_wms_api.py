@@ -10,7 +10,7 @@ from __future__ import annotations
 import pytest
 from flext_tests import tm
 
-from flext_oracle_wms import FlextOracleWmsApi, m
+from flext_oracle_wms import FlextOracleWmsApi, FlextOracleWmsSettings, m
 from tests import t, u
 
 from .._factories import _basic_password, _secret
@@ -157,7 +157,7 @@ class TestsFlextOracleWmsWmsApi:
 
     def test_execute_signals_ready_with_success_true(self) -> None:
         """The default execute() surface reports readiness as ok(True)."""
-        api = FlextOracleWmsApi()
+        api = FlextOracleWmsApi(settings=FlextOracleWmsSettings.model_validate({}))
 
         result = api.execute()
 

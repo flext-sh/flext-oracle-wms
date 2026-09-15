@@ -71,6 +71,8 @@ class TestsFlextOracleWmsClient:
 
     def test_constructor_without_settings_yields_valid_settings(self) -> None:
         """Omitting settings resolves the global runtime settings contract."""
+        FlextOracleWmsSettings.reset_for_testing()
+
         client = u.OracleWms.Client()
 
         tm.that(client.settings, is_=FlextOracleWmsSettings)
