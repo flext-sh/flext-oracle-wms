@@ -1,16 +1,23 @@
-"""Flext-oracle-wms internal model parts (composed by ``models.py`` via MRO).
-
-Re-exports the pure config-model part classes so ``models.py`` composes the
-``OracleWms`` namespace from a single package import. ``_models.config`` stays
-pure-Pydantic (no project/flext imports) — the firebreak that lets
-``c``/``t``/``p``/``m``/``u`` import config shapes without a cycle.
-
-Copyright (c) 2025 FLEXT Team. All rights reserved.
-SPDX-License-Identifier: MIT
-"""
+# AUTO-GENERATED FILE — Regenerate with: make gen
+"""Flext Oracle Wms. Models package."""
 
 from __future__ import annotations
 
-from .config import FlextOracleWmsConfigModels
+from types import MappingProxyType
+from typing import TYPE_CHECKING
 
-__all__: list[str] = ["FlextOracleWmsConfigModels"]
+from flext_core.lazy import build_lazy_import_map, install_lazy_exports
+
+if TYPE_CHECKING:
+    from .config import FlextOracleWmsConfigModels
+__all__: tuple[str, ...] = ("FlextOracleWmsConfigModels",)
+
+_LAZY_IMPORTS = MappingProxyType(
+    build_lazy_import_map(
+        MappingProxyType({".config": ("FlextOracleWmsConfigModels",)}),
+        alias_groups=MappingProxyType({}),
+        sort_keys=False,
+    )
+)
+
+install_lazy_exports(__name__, globals(), _LAZY_IMPORTS, public_exports=__all__)
