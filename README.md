@@ -1,6 +1,7 @@
 # flext-oracle-wms
 
 <!-- TOC START -->
+
 - [Purpose](#purpose)
 - [Module Map](#module-map)
 - [Collection Rules](#collection-rules)
@@ -25,11 +26,11 @@ Enterprise Oracle WMS client library for FLEXT data integration platform
 ## Module Map
 
 ::: flext_oracle_wms
-    options:
-      members: false
-      show_root_heading: false
-      show_root_toc_entry: false
-      show_source: false
+options:
+members: false
+show_root_heading: false
+show_root_toc_entry: false
+show_source: false
 
 ## Collection Rules
 

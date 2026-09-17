@@ -1,6 +1,7 @@
 # flext-oracle-wms Architecture
 
 <!-- TOC START -->
+
 - [Architecture Status](#architecture-status)
   - [Current Implementation](#current-implementation)
   - [Module Structure](#module-structure)
@@ -83,7 +84,7 @@ src/flext_oracle_wms/
 - Add proper domain service patterns
 - Enhance error handling consistency
 
-______________________________________________________________________
+---
 
 **Last Updated**: April 14, 2026 | **Status**: Framework requiring implementation completion · 1.0.0 Current
 

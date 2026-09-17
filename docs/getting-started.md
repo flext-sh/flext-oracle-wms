@@ -1,6 +1,7 @@
 # Getting Started with flext-oracle-wms
 
 <!-- TOC START -->
+
 - [Installation](#installation)
   - [Prerequisites](#prerequisites)
   - [Installation Steps](#installation-steps)
@@ -18,7 +19,7 @@
 
 **Version**: 0.12.0-dev | **Last Updated**: April 14, 2026 | **Status**: Framework requiring implementation · 1.0.0 Current
 
-______________________________________________________________________
+---
 
 ## Installation
 
@@ -98,7 +99,7 @@ print(f"Execute success: {result.success}")
 1. **Development Setup** - [Development guidelines](development.md)
 1. **Implementation Roadmap** - tracked in the workspace Beads ledger
 
-______________________________________________________________________
+---
 
 **Last Updated**: April 14, 2026 | **Status**: Framework requiring Oracle WMS Cloud integration implementation · 1.0.0 Current
 

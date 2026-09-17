@@ -6,6 +6,7 @@
 > Project profile: `flext-oracle-wms`
 
 <!-- TOC START -->
+
 - [Dependabot vulnerability governance](#dependabot-vulnerability-governance)
 <!-- TOC END -->
 

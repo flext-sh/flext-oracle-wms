@@ -1,6 +1,7 @@
 # Troubleshooting Guide
 
 <!-- TOC START -->
+
 - [Common Issues](#common-issues)
   - [Connection Issues](#connection-issues)
   - [Type Safety Issues](#type-safety-issues)
@@ -19,13 +20,13 @@
   - [Documentation Resources](#documentation-resources)
   - [Known Limitations](#known-limitations)
   - [Reporting Issues](#reporting-issues)
-<!-- TOC END -->
+  <!-- TOC END -->
 
 **Common issues and solutions for flext-oracle-wms**
 
 **Version**: 0.12.0-dev | **Last Updated**: April 14, 2026 | **Status**: Framework troubleshooting · 1.0.0 Current
 
-______________________________________________________________________
+---
 
 ## Common Issues
 
@@ -338,6 +339,6 @@ When reporting issues, include:
 1. **Steps to reproduce** - Minimal example
 1. **Expected vs actual behavior**
 
-______________________________________________________________________
+---
 
 **Last Updated**: April 14, 2026 | **Status**: Framework troubleshooting guide · 1.0.0 Current

@@ -1,12 +1,13 @@
 # FLEXT Ecosystem Integration Status
 
 <!-- TOC START -->
+
 - [Integration Overview](#integration-overview)
   - [Current FLEXT Integration](#current-flext-integration)
   - [Integration Gaps Analysis](#integration-gaps-analysis)
   - [Required Implementation Work](#required-implementation-work)
   - [Success Criteria](#success-criteria)
-<!-- TOC END -->
+  <!-- TOC END -->
 
 **Current integration analysis | April 14, 2026 | Version 0.9.9**
 
@@ -99,6 +100,6 @@ For complete FLEXT ecosystem compliance:
 - ✅ FlextContainer dependency injection
 - ✅ Full Singer protocol implementation
 
-______________________________________________________________________
+---
 
 **Last Updated**: April 14, 2026 | **Status**: Partial integration requiring completion · 1.0.0 Current

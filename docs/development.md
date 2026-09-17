@@ -1,6 +1,7 @@
 # Development Guide
 
 <!-- TOC START -->
+
 - [Development Setup](#development-setup)
   - [Prerequisites](#prerequisites)
   - [Installation](#installation)
@@ -29,13 +30,13 @@
 - [Troubleshooting](#troubleshooting)
   - [Common Issues](#common-issues)
   - [Development Tools](#development-tools)
-<!-- TOC END -->
+  <!-- TOC END -->
 
 **Development workflow and guidelines for flext-oracle-wms**
 
 **Version**: 0.12.0-dev | **Last Updated**: April 14, 2026 | **Status**: Framework requiring implementation · 1.0.0 Current
 
-______________________________________________________________________
+---
 
 ## Development Setup
 
@@ -322,6 +323,6 @@ python -m pdb script.py    # Python debugger
 python -v script.py        # Verbose imports
 ```
 
-______________________________________________________________________
+---
 
 **Last Updated**: April 14, 2026 | **Status**: Framework requiring FLEXT compliance and Oracle WMS implementation · 1.0.0 Current
