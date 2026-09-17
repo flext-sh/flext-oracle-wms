@@ -120,11 +120,11 @@ class FlextOracleWmsUtilitiesFiltering:
             right: t.OracleWms.FilterScalar | t.OracleWms.FilterList,
             op: str,
         ) -> bool:
-            left_num = u.validate_value(t.float_adapter(), left)
-            right_num = u.validate_value(t.float_adapter(), right)
-            if left_num.success and right_num.success:
-                return cls._compare_float(left_num.value, right_num.value, op)
-            return cls._compare_string(str(left), str(right), op)
+            if isinstance(left, str) and isinstance(right, str):
+                return cls._compare_string(left, right, op)
+            left_num = t.float_adapter().validate_python(left, strict=True)
+            right_num = t.float_adapter().validate_python(right, strict=True)
+            return cls._compare_float(left_num, right_num, op)
 
         @staticmethod
         def _compare_float(left_num: float, right_num: float, op: str) -> bool:
