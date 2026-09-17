@@ -157,8 +157,8 @@ if __name__ == "__main__":
 # Install dependencies
 pip install flext-oracle-wms
 
-# Or with Poetry
-make deps flext-oracle-wms
+# Provision through the workspace owner
+make setup
 ```
 
 ### Environment Setup

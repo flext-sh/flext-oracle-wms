@@ -66,11 +66,11 @@ from __future__ import annotations
 
 ```python
 from __future__ import annotations
+
 from flext_core import u
 
 logger = u.fetch_logger(__name__)
 ```
-
 ### Type Safety Issues
 
 #### MyPy errors with dynamic attributes
@@ -102,14 +102,14 @@ assert error.field == "username"  # Now works with MyPy
 
 ```python
 from __future__ import annotations
-from flext_oracle_wms import FlextOracleWmsModuleSettings, FlextOracleWmsApiVersion
+
+from flext_oracle_wms import FlextOracleWmsApiVersion, FlextOracleWmsModuleSettings
 
 settings = FlextOracleWmsModuleSettings(
     api_version=FlextOracleWmsApiVersion.V1,  # Use enum, not string
     oracle_wms_timeout=30,  # Use int, not float
 )
 ```
-
 ### FLEXT Compliance Issues
 
 #### httpx usage violations
@@ -279,6 +279,7 @@ assert error.entity_name == "test"  # Properly handled
 
 ```python
 from __future__ import annotations
+
 import logging
 
 from flext_core import u
@@ -288,7 +289,6 @@ logging.basicConfig(level=logging.DEBUG)
 logger = u.fetch_logger(__name__)
 logger.debug("Debug message")
 ```
-
 ### Type Checking
 
 ```bash
@@ -315,7 +315,7 @@ pytest --pdb tests/test_client.py
 ### Documentation Resources
 
 - **[Getting Started](getting-started.md)** - Installation and setup
-- **[API Reference](api-reference.md)** - Complete API documentation
+- **[API Reference](api-reference/README.md)** - Generated API documentation
 - **[Configuration](configuration.md)** - Settings and environment
 - **[Development](development.md)** - Development guidelines
 

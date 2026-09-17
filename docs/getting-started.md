@@ -55,6 +55,7 @@ export FLEXT_ORACLE_WMS_PASSWORD="test_password"
 
 ```python
 from __future__ import annotations
+
 from flext_oracle_wms import FlextOracleWmsApi, FlextOracleWmsSettings
 
 # Using test configuration (not real Oracle WMS)
@@ -74,7 +75,6 @@ api = FlextOracleWmsApi(settings=settings)
 result = api.execute()
 print(f"Execute success: {result.success}")
 ```
-
 ## Implementation Status
 
 ### What Works
@@ -107,7 +107,7 @@ ______________________________________________________________________
 **Within Project**:
 
 - [Architecture](architecture.md) - Architecture and design patterns
-- [API Reference](api-reference.md) - Complete API documentation
+- [API Reference](api-reference/README.md) - Generated API documentation
 - [Integration Guide](guides/integration.md) - Integration patterns
 - [Development](development.md) - Development guidelines
 

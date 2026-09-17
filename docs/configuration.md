@@ -18,7 +18,7 @@
   - [Authentication Requirements](#authentication-requirements)
 - [Implementation Status](#implementation-status)
   - [Current Status](#current-status)
-  - [Required Implementation](#required-implementation)
+  - [Required Implementation](#required-implementation_1)
 <!-- TOC END -->
 
 **Settings and environment management for flext-oracle-wms**
@@ -39,6 +39,7 @@ Current implementation provides test configuration with fake URLs:
 
 ```python
 from __future__ import annotations
+
 from flext_oracle_wms import FlextOracleWmsSettings
 
 settings = FlextOracleWmsSettings.model_validate({
@@ -53,7 +54,6 @@ print(settings.OracleWms.username)  # "test_user"
 print(settings.OracleWms.api_version)  # Current API version
 print(settings.OracleWms.timeout)  # Default timeout
 ```
-
 ## Environment Variables
 
 ### Test Environment
@@ -96,6 +96,7 @@ Configuration for Oracle WMS client (framework structure):
 
 ```python
 from __future__ import annotations
+
 from flext_oracle_wms import FlextOracleWmsSettings
 
 # Note: This is framework structure, not fully implemented
@@ -107,13 +108,13 @@ settings = FlextOracleWmsSettings(
     # Additional configuration options
 )
 ```
-
 ### Authentication Configuration (Framework)
 
 Based on source code analysis, authentication framework exists but requires implementation:
 
 ```python
 from __future__ import annotations
+
 from flext_oracle_wms import c
 
 # Framework supports these methods (implementation required)
@@ -124,7 +125,6 @@ auth_methods = [
     OracleWMSAuthMethod.API_KEY,  # API key (not implemented)
 ]
 ```
-
 ## Configuration Validation
 
 ### Current Validation
@@ -133,6 +133,7 @@ The framework includes Pydantic-based configuration validation:
 
 ```python
 from __future__ import annotations
+
 from flext_oracle_wms import FlextOracleWmsSettings
 
 # Configuration validation is implemented
@@ -141,7 +142,6 @@ settings = FlextOracleWmsSettings(
 )
 # Pydantic automatically validates configuration structure
 ```
-
 ### Required Implementation
 
 For production Oracle WMS Cloud integration:
