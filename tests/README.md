@@ -179,7 +179,7 @@ pytest -n auto
 
 ```bash
 # Complete validation (includes tests)
-make val
+make check
 
 # Test-specific quality gates
 make test-unit              # Unit tests with coverage

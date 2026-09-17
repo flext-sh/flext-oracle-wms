@@ -34,10 +34,10 @@ ______________________________________________________________________
 # Development installation
 git clone <flext-oracle-wms-repo>
 cd flext-oracle-wms
-poetry install
+make setup
 
 # Verify installation
-make val  # Run quality gates
+make check  # Run quality gates
 ```
 
 ## Basic Configuration

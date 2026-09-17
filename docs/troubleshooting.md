@@ -182,8 +182,8 @@ filter_engine.filter_records("not_a_list", {})  # Intentionally wrong type
 
 ```bash
 # Clean installation
-rm -rf .venv poetry.lock
-poetry install
+rm -rf .venv uv.lock
+make setup
 ```
 
 #### PYTHONPATH issues
@@ -238,7 +238,7 @@ pytest --maxfail=1    # Stop after one failure
 ```bash
 # Use make commands which are optimized
 make test
-make val
+make check
 ```
 
 ## Error Messages Reference

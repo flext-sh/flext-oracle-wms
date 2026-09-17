@@ -158,7 +158,7 @@ if __name__ == "__main__":
 pip install flext-oracle-wms
 
 # Or with Poetry
-poetry add flext-oracle-wms
+make deps flext-oracle-wms
 ```
 
 ### Environment Setup

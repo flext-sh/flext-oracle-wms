@@ -196,7 +196,7 @@ make coverage-html          # Generate detailed coverage report
 
 ```bash
 # Complete quality validation
-make val               # Lint + type + security + test
+make check               # Lint + type + security + test
 make lint
 make type-check
 make security               # Bandit + pip-audit security scanning

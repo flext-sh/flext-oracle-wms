@@ -216,7 +216,7 @@ pytest -m "oracle_wms" -v
 
 ```bash
 # Complete validation for this module
-make val               # Lint + type + security + test
+make check               # Lint + type + security + test
 make lint
 make type-check
 make security               # Bandit + pip-audit security scanning

@@ -51,10 +51,10 @@ ______________________________________________________________________
 # Clone and setup
 git clone <flext-oracle-wms-repo>
 cd flext-oracle-wms
-poetry install
+make setup
 
 # Verify installation
-make val  # Run all quality gates
+make check  # Run all quality gates
 ```
 
 ## Development Commands
@@ -63,7 +63,7 @@ make val  # Run all quality gates
 
 ```bash
 # Complete validation pipeline
-make val              # Lint + type + security + test
+make check              # Lint + type + security + test
 
 # Individual checks
 make lint                  # Ruff linting
@@ -269,7 +269,7 @@ def test_real_connection():
 
 ```bash
 # Required before committing
-make val              # All quality gates must pass
+make check              # All quality gates must pass
 make test                  # All tests must pass
 ```
 
