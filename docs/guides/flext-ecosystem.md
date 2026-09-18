@@ -13,7 +13,8 @@
 
 ## Integration Overview
 
-flext-oracle-wms has partial FLEXT ecosystem integration with significant compliance gaps.
+flext-oracle-wms has partial FLEXT ecosystem integration with significant compliance
+gaps.
 
 ### Current FLEXT Integration
 
@@ -102,4 +103,5 @@ For complete FLEXT ecosystem compliance:
 
 ---
 
-**Last Updated**: April 14, 2026 | **Status**: Partial integration requiring completion · 1.0.0 Current
+**Last Updated**: April 14, 2026 | **Status**: Partial integration requiring completion
+· 1.0.0 Current

@@ -23,7 +23,8 @@
 
 **Complete API documentation for flext-oracle-wms**
 
-**Version**: 0.12.0-dev | **Last Updated**: April 14, 2026 | **Status**: Framework with implementation gaps · 1.0.0 Current
+**Version**: 0.12.0-dev | **Last Updated**: April 14, 2026 | **Status**: Framework with
+implementation gaps · 1.0.0 Current
 
 ---
 
@@ -126,7 +127,8 @@ Based on source code analysis of `wms_api.py`:
 Based on Oracle WMS best practices research:
 
 - `POST /lgfapi/v10/pick_confirm/` - Enhanced pick confirmation
-- `POST /lgfapi/v10/entity/inventory/bulk_update_inventory_attributes/` - Bulk operations
+- `POST /lgfapi/v10/entity/inventory/bulk_update_inventory_attributes/` - Bulk
+  operations
 - `POST /lgfapi/v10/data_extract/export_status` - Object store integration
 
 ## Error Handling
@@ -191,7 +193,8 @@ entity = m.OracleWms.Entity(
 
 ---
 
-**Last Updated**: April 14, 2026 | **Status**: Framework requiring Oracle WMS Cloud integration implementation · 1.0.0 Current
+**Last Updated**: April 14, 2026 | **Status**: Framework requiring Oracle WMS Cloud
+integration implementation · 1.0.0 Current
 
 ## Related Documentation
 
@@ -204,9 +207,12 @@ entity = m.OracleWms.Entity(
 
 **Across Projects**:
 
-- [flext-core Foundation](https://github.com/flext-sh/flext/tree/0.12.0-dev/flext-core/docs/api-reference/foundation.md) - Core APIs and patterns
-- [flext-core Railway-Oriented Programming](https://github.com/flext-sh/flext/tree/0.12.0-dev/flext-core/docs/guides/railway-oriented-programming.md) - r patterns
-- [flext-db-oracle Integration](https://github.com/flext-sh/flext/tree/0.12.0-dev/flext-db-oracle/AGENTS.md) - Oracle database integration
+- [flext-core Foundation](https://github.com/flext-sh/flext/tree/0.12.0-dev/flext-core/docs/api-reference/foundation.md) -
+  Core APIs and patterns
+- [flext-core Railway-Oriented Programming](https://github.com/flext-sh/flext/tree/0.12.0-dev/flext-core/docs/guides/railway-oriented-programming.md) -
+  r patterns
+- [flext-db-oracle Integration](https://github.com/flext-sh/flext/tree/0.12.0-dev/flext-db-oracle/AGENTS.md) -
+  Oracle database integration
 
 **External Resources**:
 

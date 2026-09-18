@@ -24,7 +24,8 @@
 
 **Common issues and solutions for flext-oracle-wms**
 
-**Version**: 0.12.0-dev | **Last Updated**: April 14, 2026 | **Status**: Framework troubleshooting · 1.0.0 Current
+**Version**: 0.12.0-dev | **Last Updated**: April 14, 2026 | **Status**: Framework
+troubleshooting · 1.0.0 Current
 
 ---
 
@@ -171,7 +172,8 @@ from __future__ import annotations
 filter_engine.filter_records("not_a_list", {})  # Intentionally wrong type
 ```
 
-**Solution**: These are negative tests. Use `# type: ignore` if needed for intentional type violations in tests
+**Solution**: These are negative tests. Use `# type: ignore` if needed for intentional
+type violations in tests
 
 ### Development Environment Issues
 
@@ -228,8 +230,8 @@ make test
 **Solution**: Use faster test commands:
 
 ```bash
-pytest -x --tb=short  # Stop on first failure, short traceback
-pytest --maxfail=1    # Stop after one failure
+pytest -x --tb=short # Stop on first failure, short traceback
+pytest --maxfail=1   # Stop after one failure
 ```
 
 #### Memory usage during development
@@ -341,4 +343,5 @@ When reporting issues, include:
 
 ---
 
-**Last Updated**: April 14, 2026 | **Status**: Framework troubleshooting guide · 1.0.0 Current
+**Last Updated**: April 14, 2026 | **Status**: Framework troubleshooting guide · 1.0.0
+Current

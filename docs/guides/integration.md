@@ -20,7 +20,8 @@ flext-oracle-wms has partial FLEXT ecosystem integration requiring completion wo
 
 ### Current Integration
 
-- **[FLEXT Ecosystem Integration](flext-ecosystem.md)** - Current integration status and gaps
+- **[FLEXT Ecosystem Integration](flext-ecosystem.md)** - Current integration status and
+  gaps
 
 ## Integration Objectives
 
@@ -55,4 +56,5 @@ flext-oracle-wms has partial FLEXT ecosystem integration requiring completion wo
 
 ---
 
-**Last Updated**: April 14, 2026 | **Status**: Partial integration requiring completion · 1.0.0 Current
+**Last Updated**: April 14, 2026 | **Status**: Partial integration requiring completion
+· 1.0.0 Current

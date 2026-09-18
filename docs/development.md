@@ -34,7 +34,8 @@
 
 **Development workflow and guidelines for flext-oracle-wms**
 
-**Version**: 0.12.0-dev | **Last Updated**: April 14, 2026 | **Status**: Framework requiring implementation · 1.0.0 Current
+**Version**: 0.12.0-dev | **Last Updated**: April 14, 2026 | **Status**: Framework
+requiring implementation · 1.0.0 Current
 
 ---
 
@@ -64,22 +65,22 @@ make val  # Run all quality gates
 
 ```bash
 # Complete validation pipeline
-make val              # Lint + type + security + test
+make val # Lint + type + security + test
 
 # Individual checks
-make lint                  # Ruff linting
-make type-check           # MyPy strict mode type checking
-make security             # Bandit + pip-audit security scan
-make test                 # Test suite execution
-make format               # Code formatting
+make lint       # Ruff linting
+make type-check # MyPy strict mode type checking
+make security   # Bandit + pip-audit security scan
+make test       # Test suite execution
+make format     # Code formatting
 ```
 
 ### Testing
 
 ```bash
 # Run test suite
-make test                 # All tests
-pytest tests/             # Direct pytest execution
+make test     # All tests
+pytest tests/ # Direct pytest execution
 
 # Test with coverage
 pytest --cov=src --cov-report=term-missing
@@ -90,7 +91,7 @@ pytest --cov=src --cov-report=term-missing
 ```bash
 # MyPy strict mode (zero tolerance)
 make type-check
-mypy src/                 # Direct mypy execution
+mypy src/ # Direct mypy execution
 
 # PyRight for additional validation
 pyright
@@ -270,8 +271,8 @@ def test_real_connection():
 
 ```bash
 # Required before committing
-make val              # All quality gates must pass
-make test                  # All tests must pass
+make val  # All quality gates must pass
+make test # All tests must pass
 ```
 
 ### Review Checklist
@@ -319,10 +320,11 @@ export PYTHONPATH="src"
 
 ```bash
 # Debug tools
-python -m pdb script.py    # Python debugger
-python -v script.py        # Verbose imports
+python -m pdb script.py # Python debugger
+python -v script.py     # Verbose imports
 ```
 
 ---
 
-**Last Updated**: April 14, 2026 | **Status**: Framework requiring FLEXT compliance and Oracle WMS implementation · 1.0.0 Current
+**Last Updated**: April 14, 2026 | **Status**: Framework requiring FLEXT compliance and
+Oracle WMS implementation · 1.0.0 Current

@@ -18,7 +18,8 @@
 
 **Quick start guide for Oracle WMS integration framework**
 
-**Version**: 0.12.0-dev | **Last Updated**: April 14, 2026 | **Status**: Framework requiring implementation · 1.0.0 Current
+**Version**: 0.12.0-dev | **Last Updated**: April 14, 2026 | **Status**: Framework
+requiring implementation · 1.0.0 Current
 
 ---
 
@@ -102,7 +103,8 @@ print(f"Execute success: {result.success}")
 
 ---
 
-**Last Updated**: April 14, 2026 | **Status**: Framework requiring Oracle WMS Cloud integration implementation · 1.0.0 Current
+**Last Updated**: April 14, 2026 | **Status**: Framework requiring Oracle WMS Cloud
+integration implementation · 1.0.0 Current
 
 ## Related Documentation
 
@@ -115,9 +117,12 @@ print(f"Execute success: {result.success}")
 
 **Across Projects**:
 
-- [flext-core Foundation](https://github.com/flext-sh/flext/tree/0.12.0-dev/flext-core/docs/architecture/overview.md) - Clean architecture and CQRS patterns
-- [flext-core Service Patterns](https://github.com/flext-sh/flext/tree/0.12.0-dev/flext-core/docs/guides/service-patterns.md) - Service patterns and dependency injection
-- [flext-db-oracle Integration](https://github.com/flext-sh/flext/tree/0.12.0-dev/flext-db-oracle/AGENTS.md) - Oracle database integration
+- [flext-core Foundation](https://github.com/flext-sh/flext/tree/0.12.0-dev/flext-core/docs/architecture/overview.md) -
+  Clean architecture and CQRS patterns
+- [flext-core Service Patterns](https://github.com/flext-sh/flext/tree/0.12.0-dev/flext-core/docs/guides/service-patterns.md) -
+  Service patterns and dependency injection
+- [flext-db-oracle Integration](https://github.com/flext-sh/flext/tree/0.12.0-dev/flext-db-oracle/AGENTS.md) -
+  Oracle database integration
 
 **External Resources**:
 

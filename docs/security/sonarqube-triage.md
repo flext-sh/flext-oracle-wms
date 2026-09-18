@@ -6,8 +6,8 @@ Bead: `mro-2wjm.14`
 
 ## Resumo
 
-**16 issues** — BLOCKER 2, CRITICAL 0, MAJOR 12, MINOR 2
-Tipos: VULNERABILITY 4, BUG 0, CODE_SMELL 12 · **Debt total: 74min**
+**16 issues** — BLOCKER 2, CRITICAL 0, MAJOR 12, MINOR 2 Tipos: VULNERABILITY 4, BUG 0,
+CODE_SMELL 12 · **Debt total: 74min**
 
 | regra                 | issues |
 | --------------------- | ------ |
@@ -23,8 +23,11 @@ Tipos: VULNERABILITY 4, BUG 0, CODE_SMELL 12 · **Debt total: 74min**
 
 ## Como usar
 
-Cada issue traz a **mensagem do SonarQube** (descreve o problema e o impacto), o **código real** (linha `>>>`), o tipo e o effort estimado.
-**Decisão**: `corrigir` / `falso-positivo` (marcar na plataforma com justificativa) / `risco-aceito`. Ordem: BLOCKER → CRITICAL → VULNERABILITY → MAJOR. CODE_SMELL em volume pede correção de padrão.
+Cada issue traz a **mensagem do SonarQube** (descreve o problema e o impacto), o
+**código real** (linha `>>>`), o tipo e o effort estimado. **Decisão**: `corrigir` /
+`falso-positivo` (marcar na plataforma com justificativa) / `risco-aceito`. Ordem:
+BLOCKER → CRITICAL → VULNERABILITY → MAJOR. CODE_SMELL em volume pede correção de
+padrão.
 
 ## Issues
 
@@ -252,7 +255,8 @@ Cada issue traz a **mensagem do SonarQube** (descreve o problema e o impacto), o
 
 **Local**: `pyproject.toml:-` · **Effort**: 5min
 
-> Dependency versions are not predictable if the lock file (uv.lock, poetry.lock, pdm.lock or pylock.toml) is missing.
+> Dependency versions are not predictable if the lock file (uv.lock, poetry.lock,
+> pdm.lock or pylock.toml) is missing.
 
 **Decisão**: pendente
 
@@ -280,7 +284,8 @@ Cada issue traz a **mensagem do SonarQube** (descreve o problema e o impacto), o
 
 **Local**: `tests/unit/test_helpers.py:126` · **Effort**: 5min
 
-> Refactor this exception test to have only one invocation possibly throwing an exception.
+> Refactor this exception test to have only one invocation possibly throwing an
+> exception.
 
 ```python
       122              u.Filter.create_filter(max_conditions=max_conditions)
@@ -320,7 +325,8 @@ Cada issue traz a **mensagem do SonarQube** (descreve o problema e o impacto), o
 
 **Local**: `src/flext_oracle_wms/_utilities/http_client.py:68` · **Effort**: 5min
 
-> Replace this comprehension with passing the iterable to the collection constructor call
+> Replace this comprehension with passing the iterable to the collection constructor
+> call
 
 ```python
        64                  match value:

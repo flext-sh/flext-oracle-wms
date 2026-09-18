@@ -24,13 +24,15 @@
 
 **Settings and environment management for flext-oracle-wms**
 
-**Version**: 0.12.0-dev | **Last Updated**: April 14, 2026 | **Status**: Test configuration only · 1.0.0 Current
+**Version**: 0.12.0-dev | **Last Updated**: April 14, 2026 | **Status**: Test
+configuration only · 1.0.0 Current
 
 ---
 
 ## Configuration Overview
 
-flext-oracle-wms provides test configuration framework requiring implementation for production Oracle WMS Cloud connectivity.
+flext-oracle-wms provides test configuration framework requiring implementation for
+production Oracle WMS Cloud connectivity.
 
 ## Test Configuration
 
@@ -77,7 +79,7 @@ export FLEXT_ORACLE_WMS_USERNAME="api_service_user"
 export FLEXT_ORACLE_WMS_PASSWORD="secure_enterprise_password"
 
 # Authentication method (requires implementation)
-export FLEXT_ORACLE_WMS_AUTH_METHOD="oauth2"  # basic, oauth2, api_key
+export FLEXT_ORACLE_WMS_AUTH_METHOD="oauth2" # basic, oauth2, api_key
 
 # Performance tuning (requires implementation)
 export FLEXT_ORACLE_WMS_TIMEOUT="60"
@@ -111,7 +113,8 @@ settings = FlextOracleWmsSettings(
 
 ### Authentication Configuration (Framework)
 
-Based on source code analysis, authentication framework exists but requires implementation:
+Based on source code analysis, authentication framework exists but requires
+implementation:
 
 ```python
 from __future__ import annotations
@@ -194,4 +197,5 @@ Oracle WMS Cloud authentication standards:
 
 ---
 
-**Last Updated**: April 14, 2026 | **Status**: Test configuration only, requires Oracle WMS Cloud implementation · 1.0.0 Current
+**Last Updated**: April 14, 2026 | **Status**: Test configuration only, requires Oracle
+WMS Cloud implementation · 1.0.0 Current
