@@ -93,7 +93,7 @@ src/flext_oracle_wms/
 
 ### Core Client Interface
 
-```python
+````python
 from __future__ import annotations
 
 from flext_oracle_wms import FlextOracleWmsApi, FlextOracleWmsSettings
@@ -198,7 +198,7 @@ make test             # 90%+ coverage requirement
 make test-unit        # Unit tests only
 make test-integration # Integration tests with Oracle WMS
 make coverage-html    # Generate detailed coverage report
-```
+````
 
 ### Quality Gates
 

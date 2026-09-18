@@ -40,7 +40,7 @@ production Oracle WMS Cloud connectivity.
 
 Current implementation provides test configuration with fake URLs:
 
-```python
+````python
 from __future__ import annotations
 
 from flext_oracle_wms import FlextOracleWmsSettings
@@ -69,7 +69,7 @@ export FLEXT_ORACLE_WMS_USERNAME="test_user"
 export FLEXT_ORACLE_WMS_PASSWORD="test_password"
 export FLEXT_ORACLE_WMS_TIMEOUT="30"
 export FLEXT_ORACLE_WMS_API_VERSION="v1"
-```
+````
 
 ### Required for Production (Not Implemented)
 
@@ -111,15 +111,14 @@ settings = FlextOracleWmsSettings(
     timeout=30,
     # Additional configuration options
 )
-
-
 ```
+
 ### Authentication Configuration (Framework)
 
 Based on source code analysis, authentication framework exists but requires
 implementation:
 
-```python
+````python
 from __future__ import annotations
 
 from flext_oracle_wms import c
@@ -204,3 +203,4 @@ Oracle WMS Cloud authentication standards:
 
 **Last Updated**: April 14, 2026 | **Status**: Test configuration only, requires Oracle
 WMS Cloud implementation · 1.0.0 Current
+````

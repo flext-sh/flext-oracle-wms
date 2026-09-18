@@ -121,7 +121,7 @@ for the FLEXT data integration platform.
 
 ### Basic Client Setup
 
-```python
+````python
 from __future__ import annotations
 
 from flext_oracle_wms import FlextOracleWmsClient, FlextOracleWmsClientSettings
@@ -166,7 +166,7 @@ if result.success:
 from flext_cli import u
 from flext_core import FlextSettings
     u.fetch_logger(__name__).info("Records retrieved", count=len(data.get('results', [])))
-```
+````
 
 ### Error Handling with r
 

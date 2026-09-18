@@ -34,7 +34,7 @@ implementation gaps · 1.0.0 Current
 
 Main client interface for Oracle WMS integration.
 
-```python
+````python
 from __future__ import annotations
 
 from flext_oracle_wms import FlextOracleWmsApi, FlextOracleWmsSettings
@@ -64,7 +64,7 @@ if result.success:
     print("Connection structure verified")
 else:
     print(f"Connection failed: {result.error}")
-```
+````
 
 ##### `discover_entities() -> p.Result[List[Dict]]`
 
@@ -91,7 +91,7 @@ Configuration class for Oracle WMS connection settings.
 
 Returns test configuration with fake URLs.
 
-```python
+````python
 from __future__ import annotations
 
 from flext_oracle_wms import FlextOracleWmsSettings
@@ -158,7 +158,7 @@ if result.success:
     data = result.value  # Type-safe access
 else:
     error = result.error  # Error message
-```
+````
 
 ## Models
 
@@ -180,6 +180,7 @@ entity = m.OracleWms.Entity(
 
 
 ```
+
 ## Implementation Status
 
 ### Completed Components

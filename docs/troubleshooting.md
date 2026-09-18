@@ -66,7 +66,7 @@ from __future__ import annotations
 
 **Solution**: Use correct flext_core imports:
 
-```python
+````python
 from __future__ import annotations
 
 from flext_core import u
@@ -85,7 +85,7 @@ from __future__ import annotations
 
 error = FlextOracleWmsError("message", field="username")
 assert error.field == "username"  # MyPy error: attribute not found
-```
+````
 
 **Solution**: Exception classes now declare attributes explicitly:
 
@@ -103,7 +103,7 @@ assert error.field == "username"  # Now works with MyPy
 
 **Solution**: Use proper configuration types:
 
-```python
+````python
 from __future__ import annotations
 
 from flext_oracle_wms import FlextOracleWmsApiVersion, FlextOracleWmsModuleSettings
@@ -122,7 +122,7 @@ settings = FlextOracleWmsModuleSettings(
 
 ```python
 from __future__ import annotations
-```
+````
 
 **Solution**: This requires implementation work:
 
@@ -282,7 +282,7 @@ assert error.entity_name == "test"  # Properly handled
 
 ### Enable Debug Logging
 
-```python
+````python
 from __future__ import annotations
 
 import logging
@@ -304,7 +304,7 @@ pyright
 
 # Check specific file
 mypy src/flext_oracle_wms/wms_client.py
-```
+````
 
 ### Test Debugging
 

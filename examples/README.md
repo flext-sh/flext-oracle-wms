@@ -75,7 +75,7 @@ represent real-world usage scenarios.
 
 ### Basic Client Setup
 
-```python
+````python
 from __future__ import annotations
 
 from flext_oracle_wms import FlextOracleWmsClient, FlextOracleWmsClientSettings
@@ -106,13 +106,13 @@ export FLEXT_ORACLE_WMS_BASE_URL="https://your-wms.oraclecloud.com"
 export FLEXT_ORACLE_WMS_USERNAME="your_username"
 export FLEXT_ORACLE_WMS_PASSWORD="your_password"
 export FLEXT_ORACLE_WMS_AUTH_METHOD="basic"
-```
+````
 
 ## 📖 **Example Structure**
 
 Each example follows a consistent structure:
 
-```python
+````python
 from __future__ import annotations
 
 """
@@ -163,7 +163,7 @@ pip install flext-oracle-wms
 
 # Or with Poetry
 poetry add flext-oracle-wms
-```
+````
 
 ### Environment Setup
 
