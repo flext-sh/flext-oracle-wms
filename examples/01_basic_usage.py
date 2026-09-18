@@ -78,7 +78,7 @@ def discover_wms_entities(client: FlextOracleWmsClient) -> p.Result[t.StrSequenc
       r containing list of discovered entities or error details
 
     """
-    result = client.discover_entities()
+    result: p.Result[t.StrSequence] = client.discover_entities()
     if result.success:
         entities = result.value
         for entity in entities[:5]:
@@ -105,7 +105,9 @@ def query_entity_data(
       r containing entity data or error details
 
     """
-    result = client.get_entity_data(entity_name=entity_name, limit=10)
+    result: p.Result[t.SequenceOf[t.StrMapping]] = client.get_entity_data(
+        entity_name=entity_name, limit=10
+    )
     if result.success:
         data = result.value
         if data:
