@@ -52,7 +52,7 @@ def demonstrate_singleton_config() -> None:
             "OracleWms": {
                 "base_url": "https://new-environment.wms.oraclecloud.com/test",
                 "username": "NEW_USER",
-                "password": "NEW_PASSWORD",
+                "password": os.environ.get("FLEXT_DEMO_WMS_PASSWORD", "<demo-new>"),
                 "timeout": float(FlextOracleWmsConstants.OracleWms.DEFAULT_TIMEOUT * 4),
             }
         }
@@ -67,7 +67,7 @@ def demonstrate_singleton_config() -> None:
             "OracleWms": {
                 "base_url": "https://fresh.wms.oraclecloud.com/fresh",
                 "username": "FRESH_USER",
-                "password": "FRESH_PASSWORD",
+                "password": os.environ.get("FLEXT_DEMO_WMS_PASSWORD", "<demo-fresh>"),
             }
         }
     )
@@ -79,7 +79,7 @@ def demonstrate_singleton_config() -> None:
             "base_url": "https://test-wms.example.com",
             "timeout": 30.0,
             "username": "test_user",
-            "password": "test_password",
+            "password": os.environ.get("FLEXT_DEMO_WMS_PASSWORD", "<demo-test>"),
         }
     })
     logger.info("   Test URL: %s", test_config.OracleWms.base_url)

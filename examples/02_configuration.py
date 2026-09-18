@@ -103,7 +103,7 @@ def create_demo_config() -> FlextOracleWmsSettings:
         "OracleWms": {
             "base_url": "https://demo-wms.oraclecloud.com/demo",
             "username": "demo_user",
-            "password": "demo_password",
+            "password": os.environ.get("FLEXT_DEMO_WMS_PASSWORD", "<demo>"),
             "api_version": "LGF_V10",
             "timeout": c.OracleWms.DEFAULT_TIMEOUT,
             "retry_attempts": c.OracleWms.DEFAULT_MAX_RETRIES,

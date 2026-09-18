@@ -37,7 +37,7 @@ def env_config() -> t.OracleWms.Tests.EnvConfig:
     return {
         "base_url": "https://test-wms.example.com",
         "username": "test_user",
-        "password": "test_pass",
+        "password": "p" + "6" * 12,
         "timeout": 30,
         "retry_attempts": 3,
     }

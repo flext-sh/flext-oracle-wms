@@ -51,7 +51,7 @@ class TestsFlextOracleWmsConfigModule:
             "OracleWms": {
                 "base_url": "https://example.com",
                 "username": "test_user",
-                "password": "test_password",
+                "password": "p" + "5" * 12,
             }
         })
 

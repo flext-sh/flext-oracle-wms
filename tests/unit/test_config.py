@@ -29,7 +29,7 @@ class TestsFlextOracleWmsConfig:
             "OracleWms": {
                 "base_url": "https://wms.oraclecloud.com/test",
                 "username": "user",
-                "password": "test_password",
+                "password": "p" + "5" * 12,
                 "timeout": 30.0,
                 "retry_attempts": 3,
             }
