@@ -123,6 +123,7 @@ for the FLEXT data integration platform.
 
 ```python
 from __future__ import annotations
+
 from flext_oracle_wms import FlextOracleWmsClient, FlextOracleWmsClientSettings
 
 # Create configuration
@@ -140,14 +141,13 @@ client.start()
 # Discover entities
 result = client.discover_entities()
 from flext_cli import u
-from flext_core import FlextSettings
 
 if result.success:
     logger = u.fetch_logger(__name__)
     logger.info("Discovered WMS entities", count=len(result.data))
     for entity in result.data:
         logger.info("Entity", name=str(entity))
-```
+
 
 ### Entity Data Querying
 

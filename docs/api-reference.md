@@ -36,6 +36,7 @@ Main client interface for Oracle WMS integration.
 
 ```python
 from __future__ import annotations
+
 from flext_oracle_wms import FlextOracleWmsApi, FlextOracleWmsSettings
 
 # Initialize the API facade
@@ -47,7 +48,7 @@ settings = FlextOracleWmsSettings.model_validate({
     }
 })
 api = FlextOracleWmsApi(settings=settings)
-```
+
 
 #### Methods
 
@@ -92,11 +93,12 @@ Returns test configuration with fake URLs.
 
 ```python
 from __future__ import annotations
+
 from flext_oracle_wms import FlextOracleWmsSettings
 
 settings = FlextOracleWmsSettings(base_url="https://test.example.com")
 # Uses "https://test.example.com" as base URL
-```
+
 
 ## API Endpoints (Framework)
 
@@ -137,11 +139,12 @@ Based on Oracle WMS best practices research:
 
 ```python
 from __future__ import annotations
+
 from flext_oracle_wms.errors import FlextOracleWmsErrors
 
 base_error = FlextOracleWmsErrors.Error
 validation_error = FlextOracleWmsErrors.ValidationError
-```
+
 
 ### r Pattern
 
@@ -165,6 +168,7 @@ Represents Oracle WMS entity with metadata.
 
 ```python
 from __future__ import annotations
+
 from flext_oracle_wms import m
 
 entity = m.OracleWms.Entity(
@@ -173,7 +177,7 @@ entity = m.OracleWms.Entity(
     description="Inventory item entity",
     # Additional metadata
 )
-```
+
 
 ## Implementation Status
 

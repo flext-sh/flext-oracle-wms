@@ -77,6 +77,7 @@ represent real-world usage scenarios.
 
 ```python
 from __future__ import annotations
+
 from flext_oracle_wms import FlextOracleWmsClient, FlextOracleWmsClientSettings
 
 # Configure Oracle WMS connection
@@ -95,7 +96,7 @@ if result.success:
     print(f"Found {len(result.data)} WMS entities")
     for entity in result.data:
         print(f"- {entity.name}: {entity.description}")
-```
+
 
 ### Environment Configuration
 
@@ -134,7 +135,6 @@ Usage:
     python [example_file.py]:
 """
 
-from flext_oracle_wms import FlextOracleWmsClient, FlextOracleWmsClientSettings
 
 
 def main():
@@ -145,7 +145,7 @@ def main():
 
 if __name__ == "__main__":
     run(main())
-```
+
 
 ## 🔧 **Prerequisites**
 

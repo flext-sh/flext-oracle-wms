@@ -42,6 +42,7 @@ Current implementation provides test configuration with fake URLs:
 
 ```python
 from __future__ import annotations
+
 from flext_oracle_wms import FlextOracleWmsSettings
 
 settings = FlextOracleWmsSettings.model_validate({
@@ -55,7 +56,7 @@ print(settings.OracleWms.base_url)  # "https://test.example.com"
 print(settings.OracleWms.username)  # "test_user"
 print(settings.OracleWms.api_version)  # Current API version
 print(settings.OracleWms.timeout)  # Default timeout
-```
+
 
 ## Environment Variables
 
@@ -99,6 +100,7 @@ Configuration for Oracle WMS client (framework structure):
 
 ```python
 from __future__ import annotations
+
 from flext_oracle_wms import FlextOracleWmsSettings
 
 # Note: This is framework structure, not fully implemented
@@ -109,7 +111,7 @@ settings = FlextOracleWmsSettings(
     timeout=30,
     # Additional configuration options
 )
-```
+
 
 ### Authentication Configuration (Framework)
 
@@ -118,6 +120,7 @@ implementation:
 
 ```python
 from __future__ import annotations
+
 from flext_oracle_wms import c
 
 # Framework supports these methods (implementation required)
@@ -127,7 +130,7 @@ auth_methods = [
     OracleWMSAuthMethod.OAUTH2,  # Token-based (not implemented)
     OracleWMSAuthMethod.API_KEY,  # API key (not implemented)
 ]
-```
+
 
 ## Configuration Validation
 
@@ -137,6 +140,7 @@ The framework includes Pydantic-based configuration validation:
 
 ```python
 from __future__ import annotations
+
 from flext_oracle_wms import FlextOracleWmsSettings
 
 # Configuration validation is implemented
@@ -144,7 +148,7 @@ settings = FlextOracleWmsSettings(
     base_url="https://test.example.com", username="test_user", password="test_password"
 )
 # Pydantic automatically validates configuration structure
-```
+
 
 ### Required Implementation
 

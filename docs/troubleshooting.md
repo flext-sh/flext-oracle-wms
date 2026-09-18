@@ -68,10 +68,11 @@ from __future__ import annotations
 
 ```python
 from __future__ import annotations
+
 from flext_core import u
 
 logger = u.fetch_logger(__name__)
-```
+
 
 ### Type Safety Issues
 
@@ -104,13 +105,14 @@ assert error.field == "username"  # Now works with MyPy
 
 ```python
 from __future__ import annotations
-from flext_oracle_wms import FlextOracleWmsModuleSettings, FlextOracleWmsApiVersion
+
+from flext_oracle_wms import FlextOracleWmsApiVersion, FlextOracleWmsModuleSettings
 
 settings = FlextOracleWmsModuleSettings(
     api_version=FlextOracleWmsApiVersion.V1,  # Use enum, not string
     oracle_wms_timeout=30,  # Use int, not float
 )
-```
+
 
 ### FLEXT Compliance Issues
 
@@ -282,6 +284,7 @@ assert error.entity_name == "test"  # Properly handled
 
 ```python
 from __future__ import annotations
+
 import logging
 
 from flext_core import u
@@ -290,7 +293,7 @@ logging.basicConfig(level=logging.DEBUG)
 
 logger = u.fetch_logger(__name__)
 logger.debug("Debug message")
-```
+
 
 ### Type Checking
 

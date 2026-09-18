@@ -95,6 +95,7 @@ src/flext_oracle_wms/
 
 ```python
 from __future__ import annotations
+
 from flext_oracle_wms import FlextOracleWmsApi, FlextOracleWmsSettings
 
 # Type-safe configuration
@@ -114,12 +115,13 @@ if result.success:
     print("Client created")
 else:
     print(f"Discovery failed: {result.error}")
-```
+
 
 ### Configuration Management
 
 ```python
 from __future__ import annotations
+
 import os
 
 from flext_oracle_wms import FlextOracleWmsSettings
@@ -136,12 +138,13 @@ settings = FlextOracleWmsSettings.model_validate({
     }
 })
 print(settings.OracleWms.base_url)
-```
+
 
 ### Error Handling
 
 ```python
 from __future__ import annotations
+
 from flext_oracle_wms import FlextOracleWmsErrors
 
 try:
@@ -155,7 +158,7 @@ except FlextOracleWmsErrors.ValidationError:
 except FlextOracleWmsErrors.Error:
     # Handle any Oracle WMS error
     logger.error("Oracle WMS operation failed")
-```
+
 
 ## 🔧 **Development Guidelines**
 

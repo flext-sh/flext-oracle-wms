@@ -271,7 +271,7 @@ padrão.
       202                  def key_func(record: t.OracleWms.FilterRecord) -> str:
       203                      value = self._get_nested_value(record, sort_field)
       204                      return str(
->>>   205                          value if value is not None else "" if ascending else "zzz"
+>>>   205                          value if value is not None else "" if ascending e ...
       206                      )
       207
       208                  return r[Sequence[t.OracleWms.FilterRecord]].ok(
@@ -296,7 +296,7 @@ padrão.
       127              u.Filter(
       128                  filters={
       129                      "id": m.OracleWms.FlextOracleWmsOperatorFilter(
-      130                          operator=c.OracleWms.WmsFilterOperator.IN, value=[1, 2, 3]
+      130                          operator=c.OracleWms.WmsFilterOperator.IN, value= ...
 ```
 
 **Decisão**: pendente
