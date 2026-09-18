@@ -95,7 +95,7 @@ class FlextOracleWmsUtilitiesClient:
 
         def _create_api_client(self) -> FlextApi:
             """Create a configured API client for Oracle WMS requests."""
-            return FlextApi(settings=self._api_config)
+            return FlextApi(runtime_settings=self._api_config)
 
         @staticmethod
         def _decode_response_model[T: m.BaseModel](

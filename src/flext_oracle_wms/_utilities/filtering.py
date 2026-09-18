@@ -113,6 +113,18 @@ class FlextOracleWmsUtilitiesFiltering:
         ) -> bool:
             return cls._compare(field_value, min_val, ">=")
 
+        @staticmethod
+        def _scalar_part(
+            value: t.OracleWms.FilterRecordValue | None,
+        ) -> t.Scalar | None:
+            """Narrow a filter value to its scalar candidate for numeric validation.
+
+            ``FilterRecordValue`` allows nested mappings that are outside the
+            ``t.JsonPayload`` contract of ``validate_value``; mappings and lists
+            can never satisfy a float adapter, so only scalars are forwarded.
+            """
+            return value if isinstance(value, t.Scalar) else None
+
         @classmethod
         def _compare(
             cls,
@@ -120,8 +132,8 @@ class FlextOracleWmsUtilitiesFiltering:
             right: t.OracleWms.FilterScalar | t.OracleWms.FilterList,
             op: str,
         ) -> bool:
-            left_num = u.validate_value(t.float_adapter(), left)
-            right_num = u.validate_value(t.float_adapter(), right)
+            left_num = u.validate_value(t.float_adapter(), cls._scalar_part(left))
+            right_num = u.validate_value(t.float_adapter(), cls._scalar_part(right))
             if left_num.success and right_num.success:
                 return cls._compare_float(left_num.value, right_num.value, op)
             return cls._compare_string(str(left), str(right), op)

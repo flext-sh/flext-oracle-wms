@@ -55,13 +55,13 @@ class TestsFlextOracleWmsModelsUnit:
     @pytest.mark.parametrize(("field", "value"), [("name", ""), ("endpoint", "")])
     def test_entity_rejects_empty_required_string(self, field: str, value: str) -> None:
         """Empty required strings violate min_length and raise ValidationError."""
-        kwargs: t.MutableMappingKV[str, str] = {
+        fields: t.MutableMappingKV[str, str] = {
             "name": "item",
             "endpoint": "/api/items",
         }
-        kwargs[field] = value
+        fields[field] = value
         with pytest.raises(c.ValidationError):
-            m.OracleWms.Entity(**kwargs)
+            m.OracleWms.Entity.model_validate(fields)
 
     @pytest.mark.parametrize("endpoint", ["api/items", "items", "http://x/api"])
     def test_entity_rejects_endpoint_without_leading_slash(self, endpoint: str) -> None:
