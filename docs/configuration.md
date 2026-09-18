@@ -113,6 +113,7 @@ settings = FlextOracleWmsSettings(
 )
 
 
+```
 ### Authentication Configuration (Framework)
 
 Based on source code analysis, authentication framework exists but requires
