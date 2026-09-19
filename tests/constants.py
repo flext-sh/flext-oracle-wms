@@ -17,17 +17,20 @@ from flext_tests import FlextTestsConstants
 from flext_oracle_wms import c
 
 
+@unique
+class OracleWmsCategoryEnum(StrEnum):
+    """Oracle WMS API category classifications."""
+
+    DATA_EXTRACT = "data_extract"
+    ENTITY_OPERATIONS = "entity_operations"
+    SETUP_TRANSACTIONAL = "setup_transactional"
+    AUTOMATION_OPERATIONS = "automation_operations"
+
+
 class TestsFlextOracleWmsConstants(FlextTestsConstants, c):
     """Test constants for flext-oracle-wms."""
-    
-    @unique
-    class OracleWmsCategoryEnum(StrEnum):
-        """Oracle WMS API category classifications."""
 
-        DATA_EXTRACT = "data_extract"
-        ENTITY_OPERATIONS = "entity_operations"
-        SETUP_TRANSACTIONAL = "setup_transactional"
-        AUTOMATION_OPERATIONS = "automation_operations"
+    OracleWmsCategoryEnum = OracleWmsCategoryEnum
 
     class OracleWms(c.OracleWms):
         """Oracle WMS domain test constants namespace."""
@@ -35,7 +38,7 @@ class TestsFlextOracleWmsConstants(FlextTestsConstants, c):
         class Tests(FlextTestsConstants.Tests):
             """Oracle WMS-specific test constants."""
 
-            Categories: type[TestsFlextOracleWmsConstants.OracleWmsCategoryEnum] = TestsFlextOracleWmsConstants.OracleWmsCategoryEnum
+            Categories: type[OracleWmsCategoryEnum] = OracleWmsCategoryEnum
             "Oracle WMS API category classifications (data_extract, entity_operations, setup_transactional, automation_operations)."
 
             API_VERSION_LGF_V10: Final[str] = "LGF_V10"
@@ -43,4 +46,5 @@ class TestsFlextOracleWmsConstants(FlextTestsConstants, c):
 
 
 c = TestsFlextOracleWmsConstants
+
 __all__: list[str] = ["TestsFlextOracleWmsConstants"]
