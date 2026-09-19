@@ -10,7 +10,8 @@ from typing import TYPE_CHECKING, Self
 
 from flext_api import FlextApi, FlextApiSettings, u
 
-from flext_oracle_wms import c, m, p, r, t
+from flext_core import r
+from flext_oracle_wms import c, m, p, t
 
 if TYPE_CHECKING:
     from types import TracebackType

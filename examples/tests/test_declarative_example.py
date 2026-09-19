@@ -91,7 +91,8 @@ def run_client_flow(client: FlextOracleWmsClient) -> None:
     """Run the declarative example client flow."""
     start_result = client.start()
     if not start_result.success:
-        return
+        msg = f"client start failed: {start_result.error}"
+        raise RuntimeError(msg)
     categories: t.MutableMappingKV[str, t.MutableSequenceOf[str]] = {}
     for api in FlextOracleWmsApi.api_endpoints().values():
         if api.category not in categories:

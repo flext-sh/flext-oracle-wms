@@ -147,7 +147,8 @@ def run_basic_usage() -> None:
     client = FlextOracleWmsClient()
     start_result = client.start()
     if not start_result.success:
-        return
+        msg = f"client start failed: {start_result.error}"
+        raise FlextOracleWmsErrors.Error(msg)
     entities_result = discover_wms_entities(client)
     if entities_result.success:
         entities = entities_result.value
