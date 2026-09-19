@@ -177,8 +177,6 @@ entity = m.OracleWms.Entity(
     description="Inventory item entity",
     # Additional metadata
 )
-
-
 ```
 
 ## Implementation Status
