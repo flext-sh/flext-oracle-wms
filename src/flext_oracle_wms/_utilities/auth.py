@@ -8,7 +8,8 @@ from __future__ import annotations
 
 import base64
 
-from flext_oracle_wms import c, m, p, r, t
+from flext_core import r
+from flext_oracle_wms import c, m, p, t
 
 
 class FlextOracleWmsUtilitiesAuth:

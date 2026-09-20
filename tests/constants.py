@@ -30,6 +30,8 @@ class OracleWmsCategoryEnum(StrEnum):
 class TestsFlextOracleWmsConstants(FlextTestsConstants, c):
     """Test constants for flext-oracle-wms."""
 
+    OracleWmsCategoryEnum = OracleWmsCategoryEnum
+
     class OracleWms(c.OracleWms):
         """Oracle WMS domain test constants namespace."""
 
@@ -44,4 +46,5 @@ class TestsFlextOracleWmsConstants(FlextTestsConstants, c):
 
 
 c = TestsFlextOracleWmsConstants
-__all__: list[str] = ["TestsFlextOracleWmsConstants", "c"]
+
+__all__: list[str] = ["TestsFlextOracleWmsConstants"]

@@ -10,7 +10,8 @@ from collections.abc import MutableSequence, Sequence
 
 from flext_api import u
 
-from flext_oracle_wms import c, e, m, p, r, t
+from flext_core import e, r
+from flext_oracle_wms import c, m, p, t
 from flext_oracle_wms.errors import FlextOracleWmsErrors
 
 
@@ -123,7 +124,7 @@ class FlextOracleWmsUtilitiesFiltering:
             ``t.JsonPayload`` contract of ``validate_value``; mappings and lists
             can never satisfy a float adapter, so only scalars are forwarded.
             """
-            return value if isinstance(value, t.Scalar) else None
+            return value if isinstance(value, t.SCALAR_TYPES) else None
 
         @classmethod
         def _compare(
