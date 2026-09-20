@@ -5,7 +5,6 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from flext_cli import FlextCliSettings, m
-from pydantic_settings import SettingsConfigDict
 
 
 class FlextOracleWmsSettings(FlextCliSettings):
@@ -17,7 +16,7 @@ class FlextOracleWmsSettings(FlextCliSettings):
     redeclared here.
     """
 
-    model_config = SettingsConfigDict(
+    model_config = m.SettingsConfigDict(
         env_prefix="FLEXT_ORACLE_WMS_", env_nested_delimiter="__", extra="ignore"
     )
 
