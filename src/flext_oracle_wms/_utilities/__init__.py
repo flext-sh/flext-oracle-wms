@@ -15,10 +15,7 @@ if TYPE_CHECKING:
     from .filtering import FlextOracleWmsUtilitiesFiltering
     from .http_client import FlextOracleWmsUtilitiesHttpClient
 __all__: tuple[str, ...] = (
-    "FlextOracleWmsUtilitiesAuth",
-    "FlextOracleWmsUtilitiesClient",
-    "FlextOracleWmsUtilitiesDiscovery",
-    "FlextOracleWmsUtilitiesFiltering",
+    "FlextOracleWmsUtilitiesAuth", "FlextOracleWmsUtilitiesClient", "FlextOracleWmsUtilitiesDiscovery", "FlextOracleWmsUtilitiesFiltering",
     "FlextOracleWmsUtilitiesHttpClient",
 )
 
