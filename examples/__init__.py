@@ -13,9 +13,18 @@ if TYPE_CHECKING:
 
     from . import tests
 __all__: tuple[str, ...] = (
-    "c", "d", "e", "h",
-    "m", "p", "r", "s",
-    "t", "tests", "u", "x",
+    "c",
+    "d",
+    "e",
+    "h",
+    "m",
+    "p",
+    "r",
+    "s",
+    "t",
+    "tests",
+    "u",
+    "x",
 )
 
 _LAZY_IMPORTS = MappingProxyType(
