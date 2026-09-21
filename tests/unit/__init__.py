@@ -22,7 +22,6 @@ if TYPE_CHECKING:
     from .test_config_module import TestsFlextOracleWmsConfigModule
     from .test_connection import TestsFlextOracleWmsConnection
     from .test_constants import TestsFlextOracleWmsConstantsUnit
-    from .test_declarative import TestsFlextOracleWmsDeclarative
     from .test_discovery import TestsFlextOracleWmsDiscovery
     from .test_filtering import TestsFlextOracleWmsFiltering
     from .test_helpers import TestsFlextOracleWmsHelpers
@@ -33,43 +32,15 @@ if TYPE_CHECKING:
     from .test_unified_config import TestsFlextOracleWmsUnifiedConfig
     from .test_wms_client import TestsFlextOracleWmsWmsClient
 __all__: tuple[str, ...] = (
-    "TestsFlextOracleWmsApi",
-    "TestsFlextOracleWmsAuthentication",
-    "TestsFlextOracleWmsAuthenticationCore",
-    "TestsFlextOracleWmsClient",
-    "TestsFlextOracleWmsClientClass",
-    "TestsFlextOracleWmsClientCore",
-    "TestsFlextOracleWmsConfig",
-    "TestsFlextOracleWmsConfigDomains",
-    "TestsFlextOracleWmsConfigModule",
-    "TestsFlextOracleWmsConnection",
-    "TestsFlextOracleWmsConstantsUnit",
-    "TestsFlextOracleWmsDeclarative",
-    "TestsFlextOracleWmsDiscovery",
-    "TestsFlextOracleWmsFiltering",
-    "TestsFlextOracleWmsHelpers",
-    "TestsFlextOracleWmsHelpersCore",
-    "TestsFlextOracleWmsModelsUnit",
-    "TestsFlextOracleWmsSchemaDynamic",
-    "TestsFlextOracleWmsSingerFlattening",
-    "TestsFlextOracleWmsUnifiedConfig",
-    "TestsFlextOracleWmsWmsClient",
-    "c",
-    "d",
-    "e",
-    "h",
-    "m",
-    "p",
-    "r",
-    "s",
-    "t",
-    "td",
-    "tf",
-    "tk",
-    "tm",
-    "tv",
-    "u",
-    "x",
+    "TestsFlextOracleWmsApi", "TestsFlextOracleWmsAuthentication", "TestsFlextOracleWmsAuthenticationCore", "TestsFlextOracleWmsClient",
+    "TestsFlextOracleWmsClientClass", "TestsFlextOracleWmsClientCore", "TestsFlextOracleWmsConfig", "TestsFlextOracleWmsConfigDomains",
+    "TestsFlextOracleWmsConfigModule", "TestsFlextOracleWmsConnection", "TestsFlextOracleWmsConstantsUnit", "TestsFlextOracleWmsDiscovery",
+    "TestsFlextOracleWmsFiltering", "TestsFlextOracleWmsHelpers", "TestsFlextOracleWmsHelpersCore", "TestsFlextOracleWmsModelsUnit",
+    "TestsFlextOracleWmsSchemaDynamic", "TestsFlextOracleWmsSingerFlattening", "TestsFlextOracleWmsUnifiedConfig", "TestsFlextOracleWmsWmsClient",
+    "c", "d", "e", "h",
+    "m", "p", "r", "s",
+    "t", "td", "tf", "tk",
+    "tm", "tv", "u", "x",
 )
 
 _LAZY_IMPORTS = MappingProxyType(
@@ -86,7 +57,6 @@ _LAZY_IMPORTS = MappingProxyType(
             ".test_config_module": ("TestsFlextOracleWmsConfigModule",),
             ".test_connection": ("TestsFlextOracleWmsConnection",),
             ".test_constants": ("TestsFlextOracleWmsConstantsUnit",),
-            ".test_declarative": ("TestsFlextOracleWmsDeclarative",),
             ".test_discovery": ("TestsFlextOracleWmsDiscovery",),
             ".test_filtering": ("TestsFlextOracleWmsFiltering",),
             ".test_helpers": ("TestsFlextOracleWmsHelpers",),
@@ -97,22 +67,8 @@ _LAZY_IMPORTS = MappingProxyType(
             ".test_unified_config": ("TestsFlextOracleWmsUnifiedConfig",),
             ".test_wms_client": ("TestsFlextOracleWmsWmsClient",),
             "flext_tests": (
-                "c",
-                "d",
-                "e",
-                "h",
-                "m",
-                "p",
-                "r",
-                "s",
-                "t",
-                "td",
-                "tf",
-                "tk",
-                "tm",
-                "tv",
-                "u",
-                "x",
+                "c", "d", "e", "h", "m", "p", "r", "s", "t", "td", "tf", "tk", "tm",
+                "tv", "u", "x",
             ),
         }),
         alias_groups=MappingProxyType({}),
