@@ -28,7 +28,9 @@ class FlextOracleWmsConstants(c):
     One class per module following SOLID principles. Generic for any WMS system.
     """
 
-    class OracleWms(FlextOracleWmsConstantsBase, FlextOracleWmsConstantsValues.OracleWms):
+    class OracleWms(
+        FlextOracleWmsConstantsBase, FlextOracleWmsConstantsValues.OracleWms
+    ):
         """WMS connection constants - composed from base."""
 
         HTTP_BAD_REQUEST_THRESHOLD: Final[int] = 400
