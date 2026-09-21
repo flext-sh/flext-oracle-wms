@@ -289,7 +289,7 @@ padrão.
 > Extract this nested conditional expression into an independent statement.
 
 ```text
-      201  
+      201
       202                  def key_func(record: t.OracleWms.FilterRecord) -> str:
       203                      value = self._get_nested_value(record, sort_field)
       204                      return str(
