@@ -9,20 +9,33 @@ from typing import TYPE_CHECKING
 from flext_core.lazy import build_lazy_import_map, install_lazy_exports
 
 if TYPE_CHECKING:
-    from flext_oracle_wms import c, d, e, h, m, p, r, s, t, u, x
+    from flext_api import s
+    from flext_core import d, h, r, x
+    from flext_oracle_wms import c, e, m, p, t, u
 
     from . import tests
 __all__: tuple[str, ...] = (
-    "c", "d", "e", "h",
-    "m", "p", "r", "s",
-    "t", "tests", "u", "x",
+    "c",
+    "d",
+    "e",
+    "h",
+    "m",
+    "p",
+    "r",
+    "s",
+    "t",
+    "tests",
+    "u",
+    "x",
 )
 
 _LAZY_IMPORTS = MappingProxyType(
     build_lazy_import_map(
         MappingProxyType({
             ".tests": ("tests",),
-            "flext_oracle_wms": ("c", "d", "e", "h", "m", "p", "r", "s", "t", "u", "x"),
+            "flext_api": ("s",),
+            "flext_core": ("d", "h", "r", "x"),
+            "flext_oracle_wms": ("c", "e", "m", "p", "t", "u"),
         }),
         alias_groups=MappingProxyType({}),
         sort_keys=False,
