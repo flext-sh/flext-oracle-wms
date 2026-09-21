@@ -9,12 +9,19 @@ from typing import TYPE_CHECKING
 from flext_core.lazy import build_lazy_import_map, install_lazy_exports
 
 from .__version__ import (
-    __author__ as __author__, __author_email__ as __author_email__, __description__ as __description__, __license__ as __license__,
-    __title__ as __title__, __url__ as __url__, __version__ as __version__, __version_info__ as __version_info__,
+    __author__ as __author__,
+    __author_email__ as __author_email__,
+    __description__ as __description__,
+    __license__ as __license__,
+    __title__ as __title__,
+    __url__ as __url__,
+    __version__ as __version__,
+    __version_info__ as __version_info__,
 )
 
 if TYPE_CHECKING:
-    from flext_api import d, h, r, s, x
+    from flext_api import s
+    from flext_core import d, h, r, x
 
     from .__version__ import FlextOracleWmsVersion
     from ._config import FlextOracleWmsConfig, config
@@ -26,19 +33,51 @@ if TYPE_CHECKING:
     from .protocols import FlextOracleWmsProtocols, FlextOracleWmsProtocols as p
     from .typings import FlextOracleWmsTypes, FlextOracleWmsTypes as t
     from .utilities import (
-        FlextOracleWmsUtilities, FlextOracleWmsUtilities as u, FlextOracleWmsUtilitiesAuth, FlextOracleWmsUtilitiesClient,
-        FlextOracleWmsUtilitiesDiscovery, FlextOracleWmsUtilitiesFiltering, FlextOracleWmsUtilitiesHttpClient,
+        FlextOracleWmsUtilities,
+        FlextOracleWmsUtilities as u,
+        FlextOracleWmsUtilitiesAuth,
+        FlextOracleWmsUtilitiesClient,
+        FlextOracleWmsUtilitiesDiscovery,
+        FlextOracleWmsUtilitiesFiltering,
+        FlextOracleWmsUtilitiesHttpClient,
     )
 __all__: tuple[str, ...] = (
-    "FlextOracleWmsApi", "FlextOracleWmsConfig", "FlextOracleWmsConstants", "FlextOracleWmsErrors",
-    "FlextOracleWmsModels", "FlextOracleWmsProtocols", "FlextOracleWmsSettings", "FlextOracleWmsTypes",
-    "FlextOracleWmsUtilities", "FlextOracleWmsUtilitiesAuth", "FlextOracleWmsUtilitiesClient", "FlextOracleWmsUtilitiesDiscovery",
-    "FlextOracleWmsUtilitiesFiltering", "FlextOracleWmsUtilitiesHttpClient", "FlextOracleWmsVersion", "__author__",
-    "__author_email__", "__description__", "__license__", "__title__",
-    "__url__", "__version__", "__version_info__", "c",
-    "config", "d", "e", "h",
-    "m", "oracle_wms", "p", "r",
-    "s", "settings", "t", "u",
+    "FlextOracleWmsApi",
+    "FlextOracleWmsConfig",
+    "FlextOracleWmsConstants",
+    "FlextOracleWmsErrors",
+    "FlextOracleWmsModels",
+    "FlextOracleWmsProtocols",
+    "FlextOracleWmsSettings",
+    "FlextOracleWmsTypes",
+    "FlextOracleWmsUtilities",
+    "FlextOracleWmsUtilitiesAuth",
+    "FlextOracleWmsUtilitiesClient",
+    "FlextOracleWmsUtilitiesDiscovery",
+    "FlextOracleWmsUtilitiesFiltering",
+    "FlextOracleWmsUtilitiesHttpClient",
+    "FlextOracleWmsVersion",
+    "__author__",
+    "__author_email__",
+    "__description__",
+    "__license__",
+    "__title__",
+    "__url__",
+    "__version__",
+    "__version_info__",
+    "c",
+    "config",
+    "d",
+    "e",
+    "h",
+    "m",
+    "oracle_wms",
+    "p",
+    "r",
+    "s",
+    "settings",
+    "t",
+    "u",
     "x",
 )
 
@@ -55,12 +94,16 @@ _LAZY_IMPORTS = MappingProxyType(
             ".protocols": ("FlextOracleWmsProtocols", "p"),
             ".typings": ("FlextOracleWmsTypes", "t"),
             ".utilities": (
-                "FlextOracleWmsUtilities", "FlextOracleWmsUtilitiesAuth",
-                "FlextOracleWmsUtilitiesClient", "FlextOracleWmsUtilitiesDiscovery",
-                "FlextOracleWmsUtilitiesFiltering", "FlextOracleWmsUtilitiesHttpClient",
+                "FlextOracleWmsUtilities",
+                "FlextOracleWmsUtilitiesAuth",
+                "FlextOracleWmsUtilitiesClient",
+                "FlextOracleWmsUtilitiesDiscovery",
+                "FlextOracleWmsUtilitiesFiltering",
+                "FlextOracleWmsUtilitiesHttpClient",
                 "u",
             ),
-            "flext_api": ("d", "h", "r", "s", "x"),
+            "flext_api": ("s",),
+            "flext_core": ("d", "h", "r", "x"),
         }),
         alias_groups=MappingProxyType({}),
         sort_keys=False,
