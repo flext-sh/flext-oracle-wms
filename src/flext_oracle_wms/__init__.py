@@ -20,7 +20,9 @@ from .__version__ import (
 )
 
 if TYPE_CHECKING:
-    from flext_api import d, h, r, s, x
+    from flext_api import s
+
+    from flext_core import d, h, r, x
 
     from .__version__ import FlextOracleWmsVersion
     from ._config import FlextOracleWmsConfig, config
@@ -101,7 +103,8 @@ _LAZY_IMPORTS = MappingProxyType(
                 "FlextOracleWmsUtilitiesHttpClient",
                 "u",
             ),
-            "flext_api": ("d", "h", "r", "s", "x"),
+            "flext_api": ("s",),
+            "flext_core": ("d", "h", "r", "x"),
         }),
         alias_groups=MappingProxyType({}),
         sort_keys=False,

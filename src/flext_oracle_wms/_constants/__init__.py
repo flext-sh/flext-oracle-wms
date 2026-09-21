@@ -1,5 +1,5 @@
 # AUTO-GENERATED FILE — Regenerate with: make gen
-"""Examples package."""
+"""Flext Oracle Wms. Constants package."""
 
 from __future__ import annotations
 
@@ -9,34 +9,18 @@ from typing import TYPE_CHECKING
 from flext_core.lazy import build_lazy_import_map, install_lazy_exports
 
 if TYPE_CHECKING:
-    from flext_api import s
-
-    from flext_core import d, h, r, x
-    from flext_oracle_wms import c, e, m, p, t, u
-
-    from . import tests
+    from .base import FlextOracleWmsConstantsBase
+    from .values import FlextOracleWmsConstantsValues
 __all__: tuple[str, ...] = (
-    "c",
-    "d",
-    "e",
-    "h",
-    "m",
-    "p",
-    "r",
-    "s",
-    "t",
-    "tests",
-    "u",
-    "x",
+    "FlextOracleWmsConstantsBase",
+    "FlextOracleWmsConstantsValues",
 )
 
 _LAZY_IMPORTS = MappingProxyType(
     build_lazy_import_map(
         MappingProxyType({
-            ".tests": ("tests",),
-            "flext_api": ("s",),
-            "flext_core": ("d", "h", "r", "x"),
-            "flext_oracle_wms": ("c", "e", "m", "p", "t", "u"),
+            ".base": ("FlextOracleWmsConstantsBase",),
+            ".values": ("FlextOracleWmsConstantsValues",),
         }),
         alias_groups=MappingProxyType({}),
         sort_keys=False,

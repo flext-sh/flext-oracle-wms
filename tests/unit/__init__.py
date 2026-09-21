@@ -22,7 +22,6 @@ if TYPE_CHECKING:
     from .test_config_module import TestsFlextOracleWmsConfigModule
     from .test_connection import TestsFlextOracleWmsConnection
     from .test_constants import TestsFlextOracleWmsConstantsUnit
-    from .test_declarative import TestsFlextOracleWmsDeclarative
     from .test_discovery import TestsFlextOracleWmsDiscovery
     from .test_filtering import TestsFlextOracleWmsFiltering
     from .test_helpers import TestsFlextOracleWmsHelpers
@@ -44,7 +43,6 @@ __all__: tuple[str, ...] = (
     "TestsFlextOracleWmsConfigModule",
     "TestsFlextOracleWmsConnection",
     "TestsFlextOracleWmsConstantsUnit",
-    "TestsFlextOracleWmsDeclarative",
     "TestsFlextOracleWmsDiscovery",
     "TestsFlextOracleWmsFiltering",
     "TestsFlextOracleWmsHelpers",
@@ -86,7 +84,6 @@ _LAZY_IMPORTS = MappingProxyType(
             ".test_config_module": ("TestsFlextOracleWmsConfigModule",),
             ".test_connection": ("TestsFlextOracleWmsConnection",),
             ".test_constants": ("TestsFlextOracleWmsConstantsUnit",),
-            ".test_declarative": ("TestsFlextOracleWmsDeclarative",),
             ".test_discovery": ("TestsFlextOracleWmsDiscovery",),
             ".test_filtering": ("TestsFlextOracleWmsFiltering",),
             ".test_helpers": ("TestsFlextOracleWmsHelpers",),
