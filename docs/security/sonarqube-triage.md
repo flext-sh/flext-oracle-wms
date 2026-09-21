@@ -1,5 +1,27 @@
 # Triagem SonarCloud — flext-sh/flext-oracle-wms
 
+<!-- TOC START -->
+- [Resumo](#resumo)
+- [Como usar](#como-usar)
+- [Issues](#issues)
+  - [1 · 🔴 BLOCKER · CODE_SMELL · python:S3516](#1-blocker-code_smell-pythons3516)
+  - [2 · 🔴 BLOCKER · CODE_SMELL · python:S3516](#2-blocker-code_smell-pythons3516)
+  - [3 · 🟡 MAJOR · VULNERABILITY · githubactions:S8264](#3-major-vulnerability-githubactionss8264)
+  - [4 · 🟡 MAJOR · VULNERABILITY · githubactions:S8233](#4-major-vulnerability-githubactionss8233)
+  - [5 · 🟡 MAJOR · VULNERABILITY · githubactions:S8233](#5-major-vulnerability-githubactionss8233)
+  - [6 · 🟡 MAJOR · CODE_SMELL · python:S108](#6-major-code_smell-pythons108)
+  - [7 · 🟡 MAJOR · CODE_SMELL · python:S108](#7-major-code_smell-pythons108)
+  - [8 · 🟡 MAJOR · CODE_SMELL · python:S108](#8-major-code_smell-pythons108)
+  - [9 · 🟡 MAJOR · CODE_SMELL · python:S108](#9-major-code_smell-pythons108)
+  - [10 · 🟡 MAJOR · CODE_SMELL · python:S108](#10-major-code_smell-pythons108)
+  - [11 · 🟡 MAJOR · CODE_SMELL · python:S108](#11-major-code_smell-pythons108)
+  - [12 · 🟡 MAJOR · VULNERABILITY · text:S8565](#12-major-vulnerability-texts8565)
+  - [13 · 🟡 MAJOR · CODE_SMELL · python:S3358](#13-major-code_smell-pythons3358)
+  - [14 · 🟡 MAJOR · CODE_SMELL · python:S5778](#14-major-code_smell-pythons5778)
+  - [15 · ⚪ MINOR · CODE_SMELL · python:S7504](#15-minor-code_smell-pythons7504)
+  - [16 · ⚪ MINOR · CODE_SMELL · python:S7500](#16-minor-code_smell-pythons7500)
+<!-- TOC END -->
+
 Gerado do dump da plataforma SonarCloud (2026-08-06).
 
 Bead: `mro-2wjm.14`
@@ -37,7 +59,7 @@ padrão.
 
 > Refactor this method to not always return the same value.
 
-```python
+```text
        71      })
        72      _ = container.bind("FlextOracleWmsSettings", settings.model_dump(mode="python"))
        73
@@ -57,7 +79,7 @@ padrão.
 
 > Refactor this method to not always return the same value.
 
-```python
+```text
        95          return result
        96      return result
        97
@@ -137,7 +159,7 @@ padrão.
 
 > Either remove or fill this block of code.
 
-```python
+```text
       211      validation = validate_configuration(env_config)
       212      warnings = validation.get("warnings", [])
       213      if warnings and isinstance(warnings, list):
@@ -157,7 +179,7 @@ padrão.
 
 > Either remove or fill this block of code.
 
-```python
+```text
       213      if warnings and isinstance(warnings, list):
       214          for _warning in warnings:
       215              pass
@@ -177,7 +199,7 @@ padrão.
 
 > Either remove or fill this block of code.
 
-```python
+```text
       218      else:
       219          errors = validation.get("errors", [])
       220          if errors and isinstance(errors, list):
@@ -197,7 +219,7 @@ padrão.
 
 > Either remove or fill this block of code.
 
-```python
+```text
       228      validation = validate_configuration(demo_config)
       229      warnings = validation.get("warnings", [])
       230      if warnings and isinstance(warnings, (list, tuple)):
@@ -217,7 +239,7 @@ padrão.
 
 > Either remove or fill this block of code.
 
-```python
+```text
       243      except Exception as exc:
       244          logger.warning("Configuration validation failed: %s", exc)
       245      env_configs = get_environment_configs()
@@ -237,7 +259,7 @@ padrão.
 
 > Either remove or fill this block of code.
 
-```python
+```text
        89      """Feature 1: Client Configuration and Initialization."""
        90      client = FlextOracleWmsClient(settings)
        91      start_result = client.start()
@@ -266,8 +288,8 @@ padrão.
 
 > Extract this nested conditional expression into an independent statement.
 
-```python
-      201
+```text
+      201  
       202                  def key_func(record: t.OracleWms.FilterRecord) -> str:
       203                      value = self._get_nested_value(record, sort_field)
       204                      return str(
@@ -287,7 +309,7 @@ padrão.
 > Refactor this exception test to have only one invocation possibly throwing an
 > exception.
 
-```python
+```text
       122              u.Filter.create_filter(max_conditions=max_conditions)
       123
       124      def test_constructor_rejects_filters_exceeding_condition_limit(self) -> None:
@@ -307,7 +329,7 @@ padrão.
 
 > Remove this unnecessary `list()` call on an already iterable object.
 
-```python
+```text
        16      if (
        17          existing_package is None
        18          or Path(getattr(existing_package, "__file__", "")).resolve() != init_file
@@ -328,7 +350,7 @@ padrão.
 > Replace this comprehension with passing the iterable to the collection constructor
 > call
 
-```python
+```text
        64                  match value:
        65                      case str() as s:
        66                          str_value = s

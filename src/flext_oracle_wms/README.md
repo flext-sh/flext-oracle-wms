@@ -121,7 +121,7 @@ for the FLEXT data integration platform.
 
 ### Basic Client Setup
 
-````python
+```python
 from __future__ import annotations
 
 from flext_oracle_wms import FlextOracleWmsClient, FlextOracleWmsClientSettings
@@ -149,6 +149,8 @@ if result.success:
         logger.info("Entity", name=str(entity))
 
 
+```
+
 ### Entity Data Querying
 
 ```python
@@ -166,7 +168,7 @@ if result.success:
 from flext_cli import u
 from flext_core import FlextSettings
     u.fetch_logger(__name__).info("Records retrieved", count=len(data.get('results', [])))
-````
+```
 
 ### Error Handling with r
 
@@ -240,7 +242,8 @@ pytest -m "oracle_wms" -v
 
 ```bash
 # Complete validation for this module
-make val # Lint + type + security + test
+make check # Validate quality gates
+make test  # Validate runtime behavior
 make lint
 make type-check
 make security # Bandit + pip-audit security scanning

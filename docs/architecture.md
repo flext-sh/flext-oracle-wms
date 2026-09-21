@@ -96,7 +96,7 @@ completion · 1.0.0 Current
 **Within Project**:
 
 - [Getting Started](getting-started.md) - Installation and basic usage
-- [API Reference](api-reference.md) - Complete API documentation
+- [API Reference](api-reference/README.md) - Generated API documentation
 - [Integration Guide](guides/integration.md) - Integration patterns
 - [Development](development.md) - Development guidelines
 

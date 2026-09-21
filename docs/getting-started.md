@@ -37,10 +37,10 @@ requiring implementation · 1.0.0 Current
 # Development installation
 git clone <flext-oracle-wms-repo>
 cd flext-oracle-wms
-poetry install
+make setup
 
 # Verify installation
-make val  # Run quality gates
+make check  # Run quality gates
 ```
 
 ## Basic Configuration
@@ -80,7 +80,6 @@ api = FlextOracleWmsApi(settings=settings)
 result = api.execute()
 print(f"Execute success: {result.success}")
 ```
-
 ## Implementation Status
 
 ### What Works
@@ -114,7 +113,7 @@ integration implementation · 1.0.0 Current
 **Within Project**:
 
 - [Architecture](architecture.md) - Architecture and design patterns
-- [API Reference](api-reference.md) - Complete API documentation
+- [API Reference](api-reference/README.md) - Generated API documentation
 - [Integration Guide](guides/integration.md) - Integration patterns
 - [Development](development.md) - Development guidelines
 

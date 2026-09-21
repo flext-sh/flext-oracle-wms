@@ -93,7 +93,7 @@ src/flext_oracle_wms/
 
 ### Core Client Interface
 
-````python
+```python
 from __future__ import annotations
 
 from flext_oracle_wms import FlextOracleWmsApi, FlextOracleWmsSettings
@@ -116,6 +116,8 @@ if result.success:
 else:
     print(f"Discovery failed: {result.error}")
 
+
+```
 
 ### Configuration Management
 
@@ -140,6 +142,8 @@ settings = FlextOracleWmsSettings.model_validate({
 print(settings.OracleWms.base_url)
 
 
+```
+
 ### Error Handling
 
 ```python
@@ -159,6 +163,8 @@ except FlextOracleWmsErrors.Error:
     # Handle any Oracle WMS error
     logger.error("Oracle WMS operation failed")
 
+
+```
 
 ## 🔧 **Development Guidelines**
 
@@ -198,13 +204,14 @@ make test             # 90%+ coverage requirement
 make test-unit        # Unit tests only
 make test-integration # Integration tests with Oracle WMS
 make coverage-html    # Generate detailed coverage report
-````
+```
 
 ### Quality Gates
 
 ```bash
 # Complete quality validation
-make val # Lint + type + security + test
+make check # Validate quality gates
+make test  # Validate runtime behavior
 make lint
 make type-check
 make security # Bandit + pip-audit security scanning
