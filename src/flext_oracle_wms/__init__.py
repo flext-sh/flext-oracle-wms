@@ -21,7 +21,6 @@ from .__version__ import (
 
 if TYPE_CHECKING:
     from flext_api import s
-
     from flext_core import d, h, r, x
 
     from .__version__ import FlextOracleWmsVersion

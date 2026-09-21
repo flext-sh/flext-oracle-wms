@@ -10,7 +10,6 @@ from flext_core.lazy import build_lazy_import_map, install_lazy_exports
 
 if TYPE_CHECKING:
     from flext_api import s
-
     from flext_core import d, h, r, x
     from flext_oracle_wms import c, e, m, p, t, u
 
