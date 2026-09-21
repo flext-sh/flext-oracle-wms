@@ -9,17 +9,27 @@ from typing import TYPE_CHECKING
 from flext_core.lazy import build_lazy_import_map, install_lazy_exports
 
 if TYPE_CHECKING:
-    from flext_tests import FlextTestsConstants, d, e, h, r, td, tf, tk, tm, tv, x
+    from flext_tests import (
+        FlextTestsConstants,
+        FlextTestsConstants as c,
+        d,
+        e,
+        h,
+        r,
+        td,
+        tf,
+        tk,
+        tm,
+        tv,
+        x,
+    )
 
     from . import unit
     from .base import (
         TestsFlextOracleWmsServiceBase,
         TestsFlextOracleWmsServiceBase as s,
     )
-    from .constants import (
-        TestsFlextOracleWmsConstants,
-        TestsFlextOracleWmsConstants as c,
-    )
+    from .constants import TestsFlextOracleWmsConstants
     from .models import TestsFlextOracleWmsModels, TestsFlextOracleWmsModels as m
     from .protocols import (
         TestsFlextOracleWmsProtocols,
@@ -63,7 +73,7 @@ _LAZY_IMPORTS = MappingProxyType(
     build_lazy_import_map(
         MappingProxyType({
             ".base": ("TestsFlextOracleWmsServiceBase", "s"),
-            ".constants": ("TestsFlextOracleWmsConstants", "c"),
+            ".constants": ("TestsFlextOracleWmsConstants",),
             ".models": ("TestsFlextOracleWmsModels", "m"),
             ".protocols": ("TestsFlextOracleWmsProtocols", "p"),
             ".settings": ("TestsFlextOracleWmsSettings",),
@@ -72,6 +82,7 @@ _LAZY_IMPORTS = MappingProxyType(
             ".utilities": ("TestsFlextOracleWmsUtilities", "u"),
             "flext_tests": (
                 "FlextTestsConstants",
+                "c",
                 "d",
                 "e",
                 "h",

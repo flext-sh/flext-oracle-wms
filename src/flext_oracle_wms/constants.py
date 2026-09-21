@@ -12,6 +12,9 @@ from typing import TYPE_CHECKING, ClassVar, Final
 
 from flext_api import c
 
+from ._constants.base import FlextOracleWmsConstantsBase
+from ._constants.values import FlextOracleWmsConstantsValues
+
 if TYPE_CHECKING:
     from collections.abc import Mapping
 
@@ -25,10 +28,9 @@ class FlextOracleWmsConstants(c):
     One class per module following SOLID principles. Generic for any WMS system.
     """
 
-    class OracleWms:
+    class OracleWms(FlextOracleWmsConstantsBase, FlextOracleWmsConstantsValues.OracleWms):
         """WMS connection constants - composed from base."""
 
-        FLEXT_WMS_VERSION: Final[str] = "1.0.0"
         HTTP_BAD_REQUEST_THRESHOLD: Final[int] = 400
         WMS_API_BASELINE_VERSION: Final[str] = "6.1"
         API_ENDPOINTS: ClassVar[t.MappingKV[str, t.StrMapping]] = MappingProxyType({
@@ -122,23 +124,12 @@ class FlextOracleWmsConstants(c):
         class ProjectType(StrEnum):
             """Project type literals for package metadata."""
 
-        class WmsEntities:
-            """WMS entity configuration - patterns."""
-
-            MAX_ENTITY_NAME_LENGTH: ClassVar[int] = 100
-
-        class WmsProcessing:
+        class WmsProcessing(FlextOracleWmsConstantsValues.OracleWms.WmsProcessing):
             """WMS processing constants - domain-specific."""
 
-            DEFAULT_BATCH_SIZE: Final[int] = c.DEFAULT_SIZE
             MAX_BATCH_SIZE: Final[int] = c.MAX_ITEMS
             DEFAULT_PAGE_SIZE: Final[int] = c.DEFAULT_PAGE_SIZE
             MAX_SCHEMA_DEPTH: ClassVar[int] = 10
-
-        class Filtering:
-            """Filtering constants - minimal declaration."""
-
-            MAX_FILTER_CONDITIONS: ClassVar[int] = 50
 
         class Authentication:
             """Auth constants - minimal."""

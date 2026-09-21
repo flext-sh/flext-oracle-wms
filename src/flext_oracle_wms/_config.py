@@ -13,10 +13,9 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 from functools import cached_property
-from pathlib import Path
 from typing import TYPE_CHECKING, ClassVar
 
-from flext_core import FlextConfig
+from flext_core import FlextConfig, c
 
 from ._models.config import FlextOracleWmsConfigModels
 
@@ -29,9 +28,10 @@ if TYPE_CHECKING:
 class FlextOracleWmsConfig(FlextConfig):
     """OracleWms config auto-loaded from ``config/*.yaml`` and validated via models."""
 
-    # NOTE (multi-agent): config-scaffold — anchored to the package dir so the YAML
-    # SSOT loads regardless of the caller's CWD (library code must not depend on CWD).
-    CONFIG_DIR: ClassVar[str] = str(Path(__file__).resolve().parent / "config")
+    # NOTE (multi-agent): config-scaffold — owner alias for the packaged config-dir
+    # name (``c.CONFIG_DIR_NAME``); ``FlextConfig._config_dir()`` anchors the YAML
+    # SSOT to the packaged ``config/`` regardless of the caller's CWD.
+    CONFIG_DIR: ClassVar[str] = c.CONFIG_DIR_NAME
 
     @cached_property
     def oracle_wms(self) -> FlextOracleWmsProtocolsConfig.Config:
