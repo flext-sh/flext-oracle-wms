@@ -15,7 +15,8 @@ from __future__ import annotations
 from functools import cached_property
 from typing import TYPE_CHECKING, ClassVar
 
-from flext_core import FlextConfig, c
+from flext_core import FlextConfig
+from flext_oracle_wms.constants import c
 
 from ._models.config import FlextOracleWmsConfigModels
 
