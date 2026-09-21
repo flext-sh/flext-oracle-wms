@@ -13,9 +13,9 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 from functools import cached_property
-from typing import TYPE_CHECKING, ClassVar
+from typing import TYPE_CHECKING, ClassVar, Self
 
-from flext_core import FlextConfig
+from flext_core import FlextConfig, FlextSettings
 from flext_oracle_wms.constants import c
 
 from ._models.config import FlextOracleWmsConfigModels
@@ -26,8 +26,29 @@ if TYPE_CHECKING:
     from ._protocols.config import FlextOracleWmsProtocolsConfig
 
 
-class FlextOracleWmsConfig(FlextConfig):
-    """OracleWms config auto-loaded from ``config/*.yaml`` and validated via models."""
+class FlextOracleWmsConfig(FlextSettings, FlextConfig):
+    """OracleWms config auto-loaded from ``config/*.yaml`` and validated via models.
+
+    MRO carries ``FlextSettings`` FIRST (ENFORCE-042); the class stays a frozen,
+    YAML-validated config singleton.
+    """
+
+    # ENFORCE-042 namespace-holder contract: ``FlextSettings`` contributes
+    # namespacing only — instance machinery stays plain object semantics so the
+    # settings singleton ``__new__`` cannot leak into the config singleton.
+    # Unlike never-instantiated namespace holders, ``__init__`` delegates to
+    # ``super()`` so the frozen, YAML-validated pydantic construction still
+    # runs, and the inherited pydantic ``__setattr__`` keeps the frozen guard.
+    def __new__(cls, *args: object, **kwargs: object) -> Self:
+        _ = args, kwargs
+        return object.__new__(cls)
+
+    def __init__(self, *args: object, **kwargs: object) -> None:
+        super().__init__(*args, **kwargs)
+
+    __eq__ = object.__eq__
+
+    __hash__ = object.__hash__
 
     # NOTE (multi-agent): config-scaffold — owner alias for the packaged config-dir
     # name (``c.CONFIG_DIR_NAME``); ``FlextConfig._config_dir()`` anchors the YAML
