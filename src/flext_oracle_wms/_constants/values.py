@@ -12,12 +12,13 @@ from flext_api import c
 
 
 class FlextOracleWmsConstantsValues:
-    """Scalar constants mixed into ``c.OracleWms``."""
+    """Scalar constants mixed into ``c.OracleWms`` and ``FlextOracleWmsConfig``."""
 
     class OracleWms:
         """WMS connection scalar constants - composed from base."""
 
         FLEXT_WMS_VERSION: Final[str] = "1.0.0"
+        HTTP_BAD_REQUEST_THRESHOLD: Final[int] = 400
 
         class WmsEntities:
             """WMS entity configuration - patterns."""
@@ -28,11 +29,17 @@ class FlextOracleWmsConstantsValues:
             """WMS processing constants - domain-specific."""
 
             DEFAULT_BATCH_SIZE: Final[int] = c.DEFAULT_SIZE
+            MAX_BATCH_SIZE: Final[int] = c.MAX_ITEMS
 
         class Filtering:
             """Filtering constants - minimal declaration."""
 
             MAX_FILTER_CONDITIONS: ClassVar[int] = 50
+
+    class Config:
+        """Config-class scalar constants mixed into ``FlextOracleWmsConfig``."""
+
+        CONFIG_DIR: ClassVar[str] = c.CONFIG_DIR_NAME
 
 
 __all__: list[str] = ["FlextOracleWmsConstantsValues"]
