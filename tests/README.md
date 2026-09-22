@@ -48,25 +48,18 @@ Management System (WMS) Cloud integration.
 
 - **[test_client.py](test_client.py)** - Primary FlextOracleWmsClient functionality
   testing
-- **[test_client_class.py](test_client_class.py)** - Client class-specific behavior and
-  state management
-- **[test_client_comprehensive.py](test_client_comprehensive.py)** - Comprehensive
-  client integration scenarios
-- **[test_client_main_coverage.py](test_client_main_coverage.py)** - Coverage-focused
-  client testing
-- **[test_client_simple.py](test_client_simple.py)** - Basic client functionality
-  verification
+- runtime_bootstrap_options
+- runtime_bootstrap_options
+- runtime_bootstrap_options
+- runtime_bootstrap_options
 
 ### 🔧 **Configuration & Setup Tests**
 
-- **[test_config_module.py](test_config_module.py)** - Configuration management and
-  validation testing
+- runtime_bootstrap_options
 - **[test_authentication.py](test_authentication.py)** - Multi-method authentication
   pattern testing
-- **[test_authentication_coverage.py](test_authentication_coverage.py)** -
-  Authentication coverage verification
-- **[test_authentication_simple.py](test_authentication_simple.py)** - Basic
-  authentication functionality
+- runtime_bootstrap_options
+- runtime_bootstrap_options
 
 ### 🏗️ **Infrastructure Tests**
 
@@ -74,21 +67,15 @@ Management System (WMS) Cloud integration.
   testing
 - **[test_models.py](test_models.py)** - Data model validation and domain rule testing
 - **[test_helpers.py](test_helpers.py)** - Utility function and helper method testing
-- **[test_helpers_coverage.py](test_helpers_coverage.py)** - Helper function coverage
-  verification
-- **[test_helpers_real.py](test_helpers_real.py)** - Real-world helper function
-  scenarios
+- runtime_bootstrap_options
+- runtime_bootstrap_options
 
 ### 🧪 **Integration & Advanced Tests**
 
-- **[test_integration_declarative.py](test_integration_declarative.py)** - Declarative
-  API integration testing
-- **[test_real_connection.py](test_real_connection.py)** - Real Oracle WMS connection
-  testing
-- **[test_schema_dynamic.py](test_schema_dynamic.py)** - Dynamic schema discovery and
-  processing
-- **[test_singer_flattening_comprehensive.py](test_singer_flattening_comprehensive.py)** -
-  Singer protocol compatibility testing
+- runtime_bootstrap_options
+- runtime_bootstrap_options
+- runtime_bootstrap_options
+- runtime_bootstrap_options
 
 ### ⚙️ **Test Configuration**
 
