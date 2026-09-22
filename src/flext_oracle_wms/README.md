@@ -147,8 +147,6 @@ if result.success:
     logger.info("Discovered WMS entities", count=len(result.data))
     for entity in result.data:
         logger.info("Entity", name=str(entity))
-
-
 ```
 
 ### Entity Data Querying
