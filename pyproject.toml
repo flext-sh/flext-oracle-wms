@@ -152,8 +152,11 @@ allow-direct-references = true
 [tool.hatch.build.targets.wheel]
 packages = ["src/flext_oracle_wms"]
 
+[tool.hatch.build.targets.wheel.force-include]
+config = "flext_oracle_wms/config"
+
 [tool.hatch.build.targets.sdist]
-only-include = ["src/flext_oracle_wms"]
+only-include = ["src/flext_oracle_wms", "config"]
 
 [tool.mypy]
 disable_error_code = [
