@@ -20,16 +20,12 @@ from .__version__ import (
 )
 
 if TYPE_CHECKING:
-    from flext_api import api, s
-    from flext_cli import cli
-    from flext_web import main, web
-    from pydantic_core import from_json, to_json, to_jsonable_python
-
-    from flext_core import core, d, h, lazy_attribute, r, x
+    from flext_api import api, d, h, r, s, services, web, x
 
     from ._config import FlextOracleWmsConfig, config
     from ._settings import FlextOracleWmsSettings, settings
     from .api import FlextOracleWmsApi, oracle_wms
+    from .cli import main
     from .constants import FlextOracleWmsConstants, c
     from .errors import FlextOracleWmsErrors, e
     from .models import FlextOracleWmsModels, m
@@ -56,24 +52,19 @@ __all__: tuple[str, ...] = (
     "__version_info__",
     "api",
     "c",
-    "cli",
     "config",
-    "core",
     "d",
     "e",
-    "from_json",
     "h",
-    "lazy_attribute",
     "m",
     "main",
     "oracle_wms",
     "p",
     "r",
     "s",
+    "services",
     "settings",
     "t",
-    "to_json",
-    "to_jsonable_python",
     "u",
     "web",
     "x",
@@ -85,17 +76,14 @@ _LAZY_IMPORTS = MappingProxyType(
             "._config": ("FlextOracleWmsConfig", "config"),
             "._settings": ("FlextOracleWmsSettings", "settings"),
             ".api": ("FlextOracleWmsApi", "oracle_wms"),
+            ".cli": ("main",),
             ".constants": ("FlextOracleWmsConstants", "c"),
             ".errors": ("FlextOracleWmsErrors", "e"),
             ".models": ("FlextOracleWmsModels", "m"),
             ".protocols": ("FlextOracleWmsProtocols", "p"),
             ".typings": ("FlextOracleWmsTypes", "t"),
             ".utilities": ("FlextOracleWmsUtilities", "u"),
-            "flext_api": ("api", "s"),
-            "flext_cli": ("cli",),
-            "flext_core": ("core", "d", "h", "lazy_attribute", "r", "x"),
-            "flext_web": ("main", "web"),
-            "pydantic_core": ("from_json", "to_json", "to_jsonable_python"),
+            "flext_api": ("api", "d", "h", "r", "s", "services", "web", "x"),
         }),
         alias_groups=MappingProxyType({}),
         sort_keys=False,

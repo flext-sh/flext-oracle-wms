@@ -30,6 +30,6 @@ This section is generated from public exports and real docstrings.
 - Primary facades: `FlextOracleWmsApi`, `FlextOracleWmsConfig`,
   `FlextOracleWmsConstants`, `FlextOracleWmsErrors`, `FlextOracleWmsModels`,
   `FlextOracleWmsProtocols` (+3 more)
-- Generated module pages: `7`
+- Generated module pages: `8`
 
 Back to [project docs](../index.md).
