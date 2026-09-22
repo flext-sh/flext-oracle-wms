@@ -13,11 +13,11 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 from functools import cached_property
-from typing import TYPE_CHECKING, ClassVar, Self
+from typing import TYPE_CHECKING, Self
 
 from flext_core import FlextConfig, FlextSettings
-from flext_oracle_wms.constants import c
 
+from ._constants.values import FlextOracleWmsConstantsValues
 from ._models.config import FlextOracleWmsConfigModels
 
 if TYPE_CHECKING:
@@ -26,7 +26,9 @@ if TYPE_CHECKING:
     from ._protocols.config import FlextOracleWmsProtocolsConfig
 
 
-class FlextOracleWmsConfig(FlextSettings, FlextConfig):
+class FlextOracleWmsConfig(
+    FlextSettings, FlextConfig, FlextOracleWmsConstantsValues.Config
+):
     """OracleWms config auto-loaded from ``config/*.yaml`` and validated via models.
 
     MRO carries ``FlextSettings`` FIRST (ENFORCE-042); the class stays a frozen,
@@ -50,10 +52,11 @@ class FlextOracleWmsConfig(FlextSettings, FlextConfig):
 
     __hash__ = object.__hash__
 
-    # NOTE (multi-agent): config-scaffold — owner alias for the packaged config-dir
-    # name (``c.CONFIG_DIR_NAME``); ``FlextConfig._config_dir()`` anchors the YAML
-    # SSOT to the packaged ``config/`` regardless of the caller's CWD.
-    CONFIG_DIR: ClassVar[str] = c.CONFIG_DIR_NAME
+    # NOTE (multi-agent): config-scaffold — ``CONFIG_DIR`` (the packaged
+    # config-dir name, ``c.CONFIG_DIR_NAME``) is owned by
+    # ``flext_oracle_wms._constants`` (``FlextOracleWmsConstantsValues.Config``)
+    # and inherited above; ``FlextConfig._config_dir()`` anchors the YAML SSOT
+    # to the packaged ``config/`` regardless of the caller's CWD.
 
     @cached_property
     def oracle_wms(self) -> FlextOracleWmsProtocolsConfig.Config:

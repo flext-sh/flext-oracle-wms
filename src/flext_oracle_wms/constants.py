@@ -31,9 +31,13 @@ class FlextOracleWmsConstants(c):
     class OracleWms(
         FlextOracleWmsConstantsBase, FlextOracleWmsConstantsValues.OracleWms
     ):
-        """WMS connection constants - composed from base."""
+        """WMS connection constants - composed from base.
 
-        HTTP_BAD_REQUEST_THRESHOLD: Final[int] = 400
+        ``HTTP_BAD_REQUEST_THRESHOLD`` is owned by
+        ``flext_oracle_wms._constants`` and inherited through this facade
+        subclass.
+        """
+
         WMS_API_BASELINE_VERSION: Final[str] = "6.1"
         API_ENDPOINTS: ClassVar[t.MappingKV[str, t.StrMapping]] = MappingProxyType({
             "test": {
@@ -127,9 +131,13 @@ class FlextOracleWmsConstants(c):
             """Project type literals for package metadata."""
 
         class WmsProcessing(FlextOracleWmsConstantsValues.OracleWms.WmsProcessing):
-            """WMS processing constants - domain-specific."""
+            """WMS processing constants - domain-specific.
 
-            MAX_BATCH_SIZE: Final[int] = c.MAX_ITEMS
+            ``DEFAULT_BATCH_SIZE`` and ``MAX_BATCH_SIZE`` are owned by
+            ``flext_oracle_wms._constants`` and inherited through this facade
+            subclass.
+            """
+
             DEFAULT_PAGE_SIZE: Final[int] = c.DEFAULT_PAGE_SIZE
             MAX_SCHEMA_DEPTH: ClassVar[int] = 10
 
