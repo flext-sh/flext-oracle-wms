@@ -379,6 +379,11 @@ class TestsFlextOracleWmsFiltering:
         tm.ok(result)
         assert not result.value
 
+    def test_id_range_rejects_invalid_numeric_value(self) -> None:
+        records: list[t.OracleWms.FilterRecord] = [{"id": "invalid"}]
+        with pytest.raises(RuntimeError):
+            Filter.filter_by_id_range(records, "id", min_id=1)
+
     # ------------------------------------------------------------------ #
     # sort_records.
     # ------------------------------------------------------------------ #

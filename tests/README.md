@@ -196,8 +196,9 @@ pytest -n auto
 ### Quality Gate Testing
 
 ```bash
-# Complete validation (includes tests)
-make val
+# Complete validation
+make check
+make test
 
 # Test-specific quality gates
 make test-unit        # Unit tests with coverage

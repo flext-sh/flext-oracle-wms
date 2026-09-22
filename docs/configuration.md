@@ -19,8 +19,8 @@
   - [Authentication Requirements](#authentication-requirements)
 - [Implementation Status](#implementation-status)
   - [Current Status](#current-status)
-  - [Required Implementation](#required-implementation)
-  <!-- TOC END -->
+  - [Required Implementation](#required-implementation_1)
+<!-- TOC END -->
 
 **Settings and environment management for flext-oracle-wms**
 
@@ -40,7 +40,7 @@ production Oracle WMS Cloud connectivity.
 
 Current implementation provides test configuration with fake URLs:
 
-````python
+```python
 from __future__ import annotations
 
 from flext_oracle_wms import FlextOracleWmsSettings
@@ -56,8 +56,7 @@ print(settings.OracleWms.base_url)  # "https://test.example.com"
 print(settings.OracleWms.username)  # "test_user"
 print(settings.OracleWms.api_version)  # Current API version
 print(settings.OracleWms.timeout)  # Default timeout
-
-
+```
 ## Environment Variables
 
 ### Test Environment
@@ -69,7 +68,7 @@ export FLEXT_ORACLE_WMS_USERNAME="test_user"
 export FLEXT_ORACLE_WMS_PASSWORD="test_password"
 export FLEXT_ORACLE_WMS_TIMEOUT="30"
 export FLEXT_ORACLE_WMS_API_VERSION="v1"
-````
+```
 
 ### Required for Production (Not Implemented)
 
@@ -112,13 +111,12 @@ settings = FlextOracleWmsSettings(
     # Additional configuration options
 )
 ```
-
 ### Authentication Configuration (Framework)
 
 Based on source code analysis, authentication framework exists but requires
 implementation:
 
-````python
+```python
 from __future__ import annotations
 
 from flext_oracle_wms import c
@@ -130,8 +128,7 @@ auth_methods = [
     OracleWMSAuthMethod.OAUTH2,  # Token-based (not implemented)
     OracleWMSAuthMethod.API_KEY,  # API key (not implemented)
 ]
-
-
+```
 ## Configuration Validation
 
 ### Current Validation
@@ -148,8 +145,7 @@ settings = FlextOracleWmsSettings(
     base_url="https://test.example.com", username="test_user", password="test_password"
 )
 # Pydantic automatically validates configuration structure
-
-
+```
 ### Required Implementation
 
 For production Oracle WMS Cloud integration:
@@ -203,4 +199,3 @@ Oracle WMS Cloud authentication standards:
 
 **Last Updated**: April 14, 2026 | **Status**: Test configuration only, requires Oracle
 WMS Cloud implementation · 1.0.0 Current
-````

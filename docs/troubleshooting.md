@@ -66,14 +66,13 @@ from __future__ import annotations
 
 **Solution**: Use correct flext_core imports:
 
-````python
+```python
 from __future__ import annotations
 
 from flext_core import u
 
 logger = u.fetch_logger(__name__)
-
-
+```
 ### Type Safety Issues
 
 #### MyPy errors with dynamic attributes
@@ -85,7 +84,7 @@ from __future__ import annotations
 
 error = FlextOracleWmsError("message", field="username")
 assert error.field == "username"  # MyPy error: attribute not found
-````
+```
 
 **Solution**: Exception classes now declare attributes explicitly:
 
@@ -103,7 +102,7 @@ assert error.field == "username"  # Now works with MyPy
 
 **Solution**: Use proper configuration types:
 
-````python
+```python
 from __future__ import annotations
 
 from flext_oracle_wms import FlextOracleWmsApiVersion, FlextOracleWmsModuleSettings
@@ -112,8 +111,7 @@ settings = FlextOracleWmsModuleSettings(
     api_version=FlextOracleWmsApiVersion.V1,  # Use enum, not string
     oracle_wms_timeout=30,  # Use int, not float
 )
-
-
+```
 ### FLEXT Compliance Issues
 
 #### httpx usage violations
@@ -122,7 +120,7 @@ settings = FlextOracleWmsModuleSettings(
 
 ```python
 from __future__ import annotations
-````
+```
 
 **Solution**: This requires implementation work:
 
@@ -187,8 +185,8 @@ type violations in tests
 
 ```bash
 # Clean installation
-rm -rf .venv poetry.lock
-poetry install
+rm -rf .venv uv.lock
+make setup
 ```
 
 #### PYTHONPATH issues
@@ -243,7 +241,7 @@ pytest --maxfail=1   # Stop after one failure
 ```bash
 # Use make commands which are optimized
 make test
-make val
+make check
 ```
 
 ## Error Messages Reference
@@ -282,7 +280,7 @@ assert error.entity_name == "test"  # Properly handled
 
 ### Enable Debug Logging
 
-````python
+```python
 from __future__ import annotations
 
 import logging
@@ -293,8 +291,7 @@ logging.basicConfig(level=logging.DEBUG)
 
 logger = u.fetch_logger(__name__)
 logger.debug("Debug message")
-
-
+```
 ### Type Checking
 
 ```bash
@@ -304,7 +301,7 @@ pyright
 
 # Check specific file
 mypy src/flext_oracle_wms/wms_client.py
-````
+```
 
 ### Test Debugging
 
@@ -321,7 +318,7 @@ pytest --pdb tests/test_client.py
 ### Documentation Resources
 
 - **[Getting Started](getting-started.md)** - Installation and setup
-- **[API Reference](api-reference.md)** - Complete API documentation
+- **[API Reference](api-reference/README.md)** - Generated API documentation
 - **[Configuration](configuration.md)** - Settings and environment
 - **[Development](development.md)** - Development guidelines
 

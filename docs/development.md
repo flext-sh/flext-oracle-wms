@@ -14,7 +14,7 @@
   - [Error Handling Standards](#error-handling-standards)
   - [Type Safety Requirements](#type-safety-requirements)
 - [Testing Strategy](#testing-strategy)
-  - [Current Test Structure```](#current-test-structure)
+  - [Current Test Structure](#current-test-structure)
   - [Test Requirements](#test-requirements)
   - [Current Test Limitations](#current-test-limitations)
 - [Implementation Priorities](#implementation-priorities)
@@ -53,10 +53,10 @@ requiring implementation · 1.0.0 Current
 # Clone and setup
 git clone <flext-oracle-wms-repo>
 cd flext-oracle-wms
-poetry install
+make setup
 
 # Verify installation
-make val  # Run all quality gates
+make check  # Run all quality gates
 ```
 
 ## Development Commands
@@ -65,7 +65,8 @@ make val  # Run all quality gates
 
 ```bash
 # Complete validation pipeline
-make val # Lint + type + security + test
+make check # Validate quality gates
+make test  # Validate runtime behavior
 
 # Individual checks
 make lint       # Ruff linting
@@ -271,7 +272,7 @@ def test_real_connection():
 
 ```bash
 # Required before committing
-make val  # All quality gates must pass
+make check # All quality gates must pass
 make test # All tests must pass
 ```
 

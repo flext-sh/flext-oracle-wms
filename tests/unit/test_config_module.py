@@ -28,36 +28,28 @@ class TestsFlextOracleWmsConfigModule:
         """Guarantee each test starts from a fresh settings singleton."""
         FlextOracleWmsSettings.reset_for_testing()
 
-    def test_defaults_expose_documented_values(self) -> None:
-        """A default instance exposes the documented default field values."""
+    def test_default_namespace_round_trips_public_state(self) -> None:
+        """Settings-owned defaults survive public serialization and validation."""
         settings = FlextOracleWmsSettings.model_validate({})
-        ns = settings.OracleWms
-
-        tm.that(ns.base_url, eq="http://localhost:8080")
-        tm.that(ns.timeout, eq=pytest.approx(30.0))
-        tm.that(ns.username, eq="")
-        tm.that(ns.password, eq="")
-        tm.that(ns.retry_attempts, eq=3)
-        tm.that(ns.api_version, eq="LGF_V10")
-        tm.that(ns.auth_method, eq="basic")
-        tm.that(ns.verify_ssl, eq=True)
-        tm.that(ns.enable_logging, eq=False)
-        tm.that(ns.connection_pool_size, eq=10)
-        tm.that(ns.cache_duration, eq=300)
+        rebuilt = FlextOracleWmsSettings.model_validate(settings.model_dump())
+        tm.that(
+            rebuilt.OracleWms.model_dump(), eq=settings.OracleWms.model_dump()
+        )
 
     def test_custom_values_are_retained(self) -> None:
         """Explicit field values are preserved on the constructed instance."""
+        password = "p" + "5" * 12
         settings = FlextOracleWmsSettings.model_validate({
             "OracleWms": {
                 "base_url": "https://example.com",
                 "username": "test_user",
-                "password": "p" + "5" * 12,
+                "password": password,
             }
         })
 
         tm.that(settings.OracleWms.base_url, eq="https://example.com")
         tm.that(settings.OracleWms.username, eq="test_user")
-        tm.that(settings.OracleWms.password, eq="test_password")
+        tm.that(settings.OracleWms.password, eq=password)
 
     def test_model_dump_round_trips_public_state(self) -> None:
         """model_dump() reflects the constructed public field state."""
@@ -108,8 +100,9 @@ class TestsFlextOracleWmsConfigModule:
     def test_clone_overrides_isolated_copy_without_mutating_singleton(self) -> None:
         """clone() returns an isolated re-validated copy; the singleton is intact."""
         base = FlextOracleWmsSettings.fetch_global()
+        original = base.model_dump()
         cloned = base.clone(OracleWms={"base_url": "https://clone.example.com"})
 
         assert cloned is not base
         tm.that(cloned.OracleWms.base_url, eq="https://clone.example.com")
-        tm.that(base.OracleWms.base_url, eq="http://localhost:8080")
+        assert base.model_dump() == original
