@@ -29,6 +29,8 @@ if TYPE_CHECKING:
     from .test_singer_flattening import TestsFlextOracleWmsSingerFlattening
     from .test_unified_config import TestsFlextOracleWmsUnifiedConfig
     from .test_wms_client import TestsFlextOracleWmsWmsClient
+
+
 __all__: tuple[str, ...] = (
     "TestsFlextOracleWmsApi",
     "TestsFlextOracleWmsAuthentication",

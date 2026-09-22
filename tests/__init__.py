@@ -9,32 +9,26 @@ from typing import TYPE_CHECKING
 from flext_core.lazy import build_lazy_import_map, install_lazy_exports
 
 if TYPE_CHECKING:
-    from flext_api import web
+    from flext_cli import cli
     from flext_tests import (
+        active_rules,
         api,
         c,
-        cli,
         config,
-        core,
-        d,
-        from_json,
-        h,
+        discover_repository_root,
         install_local_packages,
-        lazy_attribute,
         load_infra_report,
-        r,
-        services,
         settings,
+        split_csv,
         td,
         tf,
         tk,
         tm,
-        to_json,
-        to_jsonable_python,
         tv,
-        x,
     )
+    from flext_web import web
 
+    from flext_core import core, d, h, lazy_attribute, r, x
     from flext_oracle_wms import e, main, oracle_wms
 
     from . import unit
@@ -48,6 +42,8 @@ if TYPE_CHECKING:
     from .settings import TestsFlextOracleWmsSettings
     from .typings import TestsFlextOracleWmsTypes, t
     from .utilities import TestsFlextOracleWmsUtilities, u
+
+
 __all__: tuple[str, ...] = (
     "TestsFlextOracleWmsConstants",
     "TestsFlextOracleWmsModels",
@@ -56,14 +52,15 @@ __all__: tuple[str, ...] = (
     "TestsFlextOracleWmsSettings",
     "TestsFlextOracleWmsTypes",
     "TestsFlextOracleWmsUtilities",
+    "active_rules",
     "api",
     "c",
     "cli",
     "config",
     "core",
     "d",
+    "discover_repository_root",
     "e",
-    "from_json",
     "h",
     "install_local_packages",
     "lazy_attribute",
@@ -74,15 +71,13 @@ __all__: tuple[str, ...] = (
     "p",
     "r",
     "s",
-    "services",
     "settings",
+    "split_csv",
     "t",
     "td",
     "tf",
     "tk",
     "tm",
-    "to_json",
-    "to_jsonable_python",
     "tv",
     "u",
     "unit",
@@ -101,32 +96,26 @@ _LAZY_IMPORTS = MappingProxyType(
             ".typings": ("TestsFlextOracleWmsTypes", "t"),
             ".unit": ("unit",),
             ".utilities": ("TestsFlextOracleWmsUtilities", "u"),
-            "flext_api": ("web",),
+            "flext_cli": ("cli",),
+            "flext_core": ("core", "d", "h", "lazy_attribute", "r", "x"),
             "flext_oracle_wms": ("e", "main", "oracle_wms"),
             "flext_tests": (
+                "active_rules",
                 "api",
                 "c",
-                "cli",
                 "config",
-                "core",
-                "d",
-                "from_json",
-                "h",
+                "discover_repository_root",
                 "install_local_packages",
-                "lazy_attribute",
                 "load_infra_report",
-                "r",
-                "services",
                 "settings",
+                "split_csv",
                 "td",
                 "tf",
                 "tk",
                 "tm",
-                "to_json",
-                "to_jsonable_python",
                 "tv",
-                "x",
             ),
+            "flext_web": ("web",),
         }),
         alias_groups=MappingProxyType({}),
         sort_keys=False,

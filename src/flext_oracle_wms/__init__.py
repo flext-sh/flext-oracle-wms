@@ -20,7 +20,11 @@ from .__version__ import (
 )
 
 if TYPE_CHECKING:
-    from flext_api import api, d, h, r, s, services, web, x
+    from flext_api import api, s
+    from flext_cli import cli
+    from flext_web import web
+
+    from flext_core import core, d, h, lazy_attribute, r, x
 
     from ._config import FlextOracleWmsConfig, config
     from ._settings import FlextOracleWmsSettings, settings
@@ -32,6 +36,8 @@ if TYPE_CHECKING:
     from .protocols import FlextOracleWmsProtocols, p
     from .typings import FlextOracleWmsTypes, t
     from .utilities import FlextOracleWmsUtilities, u
+
+
 __all__: tuple[str, ...] = (
     "FlextOracleWmsApi",
     "FlextOracleWmsConfig",
@@ -52,17 +58,19 @@ __all__: tuple[str, ...] = (
     "__version_info__",
     "api",
     "c",
+    "cli",
     "config",
+    "core",
     "d",
     "e",
     "h",
+    "lazy_attribute",
     "m",
     "main",
     "oracle_wms",
     "p",
     "r",
     "s",
-    "services",
     "settings",
     "t",
     "u",
@@ -83,7 +91,10 @@ _LAZY_IMPORTS = MappingProxyType(
             ".protocols": ("FlextOracleWmsProtocols", "p"),
             ".typings": ("FlextOracleWmsTypes", "t"),
             ".utilities": ("FlextOracleWmsUtilities", "u"),
-            "flext_api": ("api", "d", "h", "r", "s", "services", "web", "x"),
+            "flext_api": ("api", "s"),
+            "flext_cli": ("cli",),
+            "flext_core": ("core", "d", "h", "lazy_attribute", "r", "x"),
+            "flext_web": ("web",),
         }),
         alias_groups=MappingProxyType({}),
         sort_keys=False,
