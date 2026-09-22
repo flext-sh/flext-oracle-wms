@@ -32,9 +32,7 @@ class TestsFlextOracleWmsConfigModule:
         """Settings-owned defaults survive public serialization and validation."""
         settings = FlextOracleWmsSettings.model_validate({})
         rebuilt = FlextOracleWmsSettings.model_validate(settings.model_dump())
-        tm.that(
-            rebuilt.OracleWms.model_dump(), eq=settings.OracleWms.model_dump()
-        )
+        tm.that(rebuilt.OracleWms.model_dump(), eq=settings.OracleWms.model_dump())
 
     def test_custom_values_are_retained(self) -> None:
         """Explicit field values are preserved on the constructed instance."""

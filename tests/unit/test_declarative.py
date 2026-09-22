@@ -131,20 +131,20 @@ class TestsFlextOracleWmsDeclarative:
             tm.that(result.value, is_=list)
 
     @pytest.mark.parametrize("entity_name", ["company", "facility", "item"])
-    def test_get_entity_data_returns_record_sequence(
+    def test_fetch_entity_data_returns_record_sequence(
         self, oracle_wms_client: u.OracleWms.Client, entity_name: str
     ) -> None:
-        """get_entity_data() honours the r[T] contract and returns a sequence."""
-        result = oracle_wms_client.get_entity_data(entity_name=entity_name, limit=5)
+        """fetch_entity_data() honours the r[T] contract and returns a sequence."""
+        result = oracle_wms_client.fetch_entity_data(entity_name=entity_name, limit=5)
         self._assert_result_contract(result)
         if result.success:
             tm.that(result.value, is_=(list, tuple))
 
-    def test_get_entity_data_with_filters_returns_result_contract(
+    def test_fetch_entity_data_with_filters_returns_result_contract(
         self, oracle_wms_client: u.OracleWms.Client
     ) -> None:
         """Filtered queries still satisfy the r[T] contract."""
-        result = oracle_wms_client.get_entity_data(
+        result = oracle_wms_client.fetch_entity_data(
             entity_name="company", limit=10, filters={"active": "Y"}
         )
         self._assert_result_contract(result)
@@ -156,7 +156,7 @@ class TestsFlextOracleWmsDeclarative:
         self, oracle_wms_client: u.OracleWms.Client, limit: int
     ) -> None:
         """A successful paged query never returns more records than requested."""
-        result = oracle_wms_client.get_entity_data(entity_name="company", limit=limit)
+        result = oracle_wms_client.fetch_entity_data(entity_name="company", limit=limit)
         self._assert_result_contract(result)
         if result.success:
             assert len(result.value) <= limit
@@ -167,7 +167,7 @@ class TestsFlextOracleWmsDeclarative:
         """Sequential requests to distinct entities each return a valid r[T]."""
         entities = ["company", "facility", "item"]
         results: list[p.Result[Sequence[t.StrMapping]]] = [
-            oracle_wms_client.get_entity_data(entity, limit=3) for entity in entities
+            oracle_wms_client.fetch_entity_data(entity, limit=3) for entity in entities
         ]
         tm.that(len(results), eq=len(entities))
         for result in results:
@@ -182,7 +182,7 @@ class TestsFlextOracleWmsDeclarative:
         self, oracle_wms_client: u.OracleWms.Client, entity_name: str
     ) -> None:
         """Requesting an unknown entity fails with a populated error message."""
-        result = oracle_wms_client.get_entity_data(entity_name)
+        result = oracle_wms_client.fetch_entity_data(entity_name)
         tm.fail(result)
         assert result.error
 

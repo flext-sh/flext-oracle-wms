@@ -96,8 +96,6 @@ if result.success:
     print(f"Found {len(result.data)} WMS entities")
     for entity in result.data:
         print(f"- {entity.name}: {entity.description}")
-
-
 ```
 
 ### Environment Configuration
@@ -138,7 +136,6 @@ Usage:
 """
 
 
-
 def main():
     """Main example function with comprehensive error handling."""
     # Implementation here
@@ -147,8 +144,6 @@ def main():
 
 if __name__ == "__main__":
     run(main())
-
-
 ```
 
 ## 🔧 **Prerequisites**

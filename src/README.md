@@ -115,8 +115,6 @@ if result.success:
     print("Client created")
 else:
     print(f"Discovery failed: {result.error}")
-
-
 ```
 
 ### Configuration Management
@@ -140,8 +138,6 @@ settings = FlextOracleWmsSettings.model_validate({
     }
 })
 print(settings.OracleWms.base_url)
-
-
 ```
 
 ### Error Handling
@@ -162,8 +158,6 @@ except FlextOracleWmsErrors.ValidationError:
 except FlextOracleWmsErrors.Error:
     # Handle any Oracle WMS error
     logger.error("Oracle WMS operation failed")
-
-
 ```
 
 ## 🔧 **Development Guidelines**

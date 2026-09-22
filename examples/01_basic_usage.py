@@ -105,7 +105,7 @@ def query_entity_data(
       r containing entity data or error details
 
     """
-    result: p.Result[t.SequenceOf[t.StrMapping]] = client.get_entity_data(
+    result: p.Result[t.SequenceOf[t.StrMapping]] = client.fetch_entity_data(
         entity_name=entity_name, limit=10
     )
     if result.success:
@@ -128,7 +128,7 @@ def query_entity_data(
 
 def demonstrate_error_handling(client: FlextOracleWmsClient) -> None:
     """Demonstrate proper error handling patterns with r."""
-    result = client.get_entity_data("NON_EXISTENT_ENTITY")
+    result = client.fetch_entity_data("NON_EXISTENT_ENTITY")
     if (
         result.failure
         and result.error

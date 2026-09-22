@@ -4,7 +4,7 @@ Exercises the observable behavior of ``u.OracleWms.Client``
 that does not require the external Oracle WMS service: settings resolution,
 lifecycle (start/stop) idempotence, and ``from_auth_settings`` construction
 rules. The request-based operations (health_check, call_api, discover_entities,
-get_entity_data, get_apis_by_category) reach a live Oracle WMS Cloud endpoint;
+fetch_entity_data, get_apis_by_category) reach a live Oracle WMS Cloud endpoint;
 there is no local container or self-contained service to exercise them against,
 so per the no-mock law they are covered by real end-to-end runs against a
 provisioned WMS environment, not by substituting the HTTP boundary here.
