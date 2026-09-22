@@ -154,7 +154,7 @@ if result.success:
 ```python
 from __future__ import annotations
 # Query entity data with filtering
-result = client.get_entity_data(
+result = client.fetch_entity_data(
     entity_name="item",
     limit=100,
     fields="item_id,item_name,item_desc",
@@ -175,7 +175,7 @@ from __future__ import annotations
 from flext_oracle_wms import FlextOracleWmsConnectionError
 
 try:
-    result = client.get_entity_data("inventory")
+    result = client.fetch_entity_data("inventory")
     if result.is_failure:
         # Handle business logic errors via r
 

@@ -103,7 +103,7 @@ def run_client_flow(client: FlextOracleWmsClient) -> None:
     client.health_check()
     client.discover_entities()
     for entity in ["company", "facility", "item"]:
-        result = client.get_entity_data(entity, limit=3)
+        result = client.fetch_entity_data(entity, limit=3)
         if result.success:
             data = result.value
             if isinstance(data, list):

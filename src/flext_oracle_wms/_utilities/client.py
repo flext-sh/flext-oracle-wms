@@ -177,7 +177,7 @@ class FlextOracleWmsUtilitiesClient:
                 return r[t.SequenceOf[t.StrMapping]].fail(payload_result.error)
             return r[t.SequenceOf[t.StrMapping]].ok(payload_result.value.apis)
 
-        def get_entity_data(
+        def fetch_entity_data(
             self,
             entity_name: str,
             limit: int | None = None,

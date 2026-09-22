@@ -120,7 +120,7 @@ def showcase_3_data_retrieval(
     for entity_name in test_entities:
         if entity_name not in entities:
             continue
-        data_result = client.get_entity_data(entity_name, limit=5)
+        data_result = client.fetch_entity_data(entity_name, limit=5)
         if data_result.success:
             data = data_result.value
             if isinstance(data, list) and data:
@@ -129,7 +129,9 @@ def showcase_3_data_retrieval(
                     len(first_record)
                 sample_data[entity_name] = str(len(data))
     if "company" in sample_data:
-        client.get_entity_data(entity_name="company", limit=3, filters={"active": "Y"})
+        client.fetch_entity_data(
+            entity_name="company", limit=3, filters={"active": "Y"}
+        )
     return sample_data
 
 
@@ -173,7 +175,7 @@ def showcase_5_api_catalog(client: FlextOracleWmsClient) -> None:
 
 def showcase_6_error_handling(client: FlextOracleWmsClient) -> None:
     """Feature 6: Error Handling and Recovery."""
-    client.get_entity_data("invalid_entity_xyz123")
+    client.fetch_entity_data("invalid_entity_xyz123")
     client.call_api("non_existent_api_xyz")
     try:
         invalid_config = FlextOracleWmsSettings.model_validate({
@@ -220,7 +222,7 @@ def showcase_8_performance_tracking(
         start_time = time.time()
         results: list[p.Result[Sequence[t.StrMapping]]] = []
         for entity in test_entities:
-            result = client.get_entity_data(entity, limit=2)
+            result = client.fetch_entity_data(entity, limit=2)
             results.append(result)
         end_time = time.time()
         _elapsed = end_time - start_time
@@ -231,7 +233,7 @@ def showcase_8_performance_tracking(
         page_sizes = [1, 5, 10]
         for page_size in page_sizes:
             start_time = time.time()
-            _result = client.get_entity_data("company", limit=page_size)
+            _result = client.fetch_entity_data("company", limit=page_size)
             _elapsed = time.time() - start_time
 
 
