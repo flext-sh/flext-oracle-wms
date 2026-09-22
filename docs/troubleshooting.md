@@ -73,6 +73,7 @@ from flext_core import u
 
 logger = u.fetch_logger(__name__)
 ```
+
 ### Type Safety Issues
 
 #### MyPy errors with dynamic attributes
@@ -112,6 +113,7 @@ settings = FlextOracleWmsModuleSettings(
     oracle_wms_timeout=30,  # Use int, not float
 )
 ```
+
 ### FLEXT Compliance Issues
 
 #### httpx usage violations
@@ -292,6 +294,7 @@ logging.basicConfig(level=logging.DEBUG)
 logger = u.fetch_logger(__name__)
 logger.debug("Debug message")
 ```
+
 ### Type Checking
 
 ```bash

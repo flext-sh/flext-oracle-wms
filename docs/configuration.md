@@ -20,7 +20,7 @@
 - [Implementation Status](#implementation-status)
   - [Current Status](#current-status)
   - [Required Implementation](#required-implementation_1)
-<!-- TOC END -->
+  <!-- TOC END -->
 
 **Settings and environment management for flext-oracle-wms**
 
@@ -57,6 +57,7 @@ print(settings.OracleWms.username)  # "test_user"
 print(settings.OracleWms.api_version)  # Current API version
 print(settings.OracleWms.timeout)  # Default timeout
 ```
+
 ## Environment Variables
 
 ### Test Environment
@@ -111,6 +112,7 @@ settings = FlextOracleWmsSettings(
     # Additional configuration options
 )
 ```
+
 ### Authentication Configuration (Framework)
 
 Based on source code analysis, authentication framework exists but requires
@@ -129,6 +131,7 @@ auth_methods = [
     OracleWMSAuthMethod.API_KEY,  # API key (not implemented)
 ]
 ```
+
 ## Configuration Validation
 
 ### Current Validation
@@ -146,6 +149,7 @@ settings = FlextOracleWmsSettings(
 )
 # Pydantic automatically validates configuration structure
 ```
+
 ### Required Implementation
 
 For production Oracle WMS Cloud integration:
