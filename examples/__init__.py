@@ -11,8 +11,7 @@ from flext_core.lazy import build_lazy_import_map, install_lazy_exports
 if TYPE_CHECKING:
     from flext_api import api, s
     from flext_cli import cli
-    from flext_web import main, web
-    from pydantic_core import from_json, to_json, to_jsonable_python
+    from flext_web import web
 
     from flext_core import (
         core,
@@ -24,7 +23,7 @@ if TYPE_CHECKING:
         r,
         x,
     )
-    from flext_oracle_wms import c, config, e, m, oracle_wms, p, settings, t, u
+    from flext_oracle_wms import c, config, e, m, main, oracle_wms, p, settings, t, u
 __all__: tuple[str, ...] = (
     "api",
     "c",
@@ -33,7 +32,6 @@ __all__: tuple[str, ...] = (
     "core",
     "d",
     "e",
-    "from_json",
     "h",
     "lazy",
     "lazy_attribute",
@@ -46,8 +44,6 @@ __all__: tuple[str, ...] = (
     "s",
     "settings",
     "t",
-    "to_json",
-    "to_jsonable_python",
     "u",
     "web",
     "x",
@@ -73,14 +69,14 @@ _LAZY_IMPORTS = MappingProxyType(
                 "config",
                 "e",
                 "m",
+                "main",
                 "oracle_wms",
                 "p",
                 "settings",
                 "t",
                 "u",
             ),
-            "flext_web": ("main", "web"),
-            "pydantic_core": ("from_json", "to_json", "to_jsonable_python"),
+            "flext_web": ("web",),
         }),
         alias_groups=MappingProxyType({}),
         sort_keys=False,
