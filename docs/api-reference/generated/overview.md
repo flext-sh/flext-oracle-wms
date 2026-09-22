@@ -12,10 +12,10 @@
 - Version: `0.12.0`
 - Description: Enterprise Oracle WMS client library for FLEXT data integration platform
 - Doc summary: Flext Oracle Wms package.
-- Classifiers: `Development Status :: 3 - Alpha`, `Intended Audience :: Developers`,
-  `Operating System :: OS Independent`, `Programming Language :: Python :: 3 :: Only`,
-  `Programming Language :: Python :: 3.13`,
-  `Topic :: Software Development :: Libraries :: Python Modules` (+1 more)
+- Classifiers: Development Status :: 3 - Alpha, Intended Audience :: Developers,
+  Operating System :: OS Independent, Programming Language :: Python :: 3 :: Only,
+  Programming Language :: Python :: 3.13, Topic :: Software Development :: Libraries ::
+  Python Modules, Typing :: Typed
 - Project class: `domain`
 - Keywords: `adapter`, `enterprise`, `flext`, `integration`, `typed`
 - Main facades: `FlextOracleWmsApi`, `FlextOracleWmsConfig`, `FlextOracleWmsConstants`,

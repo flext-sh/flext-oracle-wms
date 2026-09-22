@@ -7,7 +7,8 @@
   - [Integration Gaps Analysis](#integration-gaps-analysis)
   - [Required Implementation Work](#required-implementation-work)
   - [Success Criteria](#success-criteria)
-  <!-- TOC END -->
+
+<!-- TOC END -->
 
 **Current integration analysis | April 14, 2026 | Version 0.9.9**
 

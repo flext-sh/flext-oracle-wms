@@ -20,7 +20,8 @@
   - [Documentation Resources](#documentation-resources)
   - [Known Limitations](#known-limitations)
   - [Reporting Issues](#reporting-issues)
-  <!-- TOC END -->
+
+<!-- TOC END -->
 
 **Common issues and solutions for flext-oracle-wms**
 
