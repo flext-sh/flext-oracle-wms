@@ -10,7 +10,8 @@
 - [Implementation Gaps](#implementation-gaps)
   - [Critical Issues](#critical-issues)
   - [Required Development](#required-development)
-  <!-- TOC END -->
+
+<!-- TOC END -->
 
 **Version 0.9.9 | April 14, 2026 | Status: Partial integration with gaps**
 

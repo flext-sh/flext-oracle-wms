@@ -37,8 +37,7 @@ for the FLEXT data integration platform.
 
 ### 🎯 **Core Interface**
 
-- **[flext_oracle_wms/](flext_oracle_wms/)** - Main library package with enterprise
-  Oracle WMS integration
+- runtime_bootstrap_options
 
 ### 🏗️ **Architecture Overview**
 

@@ -20,7 +20,8 @@
 - [Implementation Status](#implementation-status)
   - [Current Status](#current-status)
   - [Required Implementation](#required-implementation_1)
-  <!-- TOC END -->
+
+<!-- TOC END -->
 
 **Settings and environment management for flext-oracle-wms**
 

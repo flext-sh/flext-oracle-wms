@@ -30,7 +30,8 @@
 - [Troubleshooting](#troubleshooting)
   - [Common Issues](#common-issues)
   - [Development Tools](#development-tools)
-  <!-- TOC END -->
+
+<!-- TOC END -->
 
 **Development workflow and guidelines for flext-oracle-wms**
 
