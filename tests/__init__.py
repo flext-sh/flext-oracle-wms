@@ -9,30 +9,7 @@ from typing import TYPE_CHECKING
 from flext_core.lazy import build_lazy_import_map, install_lazy_exports
 
 if TYPE_CHECKING:
-    from flext_api import web
-    from flext_tests import (
-        api,
-        c,
-        cli,
-        config,
-        core,
-        d,
-        h,
-        install_local_packages,
-        lazy_attribute,
-        load_infra_report,
-        r,
-        services,
-        settings,
-        td,
-        tf,
-        tk,
-        tm,
-        tv,
-        x,
-    )
-
-    from flext_oracle_wms import e, main, oracle_wms
+    from flext_tests import api, c, d, e, h, r, td, tf, tk, tm, tv, x
 
     from . import unit
     from .base import (
@@ -57,23 +34,13 @@ __all__: tuple[str, ...] = (
     "TestsFlextOracleWmsUtilities",
     "api",
     "c",
-    "cli",
-    "config",
-    "core",
     "d",
     "e",
     "h",
-    "install_local_packages",
-    "lazy_attribute",
-    "load_infra_report",
     "m",
-    "main",
-    "oracle_wms",
     "p",
     "r",
     "s",
-    "services",
-    "settings",
     "t",
     "td",
     "tf",
@@ -82,7 +49,6 @@ __all__: tuple[str, ...] = (
     "tv",
     "u",
     "unit",
-    "web",
     "x",
 )
 
@@ -97,22 +63,13 @@ _LAZY_IMPORTS = MappingProxyType(
             ".typings": ("TestsFlextOracleWmsTypes", "t"),
             ".unit": ("unit",),
             ".utilities": ("TestsFlextOracleWmsUtilities", "u"),
-            "flext_api": ("web",),
-            "flext_oracle_wms": ("e", "main", "oracle_wms"),
             "flext_tests": (
                 "api",
                 "c",
-                "cli",
-                "config",
-                "core",
                 "d",
+                "e",
                 "h",
-                "install_local_packages",
-                "lazy_attribute",
-                "load_infra_report",
                 "r",
-                "services",
-                "settings",
                 "td",
                 "tf",
                 "tk",
