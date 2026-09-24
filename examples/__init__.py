@@ -9,63 +9,15 @@ from typing import TYPE_CHECKING
 from flext_core.lazy import build_lazy_import_map, install_lazy_exports
 
 if TYPE_CHECKING:
-    from flext_api import api, cli, core, d, h, lazy_attribute, r, s, services, web, x
-
-    from flext_oracle_wms import c, config, e, m, main, oracle_wms, p, settings, t, u
+    from flext_oracle_wms import c, d, e, h, m, p, r, s, t, u, x
 
 
-__all__: tuple[str, ...] = (
-    "api",
-    "c",
-    "cli",
-    "config",
-    "core",
-    "d",
-    "e",
-    "h",
-    "lazy_attribute",
-    "m",
-    "main",
-    "oracle_wms",
-    "p",
-    "r",
-    "s",
-    "services",
-    "settings",
-    "t",
-    "u",
-    "web",
-    "x",
-)
+__all__: tuple[str, ...] = ("c", "d", "e", "h", "m", "p", "r", "s", "t", "u", "x")
 
 _LAZY_IMPORTS = MappingProxyType(
     build_lazy_import_map(
         MappingProxyType({
-            "flext_api": (
-                "api",
-                "cli",
-                "core",
-                "d",
-                "h",
-                "lazy_attribute",
-                "r",
-                "s",
-                "services",
-                "web",
-                "x",
-            ),
-            "flext_oracle_wms": (
-                "c",
-                "config",
-                "e",
-                "m",
-                "main",
-                "oracle_wms",
-                "p",
-                "settings",
-                "t",
-                "u",
-            ),
+            "flext_oracle_wms": ("c", "d", "e", "h", "m", "p", "r", "s", "t", "u", "x")
         }),
         alias_groups=MappingProxyType({}),
         sort_keys=False,
