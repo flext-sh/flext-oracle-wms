@@ -9,27 +9,7 @@ from typing import TYPE_CHECKING
 from flext_core.lazy import build_lazy_import_map, install_lazy_exports
 
 if TYPE_CHECKING:
-    from flext_cli import cli
-    from flext_tests import (
-        active_rules,
-        api,
-        c,
-        config,
-        discover_repository_root,
-        install_local_packages,
-        load_infra_report,
-        settings,
-        split_csv,
-        td,
-        tf,
-        tk,
-        tm,
-        tv,
-    )
-    from flext_web import web
-
-    from flext_core import core, d, h, lazy_attribute, r, x
-    from flext_oracle_wms import e, main, oracle_wms
+    from flext_tests import api, c, d, e, h, r, td, tf, tk, tm, tv, x
 
     from . import unit
     from .base import (
@@ -52,27 +32,15 @@ __all__: tuple[str, ...] = (
     "TestsFlextOracleWmsSettings",
     "TestsFlextOracleWmsTypes",
     "TestsFlextOracleWmsUtilities",
-    "active_rules",
     "api",
     "c",
-    "cli",
-    "config",
-    "core",
     "d",
-    "discover_repository_root",
     "e",
     "h",
-    "install_local_packages",
-    "lazy_attribute",
-    "load_infra_report",
     "m",
-    "main",
-    "oracle_wms",
     "p",
     "r",
     "s",
-    "settings",
-    "split_csv",
     "t",
     "td",
     "tf",
@@ -81,7 +49,6 @@ __all__: tuple[str, ...] = (
     "tv",
     "u",
     "unit",
-    "web",
     "x",
 )
 
@@ -96,26 +63,20 @@ _LAZY_IMPORTS = MappingProxyType(
             ".typings": ("TestsFlextOracleWmsTypes", "t"),
             ".unit": ("unit",),
             ".utilities": ("TestsFlextOracleWmsUtilities", "u"),
-            "flext_cli": ("cli",),
-            "flext_core": ("core", "d", "h", "lazy_attribute", "r", "x"),
-            "flext_oracle_wms": ("e", "main", "oracle_wms"),
             "flext_tests": (
-                "active_rules",
                 "api",
                 "c",
-                "config",
-                "discover_repository_root",
-                "install_local_packages",
-                "load_infra_report",
-                "settings",
-                "split_csv",
+                "d",
+                "e",
+                "h",
+                "r",
                 "td",
                 "tf",
                 "tk",
                 "tm",
                 "tv",
+                "x",
             ),
-            "flext_web": ("web",),
         }),
         alias_groups=MappingProxyType({}),
         sort_keys=False,
