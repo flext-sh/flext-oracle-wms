@@ -10,7 +10,7 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 from enum import StrEnum, unique
-from typing import Final
+from typing import ClassVar, Final
 
 from flext_tests import FlextTestsConstants
 
@@ -35,7 +35,7 @@ class TestsFlextOracleWmsConstants(FlextTestsConstants, c):
                 SETUP_TRANSACTIONAL = "setup_transactional"
                 AUTOMATION_OPERATIONS = "automation_operations"
 
-            API_VERSION_LGF_V10: Final[str] = "LGF_V10"
+            API_VERSION_LGF_V10: ClassVar[str] = "LGF_V10"
             "Oracle WMS LGF API version 10 identifier."
 
 

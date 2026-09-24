@@ -31,7 +31,15 @@ if TYPE_CHECKING:
     from .models import FlextOracleWmsModels, m
     from .protocols import FlextOracleWmsProtocols, p
     from .typings import FlextOracleWmsTypes, t
-    from .utilities import FlextOracleWmsUtilities, u
+    from .utilities import (
+        FlextOracleWmsUtilities,
+        FlextOracleWmsUtilitiesAuth,
+        FlextOracleWmsUtilitiesClient,
+        FlextOracleWmsUtilitiesDiscovery,
+        FlextOracleWmsUtilitiesFiltering,
+        FlextOracleWmsUtilitiesHttpClient,
+        u,
+    )
 
 
 __all__: tuple[str, ...] = (
@@ -44,6 +52,11 @@ __all__: tuple[str, ...] = (
     "FlextOracleWmsSettings",
     "FlextOracleWmsTypes",
     "FlextOracleWmsUtilities",
+    "FlextOracleWmsUtilitiesAuth",
+    "FlextOracleWmsUtilitiesClient",
+    "FlextOracleWmsUtilitiesDiscovery",
+    "FlextOracleWmsUtilitiesFiltering",
+    "FlextOracleWmsUtilitiesHttpClient",
     "__author__",
     "__author_email__",
     "__description__",
@@ -81,7 +94,15 @@ _LAZY_IMPORTS = MappingProxyType(
             ".models": ("FlextOracleWmsModels", "m"),
             ".protocols": ("FlextOracleWmsProtocols", "p"),
             ".typings": ("FlextOracleWmsTypes", "t"),
-            ".utilities": ("FlextOracleWmsUtilities", "u"),
+            ".utilities": (
+                "FlextOracleWmsUtilities",
+                "FlextOracleWmsUtilitiesAuth",
+                "FlextOracleWmsUtilitiesClient",
+                "FlextOracleWmsUtilitiesDiscovery",
+                "FlextOracleWmsUtilitiesFiltering",
+                "FlextOracleWmsUtilitiesHttpClient",
+                "u",
+            ),
             "flext_api": ("d", "h", "r", "s", "x"),
         }),
         alias_groups=MappingProxyType({}),

@@ -57,7 +57,7 @@ verification).
   classes listed under Module Map above.
 - Public extensions exposed by this project: `FlextOracleWmsApi`,
   `FlextOracleWmsConfig`, `FlextOracleWmsConstants`, `FlextOracleWmsErrors`,
-  `FlextOracleWmsModels`, `FlextOracleWmsProtocols` (+3 more).
+  `FlextOracleWmsModels`, `FlextOracleWmsProtocols` (+8 more).
 - Library abstraction boundaries: see AGENTS.md §2.7.
 
 ## Quality Gates
