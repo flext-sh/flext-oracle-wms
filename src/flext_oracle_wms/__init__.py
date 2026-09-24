@@ -30,15 +30,15 @@ if TYPE_CHECKING:
     from .errors import FlextOracleWmsErrors, e
     from .models import FlextOracleWmsModels, m
     from .protocols import FlextOracleWmsProtocols, p
-    from .typings import FlextOracleWmsTypes, t
+    from .typings import FlextOracleWmsTypes, FlextOracleWmsTypes as t
     from .utilities import (
         FlextOracleWmsUtilities,
+        FlextOracleWmsUtilities as u,
         FlextOracleWmsUtilitiesAuth,
         FlextOracleWmsUtilitiesClient,
         FlextOracleWmsUtilitiesDiscovery,
         FlextOracleWmsUtilitiesFiltering,
         FlextOracleWmsUtilitiesHttpClient,
-        u,
     )
 
 

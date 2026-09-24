@@ -19,7 +19,7 @@ if TYPE_CHECKING:
     from flext_oracle_wms import FlextOracleWmsUtilities
 
 
-class TestsFlextOracleWmsTypes(FlextTestsTypes, t):
+class TestsFlextOracleWmsTypes(FlextTestsTypes):
     """Test types combining TestsFlextTypes with flext-oracle-wms types."""
 
     class OracleWms(t.OracleWms):

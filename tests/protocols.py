@@ -14,7 +14,7 @@ from flext_tests import FlextTestsProtocols
 from flext_oracle_wms import p
 
 
-class TestsFlextOracleWmsProtocols(FlextTestsProtocols, p):
+class TestsFlextOracleWmsProtocols(FlextTestsProtocols):
     """Test protocols combining TestsFlextProtocols and p."""
 
     class OracleWms(p.OracleWms):

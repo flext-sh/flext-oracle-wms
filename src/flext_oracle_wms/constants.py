@@ -10,7 +10,7 @@ from enum import StrEnum, unique
 from types import MappingProxyType
 from typing import TYPE_CHECKING, ClassVar, Final
 
-from flext_api import c
+from flext_api import FlextApiConstants, c
 
 from ._constants.base import FlextOracleWmsConstantsBase
 from ._constants.values import FlextOracleWmsConstantsValues
@@ -21,7 +21,7 @@ if TYPE_CHECKING:
     from flext_oracle_wms import t
 
 
-class FlextOracleWmsConstants(c):
+class FlextOracleWmsConstants(FlextApiConstants):
     """Generic WMS constants class with composition patterns.
 
     Uses Python 3.13+ syntax, reduces declarations through patterns.

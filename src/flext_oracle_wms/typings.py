@@ -8,13 +8,13 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from flext_api import t
+from flext_api import FlextApiTypes
 
 if TYPE_CHECKING:
     from flext_oracle_wms import m
 
 
-class FlextOracleWmsTypes(t):
+class FlextOracleWmsTypes(FlextApiTypes):
     """Oracle WMS type definitions extending t via MRO."""
 
     class OracleWms:

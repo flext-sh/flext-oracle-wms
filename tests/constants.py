@@ -10,14 +10,14 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 from enum import StrEnum, unique
-from typing import ClassVar, Final
+from typing import ClassVar
 
 from flext_tests import FlextTestsConstants
 
 from flext_oracle_wms import c
 
 
-class TestsFlextOracleWmsConstants(FlextTestsConstants, c):
+class TestsFlextOracleWmsConstants(FlextTestsConstants):
     """Test constants for flext-oracle-wms."""
 
     class OracleWms(c.OracleWms):
