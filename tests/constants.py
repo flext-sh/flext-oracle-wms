@@ -17,7 +17,7 @@ from flext_tests import FlextTestsConstants
 from flext_oracle_wms import c
 
 
-class TestsFlextOracleWmsConstants(FlextTestsConstants):
+class TestsFlextOracleWmsConstants(FlextTestsConstants, c):
     """Test constants for flext-oracle-wms."""
 
     class OracleWms(c.OracleWms):
@@ -41,4 +41,4 @@ class TestsFlextOracleWmsConstants(FlextTestsConstants):
 
 c = TestsFlextOracleWmsConstants
 
-__all__: list[str] = ["TestsFlextOracleWmsConstants"]
+__all__: list[str] = ["TestsFlextOracleWmsConstants", "c"]

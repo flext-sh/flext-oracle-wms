@@ -25,11 +25,12 @@ class TestsFlextOracleWmsConfig:
     @pytest.mark.unit
     def test_explicit_values_are_exposed_as_public_state(self) -> None:
         """Constructing with explicit values exposes them via public fields."""
+        password = "p" + "5" * 12
         settings = FlextOracleWmsSettings.model_validate({
             "OracleWms": {
                 "base_url": "https://wms.oraclecloud.com/test",
                 "username": "user",
-                "password": "p" + "5" * 12,
+                "password": password,
                 "timeout": 30.0,
                 "retry_attempts": 3,
             }
@@ -37,7 +38,7 @@ class TestsFlextOracleWmsConfig:
         ns = settings.OracleWms
         tm.that(ns.base_url, eq="https://wms.oraclecloud.com/test")
         tm.that(ns.username, eq="user")
-        tm.that(ns.password, eq="test_password")
+        tm.that(ns.password, eq=password)
         tm.that(ns.timeout, eq=pytest.approx(30.0))
         tm.that(ns.retry_attempts, eq=3)
 
