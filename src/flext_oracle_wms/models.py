@@ -11,12 +11,12 @@ from __future__ import annotations
 
 from typing import Annotated, ClassVar
 
-from flext_api import m, u
+from flext_api import FlextApiModels, m, u
 
 from flext_oracle_wms import c, t
 
 
-class FlextOracleWmsModels(m):
+class FlextOracleWmsModels(FlextApiModels):
     """Generic WMS domain models with composition patterns.
 
     Single class per module following DDD, SOLID, and flext-core patterns.

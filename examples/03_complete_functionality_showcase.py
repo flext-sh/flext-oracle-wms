@@ -29,7 +29,6 @@ from __future__ import annotations
 
 import os
 import time
-import traceback
 from pathlib import Path
 from typing import TYPE_CHECKING
 
@@ -272,14 +271,9 @@ def run_showcase() -> None:
     client.stop()
 
 
-def main() -> int:
+def main() -> None:
     """Run the complete functionality showcase."""
-    try:
-        run_showcase()
-    except (RuntimeError, OSError, ValueError):
-        traceback.print_exc()
-        return 1
-    return 0
+    run_showcase()
 
 
 if __name__ == "__main__":

@@ -38,11 +38,12 @@ class TestsFlextOracleWmsUnifiedConfig:
 
     def test_custom_values_are_preserved_on_public_fields(self) -> None:
         """Explicit values round-trip through the public field API."""
+        password = "p" + "7" * 12
         settings = FlextOracleWmsSettings.model_validate({
             "OracleWms": {
                 "base_url": "https://test.wms.oraclecloud.com",
                 "username": "test_user",
-                "password": "p" + "7" * 12,
+                "password": password,
                 "timeout": 45.0,
                 "retry_attempts": 5,
             }
@@ -51,7 +52,7 @@ class TestsFlextOracleWmsUnifiedConfig:
 
         tm.that(ns.base_url, eq="https://test.wms.oraclecloud.com")
         tm.that(ns.username, eq="test_user")
-        tm.that(ns.password, eq="test_password")
+        tm.that(ns.password, eq=password)
         tm.that(ns.timeout, eq=pytest.approx(45.0))
         tm.that(ns.retry_attempts, eq=5)
 

@@ -8,8 +8,10 @@ from __future__ import annotations
 
 from flext_api import e
 
+from flext_core import FlextExceptions
 
-class FlextOracleWmsErrors(e):
+
+class FlextOracleWmsErrors(FlextExceptions):
     """Oracle WMS-specific exceptions extending the API exception facade."""
 
     class Error(e.BaseError):

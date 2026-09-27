@@ -8,7 +8,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Protocol, runtime_checkable
 
-from flext_api import p
+from flext_api import FlextApiProtocols, p
 
 from ._protocols.config import FlextOracleWmsProtocolsConfig
 
@@ -16,7 +16,7 @@ if TYPE_CHECKING:
     from flext_oracle_wms import t
 
 
-class FlextOracleWmsProtocols(p):
+class FlextOracleWmsProtocols(FlextApiProtocols):
     """Oracle WMS protocols extending p.
 
     Extends p to inherit all foundation protocols (Result, Service, etc.)
