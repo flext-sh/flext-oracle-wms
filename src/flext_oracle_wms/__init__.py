@@ -26,7 +26,7 @@ if TYPE_CHECKING:
     from ._settings import FlextOracleWmsSettings, settings
     from .api import FlextOracleWmsApi, oracle_wms
     from .cli import main
-    from .constants import FlextOracleWmsConstants, c
+    from .constants import FlextOracleWmsConstants, FlextOracleWmsConstants as c
     from .errors import FlextOracleWmsErrors, e
     from .models import FlextOracleWmsModels, m
     from .protocols import FlextOracleWmsProtocols, p

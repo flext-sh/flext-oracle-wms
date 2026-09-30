@@ -214,14 +214,12 @@ make security # Bandit + pip-audit security scanning
 
 ### FLEXT Ecosystem Dependencies
 
-- **[flext-core](https://github.com/organization/flext/tree/main/flext-core/)** -
-  Foundation patterns, r, p, logging, DI container
-- **[flext-api](https://github.com/organization/flext/tree/main/flext-api/)** -
-  Enterprise API client patterns and authentication
-- **[flext-observability](https://github.com/organization/flext/tree/main/flext-observability/)** -
-  Monitoring, metrics, health checks
-- **[flext-oracle-wms](https://github.com/organization/flext/tree/main/flext-oracle-wms/)** -
-  This package: Oracle WMS REST client
+The client builds on the shared FLEXT stack: **flext-core** supplies the foundation
+patterns (result rail, protocols, logging, DI container), **flext-api** contributes the
+enterprise API-client and authentication patterns it extends, and
+**flext-observability** provides the monitoring, metrics and health-check hooks. This
+package itself is the Oracle WMS REST client; each dependency ships its own README as
+the owner of its details.
 
 ### External Dependencies
 
