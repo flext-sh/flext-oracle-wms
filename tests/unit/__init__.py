@@ -1,34 +1,40 @@
 # AUTO-GENERATED FILE — Regenerate with: make gen
-"""Tests.unit package."""
+"""Tests.unit package.
+
+Copyright (c) 2026 FLEXT Team. All rights reserved.
+SPDX-License-Identifier: MIT
+"""
 
 from __future__ import annotations
 
 from types import MappingProxyType
 from typing import TYPE_CHECKING
 
-from flext_core.lazy import build_lazy_import_map, install_lazy_exports
+from flext_core import build_lazy_import_map, install_lazy_exports
 
 if TYPE_CHECKING:
-    from .test_api import TestsFlextOracleWmsApi
-    from .test_authentication import TestsFlextOracleWmsAuthentication
-    from .test_authentication_core import TestsFlextOracleWmsAuthenticationCore
-    from .test_client import TestsFlextOracleWmsClient
-    from .test_client_class import TestsFlextOracleWmsClientClass
-    from .test_client_core import TestsFlextOracleWmsClientCore
-    from .test_config import TestsFlextOracleWmsConfig
-    from .test_config_domains import TestsFlextOracleWmsConfigDomains
-    from .test_config_module import TestsFlextOracleWmsConfigModule
-    from .test_connection import TestsFlextOracleWmsConnection
-    from .test_constants import TestsFlextOracleWmsConstantsUnit
-    from .test_discovery import TestsFlextOracleWmsDiscovery
-    from .test_filtering import TestsFlextOracleWmsFiltering
-    from .test_helpers import TestsFlextOracleWmsHelpers
-    from .test_helpers_core import TestsFlextOracleWmsHelpersCore
-    from .test_models import TestsFlextOracleWmsModelsUnit
-    from .test_schema_dynamic import TestsFlextOracleWmsSchemaDynamic
-    from .test_singer_flattening import TestsFlextOracleWmsSingerFlattening
-    from .test_unified_config import TestsFlextOracleWmsUnifiedConfig
-    from .test_wms_client import TestsFlextOracleWmsWmsClient
+    from tests.unit.test_api import TestsFlextOracleWmsApi
+    from tests.unit.test_authentication import TestsFlextOracleWmsAuthentication
+    from tests.unit.test_authentication_core import (
+        TestsFlextOracleWmsAuthenticationCore,
+    )
+    from tests.unit.test_client import TestsFlextOracleWmsClient
+    from tests.unit.test_client_class import TestsFlextOracleWmsClientClass
+    from tests.unit.test_client_core import TestsFlextOracleWmsClientCore
+    from tests.unit.test_config import TestsFlextOracleWmsConfig
+    from tests.unit.test_config_domains import TestsFlextOracleWmsConfigDomains
+    from tests.unit.test_config_module import TestsFlextOracleWmsConfigModule
+    from tests.unit.test_connection import TestsFlextOracleWmsConnection
+    from tests.unit.test_constants import TestsFlextOracleWmsConstantsUnit
+    from tests.unit.test_discovery import TestsFlextOracleWmsDiscovery
+    from tests.unit.test_filtering import TestsFlextOracleWmsFiltering
+    from tests.unit.test_helpers import TestsFlextOracleWmsHelpers
+    from tests.unit.test_helpers_core import TestsFlextOracleWmsHelpersCore
+    from tests.unit.test_models import TestsFlextOracleWmsModelsUnit
+    from tests.unit.test_schema_dynamic import TestsFlextOracleWmsSchemaDynamic
+    from tests.unit.test_singer_flattening import TestsFlextOracleWmsSingerFlattening
+    from tests.unit.test_unified_config import TestsFlextOracleWmsUnifiedConfig
+    from tests.unit.test_wms_client import TestsFlextOracleWmsWmsClient
 
 
 __all__: tuple[str, ...] = (
@@ -80,7 +86,7 @@ _LAZY_IMPORTS = MappingProxyType(
         }),
         alias_groups=MappingProxyType({}),
         sort_keys=False,
-    )
+    ),
 )
 
 install_lazy_exports(__name__, globals(), _LAZY_IMPORTS, public_exports=__all__)
