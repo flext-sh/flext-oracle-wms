@@ -6,15 +6,20 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from flext_oracle_wms import c, p, r
+from flext_core import r
+from flext_oracle_wms import c, m, p
 
 
 class FlextOracleWmsUtilitiesDiscovery:
     """Discovery utilities for Oracle WMS -- u.OracleWms.Discovery.*."""
 
     @staticmethod
-    def validate_wms_entity(entity: p.OracleWms.Entity) -> p.Result[bool]:
-        """Validate an Oracle WMS entity definition against domain rules."""
+    def validate_wms_entity(entity: m.OracleWms.Entity) -> p.Result[bool]:
+        """Validate an Oracle WMS entity definition against domain rules.
+
+        Returns:
+            The resulting ``p.Result[bool]``.
+        """
         # NOTE (multi-agent): U17 — entity business validation lives in u.*, not on
         # the model (declaration layer). Moved verbatim from m.OracleWms.Entity.
         if not entity.name:

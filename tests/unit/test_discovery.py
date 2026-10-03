@@ -21,6 +21,7 @@ class TestsFlextOracleWmsDiscovery:
     string identity and mutual distinctness) without touching internals.
     """
 
+    @staticmethod
     @pytest.mark.parametrize(
         ("attribute", "expected_token"),
         [
@@ -29,7 +30,8 @@ class TestsFlextOracleWmsDiscovery:
         ],
     )
     def test_discovery_token_exposes_published_string_value(
-        self, attribute: str, expected_token: str
+        attribute: str,
+        expected_token: str,
     ) -> None:
         """Each discovery outcome token is published with its exact string."""
         token: str = getattr(c.OracleWms, attribute)
@@ -37,14 +39,13 @@ class TestsFlextOracleWmsDiscovery:
         tm.that(token, eq=expected_token)
         tm.that(token, is_=str)
 
-    def test_success_and_failure_tokens_are_distinct(self) -> None:
+    @staticmethod
+    def test_success_and_failure_tokens_are_distinct() -> None:
         """Success and failure outcomes must never collide as the same token."""
         tm.that(c.OracleWms.DISCOVERY_SUCCESS, ne=c.OracleWms.DISCOVERY_FAILURE)
 
-    def test_discovery_tokens_are_stable_across_access(self) -> None:
+    @staticmethod
+    def test_discovery_tokens_are_stable_across_access() -> None:
         """Repeated reads return the identical token (immutable contract)."""
         tm.that(c.OracleWms.DISCOVERY_SUCCESS, eq=c.OracleWms.DISCOVERY_SUCCESS)
         tm.that(c.OracleWms.DISCOVERY_FAILURE, eq=c.OracleWms.DISCOVERY_FAILURE)
-
-
-__all__: list[str] = ["TestsFlextOracleWmsDiscovery"]

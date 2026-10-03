@@ -9,12 +9,17 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 from flext_tests import FlextTestsTypes
 
-from flext_oracle_wms import FlextOracleWmsUtilitiesClient, t
+from flext_oracle_wms import t
+
+if TYPE_CHECKING:
+    from flext_oracle_wms import FlextOracleWmsUtilities
 
 
-class TestsFlextOracleWmsTypes(FlextTestsTypes, t):
+class TestsFlextOracleWmsTypes(FlextTestsTypes):
     """Test types combining TestsFlextTypes with flext-oracle-wms types."""
 
     class OracleWms(t.OracleWms):
@@ -23,7 +28,7 @@ class TestsFlextOracleWmsTypes(FlextTestsTypes, t):
         class Tests(FlextTestsTypes.Tests):
             """Oracle WMS-specific test type aliases."""
 
-            type Client = FlextOracleWmsUtilitiesClient.Client
+            type Client = FlextOracleWmsUtilities.OracleWms.Client
             type EnvConfig = t.MetadataMapping
             type Record = t.MutableMappingKV[str, str | int]
 

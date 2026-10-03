@@ -1,6 +1,9 @@
 """Example usage of the new declarative Oracle WMS Client.
 
 This demonstrates the declarative approach with massive code reduction.
+
+Copyright (c) 2026 FLEXT Team. All rights reserved.
+SPDX-License-Identifier: MIT
 """
 
 from __future__ import annotations
@@ -8,21 +11,21 @@ from __future__ import annotations
 from pathlib import Path
 from urllib.parse import urlparse
 
-from flext_oracle_wms import (
-    FlextOracleWmsApi,
-    FlextOracleWmsSettings,
-    FlextOracleWmsUtilitiesClient,
-    t,
-    u,
-)
+from flext_oracle_wms import FlextOracleWmsApi, FlextOracleWmsSettings, t, u
 
 logger = u.fetch_logger(__name__)
 
-FlextOracleWmsClient = FlextOracleWmsUtilitiesClient.Client
+# Why: mro-4p0t — public facade access is u.OracleWms.Client, not the private
+# _utilities.client module (flext-oracle-wms-1sm3w toolchain sync fix).
+FlextOracleWmsClient = u.OracleWms.Client
 
 
 def load_env_config() -> t.MutableJsonMapping | None:
-    """Load configuration from .env file."""
+    """Load configuration from .env file.
+
+    Returns:
+        The resulting ``t.MutableJsonMapping | None``.
+    """
     env_path = Path("flext-tap-oracle-wms/.env")
     if not env_path.exists():
         return None
@@ -56,7 +59,7 @@ def load_env_config() -> t.MutableJsonMapping | None:
         "oracle_wms_verify_ssl": settings.get("ORACLE_WMS_VERIFY_SSL", "true").lower()
         == "true",
         "oracle_wms_enable_logging": settings.get(
-            "ORACLE_WMS_ENABLE_REQUEST_LOGGING", "true"
+            "ORACLE_WMS_ENABLE_REQUEST_LOGGING", "true",
         ).lower()
         == "true",
     }
@@ -92,10 +95,15 @@ def main() -> None:
 
 
 def run_client_flow(client: FlextOracleWmsClient) -> None:
-    """Run the declarative example client flow."""
+    """Run the declarative example client flow.
+
+    Raises:
+        RuntimeError: If client start failed.
+    """
     start_result = client.start()
     if not start_result.success:
-        return
+        msg = f"client start failed: {start_result.error}"
+        raise RuntimeError(msg)
     categories: t.MutableMappingKV[str, t.MutableSequenceOf[str]] = {}
     for api in FlextOracleWmsApi.api_endpoints().values():
         if api.category not in categories:
@@ -106,7 +114,7 @@ def run_client_flow(client: FlextOracleWmsClient) -> None:
     client.health_check()
     client.discover_entities()
     for entity in ["company", "facility", "item"]:
-        result = client.get_entity_data(entity, limit=3)
+        result = client.fetch_entity_data(entity, limit=3)
         if result.success:
             data = result.value
             if isinstance(data, list):

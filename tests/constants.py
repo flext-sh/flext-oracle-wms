@@ -10,38 +10,35 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 from enum import StrEnum, unique
-from typing import Final
+from typing import ClassVar
 
 from flext_tests import FlextTestsConstants
 
-from flext_oracle_wms import c
+from flext_oracle_wms import FlextOracleWmsConstants
 
 
-@unique
-class OracleWmsCategoryEnum(StrEnum):
-    """Oracle WMS API category classifications."""
-
-    DATA_EXTRACT = "data_extract"
-    ENTITY_OPERATIONS = "entity_operations"
-    SETUP_TRANSACTIONAL = "setup_transactional"
-    AUTOMATION_OPERATIONS = "automation_operations"
-
-
-class TestsFlextOracleWmsConstants(FlextTestsConstants, c):
+class TestsFlextOracleWmsConstants(FlextTestsConstants, FlextOracleWmsConstants):
     """Test constants for flext-oracle-wms."""
 
-    class OracleWms(c.OracleWms):
+    class OracleWms(FlextOracleWmsConstants.OracleWms):
         """Oracle WMS domain test constants namespace."""
 
         class Tests(FlextTestsConstants.Tests):
             """Oracle WMS-specific test constants."""
 
-            Categories: type[OracleWmsCategoryEnum] = OracleWmsCategoryEnum
-            "Oracle WMS API category classifications (data_extract, entity_operations, setup_transactional, automation_operations)."
+            @unique
+            class Categories(StrEnum):
+                """Oracle WMS API category classifications."""
 
-            API_VERSION_LGF_V10: Final[str] = "LGF_V10"
+                DATA_EXTRACT = "data_extract"
+                ENTITY_OPERATIONS = "entity_operations"
+                SETUP_TRANSACTIONAL = "setup_transactional"
+                AUTOMATION_OPERATIONS = "automation_operations"
+
+            API_VERSION_LGF_V10: ClassVar[str] = "LGF_V10"
             "Oracle WMS LGF API version 10 identifier."
 
 
 c = TestsFlextOracleWmsConstants
+
 __all__: list[str] = ["TestsFlextOracleWmsConstants", "c"]

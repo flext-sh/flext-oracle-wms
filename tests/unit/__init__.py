@@ -1,62 +1,24 @@
 # AUTO-GENERATED FILE — Regenerate with: make gen
-"""Unit package."""
+"""Tests.unit package.
+
+Copyright (c) 2026 FLEXT Team. All rights reserved.
+SPDX-License-Identifier: MIT
+"""
 
 from __future__ import annotations
 
-from flext_core.lazy import build_lazy_import_map, install_lazy_exports
+from types import MappingProxyType
 
-_LAZY_IMPORTS = build_lazy_import_map({
-    ".complete_mock_pipeline": ("CompleteMockPipeline",),
-    ".oracle_wms_complete_discovery": (
-        "OracleWmsCompleteDiscovery",
-        "OracleWmsCompleteDiscoveryRunner",
-    ),
-    ".oracle_wms_focused_discovery": ("FocusedOracleWmsDiscovery",),
-    ".oracle_wms_optimized_discovery": (
-        "OptimizedOracleWmsDiscovery",
-        "OptimizedOracleWmsDiscoveryRunner",
-    ),
-    ".sitecustomize": ("sitecustomize",),
-    ".test_api": ("TestsFlextOracleWmsApi",),
-    ".test_authentication": ("TestsFlextOracleWmsAuthentication",),
-    ".test_authentication_core": ("TestsFlextOracleWmsAuthenticationCore",),
-    ".test_client": ("TestsFlextOracleWmsClient",),
-    ".test_client_class": ("TestsFlextOracleWmsClientClass",),
-    ".test_client_core": ("TestsFlextOracleWmsClientCore",),
-    ".test_config": ("TestsFlextOracleWmsConfig",),
-    ".test_config_module": ("TestsFlextOracleWmsConfigModule",),
-    ".test_connection": ("TestsFlextOracleWmsConnection",),
-    ".test_constants": ("TestsFlextOracleWmsConstantsUnit",),
-    ".test_declarative": ("TestsFlextOracleWmsDeclarative",),
-    ".test_discovery": ("TestsFlextOracleWmsDiscovery",),
-    ".test_filtering": ("TestsFlextOracleWmsFiltering",),
-    ".test_helpers": ("TestsFlextOracleWmsHelpers",),
-    ".test_helpers_core": ("TestsFlextOracleWmsHelpersCore",),
-    ".test_models": ("TestsFlextOracleWmsModelsUnit",),
-    ".test_schema_dynamic": ("TestsFlextOracleWmsSchemaDynamic",),
-    ".test_singer_flattening": ("TestsFlextOracleWmsSingerFlattening",),
-    ".test_unified_config": ("TestsFlextOracleWmsUnifiedConfig",),
-    ".test_wms_api": ("test_wms_api",),
-    ".test_wms_client": ("TestsFlextOracleWmsWmsClient",),
-    "flext_tests": (
-        "c",
-        "d",
-        "e",
-        "h",
-        "m",
-        "p",
-        "r",
-        "s",
-        "t",
-        "td",
-        "tf",
-        "tk",
-        "tm",
-        "tv",
-        "u",
-        "x",
-    ),
-})
+from flext_core import build_lazy_import_map, install_lazy_exports
 
+__all__: tuple[str, ...] = ()
 
-install_lazy_exports(__name__, globals(), _LAZY_IMPORTS, publish_all=False)
+_LAZY_IMPORTS = MappingProxyType(
+    build_lazy_import_map(
+        MappingProxyType({}),
+        alias_groups=MappingProxyType({}),
+        sort_keys=False,
+    ),
+)
+
+install_lazy_exports(__name__, globals(), _LAZY_IMPORTS, public_exports=__all__)

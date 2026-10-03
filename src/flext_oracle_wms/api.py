@@ -43,6 +43,9 @@ class FlextOracleWmsApi(s[bool]):
         domain-specific methods (``fetch_settings``, ``call_endpoint``, …)
         for real work. Returning ``r[bool].ok(True)`` matches the
         ``s[bool]`` type parameter.
+
+        Returns:
+            The resulting ``p.Result[bool]``.
         """
         return r[bool].ok(value=True)
 
@@ -50,7 +53,7 @@ class FlextOracleWmsApi(s[bool]):
     def api_endpoints() -> t.MappingKV[str, m.OracleWms.ApiEndpoint]:
         """Return Oracle WMS API endpoint models from canonical constants."""
         return {
-            name: p.OracleWms.ApiEndpoint.model_validate(payload)
+            name: m.OracleWms.ApiEndpoint.model_validate(payload)
             for name, payload in c.OracleWms.API_ENDPOINTS.items()
         }
 
@@ -62,22 +65,32 @@ class FlextOracleWmsApi(s[bool]):
         *,
         verify_ssl: bool = True,
     ) -> u.OracleWms.HttpClient:
-        """Create FlextHttpClient instance."""
+        """Create FlextHttpClient instance.
+
+        Returns:
+            The resulting ``u.OracleWms.HttpClient``.
+        """
         return u.OracleWms.HttpClient(
-            base_url=base_url, timeout=timeout, headers=headers, verify_ssl=verify_ssl
+            base_url=base_url, timeout=timeout, headers=headers, verify_ssl=verify_ssl,
         )
 
     @staticmethod
     def create_oracle_wms_client(
-        settings: p.OracleWms.AuthSettings,
+        settings: m.OracleWms.AuthSettings,
     ) -> p.Result[u.OracleWms.Client]:
-        """Create a runtime Oracle WMS client from auth settings."""
+        """Create a runtime Oracle WMS client from auth settings.
+
+        Returns:
+            The resulting ``p.Result[u.OracleWms.Client]``.
+        """
         result: p.Result[u.OracleWms.Client] = u.OracleWms.Client.from_auth_settings(
-            settings
+            settings,
         )
         return result
 
 
-oracle_wms = FlextOracleWmsApi
+oracle_wms: FlextOracleWmsApi = FlextOracleWmsApi.fetch_global()
+"""Process-wide Oracle WMS API facade singleton resolved from the global container."""
+
 
 __all__: list[str] = ["FlextOracleWmsApi", "oracle_wms"]

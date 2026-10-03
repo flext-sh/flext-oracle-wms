@@ -17,6 +17,9 @@ Environment Variables:
 
 Usage:
     python examples/basic_usage.py
+
+Copyright (c) 2026 FLEXT Team. All rights reserved.
+SPDX-License-Identifier: MIT
 """
 
 from __future__ import annotations
@@ -28,19 +31,15 @@ from typing import TYPE_CHECKING, Final
 from dotenv import load_dotenv
 
 from flext_core import FlextContainer
-from flext_oracle_wms import (
-    FlextOracleWmsSettings,
-    FlextOracleWmsUtilitiesClient,
-    p,
-    t,
-    u,
-)
+from flext_oracle_wms import FlextOracleWmsSettings, p, t, u
 from flext_oracle_wms.errors import FlextOracleWmsErrors
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
 
-FlextOracleWmsClient = FlextOracleWmsUtilitiesClient.Client
+# Why: mro-4p0t — public facade access is u.OracleWms.Client, not the private
+# _utilities.client module (flext-oracle-wms-1sm3w toolchain sync fix).
+FlextOracleWmsClient = u.OracleWms.Client
 
 MAX_ENTITIES_TO_SHOW: Final[int] = 5
 MAX_VALUE_DISPLAY_LENGTH: Final[int] = 50
@@ -63,11 +62,11 @@ def setup_client_config() -> None:
     settings = FlextOracleWmsSettings.model_validate({
         "OracleWms": {
             "base_url": os.getenv(
-                "FLEXT_ORACLE_WMS_ORACLEWMS__BASE_URL", "https://wms.oraclecloud.com"
+                "FLEXT_ORACLE_WMS_ORACLEWMS__BASE_URL", "https://wms.oraclecloud.com",
             ),
             "username": os.getenv("FLEXT_ORACLE_WMS_ORACLEWMS__USERNAME", ""),
             "password": os.getenv("FLEXT_ORACLE_WMS_ORACLEWMS__PASSWORD", ""),
-        }
+        },
     })
     _ = container.bind("FlextOracleWmsSettings", settings.model_dump(mode="python"))
 
@@ -82,7 +81,7 @@ def discover_wms_entities(client: FlextOracleWmsClient) -> p.Result[t.StrSequenc
       r containing list of discovered entities or error details
 
     """
-    result = client.discover_entities()
+    result: p.Result[t.StrSequence] = client.discover_entities()
     if result.success:
         entities = result.value
         for entity in entities[:5]:
@@ -97,7 +96,7 @@ def discover_wms_entities(client: FlextOracleWmsClient) -> p.Result[t.StrSequenc
 
 
 def query_entity_data(
-    client: FlextOracleWmsClient, entity_name: str
+    client: FlextOracleWmsClient, entity_name: str,
 ) -> p.Result[Sequence[t.StrMapping]]:
     """Query data from a specific Oracle WMS entity.
 
@@ -109,7 +108,9 @@ def query_entity_data(
       r containing entity data or error details
 
     """
-    result = client.get_entity_data(entity_name=entity_name, limit=10)
+    result: p.Result[t.SequenceOf[t.StrMapping]] = client.fetch_entity_data(
+        entity_name=entity_name, limit=10,
+    )
     if result.success:
         data = result.value
         if data:
@@ -130,7 +131,7 @@ def query_entity_data(
 
 def demonstrate_error_handling(client: FlextOracleWmsClient) -> None:
     """Demonstrate proper error handling patterns with r."""
-    result = client.get_entity_data("NON_EXISTENT_ENTITY")
+    result = client.fetch_entity_data("NON_EXISTENT_ENTITY")
     if (
         result.failure
         and result.error
@@ -144,12 +145,17 @@ def demonstrate_error_handling(client: FlextOracleWmsClient) -> None:
 
 
 def run_basic_usage() -> None:
-    """Run the basic Oracle WMS usage flow."""
+    """Run the basic Oracle WMS usage flow.
+
+    Raises:
+        Error: If client start failed.
+    """
     setup_client_config()
     client = FlextOracleWmsClient()
     start_result = client.start()
     if not start_result.success:
-        return
+        msg = f"client start failed: {start_result.error}"
+        raise FlextOracleWmsErrors.Error(msg)
     entities_result = discover_wms_entities(client)
     if entities_result.success:
         entities = entities_result.value
@@ -167,6 +173,12 @@ def main() -> None:
     3. Entity discovery
     4. Data querying
     5. Error handling patterns
+
+    Raises:
+        OSError: If ``os.getenv('FLEXT_DEBUG_MODE', '').lower() in {'true', '1',
+            'yes'}``.
+        RuntimeError: If ``os.getenv('FLEXT_DEBUG_MODE', '').lower() in {'true', '1',
+            'yes'}``.
     """
     try:
         run_basic_usage()

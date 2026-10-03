@@ -8,13 +8,15 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Protocol, runtime_checkable
 
-from flext_api import p
+from flext_api import FlextApiProtocols, p
+
+from flext_oracle_wms._protocols.config import FlextOracleWmsProtocolsConfig
 
 if TYPE_CHECKING:
     from flext_oracle_wms import t
 
 
-class FlextOracleWmsProtocols(p):
+class FlextOracleWmsProtocols(FlextApiProtocols):
     """Oracle WMS protocols extending p.
 
     Extends p to inherit all foundation protocols (Result, Service, etc.)
@@ -40,6 +42,9 @@ class FlextOracleWmsProtocols(p):
     class OracleWms(Protocol):
         """Oracle WMS domain-specific protocols."""
 
+        Config: type = FlextOracleWmsProtocolsConfig.Config
+        """Validated ``config.oracle_wms`` domain surface."""
+
         @runtime_checkable
         class EntityDiscoveryClient(Protocol):
             """Protocol for entity discovery client used by FlextOracleWmsEntityDiscovery."""
@@ -53,7 +58,7 @@ class FlextOracleWmsProtocols(p):
             """Unified WMS service protocol with operation dispatch."""
 
             def execute_wms_operation(
-                self, operation: str, settings: t.JsonMapping, **params: t.Scalar
+                self, operation: str, settings: t.JsonMapping, **params: t.Scalar,
             ) -> p.Result[t.JsonValue]:
                 """Execute WMS operation with unified interface.
 

@@ -107,7 +107,7 @@ class FlextOracleWmsProtocolsConfig:
 
     @runtime_checkable
     class Config(Protocol):
-        """Structural surface of ``config.OracleWms`` (validated domains)."""
+        """Structural surface of ``config.oracle_wms`` (validated domains)."""
 
         @property
         def http(self) -> FlextOracleWmsProtocolsConfig.Http: ...

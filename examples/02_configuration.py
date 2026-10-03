@@ -3,6 +3,8 @@
 This example demonstrates WORKING configuration patterns for Oracle WMS Cloud
 integration using the ACTUAL API that exists and functions properly.
 
+Copyright (c) 2026 FLEXT Team. All rights reserved.
+SPDX-License-Identifier: MIT
 """
 
 from __future__ import annotations
@@ -12,16 +14,11 @@ from pathlib import Path
 
 from dotenv import load_dotenv
 
-from flext_oracle_wms import (
-    FlextOracleWmsConstants,
-    FlextOracleWmsSettings,
-    FlextOracleWmsUtilitiesClient,
-    m,
-    t,
-    u,
-)
+from flext_oracle_wms import FlextOracleWmsConstants, FlextOracleWmsSettings, m, t, u
 
-FlextOracleWmsClient = FlextOracleWmsUtilitiesClient.Client
+# Why: mro-4p0t — public facade access is u.OracleWms.Client, not the private
+# _utilities.client module (flext-oracle-wms-1sm3w toolchain sync fix).
+FlextOracleWmsClient = u.OracleWms.Client
 
 logger = u.fetch_logger(__name__)
 
@@ -29,23 +26,28 @@ c = FlextOracleWmsConstants
 
 
 def get_environment_configs() -> t.MappingKV[
-    c.OracleWms.Environment, m.OracleWms.EnvironmentConfig
+    c.OracleWms.Environment, m.OracleWms.EnvironmentConfig,
 ]:
-    """Define environment-specific Oracle WMS configurations."""
+    """Define environment-specific Oracle WMS configurations.
+
+    Returns:
+        The resulting ``t.MappingKV[c.OracleWms.Environment,
+            m.OracleWms.EnvironmentConfig]``.
+    """
     return {
-        c.OracleWms.Environment.DEVELOPMENT: p.OracleWms.EnvironmentConfig(
+        c.OracleWms.Environment.DEVELOPMENT: m.OracleWms.EnvironmentConfig(
             name="Development",
             base_url="https://dev-wms.oraclecloud.com/dev_env",
             timeout=c.OracleWms.DEFAULT_TIMEOUT,
             retry_attempts=c.OracleWms.DEFAULT_MAX_RETRIES,
         ),
-        c.OracleWms.Environment.STAGING: p.OracleWms.EnvironmentConfig(
+        c.OracleWms.Environment.STAGING: m.OracleWms.EnvironmentConfig(
             name="Staging",
             base_url="https://staging-wms.oraclecloud.com/staging_env",
             timeout=c.OracleWms.DEFAULT_TIMEOUT,
             retry_attempts=c.OracleWms.DEFAULT_MAX_RETRIES,
         ),
-        c.OracleWms.Environment.PRODUCTION: p.OracleWms.EnvironmentConfig(
+        c.OracleWms.Environment.PRODUCTION: m.OracleWms.EnvironmentConfig(
             name="Production",
             base_url="https://prod-wms.oraclecloud.com/prod_env",
             timeout=c.OracleWms.DEFAULT_TIMEOUT,
@@ -90,7 +92,7 @@ def create_config_from_environment() -> FlextOracleWmsSettings:
     # NOTE (multi-agent): ADR-005 — project scalars are namespaced under the
     # ``OracleWms`` group; build via model_validate with the nested payload.
     return FlextOracleWmsSettings.model_validate({
-        "OracleWms": {"base_url": base_url, "username": username, "password": password}
+        "OracleWms": {"base_url": base_url, "username": username, "password": password},
     })
 
 
@@ -108,13 +110,13 @@ def create_demo_config() -> FlextOracleWmsSettings:
         "OracleWms": {
             "base_url": "https://demo-wms.oraclecloud.com/demo",
             "username": "demo_user",
-            "password": "demo_password",
+            "password": os.environ.get("FLEXT_DEMO_WMS_PASSWORD", "<demo>"),
             "api_version": "LGF_V10",
             "timeout": c.OracleWms.DEFAULT_TIMEOUT,
             "retry_attempts": c.OracleWms.DEFAULT_MAX_RETRIES,
             "verify_ssl": True,
             "enable_logging": True,
-        }
+        },
     })
 
 
@@ -184,7 +186,7 @@ def test_configuration(settings: FlextOracleWmsSettings) -> t.MutableJsonMapping
     client = FlextOracleWmsClient(settings)
     try:
         _run_configuration_test(client, test_results)
-    except Exception as exc:
+    except ValueError as exc:
         test_results["error"] = str(exc)
     finally:
         client.stop()
@@ -192,7 +194,7 @@ def test_configuration(settings: FlextOracleWmsSettings) -> t.MutableJsonMapping
 
 
 def _run_configuration_test(
-    client: FlextOracleWmsClient, test_results: t.MutableJsonMapping
+    client: FlextOracleWmsClient, test_results: t.MutableJsonMapping,
 ) -> None:
     """Populate connection and discovery test results."""
     client.start()
@@ -240,7 +242,7 @@ def demonstrate_configuration_patterns() -> None:
         logger.info("Environment configuration unavailable: %s", exc)
     try:
         _demonstrate_demo_configuration()
-    except Exception as exc:
+    except ValueError as exc:
         logger.warning("Configuration validation failed: %s", exc)
     env_configs = get_environment_configs()
     for _config in env_configs.values():

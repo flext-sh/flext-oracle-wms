@@ -8,7 +8,8 @@ from __future__ import annotations
 
 import base64
 
-from flext_oracle_wms import c, p, r, t
+from flext_core import r
+from flext_oracle_wms import c, m, p, t
 
 
 class FlextOracleWmsUtilitiesAuth:
@@ -16,9 +17,13 @@ class FlextOracleWmsUtilitiesAuth:
 
     @staticmethod
     def validate_auth_settings(
-        auth_settings: p.OracleWms.AuthSettings,
+        auth_settings: m.OracleWms.AuthSettings,
     ) -> p.Result[bool]:
-        """Validate Oracle WMS authentication configuration business rules."""
+        """Validate Oracle WMS authentication configuration business rules.
+
+        Returns:
+            The resulting ``p.Result[bool]``.
+        """
         # NOTE (multi-agent): U17 — business validation lives in u.*, not on the
         # model (declaration layer). Moved verbatim from m.OracleWms.AuthSettings.
         basic_method = str(c.OracleWms.OracleWMSAuthMethod.BASIC)
@@ -39,11 +44,11 @@ class FlextOracleWmsUtilitiesAuth:
     class Authenticator:
         """Oracle WMS authenticator with enterprise patterns."""
 
-        def __init__(self, settings: p.OracleWms.AuthSettings) -> None:
+        def __init__(self, settings: m.OracleWms.AuthSettings) -> None:
             """Initialize authenticator with an injected auth value model."""
             # NOTE (multi-agent): mro-rn88 — retain the injected AuthSettings value model;
             # every method consumes it via self._settings (was an unbound bare name).
-            self._settings: p.OracleWms.AuthSettings = settings
+            self._settings: m.OracleWms.AuthSettings = settings
             self._token: str | None = None
 
         @property
@@ -51,10 +56,16 @@ class FlextOracleWmsUtilitiesAuth:
             """The auth method in canonical lowercase form (from the model)."""
             # NOTE (multi-agent): DRY — consume the model's computed_field, do not
             # re-derive (was a duplicate of m.OracleWms.AuthSettings.normalized_method).
-            return str(self._settings.normalized_method)
+            # Why: mro-4p0t — computed_field return is str; bind for mypy.
+            method: str = self._settings.normalized_method
+            return method
 
         def authenticate(self) -> p.Result[str]:
-            """Perform authentication."""
+            """Perform authentication.
+
+            Returns:
+                The resulting ``p.Result[str]``.
+            """
             basic_method = str(c.OracleWms.OracleWMSAuthMethod.BASIC)
             oauth2_method = str(c.OracleWms.OracleWMSAuthMethod.OAUTH2)
             if self.normalized_method == basic_method:
