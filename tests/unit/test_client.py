@@ -14,8 +14,7 @@ import pytest
 from flext_tests import tm
 
 from flext_oracle_wms import FlextOracleWmsSettings, m, u
-
-from .._factories import (
+from tests._factories import (
     _custom_password,
     _oauth_secret_dashed,
     _secret,
@@ -27,22 +26,28 @@ from .._factories import (
 class TestsFlextOracleWmsClient:
     """Public-contract tests for ``u.OracleWms.Client``."""
 
+    @staticmethod
     @pytest.fixture
-    def settings(self) -> FlextOracleWmsSettings:
-        """Deterministic runtime settings for a BASIC-auth client."""
+    def settings() -> FlextOracleWmsSettings:
+        """Deterministic runtime settings for a BASIC-auth client.
+
+        Returns:
+            The resulting ``FlextOracleWmsSettings``.
+        """
         return FlextOracleWmsSettings.model_validate({
             "OracleWms": {
                 "base_url": "https://test.wms.com",
                 "username": "test_user",
                 "password": _test_pass(),
                 "timeout": 30,
-            }
+            },
         })
 
     # ---- constructor settings resolution -----------------------------------
 
+    @staticmethod
     def test_constructor_honors_provided_settings(
-        self, settings: FlextOracleWmsSettings
+        settings: FlextOracleWmsSettings,
     ) -> None:
         """The client exposes exactly the settings object it was built with."""
         client = u.OracleWms.Client(settings)
@@ -51,7 +56,8 @@ class TestsFlextOracleWmsClient:
         tm.that(client.settings.OracleWms.base_url, eq="https://test.wms.com")
         tm.that(client.settings.OracleWms.username, eq="test_user")
 
-    def test_constructor_preserves_custom_configuration_fields(self) -> None:
+    @staticmethod
+    def test_constructor_preserves_custom_configuration_fields() -> None:
         """Custom configuration fields survive on the public settings state."""
         custom = FlextOracleWmsSettings.model_validate({
             "OracleWms": {
@@ -60,7 +66,7 @@ class TestsFlextOracleWmsClient:
                 "password": _custom_password(),
                 "timeout": 60,
                 "retry_attempts": 5,
-            }
+            },
         })
 
         client = u.OracleWms.Client(custom)
@@ -69,7 +75,8 @@ class TestsFlextOracleWmsClient:
         tm.that(client.settings.OracleWms.retry_attempts, eq=5)
         tm.that(client.settings.OracleWms.base_url, eq="https://custom.wms.com")
 
-    def test_constructor_without_settings_yields_valid_settings(self) -> None:
+    @staticmethod
+    def test_constructor_without_settings_yields_valid_settings() -> None:
         """Omitting settings resolves the global runtime settings contract."""
         FlextOracleWmsSettings.reset_for_testing()
 
@@ -80,7 +87,8 @@ class TestsFlextOracleWmsClient:
 
     # ---- start/stop lifecycle ----------------------------------------------
 
-    def test_start_returns_success(self, settings: FlextOracleWmsSettings) -> None:
+    @staticmethod
+    def test_start_returns_success(settings: FlextOracleWmsSettings) -> None:
         """``start`` reports a successful ``r[bool]`` carrying ``True``."""
         client = u.OracleWms.Client(settings)
 
@@ -89,7 +97,8 @@ class TestsFlextOracleWmsClient:
         tm.ok(result)
         tm.that(result.unwrap(), eq=True)
 
-    def test_stop_returns_success(self, settings: FlextOracleWmsSettings) -> None:
+    @staticmethod
+    def test_stop_returns_success(settings: FlextOracleWmsSettings) -> None:
         """``stop`` reports a successful ``r[bool]`` carrying ``True``."""
         client = u.OracleWms.Client(settings)
 
@@ -98,8 +107,9 @@ class TestsFlextOracleWmsClient:
         tm.ok(result)
         tm.that(result.unwrap(), eq=True)
 
+    @staticmethod
     def test_start_stop_lifecycle_is_idempotent(
-        self, settings: FlextOracleWmsSettings
+        settings: FlextOracleWmsSettings,
     ) -> None:
         """Repeated start/stop cycles keep succeeding without error."""
         client = u.OracleWms.Client(settings)
@@ -113,10 +123,13 @@ class TestsFlextOracleWmsClient:
 
     # ---- from_auth_settings contract ---------------------------------------
 
-    def test_from_auth_settings_valid_basic_builds_client(self) -> None:
+    @staticmethod
+    def test_from_auth_settings_valid_basic_builds_client() -> None:
         """Valid BASIC auth settings produce a usable client honoring creds."""
         auth = m.OracleWms.AuthSettings(
-            method="basic", username="alice", password=_secret()
+            method="basic",
+            username="alice",
+            password=_secret(),
         )
 
         result = u.OracleWms.Client.from_auth_settings(auth)
@@ -127,7 +140,8 @@ class TestsFlextOracleWmsClient:
         tm.that(client.settings.OracleWms.username, eq="alice")
         tm.that(client.settings.OracleWms.password, eq="secret")
 
-    def test_from_auth_settings_basic_missing_credentials_fails(self) -> None:
+    @staticmethod
+    def test_from_auth_settings_basic_missing_credentials_fails() -> None:
         """BASIC auth without credentials fails business-rule validation."""
         auth = m.OracleWms.AuthSettings(method="basic")
 
@@ -137,7 +151,8 @@ class TestsFlextOracleWmsClient:
         tm.that(result.error, none=False)
         tm.that(result.error, has="username and password")
 
-    def test_from_auth_settings_oauth2_rejected_as_unsupported_runtime(self) -> None:
+    @staticmethod
+    def test_from_auth_settings_oauth2_rejected_as_unsupported_runtime() -> None:
         """A validly-configured OAuth2 method is rejected: runtime is BASIC-only."""
         auth = m.OracleWms.AuthSettings(
             method="oauth2",
@@ -151,10 +166,13 @@ class TestsFlextOracleWmsClient:
         tm.that(result.error, none=False)
         tm.that(result.error, has="BASIC auth only")
 
-    def test_from_auth_settings_unknown_method_fails(self) -> None:
+    @staticmethod
+    def test_from_auth_settings_unknown_method_fails() -> None:
         """An unsupported auth method fails validation before client creation."""
         auth = m.OracleWms.AuthSettings(
-            method="kerberos", username="bob", password=_short_password()
+            method="kerberos",
+            username="bob",
+            password=_short_password(),
         )
 
         result = u.OracleWms.Client.from_auth_settings(auth)
@@ -162,6 +180,3 @@ class TestsFlextOracleWmsClient:
         tm.fail(result)
         tm.that(result.error, none=False)
         tm.that(result.error, has="Unsupported auth method")
-
-
-__all__: list[str] = ["TestsFlextOracleWmsClient"]

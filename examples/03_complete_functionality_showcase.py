@@ -23,6 +23,9 @@ Requirements:
     - .env file with Oracle WMS credentials
     - Network connectivity to Oracle WMS Cloud
     - All FLEXT dependencies installed
+
+Copyright (c) 2026 FLEXT Team. All rights reserved.
+SPDX-License-Identifier: MIT
 """
 
 from __future__ import annotations
@@ -49,7 +52,15 @@ logger = u.fetch_logger(__name__)
 
 
 def load_config_from_environment() -> FlextOracleWmsSettings:
-    """Load configuration from .env file."""
+    """Load configuration from .env file.
+
+    Returns:
+        The resulting ``FlextOracleWmsSettings``.
+
+    Raises:
+        ValueError: If Missing required environment variables; or if Required
+            environment variables cannot be None.
+    """
     env_file = Path(__file__).parent.parent / ".env"
     if env_file.exists():
         load_dotenv(env_file)
@@ -77,7 +88,14 @@ def load_config_from_environment() -> FlextOracleWmsSettings:
 def showcase_1_client_initialization(
     settings: FlextOracleWmsSettings,
 ) -> FlextOracleWmsClient:
-    """Feature 1: Client Configuration and Initialization."""
+    """Feature 1: Client Configuration and Initialization.
+
+    Returns:
+        The resulting ``FlextOracleWmsClient``.
+
+    Raises:
+        Error: If Failed to start client.
+    """
     client = FlextOracleWmsClient(settings)
     start_result = client.start()
     if start_result.success:
@@ -89,7 +107,14 @@ def showcase_1_client_initialization(
 
 
 def showcase_2_entity_discovery(client: FlextOracleWmsClient) -> list[str]:
-    """Feature 2: Entity Discovery (320+ entities)."""
+    """Feature 2: Entity Discovery (320+ entities).
+
+    Returns:
+        The resulting ``list[str]``.
+
+    Raises:
+        Error: If ``not entities_result.success``.
+    """
     entities_result = client.discover_entities()
     if not entities_result.success:
         msg = entities_result.error or "Failed to discover Oracle WMS entities"
@@ -111,9 +136,13 @@ def showcase_2_entity_discovery(client: FlextOracleWmsClient) -> list[str]:
 
 
 def showcase_3_data_retrieval(
-    client: FlextOracleWmsClient, entities: list[str]
+    client: FlextOracleWmsClient, entities: list[str],
 ) -> t.MutableJsonMapping:
-    """Feature 3: Data Retrieval and Querying."""
+    """Feature 3: Data Retrieval and Querying.
+
+    Returns:
+        The resulting ``t.MutableJsonMapping``.
+    """
     sample_data: t.MutableJsonMapping = {}
     test_entities = ["company", "facility", "item"]
     for entity_name in test_entities:
@@ -129,13 +158,17 @@ def showcase_3_data_retrieval(
                 sample_data[entity_name] = str(len(data))
     if "company" in sample_data:
         client.fetch_entity_data(
-            entity_name="company", limit=3, filters={"active": "Y"}
+            entity_name="company", limit=3, filters={"active": "Y"},
         )
     return sample_data
 
 
 def showcase_4_authentication(settings: FlextOracleWmsSettings) -> None:
-    """Feature 4: Authentication Methods."""
+    """Feature 4: Authentication Methods.
+
+    Raises:
+        ValueError: If ``validation.failure``.
+    """
     auth_config = m.OracleWms.AuthSettings(
         method=c.OracleWms.OracleWMSAuthMethod.BASIC,
         username=settings.OracleWms.username or "invalid",
@@ -149,7 +182,11 @@ def showcase_4_authentication(settings: FlextOracleWmsSettings) -> None:
 
 
 def showcase_5_api_catalog(client: FlextOracleWmsClient) -> None:
-    """Feature 5: API Catalog Management."""
+    """Feature 5: API Catalog Management.
+
+    Raises:
+        Error: If ``category_result.failure``.
+    """
     categories: t.MutableMappingKV[str, t.MutableSequenceOf[str]] = {}
     for api_name, api_info in FlextOracleWmsApi.api_endpoints().items():
         category = api_info.category
@@ -187,7 +224,7 @@ def showcase_6_error_handling(client: FlextOracleWmsClient) -> None:
                 "retry_attempts": 3,
                 "verify_ssl": True,
                 "enable_logging": True,
-            }
+            },
         })
         invalid_auth = m.OracleWms.AuthSettings(
             username=invalid_config.OracleWms.username,
@@ -201,7 +238,14 @@ def showcase_6_error_handling(client: FlextOracleWmsClient) -> None:
 
 
 def showcase_7_health_monitoring(client: FlextOracleWmsClient) -> t.MutableJsonMapping:
-    """Feature 7: Health Monitoring."""
+    """Feature 7: Health Monitoring.
+
+    Returns:
+        The resulting ``t.MutableJsonMapping``.
+
+    Raises:
+        Error: If ``health_result.failure``.
+    """
     health_result = client.health_check()
     if health_result.failure:
         msg = health_result.error or "Oracle WMS health check failed"
@@ -212,7 +256,7 @@ def showcase_7_health_monitoring(client: FlextOracleWmsClient) -> t.MutableJsonM
 
 
 def showcase_8_performance_tracking(
-    client: FlextOracleWmsClient, entities: list[str]
+    client: FlextOracleWmsClient, entities: list[str],
 ) -> None:
     """Feature 8: Performance Tracking."""
     min_entities_for_concurrent_test = c.OracleWms.DEFAULT_MAX_RETRIES
@@ -250,7 +294,7 @@ def showcase_9_cache_management(client: FlextOracleWmsClient) -> None:
 
 
 def showcase_10_enterprise_features(
-    _client: FlextOracleWmsClient, settings: FlextOracleWmsSettings
+    _client: FlextOracleWmsClient, settings: FlextOracleWmsSettings,
 ) -> None:
     """Feature 10: Enterprise Features."""
 

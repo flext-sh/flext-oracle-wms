@@ -8,8 +8,8 @@ from __future__ import annotations
 
 from flext_api import FlextApiConstants
 
-from ._constants.base import FlextOracleWmsConstantsBase
-from ._constants.values import FlextOracleWmsConstantsValues
+from flext_oracle_wms._constants.base import FlextOracleWmsConstantsBase
+from flext_oracle_wms._constants.values import FlextOracleWmsConstantsValues
 
 
 class FlextOracleWmsConstants(FlextApiConstants):
@@ -20,7 +20,7 @@ class FlextOracleWmsConstants(FlextApiConstants):
     """
 
     class OracleWms(
-        FlextOracleWmsConstantsBase, FlextOracleWmsConstantsValues.OracleWms
+        FlextOracleWmsConstantsBase, FlextOracleWmsConstantsValues.OracleWms,
     ):
         """WMS connection constants - composed from base.
 

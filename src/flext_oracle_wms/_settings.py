@@ -1,4 +1,8 @@
-"""Oracle WMS runtime settings."""
+"""Oracle WMS runtime settings.
+
+Copyright (c) 2026 FLEXT Team. All rights reserved.
+SPDX-License-Identifier: MIT
+"""
 
 from __future__ import annotations
 
@@ -17,7 +21,7 @@ class FlextOracleWmsSettings(FlextCliSettings):
     """
 
     model_config = m.SettingsConfigDict(
-        env_prefix="FLEXT_ORACLE_WMS_", env_nested_delimiter="__", extra="ignore"
+        env_prefix="FLEXT_ORACLE_WMS_", env_nested_delimiter="__", extra="ignore",
     )
 
     class _OracleWms(m.BaseModel):

@@ -10,7 +10,7 @@ from typing import TYPE_CHECKING, Protocol, runtime_checkable
 
 from flext_api import FlextApiProtocols, p
 
-from ._protocols.config import FlextOracleWmsProtocolsConfig
+from flext_oracle_wms._protocols.config import FlextOracleWmsProtocolsConfig
 
 if TYPE_CHECKING:
     from flext_oracle_wms import t
@@ -58,7 +58,7 @@ class FlextOracleWmsProtocols(FlextApiProtocols):
             """Unified WMS service protocol with operation dispatch."""
 
             def execute_wms_operation(
-                self, operation: str, settings: t.JsonMapping, **params: t.Scalar
+                self, operation: str, settings: t.JsonMapping, **params: t.Scalar,
             ) -> p.Result[t.JsonValue]:
                 """Execute WMS operation with unified interface.
 

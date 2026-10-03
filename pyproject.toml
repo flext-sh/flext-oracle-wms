@@ -189,7 +189,7 @@ module = ["rope.*"]
 follow_untyped_imports = true
 
 [[tool.mypy.overrides]]
-module = ["tests.constants", "tests.utilities"]
+module = ["tests.utilities"]
 disable_error_code = ["misc", "no-redef"]
 
 [tool.pydantic-mypy]

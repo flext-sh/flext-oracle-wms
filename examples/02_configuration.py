@@ -3,6 +3,8 @@
 This example demonstrates WORKING configuration patterns for Oracle WMS Cloud
 integration using the ACTUAL API that exists and functions properly.
 
+Copyright (c) 2026 FLEXT Team. All rights reserved.
+SPDX-License-Identifier: MIT
 """
 
 from __future__ import annotations
@@ -24,9 +26,14 @@ c = FlextOracleWmsConstants
 
 
 def get_environment_configs() -> t.MappingKV[
-    c.OracleWms.Environment, m.OracleWms.EnvironmentConfig
+    c.OracleWms.Environment, m.OracleWms.EnvironmentConfig,
 ]:
-    """Define environment-specific Oracle WMS configurations."""
+    """Define environment-specific Oracle WMS configurations.
+
+    Returns:
+        The resulting ``t.MappingKV[c.OracleWms.Environment,
+            m.OracleWms.EnvironmentConfig]``.
+    """
     return {
         c.OracleWms.Environment.DEVELOPMENT: m.OracleWms.EnvironmentConfig(
             name="Development",
@@ -85,7 +92,7 @@ def create_config_from_environment() -> FlextOracleWmsSettings:
     # NOTE (multi-agent): ADR-005 — project scalars are namespaced under the
     # ``OracleWms`` group; build via model_validate with the nested payload.
     return FlextOracleWmsSettings.model_validate({
-        "OracleWms": {"base_url": base_url, "username": username, "password": password}
+        "OracleWms": {"base_url": base_url, "username": username, "password": password},
     })
 
 
@@ -109,7 +116,7 @@ def create_demo_config() -> FlextOracleWmsSettings:
             "retry_attempts": c.OracleWms.DEFAULT_MAX_RETRIES,
             "verify_ssl": True,
             "enable_logging": True,
-        }
+        },
     })
 
 
@@ -187,7 +194,7 @@ def test_configuration(settings: FlextOracleWmsSettings) -> t.MutableJsonMapping
 
 
 def _run_configuration_test(
-    client: FlextOracleWmsClient, test_results: t.MutableJsonMapping
+    client: FlextOracleWmsClient, test_results: t.MutableJsonMapping,
 ) -> None:
     """Populate connection and discovery test results."""
     client.start()

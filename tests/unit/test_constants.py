@@ -27,21 +27,25 @@ _Environment = c.OracleWms.Environment
 class TestsFlextOracleWmsConstantsUnit:
     """Behavioral contract tests for the Oracle WMS constants facade."""
 
-    def test_facade_composes_flext_core_constants(self) -> None:
+    @staticmethod
+    def test_facade_composes_flext_core_constants() -> None:
         """The WMS constants facade extends the domain constants contract."""
         assert issubclass(c, domain_c)
 
-    def test_wms_version_is_non_empty_semver_string(self) -> None:
+    @staticmethod
+    def test_wms_version_is_non_empty_semver_string() -> None:
         """FLEXT_WMS_VERSION exposes a populated version string."""
         version = c.OracleWms.FLEXT_WMS_VERSION
         tm.that(version, is_=str)
         tm.that(version.count("."), eq=2)
         assert all(part.isdigit() for part in version.split("."))
 
+    @staticmethod
     @pytest.mark.parametrize(
-        "key", ["version_default", "base_url_default", "timeout_default", "max_retries"]
+        "key",
+        ["version_default", "base_url_default", "timeout_default", "max_retries"],
     )
-    def test_api_config_publishes_connection_defaults(self, key: str) -> None:
+    def test_api_config_publishes_connection_defaults(key: str) -> None:
         """API_CONFIG mirrors the typed config SSOT connection defaults."""
         expected: str | int = {
             "version_default": config.oracle_wms.api.version_default,
@@ -51,28 +55,33 @@ class TestsFlextOracleWmsConstantsUnit:
         }[key]
         tm.that(c.OracleWms.API_CONFIG[key], eq=expected)
 
+    @staticmethod
     @pytest.mark.parametrize(
-        "key", ["default_batch_size", "max_batch_size", "default_page_size"]
+        "key",
+        ["default_batch_size", "max_batch_size", "default_page_size"],
     )
-    def test_processing_config_exposes_positive_int_defaults(self, key: str) -> None:
+    def test_processing_config_exposes_positive_int_defaults(key: str) -> None:
         """PROCESSING_CONFIG advertises positive integer sizing defaults."""
         value = c.OracleWms.PROCESSING_CONFIG[key]
         tm.that(value, is_=int)
         assert value > 0
 
-    def test_processing_config_batch_bounds_are_ordered(self) -> None:
+    @staticmethod
+    def test_processing_config_batch_bounds_are_ordered() -> None:
         """Default batch size never exceeds the maximum batch size."""
         proc = c.OracleWms.PROCESSING_CONFIG
         assert proc["default_batch_size"] <= proc["max_batch_size"]
 
+    @staticmethod
     @pytest.mark.parametrize("key", ["default", "test", "production"])
-    def test_environments_map_to_endpoint_urls(self, key: str) -> None:
+    def test_environments_map_to_endpoint_urls(key: str) -> None:
         """ENVIRONMENTS mirrors the typed config SSOT environment URLs."""
         tm.that(
             c.OracleWms.ENVIRONMENTS[key],
             eq=getattr(config.oracle_wms.environments, key),
         )
 
+    @staticmethod
     @pytest.mark.parametrize(
         ("name", "value"),
         [
@@ -82,12 +91,13 @@ class TestsFlextOracleWmsConstantsUnit:
             ("BEARER", "bearer"),
         ],
     )
-    def test_auth_method_enum_values(self, name: str, value: str) -> None:
+    def test_auth_method_enum_values(name: str, value: str) -> None:
         """OracleWMSAuthMethod publishes the documented wire values."""
         member = _AuthMethod[name]
         tm.that(member, eq=value)
         tm.that(member.value, eq=value)
 
+    @staticmethod
     @pytest.mark.parametrize(
         ("key", "expected"),
         [
@@ -98,12 +108,14 @@ class TestsFlextOracleWmsConstantsUnit:
         ],
     )
     def test_auth_config_aliases_resolve_to_enum_members(
-        self, key: str, expected: c.OracleWms.OracleWMSAuthMethod
+        key: str,
+        expected: c.OracleWms.OracleWMSAuthMethod,
     ) -> None:
         """AUTH_CONFIG maps each auth alias onto its enum member."""
         assert c.OracleWms.AUTH_CONFIG[key] is expected
 
-    def test_auth_config_carries_oauth2_endpoint_metadata(self) -> None:
+    @staticmethod
+    def test_auth_config_carries_oauth2_endpoint_metadata() -> None:
         """AUTH_CONFIG/API_CONFIG mirror the typed config SSOT auth policy."""
         tm.that(
             c.OracleWms.API_CONFIG["oauth2_endpoint_path"],
@@ -114,6 +126,7 @@ class TestsFlextOracleWmsConstantsUnit:
             eq=config.oracle_wms.auth.oauth2_scope_default,
         )
 
+    @staticmethod
     @pytest.mark.parametrize(
         ("name", "value"),
         [
@@ -128,21 +141,23 @@ class TestsFlextOracleWmsConstantsUnit:
             ("CONTAINS", "contains"),
         ],
     )
-    def test_filter_operator_enum_values(self, name: str, value: str) -> None:
+    def test_filter_operator_enum_values(name: str, value: str) -> None:
         """WmsFilterOperator publishes the documented operator tokens."""
         member = _FilterOp[name]
         tm.that(member, eq=value)
         tm.that(member.value, eq=value)
 
+    @staticmethod
     @pytest.mark.parametrize(
         ("name", "value"),
         [("DEVELOPMENT", "dev"), ("STAGING", "staging"), ("PRODUCTION", "prod")],
     )
-    def test_environment_enum_values(self, name: str, value: str) -> None:
+    def test_environment_enum_values(name: str, value: str) -> None:
         """Environment enum publishes deployment-tier tokens."""
         tm.that(_Environment[name], eq=value)
 
-    def test_entity_and_processing_bounds(self) -> None:
+    @staticmethod
+    def test_entity_and_processing_bounds() -> None:
         """Nested namespaces mirror the typed config SSOT bounds."""
         tm.that(
             c.OracleWms.WmsEntities.MAX_ENTITY_NAME_LENGTH,
@@ -157,21 +172,21 @@ class TestsFlextOracleWmsConstantsUnit:
             eq=config.oracle_wms.filtering.max_filter_conditions,
         )
 
+    @staticmethod
     @pytest.mark.parametrize(
-        "attr", ["API_CONFIG", "PROCESSING_CONFIG", "ENVIRONMENTS", "AUTH_CONFIG"]
+        "attr",
+        ["API_CONFIG", "PROCESSING_CONFIG", "ENVIRONMENTS", "AUTH_CONFIG"],
     )
-    def test_config_mappings_are_immutable(self, attr: str) -> None:
+    def test_config_mappings_are_immutable(attr: str) -> None:
         """Published config mappings reject mutation (frozen contract)."""
         mapping = getattr(c.OracleWms, attr)
         with pytest.raises(TypeError):
             mapping["__injected__"] = "x"
 
-    def test_test_facade_adds_oracle_wms_category_taxonomy(self) -> None:
+    @staticmethod
+    def test_test_facade_adds_oracle_wms_category_taxonomy() -> None:
         """The test facade extends the domain with WMS API categories."""
         categories = c.OracleWms.Tests.Categories
         tm.that(categories.DATA_EXTRACT, eq="data_extract")
         tm.that(categories.ENTITY_OPERATIONS, eq="entity_operations")
         tm.that(c.OracleWms.Tests.API_VERSION_LGF_V10, eq="LGF_V10")
-
-
-__all__: list[str] = ["TestsFlextOracleWmsConstantsUnit"]

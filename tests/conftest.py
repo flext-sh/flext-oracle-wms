@@ -41,7 +41,11 @@ def oracle_wms_api(oracle_wms_settings: FlextOracleWmsSettings) -> FlextOracleWm
 def oracle_wms_http_client(
     oracle_wms_settings: FlextOracleWmsSettings,
 ) -> u.OracleWms.HttpClient:
-    """Create the public HTTP client from the runtime settings owner."""
+    """Create the public HTTP client from the runtime settings owner.
+
+    Returns:
+        The resulting ``u.OracleWms.HttpClient``.
+    """
     runtime = oracle_wms_settings.OracleWms
     return FlextOracleWmsApi.create_flext_http_client(
         base_url=runtime.base_url,
