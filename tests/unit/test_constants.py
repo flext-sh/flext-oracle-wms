@@ -57,8 +57,7 @@ class TestsFlextOracleWmsConstantsUnit:
 
     @staticmethod
     @pytest.mark.parametrize(
-        "key",
-        ["default_batch_size", "max_batch_size", "default_page_size"],
+        "key", ["default_batch_size", "max_batch_size", "default_page_size"]
     )
     def test_processing_config_exposes_positive_int_defaults(key: str) -> None:
         """PROCESSING_CONFIG advertises positive integer sizing defaults."""
@@ -174,8 +173,7 @@ class TestsFlextOracleWmsConstantsUnit:
 
     @staticmethod
     @pytest.mark.parametrize(
-        "attr",
-        ["API_CONFIG", "PROCESSING_CONFIG", "ENVIRONMENTS", "AUTH_CONFIG"],
+        "attr", ["API_CONFIG", "PROCESSING_CONFIG", "ENVIRONMENTS", "AUTH_CONFIG"]
     )
     def test_config_mappings_are_immutable(attr: str) -> None:
         """Published config mappings reject mutation (frozen contract)."""

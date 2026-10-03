@@ -19,9 +19,10 @@ from flext_core import FlextConfig, FlextSettings
 from flext_oracle_wms._constants.values import FlextOracleWmsConstantsValues
 from flext_oracle_wms._models.config import FlextOracleWmsConfigModels
 
+# NOTE (multi-agent): config-scaffold — accessor typed by PROTOCOL (p), never
+# the model class; the protocol module enters under TYPE_CHECKING only.
+
 if TYPE_CHECKING:
-    # NOTE (multi-agent): config-scaffold — accessor typed by PROTOCOL (p), never
-    # the model class; the protocol module enters under TYPE_CHECKING only.
     from flext_oracle_wms._protocols.config import FlextOracleWmsProtocolsConfig
 
 
@@ -58,7 +59,7 @@ class FlextOracleWmsConfig(
     def oracle_wms(self) -> FlextOracleWmsProtocolsConfig.Config:
         """Validated ``OracleWms`` config domains from the model-less YAML."""
         return FlextOracleWmsConfigModels.Root.model_validate(
-            dict(self.model_extra or {}),
+            dict(self.model_extra or {})
         )
 
 
