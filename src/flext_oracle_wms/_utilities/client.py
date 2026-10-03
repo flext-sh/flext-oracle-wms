@@ -9,9 +9,8 @@ from __future__ import annotations
 from flext_api import FlextApi, FlextApiSettings, p, r, t, u
 
 from flext_oracle_wms import c, m
-
-from .._settings import FlextOracleWmsSettings
-from .auth import FlextOracleWmsUtilitiesAuth
+from flext_oracle_wms._settings import FlextOracleWmsSettings
+from flext_oracle_wms._utilities.auth import FlextOracleWmsUtilitiesAuth
 
 
 class FlextOracleWmsUtilitiesClient:
@@ -43,20 +42,24 @@ class FlextOracleWmsUtilitiesClient:
 
         @classmethod
         def from_auth_settings(
-            cls, auth_settings: m.OracleWms.AuthSettings
+            cls, auth_settings: m.OracleWms.AuthSettings,
         ) -> p.Result[FlextOracleWmsUtilitiesClient.Client]:
-            """Create a concrete client by merging auth settings with runtime WMS settings."""
+            """Create a concrete client by merging auth settings with runtime WMS settings.
+
+            Returns:
+                The resulting ``p.Result[FlextOracleWmsUtilitiesClient.Client]``.
+            """
             validation_result = FlextOracleWmsUtilitiesAuth.validate_auth_settings(
-                auth_settings
+                auth_settings,
             )
             if validation_result.failure:
                 return r[FlextOracleWmsUtilitiesClient.Client].from_failure(
-                    validation_result
+                    validation_result,
                 )
             basic_method = str(c.OracleWms.OracleWMSAuthMethod.BASIC)
             if auth_settings.normalized_method != basic_method:
                 return r[FlextOracleWmsUtilitiesClient.Client].fail(
-                    "Oracle WMS runtime client currently supports BASIC auth only"
+                    "Oracle WMS runtime client currently supports BASIC auth only",
                 )
             # NOTE (multi-agent): clone() keeps the flext-core singleton intact
             # (isolated copy + re-validation); nested namespace overrides merge
@@ -70,13 +73,20 @@ class FlextOracleWmsUtilitiesClient:
                     "password": auth_settings.password
                     or base_settings.OracleWms.password,
                     "auth_method": auth_settings.normalized_method,
-                }
+                },
             )
             return r[FlextOracleWmsUtilitiesClient.Client].ok(cls(resolved_settings))
 
         @staticmethod
         def _build_default_headers(settings: FlextOracleWmsSettings) -> t.StrMapping:
-            """Build default request headers from Oracle WMS auth settings."""
+            """Build default request headers from Oracle WMS auth settings.
+
+            Returns:
+                The resulting ``t.StrMapping``.
+
+            Raises:
+                ValueError: If ``auth_headers.failure``.
+            """
             wms = settings.OracleWms
             if not wms.username and not wms.password:
                 return {}
@@ -94,16 +104,20 @@ class FlextOracleWmsUtilitiesClient:
             return auth_headers.value
 
         def _create_api_client(self) -> FlextApi:
-            """Create a configured API client for Oracle WMS requests."""
+            """Create a configured API client for Oracle WMS requests.
+
+            Returns:
+                The resulting ``FlextApi``.
+            """
             return FlextApi(runtime_settings=self._api_config)
 
         @staticmethod
         def _decode_response_model[T: m.BaseModel](
-            payload: t.Api.ResponseBody | t.JsonValue, model_type: type[T]
+            payload: t.Api.ResponseBody | t.JsonValue, model_type: type[T],
         ) -> p.Result[T]:
             if isinstance(payload, dict):
                 return u.try_(
-                    lambda: model_type.model_validate(payload), catch=c.ValidationError
+                    lambda: model_type.model_validate(payload), catch=c.ValidationError,
                 ).map_error(lambda exc: f"Invalid response payload: {exc}")
             if isinstance(payload, str):
                 return u.try_(
@@ -126,27 +140,43 @@ class FlextOracleWmsUtilitiesClient:
             headers: t.StrMapping | None = None,
             params: t.Api.WebParams | None = None,
         ) -> p.Result[m.Api.HttpResponse]:
-            """Call a specific Oracle WMS API."""
+            """Call a specific Oracle WMS API.
+
+            Returns:
+                The resulting ``p.Result[m.Api.HttpResponse]``.
+            """
             return self.get(f"/api/{api_name}", headers=headers, params=params)
 
         def create_lpn(self, lpn_nbr: str, qty: int) -> p.Result[m.Api.HttpResponse]:
-            """Create LPN (License Plate Number)."""
+            """Create LPN (License Plate Number).
+
+            Returns:
+                The resulting ``p.Result[m.Api.HttpResponse]``.
+            """
             payload: t.Api.RequestBody = {"lpn_nbr": lpn_nbr, "qty": qty}
             return self.post("/lpn", body=payload)
 
         def delete(
-            self, path: str, *, headers: t.StrMapping | None = None
+            self, path: str, *, headers: t.StrMapping | None = None,
         ) -> p.Result[m.Api.HttpResponse]:
-            """Make DELETE request to Oracle WMS API."""
+            """Make DELETE request to Oracle WMS API.
+
+            Returns:
+                The resulting ``p.Result[m.Api.HttpResponse]``.
+            """
             return self._request(c.Api.Method.DELETE, path, headers=headers)
 
         def discover_entities(self) -> p.Result[t.StrSequence]:
-            """Discover available Oracle WMS entities."""
+            """Discover available Oracle WMS entities.
+
+            Returns:
+                The resulting ``p.Result[t.StrSequence]``.
+            """
             result = self.get("/entities")
             if result.failure:
                 return r[t.StrSequence].fail(result.error)
             payload_result = self._decode_response_model(
-                result.value.body, m.OracleWms.EntitiesResponse
+                result.value.body, m.OracleWms.EntitiesResponse,
             )
             if payload_result.failure:
                 return r[t.StrSequence].fail(payload_result.error)
@@ -160,18 +190,26 @@ class FlextOracleWmsUtilitiesClient:
             headers: t.StrMapping | None = None,
             params: t.Api.WebParams | None = None,
         ) -> p.Result[m.Api.HttpResponse]:
-            """Make GET request to Oracle WMS API."""
+            """Make GET request to Oracle WMS API.
+
+            Returns:
+                The resulting ``p.Result[m.Api.HttpResponse]``.
+            """
             return self._request(c.Api.Method.GET, path, headers=headers, params=params)
 
         def get_apis_by_category(
-            self, category: str
+            self, category: str,
         ) -> p.Result[t.SequenceOf[t.StrMapping]]:
-            """Get Oracle WMS APIs by category."""
+            """Get Oracle WMS APIs by category.
+
+            Returns:
+                The resulting ``p.Result[t.SequenceOf[t.StrMapping]]``.
+            """
             result = self.get(f"/apis/category/{category}")
             if result.failure:
                 return r[t.SequenceOf[t.StrMapping]].fail(result.error)
             payload_result = self._decode_response_model(
-                result.value.body, m.OracleWms.ApiCategoryResponse
+                result.value.body, m.OracleWms.ApiCategoryResponse,
             )
             if payload_result.failure:
                 return r[t.SequenceOf[t.StrMapping]].fail(payload_result.error)
@@ -183,7 +221,11 @@ class FlextOracleWmsUtilitiesClient:
             limit: int | None = None,
             filters: t.ConfigurationMapping | None = None,
         ) -> p.Result[t.SequenceOf[t.StrMapping]]:
-            """Get data for a specific Oracle WMS entity."""
+            """Get data for a specific Oracle WMS entity.
+
+            Returns:
+                The resulting ``p.Result[t.SequenceOf[t.StrMapping]]``.
+            """
             params_dict: t.MutableStrMapping = {}
             if limit is not None:
                 params_dict["limit"] = str(limit)
@@ -194,14 +236,18 @@ class FlextOracleWmsUtilitiesClient:
             if result.failure:
                 return r[t.SequenceOf[t.StrMapping]].fail(result.error)
             payload_result = self._decode_response_model(
-                result.value.body, m.OracleWms.EntityDataResponse
+                result.value.body, m.OracleWms.EntityDataResponse,
             )
             if payload_result.failure:
                 return r[t.SequenceOf[t.StrMapping]].fail(payload_result.error)
             return r[t.SequenceOf[t.StrMapping]].ok(payload_result.value.data)
 
         def health_check(self) -> p.Result[m.Api.HttpResponse]:
-            """Check Oracle WMS API health."""
+            """Check Oracle WMS API health.
+
+            Returns:
+                The resulting ``p.Result[m.Api.HttpResponse]``.
+            """
             return self.get("/health")
 
         def post(
@@ -211,7 +257,11 @@ class FlextOracleWmsUtilitiesClient:
             headers: t.StrMapping | None = None,
             body: t.Api.RequestBody | None = None,
         ) -> p.Result[m.Api.HttpResponse]:
-            """Make POST request to Oracle WMS API."""
+            """Make POST request to Oracle WMS API.
+
+            Returns:
+                The resulting ``p.Result[m.Api.HttpResponse]``.
+            """
             return self._request(c.Api.Method.POST, path, headers=headers, body=body)
 
         def put(
@@ -221,18 +271,30 @@ class FlextOracleWmsUtilitiesClient:
             headers: t.StrMapping | None = None,
             body: t.Api.RequestBody | None = None,
         ) -> p.Result[m.Api.HttpResponse]:
-            """Make PUT request to Oracle WMS API."""
+            """Make PUT request to Oracle WMS API.
+
+            Returns:
+                The resulting ``p.Result[m.Api.HttpResponse]``.
+            """
             return self._request(c.Api.Method.PUT, path, headers=headers, body=body)
 
         def start(self) -> p.Result[bool]:
-            """Start the Oracle WMS client after validating runtime settings."""
+            """Start the Oracle WMS client after validating runtime settings.
+
+            Returns:
+                The resulting ``p.Result[bool]``.
+            """
             if self._client is None:
                 self._client = self._create_api_client()
             self._started = True
             return r[bool].ok(True)
 
         def stop(self) -> p.Result[bool]:
-            """Stop the Oracle WMS client and release the delegated API client."""
+            """Stop the Oracle WMS client and release the delegated API client.
+
+            Returns:
+                The resulting ``p.Result[bool]``.
+            """
             if self._client is not None:
                 close_fn = getattr(self._client, "close", None)
                 if callable(close_fn):
@@ -242,9 +304,13 @@ class FlextOracleWmsUtilitiesClient:
             return r[bool].ok(True)
 
         def update_oblpn_tracking_number(
-            self, oblpn_id: str, tracking_number: str
+            self, oblpn_id: str, tracking_number: str,
         ) -> p.Result[m.Api.HttpResponse]:
-            """Update OBLPN tracking number."""
+            """Update OBLPN tracking number.
+
+            Returns:
+                The resulting ``p.Result[m.Api.HttpResponse]``.
+            """
             payload: t.Api.RequestBody = {"tracking_number": tracking_number}
             return self.put(f"/oblpn/{oblpn_id}/tracking", body=payload)
 
@@ -273,12 +339,12 @@ class FlextOracleWmsUtilitiesClient:
             result = self._client.request(request)
             if result.failure:
                 return r[m.Api.HttpResponse].fail(
-                    f"{method} {path} failed: {result.error}"
+                    f"{method} {path} failed: {result.error}",
                 )
             response = result.value
             if response.status_code >= c.OracleWms.HTTP_BAD_REQUEST_THRESHOLD:
                 return r[m.Api.HttpResponse].fail(
-                    f"{method} {path} returned HTTP {response.status_code}"
+                    f"{method} {path} returned HTTP {response.status_code}",
                 )
             return r[m.Api.HttpResponse].ok(response)
 

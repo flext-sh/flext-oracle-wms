@@ -19,17 +19,18 @@ import pytest
 from flext_tests import tm
 
 from flext_oracle_wms import FlextOracleWmsSettings, m, u
-
-from .._factories import _oauth_secret_dashed, _wms_password_underscore
+from tests._factories import _oauth_secret_dashed, _wms_password_underscore
 
 
 @pytest.mark.unit
 class TestsFlextOracleWmsClientCore:
     """Public-contract behavior of the Oracle WMS utilities client."""
 
+    @staticmethod
     def test_init_preserves_supplied_settings(
-        self, oracle_wms_settings: FlextOracleWmsSettings
+        oracle_wms_settings: FlextOracleWmsSettings,
     ) -> None:
+        """Test init preserves supplied settings."""
         client = u.OracleWms.Client(oracle_wms_settings)
         assert client.settings is oracle_wms_settings
         tm.that(
@@ -37,60 +38,79 @@ class TestsFlextOracleWmsClientCore:
             eq=oracle_wms_settings.OracleWms.base_url,
         )
         tm.that(
-            client.settings.OracleWms.timeout, eq=oracle_wms_settings.OracleWms.timeout
+            client.settings.OracleWms.timeout,
+            eq=oracle_wms_settings.OracleWms.timeout,
         )
 
-    def test_init_without_settings_resolves_global_config(self) -> None:
+    @staticmethod
+    def test_init_without_settings_resolves_global_config() -> None:
+        """Test init without settings resolves global config."""
         client = u.OracleWms.Client(None)
         tm.that(client.settings, is_=FlextOracleWmsSettings)
 
+    @staticmethod
     def test_start_reports_success(
-        self, oracle_wms_settings: FlextOracleWmsSettings
+        oracle_wms_settings: FlextOracleWmsSettings,
     ) -> None:
+        """Test start reports success."""
         result = u.OracleWms.Client(oracle_wms_settings).start()
         tm.ok(result)
         tm.that(result.unwrap(), eq=True)
 
+    @staticmethod
     def test_start_is_idempotent(
-        self, oracle_wms_settings: FlextOracleWmsSettings
+        oracle_wms_settings: FlextOracleWmsSettings,
     ) -> None:
+        """Test start is idempotent."""
         client = u.OracleWms.Client(oracle_wms_settings)
         tm.that(client.start().unwrap(), eq=True)
         tm.that(client.start().unwrap(), eq=True)
 
+    @staticmethod
     def test_stop_reports_success(
-        self, oracle_wms_settings: FlextOracleWmsSettings
+        oracle_wms_settings: FlextOracleWmsSettings,
     ) -> None:
+        """Test stop reports success."""
         client = u.OracleWms.Client(oracle_wms_settings)
         client.start()
         result = client.stop()
         tm.ok(result)
         tm.that(result.unwrap(), eq=True)
 
+    @staticmethod
     def test_stop_before_start_still_succeeds(
-        self, oracle_wms_settings: FlextOracleWmsSettings
+        oracle_wms_settings: FlextOracleWmsSettings,
     ) -> None:
+        """Test stop before start still succeeds."""
         result = u.OracleWms.Client(oracle_wms_settings).stop()
         tm.ok(result)
         tm.that(result.unwrap(), eq=True)
 
+    @staticmethod
     def test_restart_after_stop_succeeds(
-        self, oracle_wms_settings: FlextOracleWmsSettings
+        oracle_wms_settings: FlextOracleWmsSettings,
     ) -> None:
+        """Test restart after stop succeeds."""
         client = u.OracleWms.Client(oracle_wms_settings)
         client.start()
         client.stop()
         tm.that(client.start().unwrap(), eq=True)
 
-    def test_from_auth_settings_builds_client_for_basic_auth(self) -> None:
+    @staticmethod
+    def test_from_auth_settings_builds_client_for_basic_auth() -> None:
+        """Test from auth settings builds client for basic auth."""
         auth = m.OracleWms.AuthSettings(
-            method="basic", username="wms_user", password=_wms_password_underscore()
+            method="basic",
+            username="wms_user",
+            password=_wms_password_underscore(),
         )
         result = u.OracleWms.Client.from_auth_settings(auth)
         tm.ok(result)
         tm.that(result.unwrap(), is_=u.OracleWms.Client)
 
-    def test_from_auth_settings_rejects_non_basic_auth(self) -> None:
+    @staticmethod
+    def test_from_auth_settings_rejects_non_basic_auth() -> None:
+        """Test from auth settings rejects non basic auth."""
         auth = m.OracleWms.AuthSettings(
             method="oauth2",
             oauth2_client_id="client-id",
@@ -100,11 +120,10 @@ class TestsFlextOracleWmsClientCore:
         tm.fail(result)
         tm.that((result.error or ""), has="BASIC")
 
-    def test_from_auth_settings_rejects_invalid_business_rules(self) -> None:
+    @staticmethod
+    def test_from_auth_settings_rejects_invalid_business_rules() -> None:
+        """Test from auth settings rejects invalid business rules."""
         auth = m.OracleWms.AuthSettings(method="basic", username=None, password=None)
         result = u.OracleWms.Client.from_auth_settings(auth)
         tm.fail(result)
         assert result.error
-
-
-__all__: list[str] = ["TestsFlextOracleWmsClientCore"]

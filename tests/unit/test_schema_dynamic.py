@@ -24,31 +24,32 @@ from tests import c
 class TestsFlextOracleWmsSchemaDynamic:
     """Public-contract tests for the Oracle WMS constants namespace."""
 
-    def test_filter_operator_members_are_strenums(self) -> None:
+    @staticmethod
+    def test_filter_operator_members_are_strenums() -> None:
         """Every WmsFilterOperator member is a StrEnum carrying a string value."""
         for operator in c.OracleWms.WmsFilterOperator:
             tm.that(operator, is_=StrEnum)
             tm.that(operator.value, is_=str)
 
-    def test_filter_operator_is_complete(self) -> None:
+    @staticmethod
+    def test_filter_operator_is_complete() -> None:
         """WmsFilterOperator exposes exactly the documented operator set."""
         tm.that(
             {op.value for op in c.OracleWms.WmsFilterOperator},
             eq={"eq", "ne", "gt", "gte", "lt", "lte", "in", "not_in", "contains"},
         )
 
-    def test_auth_method_members_are_strenums(self) -> None:
+    @staticmethod
+    def test_auth_method_members_are_strenums() -> None:
         """Every OracleWMSAuthMethod member is a StrEnum carrying a string value."""
         for method in c.OracleWms.OracleWMSAuthMethod:
             tm.that(method, is_=StrEnum)
             tm.that(method.value, is_=str)
 
-    def test_auth_method_is_complete(self) -> None:
+    @staticmethod
+    def test_auth_method_is_complete() -> None:
         """OracleWMSAuthMethod exposes exactly the four supported methods."""
         tm.that(
             {m.value for m in c.OracleWms.OracleWMSAuthMethod},
             eq={"basic", "oauth2", "api_key", "bearer"},
         )
-
-
-__all__: list[str] = ["TestsFlextOracleWmsSchemaDynamic"]

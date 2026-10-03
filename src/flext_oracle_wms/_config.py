@@ -16,18 +16,17 @@ from functools import cached_property
 from typing import TYPE_CHECKING, Self
 
 from flext_core import FlextConfig, FlextSettings
-
-from ._constants.values import FlextOracleWmsConstantsValues
-from ._models.config import FlextOracleWmsConfigModels
+from flext_oracle_wms._constants.values import FlextOracleWmsConstantsValues
+from flext_oracle_wms._models.config import FlextOracleWmsConfigModels
 
 if TYPE_CHECKING:
     # NOTE (multi-agent): config-scaffold — accessor typed by PROTOCOL (p), never
     # the model class; the protocol module enters under TYPE_CHECKING only.
-    from ._protocols.config import FlextOracleWmsProtocolsConfig
+    from flext_oracle_wms._protocols.config import FlextOracleWmsProtocolsConfig
 
 
 class FlextOracleWmsConfig(
-    FlextSettings, FlextConfig, FlextOracleWmsConstantsValues.Config
+    FlextSettings, FlextConfig, FlextOracleWmsConstantsValues.Config,
 ):
     """OracleWms config auto-loaded from ``config/*.yaml`` and validated via models.
 
@@ -59,7 +58,7 @@ class FlextOracleWmsConfig(
     def oracle_wms(self) -> FlextOracleWmsProtocolsConfig.Config:
         """Validated ``OracleWms`` config domains from the model-less YAML."""
         return FlextOracleWmsConfigModels.Root.model_validate(
-            dict(self.model_extra or {})
+            dict(self.model_extra or {}),
         )
 
 
