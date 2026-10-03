@@ -1,6 +1,7 @@
 # Troubleshooting Guide
 
 <!-- TOC START -->
+
 - [Common Issues](#common-issues)
   - [Connection Issues](#connection-issues)
   - [Type Safety Issues](#type-safety-issues)
@@ -19,13 +20,15 @@
   - [Documentation Resources](#documentation-resources)
   - [Known Limitations](#known-limitations)
   - [Reporting Issues](#reporting-issues)
+
 <!-- TOC END -->
 
 **Common issues and solutions for flext-oracle-wms**
 
-**Version**: 0.12.0-dev | **Last Updated**: April 14, 2026 | **Status**: Framework troubleshooting · 1.0.0 Current
+**Version**: 0.12.0-dev | **Last Updated**: April 14, 2026 | **Status**: Framework
+troubleshooting · 1.0.0 Current
 
-______________________________________________________________________
+---
 
 ## Common Issues
 
@@ -66,6 +69,7 @@ from __future__ import annotations
 
 ```python
 from __future__ import annotations
+
 from flext_core import u
 
 logger = u.fetch_logger(__name__)
@@ -102,7 +106,8 @@ assert error.field == "username"  # Now works with MyPy
 
 ```python
 from __future__ import annotations
-from flext_oracle_wms import FlextOracleWmsModuleSettings, FlextOracleWmsApiVersion
+
+from flext_oracle_wms import FlextOracleWmsApiVersion, FlextOracleWmsModuleSettings
 
 settings = FlextOracleWmsModuleSettings(
     api_version=FlextOracleWmsApiVersion.V1,  # Use enum, not string
@@ -170,7 +175,8 @@ from __future__ import annotations
 filter_engine.filter_records("not_a_list", {})  # Intentionally wrong type
 ```
 
-**Solution**: These are negative tests. Use `# type: ignore` if needed for intentional type violations in tests
+**Solution**: These are negative tests. Use `# type: ignore` if needed for intentional
+type violations in tests
 
 ### Development Environment Issues
 
@@ -182,8 +188,8 @@ filter_engine.filter_records("not_a_list", {})  # Intentionally wrong type
 
 ```bash
 # Clean installation
-rm -rf .venv poetry.lock
-poetry install
+rm -rf .venv uv.lock
+make setup
 ```
 
 #### PYTHONPATH issues
@@ -227,8 +233,8 @@ make test
 **Solution**: Use faster test commands:
 
 ```bash
-pytest -x --tb=short  # Stop on first failure, short traceback
-pytest --maxfail=1    # Stop after one failure
+pytest -x --tb=short # Stop on first failure, short traceback
+pytest --maxfail=1   # Stop after one failure
 ```
 
 #### Memory usage during development
@@ -238,7 +244,7 @@ pytest --maxfail=1    # Stop after one failure
 ```bash
 # Use make commands which are optimized
 make test
-make val
+make check
 ```
 
 ## Error Messages Reference
@@ -279,6 +285,7 @@ assert error.entity_name == "test"  # Properly handled
 
 ```python
 from __future__ import annotations
+
 import logging
 
 from flext_core import u
@@ -315,7 +322,7 @@ pytest --pdb tests/test_client.py
 ### Documentation Resources
 
 - **[Getting Started](getting-started.md)** - Installation and setup
-- **[API Reference](api-reference.md)** - Complete API documentation
+- **[API Reference](api-reference/README.md)** - Generated API documentation
 - **[Configuration](configuration.md)** - Settings and environment
 - **[Development](development.md)** - Development guidelines
 
@@ -338,6 +345,7 @@ When reporting issues, include:
 1. **Steps to reproduce** - Minimal example
 1. **Expected vs actual behavior**
 
-______________________________________________________________________
+---
 
-**Last Updated**: April 14, 2026 | **Status**: Framework troubleshooting guide · 1.0.0 Current
+**Last Updated**: April 14, 2026 | **Status**: Framework troubleshooting guide · 1.0.0
+Current

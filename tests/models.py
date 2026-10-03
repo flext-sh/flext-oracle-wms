@@ -14,7 +14,7 @@ from flext_tests import FlextTestsModels
 from flext_oracle_wms import m
 
 
-class TestsFlextOracleWmsModels(FlextTestsModels, m):
+class TestsFlextOracleWmsModels(FlextTestsModels):
     """Test models combining TestsFlextModels with flext-oracle-wms models."""
 
     class OracleWms(m.OracleWms):

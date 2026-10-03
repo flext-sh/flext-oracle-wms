@@ -20,8 +20,8 @@ if TYPE_CHECKING:
 class TestsFlextOracleWmsWmsClient:
     """Observable client behavior exposed by the public API facade."""
 
+    @staticmethod
     def test_http_client_projects_runtime_settings(
-        self,
         oracle_wms_settings: FlextOracleWmsSettings,
         oracle_wms_http_client: u.OracleWms.HttpClient,
     ) -> None:
@@ -32,7 +32,8 @@ class TestsFlextOracleWmsWmsClient:
         tm.that(oracle_wms_http_client.timeout, eq=runtime.timeout)
         tm.that(oracle_wms_http_client.verify_ssl, eq=runtime.verify_ssl)
 
-    def test_endpoint_catalog_projects_validated_config(self) -> None:
+    @staticmethod
+    def test_endpoint_catalog_projects_validated_config() -> None:
         """The public endpoint catalog is a typed projection of config."""
         endpoints = FlextOracleWmsApi.api_endpoints()
         configured = config.oracle_wms.api_endpoints
@@ -48,6 +49,3 @@ class TestsFlextOracleWmsWmsClient:
             tm.that(observed.category, eq=expected.category)
             tm.that(observed.description, eq=expected.description)
             tm.that(observed.since_version, eq=expected.since_version)
-
-
-__all__: list[str] = ["TestsFlextOracleWmsWmsClient"]

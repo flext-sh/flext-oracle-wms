@@ -1,6 +1,7 @@
 # Configuration Guide
 
 <!-- TOC START -->
+
 - [Configuration Overview](#configuration-overview)
 - [Test Configuration](#test-configuration)
   - [FlextOracleWmsModuleSettings.for_testing()](#flextoraclewmsmodulesettingsfor_testing)
@@ -18,18 +19,21 @@
   - [Authentication Requirements](#authentication-requirements)
 - [Implementation Status](#implementation-status)
   - [Current Status](#current-status)
-  - [Required Implementation](#required-implementation)
+  - [Required Implementation](#required-implementation_1)
+
 <!-- TOC END -->
 
 **Settings and environment management for flext-oracle-wms**
 
-**Version**: 0.12.0-dev | **Last Updated**: April 14, 2026 | **Status**: Test configuration only · 1.0.0 Current
+**Version**: 0.12.0-dev | **Last Updated**: April 14, 2026 | **Status**: Test
+configuration only · 1.0.0 Current
 
-______________________________________________________________________
+---
 
 ## Configuration Overview
 
-flext-oracle-wms provides test configuration framework requiring implementation for production Oracle WMS Cloud connectivity.
+flext-oracle-wms provides test configuration framework requiring implementation for
+production Oracle WMS Cloud connectivity.
 
 ## Test Configuration
 
@@ -39,6 +43,7 @@ Current implementation provides test configuration with fake URLs:
 
 ```python
 from __future__ import annotations
+
 from flext_oracle_wms import FlextOracleWmsSettings
 
 settings = FlextOracleWmsSettings.model_validate({
@@ -76,7 +81,7 @@ export FLEXT_ORACLE_WMS_USERNAME="api_service_user"
 export FLEXT_ORACLE_WMS_PASSWORD="secure_enterprise_password"
 
 # Authentication method (requires implementation)
-export FLEXT_ORACLE_WMS_AUTH_METHOD="oauth2"  # basic, oauth2, api_key
+export FLEXT_ORACLE_WMS_AUTH_METHOD="oauth2" # basic, oauth2, api_key
 
 # Performance tuning (requires implementation)
 export FLEXT_ORACLE_WMS_TIMEOUT="60"
@@ -96,6 +101,7 @@ Configuration for Oracle WMS client (framework structure):
 
 ```python
 from __future__ import annotations
+
 from flext_oracle_wms import FlextOracleWmsSettings
 
 # Note: This is framework structure, not fully implemented
@@ -110,10 +116,12 @@ settings = FlextOracleWmsSettings(
 
 ### Authentication Configuration (Framework)
 
-Based on source code analysis, authentication framework exists but requires implementation:
+Based on source code analysis, authentication framework exists but requires
+implementation:
 
 ```python
 from __future__ import annotations
+
 from flext_oracle_wms import c
 
 # Framework supports these methods (implementation required)
@@ -133,6 +141,7 @@ The framework includes Pydantic-based configuration validation:
 
 ```python
 from __future__ import annotations
+
 from flext_oracle_wms import FlextOracleWmsSettings
 
 # Configuration validation is implemented
@@ -191,6 +200,7 @@ Oracle WMS Cloud authentication standards:
 1. Configure rate limiting and retry policies
 1. Validate against real Oracle WMS instances
 
-______________________________________________________________________
+---
 
-**Last Updated**: April 14, 2026 | **Status**: Test configuration only, requires Oracle WMS Cloud implementation · 1.0.0 Current
+**Last Updated**: April 14, 2026 | **Status**: Test configuration only, requires Oracle
+WMS Cloud implementation · 1.0.0 Current

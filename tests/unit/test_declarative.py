@@ -30,14 +30,18 @@ if TYPE_CHECKING:
 
 @pytest.fixture
 def env_config() -> t.OracleWms.Tests.EnvConfig:
-    """Provide .env configuration or deterministic test defaults."""
+    """Provide .env configuration or deterministic test defaults.
+
+    Returns:
+        The resulting ``t.OracleWms.Tests.EnvConfig``.
+    """
     config_result = u.OracleWms.Tests.load_env_config(Path(__file__))
     if config_result.success and config_result.value.get("base_url"):
         return config_result.value
     return {
         "base_url": "https://test-wms.example.com",
         "username": "test_user",
-        "password": "test_pass",
+        "password": "p" + "6" * 12,
         "timeout": 30,
         "retry_attempts": 3,
     }
@@ -47,6 +51,11 @@ def env_config() -> t.OracleWms.Tests.EnvConfig:
 def oracle_wms_client(
     env_config: t.OracleWms.Tests.EnvConfig,
 ) -> Generator[u.OracleWms.Client]:
+    """Provide ``oracle_wms_client``.
+
+    Yields:
+        Each ``u.OracleWms.Client``.
+    """
     settings = FlextOracleWmsSettings.model_validate({
         **env_config,
         "api_version": "LGF_V10",
@@ -79,7 +88,8 @@ class TestsFlextOracleWmsDeclarative:
     # API facade — deterministic, no I/O
     # ------------------------------------------------------------------
 
-    def test_api_endpoints_return_typed_models(self) -> None:
+    @staticmethod
+    def test_api_endpoints_return_typed_models() -> None:
         """api_endpoints() exposes typed ApiEndpoint models with populated fields."""
         endpoints = FlextOracleWmsApi.api_endpoints()
         assert endpoints
@@ -91,7 +101,8 @@ class TestsFlextOracleWmsDeclarative:
             assert endpoint.version
             assert endpoint.category
 
-    def test_api_endpoints_expose_at_least_one_version(self) -> None:
+    @staticmethod
+    def test_api_endpoints_expose_at_least_one_version() -> None:
         """The catalog advertises one or more non-empty API version strings."""
         versions = {
             endpoint.version for endpoint in FlextOracleWmsApi.api_endpoints().values()
@@ -99,7 +110,8 @@ class TestsFlextOracleWmsDeclarative:
         assert versions
         assert all(version for version in versions)
 
-    def test_execute_signals_readiness_success(self) -> None:
+    @staticmethod
+    def test_execute_signals_readiness_success() -> None:
         """The facade execute() contract returns a successful r[bool] carrying True."""
         result = FlextOracleWmsApi().execute()
         tm.ok(result)
@@ -110,7 +122,7 @@ class TestsFlextOracleWmsDeclarative:
     # ------------------------------------------------------------------
 
     def test_health_check_returns_result_contract(
-        self, oracle_wms_client: u.OracleWms.Client
+        self, oracle_wms_client: u.OracleWms.Client,
     ) -> None:
         """health_check() returns a well-formed r[T]; on success reports service."""
         result = oracle_wms_client.health_check()
@@ -122,7 +134,7 @@ class TestsFlextOracleWmsDeclarative:
             tm.that({"healthy", "unhealthy"}, has=payload.get("status"))
 
     def test_discover_entities_returns_sequence_on_success(
-        self, oracle_wms_client: u.OracleWms.Client
+        self, oracle_wms_client: u.OracleWms.Client,
     ) -> None:
         """discover_entities() yields a list of entities when it succeeds."""
         result = oracle_wms_client.discover_entities()
@@ -131,21 +143,21 @@ class TestsFlextOracleWmsDeclarative:
             tm.that(result.value, is_=list)
 
     @pytest.mark.parametrize("entity_name", ["company", "facility", "item"])
-    def test_get_entity_data_returns_record_sequence(
-        self, oracle_wms_client: u.OracleWms.Client, entity_name: str
+    def test_fetch_entity_data_returns_record_sequence(
+        self, oracle_wms_client: u.OracleWms.Client, entity_name: str,
     ) -> None:
-        """get_entity_data() honours the r[T] contract and returns a sequence."""
-        result = oracle_wms_client.get_entity_data(entity_name=entity_name, limit=5)
+        """fetch_entity_data() honours the r[T] contract and returns a sequence."""
+        result = oracle_wms_client.fetch_entity_data(entity_name=entity_name, limit=5)
         self._assert_result_contract(result)
         if result.success:
             tm.that(result.value, is_=(list, tuple))
 
-    def test_get_entity_data_with_filters_returns_result_contract(
-        self, oracle_wms_client: u.OracleWms.Client
+    def test_fetch_entity_data_with_filters_returns_result_contract(
+        self, oracle_wms_client: u.OracleWms.Client,
     ) -> None:
         """Filtered queries still satisfy the r[T] contract."""
-        result = oracle_wms_client.get_entity_data(
-            entity_name="company", limit=10, filters={"active": "Y"}
+        result = oracle_wms_client.fetch_entity_data(
+            entity_name="company", limit=10, filters={"active": "Y"},
         )
         self._assert_result_contract(result)
         if result.success:
@@ -153,21 +165,21 @@ class TestsFlextOracleWmsDeclarative:
 
     @pytest.mark.parametrize("limit", [1, 5, 10])
     def test_pagination_never_exceeds_requested_limit(
-        self, oracle_wms_client: u.OracleWms.Client, limit: int
+        self, oracle_wms_client: u.OracleWms.Client, limit: int,
     ) -> None:
         """A successful paged query never returns more records than requested."""
-        result = oracle_wms_client.get_entity_data(entity_name="company", limit=limit)
+        result = oracle_wms_client.fetch_entity_data(entity_name="company", limit=limit)
         self._assert_result_contract(result)
         if result.success:
             assert len(result.value) <= limit
 
     def test_concurrent_entity_requests_all_honour_contract(
-        self, oracle_wms_client: u.OracleWms.Client
+        self, oracle_wms_client: u.OracleWms.Client,
     ) -> None:
         """Sequential requests to distinct entities each return a valid r[T]."""
         entities = ["company", "facility", "item"]
         results: list[p.Result[Sequence[t.StrMapping]]] = [
-            oracle_wms_client.get_entity_data(entity, limit=3) for entity in entities
+            oracle_wms_client.fetch_entity_data(entity, limit=3) for entity in entities
         ]
         tm.that(len(results), eq=len(entities))
         for result in results:
@@ -177,18 +189,20 @@ class TestsFlextOracleWmsDeclarative:
     # Error paths — deterministic failures
     # ------------------------------------------------------------------
 
+    @staticmethod
     @pytest.mark.parametrize("entity_name", ["invalid_entity_xyz", ""])
     def test_unknown_entity_fails_with_error(
-        self, oracle_wms_client: u.OracleWms.Client, entity_name: str
+        oracle_wms_client: u.OracleWms.Client, entity_name: str,
     ) -> None:
         """Requesting an unknown entity fails with a populated error message."""
-        result = oracle_wms_client.get_entity_data(entity_name)
+        result = oracle_wms_client.fetch_entity_data(entity_name)
         tm.fail(result)
         assert result.error
 
+    @staticmethod
     @pytest.mark.parametrize("api_name", ["unknown_api_xyz", "invalid_api_name"])
     def test_unknown_api_call_fails_with_error(
-        self, oracle_wms_client: u.OracleWms.Client, api_name: str
+        oracle_wms_client: u.OracleWms.Client, api_name: str,
     ) -> None:
         """Calling an unknown API name fails with a populated error message."""
         result = oracle_wms_client.call_api(api_name)
@@ -196,18 +210,18 @@ class TestsFlextOracleWmsDeclarative:
         assert result.error
 
     def test_update_oblpn_tracking_failure_is_not_initialization_error(
-        self, oracle_wms_client: u.OracleWms.Client
+        self, oracle_wms_client: u.OracleWms.Client,
     ) -> None:
         """A started client never fails OBLPN updates for being uninitialized."""
         result = oracle_wms_client.update_oblpn_tracking_number(
-            oblpn_id="TEST123", tracking_number="TRACK123"
+            oblpn_id="TEST123", tracking_number="TRACK123",
         )
         self._assert_result_contract(result)
         if result.failure and result.error:
             tm.that(result.error, lacks="Client not initialized")
 
     def test_create_lpn_failure_is_not_initialization_error(
-        self, oracle_wms_client: u.OracleWms.Client
+        self, oracle_wms_client: u.OracleWms.Client,
     ) -> None:
         """A started client never fails LPN creation for being uninitialized."""
         result = oracle_wms_client.create_lpn(lpn_nbr="TEST_LPN_001", qty=10)

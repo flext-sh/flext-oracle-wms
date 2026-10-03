@@ -1,9 +1,11 @@
 # flext-oracle-wms API Reference
 
 <!-- TOC START -->
+
 - [Source of Truth](#source-of-truth)
 - [Generated Pages](#generated-pages)
 - [Surface Summary](#surface-summary)
+
 <!-- TOC END -->
 
 <!-- AUTO-GENERATED — DO NOT EDIT MANUALLY -->
@@ -27,7 +29,7 @@ This section is generated from public exports and real docstrings.
 
 - Primary facades: `FlextOracleWmsApi`, `FlextOracleWmsConfig`,
   `FlextOracleWmsConstants`, `FlextOracleWmsErrors`, `FlextOracleWmsModels`,
-  `FlextOracleWmsProtocols` (+3 more)
-- Generated module pages: `7`
+  `FlextOracleWmsProtocols` (+8 more)
+- Generated module pages: `8`
 
 Back to [project docs](../index.md).

@@ -8,7 +8,8 @@ from __future__ import annotations
 
 import base64
 
-from flext_oracle_wms import c, m, p, r, t
+from flext_core import r
+from flext_oracle_wms import c, m, p, t
 
 
 class FlextOracleWmsUtilitiesAuth:
@@ -18,7 +19,11 @@ class FlextOracleWmsUtilitiesAuth:
     def validate_auth_settings(
         auth_settings: m.OracleWms.AuthSettings,
     ) -> p.Result[bool]:
-        """Validate Oracle WMS authentication configuration business rules."""
+        """Validate Oracle WMS authentication configuration business rules.
+
+        Returns:
+            The resulting ``p.Result[bool]``.
+        """
         # NOTE (multi-agent): U17 — business validation lives in u.*, not on the
         # model (declaration layer). Moved verbatim from m.OracleWms.AuthSettings.
         basic_method = str(c.OracleWms.OracleWMSAuthMethod.BASIC)
@@ -56,7 +61,11 @@ class FlextOracleWmsUtilitiesAuth:
             return method
 
         def authenticate(self) -> p.Result[str]:
-            """Perform authentication."""
+            """Perform authentication.
+
+            Returns:
+                The resulting ``p.Result[str]``.
+            """
             basic_method = str(c.OracleWms.OracleWMSAuthMethod.BASIC)
             oauth2_method = str(c.OracleWms.OracleWMSAuthMethod.OAUTH2)
             if self.normalized_method == basic_method:

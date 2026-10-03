@@ -1,6 +1,7 @@
 # Getting Started with flext-oracle-wms
 
 <!-- TOC START -->
+
 - [Installation](#installation)
   - [Prerequisites](#prerequisites)
   - [Installation Steps](#installation-steps)
@@ -12,13 +13,15 @@
   - [What Needs Implementation](#what-needs-implementation)
 - [Next Steps](#next-steps)
 - [Related Documentation](#related-documentation)
+
 <!-- TOC END -->
 
 **Quick start guide for Oracle WMS integration framework**
 
-**Version**: 0.12.0-dev | **Last Updated**: April 14, 2026 | **Status**: Framework requiring implementation · 1.0.0 Current
+**Version**: 0.12.0-dev | **Last Updated**: April 14, 2026 | **Status**: Framework
+requiring implementation · 1.0.0 Current
 
-______________________________________________________________________
+---
 
 ## Installation
 
@@ -34,10 +37,10 @@ ______________________________________________________________________
 # Development installation
 git clone <flext-oracle-wms-repo>
 cd flext-oracle-wms
-poetry install
+make setup
 
 # Verify installation
-make val  # Run quality gates
+make check  # Run quality gates
 ```
 
 ## Basic Configuration
@@ -55,6 +58,7 @@ export FLEXT_ORACLE_WMS_PASSWORD="test_password"
 
 ```python
 from __future__ import annotations
+
 from flext_oracle_wms import FlextOracleWmsApi, FlextOracleWmsSettings
 
 # Using test configuration (not real Oracle WMS)
@@ -98,24 +102,28 @@ print(f"Execute success: {result.success}")
 1. **Development Setup** - [Development guidelines](development.md)
 1. **Implementation Roadmap** - tracked in the workspace Beads ledger
 
-______________________________________________________________________
+---
 
-**Last Updated**: April 14, 2026 | **Status**: Framework requiring Oracle WMS Cloud integration implementation · 1.0.0 Current
+**Last Updated**: April 14, 2026 | **Status**: Framework requiring Oracle WMS Cloud
+integration implementation · 1.0.0 Current
 
 ## Related Documentation
 
 **Within Project**:
 
 - [Architecture](architecture.md) - Architecture and design patterns
-- [API Reference](api-reference.md) - Complete API documentation
+- [API Reference](api-reference/README.md) - Generated API documentation
 - [Integration Guide](guides/integration.md) - Integration patterns
 - [Development](development.md) - Development guidelines
 
 **Across Projects**:
 
-- [flext-core Foundation](https://github.com/flext-sh/flext/tree/0.12.0-dev/flext-core/docs/architecture/overview.md) - Clean architecture and CQRS patterns
-- [flext-core Service Patterns](https://github.com/flext-sh/flext/tree/0.12.0-dev/flext-core/docs/guides/service-patterns.md) - Service patterns and dependency injection
-- [flext-db-oracle Integration](https://github.com/flext-sh/flext/tree/0.12.0-dev/flext-db-oracle/AGENTS.md) - Oracle database integration
+- [flext-core Foundation](https://github.com/flext-sh/flext/tree/0.12.0-dev/flext-core/docs/architecture/overview.md) -
+  Clean architecture and CQRS patterns
+- [flext-core Service Patterns](https://github.com/flext-sh/flext/tree/0.12.0-dev/flext-core/docs/guides/service-patterns.md) -
+  Service patterns and dependency injection
+- [flext-db-oracle Integration](https://github.com/flext-sh/flext/tree/0.12.0-dev/flext-db-oracle/AGENTS.md) -
+  Oracle database integration
 
 **External Resources**:
 

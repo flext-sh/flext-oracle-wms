@@ -31,7 +31,9 @@
 
 <!-- TOC END -->
 
-This directory contains comprehensive examples demonstrating Oracle WMS Cloud integration patterns using the flext-oracle-wms library. All examples are tested and represent real-world usage scenarios.
+This directory contains comprehensive examples demonstrating Oracle WMS Cloud
+integration patterns using the flext-oracle-wms library. All examples are tested and
+represent real-world usage scenarios.
 
 ## 📁 Example Categories
 
@@ -45,14 +47,16 @@ This directory contains comprehensive examples demonstrating Oracle WMS Cloud in
 
 - **[entity_discovery.py](entity_discovery.py)** - Comprehensive entity discovery
 - **[inventory_queries.py](inventory_queries.py)** - Inventory data querying patterns
-- **[schema_processing.py](schema_processing.py)** - Dynamic schema discovery and processing
+- **[schema_processing.py](schema_processing.py)** - Dynamic schema discovery and
+  processing
 - **[data_filtering.py](data_filtering.py)** - Advanced filtering and pagination
 
 ### 🏗️ **Enterprise Integration**
 
 - **[flext_integration.py](flext_integration.py)** - Integration with FLEXT ecosystem
 - **[error_handling.py](error_handling.py)** - Comprehensive error handling patterns
-- **[performance_optimization.py](performance_optimization.py)** - Caching and performance
+- **[performance_optimization.py](performance_optimization.py)** - Caching and
+  performance
 - **[monitoring.py](monitoring.py)** - Logging and observability
 
 ### 📊 **Data Pipeline Integration**
@@ -73,6 +77,7 @@ This directory contains comprehensive examples demonstrating Oracle WMS Cloud in
 
 ```python
 from __future__ import annotations
+
 from flext_oracle_wms import FlextOracleWmsClient, FlextOracleWmsClientSettings
 
 # Configure Oracle WMS connection
@@ -130,8 +135,6 @@ Usage:
     python [example_file.py]:
 """
 
-from flext_oracle_wms import FlextOracleWmsClient, FlextOracleWmsClientSettings
-
 
 def main():
     """Main example function with comprehensive error handling."""
@@ -157,8 +160,8 @@ if __name__ == "__main__":
 # Install dependencies
 pip install flext-oracle-wms
 
-# Or with Poetry
-poetry add flext-oracle-wms
+# Provision through the workspace owner
+make setup
 ```
 
 ### Environment Setup
@@ -238,7 +241,7 @@ make examples-test
 - **Clear documentation** explaining purpose and usage
 - **Security best practices** for credential management
 
-______________________________________________________________________
+---
 
 **Last Updated**: January 4, 2025\
 **Example Status**: Production Ready\

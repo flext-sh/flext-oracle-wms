@@ -29,13 +29,15 @@
 
 <!-- TOC END -->
 
-This directory contains the core implementation of the flext-oracle-wms library, providing enterprise-grade Oracle Warehouse Management System (WMS) Cloud integration for the FLEXT data integration platform.
+This directory contains the core implementation of the flext-oracle-wms library,
+providing enterprise-grade Oracle Warehouse Management System (WMS) Cloud integration
+for the FLEXT data integration platform.
 
 ## 📁 Module Organization
 
 ### 🎯 **Core Interface**
 
-- **[flext_oracle_wms/](flext_oracle_wms/)** - Main library package with enterprise Oracle WMS integration
+- runtime_bootstrap_options
 
 ### 🏗️ **Architecture Overview**
 
@@ -92,6 +94,7 @@ src/flext_oracle_wms/
 
 ```python
 from __future__ import annotations
+
 from flext_oracle_wms import FlextOracleWmsApi, FlextOracleWmsSettings
 
 # Type-safe configuration
@@ -117,6 +120,7 @@ else:
 
 ```python
 from __future__ import annotations
+
 import os
 
 from flext_oracle_wms import FlextOracleWmsSettings
@@ -139,6 +143,7 @@ print(settings.OracleWms.base_url)
 
 ```python
 from __future__ import annotations
+
 from flext_oracle_wms import FlextOracleWmsErrors
 
 try:
@@ -163,11 +168,13 @@ except FlextOracleWmsErrors.Error:
 - **Documentation**: Thorough docstrings aligned with enterprise norms
 - **Testing**: Maintain 90%+ coverage via unit and integration suites
 - **Linting**: Full Ruff rule set (ALL categories) enforced with zero tolerance
-- **WMS-Specific**: Oracle WMS session lifecycle, batch ops, and dynamic schema resolution
+- **WMS-Specific**: Oracle WMS session lifecycle, batch ops, and dynamic schema
+  resolution
 
 ### Architecture Compliance
 
-- **Clean Architecture**: Proper separation of domain, application, and infrastructure concerns
+- **Clean Architecture**: Proper separation of domain, application, and infrastructure
+  concerns
 - **FLEXT Integration**: Full compliance with FLEXT ecosystem patterns and standards
 - **Railway-Oriented Programming**: Consistent use of r for error handling
 - **Enterprise Patterns**: Connection pooling, caching, retry logic, and observability
@@ -186,30 +193,33 @@ except FlextOracleWmsErrors.Error:
 
 ```bash
 # Run comprehensive test suite
-make test                    # 90%+ coverage requirement
-make test-unit              # Unit tests only
-make test-integration       # Integration tests with Oracle WMS
-make coverage-html          # Generate detailed coverage report
+make test             # 90%+ coverage requirement
+make test-unit        # Unit tests only
+make test-integration # Integration tests with Oracle WMS
+make coverage-html    # Generate detailed coverage report
 ```
 
 ### Quality Gates
 
 ```bash
 # Complete quality validation
-make val               # Lint + type + security + test
+make check # Validate quality gates
+make test  # Validate runtime behavior
 make lint
 make type-check
-make security               # Bandit + pip-audit security scanning
+make security # Bandit + pip-audit security scanning
 ```
 
 ## 🔗 **Integration**
 
 ### FLEXT Ecosystem Dependencies
 
-- **[flext-core](https://github.com/organization/flext/tree/main/flext-core/)** - Foundation patterns, r, p, logging, DI container
-- **[flext-api](https://github.com/organization/flext/tree/main/flext-api/)** - Enterprise API client patterns and authentication
-- **[flext-observability](https://github.com/organization/flext/tree/main/flext-observability/)** - Monitoring, metrics, health checks
-- **[flext-oracle-wms](https://github.com/organization/flext/tree/main/flext-oracle-wms/)** - This package: Oracle WMS REST client
+The client builds on the shared FLEXT stack: **flext-core** supplies the foundation
+patterns (result rail, protocols, logging, DI container), **flext-api** contributes the
+enterprise API-client and authentication patterns it extends, and
+**flext-observability** provides the monitoring, metrics and health-check hooks. This
+package itself is the Oracle WMS REST client; each dependency ships its own README as
+the owner of its details.
 
 ### External Dependencies
 
@@ -222,7 +232,8 @@ make security               # Bandit + pip-audit security scanning
 ### Documentation
 
 - **[Project README](../README.md)** - Complete project overview and usage guide
-- **[Development Guide](../AGENTS.md)** - Comprehensive development practices for the Oracle WMS REST client library
+- **[Development Guide](../AGENTS.md)** - Comprehensive development practices for the
+  Oracle WMS REST client library
 - **[Examples](../examples/)** - Working code examples and integration patterns
 - **[API Documentation](../../docs/api/)** - Detailed API reference and specifications
 - **[Internal Wiki](../../docs/internal/)** - Architecture decisions and design notes
@@ -234,7 +245,7 @@ make security               # Bandit + pip-audit security scanning
 - **[Authentication Guide](https://docs.oracle.com/en/cloud/saas/warehouse-management/25b/owmre/Authentication.html)**
 - **[Migration Notes](https://docs.oracle.com/en/cloud/saas/warehouse-management/25b/owmre/Migration.html)**
 
-______________________________________________________________________
+---
 
 **Module Status**: Production Ready\
 **Type Coverage**: 95%+\

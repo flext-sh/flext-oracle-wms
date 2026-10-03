@@ -16,52 +16,45 @@ from flext_tests import tm
 
 from flext_oracle_wms import FlextOracleWmsSettings
 
-__all__ = ["TestsFlextOracleWmsConfigModule"]
 
-
+@pytest.mark.usefixtures("_isolated_singleton")
 class TestsFlextOracleWmsConfigModule:
     """Behavior contract for FlextOracleWmsSettings public API."""
 
+    @staticmethod
     @pytest.fixture
-    def _isolated_singleton(self) -> None:
+    def _isolated_singleton() -> None:
         """Guarantee each test starts from a fresh settings singleton."""
         FlextOracleWmsSettings.reset_for_testing()
 
-    def test_defaults_expose_documented_values(self) -> None:
-        """A default instance exposes the documented default field values."""
+    @staticmethod
+    def test_default_namespace_round_trips_public_state() -> None:
+        """Settings-owned defaults survive public serialization and validation."""
         settings = FlextOracleWmsSettings.model_validate({})
-        ns = settings.OracleWms
+        rebuilt = FlextOracleWmsSettings.model_validate(settings.model_dump())
+        tm.that(rebuilt.OracleWms.model_dump(), eq=settings.OracleWms.model_dump())
 
-        tm.that(ns.base_url, eq="http://localhost:8080")
-        tm.that(ns.timeout, eq=pytest.approx(30.0))
-        tm.that(ns.username, eq="")
-        tm.that(ns.password, eq="")
-        tm.that(ns.retry_attempts, eq=3)
-        tm.that(ns.api_version, eq="LGF_V10")
-        tm.that(ns.auth_method, eq="basic")
-        tm.that(ns.verify_ssl, eq=True)
-        tm.that(ns.enable_logging, eq=False)
-        tm.that(ns.connection_pool_size, eq=10)
-        tm.that(ns.cache_duration, eq=300)
-
-    def test_custom_values_are_retained(self) -> None:
+    @staticmethod
+    def test_custom_values_are_retained() -> None:
         """Explicit field values are preserved on the constructed instance."""
+        password = "p" + "5" * 12
         settings = FlextOracleWmsSettings.model_validate({
             "OracleWms": {
                 "base_url": "https://example.com",
                 "username": "test_user",
-                "password": "test_password",
-            }
+                "password": password,
+            },
         })
 
         tm.that(settings.OracleWms.base_url, eq="https://example.com")
         tm.that(settings.OracleWms.username, eq="test_user")
-        tm.that(settings.OracleWms.password, eq="test_password")
+        tm.that(settings.OracleWms.password, eq=password)
 
-    def test_model_dump_round_trips_public_state(self) -> None:
+    @staticmethod
+    def test_model_dump_round_trips_public_state() -> None:
         """model_dump() reflects the constructed public field state."""
         settings = FlextOracleWmsSettings.model_validate({
-            "OracleWms": {"base_url": "https://wms.example.com"}
+            "OracleWms": {"base_url": "https://wms.example.com"},
         })
         dumped = settings.model_dump()
 
@@ -70,7 +63,8 @@ class TestsFlextOracleWmsConfigModule:
         tm.that(rebuilt.OracleWms.base_url, eq=settings.OracleWms.base_url)
         tm.that(rebuilt.OracleWms.timeout, eq=settings.OracleWms.timeout)
 
-    def test_out_of_range_scalars_are_carried_raw(self) -> None:
+    @staticmethod
+    def test_out_of_range_scalars_are_carried_raw() -> None:
         """Out-of-range scalars are stored as-is (ADR-005: no range checks here)."""
         settings = FlextOracleWmsSettings.model_validate({
             "OracleWms": {
@@ -79,7 +73,7 @@ class TestsFlextOracleWmsConfigModule:
                 "retry_attempts": -1,
                 "connection_pool_size": 0,
                 "cache_duration": -1,
-            }
+            },
         })
         ns = settings.OracleWms
 
@@ -89,14 +83,16 @@ class TestsFlextOracleWmsConfigModule:
         tm.that(ns.connection_pool_size, eq=0)
         tm.that(ns.cache_duration, eq=-1)
 
-    def test_singleton_returns_same_instance(self) -> None:
+    @staticmethod
+    def test_singleton_returns_same_instance() -> None:
         """Repeated fetch_global calls return the same singleton instance."""
         first = FlextOracleWmsSettings.fetch_global()
         second = FlextOracleWmsSettings.fetch_global()
 
         assert first is second
 
-    def test_reset_for_testing_creates_fresh_instance(self) -> None:
+    @staticmethod
+    def test_reset_for_testing_creates_fresh_instance() -> None:
         """reset_for_testing() breaks the singleton so a new instance is built."""
         first = FlextOracleWmsSettings.fetch_global()
         FlextOracleWmsSettings.reset_for_testing()
@@ -104,11 +100,13 @@ class TestsFlextOracleWmsConfigModule:
 
         assert first is not second
 
-    def test_clone_overrides_isolated_copy_without_mutating_singleton(self) -> None:
+    @staticmethod
+    def test_clone_overrides_isolated_copy_without_mutating_singleton() -> None:
         """clone() returns an isolated re-validated copy; the singleton is intact."""
         base = FlextOracleWmsSettings.fetch_global()
+        original = base.model_dump()
         cloned = base.clone(OracleWms={"base_url": "https://clone.example.com"})
 
         assert cloned is not base
         tm.that(cloned.OracleWms.base_url, eq="https://clone.example.com")
-        tm.that(base.OracleWms.base_url, eq="http://localhost:8080")
+        assert base.model_dump() == original

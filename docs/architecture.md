@@ -1,6 +1,7 @@
 # flext-oracle-wms Architecture
 
 <!-- TOC START -->
+
 - [Architecture Status](#architecture-status)
   - [Current Implementation](#current-implementation)
   - [Module Structure](#module-structure)
@@ -11,13 +12,15 @@
   - [2. Oracle WMS Implementation](#2-oracle-wms-implementation)
   - [3. Architectural Consolidation](#3-architectural-consolidation)
 - [Related Documentation](#related-documentation)
+
 <!-- TOC END -->
 
 **Current implementation analysis | April 14, 2026 | Version 0.9.9**
 
 ## Architecture Status
 
-flext-oracle-wms provides partial Oracle WMS Cloud integration framework with architectural gaps.
+flext-oracle-wms provides partial Oracle WMS Cloud integration framework with
+architectural gaps.
 
 ### Current Implementation
 
@@ -83,24 +86,28 @@ src/flext_oracle_wms/
 - Add proper domain service patterns
 - Enhance error handling consistency
 
-______________________________________________________________________
+---
 
-**Last Updated**: April 14, 2026 | **Status**: Framework requiring implementation completion · 1.0.0 Current
+**Last Updated**: April 14, 2026 | **Status**: Framework requiring implementation
+completion · 1.0.0 Current
 
 ## Related Documentation
 
 **Within Project**:
 
 - [Getting Started](getting-started.md) - Installation and basic usage
-- [API Reference](api-reference.md) - Complete API documentation
+- [API Reference](api-reference/README.md) - Generated API documentation
 - [Integration Guide](guides/integration.md) - Integration patterns
 - [Development](development.md) - Development guidelines
 
 **Across Projects**:
 
-- [flext-core Foundation](https://github.com/flext-sh/flext/tree/0.12.0-dev/flext-core/docs/architecture/overview.md) - Clean architecture and CQRS patterns
-- [flext-core Service Patterns](https://github.com/flext-sh/flext/tree/0.12.0-dev/flext-core/docs/guides/service-patterns.md) - Service patterns and dependency injection
-- [flext-db-oracle Integration](https://github.com/flext-sh/flext/tree/0.12.0-dev/flext-db-oracle/AGENTS.md) - Oracle database integration
+- [flext-core Foundation](https://github.com/flext-sh/flext/tree/0.12.0-dev/flext-core/docs/architecture/overview.md) -
+  Clean architecture and CQRS patterns
+- [flext-core Service Patterns](https://github.com/flext-sh/flext/tree/0.12.0-dev/flext-core/docs/guides/service-patterns.md) -
+  Service patterns and dependency injection
+- [flext-db-oracle Integration](https://github.com/flext-sh/flext/tree/0.12.0-dev/flext-db-oracle/AGENTS.md) -
+  Oracle database integration
 
 **External Resources**:
 
