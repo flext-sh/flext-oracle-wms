@@ -41,7 +41,11 @@ class FlextOracleWmsUtilitiesHttpClient:
             self._client: FlextApi | None = None
 
         def __enter__(self) -> Self:
-            """Context manager entry."""
+            """Context manager entry.
+
+            Returns:
+                The resulting ``Self``.
+            """
             self._ensure_client()
             return self
 
@@ -89,16 +93,20 @@ class FlextOracleWmsUtilitiesHttpClient:
             self._client = None
 
         def delete(
-            self, path: str, headers: t.StrMapping | None = None
+            self, path: str, headers: t.StrMapping | None = None,
         ) -> p.Result[t.JsonMapping]:
-            """Make DELETE request."""
+            """Make DELETE request.
+
+            Returns:
+                The resulting ``p.Result[t.JsonMapping]``.
+            """
             try:
                 return self._execute_request_unchecked(
-                    "DELETE", path, headers=headers, body={}
+                    "DELETE", path, headers=headers, body={},
                 )
             except c.EXC_VALIDATION_VALUE as exc:
                 return r[t.JsonMapping].fail(
-                    f"Request validation error: {exc}", exception=exc
+                    f"Request validation error: {exc}", exception=exc,
                 )
             except OSError as exc:
                 return r[t.JsonMapping].fail(f"Request I/O error: {exc}", exception=exc)
@@ -109,10 +117,14 @@ class FlextOracleWmsUtilitiesHttpClient:
             params: t.Api.WebParams | None = None,
             headers: t.StrMapping | None = None,
         ) -> p.Result[t.JsonMapping]:
-            """Make GET request with railway-oriented error handling."""
+            """Make GET request with railway-oriented error handling.
+
+            Returns:
+                The resulting ``p.Result[t.JsonMapping]``.
+            """
             params_str: t.Api.WebParams | None = params
             return self._execute_request(
-                "GET", path, params=params_str, headers=headers
+                "GET", path, params=params_str, headers=headers,
             )
 
         def post(
@@ -122,7 +134,11 @@ class FlextOracleWmsUtilitiesHttpClient:
             json_data: t.JsonMapping | None = None,
             headers: t.StrMapping | None = None,
         ) -> p.Result[t.JsonMapping]:
-            """Make POST request with railway-oriented error handling."""
+            """Make POST request with railway-oriented error handling.
+
+            Returns:
+                The resulting ``p.Result[t.JsonMapping]``.
+            """
             body = json_data or data
             return self._execute_request("POST", path, headers=headers, body=body)
 
@@ -133,14 +149,18 @@ class FlextOracleWmsUtilitiesHttpClient:
             json_data: t.JsonMapping | None = None,
             headers: t.StrMapping | None = None,
         ) -> p.Result[t.JsonMapping]:
-            """Make PUT request."""
+            """Make PUT request.
+
+            Returns:
+                The resulting ``p.Result[t.JsonMapping]``.
+            """
             try:
                 return self._execute_request_unchecked(
-                    "PUT", path, headers=headers, body=json_data or data
+                    "PUT", path, headers=headers, body=json_data or data,
                 )
             except c.EXC_VALIDATION_VALUE as exc:
                 return r[t.JsonMapping].fail(
-                    f"PUT validation error: {exc}", exception=exc
+                    f"PUT validation error: {exc}", exception=exc,
                 )
             except OSError as exc:
                 return r[t.JsonMapping].fail(f"PUT I/O error: {exc}", exception=exc)
@@ -168,14 +188,18 @@ class FlextOracleWmsUtilitiesHttpClient:
             headers: t.StrMapping | None = None,
             body: t.JsonMapping | None = None,
         ) -> p.Result[t.JsonMapping]:
-            """Execute HTTP request with FLEXT delegation."""
+            """Execute HTTP request with FLEXT delegation.
+
+            Returns:
+                The resulting ``p.Result[t.JsonMapping]``.
+            """
             try:
                 return self._execute_request_unchecked(
-                    method, path, params=params, headers=headers, body=body
+                    method, path, params=params, headers=headers, body=body,
                 )
             except c.EXC_VALIDATION_VALUE as exc:
                 return r[t.JsonMapping].fail(
-                    f"Request validation error: {exc}", exception=exc
+                    f"Request validation error: {exc}", exception=exc,
                 )
             except OSError as exc:
                 return r[t.JsonMapping].fail(f"Request I/O error: {exc}", exception=exc)
@@ -188,18 +212,22 @@ class FlextOracleWmsUtilitiesHttpClient:
             headers: t.StrMapping | None = None,
             body: t.JsonMapping | None = None,
         ) -> p.Result[t.JsonMapping]:
-            """Execute a request while allowing validation and I/O exceptions upward."""
+            """Execute a request while allowing validation and I/O exceptions upward.
+
+            Returns:
+                The resulting ``p.Result[t.JsonMapping]``.
+            """
             response_result = self._request_response_unchecked(
-                method, path, params=params, headers=headers, body=body
+                method, path, params=params, headers=headers, body=body,
             )
             if response_result.failure:
                 return r[t.JsonMapping].fail(
-                    f"HTTP {method} failed: {response_result.error}"
+                    f"HTTP {method} failed: {response_result.error}",
                 )
             response = response_result.value
             if response.status_code >= c.OracleWms.HTTP_BAD_REQUEST_THRESHOLD:
                 return r[t.JsonMapping].fail(
-                    f"HTTP {response.status_code}: {response.body!r}"
+                    f"HTTP {response.status_code}: {response.body!r}",
                 )
             return self._parse_response_body(response.body)
 
@@ -211,7 +239,11 @@ class FlextOracleWmsUtilitiesHttpClient:
             headers: t.StrMapping | None = None,
             body: t.JsonMapping | None = None,
         ) -> p.Result[m.Api.HttpResponse]:
-            """Build and dispatch one FLEXT API request."""
+            """Build and dispatch one FLEXT API request.
+
+            Returns:
+                The resulting ``p.Result[m.Api.HttpResponse]``.
+            """
             self._ensure_client()
             if self._client is None:
                 return r[m.Api.HttpResponse].fail("Client not initialized")
@@ -232,25 +264,36 @@ class FlextOracleWmsUtilitiesHttpClient:
             return self._client.request(request)
 
         def _parse_response_body(
-            self, body: t.Api.ResponseBody
+            self, body: t.Api.ResponseBody,
         ) -> p.Result[t.JsonMapping]:
-            """Parse response body; propagates parse failure via result."""
+            """Parse response body; propagates parse failure via result.
+
+            Returns:
+                The resulting ``p.Result[t.JsonMapping]``.
+            """
             if not isinstance(body, (dict, str, bytes)) or (
                 isinstance(body, str) and not body
             ):
                 return r[t.JsonMapping].fail(
-                    f"Unsupported response body type: {type(body)}"
+                    f"Unsupported response body type: {type(body)}",
                 )
             try:
                 return r[t.JsonMapping].ok(self._parse_response_body_unchecked(body))
             except c.EXC_VALIDATION_VALUE as exc:
                 return r[t.JsonMapping].fail(
-                    f"Response parse error: {exc}", exception=exc
+                    f"Response parse error: {exc}", exception=exc,
                 )
 
         @staticmethod
         def _parse_response_body_unchecked(body: t.Api.ResponseBody) -> t.JsonMapping:
-            """Parse a supported response body into a JSON mapping."""
+            """Parse a supported response body into a JSON mapping.
+
+            Returns:
+                The resulting ``t.JsonMapping``.
+
+            Raises:
+                TypeError: If Unsupported response body type.
+            """
             match body:
                 case dict() as payload:
                     return t.json_mapping_adapter().validate_python(payload)
@@ -270,7 +313,11 @@ class FlextOracleWmsUtilitiesHttpClient:
             *,
             verify_ssl: bool = True,
         ) -> FlextOracleWmsUtilitiesHttpClient.HttpClient:
-            """Create HttpClient instance."""
+            """Create HttpClient instance.
+
+            Returns:
+                The resulting ``FlextOracleWmsUtilitiesHttpClient.HttpClient``.
+            """
             return FlextOracleWmsUtilitiesHttpClient.HttpClient(
                 base_url=base_url,
                 timeout=timeout,

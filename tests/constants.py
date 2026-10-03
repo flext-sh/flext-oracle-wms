@@ -14,13 +14,13 @@ from typing import ClassVar
 
 from flext_tests import FlextTestsConstants
 
-from flext_oracle_wms import c
+from flext_oracle_wms import FlextOracleWmsConstants
 
 
-class TestsFlextOracleWmsConstants(FlextTestsConstants, c):
+class TestsFlextOracleWmsConstants(FlextTestsConstants, FlextOracleWmsConstants):
     """Test constants for flext-oracle-wms."""
 
-    class OracleWms(c.OracleWms):
+    class OracleWms(FlextOracleWmsConstants.OracleWms):
         """Oracle WMS domain test constants namespace."""
 
         class Tests(FlextTestsConstants.Tests):

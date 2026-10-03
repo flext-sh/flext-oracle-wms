@@ -1,14 +1,13 @@
 """Behavioral tests for Oracle WMS authentication.
 
-Copyright (c) 2025 FLEXT Team. All rights reserved.
-SPDX-License-Identifier: MIT
-
 Asserts the observable public contract of the Oracle WMS auth surface:
 ``m.OracleWms.AuthSettings`` (fields, defaults, ``normalized_method``,
 ``validate_business_rules``), the ``Authenticator`` (``authenticate`` /
 ``get_auth_headers`` returning ``r[T]``), and ``Client.from_auth_settings``.
 No private attribute access, no patching of the unit under test.
 
+Copyright (c) 2025 FLEXT Team. All rights reserved.
+SPDX-License-Identifier: MIT
 """
 
 from __future__ import annotations
@@ -17,8 +16,7 @@ import pytest
 from flext_tests import tm
 
 from tests import c, m, u
-
-from .._factories import _basic_password, _basic_token, _oauth_secret_456, _secret
+from tests._factories import _basic_password, _basic_token, _oauth_secret_456, _secret
 
 # Method enum reused across cases.
 _Method = c.OracleWms.OracleWMSAuthMethod
@@ -30,6 +28,7 @@ class TestsFlextOracleWmsAuthentication:
 
     # ---- Auth method enum contract --------------------------------------
 
+    @staticmethod
     @pytest.mark.parametrize(
         ("member", "expected_value"),
         [
@@ -40,12 +39,14 @@ class TestsFlextOracleWmsAuthentication:
         ],
     )
     def test_auth_method_exposes_wire_value(
-        self, member: c.OracleWms.OracleWMSAuthMethod, expected_value: str
+        member: c.OracleWms.OracleWMSAuthMethod,
+        expected_value: str,
     ) -> None:
         """Each auth method serializes to its documented wire string."""
         tm.that(member.value, eq=expected_value)
 
-    def test_auth_method_enumeration_is_complete(self) -> None:
+    @staticmethod
+    def test_auth_method_enumeration_is_complete() -> None:
         """Iterating the enum yields exactly the four supported methods."""
         tm.that(
             {member.value for member in _Method},
@@ -54,7 +55,8 @@ class TestsFlextOracleWmsAuthentication:
 
     # ---- AuthSettings model contract ------------------------------------
 
-    def test_defaults_produce_basic_method_and_documented_values(self) -> None:
+    @staticmethod
+    def test_defaults_produce_basic_method_and_documented_values() -> None:
         """A bare AuthSettings defaults to basic auth with documented values."""
         settings = m.OracleWms.AuthSettings()
         tm.that(settings.method, eq=_Method.BASIC)
@@ -63,16 +65,20 @@ class TestsFlextOracleWmsAuthentication:
         tm.that(settings.oauth2_scope, eq="wms.read wms.write")
         tm.that(settings.token_refresh_threshold, eq=300)
 
-    def test_basic_settings_retain_supplied_credentials(self) -> None:
+    @staticmethod
+    def test_basic_settings_retain_supplied_credentials() -> None:
         """Basic credentials are exposed unchanged through public fields."""
         settings = m.OracleWms.AuthSettings(
-            method=_Method.BASIC, username="test_user", password=_basic_password()
+            method=_Method.BASIC,
+            username="test_user",
+            password=_basic_password(),
         )
         tm.that(settings.method, eq=_Method.BASIC)
         tm.that(settings.username, eq="test_user")
         tm.that(settings.password, eq="test_password")
 
-    def test_oauth2_settings_retain_supplied_credentials(self) -> None:
+    @staticmethod
+    def test_oauth2_settings_retain_supplied_credentials() -> None:
         """OAuth2 credentials are exposed unchanged through public fields."""
         settings = m.OracleWms.AuthSettings(
             method=_Method.OAUTH2,
@@ -83,6 +89,7 @@ class TestsFlextOracleWmsAuthentication:
         tm.that(settings.oauth2_client_id, eq="client_id_123")
         tm.that(settings.oauth2_client_secret, eq="client_secret_456")
 
+    @staticmethod
     @pytest.mark.parametrize(
         ("supplied", "expected"),
         [
@@ -93,7 +100,8 @@ class TestsFlextOracleWmsAuthentication:
         ],
     )
     def test_normalized_method_is_canonical_lowercase(
-        self, supplied: str, expected: str
+        supplied: str,
+        expected: str,
     ) -> None:
         """normalized_method canonicalizes casing and whitespace."""
         settings = m.OracleWms.AuthSettings(method=supplied)
@@ -101,20 +109,27 @@ class TestsFlextOracleWmsAuthentication:
 
     # ---- validate_business_rules contract -------------------------------
 
-    def test_validate_business_rules_accepts_complete_basic(self) -> None:
+    @staticmethod
+    def test_validate_business_rules_accepts_complete_basic() -> None:
         """Complete basic credentials validate successfully."""
         settings = m.OracleWms.AuthSettings(
-            method=_Method.BASIC, username="test_user", password=_basic_password()
+            method=_Method.BASIC,
+            username="test_user",
+            password=_basic_password(),
         )
         assert u.OracleWms.validate_auth_settings(settings).unwrap() is True
 
-    def test_validate_business_rules_accepts_complete_oauth2(self) -> None:
+    @staticmethod
+    def test_validate_business_rules_accepts_complete_oauth2() -> None:
         """Complete OAuth2 credentials validate successfully."""
         settings = m.OracleWms.AuthSettings(
-            method=_Method.OAUTH2, oauth2_client_id="id", oauth2_client_secret=_secret()
+            method=_Method.OAUTH2,
+            oauth2_client_id="id",
+            oauth2_client_secret=_secret(),
         )
         assert u.OracleWms.validate_auth_settings(settings).unwrap() is True
 
+    @staticmethod
     @pytest.mark.parametrize(
         ("settings", "expected_fragment"),
         [
@@ -134,7 +149,8 @@ class TestsFlextOracleWmsAuthentication:
         ],
     )
     def test_validate_business_rules_reports_specific_failure(
-        self, settings: m.OracleWms.AuthSettings, expected_fragment: str
+        settings: m.OracleWms.AuthSettings,
+        expected_fragment: str,
     ) -> None:
         """Incomplete/unsupported configs fail with an explanatory error."""
         result = u.OracleWms.validate_auth_settings(settings)
@@ -143,10 +159,13 @@ class TestsFlextOracleWmsAuthentication:
 
     # ---- Authenticator.authenticate contract ----------------------------
 
-    def test_authenticator_behavior_reflects_its_settings(self) -> None:
+    @staticmethod
+    def test_authenticator_behavior_reflects_its_settings() -> None:
         """The authenticator's public behavior reflects the injected settings."""
         settings = m.OracleWms.AuthSettings(
-            method=_Method.BASIC, username="test_user", password=_basic_password()
+            method=_Method.BASIC,
+            username="test_user",
+            password=_basic_password(),
         )
         authenticator = u.OracleWms.Authenticator(settings)
         # NOTE (multi-agent): auth lane keeps the injected settings private
@@ -154,26 +173,33 @@ class TestsFlextOracleWmsAuthentication:
         tm.that(authenticator.normalized_method, eq=settings.normalized_method)
         tm.that(authenticator.authenticate().unwrap(), eq=_basic_token())
 
-    def test_basic_authenticate_returns_deterministic_token(self) -> None:
+    @staticmethod
+    def test_basic_authenticate_returns_deterministic_token() -> None:
         """Basic auth yields the base64 user:password token."""
         settings = m.OracleWms.AuthSettings(
-            method=_Method.BASIC, username="test_user", password=_basic_password()
+            method=_Method.BASIC,
+            username="test_user",
+            password=_basic_password(),
         )
         authenticator = u.OracleWms.Authenticator(settings)
         result = authenticator.authenticate()
         tm.ok(result)
         tm.that(result.unwrap(), eq=_basic_token())
 
-    def test_basic_authenticate_is_idempotent(self) -> None:
+    @staticmethod
+    def test_basic_authenticate_is_idempotent() -> None:
         """Repeated basic authentication yields the same token."""
         settings = m.OracleWms.AuthSettings(
-            method=_Method.BASIC, username="test_user", password=_basic_password()
+            method=_Method.BASIC,
+            username="test_user",
+            password=_basic_password(),
         )
         authenticator = u.OracleWms.Authenticator(settings)
         first = authenticator.authenticate()
         second = authenticator.authenticate()
         tm.that(first.unwrap(), eq=second.unwrap())
 
+    @staticmethod
     @pytest.mark.parametrize(
         ("settings", "expected_error"),
         [
@@ -196,7 +222,8 @@ class TestsFlextOracleWmsAuthentication:
         ],
     )
     def test_authenticate_failure_carries_reason(
-        self, settings: m.OracleWms.AuthSettings, expected_error: str
+        settings: m.OracleWms.AuthSettings,
+        expected_error: str,
     ) -> None:
         """Failed authentication surfaces the precise reason."""
         authenticator = u.OracleWms.Authenticator(settings)
@@ -204,7 +231,8 @@ class TestsFlextOracleWmsAuthentication:
         tm.fail(result)
         tm.that(result.error, eq=expected_error)
 
-    def test_authenticate_rejects_unsupported_method(self) -> None:
+    @staticmethod
+    def test_authenticate_rejects_unsupported_method() -> None:
         """A method that is neither basic nor oauth2 is rejected."""
         settings = m.OracleWms.AuthSettings(method=_Method.API_KEY)
         result = u.OracleWms.Authenticator(settings).authenticate()
@@ -213,17 +241,21 @@ class TestsFlextOracleWmsAuthentication:
 
     # ---- Authenticator.get_auth_headers contract ------------------------
 
-    def test_basic_headers_carry_basic_authorization(self) -> None:
+    @staticmethod
+    def test_basic_headers_carry_basic_authorization() -> None:
         """Successful basic auth builds a Basic Authorization header."""
         settings = m.OracleWms.AuthSettings(
-            method=_Method.BASIC, username="test_user", password=_basic_password()
+            method=_Method.BASIC,
+            username="test_user",
+            password=_basic_password(),
         )
         authenticator = u.OracleWms.Authenticator(settings)
         result = authenticator.get_auth_headers()
         tm.ok(result)
         tm.that(result.unwrap(), eq={"Authorization": f"Basic {_basic_token()}"})
 
-    def test_headers_fail_when_authentication_fails(self) -> None:
+    @staticmethod
+    def test_headers_fail_when_authentication_fails() -> None:
         """Header building propagates the underlying auth failure."""
         settings = m.OracleWms.AuthSettings(method=_Method.BASIC)
         authenticator = u.OracleWms.Authenticator(settings)
@@ -233,30 +265,34 @@ class TestsFlextOracleWmsAuthentication:
 
     # ---- Client.from_auth_settings contract -----------------------------
 
-    def test_client_builds_from_valid_basic_settings(self) -> None:
+    @staticmethod
+    def test_client_builds_from_valid_basic_settings() -> None:
         """Valid basic settings produce a concrete Client instance."""
         settings = m.OracleWms.AuthSettings(
-            method=_Method.BASIC, username="test_user", password=_basic_password()
+            method=_Method.BASIC,
+            username="test_user",
+            password=_basic_password(),
         )
         result = u.OracleWms.Client.from_auth_settings(settings)
         tm.ok(result)
         tm.that(result.unwrap(), is_=u.OracleWms.Client)
 
-    def test_client_rejects_invalid_basic_settings(self) -> None:
+    @staticmethod
+    def test_client_rejects_invalid_basic_settings() -> None:
         """Basic settings missing credentials cannot build a client."""
         settings = m.OracleWms.AuthSettings(method=_Method.BASIC)
         result = u.OracleWms.Client.from_auth_settings(settings)
         tm.fail(result)
         tm.that(result.error, none=False)
 
-    def test_client_rejects_non_basic_method(self) -> None:
+    @staticmethod
+    def test_client_rejects_non_basic_method() -> None:
         """Only basic auth is supported by the runtime client today."""
         settings = m.OracleWms.AuthSettings(
-            method=_Method.OAUTH2, oauth2_client_id="id", oauth2_client_secret=_secret()
+            method=_Method.OAUTH2,
+            oauth2_client_id="id",
+            oauth2_client_secret=_secret(),
         )
         result = u.OracleWms.Client.from_auth_settings(settings)
         error = tm.fail(result)
         tm.that(error.lower(), has="basic auth only")
-
-
-__all__: list[str] = ["TestsFlextOracleWmsAuthentication"]

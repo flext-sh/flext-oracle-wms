@@ -1,6 +1,9 @@
 """Example usage of the new declarative Oracle WMS Client.
 
 This demonstrates the declarative approach with massive code reduction.
+
+Copyright (c) 2026 FLEXT Team. All rights reserved.
+SPDX-License-Identifier: MIT
 """
 
 from __future__ import annotations
@@ -18,7 +21,11 @@ FlextOracleWmsClient = u.OracleWms.Client
 
 
 def load_env_config() -> t.MutableJsonMapping | None:
-    """Load configuration from .env file."""
+    """Load configuration from .env file.
+
+    Returns:
+        The resulting ``t.MutableJsonMapping | None``.
+    """
     env_path = Path("flext-tap-oracle-wms/.env")
     if not env_path.exists():
         return None
@@ -52,7 +59,7 @@ def load_env_config() -> t.MutableJsonMapping | None:
         "oracle_wms_verify_ssl": settings.get("ORACLE_WMS_VERIFY_SSL", "true").lower()
         == "true",
         "oracle_wms_enable_logging": settings.get(
-            "ORACLE_WMS_ENABLE_REQUEST_LOGGING", "true"
+            "ORACLE_WMS_ENABLE_REQUEST_LOGGING", "true",
         ).lower()
         == "true",
     }
@@ -88,7 +95,11 @@ def main() -> None:
 
 
 def run_client_flow(client: FlextOracleWmsClient) -> None:
-    """Run the declarative example client flow."""
+    """Run the declarative example client flow.
+
+    Raises:
+        RuntimeError: If client start failed.
+    """
     start_result = client.start()
     if not start_result.success:
         msg = f"client start failed: {start_result.error}"

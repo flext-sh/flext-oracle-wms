@@ -17,91 +17,159 @@ from flext_oracle_wms import FlextOracleWmsModels as m
 
 
 def _basic_username() -> str:
-    """Canonical BASIC username used across authentication tests."""
+    """Canonical BASIC username used across authentication tests.
+
+    Returns:
+        The resulting ``str``.
+    """
     return "test_user"
 
 
 def _basic_password() -> str:
-    """Canonical BASIC password used across authentication tests."""
+    """Canonical BASIC password used across authentication tests.
+
+    Returns:
+        The resulting ``str``.
+    """
     return "test_password"
 
 
 def _basic_token() -> str:
-    """Base64-encoded BASIC token for ``test_user:test_password``."""
+    """Base64-encoded BASIC token for ``test_user:test_password``.
+
+    Returns:
+        The resulting ``str``.
+    """
     return base64.b64encode(f"{_basic_username()}:{_basic_password()}".encode()).decode(
-        "ascii"
+        "ascii",
     )
 
 
 def _wms_username() -> str:
-    """Username used for WMS-specific client tests."""
+    """Username used for WMS-specific client tests.
+
+    Returns:
+        The resulting ``str``.
+    """
     return "wms-user"
 
 
 def _wms_password() -> str:
-    """Password used for WMS-specific client tests."""
+    """Password used for WMS-specific client tests.
+
+    Returns:
+        The resulting ``str``.
+    """
     return "wms-secret"
 
 
 def _wms_password_underscore() -> str:
-    """Underscored variant for WMS-specific client tests."""
+    """Underscored variant for WMS-specific client tests.
+
+    Returns:
+        The resulting ``str``.
+    """
     return "wms_pass"
 
 
 def _test_pass() -> str:
-    """Shorter test password variant."""
+    """Shorter test password variant.
+
+    Returns:
+        The resulting ``str``.
+    """
     return "test_pass"
 
 
 def _custom_password() -> str:
-    """Custom test password for settings-resolution tests."""
+    """Custom test password for settings-resolution tests.
+
+    Returns:
+        The resulting ``str``.
+    """
     return "custom_pass"
 
 
 def _short_password() -> str:
-    """Very short test password for unsupported-method tests."""
+    """Very short test password for unsupported-method tests.
+
+    Returns:
+        The resulting ``str``.
+    """
     return "pw"
 
 
 def _secret() -> str:
-    """Generic secret value used for OAuth2 client-secret tests."""
+    """Generic secret value used for OAuth2 client-secret tests.
+
+    Returns:
+        The resulting ``str``.
+    """
     return "secret"
 
 
 def _oauth_secret() -> str:
-    """Canonical OAuth2 client secret."""
+    """Canonical OAuth2 client secret.
+
+    Returns:
+        The resulting ``str``.
+    """
     return "client_secret"
 
 
 def _oauth_secret_dashed() -> str:
-    """Dashed OAuth2 client secret variant."""
+    """Dashed OAuth2 client secret variant.
+
+    Returns:
+        The resulting ``str``.
+    """
     return "client-secret"
 
 
 def _oauth_secret_456() -> str:
-    """Numeric OAuth2 client secret variant."""
+    """Numeric OAuth2 client secret variant.
+
+    Returns:
+        The resulting ``str``.
+    """
     return "client_secret_456"
 
 
 def _oauth_client_id() -> str:
-    """Canonical OAuth2 client id."""
+    """Canonical OAuth2 client id.
+
+    Returns:
+        The resulting ``str``.
+    """
     return "client_id"
 
 
 def _oauth_client_id_dashed() -> str:
-    """Dashed OAuth2 client id variant."""
+    """Dashed OAuth2 client id variant.
+
+    Returns:
+        The resulting ``str``.
+    """
     return "client-id"
 
 
 def _oauth_client_id_123() -> str:
-    """Numeric OAuth2 client id variant."""
+    """Numeric OAuth2 client id variant.
+
+    Returns:
+        The resulting ``str``.
+    """
     return "client_id_123"
 
 
 def _basic_auth_settings() -> m.OracleWms.AuthSettings:
-    """Canonical valid BASIC auth settings."""
+    """Canonical valid BASIC auth settings.
+
+    Returns:
+        The resulting ``m.OracleWms.AuthSettings``.
+    """
     return m.OracleWms.AuthSettings(
-        method="basic", username=_basic_username(), password=_basic_password()
+        method="basic", username=_basic_username(), password=_basic_password(),
     )
 
 
