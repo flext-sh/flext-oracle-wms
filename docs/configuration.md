@@ -152,7 +152,9 @@ from flext_oracle_wms import FlextOracleWmsSettings
 # Configuration validation is implemented
 wms_password = os.environ.get("FLEXT_ORACLE_WMS_PASSWORD", "test_password")
 settings = FlextOracleWmsSettings(
-    base_url="https://test.example.com", username="test_user", password=wms_password,
+    base_url="https://test.example.com",
+    username="test_user",
+    password=wms_password,
 )
 # Pydantic automatically validates configuration structure
 ```
