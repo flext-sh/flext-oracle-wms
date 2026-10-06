@@ -66,6 +66,9 @@ class FlextOracleWmsConfig(
 
 
 config: FlextOracleWmsConfig = FlextOracleWmsConfig.fetch_global()
-"""Pre-instantiated frozen config singleton — ``from flext_oracle_wms import config``."""
+"""Pre-instantiated frozen config singleton.
+
+Exposed as ``from flext_oracle_wms import config``.
+"""
 
 __all__: list[str] = ["FlextOracleWmsConfig", "config"]

@@ -144,7 +144,7 @@ def demonstrate_error_handling(client: FlextOracleWmsClient) -> None:
             or "timeout" in result.error.lower()
         )
     ):
-        logger.info(f"Expected error handled: {result.error}")
+        logger.info("Expected error handled: %s", result.error)
 
 
 def run_basic_usage() -> None:

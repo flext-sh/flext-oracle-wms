@@ -68,7 +68,10 @@ def load_config_from_environment() -> FlextOracleWmsSettings:
     username = os.getenv("ORACLE_WMS_USERNAME")
     password = os.getenv("ORACLE_WMS_PASSWORD")
     if not all([base_url, username, password]):
-        msg = "Missing required environment variables: ORACLE_WMS_BASE_URL, ORACLE_WMS_USERNAME, ORACLE_WMS_PASSWORD"
+        msg = (
+            "Missing required environment variables: "
+            "ORACLE_WMS_BASE_URL, ORACLE_WMS_USERNAME, ORACLE_WMS_PASSWORD"
+        )
         raise ValueError(msg)
     if base_url is None or username is None or password is None:
         msg = "Required environment variables cannot be None"

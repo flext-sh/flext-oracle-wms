@@ -46,7 +46,7 @@ def load_env_config() -> t.MutableJsonMapping | None:
             parsed = urlparse(base_url)
             path_parts = parsed.path.strip("/").split("/")
             if path_parts and path_parts[-1]:
-                logger.debug(f"Environment detected in URL: {path_parts[-1]}")
+                logger.debug("Environment detected in URL: %s", path_parts[-1])
         except (ValueError, AttributeError) as e:
             logger.debug("Failed to parse environment from URL: %s", e)
     return {
@@ -95,6 +95,35 @@ def main() -> None:
         client.stop()
 
 
+def _group_api_endpoints_by_category() -> t.MutableMappingKV[
+    str,
+    t.MutableSequenceOf[str],
+]:
+    """Group the declarative API endpoints by their category.
+
+    Returns:
+        The resulting category-to-endpoint-name mapping.
+    """
+    categories: t.MutableMappingKV[str, t.MutableSequenceOf[str]] = {}
+    for api in FlextOracleWmsApi.api_endpoints().values():
+        if api.category not in categories:
+            categories[api.category] = []
+        categories[api.category].append(api.name)
+    return categories
+
+
+def _fetch_sample_entities(client: FlextOracleWmsClient) -> None:
+    """Fetch a small sample for each representative WMS entity."""
+    for entity in ["company", "facility", "item"]:
+        result = client.fetch_entity_data(entity, limit=3)
+        if result.success:
+            data = result.value
+            if isinstance(data, list):
+                for record in data:
+                    if isinstance(record, dict):
+                        record.get("count", str(len(data)))
+
+
 def run_client_flow(client: FlextOracleWmsClient) -> None:
     """Run the declarative example client flow.
 
@@ -105,28 +134,15 @@ def run_client_flow(client: FlextOracleWmsClient) -> None:
     if not start_result.success:
         msg = f"client start failed: {start_result.error}"
         raise RuntimeError(msg)
-    categories: t.MutableMappingKV[str, t.MutableSequenceOf[str]] = {}
-    for api in FlextOracleWmsApi.api_endpoints().values():
-        if api.category not in categories:
-            categories[api.category] = []
-        categories[api.category].append(api.name)
-    for _category, _apis in categories.items():
-        pass
+    _group_api_endpoints_by_category()
     client.health_check()
     client.discover_entities()
-    for entity in ["company", "facility", "item"]:
-        result = client.fetch_entity_data(entity, limit=3)
-        if result.success:
-            data = result.value
-            if isinstance(data, list):
-                for record in data:
-                    if isinstance(record, dict):
-                        record.get("count", str(len(data)))
+    _fetch_sample_entities(client)
     client.health_check()
     client.update_oblpn_tracking_number(oblpn_id="TEST123", tracking_number="TRACK123")
     lpn_result = client.create_lpn(lpn_nbr="TEST_LPN", qty=10)
     if lpn_result.failure:
-        logger.debug(f"LPN creation failed as expected: {lpn_result.error}")
+        logger.debug("LPN creation failed as expected: %s", lpn_result.error)
 
 
 if __name__ == "__main__":

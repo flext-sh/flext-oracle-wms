@@ -28,7 +28,7 @@ class FlextOracleWmsUtilitiesDiscovery:
             return r[bool].fail("Entity name is too long")
         if not entity.endpoint:
             return r[bool].fail("Entity endpoint is required")
-        return r[bool].ok(True)
+        return r[bool].ok(value=True)
 
 
 __all__: list[str] = ["FlextOracleWmsUtilitiesDiscovery"]

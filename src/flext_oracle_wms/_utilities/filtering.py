@@ -271,18 +271,24 @@ class FlextOracleWmsUtilitiesFiltering:
                 self.logger.exception("Sort failed")
                 return r[Sequence[t.OracleWms.FilterRecord]].fail_op("Sort", exc)
 
-        def _apply_operator(
-            self,
+        @staticmethod
+        def _apply_null_semantics(
             field_value: t.OracleWms.FilterRecordValue | None,
             operator: c.OracleWms.WmsFilterOperator | str,
-            filter_value: (t.OracleWms.FilterScalar | t.OracleWms.FilterList),
-        ) -> bool:
+            filter_value: t.OracleWms.FilterScalar | t.OracleWms.FilterList,
+        ) -> bool | None:
+            """Resolve the three-valued null comparison semantics.
+
+            Returns:
+                The resulting ``bool | None``: ``None`` when both values are
+                present and the operator match must run.
+            """
             if (field_value is None and filter_value is not None) or (
                 field_value is not None and filter_value is None
             ):
-                result = False
-            elif field_value is None and filter_value is None:
-                result = operator in {
+                return False
+            if field_value is None and filter_value is None:
+                return operator in {
                     c.OracleWms.WmsFilterOperator.EQ,
                     c.OracleWms.WmsFilterOperator.GTE,
                     c.OracleWms.WmsFilterOperator.LTE,
@@ -290,48 +296,78 @@ class FlextOracleWmsUtilitiesFiltering:
                     "gte",
                     "lte",
                 }
-            else:
-                match operator:
-                    case c.OracleWms.WmsFilterOperator.EQ | "eq":
-                        result = self._normalize(field_value) == self._normalize(
-                            filter_value,
-                        )
-                    case c.OracleWms.WmsFilterOperator.NE | "ne":
-                        result = self._normalize(field_value) != self._normalize(
-                            filter_value,
-                        )
-                    case c.OracleWms.WmsFilterOperator.IN | "in":
-                        match filter_value:
-                            case list() as options:
-                                result = str(field_value) in [
-                                    str(item) for item in options
-                                ]
-                            case _:
-                                result = False
-                    case c.OracleWms.WmsFilterOperator.CONTAINS | "contains":
-                        result = (
-                            isinstance(field_value, str)
-                            and str(filter_value) in field_value
-                        )
-                    case c.OracleWms.WmsFilterOperator.GT | "gt":
-                        result = type(field_value) is type(
-                            filter_value,
-                        ) and self._compare(field_value, filter_value, ">")
-                    case c.OracleWms.WmsFilterOperator.LT | "lt":
-                        result = type(field_value) is type(
-                            filter_value,
-                        ) and self._compare(field_value, filter_value, "<")
-                    case c.OracleWms.WmsFilterOperator.GTE | "gte":
-                        result = type(field_value) is type(
-                            filter_value,
-                        ) and self._compare(field_value, filter_value, ">=")
-                    case c.OracleWms.WmsFilterOperator.LTE | "lte":
-                        result = type(field_value) is type(
-                            filter_value,
-                        ) and self._compare(field_value, filter_value, "<=")
-                    case _:
-                        result = False
+            return None
+
+        def _match_operator(
+            self,
+            field_value: t.OracleWms.FilterRecordValue | None,
+            operator: c.OracleWms.WmsFilterOperator | str,
+            filter_value: t.OracleWms.FilterScalar | t.OracleWms.FilterList,
+        ) -> bool:
+            """Evaluate a single filter operator against present values.
+
+            Returns:
+                The resulting ``bool``.
+            """
+            match operator:
+                case c.OracleWms.WmsFilterOperator.EQ | "eq":
+                    result = self._normalize(field_value) == self._normalize(
+                        filter_value,
+                    )
+                case c.OracleWms.WmsFilterOperator.NE | "ne":
+                    result = self._normalize(field_value) != self._normalize(
+                        filter_value,
+                    )
+                case c.OracleWms.WmsFilterOperator.IN | "in":
+                    match filter_value:
+                        case list() as options:
+                            result = str(field_value) in [str(item) for item in options]
+                        case _:
+                            result = False
+                case c.OracleWms.WmsFilterOperator.CONTAINS | "contains":
+                    result = (
+                        isinstance(field_value, str)
+                        and str(filter_value) in field_value
+                    )
+                case c.OracleWms.WmsFilterOperator.GT | "gt":
+                    result = type(field_value) is type(
+                        filter_value,
+                    ) and self._compare(field_value, filter_value, ">")
+                case c.OracleWms.WmsFilterOperator.LT | "lt":
+                    result = type(field_value) is type(
+                        filter_value,
+                    ) and self._compare(field_value, filter_value, "<")
+                case c.OracleWms.WmsFilterOperator.GTE | "gte":
+                    result = type(field_value) is type(
+                        filter_value,
+                    ) and self._compare(field_value, filter_value, ">=")
+                case c.OracleWms.WmsFilterOperator.LTE | "lte":
+                    result = type(field_value) is type(
+                        filter_value,
+                    ) and self._compare(field_value, filter_value, "<=")
+                case _:
+                    result = False
             return result
+
+        def _apply_operator(
+            self,
+            field_value: t.OracleWms.FilterRecordValue | None,
+            operator: c.OracleWms.WmsFilterOperator | str,
+            filter_value: (t.OracleWms.FilterScalar | t.OracleWms.FilterList),
+        ) -> bool:
+            """Apply one filter operator including null semantics.
+
+            Returns:
+                The resulting ``bool``.
+            """
+            null_result = self._apply_null_semantics(
+                field_value,
+                operator,
+                filter_value,
+            )
+            if null_result is not None:
+                return null_result
+            return self._match_operator(field_value, operator, filter_value)
 
         @staticmethod
         def _get_nested_value(
@@ -427,7 +463,7 @@ class FlextOracleWmsUtilitiesFiltering:
                 return r[bool].fail(
                     f"Too many filter conditions: {total} > {self.max_conditions}",
                 )
-            return r[bool].ok(True)
+            return r[bool].ok(value=True)
 
         def _validate_filters(
             self,
@@ -438,7 +474,7 @@ class FlextOracleWmsUtilitiesFiltering:
                 return r[bool].fail(
                     f"Too many conditions. Max: {self.max_conditions}, Got: {total}",
                 )
-            return r[bool].ok(True)
+            return r[bool].ok(value=True)
 
 
 __all__: list[str] = ["FlextOracleWmsUtilitiesFiltering"]
