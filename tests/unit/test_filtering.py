@@ -174,6 +174,8 @@ class TestsFlextOracleWmsFiltering:
         assert not result.value
 
     # ------------------------------------------------------------------ #
+
+
 # Nested / dotted path resolution (observed through matching).
 # ------------------------------------------------------------------ #
 
