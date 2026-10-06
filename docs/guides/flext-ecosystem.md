@@ -42,11 +42,11 @@ from __future__ import annotations
 
 # Current: Non-compliant httpx usage
 import httpx
+from flext_api import FlextApiClient
 
 client = httpx.Client()
 
 # Required: flext-api integration
-from flext_api import FlextApiClient
 
 client = FlextApiClient()
 ```
