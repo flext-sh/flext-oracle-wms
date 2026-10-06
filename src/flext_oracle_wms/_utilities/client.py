@@ -42,7 +42,8 @@ class FlextOracleWmsUtilitiesClient:
 
         @classmethod
         def from_auth_settings(
-            cls, auth_settings: m.OracleWms.AuthSettings,
+            cls,
+            auth_settings: m.OracleWms.AuthSettings,
         ) -> p.Result[FlextOracleWmsUtilitiesClient.Client]:
             """Create a concrete client by merging auth settings with runtime WMS settings.
 
@@ -113,11 +114,13 @@ class FlextOracleWmsUtilitiesClient:
 
         @staticmethod
         def _decode_response_model[T: m.BaseModel](
-            payload: t.Api.ResponseBody | t.JsonValue, model_type: type[T],
+            payload: t.Api.ResponseBody | t.JsonValue,
+            model_type: type[T],
         ) -> p.Result[T]:
             if isinstance(payload, dict):
                 return u.try_(
-                    lambda: model_type.model_validate(payload), catch=c.ValidationError,
+                    lambda: model_type.model_validate(payload),
+                    catch=c.ValidationError,
                 ).map_error(lambda exc: f"Invalid response payload: {exc}")
             if isinstance(payload, str):
                 return u.try_(
@@ -157,7 +160,10 @@ class FlextOracleWmsUtilitiesClient:
             return self.post("/lpn", body=payload)
 
         def delete(
-            self, path: str, *, headers: t.StrMapping | None = None,
+            self,
+            path: str,
+            *,
+            headers: t.StrMapping | None = None,
         ) -> p.Result[m.Api.HttpResponse]:
             """Make DELETE request to Oracle WMS API.
 
@@ -176,7 +182,8 @@ class FlextOracleWmsUtilitiesClient:
             if result.failure:
                 return r[t.StrSequence].fail(result.error)
             payload_result = self._decode_response_model(
-                result.value.body, m.OracleWms.EntitiesResponse,
+                result.value.body,
+                m.OracleWms.EntitiesResponse,
             )
             if payload_result.failure:
                 return r[t.StrSequence].fail(payload_result.error)
@@ -198,7 +205,8 @@ class FlextOracleWmsUtilitiesClient:
             return self._request(c.Api.Method.GET, path, headers=headers, params=params)
 
         def get_apis_by_category(
-            self, category: str,
+            self,
+            category: str,
         ) -> p.Result[t.SequenceOf[t.StrMapping]]:
             """Get Oracle WMS APIs by category.
 
@@ -209,7 +217,8 @@ class FlextOracleWmsUtilitiesClient:
             if result.failure:
                 return r[t.SequenceOf[t.StrMapping]].fail(result.error)
             payload_result = self._decode_response_model(
-                result.value.body, m.OracleWms.ApiCategoryResponse,
+                result.value.body,
+                m.OracleWms.ApiCategoryResponse,
             )
             if payload_result.failure:
                 return r[t.SequenceOf[t.StrMapping]].fail(payload_result.error)
@@ -236,7 +245,8 @@ class FlextOracleWmsUtilitiesClient:
             if result.failure:
                 return r[t.SequenceOf[t.StrMapping]].fail(result.error)
             payload_result = self._decode_response_model(
-                result.value.body, m.OracleWms.EntityDataResponse,
+                result.value.body,
+                m.OracleWms.EntityDataResponse,
             )
             if payload_result.failure:
                 return r[t.SequenceOf[t.StrMapping]].fail(payload_result.error)
@@ -304,7 +314,9 @@ class FlextOracleWmsUtilitiesClient:
             return r[bool].ok(True)
 
         def update_oblpn_tracking_number(
-            self, oblpn_id: str, tracking_number: str,
+            self,
+            oblpn_id: str,
+            tracking_number: str,
         ) -> p.Result[m.Api.HttpResponse]:
             """Update OBLPN tracking number.
 

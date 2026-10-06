@@ -169,7 +169,9 @@ def _basic_auth_settings() -> m.OracleWms.AuthSettings:
         The resulting ``m.OracleWms.AuthSettings``.
     """
     return m.OracleWms.AuthSettings(
-        method="basic", username=_basic_username(), password=_basic_password(),
+        method="basic",
+        username=_basic_username(),
+        password=_basic_password(),
     )
 
 

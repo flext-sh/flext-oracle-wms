@@ -67,33 +67,42 @@ class TestsFlextOracleWmsUtilities(FlextTestsUtilities, u):
                 return FlextOracleWmsSettings.model_validate({
                     "OracleWms": {
                         "base_url": u.to_str(
-                            env_config.get("base_url", ""), default="",
+                            env_config.get("base_url", ""),
+                            default="",
                         ),
                         "username": u.to_str(
-                            env_config.get("username", ""), default="",
+                            env_config.get("username", ""),
+                            default="",
                         ),
                         "password": u.to_str(
-                            env_config.get("password", ""), default="",
+                            env_config.get("password", ""),
+                            default="",
                         ),
                         "api_version": api_version,
                         "auth_method": u.to_str(
-                            env_config.get("auth_method", "BASIC"), default="BASIC",
+                            env_config.get("auth_method", "BASIC"),
+                            default="BASIC",
                         ),
                         "timeout": u.to_int(env_config.get("timeout", 30), default=30),
                         "retry_attempts": u.to_int(
-                            env_config.get("retry_attempts", 3), default=3,
+                            env_config.get("retry_attempts", 3),
+                            default=3,
                         ),
                         "verify_ssl": u.to_bool(
-                            env_config.get("verify_ssl", True), default=True,
+                            env_config.get("verify_ssl", True),
+                            default=True,
                         ),
                         "enable_logging": u.to_bool(
-                            env_config.get("enable_logging", True), default=True,
+                            env_config.get("enable_logging", True),
+                            default=True,
                         ),
                         "connection_pool_size": u.to_int(
-                            env_config.get("connection_pool_size", 20), default=20,
+                            env_config.get("connection_pool_size", 20),
+                            default=20,
                         ),
                         "cache_duration": u.to_int(
-                            env_config.get("cache_duration", 3600), default=3600,
+                            env_config.get("cache_duration", 3600),
+                            default=3600,
                         ),
                     },
                 })
@@ -143,7 +152,8 @@ class TestsFlextOracleWmsUtilities(FlextTestsUtilities, u):
 
             @classmethod
             def load_env_config(
-                cls, start_path: Path,
+                cls,
+                start_path: Path,
             ) -> p.Result[TestsFlextOracleWmsTypes.OracleWms.Tests.EnvConfig]:
                 """Load declarative integration settings from the nearest `.env` file.
 
@@ -166,7 +176,8 @@ class TestsFlextOracleWmsUtilities(FlextTestsUtilities, u):
                                 settings[key.strip()] = value.strip()
                 except (OSError, ValueError, TypeError) as exc:
                     return r[TestsFlextOracleWmsTypes.OracleWms.Tests.EnvConfig].fail(
-                        f"Failed to load .env settings: {exc}", exception=exc,
+                        f"Failed to load .env settings: {exc}",
+                        exception=exc,
                     )
                 base_url = settings.get("ORACLE_WMS_BASE_URL", "")
                 return r[TestsFlextOracleWmsTypes.OracleWms.Tests.EnvConfig].ok({
@@ -176,10 +187,12 @@ class TestsFlextOracleWmsUtilities(FlextTestsUtilities, u):
                     "environment": cls._resolve_environment_name(base_url),
                     "api_version": "LGF_V10",
                     "timeout": u.to_int(
-                        settings.get("ORACLE_WMS_TIMEOUT", "30"), default=30,
+                        settings.get("ORACLE_WMS_TIMEOUT", "30"),
+                        default=30,
                     ),
                     "max_retries": u.to_int(
-                        settings.get("ORACLE_WMS_MAX_RETRIES", "3"), default=3,
+                        settings.get("ORACLE_WMS_MAX_RETRIES", "3"),
+                        default=3,
                     ),
                     "verify_ssl": u.to_bool(
                         settings.get("ORACLE_WMS_VERIFY_SSL", "true").lower() == "true",
@@ -187,7 +200,8 @@ class TestsFlextOracleWmsUtilities(FlextTestsUtilities, u):
                     ),
                     "enable_logging": u.to_bool(
                         settings.get(
-                            "ORACLE_WMS_ENABLE_REQUEST_LOGGING", "true",
+                            "ORACLE_WMS_ENABLE_REQUEST_LOGGING",
+                            "true",
                         ).lower()
                         == "true",
                         default=True,

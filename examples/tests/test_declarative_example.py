@@ -59,7 +59,8 @@ def load_env_config() -> t.MutableJsonMapping | None:
         "oracle_wms_verify_ssl": settings.get("ORACLE_WMS_VERIFY_SSL", "true").lower()
         == "true",
         "oracle_wms_enable_logging": settings.get(
-            "ORACLE_WMS_ENABLE_REQUEST_LOGGING", "true",
+            "ORACLE_WMS_ENABLE_REQUEST_LOGGING",
+            "true",
         ).lower()
         == "true",
     }
