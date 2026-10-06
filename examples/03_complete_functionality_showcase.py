@@ -136,7 +136,8 @@ def showcase_2_entity_discovery(client: FlextOracleWmsClient) -> list[str]:
 
 
 def showcase_3_data_retrieval(
-    client: FlextOracleWmsClient, entities: list[str],
+    client: FlextOracleWmsClient,
+    entities: list[str],
 ) -> t.MutableJsonMapping:
     """Feature 3: Data Retrieval and Querying.
 
@@ -158,7 +159,9 @@ def showcase_3_data_retrieval(
                 sample_data[entity_name] = str(len(data))
     if "company" in sample_data:
         client.fetch_entity_data(
-            entity_name="company", limit=3, filters={"active": "Y"},
+            entity_name="company",
+            limit=3,
+            filters={"active": "Y"},
         )
     return sample_data
 
@@ -256,7 +259,8 @@ def showcase_7_health_monitoring(client: FlextOracleWmsClient) -> t.MutableJsonM
 
 
 def showcase_8_performance_tracking(
-    client: FlextOracleWmsClient, entities: list[str],
+    client: FlextOracleWmsClient,
+    entities: list[str],
 ) -> None:
     """Feature 8: Performance Tracking."""
     min_entities_for_concurrent_test = c.OracleWms.DEFAULT_MAX_RETRIES
@@ -294,7 +298,8 @@ def showcase_9_cache_management(client: FlextOracleWmsClient) -> None:
 
 
 def showcase_10_enterprise_features(
-    _client: FlextOracleWmsClient, settings: FlextOracleWmsSettings,
+    _client: FlextOracleWmsClient,
+    settings: FlextOracleWmsSettings,
 ) -> None:
     """Feature 10: Enterprise Features."""
 

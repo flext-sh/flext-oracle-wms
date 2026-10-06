@@ -20,7 +20,8 @@ class FlextOracleWmsConstants(FlextApiConstants):
     """
 
     class OracleWms(
-        FlextOracleWmsConstantsBase, FlextOracleWmsConstantsValues.OracleWms,
+        FlextOracleWmsConstantsBase,
+        FlextOracleWmsConstantsValues.OracleWms,
     ):
         """WMS connection constants - composed from base.
 

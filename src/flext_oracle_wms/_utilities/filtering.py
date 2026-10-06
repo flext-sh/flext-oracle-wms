@@ -54,7 +54,10 @@ class FlextOracleWmsUtilitiesFiltering:
 
         @classmethod
         def create_filter(
-            cls, *, case_sensitive: bool = False, max_conditions: int = 50,
+            cls,
+            *,
+            case_sensitive: bool = False,
+            max_conditions: int = 50,
         ) -> FlextOracleWmsUtilitiesFiltering.Filter:
             """Create a filter engine with explicit configuration.
 
@@ -83,7 +86,8 @@ class FlextOracleWmsUtilitiesFiltering:
             else:
                 filters = {
                     field: m.OracleWms.FlextOracleWmsOperatorFilter(
-                        operator=operator, value=value,
+                        operator=operator,
+                        value=value,
                     ),
                 }
             return engine.filter_records(records, filters)
@@ -156,10 +160,14 @@ class FlextOracleWmsUtilitiesFiltering:
             if isinstance(left, str) and isinstance(right, str):
                 return cls._compare_string(left, right, op)
             left_num = u.validate_value(
-                t.float_adapter(), cls._scalar_part(left), strict=True,
+                t.float_adapter(),
+                cls._scalar_part(left),
+                strict=True,
             ).unwrap()
             right_num = u.validate_value(
-                t.float_adapter(), cls._scalar_part(right), strict=True,
+                t.float_adapter(),
+                cls._scalar_part(right),
+                strict=True,
             ).unwrap()
             return cls._compare_float(left_num, right_num, op)
 
@@ -327,7 +335,8 @@ class FlextOracleWmsUtilitiesFiltering:
 
         @staticmethod
         def _get_nested_value(
-            record: t.OracleWms.FilterRecord, field: str,
+            record: t.OracleWms.FilterRecord,
+            field: str,
         ) -> t.OracleWms.NestedFilterValue | None:
             keys = field.split(".")
             # Try nested dict traversal first
@@ -338,7 +347,8 @@ class FlextOracleWmsUtilitiesFiltering:
                     t.OracleWms.FilterScalar
                     | t.OracleWms.FilterList
                     | t.MappingKV[
-                        str, t.OracleWms.FilterScalar | t.OracleWms.FilterList,
+                        str,
+                        t.OracleWms.FilterScalar | t.OracleWms.FilterList,
                     ],
                 ]
             ) = record
@@ -385,7 +395,9 @@ class FlextOracleWmsUtilitiesFiltering:
             match filter_value:
                 case m.OracleWms.FlextOracleWmsOperatorFilter() as condition:
                     return self._apply_operator(
-                        field_value, condition.operator, condition.value,
+                        field_value,
+                        condition.operator,
+                        condition.value,
                     )
                 case list() as candidates:
                     return (
@@ -395,7 +407,8 @@ class FlextOracleWmsUtilitiesFiltering:
                     return self._normalize(field_value) == self._normalize(filter_value)
 
         def _normalize(
-            self, value: (t.OracleWms.FilterRecordValue | t.OracleWms.FilterScalar),
+            self,
+            value: (t.OracleWms.FilterRecordValue | t.OracleWms.FilterScalar),
         ) -> t.OracleWms.FilterRecordValue | str:
             match value:
                 case None:
@@ -406,7 +419,8 @@ class FlextOracleWmsUtilitiesFiltering:
                     return value
 
         def _validate_filter_conditions_total(
-            self, filters: t.MappingKV[str, t.OracleWms.FilterEntry],
+            self,
+            filters: t.MappingKV[str, t.OracleWms.FilterEntry],
         ) -> p.Result[bool]:
             total = sum(self._condition_size(value) for value in filters.values())
             if total > self.max_conditions:
@@ -416,7 +430,8 @@ class FlextOracleWmsUtilitiesFiltering:
             return r[bool].ok(True)
 
         def _validate_filters(
-            self, filters: t.MappingKV[str, t.OracleWms.FilterEntry],
+            self,
+            filters: t.MappingKV[str, t.OracleWms.FilterEntry],
         ) -> p.Result[bool]:
             total = sum(self._condition_size(value) for value in filters.values())
             if total > self.max_conditions:

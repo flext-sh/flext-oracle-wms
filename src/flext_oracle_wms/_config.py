@@ -27,7 +27,9 @@ if TYPE_CHECKING:
 
 
 class FlextOracleWmsConfig(
-    FlextSettings, FlextConfig, FlextOracleWmsConstantsValues.Config,
+    FlextSettings,
+    FlextConfig,
+    FlextOracleWmsConstantsValues.Config,
 ):
     """OracleWms config auto-loaded from ``config/*.yaml`` and validated via models.
 
@@ -59,7 +61,7 @@ class FlextOracleWmsConfig(
     def oracle_wms(self) -> FlextOracleWmsProtocolsConfig.Config:
         """Validated ``OracleWms`` config domains from the model-less YAML."""
         return FlextOracleWmsConfigModels.Root.model_validate(
-            dict(self.model_extra or {})
+            dict(self.model_extra or {}),
         )
 
 

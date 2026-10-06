@@ -11,9 +11,9 @@ from __future__ import annotations
 
 from typing import Annotated, ClassVar
 
-from flext_api import FlextApiModels, m, u
+from flext_api import FlextApiModels, m
 
-from flext_oracle_wms import c, t
+from flext_oracle_wms import c, t, u
 
 
 class FlextOracleWmsModels(FlextApiModels):
@@ -41,7 +41,8 @@ class FlextOracleWmsModels(FlextApiModels):
             """Oracle WMS environment configuration."""
 
             model_config: ClassVar[m.ConfigDict] = m.ConfigDict(
-                extra="forbid", validate_assignment=True,
+                extra="forbid",
+                validate_assignment=True,
             )
 
             name: str = u.Field(description="Environment display name")
@@ -56,19 +57,24 @@ class FlextOracleWmsModels(FlextApiModels):
 
             name: Annotated[str, u.Field(min_length=1, description="Entity name")]
             endpoint: Annotated[
-                str, u.Field(min_length=1, description="API endpoint path"),
+                str,
+                u.Field(min_length=1, description="API endpoint path"),
             ]
             description: Annotated[
-                str | None, u.Field(description="Entity description"),
+                str | None,
+                u.Field(description="Entity description"),
             ] = None
             primary_key: Annotated[
-                str | None, u.Field(description="Primary key field"),
+                str | None,
+                u.Field(description="Primary key field"),
             ] = None
             replication_key: Annotated[
-                str | None, u.Field(description="Replication key field"),
+                str | None,
+                u.Field(description="Replication key field"),
             ] = None
             supports_incremental: Annotated[
-                bool, u.Field(description="Whether entity supports incremental sync"),
+                bool,
+                u.Field(description="Whether entity supports incremental sync"),
             ] = False
 
             @u.field_validator("endpoint")
@@ -144,10 +150,12 @@ class FlextOracleWmsModels(FlextApiModels):
             id: Annotated[str, u.Field(description="Entity identifier")] = ""
             name: Annotated[str, u.Field(description="Entity name")] = ""
             created_at: Annotated[
-                str | None, u.Field(description="Creation timestamp"),
+                str | None,
+                u.Field(description="Creation timestamp"),
             ] = None
             updated_at: Annotated[
-                str | None, u.Field(description="Last update timestamp"),
+                str | None,
+                u.Field(description="Last update timestamp"),
             ] = None
 
         class InventoryItem(WmsEntity):
@@ -155,10 +163,12 @@ class FlextOracleWmsModels(FlextApiModels):
 
             sku: Annotated[str, u.Field(description="Stock keeping unit")] = ""
             quantity: Annotated[
-                t.NonNegativeInt, u.Field(description="Item quantity"),
+                t.NonNegativeInt,
+                u.Field(description="Item quantity"),
             ] = 0
             location_id: Annotated[
-                str, u.Field(description="Storage location identifier"),
+                str,
+                u.Field(description="Storage location identifier"),
             ] = ""
             status: Annotated[str, u.Field(description="Item status")] = "active"
 
@@ -166,14 +176,17 @@ class FlextOracleWmsModels(FlextApiModels):
             """Shipment domain entity."""
 
             order_id: Annotated[
-                str, u.Field(description="Associated order identifier"),
+                str,
+                u.Field(description="Associated order identifier"),
             ] = ""
             status: Annotated[str, u.Field(description="Shipment status")] = "pending"
             carrier: Annotated[
-                str | None, u.Field(description="Shipping carrier name"),
+                str | None,
+                u.Field(description="Shipping carrier name"),
             ] = None
             tracking_number: Annotated[
-                str | None, u.Field(description="Shipment tracking number"),
+                str | None,
+                u.Field(description="Shipment tracking number"),
             ] = None
 
         class Location(WmsEntity):

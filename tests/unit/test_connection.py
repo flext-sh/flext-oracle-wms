@@ -14,7 +14,6 @@ from flext_core import r
 from flext_oracle_wms import FlextOracleWmsModels as m, FlextOracleWmsSettings, u
 from tests._factories import _basic_password, _secret
 
-
 # Why: mro-4p0t — public facade access is u.OracleWms.Client, not the private
 # _utilities.client module (flext-oracle-wms-1sm3w sync fix).
 Client = u.OracleWms.Client
