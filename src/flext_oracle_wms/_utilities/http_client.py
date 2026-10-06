@@ -93,7 +93,9 @@ class FlextOracleWmsUtilitiesHttpClient:
             self._client = None
 
         def delete(
-            self, path: str, headers: t.StrMapping | None = None,
+            self,
+            path: str,
+            headers: t.StrMapping | None = None,
         ) -> p.Result[t.JsonMapping]:
             """Make DELETE request.
 
@@ -102,11 +104,15 @@ class FlextOracleWmsUtilitiesHttpClient:
             """
             try:
                 return self._execute_request_unchecked(
-                    "DELETE", path, headers=headers, body={},
+                    "DELETE",
+                    path,
+                    headers=headers,
+                    body={},
                 )
             except c.EXC_VALIDATION_VALUE as exc:
                 return r[t.JsonMapping].fail(
-                    f"Request validation error: {exc}", exception=exc,
+                    f"Request validation error: {exc}",
+                    exception=exc,
                 )
             except OSError as exc:
                 return r[t.JsonMapping].fail(f"Request I/O error: {exc}", exception=exc)
@@ -124,7 +130,10 @@ class FlextOracleWmsUtilitiesHttpClient:
             """
             params_str: t.Api.WebParams | None = params
             return self._execute_request(
-                "GET", path, params=params_str, headers=headers,
+                "GET",
+                path,
+                params=params_str,
+                headers=headers,
             )
 
         def post(
@@ -156,11 +165,15 @@ class FlextOracleWmsUtilitiesHttpClient:
             """
             try:
                 return self._execute_request_unchecked(
-                    "PUT", path, headers=headers, body=json_data or data,
+                    "PUT",
+                    path,
+                    headers=headers,
+                    body=json_data or data,
                 )
             except c.EXC_VALIDATION_VALUE as exc:
                 return r[t.JsonMapping].fail(
-                    f"PUT validation error: {exc}", exception=exc,
+                    f"PUT validation error: {exc}",
+                    exception=exc,
                 )
             except OSError as exc:
                 return r[t.JsonMapping].fail(f"PUT I/O error: {exc}", exception=exc)
@@ -195,11 +208,16 @@ class FlextOracleWmsUtilitiesHttpClient:
             """
             try:
                 return self._execute_request_unchecked(
-                    method, path, params=params, headers=headers, body=body,
+                    method,
+                    path,
+                    params=params,
+                    headers=headers,
+                    body=body,
                 )
             except c.EXC_VALIDATION_VALUE as exc:
                 return r[t.JsonMapping].fail(
-                    f"Request validation error: {exc}", exception=exc,
+                    f"Request validation error: {exc}",
+                    exception=exc,
                 )
             except OSError as exc:
                 return r[t.JsonMapping].fail(f"Request I/O error: {exc}", exception=exc)
@@ -218,7 +236,11 @@ class FlextOracleWmsUtilitiesHttpClient:
                 The resulting ``p.Result[t.JsonMapping]``.
             """
             response_result = self._request_response_unchecked(
-                method, path, params=params, headers=headers, body=body,
+                method,
+                path,
+                params=params,
+                headers=headers,
+                body=body,
             )
             if response_result.failure:
                 return r[t.JsonMapping].fail(
@@ -264,7 +286,8 @@ class FlextOracleWmsUtilitiesHttpClient:
             return self._client.request(request)
 
         def _parse_response_body(
-            self, body: t.Api.ResponseBody,
+            self,
+            body: t.Api.ResponseBody,
         ) -> p.Result[t.JsonMapping]:
             """Parse response body; propagates parse failure via result.
 
@@ -281,7 +304,8 @@ class FlextOracleWmsUtilitiesHttpClient:
                 return r[t.JsonMapping].ok(self._parse_response_body_unchecked(body))
             except c.EXC_VALIDATION_VALUE as exc:
                 return r[t.JsonMapping].fail(
-                    f"Response parse error: {exc}", exception=exc,
+                    f"Response parse error: {exc}",
+                    exception=exc,
                 )
 
         @staticmethod

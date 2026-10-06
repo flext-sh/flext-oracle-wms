@@ -26,7 +26,8 @@ c = FlextOracleWmsConstants
 
 
 def get_environment_configs() -> t.MappingKV[
-    c.OracleWms.Environment, m.OracleWms.EnvironmentConfig,
+    c.OracleWms.Environment,
+    m.OracleWms.EnvironmentConfig,
 ]:
     """Define environment-specific Oracle WMS configurations.
 
@@ -194,7 +195,8 @@ def test_configuration(settings: FlextOracleWmsSettings) -> t.MutableJsonMapping
 
 
 def _run_configuration_test(
-    client: FlextOracleWmsClient, test_results: t.MutableJsonMapping,
+    client: FlextOracleWmsClient,
+    test_results: t.MutableJsonMapping,
 ) -> None:
     """Populate connection and discovery test results."""
     client.start()

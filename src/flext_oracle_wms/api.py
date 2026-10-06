@@ -71,7 +71,10 @@ class FlextOracleWmsApi(s[bool]):
             The resulting ``u.OracleWms.HttpClient``.
         """
         return u.OracleWms.HttpClient(
-            base_url=base_url, timeout=timeout, headers=headers, verify_ssl=verify_ssl,
+            base_url=base_url,
+            timeout=timeout,
+            headers=headers,
+            verify_ssl=verify_ssl,
         )
 
     @staticmethod
