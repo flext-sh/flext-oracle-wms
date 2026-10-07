@@ -67,7 +67,7 @@ settings = FlextOracleWmsSettings.model_validate({
         "base_url": "https://test.example.com",
         "username": "test_user",
         "password": "test_password",
-    }
+    },
 })
 print(f"Test Base URL: {settings.OracleWms.base_url}")
 
