@@ -10,7 +10,7 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 import os
-from typing import TYPE_CHECKING, override
+from typing import TYPE_CHECKING, ClassVar, override
 from urllib.parse import urlparse
 
 from dotenv import load_dotenv
@@ -48,7 +48,7 @@ class TestsFlextOracleWmsUtilities(FlextTestsUtilities, u):
                     Returns:
                         The resulting ``p.Result[bool]``.
                     """
-                    return r[bool].ok(True)
+                    return r[bool].ok(value=True)
 
             @classmethod
             def build_client_settings(
@@ -126,29 +126,33 @@ class TestsFlextOracleWmsUtilities(FlextTestsUtilities, u):
                     return env_path
                 return None
 
-            @staticmethod
-            def _resolve_environment_name(base_url: str) -> str:
+            _ENVIRONMENT_ALIASES: ClassVar[dict[str, str]] = {
+                "prod": "production",
+                "production": "production",
+                "stage": "staging",
+                "staging": "staging",
+                "test": "test",
+                "testing": "test",
+                "company_unknow": "test",
+                "local": "local",
+            }
+
+            @classmethod
+            def _resolve_environment_name(cls, base_url: str) -> str:
                 """Derive the environment name from the configured base URL.
 
                 Returns:
                     The resulting ``str``.
                 """
+                default = "development"
                 if not base_url:
-                    return "development"
+                    return default
                 parsed = urlparse(base_url)
                 path_parts = parsed.path.strip("/").split("/")
                 if not path_parts or not path_parts[-1]:
-                    return "development"
+                    return default
                 env_name = path_parts[-1].lower()
-                if env_name in {"prod", "production"}:
-                    return "production"
-                if env_name in {"stage", "staging"}:
-                    return "staging"
-                if env_name in {"test", "testing", "company_unknow"}:
-                    return "test"
-                if env_name == "local":
-                    return "local"
-                return "development"
+                return cls._ENVIRONMENT_ALIASES.get(env_name, default)
 
             @classmethod
             def load_env_config(

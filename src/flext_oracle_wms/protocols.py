@@ -47,7 +47,7 @@ class FlextOracleWmsProtocols(FlextApiProtocols):
 
         @runtime_checkable
         class EntityDiscoveryClient(Protocol):
-            """Protocol for entity discovery client used by FlextOracleWmsEntityDiscovery."""
+            """Protocol for the entity discovery client used by the discovery."""
 
             def discover_entities(self) -> p.Result[t.StrSequence]:
                 """Discover available entities."""

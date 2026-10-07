@@ -31,14 +31,14 @@ class FlextOracleWmsUtilitiesAuth:
         if auth_settings.normalized_method == basic_method:
             if not auth_settings.username or not auth_settings.password:
                 return r[bool].fail("Basic auth requires username and password")
-            return r[bool].ok(True)
+            return r[bool].ok(value=True)
         if auth_settings.normalized_method == oauth2_method:
             if (
                 not auth_settings.oauth2_client_id
                 or not auth_settings.oauth2_client_secret
             ):
                 return r[bool].fail("OAuth2 requires client_id and client_secret")
-            return r[bool].ok(True)
+            return r[bool].ok(value=True)
         return r[bool].fail(f"Unsupported auth method: {auth_settings.method}")
 
     class Authenticator:
@@ -46,7 +46,8 @@ class FlextOracleWmsUtilitiesAuth:
 
         def __init__(self, settings: m.OracleWms.AuthSettings) -> None:
             """Initialize authenticator with an injected auth value model."""
-            # NOTE (multi-agent): mro-rn88 — retain the injected AuthSettings value model;
+            # NOTE (multi-agent): mro-rn88 — retain the injected AuthSettings value
+            # model;
             # every method consumes it via self._settings (was an unbound bare name).
             self._settings: m.OracleWms.AuthSettings = settings
             self._token: str | None = None

@@ -1,6 +1,7 @@
 """FLEXT Oracle WMS API module.
 
-Provides the main FlextOracleWmsApi class following FLEXT standards with proper inheritance levels.
+Provides the main FlextOracleWmsApi class following FLEXT standards
+with proper inheritance levels.
 
 Copyright (c) 2025 FLEXT Team. All rights reserved.
 SPDX-License-Identifier: MIT
