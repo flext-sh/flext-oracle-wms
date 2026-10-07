@@ -41,6 +41,8 @@ troubleshooting · 1.0.0 Current
 ```python
 from __future__ import annotations
 
+from flext_oracle_wms import FlextOracleWmsClient, FlextOracleWmsModuleSettings
+
 # Expected behavior with current implementation
 settings = FlextOracleWmsModuleSettings.for_testing()
 client = FlextOracleWmsClient(settings)
@@ -84,6 +86,8 @@ logger = u.fetch_logger(__name__)
 ```python
 from __future__ import annotations
 
+from flext_oracle_wms import FlextOracleWmsError
+
 error = FlextOracleWmsError("message", field="username")
 assert error.field == "username"  # MyPy error: attribute not found
 ```
@@ -92,6 +96,8 @@ assert error.field == "username"  # MyPy error: attribute not found
 
 ```python
 from __future__ import annotations
+
+from flext_oracle_wms import FlextOracleWmsError
 
 # Exception classes have been updated with proper type annotations
 error = FlextOracleWmsError("message", field="username")
@@ -154,13 +160,20 @@ from __future__ import annotations
 ```python
 from __future__ import annotations
 
+from flext_core import u
+from flext_oracle_wms import FlextOracleWmsClient, FlextOracleWmsModuleSettings
 
-def test_real_connection():
+logger = u.fetch_logger(__name__)
+
+
+def test_real_connection() -> None:
     # This test expects to fail with test settings
+    settings = FlextOracleWmsModuleSettings.for_testing()
+    client = FlextOracleWmsClient(settings)
     try:
-        result = client.test_connection()
-    except Exception:
-        pass  # Expected with fake URLs
+        client.test_connection()  # Expected with fake URLs
+    except ConnectionError:
+        logger.debug("connection failed as expected with fake URLs")
 ```
 
 **Solution**: This is expected behavior with current test configuration
@@ -172,6 +185,9 @@ def test_real_connection():
 ```python
 from __future__ import annotations
 
+from flext_oracle_wms import FlextOracleWmsUtilitiesFiltering
+
+filter_engine = FlextOracleWmsUtilitiesFiltering.Filter()
 filter_engine.filter_records("not_a_list", {})  # Intentionally wrong type
 ```
 
@@ -255,8 +271,9 @@ make check
 
 ```python
 from __future__ import annotations
-# Pydantic validation error
-ValidationError: field required (type=value_error.missing)
+
+# Pydantic validation error:
+# ValidationError: field required (type=value_error.missing)
 ```
 
 **Solution**: Ensure all required configuration fields are provided
@@ -266,6 +283,8 @@ ValidationError: field required (type=value_error.missing)
 ```python
 from __future__ import annotations
 
+from flext_oracle_wms import FlextOracleWmsConnectionError
+
 error = FlextOracleWmsConnectionError("failed", retry_count=3)
 assert error.retry_count == 3  # Now works after exception class updates
 ```
@@ -274,6 +293,8 @@ assert error.retry_count == 3  # Now works after exception class updates
 
 ```python
 from __future__ import annotations
+
+from flext_oracle_wms import FlextOracleWmsEntityNotFoundError
 
 error = FlextOracleWmsEntityNotFoundError("Entity missing", entity_name="test")
 assert error.entity_name == "test"  # Properly handled

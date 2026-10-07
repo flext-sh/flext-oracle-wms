@@ -112,11 +112,11 @@ from __future__ import annotations
 
 # Current: Non-compliant httpx usage
 import httpx  # ❌ VIOLATION
+from flext_api import FlextApiClient  # ✅ REQUIRED
 
 client = httpx.Client()
 
 # Required: flext-api integration
-from flext_api import FlextApiClient  # ✅ REQUIRED
 
 client = FlextApiClient()
 ```
@@ -149,6 +149,8 @@ class FlextOracleWmsClient(s):
 ```python
 from __future__ import annotations
 
+from flext_auth import FlextAuth  # ✅ REQUIRED
+
 
 # Current: Custom authentication
 class CustomAuth:
@@ -156,7 +158,6 @@ class CustomAuth:
 
 
 # Required: flext-auth integration
-from flext_auth import FlextAuth  # ✅ REQUIRED
 
 _ = FlextAuth  # reference without instantiating the auth facade
 ```
@@ -176,7 +177,7 @@ def operation() -> p.Result[str]:
         # Operation logic
         result = "ok"
         return r.ok(result)
-    except Exception as e:
+    except ValueError as e:
         return r.fail(f"Operation failed: {e}")
 ```
 
@@ -216,9 +217,11 @@ Tests currently use fake URLs and expect failures:
 ```python
 from __future__ import annotations
 
+from flext_oracle_wms import FlextOracleWmsModuleSettings
 
-def test_real_connection():
-    settings = FlextOracleWmsModuleSettings.for_testing()  # Uses test.example.com
+
+def test_real_connection() -> None:
+    _ = FlextOracleWmsModuleSettings.for_testing()  # Uses test.example.com
     # Connection tests expect network failures with test settings
 ```
 
