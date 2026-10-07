@@ -21,7 +21,7 @@ class FlextOracleWmsUtilitiesHttpClient:
     """HTTP Client utilities for Oracle WMS -- u.OracleWms.HttpClient.*."""
 
     class HttpClient:
-        """Generic HTTP client using FLEXT delegation with railway-oriented programming."""
+        """Generic HTTP client using FLEXT delegation, railway-oriented."""
 
         logger = u.fetch_logger(__name__)
 

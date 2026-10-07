@@ -69,8 +69,9 @@ class FlextOracleWmsConstantsValues:
         class WmsFilterOperator(StrEnum):
             """Filter operators.
 
-            DRY Pattern: This StrEnum is the single source of truth for WMS filter operators.
-            All filter operator-related constants and Literal types MUST reference this enum.
+            DRY Pattern: This StrEnum is the single source of truth for WMS
+            filter operators. All filter operator constants and Literal types
+            MUST reference this enum.
             """
 
             EQ = "eq"
@@ -87,8 +88,9 @@ class FlextOracleWmsConstantsValues:
         class OracleWMSAuthMethod(StrEnum):
             """Auth methods.
 
-            DRY Pattern: This StrEnum is the single source of truth for Oracle WMS authentication methods.
-            All authentication method-related constants and Literal types MUST reference this enum.
+            DRY Pattern: This StrEnum is the single source of truth for Oracle
+            WMS authentication methods. All authentication method constants and
+            Literal types MUST reference this enum.
             """
 
             BASIC = "basic"

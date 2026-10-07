@@ -45,7 +45,7 @@ class FlextOracleWmsUtilitiesClient:
             cls,
             auth_settings: m.OracleWms.AuthSettings,
         ) -> p.Result[FlextOracleWmsUtilitiesClient.Client]:
-            """Create a concrete client by merging auth settings with runtime WMS settings.
+            """Create a concrete client by merging auth and runtime WMS settings.
 
             Returns:
                 The resulting ``p.Result[FlextOracleWmsUtilitiesClient.Client]``.
@@ -297,7 +297,7 @@ class FlextOracleWmsUtilitiesClient:
             if self._client is None:
                 self._client = self._create_api_client()
             self._started = True
-            return r[bool].ok(True)
+            return r[bool].ok(value=True)
 
         def stop(self) -> p.Result[bool]:
             """Stop the Oracle WMS client and release the delegated API client.
@@ -311,7 +311,7 @@ class FlextOracleWmsUtilitiesClient:
                     _ = close_fn()
                 self._client = None
             self._started = False
-            return r[bool].ok(True)
+            return r[bool].ok(value=True)
 
         def update_oblpn_tracking_number(
             self,
