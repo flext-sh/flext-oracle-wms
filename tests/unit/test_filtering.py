@@ -174,14 +174,8 @@ class TestsFlextOracleWmsFiltering:
         assert not result.value
 
     # ------------------------------------------------------------------ #
-
-
-# Nested / dotted path resolution (observed through matching).
-# ------------------------------------------------------------------ #
-
-
-class TestsFlextOracleWmsFilteringOperators:
-    """Operator-semantics tests for the WMS filtering engine."""
+    # Operator semantics.
+    # ------------------------------------------------------------------ #
 
     @staticmethod
     @pytest.mark.parametrize(
@@ -368,9 +362,9 @@ class TestsFlextOracleWmsFilteringOperators:
         tm.ok(result)
         tm.that(self._ids(result.value), eq={3, 4})
 
-
-class TestsFlextOracleWmsFilteringNestedAndSort:
-    """Nested-field and sorting tests for the WMS filtering engine."""
+    # ------------------------------------------------------------------ #
+    # Nested / dotted path resolution and sorting.
+    # ------------------------------------------------------------------ #
 
     def test_dotted_path_resolves_nested_mapping(self) -> None:
         """Test dotted path resolves nested mapping."""

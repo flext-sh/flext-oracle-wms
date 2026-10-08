@@ -12,7 +12,7 @@ from flext_tests import tm
 
 from flext_core import r
 from flext_oracle_wms import FlextOracleWmsModels as m, FlextOracleWmsSettings, u
-from tests._factories import _basic_password, _secret
+from tests._factories import _secret
 
 # Why: mro-4p0t — public facade access is u.OracleWms.Client, not the private
 # _utilities.client module (flext-oracle-wms-1sm3w sync fix).
@@ -21,23 +21,6 @@ Client = u.OracleWms.Client
 
 class TestsFlextOracleWmsConnection:
     """Public contract of the WMS utilities client and its settings."""
-
-    @staticmethod
-    @pytest.fixture
-    def settings() -> FlextOracleWmsSettings:
-        """Deterministic testing settings from the public factory.
-
-        Returns:
-            The resulting ``FlextOracleWmsSettings``.
-        """
-        return FlextOracleWmsSettings.model_validate({
-            "OracleWms": {
-                "base_url": "https://test-wms.example.com",
-                "timeout": 30.0,
-                "username": "test_user",
-                "password": _basic_password(),
-            },
-        })
 
     @staticmethod
     @pytest.fixture

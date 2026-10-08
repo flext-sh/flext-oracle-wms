@@ -17,6 +17,24 @@ from flext_oracle_wms import (
     settings,
     u,
 )
+from tests._factories import _basic_password
+
+
+@pytest.fixture(name="settings")
+def deterministic_settings() -> FlextOracleWmsSettings:
+    """Return deterministic BASIC-auth runtime settings for client contracts.
+
+    Returns:
+        The resulting ``FlextOracleWmsSettings``.
+    """
+    return FlextOracleWmsSettings.model_validate({
+        "OracleWms": {
+            "base_url": "https://test-wms.example.com",
+            "timeout": 30.0,
+            "username": "test_user",
+            "password": _basic_password(),
+        },
+    })
 
 
 @pytest.fixture
