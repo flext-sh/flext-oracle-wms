@@ -7,20 +7,19 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 from flext_core import FlextExceptions
-from flext_oracle_wms import e
 
 
 class FlextOracleWmsErrors(FlextExceptions):
     """Oracle WMS-specific exceptions extending the API exception facade."""
 
-    class Error(e.BaseError):
+    class Error(FlextExceptions.BaseError):
         """Base Oracle WMS error."""
 
     # flext-1wjg1.16: extend the framework's typed ValidationError (not the
     # local Error sibling) so this stays assignable to
     # FlextExceptionsTypes.ValidationError, the type flext-core's own
     # FlextExceptions.ValidationError declares.
-    class ValidationError(e.ValidationError, Error):
+    class ValidationError(FlextExceptions.ValidationError, Error):
         """Oracle WMS validation error."""
 
 
