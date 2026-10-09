@@ -6,8 +6,6 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
-
 from flext_cli import FlextCliSettings, m
 
 
@@ -26,7 +24,7 @@ class FlextOracleWmsSettings(FlextCliSettings):
         extra="ignore",
     )
 
-    class _OracleWms(m.BaseModel):
+    class OracleWmsSettings(m.BaseModel):
         """Oracle WMS connection and runtime scalar settings."""
 
         base_url: str = "http://localhost:8080"
@@ -41,10 +39,10 @@ class FlextOracleWmsSettings(FlextCliSettings):
         connection_pool_size: int = 10
         cache_duration: int = 300
 
-    if TYPE_CHECKING:
-        OracleWms: _OracleWms
-    else:
-        OracleWms: _OracleWms = m.Field(default_factory=_OracleWms)
+    OracleWms: OracleWmsSettings = m.Field(
+        default_factory=OracleWmsSettings,
+        description="Oracle WMS connection and runtime scalar settings.",
+    )
 
 
 settings: FlextOracleWmsSettings = FlextOracleWmsSettings.fetch_global()
