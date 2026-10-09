@@ -19,7 +19,7 @@ from flext_tests import FlextTestsUtilities, r
 from flext_oracle_wms import (
     FlextOracleWmsApi,
     FlextOracleWmsSettings,
-    FlextOracleWmsUtilities as u,
+    FlextOracleWmsUtilities,
 )
 from tests import TestsFlextOracleWmsTypes, t
 
@@ -29,10 +29,10 @@ if TYPE_CHECKING:
     from tests import p
 
 
-class TestsFlextOracleWmsUtilities(FlextTestsUtilities, u):
+class TestsFlextOracleWmsUtilities(FlextTestsUtilities, FlextOracleWmsUtilities):
     """Test utilities combining TestsFlextUtilities with flext-oracle-wms utilities."""
 
-    class OracleWms(u.OracleWms):
+    class OracleWms(FlextOracleWmsUtilities.OracleWms):
         """OracleWms test utilities namespace."""
 
         class Tests:

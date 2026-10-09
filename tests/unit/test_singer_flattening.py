@@ -75,11 +75,11 @@ class TestsFlextOracleWmsSingerFlattening:
     def test_unknown_field_is_forbidden() -> None:
         """extra="forbid" rejects fields outside the public schema."""
         with pytest.raises(c.ValidationError):
-            m.OracleWms.Entity(
-                name="inventory",
-                endpoint="/inventory",
-                unexpected="value",
-            )
+            m.OracleWms.Entity.model_validate({
+                "name": "inventory",
+                "endpoint": "/inventory",
+                "unexpected": "value",
+            })
 
     @staticmethod
     def test_validate_entity_succeeds_for_valid_entity() -> None:
