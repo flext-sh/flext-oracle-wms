@@ -78,7 +78,11 @@ class TestsFlextOracleWmsModelsUnit:
     def test_entity_forbids_unknown_fields() -> None:
         """extra='forbid' rejects fields outside the declared contract."""
         with pytest.raises(c.ValidationError):
-            m.OracleWms.Entity(name="item", endpoint="/api/items", unexpected="x")
+            m.OracleWms.Entity.model_validate({
+                "name": "item",
+                "endpoint": "/api/items",
+                "unexpected": "x",
+            })
 
     @staticmethod
     def test_validate_entity_succeeds_for_valid_entity() -> None:

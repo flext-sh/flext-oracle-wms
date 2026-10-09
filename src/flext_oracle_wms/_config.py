@@ -47,9 +47,21 @@ class FlextOracleWmsConfig(
         _ = args, kwargs
         return object.__new__(cls)
 
-    __eq__ = object.__eq__
+    def __eq__(self, other: object) -> bool:
+        """Identity equality per the frozen-config singleton contract.
 
-    __hash__ = object.__hash__
+        Returns:
+            The resulting ``bool``.
+        """
+        return object.__eq__(self, other)
+
+    def __hash__(self) -> int:
+        """Identity hash per the frozen-config singleton contract.
+
+        Returns:
+            The resulting ``int``.
+        """
+        return object.__hash__(self)
 
     # NOTE (multi-agent): config-scaffold — ``CONFIG_DIR`` (the packaged
     # config-dir name, ``c.CONFIG_DIR_NAME``) is owned by
