@@ -320,11 +320,11 @@ class FlextOracleWmsUtilitiesHttpClient:
             """
             match body:
                 case dict() as payload:
-                    return t.json_mapping_adapter().validate_python(payload)
+                    return u.json_mapping_adapter().validate_python(payload)
                 case str() as raw if raw:
-                    return t.json_mapping_adapter().validate_json(raw)
+                    return u.json_mapping_adapter().validate_json(raw)
                 case bytes() as raw_bytes:
-                    return t.json_mapping_adapter().validate_json(raw_bytes)
+                    return u.json_mapping_adapter().validate_json(raw_bytes)
                 case _:
                     msg = f"Unsupported response body type: {type(body)}"
                     raise TypeError(msg)
