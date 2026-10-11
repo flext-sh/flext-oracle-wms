@@ -13,9 +13,8 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 import pytest
-from flext_tests import tm
 
-from tests import c, m, u
+from tests import c, m, tm, u
 from tests._factories import _basic_password, _basic_token, _oauth_secret_456, _secret
 
 # Method enum reused across cases.

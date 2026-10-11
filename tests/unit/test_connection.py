@@ -8,10 +8,10 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 import pytest
-from flext_tests import tm
 
 from flext_core import r
 from flext_oracle_wms import FlextOracleWmsModels as m, FlextOracleWmsSettings, u
+from tests import tm
 from tests._factories import _secret
 
 # Why: mro-4p0t — public facade access is u.OracleWms.Client, not the private

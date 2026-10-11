@@ -17,10 +17,9 @@ from pathlib import Path
 from typing import TYPE_CHECKING
 
 import pytest
-from flext_tests import tm
 
 from flext_oracle_wms import FlextOracleWmsApi, FlextOracleWmsSettings, m
-from tests import t, u
+from tests import t, tm, u
 
 if TYPE_CHECKING:
     from collections.abc import Generator, Sequence
