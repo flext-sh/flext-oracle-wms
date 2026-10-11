@@ -14,15 +14,9 @@ from pathlib import Path
 
 from dotenv import load_dotenv
 
-from flext_oracle_wms import FlextOracleWmsConstants, FlextOracleWmsSettings, m, t, u
-
-# Why: mro-4p0t — public facade access is u.OracleWms.Client, not the private
-# _utilities.client module (flext-oracle-wms-1sm3w toolchain sync fix).
-FlextOracleWmsClient = u.OracleWms.Client
+from flext_oracle_wms import FlextOracleWmsSettings, c, m, t, u
 
 logger = u.fetch_logger(__name__)
-
-c = FlextOracleWmsConstants
 
 
 def get_environment_configs() -> t.MappingKV[
@@ -151,7 +145,7 @@ def validate_configuration(settings: FlextOracleWmsSettings) -> t.JsonMapping:
         errors.append("Max retries cannot be negative")
     elif retry_count > max_retries_warning_threshold:
         warnings.append("High retry count may cause delays")
-    config_summary = t.json_mapping_adapter().validate_python({
+    config_summary = u.json_mapping_adapter().validate_python({
         "base_url": wms.base_url,
         "username": wms.username,
         "api_version": wms.api_version,
@@ -160,7 +154,7 @@ def validate_configuration(settings: FlextOracleWmsSettings) -> t.JsonMapping:
         "verify_ssl": wms.verify_ssl,
         "enable_logging": wms.enable_logging,
     })
-    return t.json_mapping_adapter().validate_python({
+    return u.json_mapping_adapter().validate_python({
         "valid": not errors,
         "warnings": warnings,
         "errors": errors,
@@ -184,7 +178,7 @@ def test_configuration(settings: FlextOracleWmsSettings) -> t.MutableJsonMapping
         "error": None,
         "entities_discovered": 0,
     }
-    client = FlextOracleWmsClient(settings)
+    client = u.OracleWms.Client(settings)
     try:
         _run_configuration_test(client, test_results)
     except ValueError as exc:
@@ -195,7 +189,7 @@ def test_configuration(settings: FlextOracleWmsSettings) -> t.MutableJsonMapping
 
 
 def _run_configuration_test(
-    client: FlextOracleWmsClient,
+    client: u.OracleWms.Client,
     test_results: t.MutableJsonMapping,
 ) -> None:
     """Populate connection and discovery test results."""
