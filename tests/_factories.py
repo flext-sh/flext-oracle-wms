@@ -5,7 +5,7 @@ values are declared in one place. They are intentionally named without
 password-like keywords to keep the test surface free of bandit hardcoded-secret
 heuristics while remaining fully deterministic and readable.
 
-Copyright (c) 2025 FLEXT Team. All rights reserved.
+Copyright (c) 2026 FLEXT Team. All rights reserved.
 SPDX-License-Identifier: MIT
 """
 

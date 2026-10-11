@@ -1,6 +1,6 @@
 """Behavioral tests for Oracle WMS discovery outcome constants.
 
-Copyright (c) 2025 FLEXT Team. All rights reserved.
+Copyright (c) 2026 FLEXT Team. All rights reserved.
 SPDX-License-Identifier: MIT
 """
 

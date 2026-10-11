@@ -3,7 +3,7 @@
 domain-driven design with minimal declarations using composition.
 Python 3.13+ syntax, one class per module, SOLID principles. Generic for any WMS.
 
-Copyright (c) 2025 FLEXT Team. All rights reserved.
+Copyright (c) 2026 FLEXT Team. All rights reserved.
 SPDX-License-Identifier: MIT
 """
 

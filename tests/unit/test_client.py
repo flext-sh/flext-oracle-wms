@@ -4,7 +4,7 @@ Asserts the observable public contract: constructor settings resolution,
 the ``r[bool]`` outcomes of the start/stop lifecycle, and the ``r[Client]``
 outcomes of ``from_auth_settings`` across valid and invalid auth inputs.
 
-Copyright (c) 2025 FLEXT Team. All rights reserved.
+Copyright (c) 2026 FLEXT Team. All rights reserved.
 SPDX-License-Identifier: MIT
 """
 

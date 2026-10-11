@@ -6,7 +6,7 @@ Asserts the observable public contract of the Oracle WMS auth surface:
 ``get_auth_headers`` returning ``r[T]``), and ``Client.from_auth_settings``.
 No private attribute access, no patching of the unit under test.
 
-Copyright (c) 2025 FLEXT Team. All rights reserved.
+Copyright (c) 2026 FLEXT Team. All rights reserved.
 SPDX-License-Identifier: MIT
 """
 

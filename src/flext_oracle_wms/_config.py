@@ -6,7 +6,7 @@ flat YAML is then validated into the pure-Pydantic ``_models.config`` shapes and
 exposed as typed domain objects under ``config.oracle_wms.<domain>`` — never a
 model-less dict subscript.
 
-Copyright (c) 2025 FLEXT Team. All rights reserved.
+Copyright (c) 2026 FLEXT Team. All rights reserved.
 SPDX-License-Identifier: MIT
 """
 

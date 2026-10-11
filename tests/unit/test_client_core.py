@@ -9,7 +9,7 @@ there is no local container or self-contained service to exercise them against,
 so per the no-mock law they are covered by real end-to-end runs against a
 provisioned WMS environment, not by substituting the HTTP boundary here.
 
-Copyright (c) 2025 FLEXT Team. All rights reserved.
+Copyright (c) 2026 FLEXT Team. All rights reserved.
 SPDX-License-Identifier: MIT
 """
 
