@@ -13,7 +13,7 @@ from __future__ import annotations
 
 import base64
 
-from flext_oracle_wms import FlextOracleWmsModels as m
+from flext_oracle_wms import m
 
 
 def _basic_username() -> str:

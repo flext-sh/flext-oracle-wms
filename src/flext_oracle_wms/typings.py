@@ -51,20 +51,9 @@ class FlextOracleWmsTypes(FlextApiTypes):
                 | FlextOracleWmsTypes.OracleWms.FilterList,
             ],
         ]
-        type NestedFilterValue = (
-            FlextOracleWmsTypes.OracleWms.FilterScalar
-            | FlextOracleWmsTypes.OracleWms.FilterList
-            | t.MappingKV[
-                str,
-                FlextOracleWmsTypes.OracleWms.FilterScalar
-                | FlextOracleWmsTypes.OracleWms.FilterList
-                | t.MappingKV[
-                    str,
-                    FlextOracleWmsTypes.OracleWms.FilterScalar
-                    | FlextOracleWmsTypes.OracleWms.FilterList,
-                ],
-            ]
-        )
+        # Same recursive union as ``FilterRecordValue`` — one owner defines the
+        # filter-value shape; this name re-exports it.
+        type NestedFilterValue = FlextOracleWmsTypes.OracleWms.FilterRecordValue
 
 
 t = FlextOracleWmsTypes

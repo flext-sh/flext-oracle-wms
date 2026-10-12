@@ -46,7 +46,6 @@ if TYPE_CHECKING:
 # Why: mro-4p0t — public facade access is u.OracleWms.*, not the private
 # _utilities.auth/client modules (flext-oracle-wms-1sm3w toolchain sync fix).
 FlextOracleWmsAuthenticator = u.OracleWms.Authenticator
-FlextOracleWmsClient = u.OracleWms.Client
 
 logger = u.fetch_logger(__name__)
 
@@ -90,16 +89,16 @@ def load_config_from_environment() -> FlextOracleWmsSettings:
 
 def showcase_1_client_initialization(
     settings: FlextOracleWmsSettings,
-) -> FlextOracleWmsClient:
+) -> u.OracleWms.Client:
     """Feature 1: Client Configuration and Initialization.
 
     Returns:
-        The resulting ``FlextOracleWmsClient``.
+        The resulting ``u.OracleWms.Client``.
 
     Raises:
         Error: If Failed to start client.
     """
-    client = FlextOracleWmsClient(settings)
+    client = u.OracleWms.Client(settings)
     start_result = client.start()
     if start_result.success:
         pass
@@ -109,7 +108,7 @@ def showcase_1_client_initialization(
     return client
 
 
-def showcase_2_entity_discovery(client: FlextOracleWmsClient) -> list[str]:
+def showcase_2_entity_discovery(client: u.OracleWms.Client) -> list[str]:
     """Feature 2: Entity Discovery (320+ entities).
 
     Returns:
@@ -139,7 +138,7 @@ def showcase_2_entity_discovery(client: FlextOracleWmsClient) -> list[str]:
 
 
 def showcase_3_data_retrieval(
-    client: FlextOracleWmsClient,
+    client: u.OracleWms.Client,
     entities: list[str],
 ) -> t.MutableJsonMapping:
     """Feature 3: Data Retrieval and Querying.
@@ -187,7 +186,7 @@ def showcase_4_authentication(settings: FlextOracleWmsSettings) -> None:
     _headers_result = authenticator.get_auth_headers()
 
 
-def showcase_5_api_catalog(client: FlextOracleWmsClient) -> None:
+def showcase_5_api_catalog(client: u.OracleWms.Client) -> None:
     """Feature 5: API Catalog Management.
 
     Raises:
@@ -215,7 +214,7 @@ def showcase_5_api_catalog(client: FlextOracleWmsClient) -> None:
             raise FlextOracleWmsErrors.Error(msg)
 
 
-def showcase_6_error_handling(client: FlextOracleWmsClient) -> None:
+def showcase_6_error_handling(client: u.OracleWms.Client) -> None:
     """Feature 6: Error Handling and Recovery."""
     client.fetch_entity_data("invalid_entity_xyz123")
     client.call_api("non_existent_api_xyz")
@@ -243,7 +242,7 @@ def showcase_6_error_handling(client: FlextOracleWmsClient) -> None:
         logger.warning("Error handling demonstration: %s", exc)
 
 
-def showcase_7_health_monitoring(client: FlextOracleWmsClient) -> t.MutableJsonMapping:
+def showcase_7_health_monitoring(client: u.OracleWms.Client) -> t.MutableJsonMapping:
     """Feature 7: Health Monitoring.
 
     Returns:
@@ -262,7 +261,7 @@ def showcase_7_health_monitoring(client: FlextOracleWmsClient) -> t.MutableJsonM
 
 
 def showcase_8_performance_tracking(
-    client: FlextOracleWmsClient,
+    client: u.OracleWms.Client,
     entities: list[str],
 ) -> None:
     """Feature 8: Performance Tracking."""
@@ -287,7 +286,7 @@ def showcase_8_performance_tracking(
             _elapsed = time.time() - start_time
 
 
-def showcase_9_cache_management(client: FlextOracleWmsClient) -> None:
+def showcase_9_cache_management(client: u.OracleWms.Client) -> None:
     """Feature 9: Cache Management."""
     start_time = time.time()
     first_result = client.discover_entities()
@@ -301,7 +300,7 @@ def showcase_9_cache_management(client: FlextOracleWmsClient) -> None:
 
 
 def showcase_10_enterprise_features(
-    _client: FlextOracleWmsClient,
+    _client: u.OracleWms.Client,
     settings: FlextOracleWmsSettings,
 ) -> None:
     """Feature 10: Enterprise Features."""

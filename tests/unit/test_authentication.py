@@ -14,8 +14,7 @@ from __future__ import annotations
 
 import pytest
 
-from tests import c, m, tm, u
-from tests._factories import _basic_password, _basic_token, _oauth_secret_456, _secret
+from tests import _basic_password, _basic_token, _oauth_secret_456, _secret, c, m, tm, u
 
 # Method enum reused across cases.
 _Method = c.OracleWms.OracleWMSAuthMethod

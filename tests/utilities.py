@@ -126,7 +126,7 @@ class TestsFlextOracleWmsUtilities(FlextTestsUtilities, FlextOracleWmsUtilities)
                     return env_path
                 return None
 
-            _ENVIRONMENT_ALIASES: ClassVar[dict[str, str]] = {
+            _ENVIRONMENT_ALIASES: ClassVar[t.MutableStrMapping] = {
                 "prod": "production",
                 "production": "production",
                 "stage": "staging",

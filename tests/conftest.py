@@ -17,7 +17,7 @@ from flext_oracle_wms import (
     settings,
     u,
 )
-from tests._factories import _basic_password
+from tests import _basic_password
 
 
 @pytest.fixture(name="settings")

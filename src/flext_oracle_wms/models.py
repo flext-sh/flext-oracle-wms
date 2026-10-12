@@ -90,8 +90,13 @@ class FlextOracleWmsModels(FlextApiModels):
                     raise ValueError(msg)
                 return v
 
-        class ApiEndpoint(FlextApiModels.BaseModel):
-            """Typed Oracle WMS API endpoint definition."""
+        class ApiEndpoint(FlextOracleWmsConfigModels.ApiEndpoint):
+            """Typed Oracle WMS API endpoint definition (config owner, specialized).
+
+            Extends the ``_models.config`` owner so the facade namespace
+            overrides it covariantly (a valid subtype), and adds the domain
+            validation (non-empty identifiers) and the documented defaults.
+            """
 
             name: Annotated[str, u.Field(min_length=1)]
             method: Annotated[str, u.Field(min_length=1)]

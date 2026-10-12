@@ -102,20 +102,7 @@ class FlextOracleWmsUtilitiesHttpClient:
             Returns:
                 The resulting ``p.Result[t.JsonMapping]``.
             """
-            try:
-                return self._execute_request_unchecked(
-                    "DELETE",
-                    path,
-                    headers=headers,
-                    body={},
-                )
-            except c.EXC_VALIDATION_VALUE as exc:
-                return r[t.JsonMapping].fail(
-                    f"Request validation error: {exc}",
-                    exception=exc,
-                )
-            except OSError as exc:
-                return r[t.JsonMapping].fail(f"Request I/O error: {exc}", exception=exc)
+            return self._execute_request("DELETE", path, headers=headers, body={})
 
         def get(
             self,

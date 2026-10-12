@@ -42,9 +42,3 @@ class TestsFlextOracleWmsDiscovery:
     def test_success_and_failure_tokens_are_distinct() -> None:
         """Success and failure outcomes must never collide as the same token."""
         tm.that(c.OracleWms.DISCOVERY_SUCCESS, ne=c.OracleWms.DISCOVERY_FAILURE)
-
-    @staticmethod
-    def test_discovery_tokens_are_stable_across_access() -> None:
-        """Repeated reads return the identical token (immutable contract)."""
-        tm.that(c.OracleWms.DISCOVERY_SUCCESS, eq=c.OracleWms.DISCOVERY_SUCCESS)
-        tm.that(c.OracleWms.DISCOVERY_FAILURE, eq=c.OracleWms.DISCOVERY_FAILURE)

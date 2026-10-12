@@ -15,8 +15,7 @@ from __future__ import annotations
 from functools import cached_property
 from typing import TYPE_CHECKING, Self
 
-from flext_core import FlextConfig, FlextSettings
-from flext_oracle_wms._constants.values import FlextOracleWmsConstantsValues
+from flext_core import FlextConfig, FlextSettings, t
 from flext_oracle_wms._models.config import FlextOracleWmsConfigModels
 
 # NOTE (multi-agent): config-scaffold — accessor typed by PROTOCOL (p), never
@@ -29,7 +28,6 @@ if TYPE_CHECKING:
 class FlextOracleWmsConfig(
     FlextSettings,
     FlextConfig,
-    FlextOracleWmsConstantsValues.Config,
 ):
     """OracleWms config auto-loaded from ``config/*.yaml`` and validated via models.
 
@@ -43,11 +41,15 @@ class FlextOracleWmsConfig(
     # The inherited pydantic ``__init__`` still runs the frozen, YAML-validated
     # construction, and the inherited pydantic ``__setattr__`` keeps the frozen
     # guard.
-    def __new__(cls, *args: object, **kwargs: object) -> Self:
+    def __new__(cls, *args: t.JsonValue, **kwargs: t.JsonValue) -> Self:
         _ = args, kwargs
         return object.__new__(cls)
 
-    def __eq__(self, other: object) -> bool:
+    # LSP requires ``__eq__``'s parameter to accept every object; the
+    # ``ban-broad-annotation`` dunder carve-out does not reach typed parameters,
+    # so this is the scoped admission of that tooling conflict (the only correct
+    # annotation for an equality operand). ``__new__`` above uses ``t.JsonValue``.
+    def __eq__(self, other: object) -> bool:  # ast-grep-ignore: ban-broad-annotation
         """Identity equality per the frozen-config singleton contract.
 
         Returns:
@@ -63,11 +65,9 @@ class FlextOracleWmsConfig(
         """
         return object.__hash__(self)
 
-    # NOTE (multi-agent): config-scaffold — ``CONFIG_DIR`` (the packaged
-    # config-dir name, ``c.CONFIG_DIR_NAME``) is owned by
-    # ``flext_oracle_wms._constants`` (``FlextOracleWmsConstantsValues.Config``)
-    # and inherited above; ``FlextConfig._config_dir()`` anchors the YAML SSOT
-    # to the packaged ``config/`` regardless of the caller's CWD.
+    # NOTE (multi-agent): config-scaffold — the packaged ``config/`` dir name
+    # is owned by ``flext_core`` (``CONFIG_DIR_NAME``); ``FlextConfig`` anchors
+    # the YAML SSOT to the packaged ``config/`` regardless of the caller's CWD.
 
     @cached_property
     def oracle_wms(self) -> FlextOracleWmsProtocolsConfig.Config:

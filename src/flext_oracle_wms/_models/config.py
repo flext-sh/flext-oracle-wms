@@ -12,7 +12,7 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from flext_core import m
+from flext_core import m, t
 
 
 class FlextOracleWmsConfigModels:
@@ -101,7 +101,7 @@ class FlextOracleWmsConfigModels:
         entities: FlextOracleWmsConfigModels.Entities
         auth: FlextOracleWmsConfigModels.Auth
         environments: FlextOracleWmsConfigModels.Environments
-        api_endpoints: dict[str, FlextOracleWmsConfigModels.ApiEndpoint]
+        api_endpoints: t.MappingKV[str, FlextOracleWmsConfigModels.ApiEndpoint]
 
 
 __all__: list[str] = ["FlextOracleWmsConfigModels"]

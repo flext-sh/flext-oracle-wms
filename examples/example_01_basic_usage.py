@@ -37,10 +37,6 @@ from flext_oracle_wms.errors import FlextOracleWmsErrors
 if TYPE_CHECKING:
     from collections.abc import Sequence
 
-# Why: mro-4p0t — public facade access is u.OracleWms.Client, not the private
-# _utilities.client module (flext-oracle-wms-1sm3w toolchain sync fix).
-FlextOracleWmsClient = u.OracleWms.Client
-
 MAX_ENTITIES_TO_SHOW: Final[int] = 5
 MAX_VALUE_DISPLAY_LENGTH: Final[int] = 50
 logger = u.fetch_logger(__name__)
@@ -72,7 +68,7 @@ def setup_client_config() -> None:
     _ = container.bind("FlextOracleWmsSettings", settings.model_dump(mode="python"))
 
 
-def discover_wms_entities(client: FlextOracleWmsClient) -> p.Result[t.StrSequence]:
+def discover_wms_entities(client: u.OracleWms.Client) -> p.Result[t.StrSequence]:
     """Discover available Oracle WMS entities.
 
     Args:
@@ -97,7 +93,7 @@ def discover_wms_entities(client: FlextOracleWmsClient) -> p.Result[t.StrSequenc
 
 
 def query_entity_data(
-    client: FlextOracleWmsClient,
+    client: u.OracleWms.Client,
     entity_name: str,
 ) -> p.Result[Sequence[t.StrMapping]]:
     """Query data from a specific Oracle WMS entity.
@@ -132,7 +128,7 @@ def query_entity_data(
     return result
 
 
-def demonstrate_error_handling(client: FlextOracleWmsClient) -> None:
+def demonstrate_error_handling(client: u.OracleWms.Client) -> None:
     """Demonstrate proper error handling patterns with r."""
     result = client.fetch_entity_data("NON_EXISTENT_ENTITY")
     if (
@@ -154,7 +150,7 @@ def run_basic_usage() -> None:
         Error: If client start failed.
     """
     setup_client_config()
-    client = FlextOracleWmsClient()
+    client = u.OracleWms.Client()
     start_result = client.start()
     if not start_result.success:
         msg = f"client start failed: {start_result.error}"
