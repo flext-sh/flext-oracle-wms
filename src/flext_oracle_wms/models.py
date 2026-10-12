@@ -14,6 +14,7 @@ from typing import Annotated, ClassVar
 from flext_api import FlextApiModels, u
 
 from flext_oracle_wms import c, t
+from flext_oracle_wms._models.config import FlextOracleWmsConfigModels
 
 
 class FlextOracleWmsModels(FlextApiModels):
@@ -28,7 +29,7 @@ class FlextOracleWmsModels(FlextApiModels):
     # ORACLE WMS NAMESPACE - Domain-specific models
     # =========================================================================
 
-    class OracleWms:
+    class OracleWms(FlextOracleWmsConfigModels):
         """Oracle WMS domain namespace -- m.OracleWms.*."""
 
         class FlextOracleWmsOperatorFilter(FlextApiModels.BaseModel):
