@@ -1,12 +1,12 @@
-"""Oracle WMS Configuration Module tests.
+"""Oracle WMS settings singleton and lifecycle contract tests.
 
-ADR-005: project-scoped scalars live under the nested ``settings.OracleWms.*``
-namespace; settings carry raw scalars (range/enum validation lives at the
-domain boundary, not in the settings layer).
+Drives the module-level ``FlextOracleWmsSettings`` singleton lifecycle:
+``fetch_global`` reuse, ``reset_for_testing`` freshness, and ``clone``
+isolation. Project scalars live under the nested ``settings.OracleWms.*``
+namespace and are carried raw (ADR-005: no range checks in settings).
 
 Copyright (c) 2025 FLEXT Team. All rights reserved.
 SPDX-License-Identifier: MIT
-
 """
 
 from __future__ import annotations

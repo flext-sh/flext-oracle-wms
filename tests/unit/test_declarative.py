@@ -129,7 +129,7 @@ class TestsFlextOracleWmsDeclarative:
         self._assert_result_contract(result)
         if result.success:
             body = result.value.body
-            payload = body if isinstance(body, dict) else t.JsonDict()
+            payload = body if isinstance(body, dict) else dict[str, t.JsonValue]()
             tm.that(payload.get("service"), eq="FlextOracleWmsClient")
             tm.that({"healthy", "unhealthy"}, has=payload.get("status"))
 
