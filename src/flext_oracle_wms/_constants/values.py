@@ -9,12 +9,9 @@ from __future__ import annotations
 from collections.abc import Mapping
 from enum import StrEnum, unique
 from types import MappingProxyType
-from typing import TYPE_CHECKING, ClassVar, Final
+from typing import ClassVar, Final
 
-from flext_core import c
-
-if TYPE_CHECKING:
-    from flext_oracle_wms import t
+from flext_core import c, t
 
 
 class FlextOracleWmsConstantsValues:

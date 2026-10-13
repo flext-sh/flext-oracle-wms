@@ -15,7 +15,9 @@ from __future__ import annotations
 from functools import cached_property
 from typing import TYPE_CHECKING, Self
 
-from flext_core import FlextConfig, FlextSettings, t
+from flext_cli import FlextCliConfig
+
+from flext_core import t
 from flext_oracle_wms._models.config import FlextOracleWmsConfigModels
 
 # NOTE (multi-agent): config-scaffold — accessor typed by PROTOCOL (p), never
@@ -25,22 +27,18 @@ if TYPE_CHECKING:
     from flext_oracle_wms._protocols.config import FlextOracleWmsProtocolsConfig
 
 
-class FlextOracleWmsConfig(
-    FlextSettings,
-    FlextConfig,
-):
+class FlextOracleWmsConfig(FlextCliConfig):
     """OracleWms config auto-loaded from ``config/*.yaml`` and validated via models.
 
-    MRO carries ``FlextSettings`` FIRST (ENFORCE-042); the class stays a frozen,
-    YAML-validated config singleton.
+    The fleet-converged config inherits only the declared frozen config
+    capability base (``config_bases`` precedence: meltano -> cli -> core); the
+    adjustable runtime settings keep their own independent lifecycle.
     """
 
-    # ENFORCE-042 namespace-holder contract: ``FlextSettings`` contributes
-    # namespacing only — instance machinery stays plain object semantics so the
-    # settings singleton ``__new__`` cannot leak into the config singleton.
-    # The inherited pydantic ``__init__`` still runs the frozen, YAML-validated
-    # construction, and the inherited pydantic ``__setattr__`` keeps the frozen
-    # guard.
+    # Instance machinery stays plain object semantics so no upstream singleton
+    # ``__new__`` leaks into the config singleton; the inherited pydantic
+    # ``__init__`` still runs the frozen, YAML-validated construction and the
+    # inherited pydantic ``__setattr__`` keeps the frozen guard.
     def __new__(cls, *args: t.JsonValue, **kwargs: t.JsonValue) -> Self:
         _ = args, kwargs
         return object.__new__(cls)
