@@ -33,7 +33,15 @@ class FlextOracleWmsUtilitiesHttpClient:
             *,
             verify_ssl: bool = True,
         ) -> None:
-            """Initialize Oracle WMS HTTP client with FLEXT patterns."""
+            """Initialize the Oracle WMS HTTP client.
+
+            Args:
+                base_url: Base URL every request path is joined onto.
+                timeout: Request timeout in seconds.
+                headers: Default headers applied to every request.
+                verify_ssl: Whether TLS certificates are verified.
+
+            """
             self.base_url: str = base_url.rstrip("/")
             self.timeout: float = timeout
             self.default_headers = self._normalize_headers(dict(headers or {}))
@@ -41,10 +49,10 @@ class FlextOracleWmsUtilitiesHttpClient:
             self._client: FlextApi | None = None
 
         def __enter__(self) -> Self:
-            """Context manager entry.
+            """Enter the context-managed client session.
 
             Returns:
-                The resulting ``Self``.
+                The client instance itself.
             """
             self._ensure_client()
             return self
@@ -55,7 +63,7 @@ class FlextOracleWmsUtilitiesHttpClient:
             exc_val: BaseException | None,
             exc_tb: TracebackType | None,
         ) -> None:
-            """Context manager exit."""
+            """Exit the context-managed session and close the client."""
             self.close()
 
         @staticmethod
@@ -97,10 +105,14 @@ class FlextOracleWmsUtilitiesHttpClient:
             path: str,
             headers: t.StrMapping | None = None,
         ) -> p.Result[t.JsonMapping]:
-            """Make DELETE request.
+            """Make a DELETE request.
+
+            Args:
+                path: Request path relative to the base URL.
+                headers: Optional headers overriding the defaults.
 
             Returns:
-                The resulting ``p.Result[t.JsonMapping]``.
+                Result wrapping the parsed response mapping.
             """
             return self._execute_request("DELETE", path, headers=headers, body={})
 
@@ -110,10 +122,15 @@ class FlextOracleWmsUtilitiesHttpClient:
             params: t.Api.WebParams | None = None,
             headers: t.StrMapping | None = None,
         ) -> p.Result[t.JsonMapping]:
-            """Make GET request with railway-oriented error handling.
+            """Make a GET request with railway-oriented error handling.
+
+            Args:
+                path: Request path relative to the base URL.
+                params: Optional query parameters.
+                headers: Optional headers overriding the defaults.
 
             Returns:
-                The resulting ``p.Result[t.JsonMapping]``.
+                Result wrapping the parsed response mapping.
             """
             params_str: t.Api.WebParams | None = params
             return self._execute_request(
@@ -130,10 +147,18 @@ class FlextOracleWmsUtilitiesHttpClient:
             json_data: t.JsonMapping | None = None,
             headers: t.StrMapping | None = None,
         ) -> p.Result[t.JsonMapping]:
-            """Make POST request with railway-oriented error handling.
+            """Make a POST request with railway-oriented error handling.
+
+            Args:
+                path: Request path relative to the base URL.
+                data: Optional form-style payload used when no JSON body is
+                    given.
+                json_data: Optional JSON payload; takes precedence over
+                    ``data``.
+                headers: Optional headers overriding the defaults.
 
             Returns:
-                The resulting ``p.Result[t.JsonMapping]``.
+                Result wrapping the parsed response mapping.
             """
             body = json_data or data
             return self._execute_request("POST", path, headers=headers, body=body)
@@ -145,10 +170,18 @@ class FlextOracleWmsUtilitiesHttpClient:
             json_data: t.JsonMapping | None = None,
             headers: t.StrMapping | None = None,
         ) -> p.Result[t.JsonMapping]:
-            """Make PUT request.
+            """Make a PUT request with railway-oriented error handling.
+
+            Args:
+                path: Request path relative to the base URL.
+                data: Optional form-style payload used when no JSON body is
+                    given.
+                json_data: Optional JSON payload; takes precedence over
+                    ``data``.
+                headers: Optional headers overriding the defaults.
 
             Returns:
-                The resulting ``p.Result[t.JsonMapping]``.
+                Result wrapping the parsed response mapping.
             """
             try:
                 return self._execute_request_unchecked(

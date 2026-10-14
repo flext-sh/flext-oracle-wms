@@ -82,7 +82,7 @@ def _test_pass() -> str:
 
 
 def _custom_password() -> str:
-    """Custom test password for settings-resolution tests.
+    """Return the custom test password for settings-resolution tests.
 
     Returns:
         The resulting ``str``.
@@ -100,7 +100,7 @@ def _short_password() -> str:
 
 
 def _secret() -> str:
-    """Generic secret value used for OAuth2 client-secret tests.
+    """Return the generic secret value used for OAuth2 client-secret tests.
 
     Returns:
         The resulting ``str``.
