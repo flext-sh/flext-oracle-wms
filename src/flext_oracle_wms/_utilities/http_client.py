@@ -359,6 +359,12 @@ class FlextOracleWmsUtilitiesHttpClient:
         ) -> FlextOracleWmsUtilitiesHttpClient.HttpClient:
             """Create HttpClient instance.
 
+            Args:
+                base_url: Base URL of the WMS REST API.
+                timeout: Request timeout in seconds.
+                headers: Optional default request headers.
+                verify_ssl: Whether to verify TLS certificates.
+
             Returns:
                 The resulting ``FlextOracleWmsUtilitiesHttpClient.HttpClient``.
             """

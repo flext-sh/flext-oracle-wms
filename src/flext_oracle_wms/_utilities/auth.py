@@ -21,6 +21,9 @@ class FlextOracleWmsUtilitiesAuth:
     ) -> p.Result[bool]:
         """Validate Oracle WMS authentication configuration business rules.
 
+        Args:
+            auth_settings: Auth settings to validate.
+
         Returns:
             The resulting ``p.Result[bool]``.
         """

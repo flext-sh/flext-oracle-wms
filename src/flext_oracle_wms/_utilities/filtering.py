@@ -61,6 +61,10 @@ class FlextOracleWmsUtilitiesFiltering:
         ) -> FlextOracleWmsUtilitiesFiltering.Filter:
             """Create a filter engine with explicit configuration.
 
+            Args:
+                case_sensitive: Whether string comparisons are case-sensitive.
+                max_conditions: Maximum number of filter conditions allowed.
+
             Returns:
                 The resulting ``FlextOracleWmsUtilitiesFiltering.Filter``.
             """
@@ -75,6 +79,12 @@ class FlextOracleWmsUtilitiesFiltering:
             operator: c.OracleWms.WmsFilterOperator | None = None,
         ) -> p.Result[Sequence[t.OracleWms.FilterRecord]]:
             """Filter records by one field using optional operator semantics.
+
+            Args:
+                records: Records to filter.
+                field: Field name (dot path) compared on each record.
+                value: Comparison value for the field.
+                operator: Optional filter operator; defaults to equality.
 
             Returns:
                 The resulting ``p.Result[Sequence[t.OracleWms.FilterRecord]]``.
@@ -101,6 +111,12 @@ class FlextOracleWmsUtilitiesFiltering:
             max_id: t.OracleWms.FilterScalar | None = None,
         ) -> p.Result[Sequence[t.OracleWms.FilterRecord]]:
             """Filter records by inclusive identifier range.
+
+            Args:
+                records: Records to filter.
+                id_field: Field name holding the identifier.
+                min_id: Optional inclusive lower bound.
+                max_id: Optional inclusive upper bound.
 
             Returns:
                 The resulting ``p.Result[Sequence[t.OracleWms.FilterRecord]]``.
@@ -227,6 +243,11 @@ class FlextOracleWmsUtilitiesFiltering:
         ) -> p.Result[Sequence[t.OracleWms.FilterRecord]]:
             """Filter records against field conditions and optional limit.
 
+            Args:
+                records: Records to filter.
+                filters: Field conditions keyed by field name.
+                limit: Optional maximum number of records returned.
+
             Returns:
                 The resulting ``p.Result[Sequence[t.OracleWms.FilterRecord]]``.
             """
@@ -252,6 +273,11 @@ class FlextOracleWmsUtilitiesFiltering:
             ascending: bool = True,
         ) -> p.Result[Sequence[t.OracleWms.FilterRecord]]:
             """Sort records by a dot-path field.
+
+            Args:
+                records: Records to sort.
+                sort_field: Field name (dot path) used as the sort key.
+                ascending: Whether to sort ascending; defaults to ``True``.
 
             Returns:
                 The resulting ``p.Result[Sequence[t.OracleWms.FilterRecord]]``.

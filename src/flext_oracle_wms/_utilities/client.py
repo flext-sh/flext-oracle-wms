@@ -47,6 +47,9 @@ class FlextOracleWmsUtilitiesClient:
         ) -> p.Result[FlextOracleWmsUtilitiesClient.Client]:
             """Create a concrete client by merging auth and runtime WMS settings.
 
+            Args:
+                auth_settings: Auth settings describing the WMS environment.
+
             Returns:
                 The resulting ``p.Result[FlextOracleWmsUtilitiesClient.Client]``.
             """
@@ -145,13 +148,22 @@ class FlextOracleWmsUtilitiesClient:
         ) -> p.Result[m.Api.HttpResponse]:
             """Call a specific Oracle WMS API.
 
+            Args:
+                api_name: Registered API name appended to ``/api/``.
+                headers: Optional per-request headers.
+                params: Optional query parameters.
+
             Returns:
                 The resulting ``p.Result[m.Api.HttpResponse]``.
             """
             return self.get(f"/api/{api_name}", headers=headers, params=params)
 
         def create_lpn(self, lpn_nbr: str, qty: int) -> p.Result[m.Api.HttpResponse]:
-            """Create LPN (License Plate Number).
+            """Create an LPN (License Plate Number).
+
+            Args:
+                lpn_nbr: License plate number to create.
+                qty: Quantity assigned to the LPN.
 
             Returns:
                 The resulting ``p.Result[m.Api.HttpResponse]``.
@@ -165,7 +177,11 @@ class FlextOracleWmsUtilitiesClient:
             *,
             headers: t.StrMapping | None = None,
         ) -> p.Result[m.Api.HttpResponse]:
-            """Make DELETE request to Oracle WMS API.
+            """Make a DELETE request to the Oracle WMS API.
+
+            Args:
+                path: Request path relative to the configured base URL.
+                headers: Optional per-request headers.
 
             Returns:
                 The resulting ``p.Result[m.Api.HttpResponse]``.
@@ -197,7 +213,12 @@ class FlextOracleWmsUtilitiesClient:
             headers: t.StrMapping | None = None,
             params: t.Api.WebParams | None = None,
         ) -> p.Result[m.Api.HttpResponse]:
-            """Make GET request to Oracle WMS API.
+            """Make a GET request to the Oracle WMS API.
+
+            Args:
+                path: Request path relative to the configured base URL.
+                headers: Optional per-request headers.
+                params: Optional query parameters.
 
             Returns:
                 The resulting ``p.Result[m.Api.HttpResponse]``.
@@ -209,6 +230,9 @@ class FlextOracleWmsUtilitiesClient:
             category: str,
         ) -> p.Result[t.SequenceOf[t.StrMapping]]:
             """Get Oracle WMS APIs by category.
+
+            Args:
+                category: API category name to filter by.
 
             Returns:
                 The resulting ``p.Result[t.SequenceOf[t.StrMapping]]``.
@@ -231,6 +255,11 @@ class FlextOracleWmsUtilitiesClient:
             filters: t.ConfigurationMapping | None = None,
         ) -> p.Result[t.SequenceOf[t.StrMapping]]:
             """Get data for a specific Oracle WMS entity.
+
+            Args:
+                entity_name: Name of the entity to fetch.
+                limit: Optional maximum number of records to return.
+                filters: Optional field filters applied as query parameters.
 
             Returns:
                 The resulting ``p.Result[t.SequenceOf[t.StrMapping]]``.
@@ -267,7 +296,12 @@ class FlextOracleWmsUtilitiesClient:
             headers: t.StrMapping | None = None,
             body: t.Api.RequestBody | None = None,
         ) -> p.Result[m.Api.HttpResponse]:
-            """Make POST request to Oracle WMS API.
+            """Make a POST request to the Oracle WMS API.
+
+            Args:
+                path: Request path relative to the configured base URL.
+                headers: Optional per-request headers.
+                body: Optional JSON request body.
 
             Returns:
                 The resulting ``p.Result[m.Api.HttpResponse]``.
@@ -281,7 +315,12 @@ class FlextOracleWmsUtilitiesClient:
             headers: t.StrMapping | None = None,
             body: t.Api.RequestBody | None = None,
         ) -> p.Result[m.Api.HttpResponse]:
-            """Make PUT request to Oracle WMS API.
+            """Make a PUT request to the Oracle WMS API.
+
+            Args:
+                path: Request path relative to the configured base URL.
+                headers: Optional per-request headers.
+                body: Optional JSON request body.
 
             Returns:
                 The resulting ``p.Result[m.Api.HttpResponse]``.
@@ -318,7 +357,11 @@ class FlextOracleWmsUtilitiesClient:
             oblpn_id: str,
             tracking_number: str,
         ) -> p.Result[m.Api.HttpResponse]:
-            """Update OBLPN tracking number.
+            """Update the tracking number of an outbound LPN.
+
+            Args:
+                oblpn_id: Identifier of the outbound LPN.
+                tracking_number: Tracking number to assign.
 
             Returns:
                 The resulting ``p.Result[m.Api.HttpResponse]``.

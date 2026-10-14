@@ -17,6 +17,9 @@ class FlextOracleWmsUtilitiesDiscovery:
     def validate_wms_entity(entity: m.OracleWms.Entity) -> p.Result[bool]:
         """Validate an Oracle WMS entity definition against domain rules.
 
+        Args:
+            entity: Entity model to validate.
+
         Returns:
             The resulting ``p.Result[bool]``.
         """
