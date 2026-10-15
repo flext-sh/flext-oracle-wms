@@ -128,6 +128,7 @@ def main() -> None:
         OSError: If a ``(RuntimeError, OSError, ValueError)`` is caught.
         RuntimeError: If a ``(RuntimeError, OSError, ValueError)`` is caught.
         ValueError: If a ``(RuntimeError, OSError, ValueError)`` is caught.
+
     """
     try:
         demonstrate_singleton_config()

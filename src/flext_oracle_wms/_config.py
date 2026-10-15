@@ -16,8 +16,8 @@ from functools import cached_property
 from typing import TYPE_CHECKING, Self
 
 from flext_cli import FlextCliConfig
-
 from flext_core import t
+
 from flext_oracle_wms._models.config import FlextOracleWmsConfigModels
 
 # NOTE (multi-agent): config-scaffold — accessor typed by PROTOCOL (p), never
@@ -52,6 +52,7 @@ class FlextOracleWmsConfig(FlextCliConfig):
 
         Returns:
             The resulting ``bool``.
+
         """
         return object.__eq__(self, other)
 
@@ -60,6 +61,7 @@ class FlextOracleWmsConfig(FlextCliConfig):
 
         Returns:
             The resulting ``int``.
+
         """
         return object.__hash__(self)
 

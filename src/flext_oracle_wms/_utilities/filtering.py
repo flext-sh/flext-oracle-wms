@@ -9,8 +9,8 @@ from __future__ import annotations
 from collections.abc import MutableSequence, Sequence
 
 from flext_api import u
-
 from flext_core import e, r
+
 from flext_oracle_wms import c, m, p, t
 from flext_oracle_wms.errors import FlextOracleWmsErrors
 
@@ -35,6 +35,7 @@ class FlextOracleWmsUtilitiesFiltering:
             Raises:
                 BaseError: If Invalid max_conditions.
                 ValidationError: If Filter validation failed.
+
             """
             if (
                 max_conditions <= 0
@@ -67,6 +68,7 @@ class FlextOracleWmsUtilitiesFiltering:
 
             Returns:
                 The resulting ``FlextOracleWmsUtilitiesFiltering.Filter``.
+
             """
             return cls(case_sensitive=case_sensitive, max_conditions=max_conditions)
 
@@ -88,6 +90,7 @@ class FlextOracleWmsUtilitiesFiltering:
 
             Returns:
                 The resulting ``p.Result[Sequence[t.OracleWms.FilterRecord]]``.
+
             """
             engine = cls()
             filters: t.MappingKV[str, t.OracleWms.FilterEntry]
@@ -120,6 +123,7 @@ class FlextOracleWmsUtilitiesFiltering:
 
             Returns:
                 The resulting ``p.Result[Sequence[t.OracleWms.FilterRecord]]``.
+
             """
             if not records:
                 return r[Sequence[t.OracleWms.FilterRecord]].ok([])
@@ -163,6 +167,7 @@ class FlextOracleWmsUtilitiesFiltering:
 
             Returns:
                 The resulting ``t.Scalar | None``.
+
             """
             return value if isinstance(value, c.SCALAR_TYPES) else None
 
@@ -193,6 +198,7 @@ class FlextOracleWmsUtilitiesFiltering:
 
             Returns:
                 The resulting ``bool``.
+
             """
             match op:
                 case ">":
@@ -210,6 +216,7 @@ class FlextOracleWmsUtilitiesFiltering:
 
             Returns:
                 The resulting ``bool``.
+
             """
             match op:
                 case ">":
@@ -250,6 +257,7 @@ class FlextOracleWmsUtilitiesFiltering:
 
             Returns:
                 The resulting ``p.Result[Sequence[t.OracleWms.FilterRecord]]``.
+
             """
             if (result := self._validate_filters(filters)).failure:
                 return r[Sequence[t.OracleWms.FilterRecord]].fail(
@@ -281,6 +289,7 @@ class FlextOracleWmsUtilitiesFiltering:
 
             Returns:
                 The resulting ``p.Result[Sequence[t.OracleWms.FilterRecord]]``.
+
             """
             try:
 
@@ -308,6 +317,7 @@ class FlextOracleWmsUtilitiesFiltering:
             Returns:
                 The resulting ``bool | None``: ``None`` when both values are
                 present and the operator match must run.
+
             """
             if (field_value is None and filter_value is not None) or (
                 field_value is not None and filter_value is None
@@ -334,6 +344,7 @@ class FlextOracleWmsUtilitiesFiltering:
 
             Returns:
                 The resulting ``bool``.
+
             """
             match operator:
                 case c.OracleWms.WmsFilterOperator.EQ | "eq":
@@ -385,6 +396,7 @@ class FlextOracleWmsUtilitiesFiltering:
 
             Returns:
                 The resulting ``bool``.
+
             """
             null_result = self._apply_null_semantics(
                 field_value,

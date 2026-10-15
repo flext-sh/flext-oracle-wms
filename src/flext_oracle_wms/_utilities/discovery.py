@@ -7,6 +7,7 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 from flext_core import r
+
 from flext_oracle_wms import c, m, p
 
 
@@ -22,6 +23,7 @@ class FlextOracleWmsUtilitiesDiscovery:
 
         Returns:
             The resulting ``p.Result[bool]``.
+
         """
         # NOTE (multi-agent): U17 — entity business validation lives in u.*, not on
         # the model (declaration layer). Moved verbatim from m.OracleWms.Entity.

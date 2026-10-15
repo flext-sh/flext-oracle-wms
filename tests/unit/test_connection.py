@@ -8,8 +8,8 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 import pytest
-
 from flext_core import r
+
 from flext_oracle_wms import FlextOracleWmsSettings, m, u
 from tests import _secret, tm
 
@@ -28,6 +28,7 @@ class TestsFlextOracleWmsConnection:
 
         Returns:
             The resulting ``Client``.
+
         """
         return Client(settings)
 

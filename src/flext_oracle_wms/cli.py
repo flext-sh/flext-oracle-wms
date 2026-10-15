@@ -20,6 +20,7 @@ def main(args: t.StrSequence | None = None) -> int:
 
     Returns:
         Process exit code.
+
     """
     _ = args
     return 0

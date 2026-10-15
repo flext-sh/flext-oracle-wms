@@ -21,6 +21,7 @@ def _basic_username() -> str:
 
     Returns:
         The resulting ``str``.
+
     """
     return "test_user"
 
@@ -30,6 +31,7 @@ def _basic_password() -> str:
 
     Returns:
         The resulting ``str``.
+
     """
     return "test_password"
 
@@ -39,6 +41,7 @@ def _basic_token() -> str:
 
     Returns:
         The resulting ``str``.
+
     """
     return base64.b64encode(f"{_basic_username()}:{_basic_password()}".encode()).decode(
         "ascii",
@@ -50,6 +53,7 @@ def _wms_username() -> str:
 
     Returns:
         The resulting ``str``.
+
     """
     return "wms-user"
 
@@ -59,6 +63,7 @@ def _wms_password() -> str:
 
     Returns:
         The resulting ``str``.
+
     """
     return "wms-secret"
 
@@ -68,6 +73,7 @@ def _wms_password_underscore() -> str:
 
     Returns:
         The resulting ``str``.
+
     """
     return "wms_pass"
 
@@ -77,6 +83,7 @@ def _test_pass() -> str:
 
     Returns:
         The resulting ``str``.
+
     """
     return "test_pass"
 
@@ -86,6 +93,7 @@ def _custom_password() -> str:
 
     Returns:
         The resulting ``str``.
+
     """
     return "custom_pass"
 
@@ -95,6 +103,7 @@ def _short_password() -> str:
 
     Returns:
         The resulting ``str``.
+
     """
     return "pw"
 
@@ -104,6 +113,7 @@ def _secret() -> str:
 
     Returns:
         The resulting ``str``.
+
     """
     return "secret"
 
@@ -113,6 +123,7 @@ def _oauth_secret() -> str:
 
     Returns:
         The resulting ``str``.
+
     """
     return "client_secret"
 
@@ -122,6 +133,7 @@ def _oauth_secret_dashed() -> str:
 
     Returns:
         The resulting ``str``.
+
     """
     return "client-secret"
 
@@ -131,6 +143,7 @@ def _oauth_secret_456() -> str:
 
     Returns:
         The resulting ``str``.
+
     """
     return "client_secret_456"
 
@@ -140,6 +153,7 @@ def _oauth_client_id() -> str:
 
     Returns:
         The resulting ``str``.
+
     """
     return "client_id"
 
@@ -149,6 +163,7 @@ def _oauth_client_id_dashed() -> str:
 
     Returns:
         The resulting ``str``.
+
     """
     return "client-id"
 
@@ -158,6 +173,7 @@ def _oauth_client_id_123() -> str:
 
     Returns:
         The resulting ``str``.
+
     """
     return "client_id_123"
 
@@ -167,6 +183,7 @@ def _basic_auth_settings() -> m.OracleWms.AuthSettings:
 
     Returns:
         The resulting ``m.OracleWms.AuthSettings``.
+
     """
     return m.OracleWms.AuthSettings(
         method="basic",

@@ -9,6 +9,7 @@ from __future__ import annotations
 import base64
 
 from flext_core import r
+
 from flext_oracle_wms import c, m, p, t
 
 
@@ -26,6 +27,7 @@ class FlextOracleWmsUtilitiesAuth:
 
         Returns:
             The resulting ``p.Result[bool]``.
+
         """
         # NOTE (multi-agent): U17 — business validation lives in u.*, not on the
         # model (declaration layer). Moved verbatim from m.OracleWms.AuthSettings.
@@ -69,6 +71,7 @@ class FlextOracleWmsUtilitiesAuth:
 
             Returns:
                 The resulting ``p.Result[str]``.
+
             """
             basic_method = str(c.OracleWms.OracleWMSAuthMethod.BASIC)
             oauth2_method = str(c.OracleWms.OracleWMSAuthMethod.OAUTH2)

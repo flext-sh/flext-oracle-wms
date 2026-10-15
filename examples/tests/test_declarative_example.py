@@ -21,6 +21,7 @@ def load_env_config() -> t.MutableJsonMapping | None:
 
     Returns:
         The resulting ``t.MutableJsonMapping | None``.
+
     """
     env_path = Path("flext-tap-oracle-wms/.env")
     if not env_path.exists():
@@ -99,6 +100,7 @@ def _group_api_endpoints_by_category() -> t.MutableMappingKV[
 
     Returns:
         The resulting category-to-endpoint-name mapping.
+
     """
     categories: t.MutableMappingKV[str, t.MutableSequenceOf[str]] = {}
     for api in FlextOracleWmsApi.api_endpoints().values():
@@ -125,6 +127,7 @@ def run_client_flow(client: u.OracleWms.Client) -> None:
 
     Raises:
         RuntimeError: If client start failed.
+
     """
     start_result = client.start()
     if not start_result.success:

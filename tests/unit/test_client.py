@@ -33,6 +33,7 @@ class TestsFlextOracleWmsClient:
 
         Returns:
             The resulting ``FlextOracleWmsSettings``.
+
         """
         return FlextOracleWmsSettings.model_validate({
             "OracleWms": {

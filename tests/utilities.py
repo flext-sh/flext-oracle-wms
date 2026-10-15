@@ -47,6 +47,7 @@ class TestsFlextOracleWmsUtilities(FlextTestsUtilities, FlextOracleWmsUtilities)
 
                     Returns:
                         The resulting ``p.Result[bool]``.
+
                     """
                     return r[bool].ok(value=True)
 
@@ -60,6 +61,7 @@ class TestsFlextOracleWmsUtilities(FlextTestsUtilities, FlextOracleWmsUtilities)
 
                 Returns:
                     The resulting ``FlextOracleWmsSettings``.
+
                 """
                 # NOTE (multi-agent): ADR-005 — project scalars live under the
                 # nested ``OracleWms`` namespace; build via model_validate with
@@ -113,6 +115,7 @@ class TestsFlextOracleWmsUtilities(FlextTestsUtilities, FlextOracleWmsUtilities)
 
                 Returns:
                     The resulting ``Path | None``.
+
                 """
                 current_dir = start_path.parent
                 for _ in range(4):
@@ -143,6 +146,7 @@ class TestsFlextOracleWmsUtilities(FlextTestsUtilities, FlextOracleWmsUtilities)
 
                 Returns:
                     The resulting ``str``.
+
                 """
                 default = "development"
                 if not base_url:
@@ -164,6 +168,7 @@ class TestsFlextOracleWmsUtilities(FlextTestsUtilities, FlextOracleWmsUtilities)
                 Returns:
                     The resulting
                         ``p.Result[TestsFlextOracleWmsTypes.OracleWms.Tests.EnvConfig]``.
+
                 """
                 env_path = cls.find_env_file(start_path)
                 if env_path is None:
@@ -218,6 +223,7 @@ class TestsFlextOracleWmsUtilities(FlextTestsUtilities, FlextOracleWmsUtilities)
 
                 Returns:
                     The resulting ``bool``.
+
                 """
                 env_file = project_root / ".env"
                 if env_file.exists():
@@ -231,6 +237,7 @@ class TestsFlextOracleWmsUtilities(FlextTestsUtilities, FlextOracleWmsUtilities)
 
                 Returns:
                     The resulting ``p.Result[FlextOracleWmsSettings]``.
+
                 """
                 base_url = os.getenv("ORACLE_WMS_BASE_URL") or os.getenv(
                     "FLEXT_ORACLE_WMS_BASE_URL",

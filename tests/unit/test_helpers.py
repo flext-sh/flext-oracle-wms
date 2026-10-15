@@ -24,6 +24,7 @@ class TestsFlextOracleWmsHelpers:
 
         Returns:
             The resulting ``list[t.OracleWms.Tests.Record]``.
+
         """
         return [
             {"id": 1, "name": "Alpha"},

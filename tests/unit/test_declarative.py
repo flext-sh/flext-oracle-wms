@@ -33,6 +33,7 @@ def env_config() -> t.OracleWms.Tests.EnvConfig:
 
     Returns:
         The resulting ``t.OracleWms.Tests.EnvConfig``.
+
     """
     config_result = u.OracleWms.Tests.load_env_config(Path(__file__))
     if config_result.success and config_result.value.get("base_url"):
@@ -54,6 +55,7 @@ def oracle_wms_client(
 
     Yields:
         Each ``u.OracleWms.Client``.
+
     """
     settings = FlextOracleWmsSettings.model_validate({
         **env_config,

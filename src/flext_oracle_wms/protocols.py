@@ -55,6 +55,7 @@ class FlextOracleWmsProtocols(FlextApiProtocols):
 
                 Returns:
                     Result wrapping the discovered entity names.
+
                 """
                 ...
 
@@ -78,6 +79,7 @@ class FlextOracleWmsProtocols(FlextApiProtocols):
 
                 Returns:
                     Result wrapping the operation output or an error.
+
                 """
                 ...
 

@@ -52,6 +52,7 @@ class FlextOracleWmsUtilitiesClient:
 
             Returns:
                 The resulting ``p.Result[FlextOracleWmsUtilitiesClient.Client]``.
+
             """
             validation_result = FlextOracleWmsUtilitiesAuth.validate_auth_settings(
                 auth_settings,
@@ -90,6 +91,7 @@ class FlextOracleWmsUtilitiesClient:
 
             Raises:
                 ValueError: If ``auth_headers.failure``.
+
             """
             wms = settings.OracleWms
             if not wms.username and not wms.password:
@@ -112,6 +114,7 @@ class FlextOracleWmsUtilitiesClient:
 
             Returns:
                 The resulting ``FlextApi``.
+
             """
             return FlextApi(runtime_settings=self._api_config)
 
@@ -155,6 +158,7 @@ class FlextOracleWmsUtilitiesClient:
 
             Returns:
                 The resulting ``p.Result[m.Api.HttpResponse]``.
+
             """
             return self.get(f"/api/{api_name}", headers=headers, params=params)
 
@@ -167,6 +171,7 @@ class FlextOracleWmsUtilitiesClient:
 
             Returns:
                 The resulting ``p.Result[m.Api.HttpResponse]``.
+
             """
             payload: t.Api.RequestBody = {"lpn_nbr": lpn_nbr, "qty": qty}
             return self.post("/lpn", body=payload)
@@ -185,6 +190,7 @@ class FlextOracleWmsUtilitiesClient:
 
             Returns:
                 The resulting ``p.Result[m.Api.HttpResponse]``.
+
             """
             return self._request(c.Api.Method.DELETE, path, headers=headers)
 
@@ -193,6 +199,7 @@ class FlextOracleWmsUtilitiesClient:
 
             Returns:
                 The resulting ``p.Result[t.StrSequence]``.
+
             """
             result = self.get("/entities")
             if result.failure:
@@ -222,6 +229,7 @@ class FlextOracleWmsUtilitiesClient:
 
             Returns:
                 The resulting ``p.Result[m.Api.HttpResponse]``.
+
             """
             return self._request(c.Api.Method.GET, path, headers=headers, params=params)
 
@@ -236,6 +244,7 @@ class FlextOracleWmsUtilitiesClient:
 
             Returns:
                 The resulting ``p.Result[t.SequenceOf[t.StrMapping]]``.
+
             """
             result = self.get(f"/apis/category/{category}")
             if result.failure:
@@ -263,6 +272,7 @@ class FlextOracleWmsUtilitiesClient:
 
             Returns:
                 The resulting ``p.Result[t.SequenceOf[t.StrMapping]]``.
+
             """
             params_dict: t.MutableStrMapping = {}
             if limit is not None:
@@ -286,6 +296,7 @@ class FlextOracleWmsUtilitiesClient:
 
             Returns:
                 The resulting ``p.Result[m.Api.HttpResponse]``.
+
             """
             return self.get("/health")
 
@@ -305,6 +316,7 @@ class FlextOracleWmsUtilitiesClient:
 
             Returns:
                 The resulting ``p.Result[m.Api.HttpResponse]``.
+
             """
             return self._request(c.Api.Method.POST, path, headers=headers, body=body)
 
@@ -324,6 +336,7 @@ class FlextOracleWmsUtilitiesClient:
 
             Returns:
                 The resulting ``p.Result[m.Api.HttpResponse]``.
+
             """
             return self._request(c.Api.Method.PUT, path, headers=headers, body=body)
 
@@ -332,6 +345,7 @@ class FlextOracleWmsUtilitiesClient:
 
             Returns:
                 The resulting ``p.Result[bool]``.
+
             """
             if self._client is None:
                 self._client = self._create_api_client()
@@ -343,6 +357,7 @@ class FlextOracleWmsUtilitiesClient:
 
             Returns:
                 The resulting ``p.Result[bool]``.
+
             """
             if self._client is not None:
                 close_fn = getattr(self._client, "close", None)
@@ -365,6 +380,7 @@ class FlextOracleWmsUtilitiesClient:
 
             Returns:
                 The resulting ``p.Result[m.Api.HttpResponse]``.
+
             """
             payload: t.Api.RequestBody = {"tracking_number": tracking_number}
             return self.put(f"/oblpn/{oblpn_id}/tracking", body=payload)

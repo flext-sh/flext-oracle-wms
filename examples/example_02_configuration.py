@@ -28,6 +28,7 @@ def get_environment_configs() -> t.MappingKV[
     Returns:
         The resulting ``t.MappingKV[c.OracleWms.Environment,
             m.OracleWms.EnvironmentConfig]``.
+
     """
     return {
         c.OracleWms.Environment.DEVELOPMENT: m.OracleWms.EnvironmentConfig(

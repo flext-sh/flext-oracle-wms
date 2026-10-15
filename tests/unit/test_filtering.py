@@ -50,6 +50,7 @@ class TestsFlextOracleWmsFiltering:
 
         Returns:
             The resulting ``set[int]``.
+
         """
         ids: set[int] = set()
         for record in records:

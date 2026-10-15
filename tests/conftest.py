@@ -26,6 +26,7 @@ def deterministic_settings() -> FlextOracleWmsSettings:
 
     Returns:
         The resulting ``FlextOracleWmsSettings``.
+
     """
     return FlextOracleWmsSettings.model_validate({
         "OracleWms": {
@@ -63,6 +64,7 @@ def oracle_wms_http_client(
 
     Returns:
         The resulting ``u.OracleWms.HttpClient``.
+
     """
     runtime = oracle_wms_settings.OracleWms
     return FlextOracleWmsApi.create_flext_http_client(

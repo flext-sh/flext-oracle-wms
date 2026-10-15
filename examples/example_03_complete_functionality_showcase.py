@@ -59,6 +59,7 @@ def load_config_from_environment() -> FlextOracleWmsSettings:
     Raises:
         ValueError: If Missing required environment variables; or if Required
             environment variables cannot be None.
+
     """
     env_file = Path(__file__).parent.parent / ".env"
     if env_file.exists():
@@ -97,6 +98,7 @@ def showcase_1_client_initialization(
 
     Raises:
         Error: If Failed to start client.
+
     """
     client = u.OracleWms.Client(settings)
     start_result = client.start()
@@ -116,6 +118,7 @@ def showcase_2_entity_discovery(client: u.OracleWms.Client) -> list[str]:
 
     Raises:
         Error: If ``not entities_result.success``.
+
     """
     entities_result = client.discover_entities()
     if not entities_result.success:
@@ -145,6 +148,7 @@ def showcase_3_data_retrieval(
 
     Returns:
         The resulting ``t.MutableJsonMapping``.
+
     """
     sample_data: t.MutableJsonMapping = {}
     test_entities = ["company", "facility", "item"]
@@ -173,6 +177,7 @@ def showcase_4_authentication(settings: FlextOracleWmsSettings) -> None:
 
     Raises:
         ValueError: If ``validation.failure``.
+
     """
     auth_config = m.OracleWms.AuthSettings(
         method=c.OracleWms.OracleWMSAuthMethod.BASIC,
@@ -191,6 +196,7 @@ def showcase_5_api_catalog(client: u.OracleWms.Client) -> None:
 
     Raises:
         Error: If ``category_result.failure``.
+
     """
     categories: t.MutableMappingKV[str, t.MutableSequenceOf[str]] = {}
     for api_name, api_info in FlextOracleWmsApi.api_endpoints().items():
@@ -250,6 +256,7 @@ def showcase_7_health_monitoring(client: u.OracleWms.Client) -> t.MutableJsonMap
 
     Raises:
         Error: If ``health_result.failure``.
+
     """
     health_result = client.health_check()
     if health_result.failure:

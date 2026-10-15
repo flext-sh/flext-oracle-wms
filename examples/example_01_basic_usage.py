@@ -29,8 +29,8 @@ from pathlib import Path
 from typing import TYPE_CHECKING, Final
 
 from dotenv import load_dotenv
-
 from flext_core import FlextContainer
+
 from flext_oracle_wms import FlextOracleWmsSettings, p, t, u
 from flext_oracle_wms.errors import FlextOracleWmsErrors
 
@@ -148,6 +148,7 @@ def run_basic_usage() -> None:
 
     Raises:
         Error: If client start failed.
+
     """
     setup_client_config()
     client = u.OracleWms.Client()
@@ -178,6 +179,7 @@ def main() -> None:
             'yes'}``.
         RuntimeError: If ``os.getenv('FLEXT_DEBUG_MODE', '').lower() in {'true', '1',
             'yes'}``.
+
     """
     try:
         run_basic_usage()

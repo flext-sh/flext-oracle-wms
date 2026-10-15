@@ -9,8 +9,8 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Self
 
 from flext_api import FlextApi, FlextApiSettings, u
-
 from flext_core import r
+
 from flext_oracle_wms import c, m, p, t
 
 if TYPE_CHECKING:
@@ -53,6 +53,7 @@ class FlextOracleWmsUtilitiesHttpClient:
 
             Returns:
                 The client instance itself.
+
             """
             self._ensure_client()
             return self
@@ -113,6 +114,7 @@ class FlextOracleWmsUtilitiesHttpClient:
 
             Returns:
                 Result wrapping the parsed response mapping.
+
             """
             return self._execute_request("DELETE", path, headers=headers, body={})
 
@@ -131,6 +133,7 @@ class FlextOracleWmsUtilitiesHttpClient:
 
             Returns:
                 Result wrapping the parsed response mapping.
+
             """
             params_str: t.Api.WebParams | None = params
             return self._execute_request(
@@ -159,6 +162,7 @@ class FlextOracleWmsUtilitiesHttpClient:
 
             Returns:
                 Result wrapping the parsed response mapping.
+
             """
             body = json_data or data
             return self._execute_request("POST", path, headers=headers, body=body)
@@ -182,6 +186,7 @@ class FlextOracleWmsUtilitiesHttpClient:
 
             Returns:
                 Result wrapping the parsed response mapping.
+
             """
             try:
                 return self._execute_request_unchecked(
@@ -225,6 +230,7 @@ class FlextOracleWmsUtilitiesHttpClient:
 
             Returns:
                 The resulting ``p.Result[t.JsonMapping]``.
+
             """
             try:
                 return self._execute_request_unchecked(
@@ -254,6 +260,7 @@ class FlextOracleWmsUtilitiesHttpClient:
 
             Returns:
                 The resulting ``p.Result[t.JsonMapping]``.
+
             """
             response_result = self._request_response_unchecked(
                 method,
@@ -285,6 +292,7 @@ class FlextOracleWmsUtilitiesHttpClient:
 
             Returns:
                 The resulting ``p.Result[m.Api.HttpResponse]``.
+
             """
             self._ensure_client()
             if self._client is None:
@@ -313,6 +321,7 @@ class FlextOracleWmsUtilitiesHttpClient:
 
             Returns:
                 The resulting ``p.Result[t.JsonMapping]``.
+
             """
             if not isinstance(body, (dict, str, bytes)) or (
                 isinstance(body, str) and not body
@@ -337,6 +346,7 @@ class FlextOracleWmsUtilitiesHttpClient:
 
             Raises:
                 TypeError: If Unsupported response body type.
+
             """
             match body:
                 case dict() as payload:
@@ -367,6 +377,7 @@ class FlextOracleWmsUtilitiesHttpClient:
 
             Returns:
                 The resulting ``FlextOracleWmsUtilitiesHttpClient.HttpClient``.
+
             """
             return FlextOracleWmsUtilitiesHttpClient.HttpClient(
                 base_url=base_url,

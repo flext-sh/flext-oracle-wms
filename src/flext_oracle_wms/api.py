@@ -36,6 +36,7 @@ class FlextOracleWmsApi(s[bool]):
 
         Args:
             settings: Oracle WMS settings; defaults to validated globals.
+
         """
         super().__init__()
         self._client = u.OracleWms.Client(settings=settings)
@@ -51,6 +52,7 @@ class FlextOracleWmsApi(s[bool]):
 
         Returns:
             The resulting ``p.Result[bool]``.
+
         """
         return r[bool].ok(value=True)
 
@@ -80,6 +82,7 @@ class FlextOracleWmsApi(s[bool]):
 
         Returns:
             The resulting ``u.OracleWms.HttpClient``.
+
         """
         return u.OracleWms.HttpClient(
             base_url=base_url,
@@ -99,6 +102,7 @@ class FlextOracleWmsApi(s[bool]):
 
         Returns:
             The resulting ``p.Result[u.OracleWms.Client]``.
+
         """
         result: p.Result[u.OracleWms.Client] = u.OracleWms.Client.from_auth_settings(
             settings,
