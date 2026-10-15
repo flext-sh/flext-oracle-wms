@@ -4,22 +4,22 @@ Asserts the observable public contract: constructor settings resolution,
 the ``r[bool]`` outcomes of the start/stop lifecycle, and the ``r[Client]``
 outcomes of ``from_auth_settings`` across valid and invalid auth inputs.
 
-Copyright (c) 2025 FLEXT Team. All rights reserved.
+Copyright (c) 2026 FLEXT Team. All rights reserved.
 SPDX-License-Identifier: MIT
 """
 
 from __future__ import annotations
 
 import pytest
-from flext_tests import tm
 
 from flext_oracle_wms import FlextOracleWmsSettings, m, u
-from tests._factories import (
+from tests import (
     _custom_password,
     _oauth_secret_dashed,
     _secret,
     _short_password,
     _test_pass,
+    tm,
 )
 
 
@@ -33,6 +33,7 @@ class TestsFlextOracleWmsClient:
 
         Returns:
             The resulting ``FlextOracleWmsSettings``.
+
         """
         return FlextOracleWmsSettings.model_validate({
             "OracleWms": {

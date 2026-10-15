@@ -1,12 +1,13 @@
 """Oracle WMS Entity Discovery utilities.
 
-Copyright (c) 2025 FLEXT Team. All rights reserved.
+Copyright (c) 2026 FLEXT Team. All rights reserved.
 SPDX-License-Identifier: MIT
 """
 
 from __future__ import annotations
 
 from flext_core import r
+
 from flext_oracle_wms import c, m, p
 
 
@@ -17,8 +18,12 @@ class FlextOracleWmsUtilitiesDiscovery:
     def validate_wms_entity(entity: m.OracleWms.Entity) -> p.Result[bool]:
         """Validate an Oracle WMS entity definition against domain rules.
 
+        Args:
+            entity: Entity model to validate.
+
         Returns:
             The resulting ``p.Result[bool]``.
+
         """
         # NOTE (multi-agent): U17 — entity business validation lives in u.*, not on
         # the model (declaration layer). Moved verbatim from m.OracleWms.Entity.

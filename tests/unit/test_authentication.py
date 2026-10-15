@@ -6,17 +6,15 @@ Asserts the observable public contract of the Oracle WMS auth surface:
 ``get_auth_headers`` returning ``r[T]``), and ``Client.from_auth_settings``.
 No private attribute access, no patching of the unit under test.
 
-Copyright (c) 2025 FLEXT Team. All rights reserved.
+Copyright (c) 2026 FLEXT Team. All rights reserved.
 SPDX-License-Identifier: MIT
 """
 
 from __future__ import annotations
 
 import pytest
-from flext_tests import tm
 
-from tests import c, m, u
-from tests._factories import _basic_password, _basic_token, _oauth_secret_456, _secret
+from tests import _basic_password, _basic_token, _oauth_secret_456, _secret, c, m, tm, u
 
 # Method enum reused across cases.
 _Method = c.OracleWms.OracleWMSAuthMethod

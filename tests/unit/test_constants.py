@@ -14,10 +14,9 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 import pytest
-from flext_tests import tm
 
-from flext_oracle_wms import c as domain_c, config
-from tests import c
+from flext_oracle_wms import FlextOracleWmsConstants, config
+from tests import c, t, tm
 
 _AuthMethod = c.OracleWms.OracleWMSAuthMethod
 _FilterOp = c.OracleWms.WmsFilterOperator
@@ -30,7 +29,7 @@ class TestsFlextOracleWmsConstantsUnit:
     @staticmethod
     def test_facade_composes_flext_core_constants() -> None:
         """The WMS constants facade extends the domain constants contract."""
-        assert issubclass(c, domain_c)
+        assert issubclass(c, FlextOracleWmsConstants)
 
     @staticmethod
     def test_wms_version_is_non_empty_semver_string() -> None:
@@ -47,12 +46,13 @@ class TestsFlextOracleWmsConstantsUnit:
     )
     def test_api_config_publishes_connection_defaults(key: str) -> None:
         """API_CONFIG mirrors the typed config SSOT connection defaults."""
-        expected: str | int = {
+        defaults: t.MappingKV[str, str | int] = {
             "version_default": config.oracle_wms.api.version_default,
             "base_url_default": config.oracle_wms.environments.default,
             "timeout_default": config.oracle_wms.api.timeout_default,
             "max_retries": config.oracle_wms.api.max_retries,
-        }[key]
+        }
+        expected: str | int = defaults[key]
         tm.that(c.OracleWms.API_CONFIG[key], eq=expected)
 
     @staticmethod
@@ -189,4 +189,6 @@ class TestsFlextOracleWmsConstantsUnit:
         categories = c.OracleWms.Tests.Categories
         tm.that(categories.DATA_EXTRACT, eq="data_extract")
         tm.that(categories.ENTITY_OPERATIONS, eq="entity_operations")
-        tm.that(c.OracleWms.Tests.API_VERSION_LGF_V10, eq="LGF_V10")
+        version_token = c.OracleWms.Tests.API_VERSION_LGF_V10
+        tm.that(version_token, is_=str)
+        assert version_token

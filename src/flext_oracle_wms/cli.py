@@ -15,8 +15,12 @@ if TYPE_CHECKING:
 def main(args: t.StrSequence | None = None) -> int:
     """Console-script entry point — commands are not implemented yet.
 
+    Args:
+        args: Raw CLI argument sequence, accepted and ignored.
+
     Returns:
-        The resulting ``int``.
+        Process exit code.
+
     """
     _ = args
     return 0

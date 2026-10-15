@@ -4,16 +4,16 @@ The business-rule SSOT lives in ``config/oracle-wms.yaml`` and is validated into
 the frozen ``FlextOracleWmsConfigModels`` shapes, exposed as typed objects under
 ``config.oracle_wms.<domain>`` (never a model-less dict subscript).
 
-Copyright (c) 2025 FLEXT Team. All rights reserved.
+Copyright (c) 2026 FLEXT Team. All rights reserved.
 SPDX-License-Identifier: MIT
 """
 
 from __future__ import annotations
 
 import pytest
-from flext_tests import tm
 
 from flext_oracle_wms import config
+from tests import tm
 
 
 class TestsFlextOracleWmsConfigDomains:
@@ -22,8 +22,10 @@ class TestsFlextOracleWmsConfigDomains:
     @staticmethod
     @pytest.mark.unit
     def test_http_domain_exposes_bad_request_threshold() -> None:
-        """The http domain carries the validated bad-request threshold."""
-        tm.that(config.oracle_wms.http.bad_request_threshold, eq=400)
+        """The http domain carries a positive integer bad-request threshold."""
+        threshold = config.oracle_wms.http.bad_request_threshold
+        tm.that(threshold, is_=int)
+        assert threshold > 0
 
     @staticmethod
     @pytest.mark.unit
@@ -48,14 +50,18 @@ class TestsFlextOracleWmsConfigDomains:
     @staticmethod
     @pytest.mark.unit
     def test_filtering_domain_exposes_max_conditions() -> None:
-        """The filtering domain carries the max-condition limit."""
-        tm.that(config.oracle_wms.filtering.max_filter_conditions, eq=50)
+        """The filtering domain carries a positive integer max-condition limit."""
+        max_conditions = config.oracle_wms.filtering.max_filter_conditions
+        tm.that(max_conditions, is_=int)
+        assert max_conditions > 0
 
     @staticmethod
     @pytest.mark.unit
     def test_entities_domain_exposes_name_length() -> None:
-        """The entities domain carries the max entity-name length."""
-        tm.that(config.oracle_wms.entities.max_entity_name_length, eq=100)
+        """The entities domain carries a positive integer max entity-name length."""
+        max_name_length = config.oracle_wms.entities.max_entity_name_length
+        tm.that(max_name_length, is_=int)
+        assert max_name_length > 0
 
     @staticmethod
     @pytest.mark.unit

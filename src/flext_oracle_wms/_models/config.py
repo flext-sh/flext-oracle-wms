@@ -6,13 +6,13 @@ model-less YAML slices into these classes and exposes the ready objects under
 ``config.oracle_wms.<domain>``. Adding a new config domain = add a nested model
 here and a validated field on ``Root`` (cosmos-main ``_models/config.py`` shape).
 
-Copyright (c) 2025 FLEXT Team. All rights reserved.
+Copyright (c) 2026 FLEXT Team. All rights reserved.
 SPDX-License-Identifier: MIT
 """
 
 from __future__ import annotations
 
-from flext_core import m
+from flext_core import m, t
 
 
 class FlextOracleWmsConfigModels:
@@ -101,7 +101,7 @@ class FlextOracleWmsConfigModels:
         entities: FlextOracleWmsConfigModels.Entities
         auth: FlextOracleWmsConfigModels.Auth
         environments: FlextOracleWmsConfigModels.Environments
-        api_endpoints: dict[str, FlextOracleWmsConfigModels.ApiEndpoint]
+        api_endpoints: t.MappingKV[str, FlextOracleWmsConfigModels.ApiEndpoint]
 
 
 __all__: list[str] = ["FlextOracleWmsConfigModels"]

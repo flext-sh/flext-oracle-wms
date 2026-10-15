@@ -15,16 +15,13 @@ from flext_oracle_wms import FlextOracleWmsApi, FlextOracleWmsSettings, t, u
 
 logger = u.fetch_logger(__name__)
 
-# Why: mro-4p0t — public facade access is u.OracleWms.Client, not the private
-# _utilities.client module (flext-oracle-wms-1sm3w toolchain sync fix).
-FlextOracleWmsClient = u.OracleWms.Client
-
 
 def load_env_config() -> t.MutableJsonMapping | None:
     """Load configuration from .env file.
 
     Returns:
         The resulting ``t.MutableJsonMapping | None``.
+
     """
     env_path = Path("flext-tap-oracle-wms/.env")
     if not env_path.exists():
@@ -85,7 +82,7 @@ def main() -> None:
         "verify_ssl": bool(env_config["oracle_wms_verify_ssl"]),
         "enable_logging": bool(env_config["oracle_wms_enable_logging"]),
     })
-    client = FlextOracleWmsClient(settings)
+    client = u.OracleWms.Client(settings)
     try:
         run_client_flow(client)
     except Exception as exc:
@@ -103,6 +100,7 @@ def _group_api_endpoints_by_category() -> t.MutableMappingKV[
 
     Returns:
         The resulting category-to-endpoint-name mapping.
+
     """
     categories: t.MutableMappingKV[str, t.MutableSequenceOf[str]] = {}
     for api in FlextOracleWmsApi.api_endpoints().values():
@@ -112,7 +110,7 @@ def _group_api_endpoints_by_category() -> t.MutableMappingKV[
     return categories
 
 
-def _fetch_sample_entities(client: FlextOracleWmsClient) -> None:
+def _fetch_sample_entities(client: u.OracleWms.Client) -> None:
     """Fetch a small sample for each representative WMS entity."""
     for entity in ["company", "facility", "item"]:
         result = client.fetch_entity_data(entity, limit=3)
@@ -124,11 +122,12 @@ def _fetch_sample_entities(client: FlextOracleWmsClient) -> None:
                         record.get("count", str(len(data)))
 
 
-def run_client_flow(client: FlextOracleWmsClient) -> None:
+def run_client_flow(client: u.OracleWms.Client) -> None:
     """Run the declarative example client flow.
 
     Raises:
         RuntimeError: If client start failed.
+
     """
     start_result = client.start()
     if not start_result.success:

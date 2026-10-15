@@ -3,7 +3,7 @@
 domain-driven design with minimal declarations using composition.
 Python 3.13+ syntax, one class per module, SOLID principles. Generic for any WMS.
 
-Copyright (c) 2025 FLEXT Team. All rights reserved.
+Copyright (c) 2026 FLEXT Team. All rights reserved.
 SPDX-License-Identifier: MIT
 """
 
@@ -14,6 +14,7 @@ from typing import Annotated, ClassVar
 from flext_api import FlextApiModels, u
 
 from flext_oracle_wms import c, t
+from flext_oracle_wms._models.config import FlextOracleWmsConfigModels
 
 
 class FlextOracleWmsModels(FlextApiModels):
@@ -28,7 +29,7 @@ class FlextOracleWmsModels(FlextApiModels):
     # ORACLE WMS NAMESPACE - Domain-specific models
     # =========================================================================
 
-    class OracleWms:
+    class OracleWms(FlextOracleWmsConfigModels):
         """Oracle WMS domain namespace -- m.OracleWms.*."""
 
         class FlextOracleWmsOperatorFilter(FlextApiModels.BaseModel):
@@ -89,8 +90,13 @@ class FlextOracleWmsModels(FlextApiModels):
                     raise ValueError(msg)
                 return v
 
-        class ApiEndpoint(FlextApiModels.BaseModel):
-            """Typed Oracle WMS API endpoint definition."""
+        class ApiEndpoint(FlextOracleWmsConfigModels.ApiEndpoint):
+            """Typed Oracle WMS API endpoint definition (config owner, specialized).
+
+            Extends the ``_models.config`` owner so the facade namespace
+            overrides it covariantly (a valid subtype), and adds the domain
+            validation (non-empty identifiers) and the documented defaults.
+            """
 
             name: Annotated[str, u.Field(min_length=1)]
             method: Annotated[str, u.Field(min_length=1)]

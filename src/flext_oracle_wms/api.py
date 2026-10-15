@@ -32,7 +32,12 @@ class FlextOracleWmsApi(s[bool]):
     """
 
     def __init__(self, settings: FlextOracleWmsSettings | None = None) -> None:
-        """Initialize Oracle WMS facade with FLEXT integration."""
+        """Initialize Oracle WMS facade with FLEXT integration.
+
+        Args:
+            settings: Oracle WMS settings; defaults to validated globals.
+
+        """
         super().__init__()
         self._client = u.OracleWms.Client(settings=settings)
 
@@ -47,6 +52,7 @@ class FlextOracleWmsApi(s[bool]):
 
         Returns:
             The resulting ``p.Result[bool]``.
+
         """
         return r[bool].ok(value=True)
 
@@ -68,8 +74,15 @@ class FlextOracleWmsApi(s[bool]):
     ) -> u.OracleWms.HttpClient:
         """Create FlextHttpClient instance.
 
+        Args:
+            base_url: Base URL of the WMS REST API.
+            timeout: Request timeout in seconds.
+            headers: Optional default request headers.
+            verify_ssl: Whether to verify TLS certificates.
+
         Returns:
             The resulting ``u.OracleWms.HttpClient``.
+
         """
         return u.OracleWms.HttpClient(
             base_url=base_url,
@@ -84,8 +97,12 @@ class FlextOracleWmsApi(s[bool]):
     ) -> p.Result[u.OracleWms.Client]:
         """Create a runtime Oracle WMS client from auth settings.
 
+        Args:
+            settings: Auth settings describing the WMS environment.
+
         Returns:
             The resulting ``p.Result[u.OracleWms.Client]``.
+
         """
         result: p.Result[u.OracleWms.Client] = u.OracleWms.Client.from_auth_settings(
             settings,

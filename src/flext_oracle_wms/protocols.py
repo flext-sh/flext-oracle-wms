@@ -1,6 +1,6 @@
 """Oracle WMS protocols for FLEXT ecosystem.
 
-Copyright (c) 2025 FLEXT Team. All rights reserved.
+Copyright (c) 2026 FLEXT Team. All rights reserved.
 SPDX-License-Identifier: MIT
 """
 
@@ -51,7 +51,12 @@ class FlextOracleWmsProtocols(FlextApiProtocols):
             """Protocol for the entity discovery client used by the discovery."""
 
             def discover_entities(self) -> FlextApiProtocols.Result[t.StrSequence]:
-                """Discover available entities."""
+                """Discover available entities.
+
+                Returns:
+                    Result wrapping the discovered entity names.
+
+                """
                 ...
 
         @runtime_checkable
@@ -67,12 +72,13 @@ class FlextOracleWmsProtocols(FlextApiProtocols):
                 """Execute WMS operation with unified interface.
 
                 Args:
-                operation: Operation type (auth, discovery, inventory, etc.)
-                settings: Operation configuration
-                **params: Operation parameters
+                    operation: Operation type (auth, discovery, inventory,
+                        and so on).
+                    settings: Operation configuration.
+                    **params: Operation parameters.
 
                 Returns:
-                r[t.JsonMapping]: Operation result or error
+                    Result wrapping the operation output or an error.
 
                 """
                 ...
