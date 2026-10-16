@@ -6,12 +6,9 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
-
 from flext_api import FlextApiTypes
 
-if TYPE_CHECKING:
-    from flext_oracle_wms import m
+from flext_oracle_wms._typings import domain as _domain_types
 
 
 class FlextOracleWmsTypes(FlextApiTypes):
@@ -20,40 +17,12 @@ class FlextOracleWmsTypes(FlextApiTypes):
     class OracleWms:
         """Oracle WMS domain namespace (flat members per AGENTS.md §149)."""
 
-        type FilterScalar = t.Scalar | None
-        type FilterList = t.SequenceOf[FlextOracleWmsTypes.OracleWms.FilterScalar]
-        type FilterEntry = (
-            FlextOracleWmsTypes.OracleWms.FilterScalar
-            | FlextOracleWmsTypes.OracleWms.FilterList
-            | m.OracleWms.FlextOracleWmsOperatorFilter
-        )
-        type FilterRecordValue = (
-            FlextOracleWmsTypes.OracleWms.FilterScalar
-            | FlextOracleWmsTypes.OracleWms.FilterList
-            | t.MappingKV[
-                str,
-                FlextOracleWmsTypes.OracleWms.FilterScalar
-                | FlextOracleWmsTypes.OracleWms.FilterList
-                | t.MappingKV[
-                    str,
-                    FlextOracleWmsTypes.OracleWms.FilterScalar
-                    | FlextOracleWmsTypes.OracleWms.FilterList,
-                ],
-            ]
-        )
-        type FilterRecord = t.MappingKV[
-            str,
-            FlextOracleWmsTypes.OracleWms.FilterScalar
-            | FlextOracleWmsTypes.OracleWms.FilterList
-            | t.MappingKV[
-                str,
-                FlextOracleWmsTypes.OracleWms.FilterScalar
-                | FlextOracleWmsTypes.OracleWms.FilterList,
-            ],
-        ]
-        # Same recursive union as ``FilterRecordValue`` — one owner defines the
-        # filter-value shape; this name re-exports it.
-        type NestedFilterValue = FlextOracleWmsTypes.OracleWms.FilterRecordValue
+        FilterScalar = _domain_types.FilterScalar
+        FilterList = _domain_types.FilterList
+        FilterEntry = _domain_types.FilterEntry
+        FilterRecordValue = _domain_types.FilterRecordValue
+        FilterRecord = _domain_types.FilterRecord
+        NestedFilterValue = _domain_types.NestedFilterValue
 
 
 t = FlextOracleWmsTypes
