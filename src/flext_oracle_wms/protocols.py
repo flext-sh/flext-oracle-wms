@@ -1,3 +1,4 @@
+# AUTO-GENERATED FILE — Regenerate with: make gen
 """Oracle WMS protocols for FLEXT ecosystem.
 
 Copyright (c) 2026 FLEXT Team. All rights reserved.
@@ -10,7 +11,7 @@ from typing import TYPE_CHECKING, Protocol, runtime_checkable
 
 from flext_api import FlextApiProtocols
 
-from flext_oracle_wms._protocols.config import FlextOracleWmsProtocolsConfig
+from flext_oracle_wms._protocols import FlextOracleWmsProtocolsConfig
 
 if TYPE_CHECKING:
     from flext_oracle_wms import t

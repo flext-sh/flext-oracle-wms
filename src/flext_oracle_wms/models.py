@@ -1,3 +1,4 @@
+# AUTO-GENERATED FILE — Regenerate with: make gen
 """FLEXT WMS Models - Generic WMS Domain Model.
 
 domain-driven design with minimal declarations using composition.
@@ -14,7 +15,7 @@ from typing import Annotated, ClassVar
 from flext_api import FlextApiModels, u
 
 from flext_oracle_wms import c, t
-from flext_oracle_wms._models.config import FlextOracleWmsConfigModels
+from flext_oracle_wms._models import FlextOracleWmsConfigModels
 
 
 class FlextOracleWmsModels(FlextApiModels):
