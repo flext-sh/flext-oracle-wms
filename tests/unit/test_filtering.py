@@ -12,7 +12,7 @@ No private attribute/method is touched: operator semantics, normalization,
 nested-path resolution and range checks are all asserted via the public
 filtering results they produce.
 
-Copyright (c) 2025 FLEXT Team. All rights reserved.
+Copyright (c) 2026 FLEXT Team. All rights reserved.
 SPDX-License-Identifier: MIT
 """
 
@@ -50,6 +50,7 @@ class TestsFlextOracleWmsFiltering:
 
         Returns:
             The resulting ``set[int]``.
+
         """
         ids: set[int] = set()
         for record in records:

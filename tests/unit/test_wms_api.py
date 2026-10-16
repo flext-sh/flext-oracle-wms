@@ -8,11 +8,9 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 import pytest
-from flext_tests import tm
 
 from flext_oracle_wms import FlextOracleWmsApi, FlextOracleWmsSettings, m
-from tests import t, u
-from tests._factories import _basic_password, _secret
+from tests import _basic_password, _secret, t, tm, u
 
 
 class TestsFlextOracleWmsWmsApi:

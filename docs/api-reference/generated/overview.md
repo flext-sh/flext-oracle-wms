@@ -20,12 +20,12 @@
 - Keywords: `adapter`, `enterprise`, `flext`, `integration`, `typed`
 - Main facades: `FlextOracleWmsApi`, `FlextOracleWmsConfig`, `FlextOracleWmsConstants`,
   `FlextOracleWmsErrors`, `FlextOracleWmsModels`, `FlextOracleWmsProtocols`,
-  `FlextOracleWmsSettings`, `FlextOracleWmsTypes` (+6 more)
+  `FlextOracleWmsSettings`, `FlextOracleWmsTypes` (+7 more)
 - Alias exports: `c`, `d`, `e`, `h`, `m`, `p`, `r`, `s`, `t`, `u`, `x`
 - Public symbol exports: `FlextOracleWmsApi`, `FlextOracleWmsConfig`,
   `FlextOracleWmsConstants`, `FlextOracleWmsErrors`, `FlextOracleWmsModels`,
   `FlextOracleWmsProtocols`, `FlextOracleWmsSettings`, `FlextOracleWmsTypes`,
-  `FlextOracleWmsUtilities`, `FlextOracleWmsUtilitiesAuth` (+8 more)
+  `FlextOracleWmsUtilities`, `FlextOracleWmsUtilitiesAuth` (+9 more)
 - Exported module shortcuts: _none_
 - Generated module pages: `8`
 

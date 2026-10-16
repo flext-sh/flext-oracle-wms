@@ -36,25 +36,21 @@ def demonstrate_singleton_config() -> None:
     logger.info("   Updated Max Retries: %s", updated_config.OracleWms.retry_attempts)
     logger.info("   Same instance? %s", settings is updated_config)
     logger.info("3. Creating isolated clone with overrides...")
-    env_config = FlextOracleWmsSettings.fetch_global(
-        overrides={
-            "OracleWms": {
-                "timeout": float(FlextOracleWmsConstants.OracleWms.DEFAULT_TIMEOUT * 3),
-            },
+    env_config = FlextOracleWmsSettings.fetch_global().clone(
+        OracleWms={
+            "timeout": float(FlextOracleWmsConstants.OracleWms.DEFAULT_TIMEOUT * 3),
         },
     )
     logger.info("   Oracle WMS URL: %s", env_config.OracleWms.base_url)
     logger.info("   Username: %s", env_config.OracleWms.username)
     logger.info("   Timeout: %s", env_config.OracleWms.timeout)
     logger.info("4. Creating configuration for different environment...")
-    new_config = FlextOracleWmsSettings.fetch_global(
-        overrides={
-            "OracleWms": {
-                "base_url": "https://new-environment.wms.oraclecloud.com/test",
-                "username": "NEW_USER",
-                "password": os.environ.get("FLEXT_DEMO_WMS_PASSWORD", "<demo-new>"),
-                "timeout": float(FlextOracleWmsConstants.OracleWms.DEFAULT_TIMEOUT * 4),
-            },
+    new_config = FlextOracleWmsSettings.fetch_global().clone(
+        OracleWms={
+            "base_url": "https://new-environment.wms.oraclecloud.com/test",
+            "username": "NEW_USER",
+            "password": os.environ.get("FLEXT_DEMO_WMS_PASSWORD", "<demo-new>"),
+            "timeout": float(FlextOracleWmsConstants.OracleWms.DEFAULT_TIMEOUT * 4),
         },
     )
     logger.info("   New Base URL: %s", new_config.OracleWms.base_url)
@@ -62,13 +58,11 @@ def demonstrate_singleton_config() -> None:
     logger.info("   New Timeout: %s", new_config.OracleWms.timeout)
     logger.info("5. Resetting global instance...")
     FlextOracleWmsSettings.reset_for_testing()
-    fresh_config = FlextOracleWmsSettings.fetch_global(
-        overrides={
-            "OracleWms": {
-                "base_url": "https://fresh.wms.oraclecloud.com/fresh",
-                "username": "FRESH_USER",
-                "password": os.environ.get("FLEXT_DEMO_WMS_PASSWORD", "<demo-fresh>"),
-            },
+    fresh_config = FlextOracleWmsSettings.fetch_global().clone(
+        OracleWms={
+            "base_url": "https://fresh.wms.oraclecloud.com/fresh",
+            "username": "FRESH_USER",
+            "password": os.environ.get("FLEXT_DEMO_WMS_PASSWORD", "<demo-fresh>"),
         },
     )
     logger.info("   Fresh Base URL: %s", fresh_config.OracleWms.base_url)
@@ -134,6 +128,7 @@ def main() -> None:
         OSError: If a ``(RuntimeError, OSError, ValueError)`` is caught.
         RuntimeError: If a ``(RuntimeError, OSError, ValueError)`` is caught.
         ValueError: If a ``(RuntimeError, OSError, ValueError)`` is caught.
+
     """
     try:
         demonstrate_singleton_config()

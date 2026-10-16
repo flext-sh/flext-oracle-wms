@@ -1,6 +1,6 @@
 """Oracle WMS Authentication utilities.
 
-Copyright (c) 2025 FLEXT Team. All rights reserved.
+Copyright (c) 2026 FLEXT Team. All rights reserved.
 SPDX-License-Identifier: MIT
 """
 
@@ -9,6 +9,7 @@ from __future__ import annotations
 import base64
 
 from flext_core import r
+
 from flext_oracle_wms import c, m, p, t
 
 
@@ -21,8 +22,12 @@ class FlextOracleWmsUtilitiesAuth:
     ) -> p.Result[bool]:
         """Validate Oracle WMS authentication configuration business rules.
 
+        Args:
+            auth_settings: Auth settings to validate.
+
         Returns:
             The resulting ``p.Result[bool]``.
+
         """
         # NOTE (multi-agent): U17 — business validation lives in u.*, not on the
         # model (declaration layer). Moved verbatim from m.OracleWms.AuthSettings.
@@ -66,6 +71,7 @@ class FlextOracleWmsUtilitiesAuth:
 
             Returns:
                 The resulting ``p.Result[str]``.
+
             """
             basic_method = str(c.OracleWms.OracleWMSAuthMethod.BASIC)
             oauth2_method = str(c.OracleWms.OracleWMSAuthMethod.OAUTH2)

@@ -8,10 +8,9 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 import pytest
-from flext_tests import tm
 
 from flext_oracle_wms import FlextOracleWmsSettings, m, u
-from tests._factories import _oauth_secret_dashed, _wms_password
+from tests import _oauth_secret_dashed, _wms_password, tm
 
 # Why: mro-4p0t — public facade access is u.OracleWms.Client, not the private
 # _utilities.client module (flext-oracle-wms-1sm3w sync fix).
@@ -28,7 +27,6 @@ class TestsFlextOracleWmsClientClass:
         """Constructing with explicit settings surfaces them on the public field."""
         client = Client(settings)
 
-        tm.that(client, is_=Client)
         assert client.settings is settings
         tm.that(client.settings.OracleWms.base_url, eq="https://test-wms.example.com")
 

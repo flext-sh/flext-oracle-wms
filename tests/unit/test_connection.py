@@ -8,11 +8,10 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 import pytest
-from flext_tests import tm
-
 from flext_core import r
-from flext_oracle_wms import FlextOracleWmsModels as m, FlextOracleWmsSettings, u
-from tests._factories import _secret
+
+from flext_oracle_wms import FlextOracleWmsSettings, m, u
+from tests import _secret, tm
 
 # Why: mro-4p0t — public facade access is u.OracleWms.Client, not the private
 # _utilities.client module (flext-oracle-wms-1sm3w sync fix).
@@ -24,11 +23,12 @@ class TestsFlextOracleWmsConnection:
 
     @staticmethod
     @pytest.fixture
-    def client(settings: FlextOracleWmsSettings) -> Client:
+    def client(settings: FlextOracleWmsSettings) -> u.OracleWms.Client:
         """Client built from the public constructor.
 
         Returns:
             The resulting ``Client``.
+
         """
         return Client(settings)
 
@@ -66,7 +66,7 @@ class TestsFlextOracleWmsConnection:
 
     @staticmethod
     def test_client_publishes_its_settings(
-        client: Client,
+        client: u.OracleWms.Client,
         settings: FlextOracleWmsSettings,
     ) -> None:
         """The client exposes exactly the settings it was built with."""
@@ -88,7 +88,7 @@ class TestsFlextOracleWmsConnection:
 
     @staticmethod
     def test_discover_entities_returns_result_on_unreachable_host(
-        client: Client,
+        client: u.OracleWms.Client,
     ) -> None:
         """Network discovery surfaces failure as r[T], never raises."""
         result = client.discover_entities()
@@ -99,7 +99,7 @@ class TestsFlextOracleWmsConnection:
 
     @staticmethod
     def test_get_apis_by_category_returns_result_on_unreachable_host(
-        client: Client,
+        client: u.OracleWms.Client,
     ) -> None:
         """Category lookup returns a failing result rather than throwing."""
         result = client.get_apis_by_category("entity")

@@ -1,6 +1,6 @@
 """Oracle WMS Filtering utilities.
 
-Copyright (c) 2025 FLEXT Team. All rights reserved.
+Copyright (c) 2026 FLEXT Team. All rights reserved.
 SPDX-License-Identifier: MIT
 """
 
@@ -9,8 +9,8 @@ from __future__ import annotations
 from collections.abc import MutableSequence, Sequence
 
 from flext_api import u
-
 from flext_core import e, r
+
 from flext_oracle_wms import c, m, p, t
 from flext_oracle_wms.errors import FlextOracleWmsErrors
 
@@ -35,6 +35,7 @@ class FlextOracleWmsUtilitiesFiltering:
             Raises:
                 BaseError: If Invalid max_conditions.
                 ValidationError: If Filter validation failed.
+
             """
             if (
                 max_conditions <= 0
@@ -61,8 +62,13 @@ class FlextOracleWmsUtilitiesFiltering:
         ) -> FlextOracleWmsUtilitiesFiltering.Filter:
             """Create a filter engine with explicit configuration.
 
+            Args:
+                case_sensitive: Whether string comparisons are case-sensitive.
+                max_conditions: Maximum number of filter conditions allowed.
+
             Returns:
                 The resulting ``FlextOracleWmsUtilitiesFiltering.Filter``.
+
             """
             return cls(case_sensitive=case_sensitive, max_conditions=max_conditions)
 
@@ -76,8 +82,15 @@ class FlextOracleWmsUtilitiesFiltering:
         ) -> p.Result[Sequence[t.OracleWms.FilterRecord]]:
             """Filter records by one field using optional operator semantics.
 
+            Args:
+                records: Records to filter.
+                field: Field name (dot path) compared on each record.
+                value: Comparison value for the field.
+                operator: Optional filter operator; defaults to equality.
+
             Returns:
                 The resulting ``p.Result[Sequence[t.OracleWms.FilterRecord]]``.
+
             """
             engine = cls()
             filters: t.MappingKV[str, t.OracleWms.FilterEntry]
@@ -102,8 +115,15 @@ class FlextOracleWmsUtilitiesFiltering:
         ) -> p.Result[Sequence[t.OracleWms.FilterRecord]]:
             """Filter records by inclusive identifier range.
 
+            Args:
+                records: Records to filter.
+                id_field: Field name holding the identifier.
+                min_id: Optional inclusive lower bound.
+                max_id: Optional inclusive upper bound.
+
             Returns:
                 The resulting ``p.Result[Sequence[t.OracleWms.FilterRecord]]``.
+
             """
             if not records:
                 return r[Sequence[t.OracleWms.FilterRecord]].ok([])
@@ -147,6 +167,7 @@ class FlextOracleWmsUtilitiesFiltering:
 
             Returns:
                 The resulting ``t.Scalar | None``.
+
             """
             return value if isinstance(value, c.SCALAR_TYPES) else None
 
@@ -177,6 +198,7 @@ class FlextOracleWmsUtilitiesFiltering:
 
             Returns:
                 The resulting ``bool``.
+
             """
             match op:
                 case ">":
@@ -194,6 +216,7 @@ class FlextOracleWmsUtilitiesFiltering:
 
             Returns:
                 The resulting ``bool``.
+
             """
             match op:
                 case ">":
@@ -227,8 +250,14 @@ class FlextOracleWmsUtilitiesFiltering:
         ) -> p.Result[Sequence[t.OracleWms.FilterRecord]]:
             """Filter records against field conditions and optional limit.
 
+            Args:
+                records: Records to filter.
+                filters: Field conditions keyed by field name.
+                limit: Optional maximum number of records returned.
+
             Returns:
                 The resulting ``p.Result[Sequence[t.OracleWms.FilterRecord]]``.
+
             """
             if (result := self._validate_filters(filters)).failure:
                 return r[Sequence[t.OracleWms.FilterRecord]].fail(
@@ -253,8 +282,14 @@ class FlextOracleWmsUtilitiesFiltering:
         ) -> p.Result[Sequence[t.OracleWms.FilterRecord]]:
             """Sort records by a dot-path field.
 
+            Args:
+                records: Records to sort.
+                sort_field: Field name (dot path) used as the sort key.
+                ascending: Whether to sort ascending; defaults to ``True``.
+
             Returns:
                 The resulting ``p.Result[Sequence[t.OracleWms.FilterRecord]]``.
+
             """
             try:
 
@@ -282,6 +317,7 @@ class FlextOracleWmsUtilitiesFiltering:
             Returns:
                 The resulting ``bool | None``: ``None`` when both values are
                 present and the operator match must run.
+
             """
             if (field_value is None and filter_value is not None) or (
                 field_value is not None and filter_value is None
@@ -308,6 +344,7 @@ class FlextOracleWmsUtilitiesFiltering:
 
             Returns:
                 The resulting ``bool``.
+
             """
             match operator:
                 case c.OracleWms.WmsFilterOperator.EQ | "eq":
@@ -359,6 +396,7 @@ class FlextOracleWmsUtilitiesFiltering:
 
             Returns:
                 The resulting ``bool``.
+
             """
             null_result = self._apply_null_semantics(
                 field_value,

@@ -8,10 +8,9 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 import pytest
-from flext_tests import tm
 
 from flext_oracle_wms.errors import FlextOracleWmsErrors
-from tests import c, e, m, t, u
+from tests import c, e, m, t, tm, u
 
 
 @pytest.mark.unit
@@ -25,6 +24,7 @@ class TestsFlextOracleWmsHelpers:
 
         Returns:
             The resulting ``list[t.OracleWms.Tests.Record]``.
+
         """
         return [
             {"id": 1, "name": "Alpha"},
