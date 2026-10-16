@@ -11,10 +11,7 @@ from typing import Protocol, runtime_checkable
 
 from flext_api import FlextApiProtocols
 
-from flext_oracle_wms._protocols import (
-    FlextOracleWmsProtocolsConfig,
-    domain as _domain,
-)
+from flext_oracle_wms._protocols import FlextOracleWmsProtocolsConfig, domain as _domain
 
 
 class FlextOracleWmsProtocols(FlextApiProtocols):

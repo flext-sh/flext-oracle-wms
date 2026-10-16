@@ -26,11 +26,9 @@ class FlextOracleWmsModelsDomain:
     class EnvironmentConfig(FlextApiModels.BaseModel):
         """Oracle WMS environment configuration."""
 
-        model_config: ClassVar[FlextApiModels.ConfigDict] = (
-            FlextApiModels.ConfigDict(
-                extra="forbid",
-                validate_assignment=True,
-            )
+        model_config: ClassVar[FlextApiModels.ConfigDict] = FlextApiModels.ConfigDict(
+            extra="forbid",
+            validate_assignment=True,
         )
 
         name: str = u.Field(description="Environment display name")
@@ -41,8 +39,8 @@ class FlextOracleWmsModelsDomain:
     class Entity(FlextApiModels.BaseModel):
         """Oracle WMS entity definition."""
 
-        model_config: ClassVar[FlextApiModels.ConfigDict] = (
-            FlextApiModels.ConfigDict(extra="forbid")
+        model_config: ClassVar[FlextApiModels.ConfigDict] = FlextApiModels.ConfigDict(
+            extra="forbid"
         )
 
         name: Annotated[str, u.Field(min_length=1, description="Entity name")]
@@ -115,8 +113,8 @@ class FlextOracleWmsModelsDomain:
     class EntitiesResponse(FlextApiModels.BaseModel):
         """Oracle WMS entities list response."""
 
-        model_config: ClassVar[FlextApiModels.ConfigDict] = (
-            FlextApiModels.ConfigDict(extra="ignore")
+        model_config: ClassVar[FlextApiModels.ConfigDict] = FlextApiModels.ConfigDict(
+            extra="ignore"
         )
 
         entities: t.StrSequence = u.Field(default_factory=tuple)
@@ -124,8 +122,8 @@ class FlextOracleWmsModelsDomain:
     class ApiCategoryResponse(FlextApiModels.BaseModel):
         """Oracle WMS API category response."""
 
-        model_config: ClassVar[FlextApiModels.ConfigDict] = (
-            FlextApiModels.ConfigDict(extra="ignore")
+        model_config: ClassVar[FlextApiModels.ConfigDict] = FlextApiModels.ConfigDict(
+            extra="ignore"
         )
 
         apis: t.SequenceOf[t.StrMapping] = u.Field(default_factory=tuple)
@@ -133,8 +131,8 @@ class FlextOracleWmsModelsDomain:
     class EntityDataResponse(FlextApiModels.BaseModel):
         """Oracle WMS entity data response."""
 
-        model_config: ClassVar[FlextApiModels.ConfigDict] = (
-            FlextApiModels.ConfigDict(extra="ignore")
+        model_config: ClassVar[FlextApiModels.ConfigDict] = FlextApiModels.ConfigDict(
+            extra="ignore"
         )
 
         data: t.SequenceOf[t.StrMapping] = u.Field(default_factory=tuple)
@@ -145,8 +143,8 @@ class FlextOracleWmsModelsDomain:
     class WmsEntity(FlextApiModels.BaseModel):
         """Base WMS entity with identity."""
 
-        model_config: ClassVar[FlextApiModels.ConfigDict] = (
-            FlextApiModels.ConfigDict(extra="forbid")
+        model_config: ClassVar[FlextApiModels.ConfigDict] = FlextApiModels.ConfigDict(
+            extra="forbid"
         )
 
         id: Annotated[str, u.Field(description="Entity identifier")] = ""
