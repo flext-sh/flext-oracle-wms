@@ -12,7 +12,11 @@ from __future__ import annotations
 
 from flext_api import FlextApiModels
 
-from flext_oracle_wms._models import FlextOracleWmsConfigModels, domain as _domain
+from flext_oracle_wms._models import (
+    FlextOracleWmsConfigModels,
+    FlextOracleWmsModelsDomain,
+    domain as _domain,
+)
 
 
 class FlextOracleWmsModels(FlextApiModels):
@@ -27,7 +31,7 @@ class FlextOracleWmsModels(FlextApiModels):
     # ORACLE WMS NAMESPACE - Domain-specific models
     # =========================================================================
 
-    class OracleWms(FlextOracleWmsConfigModels):
+    class OracleWms(FlextOracleWmsConfigModels, FlextOracleWmsModelsDomain):
         """Oracle WMS domain namespace -- m.OracleWms.*."""
 
         FlextOracleWmsOperatorFilter = _domain.FlextOracleWmsOperatorFilter
