@@ -55,8 +55,4 @@ class FlextOracleWmsProtocolsDomain:
             ...
 
 
-__all__: list[str] = [
-    "EntityDiscoveryClient",
-    "FlextOracleWmsProtocolsDomain",
-    "WmsService",
-]
+__all__: list[str] = ["FlextOracleWmsProtocolsDomain"]
