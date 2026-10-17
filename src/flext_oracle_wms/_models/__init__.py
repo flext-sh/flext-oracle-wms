@@ -14,13 +14,17 @@ from flext_core.lazy import install_lazy_exports
 
 if TYPE_CHECKING:
     from flext_oracle_wms._models.config import FlextOracleWmsConfigModels
+    from flext_oracle_wms._models.domain import FlextOracleWmsModelsDomain
 
 
-__all__: tuple[str, ...] = ("FlextOracleWmsConfigModels",)
+__all__: tuple[str, ...] = ("FlextOracleWmsConfigModels", "FlextOracleWmsModelsDomain")
 
 install_lazy_exports(
     __name__,
     globals(),
-    MappingProxyType({"FlextOracleWmsConfigModels": ".config"}),
+    MappingProxyType({
+        "FlextOracleWmsConfigModels": ".config",
+        "FlextOracleWmsModelsDomain": ".domain",
+    }),
     public_exports=__all__,
 )

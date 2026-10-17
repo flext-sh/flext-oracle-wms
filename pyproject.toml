@@ -59,6 +59,8 @@ Repository = "https://github.com/flext-sh/flext"
 
 [dependency-groups]
 dev = [
+  "flext-infra @ git+https://github.com/flext-sh/flext-infra.git@0.12.0-dev",
+  "mkdocstrings-python>=2.0.9",
   "actionlint-py>=1.7.12.24",
   "bandit>=1.9.4",
   "deptry",
@@ -75,7 +77,6 @@ dev = [
   "mkdocs-redirects>=1.2.3",
   "mkdocs-section-index>=0.3.12",
   "mkdocstrings>=1.0.6",
-  "mkdocstrings-python>=2.0.8",
   "msgpack-types",
   "mypy>=2.3.1",
   "platformdirs>=4.12.0",
@@ -147,7 +148,6 @@ omit = [
 
 [tool.deptry]
 known_first_party = ["flext_oracle_wms"]
-optional_dependencies_dev_groups = ["dev"]
 
 [tool.flext.docs]
 package_name = "flext_oracle_wms"
@@ -159,7 +159,7 @@ scan_dirs = ["src"]
 allow-direct-references = true
 
 [tool.hatch.build.targets.wheel]
-include = ["/src/flext_oracle_wms/**"]
+only-include = ["src/flext_oracle_wms"]
 
 [tool.hatch.build.targets.wheel.sources]
 "src/flext_oracle_wms" = "flext_oracle_wms"
@@ -168,7 +168,7 @@ include = ["/src/flext_oracle_wms/**"]
 "pyproject.toml" = "flext_oracle_wms/pyproject.toml"
 
 [tool.hatch.build.targets.sdist]
-include = ["/src/flext_oracle_wms/**"]
+only-include = ["src/flext_oracle_wms"]
 
 [tool.hatch.build.targets.sdist.force-include]
 "pyproject.toml" = "pyproject.toml"
@@ -329,7 +329,7 @@ exclude = [
   ".venv",
   "vendor",
 ]
-include = ["src", "tests"]
+include = ["examples", "src", "tests"]
 extraPaths = ["src", "."]
 pythonPlatform = "Linux"
 pythonVersion = "3.13"
@@ -348,6 +348,11 @@ reportUnusedFunction = "error"
 reportUnusedImport = "error"
 reportUnusedVariable = "error"
 typeCheckingMode = "strict"
+
+[[tool.pyright.executionEnvironments]]
+root = "examples"
+extraPaths = [".", "src"]
+reportPrivateUsage = "error"
 
 [[tool.pyright.executionEnvironments]]
 root = "src"
@@ -462,8 +467,9 @@ runtime-evaluated-base-classes = [
   "flext_oracle_wms.FlextOracleWmsApi",
   "flext_oracle_wms.FlextOracleWmsSettings",
   "flext_oracle_wms._models.config.FlextOracleWmsConfigModels.ApiEndpoint",
-  "flext_oracle_wms.models.WmsEntity",
+  "flext_oracle_wms._models.domain.WmsEntity",
   "flext_oracle_wms.s",
+  "flext_tests.FlextTestsModels.Tests",
   "flext_tests.FlextTestsServiceBase",
   "flext_tests.FlextTestsSettings",
   "pydantic.BaseModel",
