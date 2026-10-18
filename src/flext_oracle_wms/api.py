@@ -47,7 +47,7 @@ class FlextOracleWmsApi(s[bool]):
 
         Default execute surface signals readiness; consumers call the
         domain-specific methods (``fetch_settings``, ``call_endpoint``, …)
-        for real work. Returning ``r[bool].ok(True)`` matches the
+        for real work. Returning ``r[bool].ok(value=True)=True)`` matches the
         ``s[bool]`` type parameter.
 
         Returns:
