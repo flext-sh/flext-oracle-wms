@@ -34,23 +34,25 @@ class FlextOracleWmsModels(FlextApiModels):
     class OracleWms(FlextOracleWmsConfigModels, FlextOracleWmsModelsDomain):
         """Oracle WMS domain namespace -- m.OracleWms.*."""
 
-        FlextOracleWmsOperatorFilter = _domain.FlextOracleWmsOperatorFilter
-        EnvironmentConfig = _domain.EnvironmentConfig
-        Entity = _domain.Entity
-        ApiEndpoint = _domain.ApiEndpoint
-        AuthSettings = _domain.AuthSettings
-        EntitiesResponse = _domain.EntitiesResponse
-        ApiCategoryResponse = _domain.ApiCategoryResponse
-        EntityDataResponse = _domain.EntityDataResponse
+        FlextOracleWmsOperatorFilter = (
+            _domain.FlextOracleWmsModelsDomain.FlextOracleWmsOperatorFilter
+        )
+        EnvironmentConfig = _domain.FlextOracleWmsModelsDomain.EnvironmentConfig
+        Entity = _domain.FlextOracleWmsModelsDomain.Entity
+        ApiEndpoint = _domain.FlextOracleWmsModelsDomain.ApiEndpoint
+        AuthSettings = _domain.FlextOracleWmsModelsDomain.AuthSettings
+        EntitiesResponse = _domain.FlextOracleWmsModelsDomain.EntitiesResponse
+        ApiCategoryResponse = _domain.FlextOracleWmsModelsDomain.ApiCategoryResponse
+        EntityDataResponse = _domain.FlextOracleWmsModelsDomain.EntityDataResponse
 
         # =====================================================================
         # DOMAIN ENTITIES - Composed DDD patterns
         # =====================================================================
 
-        WmsEntity = _domain.WmsEntity
-        InventoryItem = _domain.InventoryItem
-        Shipment = _domain.Shipment
-        Location = _domain.Location
+        WmsEntity = _domain.FlextOracleWmsModelsDomain.WmsEntity
+        InventoryItem = _domain.FlextOracleWmsModelsDomain.InventoryItem
+        Shipment = _domain.FlextOracleWmsModelsDomain.Shipment
+        Location = _domain.FlextOracleWmsModelsDomain.Location
 
         # =====================================================================
         # VALUE OBJECTS - Immutable domain values
