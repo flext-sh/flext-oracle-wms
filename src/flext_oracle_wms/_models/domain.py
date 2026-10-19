@@ -8,7 +8,7 @@ from __future__ import annotations
 
 from typing import Annotated, ClassVar
 
-from flext_api import FlextApiModels, u
+from flext_api import FlextApiModels, m, u
 
 from flext_oracle_wms import c, t
 from flext_oracle_wms._models.config import FlextOracleWmsConfigModels
@@ -31,10 +31,10 @@ class FlextOracleWmsModelsDomain:
             validate_assignment=True,
         )
 
-        name: str = u.Field(description="Environment display name")
-        base_url: str = u.Field(description="Oracle WMS base URL")
-        timeout: int = u.Field(ge=1, description="Request timeout in seconds")
-        retry_attempts: int = u.Field(ge=0, description="Retry attempts")
+        name: str = m.Field(description="Environment display name")
+        base_url: str = m.Field(description="Oracle WMS base URL")
+        timeout: int = m.Field(ge=1, description="Request timeout in seconds")
+        retry_attempts: int = m.Field(ge=0, description="Retry attempts")
 
     class Entity(FlextApiModels.BaseModel):
         """Oracle WMS entity definition."""
@@ -43,26 +43,26 @@ class FlextOracleWmsModelsDomain:
             extra="forbid"
         )
 
-        name: Annotated[str, u.Field(min_length=1, description="Entity name")]
+        name: Annotated[str, m.Field(min_length=1, description="Entity name")]
         endpoint: Annotated[
             str,
-            u.Field(min_length=1, description="API endpoint path"),
+            m.Field(min_length=1, description="API endpoint path"),
         ]
         description: Annotated[
             str | None,
-            u.Field(description="Entity description"),
+            m.Field(description="Entity description"),
         ] = None
         primary_key: Annotated[
             str | None,
-            u.Field(description="Primary key field"),
+            m.Field(description="Primary key field"),
         ] = None
         replication_key: Annotated[
             str | None,
-            u.Field(description="Replication key field"),
+            m.Field(description="Replication key field"),
         ] = None
         supports_incremental: Annotated[
             bool,
-            u.Field(description="Whether entity supports incremental sync"),
+            m.Field(description="Whether entity supports incremental sync"),
         ] = False
 
         @u.field_validator("endpoint")
@@ -81,11 +81,11 @@ class FlextOracleWmsModelsDomain:
         validation (non-empty identifiers) and the documented defaults.
         """
 
-        name: Annotated[str, u.Field(min_length=1)]
-        method: Annotated[str, u.Field(min_length=1)]
-        path: Annotated[str, u.Field(min_length=1)]
-        version: Annotated[str, u.Field(min_length=1)]
-        category: Annotated[str, u.Field(min_length=1)]
+        name: Annotated[str, m.Field(min_length=1)]
+        method: Annotated[str, m.Field(min_length=1)]
+        path: Annotated[str, m.Field(min_length=1)]
+        version: Annotated[str, m.Field(min_length=1)]
+        category: Annotated[str, m.Field(min_length=1)]
         description: str = ""
         since_version: str = c.OracleWms.WMS_API_BASELINE_VERSION
 
@@ -117,7 +117,7 @@ class FlextOracleWmsModelsDomain:
             extra="ignore"
         )
 
-        entities: t.StrSequence = u.Field(default_factory=tuple)
+        entities: t.StrSequence = m.Field(default_factory=tuple)
 
     class ApiCategoryResponse(FlextApiModels.BaseModel):
         """Oracle WMS API category response."""
@@ -126,7 +126,7 @@ class FlextOracleWmsModelsDomain:
             extra="ignore"
         )
 
-        apis: t.SequenceOf[t.StrMapping] = u.Field(default_factory=tuple)
+        apis: t.SequenceOf[t.StrMapping] = m.Field(default_factory=tuple)
 
     class EntityDataResponse(FlextApiModels.BaseModel):
         """Oracle WMS entity data response."""
@@ -135,7 +135,7 @@ class FlextOracleWmsModelsDomain:
             extra="ignore"
         )
 
-        data: t.SequenceOf[t.StrMapping] = u.Field(default_factory=tuple)
+        data: t.SequenceOf[t.StrMapping] = m.Field(default_factory=tuple)
 
     # =====================================================================
     # DOMAIN ENTITIES - Composed DDD patterns
@@ -147,55 +147,55 @@ class FlextOracleWmsModelsDomain:
             extra="forbid"
         )
 
-        id: Annotated[str, u.Field(description="Entity identifier")] = ""
-        name: Annotated[str, u.Field(description="Entity name")] = ""
+        id: Annotated[str, m.Field(description="Entity identifier")] = ""
+        name: Annotated[str, m.Field(description="Entity name")] = ""
         created_at: Annotated[
             str | None,
-            u.Field(description="Creation timestamp"),
+            m.Field(description="Creation timestamp"),
         ] = None
         updated_at: Annotated[
             str | None,
-            u.Field(description="Last update timestamp"),
+            m.Field(description="Last update timestamp"),
         ] = None
 
     class InventoryItem(WmsEntity):
         """Inventory domain entity."""
 
-        sku: Annotated[str, u.Field(description="Stock keeping unit")] = ""
+        sku: Annotated[str, m.Field(description="Stock keeping unit")] = ""
         quantity: Annotated[
             t.NonNegativeInt,
-            u.Field(description="Item quantity"),
+            m.Field(description="Item quantity"),
         ] = 0
         location_id: Annotated[
             str,
-            u.Field(description="Storage location identifier"),
+            m.Field(description="Storage location identifier"),
         ] = ""
-        status: Annotated[str, u.Field(description="Item status")] = "active"
+        status: Annotated[str, m.Field(description="Item status")] = "active"
 
     class Shipment(WmsEntity):
         """Shipment domain entity."""
 
         order_id: Annotated[
             str,
-            u.Field(description="Associated order identifier"),
+            m.Field(description="Associated order identifier"),
         ] = ""
-        status: Annotated[str, u.Field(description="Shipment status")] = "pending"
+        status: Annotated[str, m.Field(description="Shipment status")] = "pending"
         carrier: Annotated[
             str | None,
-            u.Field(description="Shipping carrier name"),
+            m.Field(description="Shipping carrier name"),
         ] = None
         tracking_number: Annotated[
             str | None,
-            u.Field(description="Shipment tracking number"),
+            m.Field(description="Shipment tracking number"),
         ] = None
 
     class Location(WmsEntity):
         """Location domain entity."""
 
-        aisle: Annotated[str, u.Field(description="Aisle identifier")] = ""
-        shelf: Annotated[str, u.Field(description="Shelf identifier")] = ""
-        bin_: Annotated[str, u.Field(description="Bin identifier")] = ""
-        zone: Annotated[str, u.Field(description="Zone identifier")] = ""
+        aisle: Annotated[str, m.Field(description="Aisle identifier")] = ""
+        shelf: Annotated[str, m.Field(description="Shelf identifier")] = ""
+        bin_: Annotated[str, m.Field(description="Bin identifier")] = ""
+        zone: Annotated[str, m.Field(description="Zone identifier")] = ""
 
 
 __all__: list[str] = ["FlextOracleWmsModelsDomain"]
