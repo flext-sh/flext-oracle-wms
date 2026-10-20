@@ -46,4 +46,4 @@ class TestsFlextOracleWmsHelpersCore:
         result = oracle_wms_api.execute()
 
         tm.ok(result)
-        tm.that(result.unwrap(), eq=True)
+        tm.ok(result.unwrap())

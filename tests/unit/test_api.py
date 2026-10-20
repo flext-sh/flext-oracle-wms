@@ -41,7 +41,7 @@ class TestsFlextOracleWmsApi:
         result = api.execute()
 
         tm.ok(result)
-        tm.that(result.unwrap(), eq=True)
+        tm.ok(result.unwrap())
 
     @staticmethod
     def test_execute_is_idempotent(api: FlextOracleWmsApi) -> None:

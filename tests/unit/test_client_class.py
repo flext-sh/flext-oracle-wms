@@ -44,7 +44,7 @@ class TestsFlextOracleWmsClientClass:
         result = Client(settings).start()
 
         tm.ok(result)
-        tm.that(result.unwrap(), eq=True)
+        tm.ok(result.unwrap())
 
     @staticmethod
     def test_stop_reports_success(settings: FlextOracleWmsSettings) -> None:
@@ -52,7 +52,7 @@ class TestsFlextOracleWmsClientClass:
         result = Client(settings).stop()
 
         tm.ok(result)
-        tm.that(result.unwrap(), eq=True)
+        tm.ok(result.unwrap())
 
     @staticmethod
     def test_lifecycle_is_idempotent(settings: FlextOracleWmsSettings) -> None:

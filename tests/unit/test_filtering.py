@@ -66,14 +66,14 @@ class TestsFlextOracleWmsFiltering:
     def test_construction_exposes_configuration() -> None:
         """Test construction exposes configuration."""
         engine = Filter(case_sensitive=True, max_conditions=25)
-        tm.that(engine.case_sensitive, eq=True)
+        tm.ok(engine.case_sensitive)
         tm.that(engine.max_conditions, eq=25)
 
     @staticmethod
     def test_construction_defaults_are_case_insensitive() -> None:
         """Test construction defaults are case insensitive."""
         engine = Filter()
-        tm.that(engine.case_sensitive, eq=False)
+        tm.fail(engine.case_sensitive)
         tm.that(engine.max_conditions, eq=c.OracleWms.Filtering.MAX_FILTER_CONDITIONS)
 
     @staticmethod
@@ -194,7 +194,7 @@ class TestsFlextOracleWmsFiltering:
     def test_create_filter_matches_constructor_contract() -> None:
         """Test create filter matches constructor contract."""
         engine = Filter.create_filter(case_sensitive=True, max_conditions=10)
-        tm.that(engine.case_sensitive, eq=True)
+        tm.ok(engine.case_sensitive)
         tm.that(engine.max_conditions, eq=10)
 
     def test_construction_accepts_valid_initial_filters(self) -> None:

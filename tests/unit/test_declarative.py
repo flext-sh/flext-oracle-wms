@@ -116,7 +116,7 @@ class TestsFlextOracleWmsDeclarative:
         """The facade execute() contract returns a successful r[bool] carrying True."""
         result = FlextOracleWmsApi().execute()
         tm.ok(result)
-        tm.that(result.value, eq=True)
+        tm.ok(result.value)
 
     # ------------------------------------------------------------------
     # Client operations — r[T] contract on every path

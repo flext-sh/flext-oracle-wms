@@ -126,7 +126,7 @@ class TestsFlextOracleWmsHelpers:
         engine = u.Filter.create_filter(case_sensitive=True, max_conditions=10)
 
         tm.that(engine, is_=u.Filter)
-        tm.that(engine.case_sensitive, eq=True)
+        tm.ok(engine.case_sensitive)
         tm.that(engine.max_conditions, eq=10)
 
     @staticmethod
