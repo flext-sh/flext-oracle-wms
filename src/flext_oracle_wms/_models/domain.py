@@ -8,7 +8,7 @@ from __future__ import annotations
 
 from typing import Annotated, ClassVar
 
-from flext_api import FlextApiModels, m, u
+from flext_api import FlextApiModels, m
 
 from flext_oracle_wms import c, t
 from flext_oracle_wms._models.config import FlextOracleWmsConfigModels
@@ -65,7 +65,7 @@ class FlextOracleWmsModelsDomain:
             m.Field(description="Whether entity supports incremental sync"),
         ] = False
 
-        @u.field_validator("endpoint")
+        @m.field_validator("endpoint")
         @classmethod
         def _validate_endpoint_starts_with_slash(cls, v: str) -> str:
             if not v.startswith("/"):
@@ -104,7 +104,7 @@ class FlextOracleWmsModelsDomain:
         # overload, which flext-core's `staticmethod(computed_field)` wrap
         # does not expose to pyrefly (flext-1wjg1.16 fleet defect); the
         # bare form already infers the type from the property annotation.
-        @u.computed_field
+        @m.computed_field
         @property
         def normalized_method(self) -> str:
             """The auth method in canonical lowercase form."""
