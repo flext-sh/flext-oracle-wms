@@ -272,7 +272,7 @@ class TestComponentName:
 
         # Assert
         tm.ok(result.success)
-        assert result.data is not None
+        tm.not_none(result.data)
 
     def test_error_scenarios(self):
         """Test error handling with comprehensive coverage."""
