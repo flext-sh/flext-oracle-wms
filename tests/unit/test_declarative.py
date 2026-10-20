@@ -80,7 +80,7 @@ class TestsFlextOracleWmsDeclarative:
         callers can surface it. This is the fail-loud guarantee: operations
         return a typed result instead of raising or hiding failures.
         """
-        assert result.success is not result.failure
+        tm.that(result.success is not result.failure, truth=True)
         if result.failure:
             tm.that(result.error, is_=str)
             assert result.error

@@ -271,7 +271,7 @@ class TestComponentName:
         result = component.operation()
 
         # Assert
-        assert result.success
+        tm.ok(result.success)
         assert result.data is not None
 
     def test_error_scenarios(self):
@@ -307,7 +307,7 @@ def test_performance_benchmark():
     result = perform_operation()
     execution_time = time.time() - start_time
 
-    assert result.success
+    tm.ok(result.success)
     assert execution_time < 2.0  # Performance requirement
 ```
 

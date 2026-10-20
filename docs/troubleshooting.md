@@ -89,7 +89,7 @@ from __future__ import annotations
 from flext_oracle_wms import FlextOracleWmsError
 
 error = FlextOracleWmsError("message", field="username")
-assert error.field == "username"  # MyPy error: attribute not found
+tm.that(error.field, eq="username")  # MyPy error: attribute not found
 ```
 
 **Solution**: Exception classes now declare attributes explicitly:
@@ -101,7 +101,7 @@ from flext_oracle_wms import FlextOracleWmsError
 
 # Exception classes have been updated with proper type annotations
 error = FlextOracleWmsError("message", field="username")
-assert error.field == "username"  # Now works with MyPy
+tm.that(error.field, eq="username")  # Now works with MyPy
 ```
 
 #### Configuration type mismatches
@@ -286,7 +286,7 @@ from __future__ import annotations
 from flext_oracle_wms import FlextOracleWmsConnectionError
 
 error = FlextOracleWmsConnectionError("failed", retry_count=3)
-assert error.retry_count == 3  # Now works after exception class updates
+tm.that(error.retry_count, eq=3)  # Now works after exception class updates
 ```
 
 #### "Entity not found" errors
@@ -297,7 +297,7 @@ from __future__ import annotations
 from flext_oracle_wms import FlextOracleWmsEntityNotFoundError
 
 error = FlextOracleWmsEntityNotFoundError("Entity missing", entity_name="test")
-assert error.entity_name == "test"  # Properly handled
+tm.that(error.entity_name, eq="test")  # Properly handled
 ```
 
 ## Debugging Tips

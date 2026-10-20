@@ -109,4 +109,4 @@ class TestsFlextOracleWmsConfigModule:
 
         assert cloned is not base
         tm.that(cloned.OracleWms.base_url, eq="https://clone.example.com")
-        assert base.model_dump() == original
+        tm.that(base.model_dump(), eq=original)
