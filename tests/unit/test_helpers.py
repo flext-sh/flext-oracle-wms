@@ -7,6 +7,7 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
+import flext_core
 import pytest
 
 from flext_oracle_wms.errors import FlextOracleWmsErrors
@@ -37,12 +38,12 @@ class TestsFlextOracleWmsHelpers:
     @staticmethod
     def test_utilities_facade_inherits_flext_core_utilities() -> None:
         """The facade composes flext-core utilities via MRO."""
-        assert issubclass(u, u)
+        tm.that(issubclass(u, flext_core.u), truth=True)
 
     @staticmethod
     def test_filter_engine_reachable_through_public_namespace() -> None:
         """Filtering engine is exposed on both the facade and OracleWms namespace."""
-        assert u.Filter is u.OracleWms.Filter
+        tm.that(u.Filter is u.OracleWms.Filter, truth=True)
 
     # ---- conversion helpers ---------------------------------------------
 

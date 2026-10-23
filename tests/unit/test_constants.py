@@ -29,7 +29,7 @@ class TestsFlextOracleWmsConstantsUnit:
     @staticmethod
     def test_facade_composes_flext_core_constants() -> None:
         """The WMS constants facade extends the domain constants contract."""
-        assert issubclass(c, FlextOracleWmsConstants)
+        tm.that(issubclass(c, FlextOracleWmsConstants), truth=True)
 
     @staticmethod
     def test_wms_version_is_non_empty_semver_string() -> None:
@@ -37,7 +37,7 @@ class TestsFlextOracleWmsConstantsUnit:
         version = c.OracleWms.FLEXT_WMS_VERSION
         tm.that(version, is_=str)
         tm.that(version.count("."), eq=2)
-        assert all(part.isdigit() for part in version.split("."))
+        tm.that(all(part.isdigit() for part in version.split(".")), truth=True)
 
     @staticmethod
     @pytest.mark.parametrize(
@@ -64,13 +64,13 @@ class TestsFlextOracleWmsConstantsUnit:
         """PROCESSING_CONFIG advertises positive integer sizing defaults."""
         value = c.OracleWms.PROCESSING_CONFIG[key]
         tm.that(value, is_=int)
-        assert value > 0
+        tm.that(value > 0, truth=True)
 
     @staticmethod
     def test_processing_config_batch_bounds_are_ordered() -> None:
         """Default batch size never exceeds the maximum batch size."""
         proc = c.OracleWms.PROCESSING_CONFIG
-        assert proc["default_batch_size"] <= proc["max_batch_size"]
+        tm.that(proc["default_batch_size"] <= proc["max_batch_size"], truth=True)
 
     @staticmethod
     @pytest.mark.parametrize("key", ["default", "test", "production"])
@@ -112,7 +112,7 @@ class TestsFlextOracleWmsConstantsUnit:
         expected: c.OracleWms.OracleWMSAuthMethod,
     ) -> None:
         """AUTH_CONFIG maps each auth alias onto its enum member."""
-        assert c.OracleWms.AUTH_CONFIG[key] is expected
+        tm.that(c.OracleWms.AUTH_CONFIG[key] is expected, truth=True)
 
     @staticmethod
     def test_auth_config_carries_oauth2_endpoint_metadata() -> None:
@@ -191,4 +191,4 @@ class TestsFlextOracleWmsConstantsUnit:
         tm.that(categories.ENTITY_OPERATIONS, eq="entity_operations")
         version_token = c.OracleWms.Tests.API_VERSION_LGF_V10
         tm.that(version_token, is_=str)
-        assert version_token
+        tm.that(version_token, truth=True)

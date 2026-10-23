@@ -277,7 +277,7 @@ class TestsFlextOracleWmsAuthenticationCore:
         )
         result = u.OracleWms.Client.from_auth_settings(settings)
         tm.fail(result)
-        assert (
-            result.error
-            == "Oracle WMS runtime client currently supports BASIC auth only"
+        tm.that(
+            result.error,
+            eq="Oracle WMS runtime client currently supports BASIC auth only",
         )

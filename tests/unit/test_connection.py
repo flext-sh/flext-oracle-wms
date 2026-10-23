@@ -8,10 +8,9 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 import pytest
-from flext_core import r
 
 from flext_oracle_wms import FlextOracleWmsSettings, m, u
-from tests import _secret, tm
+from tests import _secret, r, tm
 
 # Why: mro-4p0t — public facade access is u.OracleWms.Client, not the private
 # _utilities.client module (flext-oracle-wms-1sm3w sync fix).
@@ -70,7 +69,7 @@ class TestsFlextOracleWmsConnection:
         settings: FlextOracleWmsSettings,
     ) -> None:
         """The client exposes exactly the settings it was built with."""
-        assert client.settings is settings
+        tm.that(client.settings is settings, truth=True)
 
     @staticmethod
     def test_from_auth_settings_builds_client() -> None:
@@ -95,7 +94,7 @@ class TestsFlextOracleWmsConnection:
         tm.that(result, is_=r)
         tm.fail(result)
         tm.that(result.error, is_=str)
-        assert result.error
+        tm.that(result.error, truth=True)
 
     @staticmethod
     def test_get_apis_by_category_returns_result_on_unreachable_host(
@@ -106,4 +105,4 @@ class TestsFlextOracleWmsConnection:
         tm.that(result, is_=r)
         tm.fail(result)
         tm.that(result.error, is_=str)
-        assert result.error
+        tm.that(result.error, truth=True)

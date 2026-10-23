@@ -53,7 +53,7 @@ class TestsFlextOracleWmsClient:
         """The client exposes exactly the settings object it was built with."""
         client = u.OracleWms.Client(settings)
 
-        assert client.settings is settings
+        tm.that(client.settings is settings, truth=True)
         tm.that(client.settings.OracleWms.base_url, eq="https://test.wms.com")
         tm.that(client.settings.OracleWms.username, eq="test_user")
 
@@ -84,7 +84,7 @@ class TestsFlextOracleWmsClient:
         client = u.OracleWms.Client()
 
         tm.that(client.settings, is_=FlextOracleWmsSettings)
-        assert client.settings.OracleWms.base_url
+        tm.that(client.settings.OracleWms.base_url, truth=True)
 
     # ---- start/stop lifecycle ----------------------------------------------
 

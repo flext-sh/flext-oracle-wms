@@ -89,16 +89,16 @@ class TestsFlextOracleWmsConfigModule:
         first = FlextOracleWmsSettings.fetch_global()
         second = FlextOracleWmsSettings.fetch_global()
 
-        assert first is second
+        tm.that(first is second, truth=True)
 
     @staticmethod
-    def test_reset_for_testing_creates_fresh_instance() -> None:
-        """reset_for_testing() breaks the singleton so a new instance is built."""
+    def test_reset_for_testing_preserves_published_instance() -> None:
+        """reset_for_testing() reloads sources without replacing the shared root."""
         first = FlextOracleWmsSettings.fetch_global()
         FlextOracleWmsSettings.reset_for_testing()
         second = FlextOracleWmsSettings.fetch_global()
 
-        assert first is not second
+        tm.that(first is second, truth=True)
 
     @staticmethod
     def test_clone_overrides_isolated_copy_without_mutating_singleton() -> None:
@@ -107,6 +107,6 @@ class TestsFlextOracleWmsConfigModule:
         original = base.model_dump()
         cloned = base.clone(OracleWms={"base_url": "https://clone.example.com"})
 
-        assert cloned is not base
+        tm.that(cloned is not base, truth=True)
         tm.that(cloned.OracleWms.base_url, eq="https://clone.example.com")
         tm.that(base.model_dump(), eq=original)

@@ -25,10 +25,10 @@ class TestsFlextOracleWmsWmsApi:
         """api_endpoints() publishes a non-empty name -> ApiEndpoint mapping."""
         endpoints = FlextOracleWmsApi.api_endpoints()
 
-        assert endpoints, "expected a non-empty endpoint catalog"
+        tm.that(endpoints, truth=True, msg="expected a non-empty endpoint catalog")
         for name, endpoint in endpoints.items():
             tm.that(name, is_=str)
-            assert name
+            tm.that(name, truth=True)
             tm.that(endpoint, is_=m.OracleWms.ApiEndpoint)
             tm.that(endpoint.name, eq=name)
 
@@ -58,7 +58,10 @@ class TestsFlextOracleWmsWmsApi:
         second = FlextOracleWmsApi.api_endpoints()
 
         tm.that(first.keys(), eq=second.keys())
-        assert all(first[k].model_dump() == second[k].model_dump() for k in first)
+        tm.that(
+            all(first[k].model_dump() == second[k].model_dump() for k in first),
+            truth=True,
+        )
 
     # ------------------------------------------------------------------
     # m.OracleWms.ApiEndpoint model contract

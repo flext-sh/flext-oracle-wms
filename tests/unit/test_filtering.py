@@ -20,6 +20,7 @@ from __future__ import annotations
 
 import pytest
 from flext_tests import e, tm
+from pydantic import ValidationError
 
 from flext_oracle_wms.errors import FlextOracleWmsErrors
 from tests import c, m, t, u
@@ -52,12 +53,7 @@ class TestsFlextOracleWmsFiltering:
             The resulting ``set[int]``.
 
         """
-        ids: set[int] = set()
-        for record in records:
-            id_value = record["id"]
-            assert isinstance(id_value, int)
-            ids.add(id_value)
-        return ids
+        return {tm.instance(record["id"], int) for record in records}
 
     # ------------------------------------------------------------------ #
     # Construction / configuration contract.
@@ -117,7 +113,7 @@ class TestsFlextOracleWmsFiltering:
         engine = Filter()
         result = engine.filter_records(self.sample_records, {"status": "gone"})
         tm.ok(result)
-        assert not result.value
+        tm.that(result.value, truth=False)
 
     @staticmethod
     def test_limit_applied_over_large_record_set() -> None:
@@ -130,7 +126,9 @@ class TestsFlextOracleWmsFiltering:
         result = engine.filter_records(records, {"status": "active"}, limit=100)
         tm.ok(result)
         tm.that(len(result.value), eq=100)
-        assert all(record["status"] == "active" for record in result.value)
+        tm.that(
+            all(record["status"] == "active" for record in result.value), truth=True
+        )
 
     # ------------------------------------------------------------------ #
     # Case sensitivity / normalization (observed through equality).
@@ -140,7 +138,7 @@ class TestsFlextOracleWmsFiltering:
         engine = Filter(case_sensitive=True)
         result = engine.filter_records(self.sample_records, {"status": "ACTIVE"})
         tm.ok(result)
-        assert not result.value
+        tm.that(result.value, truth=False)
 
     def test_case_insensitive_equality_folds_unicode(self) -> None:
         """Test case insensitive equality folds unicode."""
@@ -163,7 +161,7 @@ class TestsFlextOracleWmsFiltering:
             {"score": Operator(operator="gt", value=5.0)},
         )
         tm.ok(result)
-        assert not result.value
+        tm.that(result.value, truth=False)
 
     @staticmethod
     def test_none_field_does_not_match_list_condition() -> None:
@@ -172,7 +170,7 @@ class TestsFlextOracleWmsFiltering:
         records: list[t.OracleWms.FilterRecord] = [{"id": 1, "status": None}]
         result = engine.filter_records(records, {"status": ["a", "b"]})
         tm.ok(result)
-        assert not result.value
+        tm.that(result.value, truth=False)
 
     # ------------------------------------------------------------------ #
     # Operator semantics.
@@ -317,7 +315,7 @@ class TestsFlextOracleWmsFiltering:
             {"status": Operator(operator="mystery", value="active")},
         )
         tm.ok(result)
-        assert not result.value
+        tm.that(result.value, truth=False)
 
     @staticmethod
     def test_comparison_requires_matching_types() -> None:
@@ -329,7 +327,7 @@ class TestsFlextOracleWmsFiltering:
             {"score": Operator(operator="gt", value=5.0)},
         )
         tm.ok(result)
-        assert not result.value
+        tm.that(result.value, truth=False)
 
     def test_filter_by_field_scalar_default_operator(self) -> None:
         """Test filter by field scalar default operator."""
@@ -394,7 +392,7 @@ class TestsFlextOracleWmsFiltering:
         engine = Filter()
         result = engine.filter_records(self.sample_records, {"nonexistent": "whatever"})
         tm.ok(result)
-        assert not result.value
+        tm.that(result.value, truth=False)
 
     # ------------------------------------------------------------------ #
     # Condition-count validation (observed through failure result).
@@ -456,13 +454,13 @@ class TestsFlextOracleWmsFiltering:
         """Test id range empty records."""
         result = Filter.filter_by_id_range([], "id", min_id=1)
         tm.ok(result)
-        assert not result.value
+        tm.that(result.value, truth=False)
 
     @staticmethod
     def test_id_range_rejects_invalid_numeric_value() -> None:
         """Test id range rejects invalid numeric value."""
         records: list[t.OracleWms.FilterRecord] = [{"id": "invalid"}]
-        with pytest.raises(RuntimeError):
+        with pytest.raises(ValidationError, match="Input should be a valid number"):
             Filter.filter_by_id_range(records, "id", min_id=1)
 
     # ------------------------------------------------------------------ #
@@ -539,4 +537,4 @@ class TestsFlextOracleWmsFiltering:
         engine = Filter()
         result = engine.sort_records([], "any_field")
         tm.ok(result)
-        assert not result.value
+        tm.that(result.value, truth=False)

@@ -9,8 +9,8 @@ from __future__ import annotations
 
 import pytest
 
-from flext_oracle_wms import FlextOracleWmsApi, FlextOracleWmsSettings, c, m, s, u
-from tests import _secret, tm
+from flext_oracle_wms import FlextOracleWmsApi, FlextOracleWmsSettings, m, s, u
+from tests import _secret, c, tm
 
 
 class TestsFlextOracleWmsApi:
@@ -24,7 +24,7 @@ class TestsFlextOracleWmsApi:
             settings=FlextOracleWmsSettings.model_validate({
                 "OracleWms": {
                     "base_url": "http://wms.example",
-                    "username": "user",
+                    "username": c.ContextScope.USER,
                     "password": _secret(),
                 },
             }),
@@ -33,7 +33,7 @@ class TestsFlextOracleWmsApi:
     @staticmethod
     def test_is_flext_service() -> None:
         """The facade honors the FlextService contract via subclassing."""
-        assert issubclass(FlextOracleWmsApi, s)
+        tm.that(issubclass(FlextOracleWmsApi, s), truth=True)
 
     @staticmethod
     def test_execute_returns_ready_success(api: FlextOracleWmsApi) -> None:
@@ -68,8 +68,8 @@ class TestsFlextOracleWmsApi:
         for name, endpoint in endpoints.items():
             tm.that(endpoint, is_=m.OracleWms.ApiEndpoint)
             tm.that(endpoint.name, eq=name)
-            assert endpoint.path
-            assert endpoint.method
+            tm.that(endpoint.path, truth=True)
+            tm.that(endpoint.method, truth=True)
 
     @staticmethod
     @pytest.mark.parametrize(
@@ -96,7 +96,9 @@ class TestsFlextOracleWmsApi:
     @staticmethod
     def test_create_oracle_wms_client_succeeds_from_auth_settings() -> None:
         """create_oracle_wms_client returns a successful client result."""
-        auth = m.OracleWms.AuthSettings(username="user", password=_secret())
+        auth = m.OracleWms.AuthSettings(
+            username=c.ContextScope.USER, password=_secret()
+        )
 
         result = FlextOracleWmsApi.create_oracle_wms_client(auth)
 

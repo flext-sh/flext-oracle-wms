@@ -25,7 +25,7 @@ class TestsFlextOracleWmsConfigDomains:
         """The http domain carries a positive integer bad-request threshold."""
         threshold = config.oracle_wms.http.bad_request_threshold
         tm.that(threshold, is_=int)
-        assert threshold > 0
+        tm.that(threshold > 0, truth=True)
 
     @staticmethod
     @pytest.mark.unit
@@ -53,7 +53,7 @@ class TestsFlextOracleWmsConfigDomains:
         """The filtering domain carries a positive integer max-condition limit."""
         max_conditions = config.oracle_wms.filtering.max_filter_conditions
         tm.that(max_conditions, is_=int)
-        assert max_conditions > 0
+        tm.that(max_conditions > 0, truth=True)
 
     @staticmethod
     @pytest.mark.unit
@@ -61,7 +61,7 @@ class TestsFlextOracleWmsConfigDomains:
         """The entities domain carries a positive integer max entity-name length."""
         max_name_length = config.oracle_wms.entities.max_entity_name_length
         tm.that(max_name_length, is_=int)
-        assert max_name_length > 0
+        tm.that(max_name_length > 0, truth=True)
 
     @staticmethod
     @pytest.mark.unit

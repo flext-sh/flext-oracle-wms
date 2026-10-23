@@ -26,7 +26,7 @@ from tests import TestsFlextOracleWmsTypes, t
 if TYPE_CHECKING:
     from pathlib import Path
 
-    from tests import p
+from tests import p
 
 
 class TestsFlextOracleWmsUtilities(FlextTestsUtilities, FlextOracleWmsUtilities):

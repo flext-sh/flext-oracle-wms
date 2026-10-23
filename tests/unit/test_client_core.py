@@ -31,7 +31,7 @@ class TestsFlextOracleWmsClientCore:
     ) -> None:
         """Test init preserves supplied settings."""
         client = u.OracleWms.Client(oracle_wms_settings)
-        assert client.settings is oracle_wms_settings
+        tm.that(client.settings is oracle_wms_settings, truth=True)
         tm.that(
             client.settings.OracleWms.base_url,
             eq=oracle_wms_settings.OracleWms.base_url,
@@ -125,4 +125,4 @@ class TestsFlextOracleWmsClientCore:
         auth = m.OracleWms.AuthSettings(method="basic", username=None, password=None)
         result = u.OracleWms.Client.from_auth_settings(auth)
         tm.fail(result)
-        assert result.error
+        tm.that(result.error, truth=True)
