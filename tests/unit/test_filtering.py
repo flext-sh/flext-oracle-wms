@@ -400,7 +400,9 @@ class TestsFlextOracleWmsFiltering:
     def test_scalar_conditions_over_limit_fail(self) -> None:
         """Test scalar conditions over limit fail."""
         engine = Filter(max_conditions=1)
-        result = engine.filter_records(self.sample_records, {"a": "1", "b": "2"})
+        result = engine.filter_records(
+            self.sample_records, {"a": c.ParserBooleanToken.ONE, "b": "2"}
+        )
         tm.fail(result)
         tm.that(result.error, none=False)
         tm.that(result.error, has="Too many")

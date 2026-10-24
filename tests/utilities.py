@@ -21,12 +21,10 @@ from flext_oracle_wms import (
     FlextOracleWmsSettings,
     FlextOracleWmsUtilities,
 )
-from tests import TestsFlextOracleWmsTypes, t
+from tests import TestsFlextOracleWmsTypes, c, p, t
 
 if TYPE_CHECKING:
     from pathlib import Path
-
-from tests import p
 
 
 class TestsFlextOracleWmsUtilities(FlextTestsUtilities, FlextOracleWmsUtilities):
@@ -204,15 +202,18 @@ class TestsFlextOracleWmsUtilities(FlextTestsUtilities, FlextOracleWmsUtilities)
                         default=3,
                     ),
                     "verify_ssl": u.to_bool(
-                        settings.get("ORACLE_WMS_VERIFY_SSL", "true").lower() == "true",
+                        settings.get(
+                            "ORACLE_WMS_VERIFY_SSL", c.ParserBooleanToken.TRUE
+                        ).lower()
+                        == c.ParserBooleanToken.TRUE,
                         default=True,
                     ),
                     "enable_logging": u.to_bool(
                         settings.get(
                             "ORACLE_WMS_ENABLE_REQUEST_LOGGING",
-                            "true",
+                            c.ParserBooleanToken.TRUE,
                         ).lower()
-                        == "true",
+                        == c.ParserBooleanToken.TRUE,
                         default=True,
                     ),
                 })

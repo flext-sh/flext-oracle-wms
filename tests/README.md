@@ -211,7 +211,7 @@ export ORACLE_WMS_ENVIRONMENT="test"
 export ORACLE_WMS_TEST_MODE="mock"          # mock or real
 export ORACLE_WMS_TEST_TIMEOUT="30"         # Test timeout seconds
 export ORACLE_WMS_LOG_LEVEL="debug"         # Logging level for tests
-export ORACLE_WMS_ENABLE_SLOW_TESTS="false" # Enable/disable slow tests
+export ORACLE_WMS_ENABLE_SLOW_TESTS=c.ParserBooleanToken.FALSE # Enable/disable slow tests
 ```
 
 ### Test Data Management

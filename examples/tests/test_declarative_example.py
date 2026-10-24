@@ -53,13 +53,15 @@ def load_env_config() -> t.MutableJsonMapping | None:
         "api_version": "LGF_V10",
         "oracle_wms_timeout": int(settings.get("ORACLE_WMS_TIMEOUT", "30")),
         "oracle_wms_max_retries": int(settings.get("ORACLE_WMS_MAX_RETRIES", "3")),
-        "oracle_wms_verify_ssl": settings.get("ORACLE_WMS_VERIFY_SSL", "true").lower()
-        == "true",
+        "oracle_wms_verify_ssl": settings.get(
+            "ORACLE_WMS_VERIFY_SSL", c.ParserBooleanToken.TRUE
+        ).lower()
+        == c.ParserBooleanToken.TRUE,
         "oracle_wms_enable_logging": settings.get(
             "ORACLE_WMS_ENABLE_REQUEST_LOGGING",
-            "true",
+            c.ParserBooleanToken.TRUE,
         ).lower()
-        == "true",
+        == c.ParserBooleanToken.TRUE,
     }
 
 
@@ -119,7 +121,7 @@ def _fetch_sample_entities(client: u.OracleWms.Client) -> None:
             if isinstance(data, list):
                 for record in data:
                     if isinstance(record, dict):
-                        record.get("count", str(len(data)))
+                        record.get(c.Aggregation.COUNT, str(len(data)))
 
 
 def run_client_flow(client: u.OracleWms.Client) -> None:

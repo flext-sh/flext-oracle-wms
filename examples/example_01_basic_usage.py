@@ -188,7 +188,11 @@ def main() -> None:
     except ValueError:
         logger.exception("Configuration error")
     except (RuntimeError, OSError):
-        if os.getenv("FLEXT_DEBUG_MODE", "").lower() in {"true", "1", "yes"}:
+        if os.getenv("FLEXT_DEBUG_MODE", "").lower() in {
+            c.ParserBooleanToken.TRUE,
+            c.ParserBooleanToken.ONE,
+            c.ParserBooleanToken.YES,
+        }:
             raise
 
 

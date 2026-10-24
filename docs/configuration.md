@@ -90,7 +90,7 @@ export FLEXT_ORACLE_WMS_CACHE_TTL="3600"
 
 # FLEXT integration (requires implementation)
 export FLEXT_LOG_LEVEL="info"
-export FLEXT_ENABLE_METRICS="true"
+export FLEXT_ENABLE_METRICS=c.ParserBooleanToken.TRUE
 ```
 
 ## Configuration Classes
