@@ -47,7 +47,7 @@ def oracle_wms_settings() -> FlextOracleWmsSettings:
 @pytest.fixture
 def oracle_wms_config() -> p.OracleWms.Config:
     """Return the validated public business-rule configuration."""
-    return config.oracle_wms
+    return config
 
 
 @pytest.fixture

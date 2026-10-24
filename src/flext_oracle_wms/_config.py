@@ -1,10 +1,9 @@
 """FlextOracleWmsConfig — frozen, validated config singleton (ADR-005 / cosmos pattern).
 
 Every ``config/*.yaml`` file is auto-discovered and deep-merged at first
-``fetch_global`` call (model-less, ``extra=allow`` at the FlextConfig base). The
-flat YAML is then validated into the pure-Pydantic ``_models.config`` shapes and
-exposed as typed domain objects under ``config.oracle_wms.<domain>`` — never a
-model-less dict subscript.
+``fetch_global`` call. Each root-level YAML domain is a declared typed field
+validated once into the pure-Pydantic ``_models.config`` shapes and exposed as
+``config.<domain>`` — never a model-less dict subscript.
 
 Copyright (c) 2026 FLEXT Team. All rights reserved.
 SPDX-License-Identifier: MIT
@@ -12,19 +11,12 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from functools import cached_property
-from typing import TYPE_CHECKING, Self
+from typing import Annotated, Self
 
 from flext_cli import FlextCliConfig
-from flext_core import t
+from flext_core import m, t
 
 from flext_oracle_wms._models.config import FlextOracleWmsConfigModels
-
-# NOTE (multi-agent): config-scaffold — accessor typed by PROTOCOL (p), never
-# the model class; the protocol module enters under TYPE_CHECKING only.
-
-if TYPE_CHECKING:
-    from flext_oracle_wms._protocols.config import FlextOracleWmsProtocolsConfig
 
 
 class FlextOracleWmsConfig(FlextCliConfig):
@@ -69,13 +61,38 @@ class FlextOracleWmsConfig(FlextCliConfig):
     # is owned by ``flext_core`` (``CONFIG_DIR_NAME``); ``FlextConfig`` anchors
     # the YAML SSOT to the packaged ``config/`` regardless of the caller's CWD.
 
-    @cached_property
-    def oracle_wms(self) -> FlextOracleWmsProtocolsConfig.Config:
-        """Validated ``OracleWms`` config domains from the model-less YAML."""
-        return FlextOracleWmsConfigModels.Root.model_validate(
-            dict(self.model_extra or {}),
-        )
-
+    http: Annotated[
+        FlextOracleWmsConfigModels.Http,
+        m.Field(description="HTTP response-classification thresholds."),
+    ]
+    api: Annotated[
+        FlextOracleWmsConfigModels.Api,
+        m.Field(description="Runtime API connection defaults."),
+    ]
+    processing: Annotated[
+        FlextOracleWmsConfigModels.Processing,
+        m.Field(description="Batch, page and schema processing limits."),
+    ]
+    filtering: Annotated[
+        FlextOracleWmsConfigModels.Filtering,
+        m.Field(description="Query-filter construction limits."),
+    ]
+    entities: Annotated[
+        FlextOracleWmsConfigModels.Entities,
+        m.Field(description="Entity-name validation rules."),
+    ]
+    auth: Annotated[
+        FlextOracleWmsConfigModels.Auth,
+        m.Field(description="OAuth2 authentication policy."),
+    ]
+    environments: Annotated[
+        FlextOracleWmsConfigModels.Environments,
+        m.Field(description="Named Oracle WMS environment base URLs."),
+    ]
+    api_endpoints: Annotated[
+        t.MappingKV[str, FlextOracleWmsConfigModels.ApiEndpoint],
+        m.Field(description="Oracle WMS API endpoint catalog by name."),
+    ]
 
 config: FlextOracleWmsConfig = FlextOracleWmsConfig.fetch_global()
 """Pre-instantiated frozen config singleton.

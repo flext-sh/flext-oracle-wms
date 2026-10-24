@@ -47,10 +47,10 @@ class TestsFlextOracleWmsConstantsUnit:
     def test_api_config_publishes_connection_defaults(key: str) -> None:
         """API_CONFIG mirrors the typed config SSOT connection defaults."""
         defaults: t.MappingKV[str, str | int] = {
-            "version_default": config.oracle_wms.api.version_default,
-            "base_url_default": config.oracle_wms.environments.default,
-            "timeout_default": config.oracle_wms.api.timeout_default,
-            "max_retries": config.oracle_wms.api.max_retries,
+            "version_default": config.api.version_default,
+            "base_url_default": config.environments.default,
+            "timeout_default": config.api.timeout_default,
+            "max_retries": config.api.max_retries,
         }
         expected: str | int = defaults[key]
         tm.that(c.OracleWms.API_CONFIG[key], eq=expected)
@@ -78,7 +78,7 @@ class TestsFlextOracleWmsConstantsUnit:
         """ENVIRONMENTS mirrors the typed config SSOT environment URLs."""
         tm.that(
             c.OracleWms.ENVIRONMENTS[key],
-            eq=getattr(config.oracle_wms.environments, key),
+            eq=getattr(config.environments, key),
         )
 
     @staticmethod
@@ -119,11 +119,11 @@ class TestsFlextOracleWmsConstantsUnit:
         """AUTH_CONFIG/API_CONFIG mirror the typed config SSOT auth policy."""
         tm.that(
             c.OracleWms.API_CONFIG["oauth2_endpoint_path"],
-            eq=config.oracle_wms.auth.oauth2_token_endpoint,
+            eq=config.auth.oauth2_token_endpoint,
         )
         tm.that(
             c.OracleWms.AUTH_CONFIG["oauth2_scope_default"],
-            eq=config.oracle_wms.auth.oauth2_scope_default,
+            eq=config.auth.oauth2_scope_default,
         )
 
     @staticmethod
@@ -161,15 +161,15 @@ class TestsFlextOracleWmsConstantsUnit:
         """Nested namespaces mirror the typed config SSOT bounds."""
         tm.that(
             c.OracleWms.WmsEntities.MAX_ENTITY_NAME_LENGTH,
-            eq=config.oracle_wms.entities.max_entity_name_length,
+            eq=config.entities.max_entity_name_length,
         )
         tm.that(
             c.OracleWms.WmsProcessing.MAX_SCHEMA_DEPTH,
-            eq=config.oracle_wms.processing.max_schema_depth,
+            eq=config.processing.max_schema_depth,
         )
         tm.that(
             c.OracleWms.Filtering.MAX_FILTER_CONDITIONS,
-            eq=config.oracle_wms.filtering.max_filter_conditions,
+            eq=config.filtering.max_filter_conditions,
         )
 
     @staticmethod

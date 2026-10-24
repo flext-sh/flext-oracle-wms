@@ -38,7 +38,7 @@ class TestsFlextOracleWmsHelpersCore:
     ) -> None:
         """Tests consume the validated config projection without copying it."""
         tm.that(config, is_=FlextOracleWmsConfig)
-        tm.that(oracle_wms_config is config.oracle_wms, truth=True)
+        tm.that(oracle_wms_config is config, truth=True)
 
     @staticmethod
     def test_real_public_api_executes(oracle_wms_api: FlextOracleWmsApi) -> None:

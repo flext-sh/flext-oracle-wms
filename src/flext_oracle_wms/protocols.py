@@ -40,7 +40,7 @@ class FlextOracleWmsProtocols(FlextApiProtocols):
     class OracleWms(Protocol):
         """Oracle WMS domain-specific protocols."""
 
-        # Validated ``config.oracle_wms`` domain surface, aliased as a PEP 695
+        # Validated ``config`` domain surface, aliased as a PEP 695
         # type so the structural protocol stays usable in type expressions.
         Config = FlextOracleWmsProtocolsConfig.Config
 
