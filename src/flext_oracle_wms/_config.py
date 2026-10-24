@@ -94,6 +94,7 @@ class FlextOracleWmsConfig(FlextCliConfig):
         m.Field(description="Oracle WMS API endpoint catalog by name."),
     ]
 
+
 config: FlextOracleWmsConfig = FlextOracleWmsConfig.fetch_global()
 """Pre-instantiated frozen config singleton.
 

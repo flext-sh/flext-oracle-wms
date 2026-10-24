@@ -12,7 +12,7 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from flext_core import m, t
+from flext_core import m
 
 
 class FlextOracleWmsConfigModels:
