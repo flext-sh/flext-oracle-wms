@@ -181,12 +181,12 @@ class FlextOracleWmsUtilitiesFiltering:
             if isinstance(left, str) and isinstance(right, str):
                 return cls._compare_string(left, right, op)
             left_num = u.validate_value(
-                t.float_adapter(),
+                u.float_adapter(),
                 cls._scalar_part(left),
                 strict=True,
             ).unwrap()
             right_num = u.validate_value(
-                t.float_adapter(),
+                u.float_adapter(),
                 cls._scalar_part(right),
                 strict=True,
             ).unwrap()
