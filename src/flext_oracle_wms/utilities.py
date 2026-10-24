@@ -1,3 +1,4 @@
+# AUTO-GENERATED FILE — Regenerate with: make gen
 """Oracle WMS utilities extending u via MRO composition.
 
 Copyright (c) 2026 FLEXT Team. All rights reserved.
@@ -8,11 +9,13 @@ from __future__ import annotations
 
 from flext_api import FlextApiUtilities
 
-from flext_oracle_wms._utilities.auth import FlextOracleWmsUtilitiesAuth
-from flext_oracle_wms._utilities.client import FlextOracleWmsUtilitiesClient
-from flext_oracle_wms._utilities.discovery import FlextOracleWmsUtilitiesDiscovery
-from flext_oracle_wms._utilities.filtering import FlextOracleWmsUtilitiesFiltering
-from flext_oracle_wms._utilities.http_client import FlextOracleWmsUtilitiesHttpClient
+from flext_oracle_wms._utilities import (
+    FlextOracleWmsUtilitiesAuth,
+    FlextOracleWmsUtilitiesClient,
+    FlextOracleWmsUtilitiesDiscovery,
+    FlextOracleWmsUtilitiesFiltering,
+    FlextOracleWmsUtilitiesHttpClient,
+)
 
 
 class FlextOracleWmsUtilities(

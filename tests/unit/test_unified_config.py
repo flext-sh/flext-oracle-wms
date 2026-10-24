@@ -30,8 +30,8 @@ class TestsFlextOracleWmsUnifiedConfig:
         tm.that(ns.retry_attempts, eq=3)
         tm.that(ns.api_version, eq="LGF_V10")
         tm.that(ns.auth_method, eq="basic")
-        tm.that(ns.verify_ssl, eq=True)
-        tm.that(ns.enable_logging, eq=False)
+        tm.ok(ns.verify_ssl)
+        tm.fail(ns.enable_logging)
         tm.that(ns.connection_pool_size, eq=10)
         tm.that(ns.cache_duration, eq=300)
 

@@ -24,7 +24,7 @@ from tests import t, tm, u
 if TYPE_CHECKING:
     from collections.abc import Generator, Sequence
 
-    from tests import p
+from tests import p
 
 
 @pytest.fixture
@@ -80,10 +80,10 @@ class TestsFlextOracleWmsDeclarative:
         callers can surface it. This is the fail-loud guarantee: operations
         return a typed result instead of raising or hiding failures.
         """
-        assert result.success is not result.failure
+        tm.that(result.success is not result.failure, truth=True)
         if result.failure:
             tm.that(result.error, is_=str)
-            assert result.error
+            tm.that(result.error, truth=True)
 
     # ------------------------------------------------------------------
     # API facade — deterministic, no I/O
@@ -93,14 +93,14 @@ class TestsFlextOracleWmsDeclarative:
     def test_api_endpoints_return_typed_models() -> None:
         """api_endpoints() exposes typed ApiEndpoint models with populated fields."""
         endpoints = FlextOracleWmsApi.api_endpoints()
-        assert endpoints
+        tm.that(endpoints, truth=True)
         for endpoint in endpoints.values():
             tm.that(endpoint, is_=m.OracleWms.ApiEndpoint)
-            assert endpoint.name
-            assert endpoint.method
-            assert endpoint.path
-            assert endpoint.version
-            assert endpoint.category
+            tm.that(endpoint.name, truth=True)
+            tm.that(endpoint.method, truth=True)
+            tm.that(endpoint.path, truth=True)
+            tm.that(endpoint.version, truth=True)
+            tm.that(endpoint.category, truth=True)
 
     @staticmethod
     def test_api_endpoints_expose_at_least_one_version() -> None:
@@ -108,15 +108,15 @@ class TestsFlextOracleWmsDeclarative:
         versions = {
             endpoint.version for endpoint in FlextOracleWmsApi.api_endpoints().values()
         }
-        assert versions
-        assert all(version for version in versions)
+        tm.that(versions, truth=True)
+        tm.that(all(version for version in versions), truth=True)
 
     @staticmethod
     def test_execute_signals_readiness_success() -> None:
         """The facade execute() contract returns a successful r[bool] carrying True."""
         result = FlextOracleWmsApi().execute()
         tm.ok(result)
-        tm.that(result.value, eq=True)
+        tm.ok(result.value)
 
     # ------------------------------------------------------------------
     # Client operations — r[T] contract on every path
@@ -181,7 +181,7 @@ class TestsFlextOracleWmsDeclarative:
         result = oracle_wms_client.fetch_entity_data(entity_name="company", limit=limit)
         self._assert_result_contract(result)
         if result.success:
-            assert len(result.value) <= limit
+            tm.that(len(result.value) <= limit, truth=True)
 
     def test_concurrent_entity_requests_all_honour_contract(
         self,
@@ -209,7 +209,7 @@ class TestsFlextOracleWmsDeclarative:
         """Requesting an unknown entity fails with a populated error message."""
         result = oracle_wms_client.fetch_entity_data(entity_name)
         tm.fail(result)
-        assert result.error
+        tm.that(result.error, truth=True)
 
     @staticmethod
     @pytest.mark.parametrize("api_name", ["unknown_api_xyz", "invalid_api_name"])
@@ -220,7 +220,7 @@ class TestsFlextOracleWmsDeclarative:
         """Calling an unknown API name fails with a populated error message."""
         result = oracle_wms_client.call_api(api_name)
         tm.fail(result)
-        assert result.error
+        tm.that(result.error, truth=True)
 
     def test_update_oblpn_tracking_failure_is_not_initialization_error(
         self,

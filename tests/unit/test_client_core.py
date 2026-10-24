@@ -31,7 +31,7 @@ class TestsFlextOracleWmsClientCore:
     ) -> None:
         """Test init preserves supplied settings."""
         client = u.OracleWms.Client(oracle_wms_settings)
-        assert client.settings is oracle_wms_settings
+        tm.that(client.settings is oracle_wms_settings, truth=True)
         tm.that(
             client.settings.OracleWms.base_url,
             eq=oracle_wms_settings.OracleWms.base_url,
@@ -54,7 +54,7 @@ class TestsFlextOracleWmsClientCore:
         """Test start reports success."""
         result = u.OracleWms.Client(oracle_wms_settings).start()
         tm.ok(result)
-        tm.that(result.unwrap(), eq=True)
+        tm.ok(result.unwrap())
 
     @staticmethod
     def test_start_is_idempotent(
@@ -62,8 +62,8 @@ class TestsFlextOracleWmsClientCore:
     ) -> None:
         """Test start is idempotent."""
         client = u.OracleWms.Client(oracle_wms_settings)
-        tm.that(client.start().unwrap(), eq=True)
-        tm.that(client.start().unwrap(), eq=True)
+        tm.ok(client.start().unwrap())
+        tm.ok(client.start().unwrap())
 
     @staticmethod
     def test_stop_reports_success(
@@ -74,7 +74,7 @@ class TestsFlextOracleWmsClientCore:
         client.start()
         result = client.stop()
         tm.ok(result)
-        tm.that(result.unwrap(), eq=True)
+        tm.ok(result.unwrap())
 
     @staticmethod
     def test_stop_before_start_still_succeeds(
@@ -83,7 +83,7 @@ class TestsFlextOracleWmsClientCore:
         """Test stop before start still succeeds."""
         result = u.OracleWms.Client(oracle_wms_settings).stop()
         tm.ok(result)
-        tm.that(result.unwrap(), eq=True)
+        tm.ok(result.unwrap())
 
     @staticmethod
     def test_restart_after_stop_succeeds(
@@ -93,7 +93,7 @@ class TestsFlextOracleWmsClientCore:
         client = u.OracleWms.Client(oracle_wms_settings)
         client.start()
         client.stop()
-        tm.that(client.start().unwrap(), eq=True)
+        tm.ok(client.start().unwrap())
 
     @staticmethod
     def test_from_auth_settings_builds_client_for_basic_auth() -> None:
@@ -125,4 +125,4 @@ class TestsFlextOracleWmsClientCore:
         auth = m.OracleWms.AuthSettings(method="basic", username=None, password=None)
         result = u.OracleWms.Client.from_auth_settings(auth)
         tm.fail(result)
-        assert result.error
+        tm.that(result.error, truth=True)

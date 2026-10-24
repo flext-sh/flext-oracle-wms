@@ -307,7 +307,7 @@ Recommended VS Code settings:
 
 ```bash
 # Development environment
-export FLEXT_DEBUG_MODE="true"
+export FLEXT_DEBUG_MODE=c.ParserBooleanToken.TRUE
 export FLEXT_LOG_LEVEL="debug"
 export PYTHONPATH="src"
 ```

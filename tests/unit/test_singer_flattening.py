@@ -31,7 +31,7 @@ class TestsFlextOracleWmsSingerFlattening:
         tm.that(entity.description, none=True)
         tm.that(entity.primary_key, none=True)
         tm.that(entity.replication_key, none=True)
-        tm.that(entity.supports_incremental, eq=False)
+        tm.fail(entity.supports_incremental)
 
     @staticmethod
     def test_full_entity_round_trips_through_model_dump() -> None:
@@ -88,7 +88,7 @@ class TestsFlextOracleWmsSingerFlattening:
         result = u.OracleWms.validate_wms_entity(entity)
 
         tm.ok(result)
-        tm.that(result.unwrap(), eq=True)
+        tm.ok(result.unwrap())
 
     @staticmethod
     def test_validate_entity_at_max_name_length_succeeds() -> None:
@@ -98,7 +98,7 @@ class TestsFlextOracleWmsSingerFlattening:
         result = u.OracleWms.validate_wms_entity(entity)
 
         tm.ok(result)
-        tm.that(result.unwrap(), eq=True)
+        tm.ok(result.unwrap())
 
     @staticmethod
     def test_validate_entity_rejects_overlong_name() -> None:

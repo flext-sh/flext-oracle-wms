@@ -1,10 +1,10 @@
 """Flext-oracle-wms config models (m facade; no project-specific imports).
 
 Typed, frozen shapes for the ``config/*.yaml`` business-rule SSOT. This module
-imports only the ``flext_core.m`` facade — the ``_config.py`` facade validates the
-model-less YAML slices into these classes and exposes the ready objects under
-``config.oracle_wms.<domain>``. Adding a new config domain = add a nested model
-here and a validated field on ``Root`` (cosmos-main ``_models/config.py`` shape).
+imports only the ``flext_core.m`` facade — ``FlextOracleWmsConfig`` declares one
+typed field per YAML domain and exposes the validated objects as
+``config.<domain>``. Adding a new config domain = add a nested model here and a
+typed field on ``FlextOracleWmsConfig``.
 
 Copyright (c) 2026 FLEXT Team. All rights reserved.
 SPDX-License-Identifier: MIT
@@ -88,20 +88,6 @@ class FlextOracleWmsConfigModels:
         category: str
         description: str
         since_version: str
-
-    class Root(m.BaseModel):
-        """Root oracle-wms runtime config validated from ``config/*.yaml``."""
-
-        model_config = m.ConfigDict(frozen=True, extra="ignore")
-
-        http: FlextOracleWmsConfigModels.Http
-        api: FlextOracleWmsConfigModels.Api
-        processing: FlextOracleWmsConfigModels.Processing
-        filtering: FlextOracleWmsConfigModels.Filtering
-        entities: FlextOracleWmsConfigModels.Entities
-        auth: FlextOracleWmsConfigModels.Auth
-        environments: FlextOracleWmsConfigModels.Environments
-        api_endpoints: t.MappingKV[str, FlextOracleWmsConfigModels.ApiEndpoint]
 
 
 __all__: list[str] = ["FlextOracleWmsConfigModels"]

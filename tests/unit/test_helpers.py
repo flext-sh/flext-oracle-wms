@@ -7,6 +7,7 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
+import flext_core
 import pytest
 
 from flext_oracle_wms.errors import FlextOracleWmsErrors
@@ -19,11 +20,11 @@ class TestsFlextOracleWmsHelpers:
 
     @staticmethod
     @pytest.fixture
-    def records() -> list[t.OracleWms.Tests.Record]:
+    def records() -> list[t.OracleWms.FilterRecord]:
         """Three ordered records exercised by the filtering contract.
 
         Returns:
-            The resulting ``list[t.OracleWms.Tests.Record]``.
+            The resulting ``list[t.OracleWms.FilterRecord]``.
 
         """
         return [
@@ -37,12 +38,12 @@ class TestsFlextOracleWmsHelpers:
     @staticmethod
     def test_utilities_facade_inherits_flext_core_utilities() -> None:
         """The facade composes flext-core utilities via MRO."""
-        assert issubclass(u, u)
+        tm.that(issubclass(u, flext_core.u), truth=True)
 
     @staticmethod
     def test_filter_engine_reachable_through_public_namespace() -> None:
         """Filtering engine is exposed on both the facade and OracleWms namespace."""
-        assert u.Filter is u.OracleWms.Filter
+        tm.that(u.Filter is u.OracleWms.Filter, truth=True)
 
     # ---- conversion helpers ---------------------------------------------
 
@@ -63,7 +64,7 @@ class TestsFlextOracleWmsHelpers:
 
     @staticmethod
     def test_filter_by_field_keeps_only_matching_records(
-        records: list[t.OracleWms.Tests.Record],
+        records: list[t.OracleWms.FilterRecord],
     ) -> None:
         """Equality filtering yields exactly the records whose field matches."""
         result = u.Filter.filter_by_field(records, "name", "beta")
@@ -73,7 +74,7 @@ class TestsFlextOracleWmsHelpers:
 
     @staticmethod
     def test_filter_by_field_with_operator_applies_comparison(
-        records: list[t.OracleWms.Tests.Record],
+        records: list[t.OracleWms.FilterRecord],
     ) -> None:
         """A GTE operator keeps records at or above the threshold."""
         result = u.Filter.filter_by_field(
@@ -94,7 +95,7 @@ class TestsFlextOracleWmsHelpers:
         [(2, None, [2, 5]), (None, 2, [1, 2]), (2, 2, [2]), (None, None, [1, 2, 5])],
     )
     def test_filter_by_id_range_is_inclusive(
-        records: list[t.OracleWms.Tests.Record],
+        records: list[t.OracleWms.FilterRecord],
         min_id: int | None,
         max_id: int | None,
         expected: list[int],
@@ -126,7 +127,7 @@ class TestsFlextOracleWmsHelpers:
         engine = u.Filter.create_filter(case_sensitive=True, max_conditions=10)
 
         tm.that(engine, is_=u.Filter)
-        tm.that(engine.case_sensitive, eq=True)
+        tm.ok(engine.case_sensitive)
         tm.that(engine.max_conditions, eq=10)
 
     @staticmethod
@@ -159,7 +160,7 @@ class TestsFlextOracleWmsHelpers:
 
     @staticmethod
     def test_case_insensitive_engine_matches_regardless_of_case(
-        records: list[t.OracleWms.Tests.Record],
+        records: list[t.OracleWms.FilterRecord],
     ) -> None:
         """Default (case-insensitive) matching ignores letter case."""
         engine = u.Filter.create_filter()
@@ -171,7 +172,7 @@ class TestsFlextOracleWmsHelpers:
 
     @staticmethod
     def test_case_sensitive_engine_requires_exact_case(
-        records: list[t.OracleWms.Tests.Record],
+        records: list[t.OracleWms.FilterRecord],
     ) -> None:
         """A case-sensitive engine rejects a case mismatch."""
         engine = u.Filter.create_filter(case_sensitive=True)
@@ -185,7 +186,7 @@ class TestsFlextOracleWmsHelpers:
 
     @staticmethod
     def test_filter_records_respects_limit(
-        records: list[t.OracleWms.Tests.Record],
+        records: list[t.OracleWms.FilterRecord],
     ) -> None:
         """The optional limit truncates the matched records."""
         engine = u.Filter.create_filter()
@@ -197,7 +198,7 @@ class TestsFlextOracleWmsHelpers:
 
     @staticmethod
     def test_filter_records_reports_condition_overflow_as_failure(
-        records: list[t.OracleWms.Tests.Record],
+        records: list[t.OracleWms.FilterRecord],
     ) -> None:
         """Exceeding max_conditions returns a failure result, not a raise."""
         engine = u.Filter.create_filter(max_conditions=1)
@@ -223,7 +224,7 @@ class TestsFlextOracleWmsHelpers:
         [(True, [1, 5, 2]), (False, [2, 5, 1])],
     )
     def test_sort_records_orders_by_field(
-        records: list[t.OracleWms.Tests.Record],
+        records: list[t.OracleWms.FilterRecord],
         *,
         ascending: bool,
         expected: list[int],

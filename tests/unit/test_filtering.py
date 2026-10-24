@@ -20,6 +20,7 @@ from __future__ import annotations
 
 import pytest
 from flext_tests import e, tm
+from pydantic import ValidationError
 
 from flext_oracle_wms.errors import FlextOracleWmsErrors
 from tests import c, m, t, u
@@ -34,509 +35,515 @@ Op = c.OracleWms.WmsFilterOperator
 class TestsFlextOracleWmsFiltering:
     """Tests for the WMS declarative filtering engine."""
 
-    @property
-    def sample_records(self) -> list[t.OracleWms.FilterRecord]:
-        """Four records with a stable, well-known id/status/score layout."""
-        return [
-            {"id": 1, "name": "Company A", "status": "active", "score": 85.5},
-            {"id": 2, "name": "Company B", "status": "inactive", "score": 72.0},
-            {"id": 3, "name": "Company C", "status": "active", "score": 90.0},
-            {"id": 4, "name": "Company D", "status": "pending", "score": 65.5},
-        ]
+    class _Records:
+        """Shared record scenarios for every filtering contract group."""
 
-    @staticmethod
-    def _ids(records: t.SequenceOf[t.OracleWms.FilterRecord]) -> set[int]:
-        """Collect the ``id`` field of every record for set comparison.
+        @property
+        def sample_records(self) -> list[t.OracleWms.FilterRecord]:
+            """Four records with a stable, well-known id/status/score layout."""
+            return [
+                {"id": 1, "name": "Company A", "status": "active", "score": 85.5},
+                {"id": 2, "name": "Company B", "status": "inactive", "score": 72.0},
+                {"id": 3, "name": "Company C", "status": "active", "score": 90.0},
+                {"id": 4, "name": "Company D", "status": "pending", "score": 65.5},
+            ]
 
-        Returns:
-            The resulting ``set[int]``.
+        @property
+        def unsorted_records(self) -> list[t.OracleWms.FilterRecord]:
+            """``unsorted_records``."""
+            return [
+                {"id": 3, "name": "Charlie", "score": 75.5},
+                {"id": 1, "name": "Alice", "score": 90.0},
+                {"id": 2, "name": "Bob", "score": 85.0},
+            ]
 
-        """
-        ids: set[int] = set()
-        for record in records:
-            id_value = record["id"]
-            assert isinstance(id_value, int)
-            ids.add(id_value)
-        return ids
+        @staticmethod
+        def _ids(records: t.SequenceOf[t.OracleWms.FilterRecord]) -> set[int]:
+            """Collect the ``id`` field of every record for set comparison.
 
-    # ------------------------------------------------------------------ #
-    # Construction / configuration contract.
-    # ------------------------------------------------------------------ #
-    @staticmethod
-    def test_construction_exposes_configuration() -> None:
-        """Test construction exposes configuration."""
-        engine = Filter(case_sensitive=True, max_conditions=25)
-        tm.that(engine.case_sensitive, eq=True)
-        tm.that(engine.max_conditions, eq=25)
+            Returns:
+                The resulting ``set[int]``.
 
-    @staticmethod
-    def test_construction_defaults_are_case_insensitive() -> None:
-        """Test construction defaults are case insensitive."""
-        engine = Filter()
-        tm.that(engine.case_sensitive, eq=False)
-        tm.that(engine.max_conditions, eq=c.OracleWms.Filtering.MAX_FILTER_CONDITIONS)
+            """
+            return {tm.instance(record["id"], int) for record in records}
 
-    @staticmethod
-    @pytest.mark.parametrize(
-        "max_conditions",
-        [0, -1, c.OracleWms.Filtering.MAX_FILTER_CONDITIONS + 1],
-    )
-    def test_construction_rejects_invalid_max_conditions(
-        max_conditions: int,
-    ) -> None:
-        """Test construction rejects invalid max conditions."""
-        with pytest.raises(e.BaseError, match="Invalid max_conditions"):
-            Filter(max_conditions=max_conditions)
+    class TestsConstruction(_Records):
+        """Construction / configuration contract."""
 
-    def test_scalar_equality_selects_matching_records(self) -> None:
-        """Test scalar equality selects matching records."""
-        engine = Filter()
-        result = engine.filter_records(self.sample_records, {"status": "active"})
-        tm.ok(result)
-        tm.that(self._ids(result.value), eq={1, 3})
+        @staticmethod
+        def test_construction_exposes_configuration() -> None:
+            """Test construction exposes configuration."""
+            engine = Filter(case_sensitive=True, max_conditions=25)
+            tm.ok(engine.case_sensitive)
+            tm.that(engine.max_conditions, eq=25)
 
-    def test_numeric_equality_selects_single_record(self) -> None:
-        """Test numeric equality selects single record."""
-        engine = Filter()
-        result = engine.filter_records(self.sample_records, {"id": 2})
-        tm.ok(result)
-        tm.that(self._ids(result.value), eq={2})
+        @staticmethod
+        def test_construction_defaults_are_case_insensitive() -> None:
+            """Test construction defaults are case insensitive."""
+            engine = Filter()
+            tm.fail(engine.case_sensitive)
+            tm.that(
+                engine.max_conditions,
+                eq=c.OracleWms.Filtering.MAX_FILTER_CONDITIONS,
+            )
 
-    def test_list_value_matches_membership(self) -> None:
-        """Test list value matches membership."""
-        engine = Filter()
-        result = engine.filter_records(
-            self.sample_records,
-            {"status": ["active", "pending"]},
+        @staticmethod
+        @pytest.mark.parametrize(
+            "max_conditions",
+            [0, -1, c.OracleWms.Filtering.MAX_FILTER_CONDITIONS + 1],
         )
-        tm.ok(result)
-        tm.that(self._ids(result.value), eq={1, 3, 4})
+        def test_construction_rejects_invalid_max_conditions(
+            max_conditions: int,
+        ) -> None:
+            """Test construction rejects invalid max conditions."""
+            with pytest.raises(e.BaseError, match="Invalid max_conditions"):
+                Filter(max_conditions=max_conditions)
 
-    def test_no_matching_records_yields_empty_success(self) -> None:
-        """Test no matching records yields empty success."""
-        engine = Filter()
-        result = engine.filter_records(self.sample_records, {"status": "gone"})
-        tm.ok(result)
-        assert not result.value
-
-    @staticmethod
-    def test_limit_applied_over_large_record_set() -> None:
-        """Test limit applied over large record set."""
-        records: list[t.OracleWms.FilterRecord] = [
-            {"id": i, "status": "active" if i % 2 == 0 else "inactive"}
-            for i in range(1000)
-        ]
-        engine = Filter()
-        result = engine.filter_records(records, {"status": "active"}, limit=100)
-        tm.ok(result)
-        tm.that(len(result.value), eq=100)
-        assert all(record["status"] == "active" for record in result.value)
-
-    # ------------------------------------------------------------------ #
-    # Case sensitivity / normalization (observed through equality).
-    # ------------------------------------------------------------------ #
-    def test_case_sensitive_equality_respects_case(self) -> None:
-        """Test case sensitive equality respects case."""
-        engine = Filter(case_sensitive=True)
-        result = engine.filter_records(self.sample_records, {"status": "ACTIVE"})
-        tm.ok(result)
-        assert not result.value
-
-    def test_case_insensitive_equality_folds_unicode(self) -> None:
-        """Test case insensitive equality folds unicode."""
-        engine = Filter(case_sensitive=False)
-        records: list[t.OracleWms.FilterRecord] = [{"id": 1, "name": "Café"}]
-        result = engine.filter_records(records, {"name": "café"})
-        tm.ok(result)
-        tm.that(self._ids(result.value), eq={1})
-
-    # ------------------------------------------------------------------ #
-    # Operator-dict conditions (eq/ne/in/contains/gt/gte/lt/lte/unknown).
-    # ------------------------------------------------------------------ #
-    @staticmethod
-    def test_none_field_does_not_match_valued_condition() -> None:
-        """Test none field does not match valued condition."""
-        engine = Filter()
-        records: list[t.OracleWms.FilterRecord] = [{"id": 1, "score": None}]
-        result = engine.filter_records(
-            records,
-            {"score": Operator(operator="gt", value=5.0)},
+        @staticmethod
+        @pytest.mark.parametrize(
+            "max_conditions",
+            [0, c.OracleWms.Filtering.MAX_FILTER_CONDITIONS + 1],
         )
-        tm.ok(result)
-        assert not result.value
+        def test_create_filter_rejects_invalid_max_conditions(
+            max_conditions: int,
+        ) -> None:
+            """Test create filter rejects invalid max conditions."""
+            with pytest.raises(e.BaseError, match="Invalid max_conditions"):
+                Filter.create_filter(max_conditions=max_conditions)
 
-    @staticmethod
-    def test_none_field_does_not_match_list_condition() -> None:
-        """Test none field does not match list condition."""
-        engine = Filter()
-        records: list[t.OracleWms.FilterRecord] = [{"id": 1, "status": None}]
-        result = engine.filter_records(records, {"status": ["a", "b"]})
-        tm.ok(result)
-        assert not result.value
+        @staticmethod
+        def test_create_filter_matches_constructor_contract() -> None:
+            """Test create filter matches constructor contract."""
+            engine = Filter.create_filter(case_sensitive=True, max_conditions=10)
+            tm.ok(engine.case_sensitive)
+            tm.that(engine.max_conditions, eq=10)
 
-    # ------------------------------------------------------------------ #
-    # Operator semantics.
-    # ------------------------------------------------------------------ #
+        def test_construction_accepts_valid_initial_filters(self) -> None:
+            """Test construction accepts valid initial filters."""
+            engine = Filter(filters={"status": "active"}, max_conditions=5)
+            result = engine.filter_records(self.sample_records, {"status": "active"})
+            tm.ok(result)
+            tm.that(self._ids(result.value), eq={1, 3})
 
-    @staticmethod
-    @pytest.mark.parametrize(
-        "max_conditions",
-        [0, c.OracleWms.Filtering.MAX_FILTER_CONDITIONS + 1],
-    )
-    def test_create_filter_rejects_invalid_max_conditions(
-        max_conditions: int,
-    ) -> None:
-        """Test create filter rejects invalid max conditions."""
-        with pytest.raises(e.BaseError, match="Invalid max_conditions"):
-            Filter.create_filter(max_conditions=max_conditions)
+        @staticmethod
+        def test_construction_rejects_initial_filters_over_limit() -> None:
+            """Test construction rejects initial filters over limit."""
+            filters: t.MappingKV[str, t.OracleWms.FilterEntry] = {
+                "field1": "v1",
+                "field2": "v2",
+                "field3": "v3",
+                "field4": "v4",
+            }
+            with pytest.raises(FlextOracleWmsErrors.ValidationError):
+                Filter(filters=filters, max_conditions=3)
 
-    @staticmethod
-    def test_create_filter_matches_constructor_contract() -> None:
-        """Test create filter matches constructor contract."""
-        engine = Filter.create_filter(case_sensitive=True, max_conditions=10)
-        tm.that(engine.case_sensitive, eq=True)
-        tm.that(engine.max_conditions, eq=10)
+    class TestsRecordFiltering(_Records):
+        """``filter_records`` scalar, list, limit, case, path and count rules."""
 
-    def test_construction_accepts_valid_initial_filters(self) -> None:
-        """Test construction accepts valid initial filters."""
-        engine = Filter(filters={"status": "active"}, max_conditions=5)
-        result = engine.filter_records(self.sample_records, {"status": "active"})
-        tm.ok(result)
-        tm.that(self._ids(result.value), eq={1, 3})
+        def test_scalar_equality_selects_matching_records(self) -> None:
+            """Test scalar equality selects matching records."""
+            engine = Filter()
+            result = engine.filter_records(self.sample_records, {"status": "active"})
+            tm.ok(result)
+            tm.that(self._ids(result.value), eq={1, 3})
 
-    @staticmethod
-    def test_construction_rejects_initial_filters_over_limit() -> None:
-        """Test construction rejects initial filters over limit."""
-        filters: t.MappingKV[str, t.OracleWms.FilterEntry] = {
-            "field1": "v1",
-            "field2": "v2",
-            "field3": "v3",
-            "field4": "v4",
-        }
-        with pytest.raises(FlextOracleWmsErrors.ValidationError):
-            Filter(filters=filters, max_conditions=3)
+        def test_numeric_equality_selects_single_record(self) -> None:
+            """Test numeric equality selects single record."""
+            engine = Filter()
+            result = engine.filter_records(self.sample_records, {"id": 2})
+            tm.ok(result)
+            tm.that(self._ids(result.value), eq={2})
 
-    # ------------------------------------------------------------------ #
-    # filter_records: scalar / list / limit / empty.
-    # ------------------------------------------------------------------ #
-    def test_empty_filters_returns_all_records_unchanged(self) -> None:
-        """Test empty filters returns all records unchanged."""
-        engine = Filter()
-        result = engine.filter_records(self.sample_records, {})
-        tm.ok(result)
-        tm.that(list(result.value), eq=self.sample_records)
+        def test_list_value_matches_membership(self) -> None:
+            """Test list value matches membership."""
+            engine = Filter()
+            result = engine.filter_records(
+                self.sample_records,
+                {"status": ["active", "pending"]},
+            )
+            tm.ok(result)
+            tm.that(self._ids(result.value), eq={1, 3, 4})
 
-    def test_limit_truncates_result_set(self) -> None:
-        """Test limit truncates result set."""
-        engine = Filter()
-        result = engine.filter_records(
-            self.sample_records,
-            {"status": "active"},
-            limit=1,
+        def test_no_matching_records_yields_empty_success(self) -> None:
+            """Test no matching records yields empty success."""
+            engine = Filter()
+            result = engine.filter_records(self.sample_records, {"status": "gone"})
+            tm.ok(result)
+            tm.that(result.value, truth=False)
+
+        @staticmethod
+        def test_limit_applied_over_large_record_set() -> None:
+            """Test limit applied over large record set."""
+            records: list[t.OracleWms.FilterRecord] = [
+                {"id": i, "status": "active" if i % 2 == 0 else "inactive"}
+                for i in range(1000)
+            ]
+            engine = Filter()
+            result = engine.filter_records(records, {"status": "active"}, limit=100)
+            tm.ok(result)
+            tm.that(len(result.value), eq=100)
+            tm.that(
+                all(record["status"] == "active" for record in result.value),
+                truth=True,
+            )
+
+        def test_case_sensitive_equality_respects_case(self) -> None:
+            """Test case sensitive equality respects case."""
+            engine = Filter(case_sensitive=True)
+            result = engine.filter_records(self.sample_records, {"status": "ACTIVE"})
+            tm.ok(result)
+            tm.that(result.value, truth=False)
+
+        def test_case_insensitive_equality_folds_unicode(self) -> None:
+            """Test case insensitive equality folds unicode."""
+            engine = Filter(case_sensitive=False)
+            records: list[t.OracleWms.FilterRecord] = [{"id": 1, "name": "Café"}]
+            result = engine.filter_records(records, {"name": "café"})
+            tm.ok(result)
+            tm.that(self._ids(result.value), eq={1})
+
+        @staticmethod
+        def test_none_field_does_not_match_valued_condition() -> None:
+            """Test none field does not match valued condition."""
+            engine = Filter()
+            records: list[t.OracleWms.FilterRecord] = [{"id": 1, "score": None}]
+            result = engine.filter_records(
+                records,
+                {"score": Operator(operator="gt", value=5.0)},
+            )
+            tm.ok(result)
+            tm.that(result.value, truth=False)
+
+        @staticmethod
+        def test_none_field_does_not_match_list_condition() -> None:
+            """Test none field does not match list condition."""
+            engine = Filter()
+            records: list[t.OracleWms.FilterRecord] = [{"id": 1, "status": None}]
+            result = engine.filter_records(records, {"status": ["a", "b"]})
+            tm.ok(result)
+            tm.that(result.value, truth=False)
+
+        def test_empty_filters_returns_all_records_unchanged(self) -> None:
+            """Test empty filters returns all records unchanged."""
+            engine = Filter()
+            result = engine.filter_records(self.sample_records, {})
+            tm.ok(result)
+            tm.that(list(result.value), eq=self.sample_records)
+
+        def test_limit_truncates_result_set(self) -> None:
+            """Test limit truncates result set."""
+            engine = Filter()
+            result = engine.filter_records(
+                self.sample_records,
+                {"status": "active"},
+                limit=1,
+            )
+            tm.ok(result)
+            tm.that(len(result.value), eq=1)
+            tm.that(result.value[0]["status"], eq="active")
+
+        def test_default_equality_is_case_insensitive(self) -> None:
+            """Test default equality is case insensitive."""
+            engine = Filter(case_sensitive=False)
+            result = engine.filter_records(self.sample_records, {"status": "ACTIVE"})
+            tm.ok(result)
+            tm.that(self._ids(result.value), eq={1, 3})
+
+        def test_dotted_path_resolves_nested_mapping(self) -> None:
+            """Test dotted path resolves nested mapping."""
+            engine = Filter()
+            records: list[t.OracleWms.FilterRecord] = [
+                {"id": 1, "company": {"city": "New York"}},
+                {"id": 2, "company": {"city": "London"}},
+            ]
+            result = engine.filter_records(records, {"company.city": "New York"})
+            tm.ok(result)
+            tm.that(self._ids(result.value), eq={1})
+
+        def test_dotted_path_falls_back_to_flattened_key(self) -> None:
+            """Test dotted path falls back to flattened key."""
+            engine = Filter()
+            records: list[t.OracleWms.FilterRecord] = [
+                {"id": 1, "company_address_city": "New York"},
+                {"id": 2, "company_address_city": "London"},
+            ]
+            result = engine.filter_records(
+                records,
+                {"company.address.city": "London"},
+            )
+            tm.ok(result)
+            tm.that(self._ids(result.value), eq={2})
+
+        def test_missing_field_matches_no_records(self) -> None:
+            """Test missing field matches no records."""
+            engine = Filter()
+            result = engine.filter_records(
+                self.sample_records,
+                {"nonexistent": "whatever"},
+            )
+            tm.ok(result)
+            tm.that(result.value, truth=False)
+
+        def test_scalar_conditions_over_limit_fail(self) -> None:
+            """Test scalar conditions over limit fail."""
+            engine = Filter(max_conditions=1)
+            result = engine.filter_records(
+                self.sample_records, {"a": c.ParserBooleanToken.ONE, "b": "2"}
+            )
+            tm.fail(result)
+            tm.that(result.error, none=False)
+            tm.that(result.error, has="Too many")
+
+        def test_list_condition_counted_by_length(self) -> None:
+            """Test list condition counted by length."""
+            engine = Filter(max_conditions=2)
+            result = engine.filter_records(
+                self.sample_records,
+                {"status": ["a", "b", "c"]},
+            )
+            tm.fail(result)
+            tm.that(result.error, none=False)
+            tm.that(result.error, has="Too many")
+
+    class TestsOperators(_Records):
+        """Operator-dict conditions (eq/ne/in/contains/gt/gte/lt/lte/unknown)."""
+
+        @pytest.mark.parametrize(
+            ("operator", "value", "expected_ids"),
+            [
+                ("gt", 80.0, {1, 3}),
+                ("gte", 85.5, {1, 3}),
+                ("lt", 72.0, {4}),
+                ("lte", 72.0, {2, 4}),
+            ],
         )
-        tm.ok(result)
-        tm.that(len(result.value), eq=1)
-        tm.that(result.value[0]["status"], eq="active")
+        def test_numeric_comparison_operators_select_range(
+            self,
+            operator: str,
+            value: float,
+            expected_ids: set[int],
+        ) -> None:
+            """Test numeric comparison operators select range."""
+            engine = Filter()
+            result = engine.filter_records(
+                self.sample_records,
+                {"score": Operator(operator=operator, value=value)},
+            )
+            tm.ok(result)
+            tm.that(self._ids(result.value), eq=expected_ids)
 
-    def test_default_equality_is_case_insensitive(self) -> None:
-        """Test default equality is case insensitive."""
-        engine = Filter(case_sensitive=False)
-        result = engine.filter_records(self.sample_records, {"status": "ACTIVE"})
-        tm.ok(result)
-        tm.that(self._ids(result.value), eq={1, 3})
+        def test_eq_operator_dict_matches_value(self) -> None:
+            """Test eq operator dict matches value."""
+            engine = Filter()
+            result = engine.filter_records(
+                self.sample_records,
+                {"status": Operator(operator="eq", value="active")},
+            )
+            tm.ok(result)
+            tm.that(self._ids(result.value), eq={1, 3})
 
-    @pytest.mark.parametrize(
-        ("operator", "value", "expected_ids"),
-        [
-            ("gt", 80.0, {1, 3}),
-            ("gte", 85.5, {1, 3}),
-            ("lt", 72.0, {4}),
-            ("lte", 72.0, {2, 4}),
-        ],
-    )
-    def test_numeric_comparison_operators_select_range(
-        self,
-        operator: str,
-        value: float,
-        expected_ids: set[int],
-    ) -> None:
-        """Test numeric comparison operators select range."""
-        engine = Filter()
-        result = engine.filter_records(
-            self.sample_records,
-            {"score": Operator(operator=operator, value=value)},
+        def test_ne_operator_dict_excludes_value(self) -> None:
+            """Test ne operator dict excludes value."""
+            engine = Filter()
+            result = engine.filter_records(
+                self.sample_records,
+                {"status": Operator(operator="ne", value="inactive")},
+            )
+            tm.ok(result)
+            tm.that(self._ids(result.value), eq={1, 3, 4})
+
+        def test_in_operator_dict_matches_membership(self) -> None:
+            """Test in operator dict matches membership."""
+            engine = Filter()
+            result = engine.filter_records(
+                self.sample_records,
+                {"status": Operator(operator="in", value=["active", "pending"])},
+            )
+            tm.ok(result)
+            tm.that(self._ids(result.value), eq={1, 3, 4})
+
+        def test_contains_operator_dict_matches_substring(self) -> None:
+            """Test contains operator dict matches substring."""
+            engine = Filter()
+            result = engine.filter_records(
+                self.sample_records,
+                {"name": Operator(operator="contains", value="Company B")},
+            )
+            tm.ok(result)
+            tm.that(self._ids(result.value), eq={2})
+
+        def test_unknown_operator_matches_nothing(self) -> None:
+            """Test unknown operator matches nothing."""
+            engine = Filter()
+            result = engine.filter_records(
+                self.sample_records,
+                {"status": Operator(operator="mystery", value="active")},
+            )
+            tm.ok(result)
+            tm.that(result.value, truth=False)
+
+        @staticmethod
+        def test_comparison_requires_matching_types() -> None:
+            """A numeric ``gt`` filter must not match a stringified field value."""
+            engine = Filter()
+            records: list[t.OracleWms.FilterRecord] = [{"id": 1, "score": "10"}]
+            result = engine.filter_records(
+                records,
+                {"score": Operator(operator="gt", value=5.0)},
+            )
+            tm.ok(result)
+            tm.that(result.value, truth=False)
+
+    class TestsFieldHelpers(_Records):
+        """``filter_by_field`` / ``filter_by_id_range`` classmethod helpers."""
+
+        def test_filter_by_field_scalar_default_operator(self) -> None:
+            """Test filter by field scalar default operator."""
+            result = Filter.filter_by_field(self.sample_records, "status", "active")
+            tm.ok(result)
+            tm.that(self._ids(result.value), eq={1, 3})
+
+        def test_filter_by_field_numeric_value(self) -> None:
+            """Test filter by field numeric value."""
+            result = Filter.filter_by_field(self.sample_records, "id", 2)
+            tm.ok(result)
+            tm.that(self._ids(result.value), eq={2})
+
+        def test_filter_by_field_explicit_operator(self) -> None:
+            """Test filter by field explicit operator."""
+            result = Filter.filter_by_field(
+                self.sample_records,
+                "status",
+                "inactive",
+                Op.NE,
+            )
+            tm.ok(result)
+            tm.that(self._ids(result.value), eq={1, 3, 4})
+
+        def test_id_range_min_only(self) -> None:
+            """Test id range min only."""
+            result = Filter.filter_by_id_range(self.sample_records, "id", min_id=3)
+            tm.ok(result)
+            tm.that(self._ids(result.value), eq={3, 4})
+
+        def test_id_range_both_bounds_inclusive(self) -> None:
+            """Test id range both bounds inclusive."""
+            result = Filter.filter_by_id_range(
+                self.sample_records,
+                "id",
+                min_id=2,
+                max_id=3,
+            )
+            tm.ok(result)
+            tm.that(self._ids(result.value), eq={2, 3})
+
+        def test_id_range_max_only(self) -> None:
+            """Test id range max only."""
+            result = Filter.filter_by_id_range(self.sample_records, "id", max_id=2)
+            tm.ok(result)
+            tm.that(self._ids(result.value), eq={1, 2})
+
+        def test_id_range_no_bounds_returns_all(self) -> None:
+            """Test id range no bounds returns all."""
+            result = Filter.filter_by_id_range(self.sample_records, "id")
+            tm.ok(result)
+            tm.that(self._ids(result.value), eq={1, 2, 3, 4})
+
+        def test_id_range_on_string_field(self) -> None:
+            """Test id range on string field."""
+            result = Filter.filter_by_id_range(
+                self.sample_records,
+                "name",
+                min_id="Company C",
+            )
+            tm.ok(result)
+            tm.that(self._ids(result.value), eq={3, 4})
+
+        @staticmethod
+        def test_id_range_empty_records() -> None:
+            """Test id range empty records."""
+            result = Filter.filter_by_id_range([], "id", min_id=1)
+            tm.ok(result)
+            tm.that(result.value, truth=False)
+
+        @staticmethod
+        def test_id_range_rejects_invalid_numeric_value() -> None:
+            """Test id range rejects invalid numeric value."""
+            records: list[t.OracleWms.FilterRecord] = [{"id": "invalid"}]
+            with pytest.raises(ValidationError, match="Input should be a valid number"):
+                Filter.filter_by_id_range(records, "id", min_id=1)
+
+    class TestsSorting(_Records):
+        """``sort_records`` ordering, None handling and missing field."""
+
+        @pytest.mark.parametrize(
+            ("field", "ascending", "expected"),
+            [
+                ("name", True, ["Alice", "Bob", "Charlie"]),
+                ("name", False, ["Charlie", "Bob", "Alice"]),
+            ],
         )
-        tm.ok(result)
-        tm.that(self._ids(result.value), eq=expected_ids)
+        def test_sort_by_string_field(
+            self,
+            field: str,
+            *,
+            ascending: bool,
+            expected: list[str],
+        ) -> None:
+            """Test sort by string field."""
+            engine = Filter()
+            result = engine.sort_records(
+                self.unsorted_records,
+                field,
+                ascending=ascending,
+            )
+            tm.ok(result)
+            tm.that([record[field] for record in result.value], eq=expected)
 
-    def test_eq_operator_dict_matches_value(self) -> None:
-        """Test eq operator dict matches value."""
-        engine = Filter()
-        result = engine.filter_records(
-            self.sample_records,
-            {"status": Operator(operator="eq", value="active")},
+        @pytest.mark.parametrize(
+            ("field", "ascending", "expected"),
+            [("id", True, [1, 2, 3]), ("score", False, [90.0, 85.0, 75.5])],
         )
-        tm.ok(result)
-        tm.that(self._ids(result.value), eq={1, 3})
+        def test_sort_by_numeric_field(
+            self,
+            field: str,
+            *,
+            ascending: bool,
+            expected: list[float],
+        ) -> None:
+            """Test sort by numeric field."""
+            engine = Filter()
+            result = engine.sort_records(
+                self.unsorted_records,
+                field,
+                ascending=ascending,
+            )
+            tm.ok(result)
+            tm.that([record[field] for record in result.value], eq=expected)
 
-    def test_ne_operator_dict_excludes_value(self) -> None:
-        """Test ne operator dict excludes value."""
-        engine = Filter()
-        result = engine.filter_records(
-            self.sample_records,
-            {"status": Operator(operator="ne", value="inactive")},
-        )
-        tm.ok(result)
-        tm.that(self._ids(result.value), eq={1, 3, 4})
+        def test_sort_preserves_all_records_with_none_values(self) -> None:
+            """Test sort preserves all records with none values."""
+            records: list[t.OracleWms.FilterRecord] = [
+                {"id": 1, "name": "Alice", "score": None},
+                {"id": 2, "name": "Bob", "score": 85.0},
+                {"id": 3, "name": None, "score": 90.0},
+            ]
+            engine = Filter()
+            result = engine.sort_records(records, "name")
+            tm.ok(result)
+            tm.that(self._ids(result.value), eq={1, 2, 3})
 
-    def test_in_operator_dict_matches_membership(self) -> None:
-        """Test in operator dict matches membership."""
-        engine = Filter()
-        result = engine.filter_records(
-            self.sample_records,
-            {"status": Operator(operator="in", value=["active", "pending"])},
-        )
-        tm.ok(result)
-        tm.that(self._ids(result.value), eq={1, 3, 4})
+        def test_sort_by_missing_field_keeps_all_records(self) -> None:
+            """Test sort by missing field keeps all records."""
+            engine = Filter()
+            result = engine.sort_records(self.unsorted_records, "nonexistent")
+            tm.ok(result)
+            tm.that(self._ids(result.value), eq={1, 2, 3})
 
-    def test_contains_operator_dict_matches_substring(self) -> None:
-        """Test contains operator dict matches substring."""
-        engine = Filter()
-        result = engine.filter_records(
-            self.sample_records,
-            {"name": Operator(operator="contains", value="Company B")},
-        )
-        tm.ok(result)
-        tm.that(self._ids(result.value), eq={2})
-
-    def test_unknown_operator_matches_nothing(self) -> None:
-        """Test unknown operator matches nothing."""
-        engine = Filter()
-        result = engine.filter_records(
-            self.sample_records,
-            {"status": Operator(operator="mystery", value="active")},
-        )
-        tm.ok(result)
-        assert not result.value
-
-    @staticmethod
-    def test_comparison_requires_matching_types() -> None:
-        """A numeric ``gt`` filter must not match a stringified field value."""
-        engine = Filter()
-        records: list[t.OracleWms.FilterRecord] = [{"id": 1, "score": "10"}]
-        result = engine.filter_records(
-            records,
-            {"score": Operator(operator="gt", value=5.0)},
-        )
-        tm.ok(result)
-        assert not result.value
-
-    def test_filter_by_field_scalar_default_operator(self) -> None:
-        """Test filter by field scalar default operator."""
-        result = Filter.filter_by_field(self.sample_records, "status", "active")
-        tm.ok(result)
-        tm.that(self._ids(result.value), eq={1, 3})
-
-    def test_filter_by_field_numeric_value(self) -> None:
-        """Test filter by field numeric value."""
-        result = Filter.filter_by_field(self.sample_records, "id", 2)
-        tm.ok(result)
-        tm.that(self._ids(result.value), eq={2})
-
-    def test_filter_by_field_explicit_operator(self) -> None:
-        """Test filter by field explicit operator."""
-        result = Filter.filter_by_field(
-            self.sample_records,
-            "status",
-            "inactive",
-            Op.NE,
-        )
-        tm.ok(result)
-        tm.that(self._ids(result.value), eq={1, 3, 4})
-
-    # ------------------------------------------------------------------ #
-    # filter_by_id_range classmethod helper.
-    # ------------------------------------------------------------------ #
-    def test_id_range_min_only(self) -> None:
-        """Test id range min only."""
-        result = Filter.filter_by_id_range(self.sample_records, "id", min_id=3)
-        tm.ok(result)
-        tm.that(self._ids(result.value), eq={3, 4})
-
-    # ------------------------------------------------------------------ #
-    # Nested / dotted path resolution and sorting.
-    # ------------------------------------------------------------------ #
-
-    def test_dotted_path_resolves_nested_mapping(self) -> None:
-        """Test dotted path resolves nested mapping."""
-        engine = Filter()
-        records: list[t.OracleWms.FilterRecord] = [
-            {"id": 1, "company": {"city": "New York"}},
-            {"id": 2, "company": {"city": "London"}},
-        ]
-        result = engine.filter_records(records, {"company.city": "New York"})
-        tm.ok(result)
-        tm.that(self._ids(result.value), eq={1})
-
-    def test_dotted_path_falls_back_to_flattened_key(self) -> None:
-        """Test dotted path falls back to flattened key."""
-        engine = Filter()
-        records: list[t.OracleWms.FilterRecord] = [
-            {"id": 1, "company_address_city": "New York"},
-            {"id": 2, "company_address_city": "London"},
-        ]
-        result = engine.filter_records(records, {"company.address.city": "London"})
-        tm.ok(result)
-        tm.that(self._ids(result.value), eq={2})
-
-    def test_missing_field_matches_no_records(self) -> None:
-        """Test missing field matches no records."""
-        engine = Filter()
-        result = engine.filter_records(self.sample_records, {"nonexistent": "whatever"})
-        tm.ok(result)
-        assert not result.value
-
-    # ------------------------------------------------------------------ #
-    # Condition-count validation (observed through failure result).
-    # ------------------------------------------------------------------ #
-    def test_scalar_conditions_over_limit_fail(self) -> None:
-        """Test scalar conditions over limit fail."""
-        engine = Filter(max_conditions=1)
-        result = engine.filter_records(self.sample_records, {"a": "1", "b": "2"})
-        tm.fail(result)
-        tm.that(result.error, none=False)
-        tm.that(result.error, has="Too many")
-
-    def test_list_condition_counted_by_length(self) -> None:
-        """Test list condition counted by length."""
-        engine = Filter(max_conditions=2)
-        result = engine.filter_records(self.sample_records, {"status": ["a", "b", "c"]})
-        tm.fail(result)
-        tm.that(result.error, none=False)
-        tm.that(result.error, has="Too many")
-
-    # ------------------------------------------------------------------ #
-    # filter_by_field classmethod helper.
-    # ------------------------------------------------------------------ #
-    def test_id_range_both_bounds_inclusive(self) -> None:
-        """Test id range both bounds inclusive."""
-        result = Filter.filter_by_id_range(
-            self.sample_records,
-            "id",
-            min_id=2,
-            max_id=3,
-        )
-        tm.ok(result)
-        tm.that(self._ids(result.value), eq={2, 3})
-
-    def test_id_range_max_only(self) -> None:
-        """Test id range max only."""
-        result = Filter.filter_by_id_range(self.sample_records, "id", max_id=2)
-        tm.ok(result)
-        tm.that(self._ids(result.value), eq={1, 2})
-
-    def test_id_range_no_bounds_returns_all(self) -> None:
-        """Test id range no bounds returns all."""
-        result = Filter.filter_by_id_range(self.sample_records, "id")
-        tm.ok(result)
-        tm.that(self._ids(result.value), eq={1, 2, 3, 4})
-
-    def test_id_range_on_string_field(self) -> None:
-        """Test id range on string field."""
-        result = Filter.filter_by_id_range(
-            self.sample_records,
-            "name",
-            min_id="Company C",
-        )
-        tm.ok(result)
-        tm.that(self._ids(result.value), eq={3, 4})
-
-    @staticmethod
-    def test_id_range_empty_records() -> None:
-        """Test id range empty records."""
-        result = Filter.filter_by_id_range([], "id", min_id=1)
-        tm.ok(result)
-        assert not result.value
-
-    @staticmethod
-    def test_id_range_rejects_invalid_numeric_value() -> None:
-        """Test id range rejects invalid numeric value."""
-        records: list[t.OracleWms.FilterRecord] = [{"id": "invalid"}]
-        with pytest.raises(RuntimeError):
-            Filter.filter_by_id_range(records, "id", min_id=1)
-
-    # ------------------------------------------------------------------ #
-    # sort_records.
-    # ------------------------------------------------------------------ #
-    @property
-    def unsorted_records(self) -> list[t.OracleWms.FilterRecord]:
-        """``unsorted_records``."""
-        return [
-            {"id": 3, "name": "Charlie", "score": 75.5},
-            {"id": 1, "name": "Alice", "score": 90.0},
-            {"id": 2, "name": "Bob", "score": 85.0},
-        ]
-
-    @pytest.mark.parametrize(
-        ("field", "ascending", "expected"),
-        [
-            ("name", True, ["Alice", "Bob", "Charlie"]),
-            ("name", False, ["Charlie", "Bob", "Alice"]),
-        ],
-    )
-    def test_sort_by_string_field(
-        self,
-        field: str,
-        *,
-        ascending: bool,
-        expected: list[str],
-    ) -> None:
-        """Test sort by string field."""
-        engine = Filter()
-        result = engine.sort_records(self.unsorted_records, field, ascending=ascending)
-        tm.ok(result)
-        tm.that([record[field] for record in result.value], eq=expected)
-
-    @pytest.mark.parametrize(
-        ("field", "ascending", "expected"),
-        [("id", True, [1, 2, 3]), ("score", False, [90.0, 85.0, 75.5])],
-    )
-    def test_sort_by_numeric_field(
-        self,
-        field: str,
-        *,
-        ascending: bool,
-        expected: list[float],
-    ) -> None:
-        """Test sort by numeric field."""
-        engine = Filter()
-        result = engine.sort_records(self.unsorted_records, field, ascending=ascending)
-        tm.ok(result)
-        tm.that([record[field] for record in result.value], eq=expected)
-
-    def test_sort_preserves_all_records_with_none_values(self) -> None:
-        """Test sort preserves all records with none values."""
-        records: list[t.OracleWms.FilterRecord] = [
-            {"id": 1, "name": "Alice", "score": None},
-            {"id": 2, "name": "Bob", "score": 85.0},
-            {"id": 3, "name": None, "score": 90.0},
-        ]
-        engine = Filter()
-        result = engine.sort_records(records, "name")
-        tm.ok(result)
-        tm.that(self._ids(result.value), eq={1, 2, 3})
-
-    def test_sort_by_missing_field_keeps_all_records(self) -> None:
-        """Test sort by missing field keeps all records."""
-        engine = Filter()
-        result = engine.sort_records(self.unsorted_records, "nonexistent")
-        tm.ok(result)
-        tm.that(self._ids(result.value), eq={1, 2, 3})
-
-    @staticmethod
-    def test_sort_empty_records_returns_empty_success() -> None:
-        """Test sort empty records returns empty success."""
-        engine = Filter()
-        result = engine.sort_records([], "any_field")
-        tm.ok(result)
-        assert not result.value
+        @staticmethod
+        def test_sort_empty_records_returns_empty_success() -> None:
+            """Test sort empty records returns empty success."""
+            engine = Filter()
+            result = engine.sort_records([], "any_field")
+            tm.ok(result)
+            tm.that(result.value, truth=False)

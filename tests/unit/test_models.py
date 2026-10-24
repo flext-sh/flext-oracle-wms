@@ -29,7 +29,7 @@ class TestsFlextOracleWmsModelsUnit:
         tm.that(entity.description, none=True)
         tm.that(entity.primary_key, none=True)
         tm.that(entity.replication_key, none=True)
-        tm.that(entity.supports_incremental, eq=False)
+        tm.fail(entity.supports_incremental)
 
     @staticmethod
     def test_entity_model_dump_roundtrips_public_state() -> None:
@@ -89,7 +89,7 @@ class TestsFlextOracleWmsModelsUnit:
         entity = m.OracleWms.Entity(name="item_master", endpoint="/api/items")
         result = u.OracleWms.validate_wms_entity(entity)
         tm.ok(result)
-        tm.that(result.unwrap(), eq=True)
+        tm.ok(result.unwrap())
 
     @staticmethod
     def test_validate_entity_fails_when_name_exceeds_max_length() -> None:

@@ -115,7 +115,9 @@ class TestsFlextOracleWmsAuthentication:
             username="test_user",
             password=_basic_password(),
         )
-        assert u.OracleWms.validate_auth_settings(settings).unwrap() is True
+        tm.that(
+            u.OracleWms.validate_auth_settings(settings).unwrap() is True, truth=True
+        )
 
     @staticmethod
     def test_validate_business_rules_accepts_complete_oauth2() -> None:
@@ -125,7 +127,9 @@ class TestsFlextOracleWmsAuthentication:
             oauth2_client_id="id",
             oauth2_client_secret=_secret(),
         )
-        assert u.OracleWms.validate_auth_settings(settings).unwrap() is True
+        tm.that(
+            u.OracleWms.validate_auth_settings(settings).unwrap() is True, truth=True
+        )
 
     @staticmethod
     @pytest.mark.parametrize(

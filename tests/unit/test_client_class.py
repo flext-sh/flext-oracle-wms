@@ -27,7 +27,7 @@ class TestsFlextOracleWmsClientClass:
         """Constructing with explicit settings surfaces them on the public field."""
         client = Client(settings)
 
-        assert client.settings is settings
+        tm.that(client.settings is settings, truth=True)
         tm.that(client.settings.OracleWms.base_url, eq="https://test-wms.example.com")
 
     @staticmethod
@@ -36,7 +36,7 @@ class TestsFlextOracleWmsClientClass:
         client = Client()
 
         tm.that(client.settings, is_=FlextOracleWmsSettings)
-        assert client.settings.OracleWms.base_url
+        tm.that(client.settings.OracleWms.base_url, truth=True)
 
     @staticmethod
     def test_start_reports_success(settings: FlextOracleWmsSettings) -> None:
@@ -44,7 +44,7 @@ class TestsFlextOracleWmsClientClass:
         result = Client(settings).start()
 
         tm.ok(result)
-        tm.that(result.unwrap(), eq=True)
+        tm.ok(result.unwrap())
 
     @staticmethod
     def test_stop_reports_success(settings: FlextOracleWmsSettings) -> None:
@@ -52,7 +52,7 @@ class TestsFlextOracleWmsClientClass:
         result = Client(settings).stop()
 
         tm.ok(result)
-        tm.that(result.unwrap(), eq=True)
+        tm.ok(result.unwrap())
 
     @staticmethod
     def test_lifecycle_is_idempotent(settings: FlextOracleWmsSettings) -> None:
