@@ -13,35 +13,14 @@ from typing import TYPE_CHECKING
 from flext_core.lazy import install_lazy_exports
 
 if TYPE_CHECKING:
-    from flext_oracle_wms._typings.domain import (
-        FilterEntry,
-        FilterList,
-        FilterRecord,
-        FilterRecordValue,
-        FilterScalar,
-        NestedFilterValue,
-    )
+    from flext_oracle_wms._typings.domain import FlextOracleWmsTypesDomain
 
 
-__all__: tuple[str, ...] = (
-    "FilterEntry",
-    "FilterList",
-    "FilterRecord",
-    "FilterRecordValue",
-    "FilterScalar",
-    "NestedFilterValue",
-)
+__all__: tuple[str, ...] = ("FlextOracleWmsTypesDomain",)
 
 install_lazy_exports(
     __name__,
     globals(),
-    MappingProxyType({
-        "FilterEntry": ".domain",
-        "FilterList": ".domain",
-        "FilterRecord": ".domain",
-        "FilterRecordValue": ".domain",
-        "FilterScalar": ".domain",
-        "NestedFilterValue": ".domain",
-    }),
+    MappingProxyType({"FlextOracleWmsTypesDomain": ".domain"}),
     public_exports=__all__,
 )

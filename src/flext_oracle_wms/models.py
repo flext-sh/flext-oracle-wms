@@ -15,7 +15,6 @@ from flext_api import FlextApiModels
 from flext_oracle_wms._models import (
     FlextOracleWmsConfigModels,
     FlextOracleWmsModelsDomain,
-    domain as _domain,
 )
 
 
@@ -34,26 +33,6 @@ class FlextOracleWmsModels(FlextApiModels):
     class OracleWms(FlextOracleWmsConfigModels, FlextOracleWmsModelsDomain):
         """Oracle WMS domain namespace -- m.OracleWms.*."""
 
-        FlextOracleWmsOperatorFilter = (
-            _domain.FlextOracleWmsModelsDomain.FlextOracleWmsOperatorFilter
-        )
-        EnvironmentConfig = _domain.FlextOracleWmsModelsDomain.EnvironmentConfig
-        Entity = _domain.FlextOracleWmsModelsDomain.Entity
-        ApiEndpoint = _domain.FlextOracleWmsModelsDomain.ApiEndpoint
-        AuthSettings = _domain.FlextOracleWmsModelsDomain.AuthSettings
-        EntitiesResponse = _domain.FlextOracleWmsModelsDomain.EntitiesResponse
-        ApiCategoryResponse = _domain.FlextOracleWmsModelsDomain.ApiCategoryResponse
-        EntityDataResponse = _domain.FlextOracleWmsModelsDomain.EntityDataResponse
-
-        # =====================================================================
-        # DOMAIN ENTITIES - Composed DDD patterns
-        # =====================================================================
-
-        WmsEntity = _domain.FlextOracleWmsModelsDomain.WmsEntity
-        InventoryItem = _domain.FlextOracleWmsModelsDomain.InventoryItem
-        Shipment = _domain.FlextOracleWmsModelsDomain.Shipment
-        Location = _domain.FlextOracleWmsModelsDomain.Location
-
         # =====================================================================
         # VALUE OBJECTS - Immutable domain values
         # =====================================================================
@@ -64,5 +43,4 @@ class FlextOracleWmsModels(FlextApiModels):
 
 
 m = FlextOracleWmsModels
-
 __all__: list[str] = ["FlextOracleWmsModels", "m"]

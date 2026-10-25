@@ -1,3 +1,4 @@
+# AUTO-GENERATED FILE — Regenerate with: make gen
 """FLEXT WMS Constants - Generic WMS constants with patterns.
 
 Copyright (c) 2026 FLEXT Team. All rights reserved.
@@ -8,8 +9,10 @@ from __future__ import annotations
 
 from flext_api import FlextApiConstants
 
-from flext_oracle_wms._constants.base import FlextOracleWmsConstantsBase
-from flext_oracle_wms._constants.values import FlextOracleWmsConstantsValues
+from flext_oracle_wms._constants import (
+    FlextOracleWmsConstantsBase,
+    FlextOracleWmsConstantsValues,
+)
 
 
 class FlextOracleWmsConstants(FlextApiConstants):
@@ -21,7 +24,6 @@ class FlextOracleWmsConstants(FlextApiConstants):
 
     class OracleWms(
         FlextOracleWmsConstantsBase,
-        FlextOracleWmsConstantsValues,
         FlextOracleWmsConstantsValues.OracleWms,
     ):
         """WMS connection constants - composed from base.
@@ -33,5 +35,4 @@ class FlextOracleWmsConstants(FlextApiConstants):
 
 
 c = FlextOracleWmsConstants
-
-__all__: tuple[str, ...] = ("FlextOracleWmsConstants", "c")
+__all__: list[str] = ["FlextOracleWmsConstants", "c"]
