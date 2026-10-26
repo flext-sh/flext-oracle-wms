@@ -15,10 +15,12 @@ from flext_core.lazy import install_lazy_exports
 if TYPE_CHECKING:
     from flext_tests import (
         api,
+        cli,
         config,
         d,
         h,
         install_local_packages,
+        main,
         r,
         settings,
         td,
@@ -28,7 +30,7 @@ if TYPE_CHECKING:
         x,
     )
 
-    from flext_oracle_wms import cli, e, main, oracle_wms, web
+    from flext_oracle_wms import e, oracle_wms, web
     from tests.base import TestsFlextOracleWmsServiceBase, s
     from tests.constants import TestsFlextOracleWmsConstants, c
     from tests.factories import (
@@ -137,14 +139,14 @@ install_lazy_exports(
         "_wms_username": ".factories",
         "api": "flext_tests",
         "c": ".constants",
-        "cli": "flext_oracle_wms",
+        "cli": "flext_tests",
         "config": "flext_tests",
         "d": "flext_tests",
         "e": "flext_oracle_wms",
         "h": "flext_tests",
         "install_local_packages": "flext_tests",
         "m": ".models",
-        "main": "flext_oracle_wms",
+        "main": "flext_tests",
         "oracle_wms": "flext_oracle_wms",
         "p": ".protocols",
         "r": "flext_tests",
