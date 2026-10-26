@@ -13,7 +13,7 @@ from typing import TYPE_CHECKING
 from flext_core.lazy import install_lazy_exports
 
 if TYPE_CHECKING:
-    from flext_api import d, h, r, s, x
+    from flext_api import api, d, h, r, s, web, x
 
     from flext_oracle_wms.__version__ import (
         FlextOracleWmsVersion,
@@ -70,6 +70,7 @@ __all__: tuple[str, ...] = (
     "__url__",
     "__version__",
     "__version_info__",
+    "api",
     "c",
     "config",
     "d",
@@ -84,6 +85,7 @@ __all__: tuple[str, ...] = (
     "settings",
     "t",
     "u",
+    "web",
     "x",
 )
 
@@ -113,6 +115,7 @@ install_lazy_exports(
         "__title__": ".__version__",
         "__url__": ".__version__",
         "__version_info__": ".__version__",
+        "api": "flext_api",
         "c": ".constants",
         "config": "._config",
         "d": "flext_api",
@@ -127,6 +130,7 @@ install_lazy_exports(
         "settings": "._settings",
         "t": ".typings",
         "u": ".utilities",
+        "web": "flext_api",
         "x": "flext_api",
     }),
     public_exports=__all__,
