@@ -28,7 +28,7 @@ if TYPE_CHECKING:
         x,
     )
 
-    from flext_oracle_wms import e, main, oracle_wms, web
+    from flext_oracle_wms import cli, e, main, oracle_wms, web
     from tests.base import TestsFlextOracleWmsServiceBase, s
     from tests.constants import TestsFlextOracleWmsConstants, c
     from tests.factories import (
@@ -84,6 +84,7 @@ __all__: tuple[str, ...] = (
     "_wms_username",
     "api",
     "c",
+    "cli",
     "config",
     "d",
     "e",
@@ -136,6 +137,7 @@ install_lazy_exports(
         "_wms_username": ".factories",
         "api": "flext_tests",
         "c": ".constants",
+        "cli": "flext_oracle_wms",
         "config": "flext_tests",
         "d": "flext_tests",
         "e": "flext_oracle_wms",

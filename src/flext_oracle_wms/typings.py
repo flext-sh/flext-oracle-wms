@@ -7,12 +7,12 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from flext_api import FlextApiTypes
+from flext_api import t
 
 from flext_oracle_wms._typings import FlextOracleWmsTypesDomain
 
 
-class FlextOracleWmsTypes(FlextApiTypes):
+class FlextOracleWmsTypes(t):
     """Oracle WMS type definitions extending t via MRO."""
 
     class OracleWms(FlextOracleWmsTypesDomain):

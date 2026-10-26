@@ -18,6 +18,7 @@ if TYPE_CHECKING:
     from flext_oracle_wms import (
         api,
         c,
+        cli,
         config,
         d,
         e,
@@ -38,6 +39,7 @@ if TYPE_CHECKING:
 __all__: tuple[str, ...] = (
     "api",
     "c",
+    "cli",
     "config",
     "d",
     "e",
@@ -61,6 +63,7 @@ install_lazy_exports(
     MappingProxyType({
         "api": "flext_oracle_wms",
         "c": "flext_oracle_wms",
+        "cli": "flext_oracle_wms",
         "config": "flext_oracle_wms",
         "d": "flext_oracle_wms",
         "e": "flext_oracle_wms",

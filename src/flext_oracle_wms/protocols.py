@@ -7,7 +7,7 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from flext_api import FlextApiProtocols
+from flext_api import p
 
 from flext_oracle_wms._protocols import (
     FlextOracleWmsProtocolsConfig,
@@ -15,7 +15,7 @@ from flext_oracle_wms._protocols import (
 )
 
 
-class FlextOracleWmsProtocols(FlextApiProtocols):
+class FlextOracleWmsProtocols(p):
     """Oracle WMS protocols extending p.
 
     Extends p to inherit all foundation protocols (Result, Service, etc.)

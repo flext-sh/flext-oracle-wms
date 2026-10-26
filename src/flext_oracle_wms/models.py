@@ -10,7 +10,7 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from flext_api import FlextApiModels
+from flext_api import m
 
 from flext_oracle_wms._models import (
     FlextOracleWmsConfigModels,
@@ -18,7 +18,7 @@ from flext_oracle_wms._models import (
 )
 
 
-class FlextOracleWmsModels(FlextApiModels):
+class FlextOracleWmsModels(m):
     """Generic WMS domain models with composition patterns.
 
     Single class per module following DDD, SOLID, and flext-core patterns.

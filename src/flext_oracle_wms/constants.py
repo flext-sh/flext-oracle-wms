@@ -7,7 +7,7 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from flext_api import FlextApiConstants
+from flext_api import c
 
 from flext_oracle_wms._constants import (
     FlextOracleWmsConstantsBase,
@@ -15,7 +15,7 @@ from flext_oracle_wms._constants import (
 )
 
 
-class FlextOracleWmsConstants(FlextApiConstants):
+class FlextOracleWmsConstants(c):
     """Generic WMS constants class with composition patterns.
 
     Uses Python 3.13+ syntax, reduces declarations through patterns.
