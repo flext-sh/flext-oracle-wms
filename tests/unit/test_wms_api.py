@@ -94,18 +94,16 @@ class TestsFlextOracleWmsWmsApi:
         )
 
     @staticmethod
-    def test_api_endpoint_applies_documented_defaults() -> None:
-        """Description field defaults to '' and since_version to '6.1' baseline."""
-        endpoint = m.OracleWms.ApiEndpoint(
-            name="x",
-            method="GET",
-            path="/x/",
-            version="v1",
-            category="test",
-        )
-
-        tm.that(endpoint.description, eq="")
-        tm.that(endpoint.since_version, eq="6.1")
+    def test_api_endpoint_requires_declared_metadata() -> None:
+        """Endpoint metadata is supplied by the catalog, not invented by the model."""
+        with pytest.raises(m.ValidationError):
+            m.OracleWms.ApiEndpoint.model_validate({
+                "name": "x",
+                "method": "GET",
+                "path": "/x/",
+                "version": "v1",
+                "category": "test",
+            })
 
     @staticmethod
     @pytest.mark.parametrize(

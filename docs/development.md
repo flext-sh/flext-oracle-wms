@@ -231,44 +231,44 @@ def test_real_connection() -> None:
 
 1. **Replace httpx with flext-api patterns**
 
-   - Migrate `http_client.py` and `wms_discovery.py`
-   - Update all HTTP client usage
+    - Migrate `http_client.py` and `wms_discovery.py`
+    - Update all HTTP client usage
 
 1. **Consolidate class architecture**
 
-   - Reduce from 71 classes to unified classes per module
-   - Implement nested helper pattern
+    - Reduce from 71 classes to unified classes per module
+    - Implement nested helper pattern
 
 1. **Integrate flext-auth**
 
-   - Replace custom authentication classes
-   - Add OAuth2 support for Oracle WMS Cloud
+    - Replace custom authentication classes
+    - Add OAuth2 support for Oracle WMS Cloud
 
 ### Phase 2: Oracle WMS Integration (Weeks 3-4)
 
 1. **Add missing LGF v10 APIs**
 
-   - Implement modern pick_confirm API
-   - Add bulk_update_inventory_attributes endpoint
-   - Add t.JsonValue store data extraction capabilities
+    - Implement modern pick_confirm API
+    - Add bulk_update_inventory_attributes endpoint
+    - Add t.JsonValue store data extraction capabilities
 
 1. **Establish real connectivity**
 
-   - Replace fake test URLs with actual Oracle WMS Cloud testing
-   - Implement proper authentication testing
-   - Validate against real Oracle WMS instances
+    - Replace fake test URLs with actual Oracle WMS Cloud testing
+    - Implement proper authentication testing
+    - Validate against real Oracle WMS instances
 
 ### Phase 3: Enhanced Features (Weeks 5-6)
 
 1. **Complete Singer protocol implementation**
 
-   - Enhanced tap/target functionality
-   - Real-time streaming capabilities
+    - Enhanced tap/target functionality
+    - Real-time streaming capabilities
 
 1. **Performance optimization**
 
-   - Connection pooling
-   - Intelligent caching strategies
+    - Connection pooling
+    - Intelligent caching strategies
 
 ## Code Review Guidelines
 
