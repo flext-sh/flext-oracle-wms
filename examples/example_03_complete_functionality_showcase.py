@@ -32,7 +32,7 @@ from __future__ import annotations
 
 import os
 import time
-from collections.abc import Sequence
+from collections.abc import Mapping, MutableMapping, MutableSequence, Sequence
 from pathlib import Path
 
 from dotenv import load_dotenv
@@ -195,7 +195,7 @@ def showcase_5_api_catalog(client: u.OracleWms.Client) -> None:
         Error: If ``category_result.failure``.
 
     """
-    categories: t.MutableMappingKV[str, t.MutableSequenceOf[str]] = {}
+    categories: MutableMapping[str, MutableSequence[str]] = {}
     for api_name, api_info in FlextOracleWmsApi.api_endpoints().items():
         category = api_info.category
         if category not in categories:
@@ -273,7 +273,7 @@ def showcase_8_performance_tracking(
     if len(entities) >= min_entities_for_concurrent_test:
         test_entities = entities[:min_entities_for_concurrent_test]
         start_time = time.time()
-        results: list[p.Result[Sequence[t.StrMapping]]] = []
+        results: list[p.Result[Sequence[Mapping[str, str]]]] = []
         for entity in test_entities:
             result = client.fetch_entity_data(entity, limit=2)
             results.append(result)

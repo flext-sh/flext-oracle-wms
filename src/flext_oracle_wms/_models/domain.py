@@ -6,6 +6,7 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
+from collections.abc import Mapping, Sequence
 from typing import Annotated, ClassVar
 
 from flext_api import FlextApiModels, m
@@ -117,7 +118,7 @@ class FlextModelsOracleWmsDomain:
             extra="ignore"
         )
 
-        entities: t.StrSequence = m.Field(default_factory=tuple)
+        entities: Sequence[str] = m.Field(default_factory=tuple)
 
     class ApiCategoryResponse(FlextApiModels.BaseModel):
         """Oracle WMS API category response."""
@@ -126,7 +127,7 @@ class FlextModelsOracleWmsDomain:
             extra="ignore"
         )
 
-        apis: t.SequenceOf[t.StrMapping] = m.Field(default_factory=tuple)
+        apis: Sequence[Mapping[str, str]] = m.Field(default_factory=tuple)
 
     class EntityDataResponse(FlextApiModels.BaseModel):
         """Oracle WMS entity data response."""
@@ -135,7 +136,7 @@ class FlextModelsOracleWmsDomain:
             extra="ignore"
         )
 
-        data: t.SequenceOf[t.StrMapping] = m.Field(default_factory=tuple)
+        data: Sequence[Mapping[str, str]] = m.Field(default_factory=tuple)
 
     # =====================================================================
     # DOMAIN ENTITIES - Composed DDD patterns

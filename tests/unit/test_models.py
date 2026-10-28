@@ -7,9 +7,11 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
+from collections.abc import MutableMapping
+
 import pytest
 
-from tests import c, m, t, tm, u
+from tests import c, m, tm, u
 
 
 class TestsFlextOracleWmsModelsUnit:
@@ -58,7 +60,7 @@ class TestsFlextOracleWmsModelsUnit:
     @pytest.mark.parametrize(("field", "value"), [("name", ""), ("endpoint", "")])
     def test_entity_rejects_empty_required_string(field: str, value: str) -> None:
         """Empty required strings violate min_length and raise ValidationError."""
-        fields: t.MutableMappingKV[str, str] = {
+        fields: MutableMapping[str, str] = {
             "name": "item",
             "endpoint": "/api/items",
         }

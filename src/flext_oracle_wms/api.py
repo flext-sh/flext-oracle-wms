@@ -10,9 +10,10 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
+from collections.abc import Mapping
 from typing import override
 
-from flext_oracle_wms import FlextOracleWmsSettings, c, m, p, r, s, t, u
+from flext_oracle_wms import FlextOracleWmsSettings, c, m, p, r, s, u
 
 
 class FlextOracleWmsApi(s[bool]):
@@ -57,7 +58,7 @@ class FlextOracleWmsApi(s[bool]):
         return r[bool].ok(value=True)
 
     @staticmethod
-    def api_endpoints() -> t.MappingKV[str, m.OracleWms.ApiEndpoint]:
+    def api_endpoints() -> Mapping[str, m.OracleWms.ApiEndpoint]:
         """Return Oracle WMS API endpoint models from canonical constants."""
         return {
             name: m.OracleWms.ApiEndpoint.model_validate(payload)
@@ -68,7 +69,7 @@ class FlextOracleWmsApi(s[bool]):
     def create_flext_http_client(
         base_url: str,
         timeout: float = 30.0,
-        headers: t.StrMapping | None = None,
+        headers: Mapping[str, str] | None = None,
         *,
         verify_ssl: bool = True,
     ) -> u.OracleWms.HttpClient:

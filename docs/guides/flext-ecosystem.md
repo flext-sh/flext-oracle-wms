@@ -40,6 +40,15 @@ gaps.
 ```python
 from __future__ import annotations
 
+from collections.abc import (
+    Iterable,
+    Iterator,
+    Mapping,
+    MutableMapping,
+    MutableSequence,
+    Sequence,
+)
+
 # Current: Non-compliant httpx usage
 import httpx
 from flext_api import FlextApiClient

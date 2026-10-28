@@ -13,7 +13,7 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from collections.abc import Sequence
+from collections.abc import Mapping, Sequence
 from pathlib import Path
 from typing import TYPE_CHECKING
 
@@ -190,7 +190,7 @@ class TestsFlextOracleWmsDeclarative:
     ) -> None:
         """Sequential requests to distinct entities each return a valid r[T]."""
         entities = ["company", "facility", "item"]
-        results: list[p.Result[Sequence[t.StrMapping]]] = [
+        results: list[p.Result[Sequence[Mapping[str, str]]]] = [
             oracle_wms_client.fetch_entity_data(entity, limit=3) for entity in entities
         ]
         tm.that(len(results), eq=len(entities))

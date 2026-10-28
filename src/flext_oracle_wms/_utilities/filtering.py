@@ -6,7 +6,7 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from collections.abc import MutableSequence, Sequence
+from collections.abc import Mapping, MutableSequence, Sequence
 
 from flext_api import u
 from flext_core import e, r
@@ -26,7 +26,7 @@ class FlextOracleWmsUtilitiesFiltering:
         def __init__(
             self,
             *,
-            filters: t.MappingKV[str, t.OracleWms.FilterEntry] | None = None,
+            filters: Mapping[str, t.OracleWms.FilterEntry] | None = None,
             case_sensitive: bool = False,
             max_conditions: int = 50,
         ) -> None:
@@ -45,7 +45,7 @@ class FlextOracleWmsUtilitiesFiltering:
                 raise e.BaseError(error_message)
             self.max_conditions: int = max_conditions
             self.case_sensitive: bool = case_sensitive
-            self.filters: t.MappingKV[str, t.OracleWms.FilterEntry] = filters or {}
+            self.filters: Mapping[str, t.OracleWms.FilterEntry] = filters or {}
             if (
                 self.filters
                 and self._validate_filter_conditions_total(self.filters).failure
@@ -75,7 +75,7 @@ class FlextOracleWmsUtilitiesFiltering:
         @classmethod
         def filter_by_field(
             cls,
-            records: t.SequenceOf[t.OracleWms.FilterRecord],
+            records: Sequence[t.OracleWms.FilterRecord],
             field: str,
             value: t.OracleWms.FilterScalar,
             operator: c.OracleWms.WmsFilterOperator | None = None,
@@ -93,7 +93,7 @@ class FlextOracleWmsUtilitiesFiltering:
 
             """
             engine = cls()
-            filters: t.MappingKV[str, t.OracleWms.FilterEntry]
+            filters: Mapping[str, t.OracleWms.FilterEntry]
             if operator is None:
                 filters = {field: value}
             else:
@@ -108,7 +108,7 @@ class FlextOracleWmsUtilitiesFiltering:
         @classmethod
         def filter_by_id_range(
             cls,
-            records: t.SequenceOf[t.OracleWms.FilterRecord],
+            records: Sequence[t.OracleWms.FilterRecord],
             id_field: str,
             min_id: t.OracleWms.FilterScalar | None = None,
             max_id: t.OracleWms.FilterScalar | None = None,
@@ -244,8 +244,8 @@ class FlextOracleWmsUtilitiesFiltering:
 
         def filter_records(
             self,
-            records: t.SequenceOf[t.OracleWms.FilterRecord],
-            filters: t.MappingKV[str, t.OracleWms.FilterEntry],
+            records: Sequence[t.OracleWms.FilterRecord],
+            filters: Mapping[str, t.OracleWms.FilterEntry],
             limit: int | None = None,
         ) -> p.Result[Sequence[t.OracleWms.FilterRecord]]:
             """Filter records against field conditions and optional limit.
@@ -275,7 +275,7 @@ class FlextOracleWmsUtilitiesFiltering:
 
         def sort_records(
             self,
-            records: t.SequenceOf[t.OracleWms.FilterRecord],
+            records: Sequence[t.OracleWms.FilterRecord],
             sort_field: str,
             *,
             ascending: bool = True,
@@ -416,11 +416,11 @@ class FlextOracleWmsUtilitiesFiltering:
             # Try nested dict traversal first
             current: (
                 t.OracleWms.NestedFilterValue
-                | t.MappingKV[
+                | Mapping[
                     str,
                     t.OracleWms.FilterScalar
                     | t.OracleWms.FilterList
-                    | t.MappingKV[
+                    | Mapping[
                         str,
                         t.OracleWms.FilterScalar | t.OracleWms.FilterList,
                     ],
@@ -450,7 +450,7 @@ class FlextOracleWmsUtilitiesFiltering:
         def _matches_all_filters(
             self,
             record: t.OracleWms.FilterRecord,
-            filters: t.MappingKV[str, t.OracleWms.FilterEntry],
+            filters: Mapping[str, t.OracleWms.FilterEntry],
         ) -> bool:
             return all(
                 (
@@ -494,7 +494,7 @@ class FlextOracleWmsUtilitiesFiltering:
 
         def _validate_filter_conditions_total(
             self,
-            filters: t.MappingKV[str, t.OracleWms.FilterEntry],
+            filters: Mapping[str, t.OracleWms.FilterEntry],
         ) -> p.Result[bool]:
             total = sum(self._condition_size(value) for value in filters.values())
             if total > self.max_conditions:
@@ -505,7 +505,7 @@ class FlextOracleWmsUtilitiesFiltering:
 
         def _validate_filters(
             self,
-            filters: t.MappingKV[str, t.OracleWms.FilterEntry],
+            filters: Mapping[str, t.OracleWms.FilterEntry],
         ) -> p.Result[bool]:
             total = sum(self._condition_size(value) for value in filters.values())
             if total > self.max_conditions:

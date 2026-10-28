@@ -6,6 +6,7 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
+from collections.abc import Sequence
 from typing import TYPE_CHECKING, Protocol, runtime_checkable
 
 from flext_api import FlextApiProtocols
@@ -21,7 +22,7 @@ class FlextOracleWmsProtocolsDomain:
     class EntityDiscoveryClient(Protocol):
         """Protocol for the entity discovery client used by the discovery."""
 
-        def discover_entities(self) -> FlextApiProtocols.Result[t.StrSequence]:
+        def discover_entities(self) -> FlextApiProtocols.Result[Sequence[str]]:
             """Discover available entities.
 
             Returns:

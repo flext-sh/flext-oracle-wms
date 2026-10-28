@@ -18,28 +18,28 @@ class FlextOracleWmsTypesDomain:
     """Oracle WMS filter aliases composed into ``t.OracleWms``."""
 
     type FilterScalar = FlextApiTypes.Scalar | None
-    type FilterList = FlextApiTypes.SequenceOf[FilterScalar]
+    type FilterList = FlextApiTypes.Sequence[FilterScalar]
     type FilterEntry = (
         FilterScalar | FilterList | m.OracleWms.FlextOracleWmsOperatorFilter
     )
     type FilterRecordValue = (
         FilterScalar
         | FilterList
-        | FlextApiTypes.MappingKV[
+        | FlextApiTypes.Mapping[
             str,
             FilterScalar
             | FilterList
-            | FlextApiTypes.MappingKV[
+            | FlextApiTypes.Mapping[
                 str,
                 FilterScalar | FilterList,
             ],
         ]
     )
-    type FilterRecord = FlextApiTypes.MappingKV[
+    type FilterRecord = FlextApiTypes.Mapping[
         str,
         FilterScalar
         | FilterList
-        | FlextApiTypes.MappingKV[
+        | FlextApiTypes.Mapping[
             str,
             FilterScalar | FilterList,
         ],

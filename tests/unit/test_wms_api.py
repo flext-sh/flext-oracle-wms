@@ -7,10 +7,12 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
+from collections.abc import MutableMapping
+
 import pytest
 
 from flext_oracle_wms import FlextOracleWmsApi, FlextOracleWmsSettings, m
-from tests import _basic_password, _secret, t, tm, u
+from tests import _basic_password, _secret, tm, u
 
 
 class TestsFlextOracleWmsWmsApi:
@@ -112,7 +114,7 @@ class TestsFlextOracleWmsWmsApi:
     )
     def test_api_endpoint_rejects_blank_required_field(blank_field: str) -> None:
         """Each required identifier field must be non-empty (min_length=1)."""
-        fields: t.MutableMappingKV[str, str] = {
+        fields: MutableMapping[str, str] = {
             "name": "n",
             "method": "GET",
             "path": "/n/",

@@ -110,6 +110,15 @@ Current compliance gaps requiring implementation:
 ```python
 from __future__ import annotations
 
+from collections.abc import (
+    Iterable,
+    Iterator,
+    Mapping,
+    MutableMapping,
+    MutableSequence,
+    Sequence,
+)
+
 # Current: Non-compliant httpx usage
 import httpx  # ❌ VIOLATION
 from flext_api import FlextApiClient  # ✅ REQUIRED
@@ -125,6 +134,15 @@ client = FlextApiClient()
 
 ```python
 from __future__ import annotations
+
+from collections.abc import (
+    Iterable,
+    Iterator,
+    Mapping,
+    MutableMapping,
+    MutableSequence,
+    Sequence,
+)
 
 from flext_core import s
 
@@ -149,6 +167,15 @@ class FlextOracleWmsClient(s):
 ```python
 from __future__ import annotations
 
+from collections.abc import (
+    Iterable,
+    Iterator,
+    Mapping,
+    MutableMapping,
+    MutableSequence,
+    Sequence,
+)
+
 from flext_auth import FlextAuth  # ✅ REQUIRED
 
 
@@ -168,6 +195,15 @@ All operations must use r pattern:
 
 ```python
 from __future__ import annotations
+
+from collections.abc import (
+    Iterable,
+    Iterator,
+    Mapping,
+    MutableMapping,
+    MutableSequence,
+    Sequence,
+)
 
 from flext_core import p, r
 
@@ -216,6 +252,15 @@ Tests currently use fake URLs and expect failures:
 
 ```python
 from __future__ import annotations
+
+from collections.abc import (
+    Iterable,
+    Iterator,
+    Mapping,
+    MutableMapping,
+    MutableSequence,
+    Sequence,
+)
 
 from flext_oracle_wms import FlextOracleWmsModuleSettings
 

@@ -6,6 +6,7 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
+from collections.abc import Mapping
 from typing import TYPE_CHECKING, Self
 
 from flext_api import FlextApi, FlextApiSettings, u
@@ -29,7 +30,7 @@ class FlextOracleWmsUtilitiesHttpClient:
             self,
             base_url: str,
             timeout: float = 30.0,
-            headers: t.StrMapping | None = None,
+            headers: Mapping[str, str] | None = None,
             *,
             verify_ssl: bool = True,
         ) -> None:
@@ -69,8 +70,8 @@ class FlextOracleWmsUtilitiesHttpClient:
 
         @staticmethod
         def _normalize_headers(
-            headers: t.StrMapping | t.Api.WebHeaders | None,
-        ) -> t.StrMapping:
+            headers: Mapping[str, str] | t.Api.WebHeaders | None,
+        ) -> Mapping[str, str]:
             if headers is None:
                 return {}
             normalized: t.MutableStrMapping = {}
@@ -104,7 +105,7 @@ class FlextOracleWmsUtilitiesHttpClient:
         def delete(
             self,
             path: str,
-            headers: t.StrMapping | None = None,
+            headers: Mapping[str, str] | None = None,
         ) -> p.Result[t.JsonMapping]:
             """Make a DELETE request.
 
@@ -122,7 +123,7 @@ class FlextOracleWmsUtilitiesHttpClient:
             self,
             path: str,
             params: t.Api.WebParams | None = None,
-            headers: t.StrMapping | None = None,
+            headers: Mapping[str, str] | None = None,
         ) -> p.Result[t.JsonMapping]:
             """Make a GET request with railway-oriented error handling.
 
@@ -148,7 +149,7 @@ class FlextOracleWmsUtilitiesHttpClient:
             path: str,
             data: t.JsonMapping | None = None,
             json_data: t.JsonMapping | None = None,
-            headers: t.StrMapping | None = None,
+            headers: Mapping[str, str] | None = None,
         ) -> p.Result[t.JsonMapping]:
             """Make a POST request with railway-oriented error handling.
 
@@ -172,7 +173,7 @@ class FlextOracleWmsUtilitiesHttpClient:
             path: str,
             data: t.JsonMapping | None = None,
             json_data: t.JsonMapping | None = None,
-            headers: t.StrMapping | None = None,
+            headers: Mapping[str, str] | None = None,
         ) -> p.Result[t.JsonMapping]:
             """Make a PUT request with railway-oriented error handling.
 
@@ -223,7 +224,7 @@ class FlextOracleWmsUtilitiesHttpClient:
             method: str,
             path: str,
             params: t.Api.WebParams | None = None,
-            headers: t.StrMapping | None = None,
+            headers: Mapping[str, str] | None = None,
             body: t.JsonMapping | None = None,
         ) -> p.Result[t.JsonMapping]:
             """Execute HTTP request with FLEXT delegation.
@@ -253,7 +254,7 @@ class FlextOracleWmsUtilitiesHttpClient:
             method: str,
             path: str,
             params: t.Api.WebParams | None = None,
-            headers: t.StrMapping | None = None,
+            headers: Mapping[str, str] | None = None,
             body: t.JsonMapping | None = None,
         ) -> p.Result[t.JsonMapping]:
             """Execute a request while allowing validation and I/O exceptions upward.
@@ -285,7 +286,7 @@ class FlextOracleWmsUtilitiesHttpClient:
             method: str,
             path: str,
             params: t.Api.WebParams | None = None,
-            headers: t.StrMapping | None = None,
+            headers: Mapping[str, str] | None = None,
             body: t.JsonMapping | None = None,
         ) -> p.Result[m.Api.HttpResponse]:
             """Build and dispatch one FLEXT API request.
@@ -363,7 +364,7 @@ class FlextOracleWmsUtilitiesHttpClient:
         def create(
             base_url: str,
             timeout: float = 30.0,
-            headers: t.StrMapping | None = None,
+            headers: Mapping[str, str] | None = None,
             *,
             verify_ssl: bool = True,
         ) -> FlextOracleWmsUtilitiesHttpClient.HttpClient:

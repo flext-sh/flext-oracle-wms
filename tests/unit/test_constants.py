@@ -13,10 +13,12 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
+from collections.abc import Mapping
+
 import pytest
 
 from flext_oracle_wms import FlextOracleWmsConstants, config
-from tests import c, t, tm
+from tests import c, tm
 
 _AuthMethod = c.OracleWms.OracleWMSAuthMethod
 _FilterOp = c.OracleWms.WmsFilterOperator
@@ -46,7 +48,7 @@ class TestsFlextOracleWmsConstantsUnit:
     )
     def test_api_config_publishes_connection_defaults(key: str) -> None:
         """API_CONFIG mirrors the typed config SSOT connection defaults."""
-        defaults: t.MappingKV[str, str | int] = {
+        defaults: Mapping[str, str | int] = {
             "version_default": config.api.version_default,
             "base_url_default": config.environments.default,
             "timeout_default": config.api.timeout_default,

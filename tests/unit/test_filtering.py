@@ -18,6 +18,8 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
+from collections.abc import Mapping, Sequence
+
 import pytest
 from flext_tests import e, tm
 from pydantic import ValidationError
@@ -58,7 +60,7 @@ class TestsFlextOracleWmsFiltering:
             ]
 
         @staticmethod
-        def _ids(records: t.SequenceOf[t.OracleWms.FilterRecord]) -> set[int]:
+        def _ids(records: Sequence[t.OracleWms.FilterRecord]) -> set[int]:
             """Collect the ``id`` field of every record for set comparison.
 
             Returns:
@@ -128,7 +130,7 @@ class TestsFlextOracleWmsFiltering:
         @staticmethod
         def test_construction_rejects_initial_filters_over_limit() -> None:
             """Test construction rejects initial filters over limit."""
-            filters: t.MappingKV[str, t.OracleWms.FilterEntry] = {
+            filters: Mapping[str, t.OracleWms.FilterEntry] = {
                 "field1": "v1",
                 "field2": "v2",
                 "field3": "v3",

@@ -66,7 +66,7 @@ padrão.
        72      _ = container.bind("FlextOracleWmsSettings", settings.model_dump(mode="python"))
        73
        74
->>>    75  def discover_wms_entities(client: FlextOracleWmsClient) -> p.Result[t.StrSequence]:
+>>>    75  def discover_wms_entities(client: FlextOracleWmsClient) -> p.Result[Sequence[str]]:
        76      """Discover available Oracle WMS entities.
        77
        78      Args:
@@ -88,7 +88,7 @@ padrão.
        98
 >>>    99  def query_entity_data(
       100      client: FlextOracleWmsClient, entity_name: str
-      101  ) -> p.Result[Sequence[t.StrMapping]]:
+      101  ) -> p.Result[Sequence[Mapping[str, str]]]:
       102      """Query data from a specific Oracle WMS entity.
       103
 ```

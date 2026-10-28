@@ -268,7 +268,7 @@ class TestsFlextOracleWmsUtilities(FlextTestsUtilities, FlextOracleWmsUtilities)
                 )
 
             @staticmethod
-            def sample_entities() -> TestsFlextOracleWmsTypes.StrSequence:
+            def sample_entities() -> TestsFlextOracleWmsTypes.Sequence[str]:
                 """Return the canonical sample entity list for tests."""
                 return [
                     "action_code",

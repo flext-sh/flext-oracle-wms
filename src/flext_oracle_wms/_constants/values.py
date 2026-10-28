@@ -24,7 +24,7 @@ class FlextOracleWmsConstantsValues:
         HTTP_BAD_REQUEST_THRESHOLD: Final[int] = 400
         WMS_API_BASELINE_VERSION: Final[str] = "6.1"
 
-        API_ENDPOINTS: ClassVar[t.MappingKV[str, t.StrMapping]] = MappingProxyType({
+        API_ENDPOINTS: ClassVar[Mapping[str, Mapping[str, str]]] = MappingProxyType({
             "test": {
                 "name": "test",
                 "method": "GET",
@@ -50,7 +50,7 @@ class FlextOracleWmsConstantsValues:
             "default_page_size": c.DEFAULT_PAGE_SIZE,
         })
 
-        ENVIRONMENTS: ClassVar[t.StrMapping] = MappingProxyType({
+        ENVIRONMENTS: ClassVar[Mapping[str, str]] = MappingProxyType({
             "default": "http://localhost:8080",
             "test": "https://test-wms.example.com",
             "production": "https://prod-wms.example.com",

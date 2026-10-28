@@ -25,14 +25,14 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 import os
-from collections.abc import Sequence
+from collections.abc import Mapping, Sequence
 from pathlib import Path
 from typing import Final
 
 from dotenv import load_dotenv
 from flext_core import FlextContainer
 
-from flext_oracle_wms import FlextOracleWmsSettings, c, p, t, u
+from flext_oracle_wms import FlextOracleWmsSettings, c, p, u
 from flext_oracle_wms.errors import FlextOracleWmsErrors
 
 MAX_ENTITIES_TO_SHOW: Final[int] = 5
@@ -66,7 +66,7 @@ def setup_client_config() -> None:
     _ = container.bind("FlextOracleWmsSettings", settings.model_dump(mode="python"))
 
 
-def discover_wms_entities(client: u.OracleWms.Client) -> p.Result[t.StrSequence]:
+def discover_wms_entities(client: u.OracleWms.Client) -> p.Result[Sequence[str]]:
     """Discover available Oracle WMS entities.
 
     Args:
@@ -76,7 +76,7 @@ def discover_wms_entities(client: u.OracleWms.Client) -> p.Result[t.StrSequence]
       r containing list of discovered entities or error details
 
     """
-    result: p.Result[t.StrSequence] = client.discover_entities()
+    result: p.Result[Sequence[str]] = client.discover_entities()
     if result.success:
         entities = result.value
         for entity in entities[:5]:
@@ -93,7 +93,7 @@ def discover_wms_entities(client: u.OracleWms.Client) -> p.Result[t.StrSequence]
 def query_entity_data(
     client: u.OracleWms.Client,
     entity_name: str,
-) -> p.Result[Sequence[t.StrMapping]]:
+) -> p.Result[Sequence[Mapping[str, str]]]:
     """Query data from a specific Oracle WMS entity.
 
     Args:
@@ -104,14 +104,14 @@ def query_entity_data(
       r containing entity data or error details
 
     """
-    result: p.Result[t.SequenceOf[t.StrMapping]] = client.fetch_entity_data(
+    result: p.Result[Sequence[Mapping[str, str]]] = client.fetch_entity_data(
         entity_name=entity_name,
         limit=10,
     )
     if result.success:
         data = result.value
         if data:
-            sample_record: t.StrMapping = data[0]
+            sample_record: Mapping[str, str] = data[0]
             field_names: list[str] = list(sample_record.keys())[:5]
             for field in field_names:
                 try:

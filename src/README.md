@@ -95,6 +95,15 @@ src/flext_oracle_wms/
 ```python
 from __future__ import annotations
 
+from collections.abc import (
+    Iterable,
+    Iterator,
+    Mapping,
+    MutableMapping,
+    MutableSequence,
+    Sequence,
+)
+
 from flext_oracle_wms import FlextOracleWmsApi, FlextOracleWmsSettings
 
 # Type-safe configuration
@@ -121,6 +130,15 @@ else:
 ```python
 from __future__ import annotations
 
+from collections.abc import (
+    Iterable,
+    Iterator,
+    Mapping,
+    MutableMapping,
+    MutableSequence,
+    Sequence,
+)
+
 import os
 
 from flext_oracle_wms import FlextOracleWmsSettings
@@ -143,6 +161,15 @@ print(settings.OracleWms.base_url)
 
 ```python
 from __future__ import annotations
+
+from collections.abc import (
+    Iterable,
+    Iterator,
+    Mapping,
+    MutableMapping,
+    MutableSequence,
+    Sequence,
+)
 
 from flext_oracle_wms import FlextOracleWmsErrors
 
