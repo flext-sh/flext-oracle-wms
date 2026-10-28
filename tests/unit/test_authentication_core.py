@@ -21,8 +21,8 @@ _BASIC_TOKEN = base64.b64encode(b"test_user:test_password").decode("ascii")
 class TestsFlextOracleWmsAuthenticationCore:
     """Public-contract behavior of Oracle WMS auth settings, authenticator, client."""
 
-    @staticmethod
     @pytest.fixture
+    @staticmethod
     def basic_settings() -> m.OracleWms.AuthSettings:
         """Return valid BASIC auth settings."""
         return m.OracleWms.AuthSettings(

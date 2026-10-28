@@ -18,8 +18,8 @@ from tests import c, e, m, t, tm, u
 class TestsFlextOracleWmsHelpers:
     """Behavioral contract of FlextOracleWmsUtilities (public utilities facade)."""
 
-    @staticmethod
     @pytest.fixture
+    @staticmethod
     def records() -> list[t.OracleWms.FilterRecord]:
         """Three ordered records exercised by the filtering contract.
 

@@ -21,8 +21,8 @@ from tests import tm
 class TestsFlextOracleWmsConfigModule:
     """Behavior contract for FlextOracleWmsSettings public API."""
 
-    @staticmethod
     @pytest.fixture
+    @staticmethod
     def _isolated_singleton() -> None:
         """Guarantee each test starts from a fresh settings singleton."""
         FlextOracleWmsSettings.reset_for_testing()
