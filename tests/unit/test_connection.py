@@ -12,23 +12,20 @@ import pytest
 from flext_oracle_wms import FlextOracleWmsSettings, m, u
 from tests import _secret, r, tm
 
-# Why: mro-4p0t — public facade access is u.OracleWms.Client, not the private
-# _utilities.client module (flext-oracle-wms-1sm3w sync fix).
-Client = u.OracleWms.Client
-
 
 class TestsFlextOracleWmsConnection:
     """Public contract of the WMS utilities client and its settings."""
 
+    @staticmethod
     @pytest.fixture
-    def client(self: FlextOracleWmsSettings) -> u.OracleWms.Client:
+    def client(settings: FlextOracleWmsSettings) -> u.OracleWms.Client:
         """Client built from the public constructor.
 
         Returns:
             The resulting ``Client``.
 
         """
-        return Client(self)
+        return u.OracleWms.Client(settings)
 
     @staticmethod
     @pytest.mark.parametrize(
@@ -78,7 +75,7 @@ class TestsFlextOracleWmsConnection:
             username="alice",
             password=_secret(),
         )
-        result = Client.from_auth_settings(auth)
+        result = u.OracleWms.Client.from_auth_settings(auth)
         tm.ok(result)
         built = result.unwrap()
         tm.that(built.settings.OracleWms.username, eq="alice")
