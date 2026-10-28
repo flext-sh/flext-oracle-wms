@@ -21,15 +21,14 @@ class TestsFlextOracleWmsConnection:
     """Public contract of the WMS utilities client and its settings."""
 
     @pytest.fixture
-    @staticmethod
-    def client(settings: FlextOracleWmsSettings) -> u.OracleWms.Client:
+    def client(self: FlextOracleWmsSettings) -> u.OracleWms.Client:
         """Client built from the public constructor.
 
         Returns:
             The resulting ``Client``.
 
         """
-        return Client(settings)
+        return Client(self)
 
     @staticmethod
     @pytest.mark.parametrize(

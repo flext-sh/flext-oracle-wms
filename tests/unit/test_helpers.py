@@ -19,7 +19,6 @@ class TestsFlextOracleWmsHelpers:
     """Behavioral contract of FlextOracleWmsUtilities (public utilities facade)."""
 
     @pytest.fixture
-    @staticmethod
     def records() -> list[t.OracleWms.FilterRecord]:
         """Three ordered records exercised by the filtering contract.
 
