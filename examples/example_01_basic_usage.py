@@ -25,17 +25,15 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 import os
+from collections.abc import Sequence
 from pathlib import Path
-from typing import TYPE_CHECKING, Final
+from typing import Final
 
 from dotenv import load_dotenv
 from flext_core import FlextContainer
 
 from flext_oracle_wms import FlextOracleWmsSettings, c, p, t, u
 from flext_oracle_wms.errors import FlextOracleWmsErrors
-
-if TYPE_CHECKING:
-    from collections.abc import Sequence
 
 MAX_ENTITIES_TO_SHOW: Final[int] = 5
 MAX_VALUE_DISPLAY_LENGTH: Final[int] = 50

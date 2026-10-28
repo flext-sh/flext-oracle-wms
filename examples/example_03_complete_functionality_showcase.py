@@ -32,16 +32,13 @@ from __future__ import annotations
 
 import os
 import time
+from collections.abc import Sequence
 from pathlib import Path
-from typing import TYPE_CHECKING
 
 from dotenv import load_dotenv
 
 from flext_oracle_wms import FlextOracleWmsApi, FlextOracleWmsSettings, c, m, p, t, u
 from flext_oracle_wms.errors import FlextOracleWmsErrors
-
-if TYPE_CHECKING:
-    from collections.abc import Sequence
 
 # Why: mro-4p0t — public facade access is u.OracleWms.*, not the private
 # _utilities.auth/client modules (flext-oracle-wms-1sm3w toolchain sync fix).

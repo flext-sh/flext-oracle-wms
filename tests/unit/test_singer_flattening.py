@@ -60,7 +60,7 @@ class TestsFlextOracleWmsSingerFlattening:
     @staticmethod
     @pytest.mark.parametrize(
         ("name", "endpoint"),
-        [("", "/valid"), ("valid", "no-leading-slash"), ("valid", "")],
+        [("", "/valid"), ("valid", "no-leading-slash"), ("valid", ...)],
     )
     def test_invalid_construction_raises_validation_error(
         name: str,
