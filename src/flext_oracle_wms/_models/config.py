@@ -6,11 +6,11 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from flext_oracle_wms.config_models import FlextOracleWmsConfigModels as _ConfigModels
+from flext_oracle_wms.config_models import FlextModelsOracleWmsConfig as _ConfigModels
 
 
-class FlextOracleWmsConfigModels(_ConfigModels):
+class FlextModelsOracleWmsConfig(_ConfigModels):
     """Expose the single configuration schema owner through the model family."""
 
 
-__all__: list[str] = ["FlextOracleWmsConfigModels"]
+__all__: list[str] = ["FlextModelsOracleWmsConfig"]

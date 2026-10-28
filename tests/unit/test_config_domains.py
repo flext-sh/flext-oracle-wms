@@ -1,7 +1,7 @@
 """Behavioral contract for the validated ``config.*`` domains.
 
 The business-rule SSOT lives in ``config/oracle-wms.yaml`` and is validated into
-the frozen ``FlextOracleWmsConfigModels`` shapes, exposed as typed objects under
+the frozen ``FlextModelsOracleWmsConfig`` shapes, exposed as typed objects under
 ``config.<domain>`` (never a model-less dict subscript).
 
 Copyright (c) 2026 FLEXT Team. All rights reserved.

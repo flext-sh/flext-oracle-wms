@@ -600,7 +600,7 @@ runtime-evaluated-base-classes = [
   "flext_core.m.BaseModel",
   "flext_oracle_wms.FlextOracleWmsApi",
   "flext_oracle_wms.FlextOracleWmsSettings",
-  "flext_oracle_wms._models.config.FlextOracleWmsConfigModels.ApiEndpoint",
+  "flext_oracle_wms._models.config.FlextModelsOracleWmsConfig.ApiEndpoint",
   "flext_oracle_wms._models.domain.WmsEntity",
   "flext_oracle_wms.s",
   "flext_tests.FlextTestsServiceBase",

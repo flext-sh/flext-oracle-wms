@@ -7,5 +7,5 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 
-class FlextOracleWmsModelsBase:
+class FlextModelsOracleWmsBase:
     """Base family holder for flext-oracle-wms models."""

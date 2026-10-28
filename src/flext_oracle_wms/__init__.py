@@ -32,7 +32,7 @@ if TYPE_CHECKING:
     from flext_oracle_wms.cli import main
     from flext_oracle_wms.constants import FlextOracleWmsConstants, c
     from flext_oracle_wms.errors import FlextOracleWmsErrors, e
-    from flext_oracle_wms.models import FlextOracleWmsModels, m
+    from flext_oracle_wms.models import FlextModelsOracleWms, m
     from flext_oracle_wms.protocols import FlextOracleWmsProtocols, p
     from flext_oracle_wms.typings import FlextOracleWmsTypes, t
     from flext_oracle_wms.utilities import (
@@ -47,11 +47,11 @@ if TYPE_CHECKING:
 
 
 __all__: tuple[str, ...] = (
+    "FlextModelsOracleWms",
     "FlextOracleWmsApi",
     "FlextOracleWmsConfig",
     "FlextOracleWmsConstants",
     "FlextOracleWmsErrors",
-    "FlextOracleWmsModels",
     "FlextOracleWmsProtocols",
     "FlextOracleWmsSettings",
     "FlextOracleWmsTypes",
@@ -98,7 +98,7 @@ install_lazy_exports(
         "FlextOracleWmsConfig": "._config",
         "FlextOracleWmsConstants": ".constants",
         "FlextOracleWmsErrors": ".errors",
-        "FlextOracleWmsModels": ".models",
+        "FlextModelsOracleWms": ".models",
         "FlextOracleWmsProtocols": ".protocols",
         "FlextOracleWmsSettings": "._settings",
         "FlextOracleWmsTypes": ".typings",

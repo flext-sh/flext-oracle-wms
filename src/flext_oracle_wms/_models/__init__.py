@@ -13,18 +13,18 @@ from typing import TYPE_CHECKING
 from flext_core.lazy import install_lazy_exports
 
 if TYPE_CHECKING:
-    from flext_oracle_wms._models.config import FlextOracleWmsConfigModels
-    from flext_oracle_wms._models.domain import FlextOracleWmsModelsDomain
+    from flext_oracle_wms._models.config import FlextModelsOracleWmsConfig
+    from flext_oracle_wms._models.domain import FlextModelsOracleWmsDomain
 
 
-__all__: tuple[str, ...] = ("FlextOracleWmsConfigModels", "FlextOracleWmsModelsDomain")
+__all__: tuple[str, ...] = ("FlextModelsOracleWmsConfig", "FlextModelsOracleWmsDomain")
 
 install_lazy_exports(
     __name__,
     globals(),
     MappingProxyType({
-        "FlextOracleWmsConfigModels": ".config",
-        "FlextOracleWmsModelsDomain": ".domain",
+        "FlextModelsOracleWmsConfig": ".config",
+        "FlextModelsOracleWmsDomain": ".domain",
     }),
     public_exports=__all__,
 )
