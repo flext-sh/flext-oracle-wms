@@ -10,6 +10,7 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 import os
+from collections.abc import Sequence
 from typing import TYPE_CHECKING, ClassVar, override
 from urllib.parse import urlparse
 
@@ -268,7 +269,7 @@ class TestsFlextOracleWmsUtilities(FlextTestsUtilities, FlextOracleWmsUtilities)
                 )
 
             @staticmethod
-            def sample_entities() -> TestsFlextOracleWmsTypes.Sequence[str]:
+            def sample_entities() -> Sequence[str]:
                 """Return the canonical sample entity list for tests."""
                 return [
                     "action_code",

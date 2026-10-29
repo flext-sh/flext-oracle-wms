@@ -6,6 +6,7 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
+from collections.abc import Mapping, Sequence
 from typing import TYPE_CHECKING
 
 from flext_api import FlextApiTypes
@@ -18,28 +19,28 @@ class FlextOracleWmsTypesDomain:
     """Oracle WMS filter aliases composed into ``t.OracleWms``."""
 
     type FilterScalar = FlextApiTypes.Scalar | None
-    type FilterList = FlextApiTypes.Sequence[FilterScalar]
+    type FilterList = Sequence[FilterScalar]
     type FilterEntry = (
         FilterScalar | FilterList | m.OracleWms.FlextOracleWmsOperatorFilter
     )
     type FilterRecordValue = (
         FilterScalar
         | FilterList
-        | FlextApiTypes.Mapping[
+        | Mapping[
             str,
             FilterScalar
             | FilterList
-            | FlextApiTypes.Mapping[
+            | Mapping[
                 str,
                 FilterScalar | FilterList,
             ],
         ]
     )
-    type FilterRecord = FlextApiTypes.Mapping[
+    type FilterRecord = Mapping[
         str,
         FilterScalar
         | FilterList
-        | FlextApiTypes.Mapping[
+        | Mapping[
             str,
             FilterScalar | FilterList,
         ],
