@@ -30,7 +30,7 @@ class TestsFlextOracleWmsHelpersCore:
     ) -> None:
         """Tests consume the same typed settings singleton as production."""
         tm.that(oracle_wms_settings, is_=FlextOracleWmsSettings)
-        assert oracle_wms_settings is settings
+        tm.that(oracle_wms_settings is settings, truth=True)
 
     @staticmethod
     def test_config_fixture_is_the_public_config_owner(
@@ -38,7 +38,7 @@ class TestsFlextOracleWmsHelpersCore:
     ) -> None:
         """Tests consume the validated config projection without copying it."""
         tm.that(config, is_=FlextOracleWmsConfig)
-        assert oracle_wms_config is config.oracle_wms
+        tm.that(oracle_wms_config is config, truth=True)
 
     @staticmethod
     def test_real_public_api_executes(oracle_wms_api: FlextOracleWmsApi) -> None:
@@ -46,4 +46,4 @@ class TestsFlextOracleWmsHelpersCore:
         result = oracle_wms_api.execute()
 
         tm.ok(result)
-        tm.that(result.unwrap(), eq=True)
+        tm.ok(result.unwrap())

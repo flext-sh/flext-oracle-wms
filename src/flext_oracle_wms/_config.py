@@ -1,10 +1,9 @@
 """FlextOracleWmsConfig — frozen, validated config singleton (ADR-005 / cosmos pattern).
 
 Every ``config/*.yaml`` file is auto-discovered and deep-merged at first
-``fetch_global`` call (model-less, ``extra=allow`` at the FlextConfig base). The
-flat YAML is then validated into the pure-Pydantic ``_models.config`` shapes and
-exposed as typed domain objects under ``config.oracle_wms.<domain>`` — never a
-model-less dict subscript.
+``fetch_global`` call. Each root-level YAML domain is a declared typed field
+validated once into the pure-Pydantic ``config_models`` shapes and exposed as
+``config.<domain>`` — never a model-less dict subscript.
 
 Copyright (c) 2026 FLEXT Team. All rights reserved.
 SPDX-License-Identifier: MIT
@@ -12,19 +11,13 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from functools import cached_property
-from typing import TYPE_CHECKING, Self
+from collections.abc import Mapping
+from typing import Annotated, Self
 
 from flext_cli import FlextCliConfig
-from flext_core import t
+from pydantic import BaseModel, Field, JsonValue
 
-from flext_oracle_wms._models.config import FlextOracleWmsConfigModels
-
-# NOTE (multi-agent): config-scaffold — accessor typed by PROTOCOL (p), never
-# the model class; the protocol module enters under TYPE_CHECKING only.
-
-if TYPE_CHECKING:
-    from flext_oracle_wms._protocols.config import FlextOracleWmsProtocolsConfig
+from flext_oracle_wms.config_models import FlextModelsOracleWmsConfig
 
 
 class FlextOracleWmsConfig(FlextCliConfig):
@@ -39,14 +32,16 @@ class FlextOracleWmsConfig(FlextCliConfig):
     # ``__new__`` leaks into the config singleton; the inherited pydantic
     # ``__init__`` still runs the frozen, YAML-validated construction and the
     # inherited pydantic ``__setattr__`` keeps the frozen guard.
-    def __new__(cls, *args: t.JsonValue, **kwargs: t.JsonValue) -> Self:
+    def __new__(
+        cls, *args: JsonValue | BaseModel, **kwargs: JsonValue | BaseModel
+    ) -> Self:
         _ = args, kwargs
         return object.__new__(cls)
 
     # LSP requires ``__eq__``'s parameter to accept every object; the
     # ``ban-broad-annotation`` dunder carve-out does not reach typed parameters,
     # so this is the scoped admission of that tooling conflict (the only correct
-    # annotation for an equality operand). ``__new__`` above uses ``t.JsonValue``.
+    # annotation for an equality operand).
     def __eq__(self, other: object) -> bool:  # ast-grep-ignore: ban-broad-annotation
         """Identity equality per the frozen-config singleton contract.
 
@@ -69,12 +64,38 @@ class FlextOracleWmsConfig(FlextCliConfig):
     # is owned by ``flext_core`` (``CONFIG_DIR_NAME``); ``FlextConfig`` anchors
     # the YAML SSOT to the packaged ``config/`` regardless of the caller's CWD.
 
-    @cached_property
-    def oracle_wms(self) -> FlextOracleWmsProtocolsConfig.Config:
-        """Validated ``OracleWms`` config domains from the model-less YAML."""
-        return FlextOracleWmsConfigModels.Root.model_validate(
-            dict(self.model_extra or {}),
-        )
+    http: Annotated[
+        FlextModelsOracleWmsConfig.Http,
+        Field(description="HTTP response-classification thresholds."),
+    ]
+    api: Annotated[
+        FlextModelsOracleWmsConfig.Api,
+        Field(description="Runtime API connection defaults."),
+    ]
+    processing: Annotated[
+        FlextModelsOracleWmsConfig.Processing,
+        Field(description="Batch, page and schema processing limits."),
+    ]
+    filtering: Annotated[
+        FlextModelsOracleWmsConfig.Filtering,
+        Field(description="Query-filter construction limits."),
+    ]
+    entities: Annotated[
+        FlextModelsOracleWmsConfig.Entities,
+        Field(description="Entity-name validation rules."),
+    ]
+    auth: Annotated[
+        FlextModelsOracleWmsConfig.Auth,
+        Field(description="OAuth2 authentication policy."),
+    ]
+    environments: Annotated[
+        FlextModelsOracleWmsConfig.Environments,
+        Field(description="Named Oracle WMS environment base URLs."),
+    ]
+    api_endpoints: Annotated[
+        Mapping[str, FlextModelsOracleWmsConfig.ApiEndpoint],
+        Field(description="Oracle WMS API endpoint catalog by name."),
+    ]
 
 
 config: FlextOracleWmsConfig = FlextOracleWmsConfig.fetch_global()

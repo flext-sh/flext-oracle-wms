@@ -59,6 +59,15 @@ export FLEXT_ORACLE_WMS_PASSWORD="test_password"
 ```python
 from __future__ import annotations
 
+from collections.abc import (
+    Iterable,
+    Iterator,
+    Mapping,
+    MutableMapping,
+    MutableSequence,
+    Sequence,
+)
+
 from flext_oracle_wms import FlextOracleWmsApi, FlextOracleWmsSettings
 
 # Using test configuration (not real Oracle WMS)

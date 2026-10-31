@@ -35,7 +35,7 @@ class TestsFlextOracleWmsWmsClient:
     def test_endpoint_catalog_projects_validated_config() -> None:
         """The public endpoint catalog is a typed projection of config."""
         endpoints = FlextOracleWmsApi.api_endpoints()
-        configured = config.oracle_wms.api_endpoints
+        configured = config.api_endpoints
 
         tm.that(tuple(endpoints), eq=tuple(configured))
         for name, expected in configured.items():

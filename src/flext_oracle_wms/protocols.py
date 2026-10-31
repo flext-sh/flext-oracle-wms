@@ -1,3 +1,4 @@
+# AUTO-GENERATED FILE — Regenerate with: make gen
 """Oracle WMS protocols for FLEXT ecosystem.
 
 Copyright (c) 2026 FLEXT Team. All rights reserved.
@@ -6,17 +7,15 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Protocol, runtime_checkable
+from flext_api import p
 
-from flext_api import FlextApiProtocols
-
-from flext_oracle_wms._protocols.config import FlextOracleWmsProtocolsConfig
-
-if TYPE_CHECKING:
-    from flext_oracle_wms import t
+from flext_oracle_wms._protocols import (
+    FlextOracleWmsProtocolsConfig,
+    FlextOracleWmsProtocolsDomain,
+)
 
 
-class FlextOracleWmsProtocols(FlextApiProtocols):
+class FlextOracleWmsProtocols(p):
     """Oracle WMS protocols extending p.
 
     Extends p to inherit all foundation protocols (Result, Service, etc.)
@@ -38,52 +37,9 @@ class FlextOracleWmsProtocols(FlextApiProtocols):
     wms_service: p.OracleWms.WmsService
     """
 
-    @runtime_checkable
-    class OracleWms(Protocol):
+    class OracleWms(FlextOracleWmsProtocolsConfig, FlextOracleWmsProtocolsDomain):
         """Oracle WMS domain-specific protocols."""
-
-        # Validated ``config.oracle_wms`` domain surface, aliased as a PEP 695
-        # type so the structural protocol stays usable in type expressions.
-        type Config = FlextOracleWmsProtocolsConfig.Config
-
-        @runtime_checkable
-        class EntityDiscoveryClient(Protocol):
-            """Protocol for the entity discovery client used by the discovery."""
-
-            def discover_entities(self) -> FlextApiProtocols.Result[t.StrSequence]:
-                """Discover available entities.
-
-                Returns:
-                    Result wrapping the discovered entity names.
-
-                """
-                ...
-
-        @runtime_checkable
-        class WmsService(FlextApiProtocols.Service[None], Protocol):
-            """Unified WMS service protocol with operation dispatch."""
-
-            def execute_wms_operation(
-                self,
-                operation: str,
-                settings: t.JsonMapping,
-                **params: t.Scalar,
-            ) -> FlextApiProtocols.Result[t.JsonValue]:
-                """Execute WMS operation with unified interface.
-
-                Args:
-                    operation: Operation type (auth, discovery, inventory,
-                        and so on).
-                    settings: Operation configuration.
-                    **params: Operation parameters.
-
-                Returns:
-                    Result wrapping the operation output or an error.
-
-                """
-                ...
 
 
 p = FlextOracleWmsProtocols
-
 __all__: list[str] = ["FlextOracleWmsProtocols", "p"]

@@ -10,10 +10,8 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Protocol, runtime_checkable
-
-if TYPE_CHECKING:
-    from collections.abc import Mapping
+from collections.abc import Mapping
+from typing import Protocol, runtime_checkable
 
 
 class FlextOracleWmsProtocolsConfig:
@@ -107,7 +105,7 @@ class FlextOracleWmsProtocolsConfig:
 
     @runtime_checkable
     class Config(Protocol):
-        """Structural surface of ``config.oracle_wms`` (validated domains)."""
+        """Structural surface of the ``config`` singleton (validated domains)."""
 
         @property
         def http(self) -> FlextOracleWmsProtocolsConfig.Http: ...

@@ -14,13 +14,20 @@ from flext_core.lazy import install_lazy_exports
 
 if TYPE_CHECKING:
     from flext_oracle_wms._protocols.config import FlextOracleWmsProtocolsConfig
+    from flext_oracle_wms._protocols.domain import FlextOracleWmsProtocolsDomain
 
 
-__all__: tuple[str, ...] = ("FlextOracleWmsProtocolsConfig",)
+__all__: tuple[str, ...] = (
+    "FlextOracleWmsProtocolsConfig",
+    "FlextOracleWmsProtocolsDomain",
+)
 
 install_lazy_exports(
     __name__,
     globals(),
-    MappingProxyType({"FlextOracleWmsProtocolsConfig": ".config"}),
+    MappingProxyType({
+        "FlextOracleWmsProtocolsConfig": ".config",
+        "FlextOracleWmsProtocolsDomain": ".domain",
+    }),
     public_exports=__all__,
 )

@@ -10,6 +10,7 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 import os
+from collections.abc import Mapping
 from pathlib import Path
 
 from dotenv import load_dotenv
@@ -19,14 +20,14 @@ from flext_oracle_wms import FlextOracleWmsSettings, c, m, t, u
 logger = u.fetch_logger(__name__)
 
 
-def get_environment_configs() -> t.MappingKV[
+def get_environment_configs() -> Mapping[
     c.OracleWms.Environment,
     m.OracleWms.EnvironmentConfig,
 ]:
     """Define environment-specific Oracle WMS configurations.
 
     Returns:
-        The resulting ``t.MappingKV[c.OracleWms.Environment,
+        The resulting ``Mapping[c.OracleWms.Environment,
             m.OracleWms.EnvironmentConfig]``.
 
     """

@@ -110,6 +110,15 @@ Current compliance gaps requiring implementation:
 ```python
 from __future__ import annotations
 
+from collections.abc import (
+    Iterable,
+    Iterator,
+    Mapping,
+    MutableMapping,
+    MutableSequence,
+    Sequence,
+)
+
 # Current: Non-compliant httpx usage
 import httpx  # ❌ VIOLATION
 from flext_api import FlextApiClient  # ✅ REQUIRED
@@ -125,6 +134,15 @@ client = FlextApiClient()
 
 ```python
 from __future__ import annotations
+
+from collections.abc import (
+    Iterable,
+    Iterator,
+    Mapping,
+    MutableMapping,
+    MutableSequence,
+    Sequence,
+)
 
 from flext_core import s
 
@@ -149,6 +167,15 @@ class FlextOracleWmsClient(s):
 ```python
 from __future__ import annotations
 
+from collections.abc import (
+    Iterable,
+    Iterator,
+    Mapping,
+    MutableMapping,
+    MutableSequence,
+    Sequence,
+)
+
 from flext_auth import FlextAuth  # ✅ REQUIRED
 
 
@@ -168,6 +195,15 @@ All operations must use r pattern:
 
 ```python
 from __future__ import annotations
+
+from collections.abc import (
+    Iterable,
+    Iterator,
+    Mapping,
+    MutableMapping,
+    MutableSequence,
+    Sequence,
+)
 
 from flext_core import p, r
 
@@ -217,6 +253,15 @@ Tests currently use fake URLs and expect failures:
 ```python
 from __future__ import annotations
 
+from collections.abc import (
+    Iterable,
+    Iterator,
+    Mapping,
+    MutableMapping,
+    MutableSequence,
+    Sequence,
+)
+
 from flext_oracle_wms import FlextOracleWmsModuleSettings
 
 
@@ -231,44 +276,44 @@ def test_real_connection() -> None:
 
 1. **Replace httpx with flext-api patterns**
 
-   - Migrate `http_client.py` and `wms_discovery.py`
-   - Update all HTTP client usage
+    - Migrate `http_client.py` and `wms_discovery.py`
+    - Update all HTTP client usage
 
 1. **Consolidate class architecture**
 
-   - Reduce from 71 classes to unified classes per module
-   - Implement nested helper pattern
+    - Reduce from 71 classes to unified classes per module
+    - Implement nested helper pattern
 
 1. **Integrate flext-auth**
 
-   - Replace custom authentication classes
-   - Add OAuth2 support for Oracle WMS Cloud
+    - Replace custom authentication classes
+    - Add OAuth2 support for Oracle WMS Cloud
 
 ### Phase 2: Oracle WMS Integration (Weeks 3-4)
 
 1. **Add missing LGF v10 APIs**
 
-   - Implement modern pick_confirm API
-   - Add bulk_update_inventory_attributes endpoint
-   - Add t.JsonValue store data extraction capabilities
+    - Implement modern pick_confirm API
+    - Add bulk_update_inventory_attributes endpoint
+    - Add t.JsonValue store data extraction capabilities
 
 1. **Establish real connectivity**
 
-   - Replace fake test URLs with actual Oracle WMS Cloud testing
-   - Implement proper authentication testing
-   - Validate against real Oracle WMS instances
+    - Replace fake test URLs with actual Oracle WMS Cloud testing
+    - Implement proper authentication testing
+    - Validate against real Oracle WMS instances
 
 ### Phase 3: Enhanced Features (Weeks 5-6)
 
 1. **Complete Singer protocol implementation**
 
-   - Enhanced tap/target functionality
-   - Real-time streaming capabilities
+    - Enhanced tap/target functionality
+    - Real-time streaming capabilities
 
 1. **Performance optimization**
 
-   - Connection pooling
-   - Intelligent caching strategies
+    - Connection pooling
+    - Intelligent caching strategies
 
 ## Code Review Guidelines
 
@@ -307,7 +352,7 @@ Recommended VS Code settings:
 
 ```bash
 # Development environment
-export FLEXT_DEBUG_MODE="true"
+export FLEXT_DEBUG_MODE=c.ParserBooleanToken.TRUE
 export FLEXT_LOG_LEVEL="debug"
 export PYTHONPATH="src"
 ```

@@ -7,10 +7,12 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
+from collections.abc import MutableMapping
+
 import pytest
 
 from flext_oracle_wms import FlextOracleWmsApi, FlextOracleWmsSettings, m
-from tests import _basic_password, _secret, t, tm, u
+from tests import _basic_password, _secret, tm, u
 
 
 class TestsFlextOracleWmsWmsApi:
@@ -25,10 +27,10 @@ class TestsFlextOracleWmsWmsApi:
         """api_endpoints() publishes a non-empty name -> ApiEndpoint mapping."""
         endpoints = FlextOracleWmsApi.api_endpoints()
 
-        assert endpoints, "expected a non-empty endpoint catalog"
+        tm.that(endpoints, truth=True, msg="expected a non-empty endpoint catalog")
         for name, endpoint in endpoints.items():
             tm.that(name, is_=str)
-            assert name
+            tm.that(name, truth=True)
             tm.that(endpoint, is_=m.OracleWms.ApiEndpoint)
             tm.that(endpoint.name, eq=name)
 
@@ -58,7 +60,10 @@ class TestsFlextOracleWmsWmsApi:
         second = FlextOracleWmsApi.api_endpoints()
 
         tm.that(first.keys(), eq=second.keys())
-        assert all(first[k].model_dump() == second[k].model_dump() for k in first)
+        tm.that(
+            all(first[k].model_dump() == second[k].model_dump() for k in first),
+            truth=True,
+        )
 
     # ------------------------------------------------------------------
     # m.OracleWms.ApiEndpoint model contract
@@ -91,18 +96,16 @@ class TestsFlextOracleWmsWmsApi:
         )
 
     @staticmethod
-    def test_api_endpoint_applies_documented_defaults() -> None:
-        """Description field defaults to '' and since_version to '6.1' baseline."""
-        endpoint = m.OracleWms.ApiEndpoint(
-            name="x",
-            method="GET",
-            path="/x/",
-            version="v1",
-            category="test",
-        )
-
-        tm.that(endpoint.description, eq="")
-        tm.that(endpoint.since_version, eq="6.1")
+    def test_api_endpoint_requires_declared_metadata() -> None:
+        """Endpoint metadata is supplied by the catalog, not invented by the model."""
+        with pytest.raises(m.ValidationError):
+            m.OracleWms.ApiEndpoint.model_validate({
+                "name": "x",
+                "method": "GET",
+                "path": "/x/",
+                "version": "v1",
+                "category": "test",
+            })
 
     @staticmethod
     @pytest.mark.parametrize(
@@ -111,7 +114,7 @@ class TestsFlextOracleWmsWmsApi:
     )
     def test_api_endpoint_rejects_blank_required_field(blank_field: str) -> None:
         """Each required identifier field must be non-empty (min_length=1)."""
-        fields: t.MutableMappingKV[str, str] = {
+        fields: MutableMapping[str, str] = {
             "name": "n",
             "method": "GET",
             "path": "/n/",
@@ -174,4 +177,4 @@ class TestsFlextOracleWmsWmsApi:
         result = api.execute()
 
         tm.ok(result)
-        tm.that(result.unwrap(), eq=True)
+        tm.ok(result.unwrap())

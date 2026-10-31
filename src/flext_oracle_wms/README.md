@@ -124,6 +124,15 @@ for the FLEXT data integration platform.
 ```python
 from __future__ import annotations
 
+from collections.abc import (
+    Iterable,
+    Iterator,
+    Mapping,
+    MutableMapping,
+    MutableSequence,
+    Sequence,
+)
+
 from flext_oracle_wms import FlextOracleWmsClient, FlextOracleWmsClientSettings
 
 # Create configuration
@@ -153,6 +162,15 @@ if result.success:
 
 ```python
 from __future__ import annotations
+
+from collections.abc import (
+    Iterable,
+    Iterator,
+    Mapping,
+    MutableMapping,
+    MutableSequence,
+    Sequence,
+)
 # Query entity data with filtering
 result = client.fetch_entity_data(
     entity_name="item",
@@ -172,6 +190,15 @@ from flext_core import FlextSettings
 
 ```python
 from __future__ import annotations
+
+from collections.abc import (
+    Iterable,
+    Iterator,
+    Mapping,
+    MutableMapping,
+    MutableSequence,
+    Sequence,
+)
 from flext_oracle_wms import FlextOracleWmsConnectionError
 
 try:

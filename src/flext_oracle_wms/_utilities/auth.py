@@ -7,10 +7,11 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 import base64
+from collections.abc import Mapping
 
 from flext_core import r
 
-from flext_oracle_wms import c, m, p, t
+from flext_oracle_wms import c, m, p
 
 
 class FlextOracleWmsUtilitiesAuth:
@@ -93,17 +94,17 @@ class FlextOracleWmsUtilitiesAuth:
                 return r[str].fail("OAuth2 not configured")
             return r[str].fail(f"Unsupported auth method: {self._settings.method}")
 
-        def get_auth_headers(self) -> p.Result[t.StrMapping]:
+        def get_auth_headers(self) -> p.Result[Mapping[str, str]]:
             """Return the authentication headers."""
             auth_result = self.authenticate()
             if auth_result.failure:
-                return r[t.StrMapping].fail_op("Authentication", auth_result.error)
+                return r[Mapping[str, str]].fail_op("Authentication", auth_result.error)
             token = auth_result.value
             basic_method = str(c.OracleWms.OracleWMSAuthMethod.BASIC)
             auth_scheme = (
                 "Basic" if self.normalized_method == basic_method else "Bearer"
             )
-            return r[t.StrMapping].ok({"Authorization": f"{auth_scheme} {token}"})
+            return r[Mapping[str, str]].ok({"Authorization": f"{auth_scheme} {token}"})
 
 
 __all__: list[str] = ["FlextOracleWmsUtilitiesAuth"]

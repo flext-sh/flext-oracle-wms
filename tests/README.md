@@ -211,7 +211,7 @@ export ORACLE_WMS_ENVIRONMENT="test"
 export ORACLE_WMS_TEST_MODE="mock"          # mock or real
 export ORACLE_WMS_TEST_TIMEOUT="30"         # Test timeout seconds
 export ORACLE_WMS_LOG_LEVEL="debug"         # Logging level for tests
-export ORACLE_WMS_ENABLE_SLOW_TESTS="false" # Enable/disable slow tests
+export ORACLE_WMS_ENABLE_SLOW_TESTS=c.ParserBooleanToken.FALSE # Enable/disable slow tests
 ```
 
 ### Test Data Management
@@ -271,8 +271,8 @@ class TestComponentName:
         result = component.operation()
 
         # Assert
-        assert result.success
-        assert result.data is not None
+        tm.ok(result.success)
+        tm.not_none(result.data)
 
     def test_error_scenarios(self):
         """Test error handling with comprehensive coverage."""
@@ -307,7 +307,7 @@ def test_performance_benchmark():
     result = perform_operation()
     execution_time = time.time() - start_time
 
-    assert result.success
+    tm.ok(result.success)
     assert execution_time < 2.0  # Performance requirement
 ```
 

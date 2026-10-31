@@ -21,7 +21,6 @@ _BASIC_TOKEN = base64.b64encode(b"test_user:test_password").decode("ascii")
 class TestsFlextOracleWmsAuthenticationCore:
     """Public-contract behavior of Oracle WMS auth settings, authenticator, client."""
 
-    @staticmethod
     @pytest.fixture
     def basic_settings() -> m.OracleWms.AuthSettings:
         """Return valid BASIC auth settings."""
@@ -105,7 +104,7 @@ class TestsFlextOracleWmsAuthenticationCore:
         """Complete BASIC credentials pass business-rule validation."""
         result = u.OracleWms.validate_auth_settings(basic_settings)
         tm.ok(result)
-        tm.that(result.unwrap(), eq=True)
+        tm.ok(result.unwrap())
 
     @staticmethod
     def test_validate_business_rules_accepts_complete_oauth2() -> None:
@@ -117,7 +116,7 @@ class TestsFlextOracleWmsAuthenticationCore:
         )
         result = u.OracleWms.validate_auth_settings(settings)
         tm.ok(result)
-        tm.that(result.unwrap(), eq=True)
+        tm.ok(result.unwrap())
 
     @staticmethod
     @pytest.mark.parametrize(
@@ -277,7 +276,7 @@ class TestsFlextOracleWmsAuthenticationCore:
         )
         result = u.OracleWms.Client.from_auth_settings(settings)
         tm.fail(result)
-        assert (
-            result.error
-            == "Oracle WMS runtime client currently supports BASIC auth only"
+        tm.that(
+            result.error,
+            eq="Oracle WMS runtime client currently supports BASIC auth only",
         )
