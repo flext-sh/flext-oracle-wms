@@ -12,10 +12,10 @@ from typing import Annotated, ClassVar
 from flext_api import FlextApiModels, m
 
 from flext_oracle_wms import c, t
-from flext_oracle_wms._models.config import FlextModelsOracleWmsConfig
+from flext_oracle_wms.config_models import FlextModelsOracleWmsConfig
 
 
-class FlextModelsOracleWmsDomain:
+class FlextModelsOracleWmsDomain(FlextModelsOracleWmsConfig):
     """Oracle WMS domain models composed into ``m.OracleWms``."""
 
     class FlextOracleWmsOperatorFilter(FlextApiModels.BaseModel):
@@ -77,8 +77,8 @@ class FlextModelsOracleWmsDomain:
     class ApiEndpoint(FlextModelsOracleWmsConfig.ApiEndpoint):
         """Typed Oracle WMS API endpoint definition (config owner, specialized).
 
-        Extends the ``_models.config`` owner so the facade namespace
-        overrides it covariantly (a valid subtype), and adds the domain
+        Extends the ``config_models`` owner so the domain part overrides it
+        covariantly (a valid subtype), and adds the domain
         validation (non-empty identifiers) and the documented defaults.
         """
 
