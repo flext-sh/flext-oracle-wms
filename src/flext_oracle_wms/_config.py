@@ -42,7 +42,7 @@ class FlextOracleWmsConfig(FlextCliConfig):
     # ``ban-broad-annotation`` dunder carve-out does not reach typed parameters,
     # so this is the scoped admission of that tooling conflict (the only correct
     # annotation for an equality operand).
-    def __eq__(self, other: object) -> bool:  # ast-grep-ignore: ban-broad-annotation
+    def __eq__(self, other: object) -> bool:
         """Identity equality per the frozen-config singleton contract.
 
         Returns:
