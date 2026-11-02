@@ -11,7 +11,7 @@ import flext_core
 import pytest
 
 from flext_oracle_wms.errors import FlextOracleWmsErrors
-from tests import c, e, t, tm, u
+from tests import c, e, p, t, tm, u
 
 
 @pytest.mark.unit

@@ -11,7 +11,7 @@ import base64
 
 import pytest
 
-from tests import _basic_password, _oauth_secret, _secret, c, m, tm, u
+from tests import _basic_password, _oauth_secret, _secret, c, m, p, tm, u
 
 _AuthMethod = c.OracleWms.OracleWMSAuthMethod
 _BASIC_TOKEN = base64.b64encode(b"test_user:test_password").decode("ascii")
