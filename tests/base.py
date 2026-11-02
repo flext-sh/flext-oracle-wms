@@ -10,7 +10,7 @@ from typing import override
 
 from flext_tests import FlextTestsServiceBase
 
-from flext_oracle_wms import m
+from flext_oracle_wms import m, p
 from tests.settings import TestsFlextOracleWmsSettings
 
 

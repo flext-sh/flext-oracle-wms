@@ -15,7 +15,7 @@ from pathlib import Path
 
 from dotenv import load_dotenv
 
-from flext_oracle_wms import FlextOracleWmsSettings, c, m, t, u
+from flext_oracle_wms import FlextOracleWmsSettings, c, m, p, t, u
 
 logger = u.fetch_logger(__name__)
 
