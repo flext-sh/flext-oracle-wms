@@ -16,8 +16,8 @@ from tests import _secret, r, tm
 class TestsFlextOracleWmsConnection:
     """Public contract of the WMS utilities client and its settings."""
 
-    @staticmethod
     @pytest.fixture
+    @staticmethod
     def client(settings: FlextOracleWmsSettings) -> u.OracleWms.Client:
         """Client built from the public constructor.
 
