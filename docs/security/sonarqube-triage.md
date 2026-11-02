@@ -319,7 +319,7 @@ padrão.
 >>>   126          with pytest.raises(FlextOracleWmsErrors.ValidationError):
       127              u.Filter(
       128                  filters={
-      129                      "id": m.OracleWms.FlextOracleWmsOperatorFilter(
+      129                      "id": p.OracleWms.FlextOracleWmsOperatorFilter(
       130                          operator=c.OracleWms.WmsFilterOperator.IN, value= ...
 ```
 

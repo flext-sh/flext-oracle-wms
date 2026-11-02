@@ -288,16 +288,16 @@ class FlextOracleWmsUtilitiesHttpClient:
             params: t.Api.WebParams | None = None,
             headers: Mapping[str, str] | None = None,
             body: t.JsonMapping | None = None,
-        ) -> p.Result[m.Api.HttpResponse]:
+        ) -> p.Result[p.Api.HttpResponse]:
             """Build and dispatch one FLEXT API request.
 
             Returns:
-                The resulting ``p.Result[m.Api.HttpResponse]``.
+                The resulting ``p.Result[p.Api.HttpResponse]``.
 
             """
             self._ensure_client()
             if self._client is None:
-                return r[m.Api.HttpResponse].fail("Client not initialized")
+                return r[p.Api.HttpResponse].fail("Client not initialized")
             request_headers: t.MutableStrMapping = dict(self.default_headers)
             request_headers.update(self._normalize_headers(headers))
             url = f"{self.base_url}/{path.lstrip('/')}" if path else self.base_url

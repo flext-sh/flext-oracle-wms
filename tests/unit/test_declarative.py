@@ -20,12 +20,10 @@ from typing import TYPE_CHECKING
 import pytest
 
 from flext_oracle_wms import FlextOracleWmsApi, FlextOracleWmsSettings, m
-from tests import t, tm, u
+from tests import p, t, tm, u
 
 if TYPE_CHECKING:
     from collections.abc import Generator
-
-from tests import p
 
 
 @pytest.fixture

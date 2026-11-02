@@ -32,19 +32,19 @@ def get_environment_configs() -> Mapping[
 
     """
     return {
-        c.OracleWms.Environment.DEVELOPMENT: m.OracleWms.EnvironmentConfig(
+        c.OracleWms.Environment.DEVELOPMENT: p.OracleWms.EnvironmentConfig(
             name="Development",
             base_url="https://dev-wms.oraclecloud.com/dev_env",
             timeout=c.OracleWms.DEFAULT_TIMEOUT,
             retry_attempts=c.OracleWms.DEFAULT_MAX_RETRIES,
         ),
-        c.OracleWms.Environment.STAGING: m.OracleWms.EnvironmentConfig(
+        c.OracleWms.Environment.STAGING: p.OracleWms.EnvironmentConfig(
             name="Staging",
             base_url="https://staging-wms.oraclecloud.com/staging_env",
             timeout=c.OracleWms.DEFAULT_TIMEOUT,
             retry_attempts=c.OracleWms.DEFAULT_MAX_RETRIES,
         ),
-        c.OracleWms.Environment.PRODUCTION: m.OracleWms.EnvironmentConfig(
+        c.OracleWms.Environment.PRODUCTION: p.OracleWms.EnvironmentConfig(
             name="Production",
             base_url="https://prod-wms.oraclecloud.com/prod_env",
             timeout=c.OracleWms.DEFAULT_TIMEOUT,

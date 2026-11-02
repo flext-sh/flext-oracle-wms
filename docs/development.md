@@ -123,7 +123,7 @@ from collections.abc import (
 import httpx  # ❌ VIOLATION
 from flext_api import FlextApiClient  # ✅ REQUIRED
 
-client = httpx.Client()
+client: p.Api.HttpxClient = u.Api.HttpxClient()
 
 # Required: flext-api integration
 

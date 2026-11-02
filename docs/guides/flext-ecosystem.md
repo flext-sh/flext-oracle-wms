@@ -53,7 +53,7 @@ from collections.abc import (
 import httpx
 from flext_api import FlextApiClient
 
-client = httpx.Client()
+client: p.Api.HttpxClient = u.Api.HttpxClient()
 
 # Required: flext-api integration
 

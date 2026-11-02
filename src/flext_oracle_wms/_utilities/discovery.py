@@ -8,14 +8,14 @@ from __future__ import annotations
 
 from flext_core import r
 
-from flext_oracle_wms import c, m, p
+from flext_oracle_wms import c, p
 
 
 class FlextOracleWmsUtilitiesDiscovery:
     """Discovery utilities for Oracle WMS -- u.OracleWms.Discovery.*."""
 
     @staticmethod
-    def validate_wms_entity(entity: m.OracleWms.Entity) -> p.Result[bool]:
+    def validate_wms_entity(entity: p.OracleWms.Entity) -> p.Result[bool]:
         """Validate an Oracle WMS entity definition against domain rules.
 
         Args:

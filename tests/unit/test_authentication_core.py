@@ -22,7 +22,7 @@ class TestsFlextOracleWmsAuthenticationCore:
     """Public-contract behavior of Oracle WMS auth settings, authenticator, client."""
 
     @pytest.fixture
-    def basic_settings() -> m.OracleWms.AuthSettings:
+    def basic_settings() -> p.OracleWms.AuthSettings:
         """Return valid BASIC auth settings."""
         return m.OracleWms.AuthSettings(
             method=_AuthMethod.BASIC,
@@ -67,7 +67,7 @@ class TestsFlextOracleWmsAuthenticationCore:
 
     @staticmethod
     def test_supplied_credentials_are_retained(
-        basic_settings: m.OracleWms.AuthSettings,
+        basic_settings: p.OracleWms.AuthSettings,
     ) -> None:
         """BASIC credentials round-trip through public fields."""
         tm.that(basic_settings.method, eq=_AuthMethod.BASIC)
@@ -99,7 +99,7 @@ class TestsFlextOracleWmsAuthenticationCore:
 
     @staticmethod
     def test_validate_business_rules_accepts_complete_basic(
-        basic_settings: m.OracleWms.AuthSettings,
+        basic_settings: p.OracleWms.AuthSettings,
     ) -> None:
         """Complete BASIC credentials pass business-rule validation."""
         result = u.OracleWms.validate_auth_settings(basic_settings)
@@ -144,7 +144,7 @@ class TestsFlextOracleWmsAuthenticationCore:
         ],
     )
     def test_validate_business_rules_reports_specific_failure(
-        settings: m.OracleWms.AuthSettings,
+        settings: p.OracleWms.AuthSettings,
         expected_error: str,
     ) -> None:
         """Incomplete/unsupported configs fail with a specific diagnostic."""
@@ -156,7 +156,7 @@ class TestsFlextOracleWmsAuthenticationCore:
 
     @staticmethod
     def test_authenticator_behavior_reflects_its_settings(
-        basic_settings: m.OracleWms.AuthSettings,
+        basic_settings: p.OracleWms.AuthSettings,
     ) -> None:
         """The authenticator's public behavior reflects the injected settings."""
         authenticator = u.OracleWms.Authenticator(basic_settings)
@@ -167,7 +167,7 @@ class TestsFlextOracleWmsAuthenticationCore:
 
     @staticmethod
     def test_authenticate_basic_yields_decodable_credentials(
-        basic_settings: m.OracleWms.AuthSettings,
+        basic_settings: p.OracleWms.AuthSettings,
     ) -> None:
         """BASIC authentication returns a base64 token decoding to user:password."""
         authenticator = u.OracleWms.Authenticator(basic_settings)
@@ -179,7 +179,7 @@ class TestsFlextOracleWmsAuthenticationCore:
 
     @staticmethod
     def test_authenticate_is_idempotent(
-        basic_settings: m.OracleWms.AuthSettings,
+        basic_settings: p.OracleWms.AuthSettings,
     ) -> None:
         """Repeated authentication yields the same token for the same credentials."""
         authenticator = u.OracleWms.Authenticator(basic_settings)
@@ -216,7 +216,7 @@ class TestsFlextOracleWmsAuthenticationCore:
         ],
     )
     def test_authenticate_failure_carries_specific_error(
-        settings: m.OracleWms.AuthSettings,
+        settings: p.OracleWms.AuthSettings,
         expected_error: str,
     ) -> None:
         """Every unauthenticatable configuration fails with a precise message."""
@@ -229,7 +229,7 @@ class TestsFlextOracleWmsAuthenticationCore:
 
     @staticmethod
     def test_get_auth_headers_basic_emits_basic_scheme(
-        basic_settings: m.OracleWms.AuthSettings,
+        basic_settings: p.OracleWms.AuthSettings,
     ) -> None:
         """BASIC headers carry the token under an 'Authorization: Basic' entry."""
         authenticator = u.OracleWms.Authenticator(basic_settings)
@@ -251,7 +251,7 @@ class TestsFlextOracleWmsAuthenticationCore:
 
     @staticmethod
     def test_from_auth_settings_builds_client_for_basic_auth(
-        basic_settings: m.OracleWms.AuthSettings,
+        basic_settings: p.OracleWms.AuthSettings,
     ) -> None:
         """Valid BASIC settings yield a concrete Oracle WMS client."""
         result = u.OracleWms.Client.from_auth_settings(basic_settings)

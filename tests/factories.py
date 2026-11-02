@@ -178,7 +178,7 @@ def _oauth_client_id_123() -> str:
     return "client_id_123"
 
 
-def _basic_auth_settings() -> m.OracleWms.AuthSettings:
+def _basic_auth_settings() -> p.OracleWms.AuthSettings:
     """Canonical valid BASIC auth settings.
 
     Returns:

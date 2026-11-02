@@ -11,7 +11,7 @@ from collections.abc import Mapping
 
 from flext_core import r
 
-from flext_oracle_wms import c, m, p
+from flext_oracle_wms import c, p
 
 
 class FlextOracleWmsUtilitiesAuth:
@@ -19,7 +19,7 @@ class FlextOracleWmsUtilitiesAuth:
 
     @staticmethod
     def validate_auth_settings(
-        auth_settings: m.OracleWms.AuthSettings,
+        auth_settings: p.OracleWms.AuthSettings,
     ) -> p.Result[bool]:
         """Validate Oracle WMS authentication configuration business rules.
 
@@ -50,12 +50,12 @@ class FlextOracleWmsUtilitiesAuth:
     class Authenticator:
         """Oracle WMS authenticator with enterprise patterns."""
 
-        def __init__(self, settings: m.OracleWms.AuthSettings) -> None:
+        def __init__(self, settings: p.OracleWms.AuthSettings) -> None:
             """Initialize authenticator with an injected auth value model."""
             # NOTE (multi-agent): mro-rn88 — retain the injected AuthSettings value
             # model;
             # every method consumes it via self._settings (was an unbound bare name).
-            self._settings: m.OracleWms.AuthSettings = settings
+            self._settings: p.OracleWms.AuthSettings = settings
             self._token: str | None = None
 
         @property

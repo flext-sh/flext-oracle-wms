@@ -15,7 +15,7 @@ from flext_oracle_wms import (
     config,
     settings,
 )
-from tests import tm
+from tests import p, tm
 
 if TYPE_CHECKING:
     from flext_oracle_wms import FlextOracleWmsApi, p
