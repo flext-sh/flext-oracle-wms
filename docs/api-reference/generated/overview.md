@@ -18,13 +18,13 @@
   Python Modules, Typing :: Typed
 - Project class: `domain`
 - Keywords: `adapter`, `enterprise`, `flext`, `integration`, `typed`
-- Main facades: `FlextOracleWmsModels`, `FlextOracleWmsApi`, `FlextOracleWmsConfig`,
-  `FlextOracleWmsConstants`, `FlextOracleWmsErrors`, `FlextOracleWmsProtocols`,
-  `FlextOracleWmsSettings`, `FlextOracleWmsTypes` (+7 more)
+- Main facades: `FlextOracleWmsApi`, `FlextOracleWmsConfig`, `FlextOracleWmsConstants`,
+  `FlextOracleWmsErrors`, `FlextOracleWmsModels`, `FlextOracleWmsModelsConfig`,
+  `FlextOracleWmsProtocols`, `FlextOracleWmsSettings` (+8 more)
 - Alias exports: `c`, `d`, `e`, `h`, `m`, `p`, `r`, `s`, `t`, `u`, `x`
-- Public symbol exports: `FlextOracleWmsModels`, `FlextOracleWmsModelsConfig`,
-  `FlextOracleWmsApi`, `FlextOracleWmsConfig`, `FlextOracleWmsConstants`,
-  `FlextOracleWmsErrors`, `FlextOracleWmsProtocols`, `FlextOracleWmsSettings`,
+- Public symbol exports: `FlextOracleWmsApi`, `FlextOracleWmsConfig`,
+  `FlextOracleWmsConstants`, `FlextOracleWmsErrors`, `FlextOracleWmsModels`,
+  `FlextOracleWmsModelsConfig`, `FlextOracleWmsProtocols`, `FlextOracleWmsSettings`,
   `FlextOracleWmsTypes`, `FlextOracleWmsUtilities` (+10 more)
 - Exported module shortcuts: _none_
 - Generated module pages: `9`

@@ -6,15 +6,14 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from collections.abc import Sequence
+from collections.abc import Mapping, Sequence
 from typing import TYPE_CHECKING, Protocol, runtime_checkable
 
 from flext_api import FlextApiProtocols
 
-if TYPE_CHECKING:
-    from collections.abc import Mapping
+from flext_oracle_wms import t
 
-    from flext_oracle_wms import t
+if TYPE_CHECKING:
     from flext_oracle_wms._typings import FlextOracleWmsTypesDomain
 
 
@@ -59,7 +58,7 @@ class FlextOracleWmsProtocolsDomain:
             ...
 
     @runtime_checkable
-    class FlextOracleWmsOperatorFilter(FlextApiProtocols.Model, Protocol):
+    class FlextOracleWmsOperatorFilter(FlextApiProtocols.BaseModel, Protocol):
         """Structural data contract projected from the owning model."""
 
         operator: str
@@ -75,7 +74,7 @@ class FlextOracleWmsProtocolsDomain:
             ...
 
     @runtime_checkable
-    class EnvironmentConfig(FlextApiProtocols.Model, Protocol):
+    class EnvironmentConfig(FlextApiProtocols.BaseModel, Protocol):
         """Structural data contract projected from the owning model."""
 
         name: str
@@ -84,41 +83,18 @@ class FlextOracleWmsProtocolsDomain:
         retry_attempts: int
 
     @runtime_checkable
-    class Entity(FlextApiProtocols.Model, Protocol):
+    class Entity(FlextApiProtocols.BaseModel, Protocol):
         """Structural data contract projected from the owning model."""
 
-        @property
-        def name(self) -> str:
-            """Entity name."""
-            ...
-
-        @property
-        def endpoint(self) -> str:
-            """API endpoint path."""
-            ...
-
-        @property
-        def description(self) -> str | None:
-            """Entity description."""
-            ...
-
-        @property
-        def primary_key(self) -> str | None:
-            """Primary key field."""
-            ...
-
-        @property
-        def replication_key(self) -> str | None:
-            """Replication key field."""
-            ...
-
-        @property
-        def supports_incremental(self) -> bool:
-            """Whether entity supports incremental sync."""
-            ...
+        name: str
+        endpoint: str
+        description: str | None
+        primary_key: str | None
+        replication_key: str | None
+        supports_incremental: bool
 
     @runtime_checkable
-    class ApiEndpoint(FlextApiProtocols.Model, Protocol):
+    class ApiEndpoint(FlextApiProtocols.BaseModel, Protocol):
         """Structural data contract projected from the owning model."""
 
         @property
@@ -157,7 +133,7 @@ class FlextOracleWmsProtocolsDomain:
             ...
 
     @runtime_checkable
-    class AuthSettings(FlextApiProtocols.Model, Protocol):
+    class AuthSettings(FlextApiProtocols.BaseModel, Protocol):
         """Structural data contract projected from the owning model."""
 
         method: str
@@ -174,178 +150,58 @@ class FlextOracleWmsProtocolsDomain:
             ...
 
     @runtime_checkable
-    class EntitiesResponse(FlextApiProtocols.Model, Protocol):
+    class EntitiesResponse(FlextApiProtocols.BaseModel, Protocol):
         """Structural data contract projected from the owning model."""
 
         entities: Sequence[str]
 
     @runtime_checkable
-    class ApiCategoryResponse(FlextApiProtocols.Model, Protocol):
+    class ApiCategoryResponse(FlextApiProtocols.BaseModel, Protocol):
         """Structural data contract projected from the owning model."""
 
         apis: Sequence[Mapping[str, str]]
 
     @runtime_checkable
-    class EntityDataResponse(FlextApiProtocols.Model, Protocol):
+    class EntityDataResponse(FlextApiProtocols.BaseModel, Protocol):
         """Structural data contract projected from the owning model."""
 
         data: Sequence[Mapping[str, str]]
 
     @runtime_checkable
-    class WmsEntity(FlextApiProtocols.Model, Protocol):
+    class WmsEntity(FlextApiProtocols.BaseModel, Protocol):
         """Structural data contract projected from the owning model."""
 
-        @property
-        def id(self) -> str:
-            """Entity identifier."""
-            ...
-
-        @property
-        def name(self) -> str:
-            """Entity name."""
-            ...
-
-        @property
-        def created_at(self) -> str | None:
-            """Creation timestamp."""
-            ...
-
-        @property
-        def updated_at(self) -> str | None:
-            """Last update timestamp."""
-            ...
+        id: str
+        name: str
+        created_at: str | None
+        updated_at: str | None
 
     @runtime_checkable
-    class InventoryItem(FlextApiProtocols.Model, Protocol):
+    class InventoryItem(WmsEntity, Protocol):
         """Structural data contract projected from the owning model."""
 
-        @property
-        def id(self) -> str:
-            """Entity identifier."""
-            ...
-
-        @property
-        def name(self) -> str:
-            """Entity name."""
-            ...
-
-        @property
-        def created_at(self) -> str | None:
-            """Creation timestamp."""
-            ...
-
-        @property
-        def updated_at(self) -> str | None:
-            """Last update timestamp."""
-            ...
-
-        @property
-        def sku(self) -> str:
-            """Stock keeping unit."""
-            ...
-
-        @property
-        def quantity(self) -> t.NonNegativeInt:
-            """Item quantity."""
-            ...
-
-        @property
-        def location_id(self) -> str:
-            """Storage location identifier."""
-            ...
-
-        @property
-        def status(self) -> str:
-            """Item status."""
-            ...
+        sku: str
+        quantity: t.NonNegativeInt
+        location_id: str
+        status: str
 
     @runtime_checkable
-    class Shipment(FlextApiProtocols.Model, Protocol):
+    class Shipment(WmsEntity, Protocol):
         """Structural data contract projected from the owning model."""
 
-        @property
-        def id(self) -> str:
-            """Entity identifier."""
-            ...
-
-        @property
-        def name(self) -> str:
-            """Entity name."""
-            ...
-
-        @property
-        def created_at(self) -> str | None:
-            """Creation timestamp."""
-            ...
-
-        @property
-        def updated_at(self) -> str | None:
-            """Last update timestamp."""
-            ...
-
-        @property
-        def order_id(self) -> str:
-            """Associated order identifier."""
-            ...
-
-        @property
-        def status(self) -> str:
-            """Shipment status."""
-            ...
-
-        @property
-        def carrier(self) -> str | None:
-            """Shipping carrier name."""
-            ...
-
-        @property
-        def tracking_number(self) -> str | None:
-            """Shipment tracking number."""
-            ...
+        order_id: str
+        status: str
+        carrier: str | None
+        tracking_number: str | None
 
     @runtime_checkable
-    class Location(FlextApiProtocols.Model, Protocol):
+    class Location(WmsEntity, Protocol):
         """Structural data contract projected from the owning model."""
 
-        @property
-        def id(self) -> str:
-            """Entity identifier."""
-            ...
-
-        @property
-        def name(self) -> str:
-            """Entity name."""
-            ...
-
-        @property
-        def created_at(self) -> str | None:
-            """Creation timestamp."""
-            ...
-
-        @property
-        def updated_at(self) -> str | None:
-            """Last update timestamp."""
-            ...
-
-        @property
-        def aisle(self) -> str:
-            """Aisle identifier."""
-            ...
-
-        @property
-        def shelf(self) -> str:
-            """Shelf identifier."""
-            ...
-
-        @property
-        def bin_(self) -> str:
-            """Bin identifier."""
-            ...
-
-        @property
-        def zone(self) -> str:
-            """Zone identifier."""
-            ...
+        aisle: str
+        shelf: str
+        bin_: str
+        zone: str
 
 
 __all__: list[str] = ["FlextOracleWmsProtocolsDomain"]

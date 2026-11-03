@@ -55,9 +55,9 @@ required validation.
 - Parent FLEXT chain: read this project's `pyproject.toml` `dependencies` array filtered
   by `flext-*`. The FLEXT cascade is encoded in the inheritance lists of the facade
   classes listed under Module Map above.
-- Public extensions exposed by this project: `FlextOracleWmsModels`,
-  `FlextOracleWmsApi`, `FlextOracleWmsConfig`, `FlextOracleWmsConstants`,
-  `FlextOracleWmsErrors`, `FlextOracleWmsProtocols` (+9 more).
+- Public extensions exposed by this project: `FlextOracleWmsApi`,
+  `FlextOracleWmsConfig`, `FlextOracleWmsConstants`, `FlextOracleWmsErrors`,
+  `FlextOracleWmsModels`, `FlextOracleWmsModelsConfig` (+10 more).
 - Library abstraction boundaries: see the project `AGENTS.md` and the referenced parent
   architecture rules.
 

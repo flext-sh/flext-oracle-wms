@@ -92,12 +92,12 @@ install_lazy_exports(
     __name__,
     globals(),
     {
-        "FlextOracleWmsModelsConfig": ".config_models",
         "FlextOracleWmsApi": ".api",
         "FlextOracleWmsConfig": "._config",
         "FlextOracleWmsConstants": ".constants",
         "FlextOracleWmsErrors": ".errors",
         "FlextOracleWmsModels": ".models",
+        "FlextOracleWmsModelsConfig": ".config_models",
         "FlextOracleWmsProtocols": ".protocols",
         "FlextOracleWmsSettings": "._settings",
         "FlextOracleWmsTypes": ".typings",
