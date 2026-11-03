@@ -15,7 +15,7 @@ from __future__ import annotations
 from pydantic import BaseModel, ConfigDict
 
 
-class FlextModelsOracleWmsConfig:
+class FlextOracleWmsModelsConfig:
     """Namespace of typed flext-oracle-wms config models (pure Pydantic)."""
 
     class Http(BaseModel):
@@ -90,4 +90,4 @@ class FlextModelsOracleWmsConfig:
         since_version: str
 
 
-__all__: list[str] = ["FlextModelsOracleWmsConfig"]
+__all__: list[str] = ["FlextOracleWmsModelsConfig"]

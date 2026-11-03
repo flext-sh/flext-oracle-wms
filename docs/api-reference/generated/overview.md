@@ -18,11 +18,11 @@
   Python Modules, Typing :: Typed
 - Project class: `domain`
 - Keywords: `adapter`, `enterprise`, `flext`, `integration`, `typed`
-- Main facades: `FlextOracleWmsApi`, `FlextOracleWmsConfig`, `FlextOracleWmsConstants`,
-  `FlextOracleWmsErrors`, `FlextOracleWmsProtocols`, `FlextOracleWmsSettings`,
-  `FlextOracleWmsTypes`, `FlextOracleWmsUtilities` (+6 more)
+- Main facades: `FlextOracleWmsModels`, `FlextOracleWmsApi`, `FlextOracleWmsConfig`,
+  `FlextOracleWmsConstants`, `FlextOracleWmsErrors`, `FlextOracleWmsProtocols`,
+  `FlextOracleWmsSettings`, `FlextOracleWmsTypes` (+7 more)
 - Alias exports: `c`, `d`, `e`, `h`, `m`, `p`, `r`, `s`, `t`, `u`, `x`
-- Public symbol exports: `FlextModelsOracleWms`, `FlextModelsOracleWmsConfig`,
+- Public symbol exports: `FlextOracleWmsModels`, `FlextOracleWmsModelsConfig`,
   `FlextOracleWmsApi`, `FlextOracleWmsConfig`, `FlextOracleWmsConstants`,
   `FlextOracleWmsErrors`, `FlextOracleWmsProtocols`, `FlextOracleWmsSettings`,
   `FlextOracleWmsTypes`, `FlextOracleWmsUtilities` (+10 more)

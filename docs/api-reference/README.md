@@ -27,9 +27,8 @@ This section is generated from public exports and real docstrings.
 
 ## Surface Summary
 
-- Primary facades: `FlextOracleWmsApi`, `FlextOracleWmsConfig`,
-  `FlextOracleWmsConstants`, `FlextOracleWmsErrors`, `FlextOracleWmsProtocols`,
-  `FlextOracleWmsSettings` (+8 more)
+- Primary facades: `FlextOracleWmsModels`, `FlextOracleWmsApi`, `FlextOracleWmsConfig`,
+  `FlextOracleWmsConstants`, `FlextOracleWmsErrors`, `FlextOracleWmsProtocols` (+9 more)
 - Generated module pages: `9`
 
 Back to [project docs](../index.md).

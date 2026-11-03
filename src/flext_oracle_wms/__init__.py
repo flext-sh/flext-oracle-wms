@@ -7,7 +7,6 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from types import MappingProxyType
 from typing import TYPE_CHECKING
 
 from flext_core.lazy import install_lazy_exports
@@ -30,10 +29,10 @@ if TYPE_CHECKING:
     from flext_oracle_wms._settings import FlextOracleWmsSettings, settings
     from flext_oracle_wms.api import FlextOracleWmsApi, oracle_wms
     from flext_oracle_wms.cli import main
-    from flext_oracle_wms.config_models import FlextModelsOracleWmsConfig
+    from flext_oracle_wms.config_models import FlextOracleWmsModelsConfig
     from flext_oracle_wms.constants import FlextOracleWmsConstants, c
     from flext_oracle_wms.errors import FlextOracleWmsErrors, e
-    from flext_oracle_wms.models import FlextModelsOracleWms, m
+    from flext_oracle_wms.models import FlextOracleWmsModels, m
     from flext_oracle_wms.protocols import FlextOracleWmsProtocols, p
     from flext_oracle_wms.typings import FlextOracleWmsTypes, t
     from flext_oracle_wms.utilities import (
@@ -48,12 +47,12 @@ if TYPE_CHECKING:
 
 
 __all__: tuple[str, ...] = (
-    "FlextModelsOracleWms",
-    "FlextModelsOracleWmsConfig",
     "FlextOracleWmsApi",
     "FlextOracleWmsConfig",
     "FlextOracleWmsConstants",
     "FlextOracleWmsErrors",
+    "FlextOracleWmsModels",
+    "FlextOracleWmsModelsConfig",
     "FlextOracleWmsProtocols",
     "FlextOracleWmsSettings",
     "FlextOracleWmsTypes",
@@ -92,13 +91,13 @@ __all__: tuple[str, ...] = (
 install_lazy_exports(
     __name__,
     globals(),
-    MappingProxyType({
-        "FlextModelsOracleWms": ".models",
-        "FlextModelsOracleWmsConfig": ".config_models",
+    {
+        "FlextOracleWmsModelsConfig": ".config_models",
         "FlextOracleWmsApi": ".api",
         "FlextOracleWmsConfig": "._config",
         "FlextOracleWmsConstants": ".constants",
         "FlextOracleWmsErrors": ".errors",
+        "FlextOracleWmsModels": ".models",
         "FlextOracleWmsProtocols": ".protocols",
         "FlextOracleWmsSettings": "._settings",
         "FlextOracleWmsTypes": ".typings",
@@ -131,7 +130,7 @@ install_lazy_exports(
         "t": ".typings",
         "u": ".utilities",
         "x": "flext_api",
-    }),
+    },
     public_exports=__all__,
 )
 

@@ -30,8 +30,8 @@ class FlextOracleWmsUtilities(
 
     class OracleWms(
         FlextOracleWmsUtilitiesAuth,
-        FlextOracleWmsUtilitiesDiscovery,
         FlextOracleWmsUtilitiesClient,
+        FlextOracleWmsUtilitiesDiscovery,
         FlextOracleWmsUtilitiesFiltering,
         FlextOracleWmsUtilitiesHttpClient,
     ):

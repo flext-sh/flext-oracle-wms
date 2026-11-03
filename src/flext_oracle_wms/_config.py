@@ -17,7 +17,7 @@ from typing import Annotated, Self
 from flext_cli import FlextCliConfig
 from pydantic import BaseModel, Field, JsonValue
 
-from flext_oracle_wms.config_models import FlextModelsOracleWmsConfig
+from flext_oracle_wms.config_models import FlextOracleWmsModelsConfig
 
 
 class FlextOracleWmsConfig(FlextCliConfig):
@@ -65,35 +65,35 @@ class FlextOracleWmsConfig(FlextCliConfig):
     # the YAML SSOT to the packaged ``config/`` regardless of the caller's CWD.
 
     http: Annotated[
-        FlextModelsOracleWmsConfig.Http,
+        FlextOracleWmsModelsConfig.Http,
         Field(description="HTTP response-classification thresholds."),
     ]
     api: Annotated[
-        FlextModelsOracleWmsConfig.Api,
+        FlextOracleWmsModelsConfig.Api,
         Field(description="Runtime API connection defaults."),
     ]
     processing: Annotated[
-        FlextModelsOracleWmsConfig.Processing,
+        FlextOracleWmsModelsConfig.Processing,
         Field(description="Batch, page and schema processing limits."),
     ]
     filtering: Annotated[
-        FlextModelsOracleWmsConfig.Filtering,
+        FlextOracleWmsModelsConfig.Filtering,
         Field(description="Query-filter construction limits."),
     ]
     entities: Annotated[
-        FlextModelsOracleWmsConfig.Entities,
+        FlextOracleWmsModelsConfig.Entities,
         Field(description="Entity-name validation rules."),
     ]
     auth: Annotated[
-        FlextModelsOracleWmsConfig.Auth,
+        FlextOracleWmsModelsConfig.Auth,
         Field(description="OAuth2 authentication policy."),
     ]
     environments: Annotated[
-        FlextModelsOracleWmsConfig.Environments,
+        FlextOracleWmsModelsConfig.Environments,
         Field(description="Named Oracle WMS environment base URLs."),
     ]
     api_endpoints: Annotated[
-        Mapping[str, FlextModelsOracleWmsConfig.ApiEndpoint],
+        Mapping[str, FlextOracleWmsModelsConfig.ApiEndpoint],
         Field(description="Oracle WMS API endpoint catalog by name."),
     ]
 

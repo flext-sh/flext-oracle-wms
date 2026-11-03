@@ -12,10 +12,10 @@ from typing import Annotated, ClassVar
 from flext_api import FlextApiModels, m
 
 from flext_oracle_wms import c, t
-from flext_oracle_wms.config_models import FlextModelsOracleWmsConfig
+from flext_oracle_wms.config_models import FlextOracleWmsModelsConfig
 
 
-class FlextModelsOracleWmsDomain(FlextModelsOracleWmsConfig):
+class FlextOracleWmsModelsDomain(FlextOracleWmsModelsConfig):
     """Oracle WMS domain models composed into ``m.OracleWms``."""
 
     class FlextOracleWmsOperatorFilter(FlextApiModels.BaseModel):
@@ -74,7 +74,7 @@ class FlextModelsOracleWmsDomain(FlextModelsOracleWmsConfig):
                 raise ValueError(msg)
             return v
 
-    class ApiEndpoint(FlextModelsOracleWmsConfig.ApiEndpoint):
+    class ApiEndpoint(FlextOracleWmsModelsConfig.ApiEndpoint):
         """Typed Oracle WMS API endpoint definition (config owner, specialized).
 
         Extends the ``config_models`` owner so the domain part overrides it
@@ -199,4 +199,4 @@ class FlextModelsOracleWmsDomain(FlextModelsOracleWmsConfig):
         zone: Annotated[str, m.Field(description="Zone identifier")] = ""
 
 
-__all__: list[str] = ["FlextModelsOracleWmsDomain"]
+__all__: list[str] = ["FlextOracleWmsModelsDomain"]

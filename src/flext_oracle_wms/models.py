@@ -12,10 +12,10 @@ from __future__ import annotations
 
 from flext_api import m
 
-from flext_oracle_wms._models import FlextModelsOracleWmsDomain
+from flext_oracle_wms._models import FlextOracleWmsModelsDomain
 
 
-class FlextModelsOracleWms(m):
+class FlextOracleWmsModels(m):
     """Generic WMS domain models with composition patterns.
 
     Single class per module following DDD, SOLID, and flext-core patterns.
@@ -28,7 +28,7 @@ class FlextModelsOracleWms(m):
     # =========================================================================
 
     class OracleWms(
-        FlextModelsOracleWmsDomain,
+        FlextOracleWmsModelsDomain,
     ):
         """Oracle WMS domain namespace -- m.OracleWms.*."""
 
@@ -41,5 +41,5 @@ class FlextModelsOracleWms(m):
         # =====================================================================
 
 
-m = FlextModelsOracleWms
-__all__: list[str] = ["FlextModelsOracleWms", "m"]
+m = FlextOracleWmsModels
+__all__: list[str] = ["FlextOracleWmsModels", "m"]
