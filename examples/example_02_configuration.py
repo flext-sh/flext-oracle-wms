@@ -15,7 +15,7 @@ from pathlib import Path
 
 from dotenv import load_dotenv
 
-from flext_oracle_wms import FlextOracleWmsSettings, c, m, p, t, u
+from flext_oracle_wms import FlextOracleWmsSettings, c, m, t, u
 
 logger = u.fetch_logger(__name__)
 
@@ -32,19 +32,19 @@ def get_environment_configs() -> Mapping[
 
     """
     return {
-        c.OracleWms.Environment.DEVELOPMENT: p.OracleWms.EnvironmentConfig(
+        c.OracleWms.Environment.DEVELOPMENT: m.OracleWms.EnvironmentConfig(
             name="Development",
             base_url="https://dev-wms.oraclecloud.com/dev_env",
             timeout=c.OracleWms.DEFAULT_TIMEOUT,
             retry_attempts=c.OracleWms.DEFAULT_MAX_RETRIES,
         ),
-        c.OracleWms.Environment.STAGING: p.OracleWms.EnvironmentConfig(
+        c.OracleWms.Environment.STAGING: m.OracleWms.EnvironmentConfig(
             name="Staging",
             base_url="https://staging-wms.oraclecloud.com/staging_env",
             timeout=c.OracleWms.DEFAULT_TIMEOUT,
             retry_attempts=c.OracleWms.DEFAULT_MAX_RETRIES,
         ),
-        c.OracleWms.Environment.PRODUCTION: p.OracleWms.EnvironmentConfig(
+        c.OracleWms.Environment.PRODUCTION: m.OracleWms.EnvironmentConfig(
             name="Production",
             base_url="https://prod-wms.oraclecloud.com/prod_env",
             timeout=c.OracleWms.DEFAULT_TIMEOUT,
