@@ -11,7 +11,8 @@ from collections.abc import Mapping
 
 from flext_core import r
 
-from flext_oracle_wms import c, p
+from flext_oracle_wms.constants import c
+from flext_oracle_wms.protocols import p
 
 
 class FlextOracleWmsUtilitiesAuth:

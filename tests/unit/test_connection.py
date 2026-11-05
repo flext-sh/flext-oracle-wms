@@ -9,8 +9,8 @@ from __future__ import annotations
 
 import pytest
 
-from flext_oracle_wms import FlextOracleWmsSettings, m, u
-from tests import _secret, r, tm
+from flext_oracle_wms import FlextOracleWmsSettings, m
+from tests import _secret, r, tm, u
 
 
 class TestsFlextOracleWmsConnection:

@@ -98,7 +98,7 @@ class TestsFlextOracleWmsWmsApi:
     @staticmethod
     def test_api_endpoint_requires_declared_metadata() -> None:
         """Endpoint metadata is supplied by the catalog, not invented by the model."""
-        with pytest.raises(m.ValidationError):
+        with u.Tests.raises(m.ValidationError):
             m.OracleWms.ApiEndpoint.model_validate({
                 "name": "x",
                 "method": "GET",
@@ -123,7 +123,7 @@ class TestsFlextOracleWmsWmsApi:
         }
         fields[blank_field] = ""
 
-        with pytest.raises(m.ValidationError):
+        with u.Tests.raises(m.ValidationError):
             m.OracleWms.ApiEndpoint(**fields)
 
     # ------------------------------------------------------------------

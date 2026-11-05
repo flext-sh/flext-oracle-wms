@@ -7,8 +7,8 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-import flext_core
 import pytest
+from flext_core import c, m, t, u
 
 from flext_oracle_wms.errors import FlextOracleWmsErrors
 from tests import c, e, m, t, tm, u
@@ -139,13 +139,13 @@ class TestsFlextOracleWmsHelpers:
         max_conditions: int,
     ) -> None:
         """Out-of-range condition limits fail loudly via the exception family."""
-        with pytest.raises(e.BaseError):
+        with u.Tests.raises(e.BaseError):
             u.Filter.create_filter(max_conditions=max_conditions)
 
     @staticmethod
     def test_constructor_rejects_filters_exceeding_condition_limit() -> None:
         """Building an engine with too many conditions raises a validation error."""
-        with pytest.raises(FlextOracleWmsErrors.ValidationError):
+        with u.Tests.raises(FlextOracleWmsErrors.ValidationError):
             u.Filter(
                 filters={
                     "id": m.OracleWms.FlextOracleWmsOperatorFilter(

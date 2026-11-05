@@ -11,8 +11,9 @@ from typing import Annotated, ClassVar
 
 from flext_api import FlextApiModels, m
 
-from flext_oracle_wms import c, t
 from flext_oracle_wms.config_models import FlextOracleWmsModelsConfig
+from flext_oracle_wms.constants import c
+from flext_oracle_wms.typings import t
 
 
 class FlextOracleWmsModelsDomain(FlextOracleWmsModelsConfig):

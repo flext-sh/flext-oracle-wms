@@ -67,13 +67,13 @@ class TestsFlextOracleWmsSingerFlattening:
         endpoint: str,
     ) -> None:
         """Boundary violations reject construction with a ValidationError."""
-        with pytest.raises(c.ValidationError):
+        with u.Tests.raises(c.ValidationError):
             m.OracleWms.Entity(name=name, endpoint=endpoint)
 
     @staticmethod
     def test_unknown_field_is_forbidden() -> None:
         """extra="forbid" rejects fields outside the public schema."""
-        with pytest.raises(c.ValidationError):
+        with u.Tests.raises(c.ValidationError):
             m.OracleWms.Entity.model_validate({
                 "name": "inventory",
                 "endpoint": "/inventory",

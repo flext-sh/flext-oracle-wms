@@ -18,7 +18,7 @@ from collections.abc import Mapping
 import pytest
 
 from flext_oracle_wms import FlextOracleWmsConstants, config
-from tests import c, tm
+from tests import c, tm, u
 
 _AuthMethod = c.OracleWms.OracleWMSAuthMethod
 _FilterOp = c.OracleWms.WmsFilterOperator
@@ -182,7 +182,7 @@ class TestsFlextOracleWmsConstantsUnit:
     def test_config_mappings_are_immutable(attr: str) -> None:
         """Published config mappings reject mutation (frozen contract)."""
         mapping = getattr(c.OracleWms, attr)
-        with pytest.raises(TypeError):
+        with u.Tests.raises(TypeError):
             mapping["__injected__"] = "x"
 
     @staticmethod

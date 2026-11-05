@@ -8,11 +8,14 @@ from __future__ import annotations
 
 from collections.abc import Mapping, MutableSequence, Sequence
 
-from flext_api import u
 from flext_core import e, r
 
-from flext_oracle_wms import c, m, p, t
+from flext_oracle_wms.constants import c
 from flext_oracle_wms.errors import FlextOracleWmsErrors
+from flext_oracle_wms.models import m
+from flext_oracle_wms.protocols import p
+from flext_oracle_wms.typings import t
+from flext_oracle_wms.utilities import u
 
 
 class FlextOracleWmsUtilitiesFiltering:

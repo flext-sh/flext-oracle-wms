@@ -98,7 +98,7 @@ class TestsFlextOracleWmsFiltering:
             max_conditions: int,
         ) -> None:
             """Test construction rejects invalid max conditions."""
-            with pytest.raises(e.BaseError, match="Invalid max_conditions"):
+            with u.Tests.raises(e.BaseError, match="Invalid max_conditions"):
                 Filter(max_conditions=max_conditions)
 
         @staticmethod
@@ -110,7 +110,7 @@ class TestsFlextOracleWmsFiltering:
             max_conditions: int,
         ) -> None:
             """Test create filter rejects invalid max conditions."""
-            with pytest.raises(e.BaseError, match="Invalid max_conditions"):
+            with u.Tests.raises(e.BaseError, match="Invalid max_conditions"):
                 Filter.create_filter(max_conditions=max_conditions)
 
         @staticmethod
@@ -136,7 +136,7 @@ class TestsFlextOracleWmsFiltering:
                 "field3": "v3",
                 "field4": "v4",
             }
-            with pytest.raises(FlextOracleWmsErrors.ValidationError):
+            with u.Tests.raises(FlextOracleWmsErrors.ValidationError):
                 Filter(filters=filters, max_conditions=3)
 
     class TestsRecordFiltering(_Records):
@@ -472,7 +472,9 @@ class TestsFlextOracleWmsFiltering:
         def test_id_range_rejects_invalid_numeric_value() -> None:
             """Test id range rejects invalid numeric value."""
             records: list[t.OracleWms.FilterRecord] = [{"id": "invalid"}]
-            with pytest.raises(ValidationError, match="Input should be a valid number"):
+            with u.Tests.raises(
+                ValidationError, match="Input should be a valid number"
+            ):
                 Filter.filter_by_id_range(records, "id", min_id=1)
 
     class TestsSorting(_Records):

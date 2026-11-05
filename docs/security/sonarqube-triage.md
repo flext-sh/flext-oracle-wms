@@ -316,7 +316,7 @@ padrão.
       123
       124      def test_constructor_rejects_filters_exceeding_condition_limit(self) -> None:
       125          """Building an engine with too many conditions raises a validation error."""
->>>   126          with pytest.raises(FlextOracleWmsErrors.ValidationError):
+>>>   126          with u.Tests.raises(FlextOracleWmsErrors.ValidationError):
       127              u.Filter(
       128                  filters={
       129                      "id": m.OracleWms.FlextOracleWmsOperatorFilter(

@@ -11,7 +11,7 @@ from typing import TYPE_CHECKING, Protocol, runtime_checkable
 
 from flext_api import FlextApiProtocols
 
-from flext_oracle_wms import t
+from flext_oracle_wms.typings import t
 
 if TYPE_CHECKING:
     from flext_oracle_wms._typings import FlextOracleWmsTypesDomain

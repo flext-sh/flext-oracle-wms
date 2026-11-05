@@ -17,8 +17,8 @@ from __future__ import annotations
 
 import pytest
 
-from flext_oracle_wms import FlextOracleWmsSettings, m, u
-from tests import _oauth_secret_dashed, _wms_password_underscore, tm
+from flext_oracle_wms import FlextOracleWmsSettings, m
+from tests import _oauth_secret_dashed, _wms_password_underscore, tm, u
 
 
 @pytest.mark.unit

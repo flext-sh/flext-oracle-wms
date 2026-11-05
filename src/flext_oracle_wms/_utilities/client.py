@@ -10,9 +10,10 @@ from collections.abc import Mapping, Sequence
 
 from flext_api import FlextApi, FlextApiSettings, p, r, t, u
 
-from flext_oracle_wms import c, m
 from flext_oracle_wms._settings import FlextOracleWmsSettings
 from flext_oracle_wms._utilities.auth import FlextOracleWmsUtilitiesAuth
+from flext_oracle_wms.constants import c
+from flext_oracle_wms.models import m
 
 
 class FlextOracleWmsUtilitiesClient:

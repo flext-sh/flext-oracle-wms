@@ -9,8 +9,8 @@ from __future__ import annotations
 
 import pytest
 
-from flext_oracle_wms import FlextOracleWmsSettings, m, u
-from tests import _oauth_secret_dashed, _wms_password, tm
+from flext_oracle_wms import FlextOracleWmsSettings, m
+from tests import _oauth_secret_dashed, _wms_password, tm, u
 
 # Why: mro-4p0t — public facade access is u.OracleWms.Client, not the private
 # _utilities.client module (flext-oracle-wms-1sm3w sync fix).

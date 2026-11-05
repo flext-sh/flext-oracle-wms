@@ -65,20 +65,20 @@ class TestsFlextOracleWmsModelsUnit:
             "endpoint": "/api/items",
         }
         fields[field] = value
-        with pytest.raises(c.ValidationError):
+        with u.Tests.raises(c.ValidationError):
             m.OracleWms.Entity.model_validate(fields)
 
     @staticmethod
     @pytest.mark.parametrize("endpoint", ["api/items", "items", "http://x/api"])
     def test_entity_rejects_endpoint_without_leading_slash(endpoint: str) -> None:
         """Endpoint validator enforces a leading slash contract."""
-        with pytest.raises(c.ValidationError):
+        with u.Tests.raises(c.ValidationError):
             m.OracleWms.Entity(name="item", endpoint=endpoint)
 
     @staticmethod
     def test_entity_forbids_unknown_fields() -> None:
         """extra='forbid' rejects fields outside the declared contract."""
-        with pytest.raises(c.ValidationError):
+        with u.Tests.raises(c.ValidationError):
             m.OracleWms.Entity.model_validate({
                 "name": "item",
                 "endpoint": "/api/items",
