@@ -61,7 +61,7 @@ class FlextOracleWmsApi(s[bool]):
     def api_endpoints() -> Mapping[str, m.OracleWms.ApiEndpoint]:
         """Return Oracle WMS API endpoint models from canonical constants."""
         return {
-            name: p.OracleWms.ApiEndpoint.model_validate(payload)
+            name: m.OracleWms.ApiEndpoint.model_validate(payload)
             for name, payload in c.OracleWms.API_ENDPOINTS.items()
         }
 

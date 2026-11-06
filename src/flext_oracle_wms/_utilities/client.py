@@ -10,6 +10,7 @@ from collections.abc import Mapping, Sequence
 
 from flext_api import FlextApi, FlextApiSettings, p, r, t, u
 
+from flext_oracle_wms import p as wms_p
 from flext_oracle_wms._settings import FlextOracleWmsSettings
 from flext_oracle_wms._utilities.auth import FlextOracleWmsUtilitiesAuth
 from flext_oracle_wms.constants import c
@@ -46,7 +47,7 @@ class FlextOracleWmsUtilitiesClient:
         @classmethod
         def from_auth_settings(
             cls,
-            auth_settings: p.OracleWms.AuthSettings,
+            auth_settings: wms_p.OracleWms.AuthSettings,
         ) -> p.Result[FlextOracleWmsUtilitiesClient.Client]:
             """Create a concrete client by merging auth and runtime WMS settings.
 
