@@ -14,7 +14,7 @@ from flext_api import FlextApiProtocols
 from flext_oracle_wms.typings import t
 
 if TYPE_CHECKING:
-    from flext_oracle_wms._typings import FlextOracleWmsTypesDomain
+    pass
 
 
 class FlextOracleWmsProtocolsDomain:
@@ -62,16 +62,7 @@ class FlextOracleWmsProtocolsDomain:
         """Structural data contract projected from the owning model."""
 
         operator: str
-
-        @property
-        def value(
-            self,
-        ) -> (
-            FlextOracleWmsTypesDomain.FilterScalar
-            | FlextOracleWmsTypesDomain.FilterList
-        ):
-            """Structural member projected from the owning model."""
-            ...
+        value: t.OracleWms.FilterScalar | t.OracleWms.FilterList
 
     @runtime_checkable
     class EnvironmentConfig(FlextApiProtocols.BaseModel, Protocol):
