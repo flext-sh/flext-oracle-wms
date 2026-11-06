@@ -30,7 +30,6 @@ class TestsFlextOracleWmsTypes(FlextTestsTypes):
 
             type Client = FlextOracleWmsUtilities.OracleWms.Client
             type EnvConfig = FlextOracleWmsTypes.MetadataMapping
-            type Record = FlextOracleWmsTypes.MutableMappingKV[str, str | int]
 
 
 t = TestsFlextOracleWmsTypes

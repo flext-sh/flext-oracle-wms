@@ -6,11 +6,14 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
+from collections.abc import Mapping, Sequence
+
 from flext_api import FlextApi, FlextApiSettings, p, r, t, u
 
-from flext_oracle_wms import c, m
 from flext_oracle_wms._settings import FlextOracleWmsSettings
 from flext_oracle_wms._utilities.auth import FlextOracleWmsUtilitiesAuth
+from flext_oracle_wms.constants import c
+from flext_oracle_wms.models import m
 
 
 class FlextOracleWmsUtilitiesClient:
@@ -37,13 +40,13 @@ class FlextOracleWmsUtilitiesClient:
                 "default_headers": default_headers,
             })
             self._client: FlextApi | None = self._create_api_client()
-            self._discovered_entities: t.StrSequence = []
+            self._discovered_entities: Sequence[str] = []
             self._started = False
 
         @classmethod
         def from_auth_settings(
             cls,
-            auth_settings: m.OracleWms.AuthSettings,
+            auth_settings: p.OracleWms.AuthSettings,
         ) -> p.Result[FlextOracleWmsUtilitiesClient.Client]:
             """Create a concrete client by merging auth and runtime WMS settings.
 
@@ -83,11 +86,13 @@ class FlextOracleWmsUtilitiesClient:
             return r[FlextOracleWmsUtilitiesClient.Client].ok(cls(resolved_settings))
 
         @staticmethod
-        def _build_default_headers(settings: FlextOracleWmsSettings) -> t.StrMapping:
+        def _build_default_headers(
+            settings: FlextOracleWmsSettings,
+        ) -> Mapping[str, str]:
             """Build default request headers from Oracle WMS auth settings.
 
             Returns:
-                The resulting ``t.StrMapping``.
+                The resulting ``Mapping[str, str]``.
 
             Raises:
                 ValueError: If ``auth_headers.failure``.
@@ -119,7 +124,7 @@ class FlextOracleWmsUtilitiesClient:
             return FlextApi(runtime_settings=self._api_config)
 
         @staticmethod
-        def _decode_response_model[T: m.BaseModel](
+        def _decode_response_model[T: p.BaseModel](
             payload: t.Api.ResponseBody | t.JsonValue,
             model_type: type[T],
         ) -> p.Result[T]:
@@ -146,9 +151,9 @@ class FlextOracleWmsUtilitiesClient:
             self,
             api_name: str,
             *,
-            headers: t.StrMapping | None = None,
+            headers: Mapping[str, str] | None = None,
             params: t.Api.WebParams | None = None,
-        ) -> p.Result[m.Api.HttpResponse]:
+        ) -> p.Result[p.Api.HttpResponse]:
             """Call a specific Oracle WMS API.
 
             Args:
@@ -157,12 +162,12 @@ class FlextOracleWmsUtilitiesClient:
                 params: Optional query parameters.
 
             Returns:
-                The resulting ``p.Result[m.Api.HttpResponse]``.
+                The resulting ``p.Result[p.Api.HttpResponse]``.
 
             """
             return self.get(f"/api/{api_name}", headers=headers, params=params)
 
-        def create_lpn(self, lpn_nbr: str, qty: int) -> p.Result[m.Api.HttpResponse]:
+        def create_lpn(self, lpn_nbr: str, qty: int) -> p.Result[p.Api.HttpResponse]:
             """Create an LPN (License Plate Number).
 
             Args:
@@ -170,7 +175,7 @@ class FlextOracleWmsUtilitiesClient:
                 qty: Quantity assigned to the LPN.
 
             Returns:
-                The resulting ``p.Result[m.Api.HttpResponse]``.
+                The resulting ``p.Result[p.Api.HttpResponse]``.
 
             """
             payload: t.Api.RequestBody = {"lpn_nbr": lpn_nbr, "qty": qty}
@@ -180,8 +185,8 @@ class FlextOracleWmsUtilitiesClient:
             self,
             path: str,
             *,
-            headers: t.StrMapping | None = None,
-        ) -> p.Result[m.Api.HttpResponse]:
+            headers: Mapping[str, str] | None = None,
+        ) -> p.Result[p.Api.HttpResponse]:
             """Make a DELETE request to the Oracle WMS API.
 
             Args:
@@ -189,37 +194,37 @@ class FlextOracleWmsUtilitiesClient:
                 headers: Optional per-request headers.
 
             Returns:
-                The resulting ``p.Result[m.Api.HttpResponse]``.
+                The resulting ``p.Result[p.Api.HttpResponse]``.
 
             """
             return self._request(c.Api.Method.DELETE, path, headers=headers)
 
-        def discover_entities(self) -> p.Result[t.StrSequence]:
+        def discover_entities(self) -> p.Result[Sequence[str]]:
             """Discover available Oracle WMS entities.
 
             Returns:
-                The resulting ``p.Result[t.StrSequence]``.
+                The resulting ``p.Result[Sequence[str]]``.
 
             """
             result = self.get("/entities")
             if result.failure:
-                return r[t.StrSequence].fail(result.error)
+                return r[Sequence[str]].fail(result.error)
             payload_result = self._decode_response_model(
                 result.value.body,
                 m.OracleWms.EntitiesResponse,
             )
             if payload_result.failure:
-                return r[t.StrSequence].fail(payload_result.error)
+                return r[Sequence[str]].fail(payload_result.error)
             self._discovered_entities = payload_result.value.entities
-            return r[t.StrSequence].ok(payload_result.value.entities)
+            return r[Sequence[str]].ok(payload_result.value.entities)
 
         def get(
             self,
             path: str,
             *,
-            headers: t.StrMapping | None = None,
+            headers: Mapping[str, str] | None = None,
             params: t.Api.WebParams | None = None,
-        ) -> p.Result[m.Api.HttpResponse]:
+        ) -> p.Result[p.Api.HttpResponse]:
             """Make a GET request to the Oracle WMS API.
 
             Args:
@@ -228,7 +233,7 @@ class FlextOracleWmsUtilitiesClient:
                 params: Optional query parameters.
 
             Returns:
-                The resulting ``p.Result[m.Api.HttpResponse]``.
+                The resulting ``p.Result[p.Api.HttpResponse]``.
 
             """
             return self._request(c.Api.Method.GET, path, headers=headers, params=params)
@@ -236,33 +241,33 @@ class FlextOracleWmsUtilitiesClient:
         def get_apis_by_category(
             self,
             category: str,
-        ) -> p.Result[t.SequenceOf[t.StrMapping]]:
+        ) -> p.Result[Sequence[Mapping[str, str]]]:
             """Get Oracle WMS APIs by category.
 
             Args:
                 category: API category name to filter by.
 
             Returns:
-                The resulting ``p.Result[t.SequenceOf[t.StrMapping]]``.
+                The resulting ``p.Result[Sequence[Mapping[str, str]]]``.
 
             """
             result = self.get(f"/apis/category/{category}")
             if result.failure:
-                return r[t.SequenceOf[t.StrMapping]].fail(result.error)
+                return r[Sequence[Mapping[str, str]]].fail(result.error)
             payload_result = self._decode_response_model(
                 result.value.body,
                 m.OracleWms.ApiCategoryResponse,
             )
             if payload_result.failure:
-                return r[t.SequenceOf[t.StrMapping]].fail(payload_result.error)
-            return r[t.SequenceOf[t.StrMapping]].ok(payload_result.value.apis)
+                return r[Sequence[Mapping[str, str]]].fail(payload_result.error)
+            return r[Sequence[Mapping[str, str]]].ok(payload_result.value.apis)
 
         def fetch_entity_data(
             self,
             entity_name: str,
             limit: int | None = None,
             filters: t.ConfigurationMapping | None = None,
-        ) -> p.Result[t.SequenceOf[t.StrMapping]]:
+        ) -> p.Result[Sequence[Mapping[str, str]]]:
             """Get data for a specific Oracle WMS entity.
 
             Args:
@@ -271,7 +276,7 @@ class FlextOracleWmsUtilitiesClient:
                 filters: Optional field filters applied as query parameters.
 
             Returns:
-                The resulting ``p.Result[t.SequenceOf[t.StrMapping]]``.
+                The resulting ``p.Result[Sequence[Mapping[str, str]]]``.
 
             """
             params_dict: t.MutableStrMapping = {}
@@ -282,20 +287,20 @@ class FlextOracleWmsUtilitiesClient:
             params: t.Api.WebParams = params_dict
             result = self.get(f"/entities/{entity_name}", params=params)
             if result.failure:
-                return r[t.SequenceOf[t.StrMapping]].fail(result.error)
+                return r[Sequence[Mapping[str, str]]].fail(result.error)
             payload_result = self._decode_response_model(
                 result.value.body,
                 m.OracleWms.EntityDataResponse,
             )
             if payload_result.failure:
-                return r[t.SequenceOf[t.StrMapping]].fail(payload_result.error)
-            return r[t.SequenceOf[t.StrMapping]].ok(payload_result.value.data)
+                return r[Sequence[Mapping[str, str]]].fail(payload_result.error)
+            return r[Sequence[Mapping[str, str]]].ok(payload_result.value.data)
 
-        def health_check(self) -> p.Result[m.Api.HttpResponse]:
+        def health_check(self) -> p.Result[p.Api.HttpResponse]:
             """Check Oracle WMS API health.
 
             Returns:
-                The resulting ``p.Result[m.Api.HttpResponse]``.
+                The resulting ``p.Result[p.Api.HttpResponse]``.
 
             """
             return self.get("/health")
@@ -304,9 +309,9 @@ class FlextOracleWmsUtilitiesClient:
             self,
             path: str,
             *,
-            headers: t.StrMapping | None = None,
+            headers: Mapping[str, str] | None = None,
             body: t.Api.RequestBody | None = None,
-        ) -> p.Result[m.Api.HttpResponse]:
+        ) -> p.Result[p.Api.HttpResponse]:
             """Make a POST request to the Oracle WMS API.
 
             Args:
@@ -315,7 +320,7 @@ class FlextOracleWmsUtilitiesClient:
                 body: Optional JSON request body.
 
             Returns:
-                The resulting ``p.Result[m.Api.HttpResponse]``.
+                The resulting ``p.Result[p.Api.HttpResponse]``.
 
             """
             return self._request(c.Api.Method.POST, path, headers=headers, body=body)
@@ -324,9 +329,9 @@ class FlextOracleWmsUtilitiesClient:
             self,
             path: str,
             *,
-            headers: t.StrMapping | None = None,
+            headers: Mapping[str, str] | None = None,
             body: t.Api.RequestBody | None = None,
-        ) -> p.Result[m.Api.HttpResponse]:
+        ) -> p.Result[p.Api.HttpResponse]:
             """Make a PUT request to the Oracle WMS API.
 
             Args:
@@ -335,7 +340,7 @@ class FlextOracleWmsUtilitiesClient:
                 body: Optional JSON request body.
 
             Returns:
-                The resulting ``p.Result[m.Api.HttpResponse]``.
+                The resulting ``p.Result[p.Api.HttpResponse]``.
 
             """
             return self._request(c.Api.Method.PUT, path, headers=headers, body=body)
@@ -371,7 +376,7 @@ class FlextOracleWmsUtilitiesClient:
             self,
             oblpn_id: str,
             tracking_number: str,
-        ) -> p.Result[m.Api.HttpResponse]:
+        ) -> p.Result[p.Api.HttpResponse]:
             """Update the tracking number of an outbound LPN.
 
             Args:
@@ -379,7 +384,7 @@ class FlextOracleWmsUtilitiesClient:
                 tracking_number: Tracking number to assign.
 
             Returns:
-                The resulting ``p.Result[m.Api.HttpResponse]``.
+                The resulting ``p.Result[p.Api.HttpResponse]``.
 
             """
             payload: t.Api.RequestBody = {"tracking_number": tracking_number}
@@ -390,10 +395,10 @@ class FlextOracleWmsUtilitiesClient:
             method: str,
             path: str,
             *,
-            headers: t.StrMapping | None = None,
+            headers: Mapping[str, str] | None = None,
             params: t.Api.WebParams | None = None,
             body: t.Api.RequestBody | None = None,
-        ) -> p.Result[m.Api.HttpResponse]:
+        ) -> p.Result[p.Api.HttpResponse]:
             if self._client is None:
                 self._client = self._create_api_client()
             request_headers: t.MutableStrMapping = {}
@@ -409,15 +414,15 @@ class FlextOracleWmsUtilitiesClient:
             })
             result = self._client.request(request)
             if result.failure:
-                return r[m.Api.HttpResponse].fail(
+                return r[p.Api.HttpResponse].fail(
                     f"{method} {path} failed: {result.error}",
                 )
             response = result.value
             if response.status_code >= c.OracleWms.HTTP_BAD_REQUEST_THRESHOLD:
-                return r[m.Api.HttpResponse].fail(
+                return r[p.Api.HttpResponse].fail(
                     f"{method} {path} returned HTTP {response.status_code}",
                 )
-            return r[m.Api.HttpResponse].ok(response)
+            return r[p.Api.HttpResponse].ok(response)
 
 
 __all__: list[str] = ["FlextOracleWmsUtilitiesClient"]

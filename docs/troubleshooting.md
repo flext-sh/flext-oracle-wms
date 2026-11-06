@@ -41,6 +41,15 @@ troubleshooting · 1.0.0 Current
 ```python
 from __future__ import annotations
 
+from collections.abc import (
+    Iterable,
+    Iterator,
+    Mapping,
+    MutableMapping,
+    MutableSequence,
+    Sequence,
+)
+
 from flext_oracle_wms import FlextOracleWmsClient, FlextOracleWmsModuleSettings
 
 # Expected behavior with current implementation
@@ -63,6 +72,15 @@ result = client.test_connection()  # Expected to fail
 
 ```python
 from __future__ import annotations
+
+from collections.abc import (
+    Iterable,
+    Iterator,
+    Mapping,
+    MutableMapping,
+    MutableSequence,
+    Sequence,
+)
 ```
 
 **Cause**: `get_logger` doesn't exist in flext_core
@@ -71,6 +89,15 @@ from __future__ import annotations
 
 ```python
 from __future__ import annotations
+
+from collections.abc import (
+    Iterable,
+    Iterator,
+    Mapping,
+    MutableMapping,
+    MutableSequence,
+    Sequence,
+)
 
 from flext_core import u
 
@@ -86,10 +113,19 @@ logger = u.fetch_logger(__name__)
 ```python
 from __future__ import annotations
 
+from collections.abc import (
+    Iterable,
+    Iterator,
+    Mapping,
+    MutableMapping,
+    MutableSequence,
+    Sequence,
+)
+
 from flext_oracle_wms import FlextOracleWmsError
 
 error = FlextOracleWmsError("message", field="username")
-assert error.field == "username"  # MyPy error: attribute not found
+tm.that(error.field, eq="username")  # MyPy error: attribute not found
 ```
 
 **Solution**: Exception classes now declare attributes explicitly:
@@ -97,11 +133,20 @@ assert error.field == "username"  # MyPy error: attribute not found
 ```python
 from __future__ import annotations
 
+from collections.abc import (
+    Iterable,
+    Iterator,
+    Mapping,
+    MutableMapping,
+    MutableSequence,
+    Sequence,
+)
+
 from flext_oracle_wms import FlextOracleWmsError
 
 # Exception classes have been updated with proper type annotations
 error = FlextOracleWmsError("message", field="username")
-assert error.field == "username"  # Now works with MyPy
+tm.that(error.field, eq="username")  # Now works with MyPy
 ```
 
 #### Configuration type mismatches
@@ -112,6 +157,15 @@ assert error.field == "username"  # Now works with MyPy
 
 ```python
 from __future__ import annotations
+
+from collections.abc import (
+    Iterable,
+    Iterator,
+    Mapping,
+    MutableMapping,
+    MutableSequence,
+    Sequence,
+)
 
 from flext_oracle_wms import FlextOracleWmsApiVersion, FlextOracleWmsModuleSettings
 
@@ -129,6 +183,15 @@ settings = FlextOracleWmsModuleSettings(
 
 ```python
 from __future__ import annotations
+
+from collections.abc import (
+    Iterable,
+    Iterator,
+    Mapping,
+    MutableMapping,
+    MutableSequence,
+    Sequence,
+)
 ```
 
 **Solution**: This requires implementation work:
@@ -160,6 +223,15 @@ from __future__ import annotations
 ```python
 from __future__ import annotations
 
+from collections.abc import (
+    Iterable,
+    Iterator,
+    Mapping,
+    MutableMapping,
+    MutableSequence,
+    Sequence,
+)
+
 from flext_core import u
 from flext_oracle_wms import FlextOracleWmsClient, FlextOracleWmsModuleSettings
 
@@ -184,6 +256,15 @@ def test_real_connection() -> None:
 
 ```python
 from __future__ import annotations
+
+from collections.abc import (
+    Iterable,
+    Iterator,
+    Mapping,
+    MutableMapping,
+    MutableSequence,
+    Sequence,
+)
 
 from flext_oracle_wms import FlextOracleWmsUtilitiesFiltering
 
@@ -272,6 +353,15 @@ make check
 ```python
 from __future__ import annotations
 
+from collections.abc import (
+    Iterable,
+    Iterator,
+    Mapping,
+    MutableMapping,
+    MutableSequence,
+    Sequence,
+)
+
 # Pydantic validation error:
 # ValidationError: field required (type=value_error.missing)
 ```
@@ -283,10 +373,19 @@ from __future__ import annotations
 ```python
 from __future__ import annotations
 
+from collections.abc import (
+    Iterable,
+    Iterator,
+    Mapping,
+    MutableMapping,
+    MutableSequence,
+    Sequence,
+)
+
 from flext_oracle_wms import FlextOracleWmsConnectionError
 
 error = FlextOracleWmsConnectionError("failed", retry_count=3)
-assert error.retry_count == 3  # Now works after exception class updates
+tm.that(error.retry_count, eq=3)  # Now works after exception class updates
 ```
 
 #### "Entity not found" errors
@@ -294,10 +393,19 @@ assert error.retry_count == 3  # Now works after exception class updates
 ```python
 from __future__ import annotations
 
+from collections.abc import (
+    Iterable,
+    Iterator,
+    Mapping,
+    MutableMapping,
+    MutableSequence,
+    Sequence,
+)
+
 from flext_oracle_wms import FlextOracleWmsEntityNotFoundError
 
 error = FlextOracleWmsEntityNotFoundError("Entity missing", entity_name="test")
-assert error.entity_name == "test"  # Properly handled
+tm.that(error.entity_name, eq="test")  # Properly handled
 ```
 
 ## Debugging Tips
@@ -306,6 +414,15 @@ assert error.entity_name == "test"  # Properly handled
 
 ```python
 from __future__ import annotations
+
+from collections.abc import (
+    Iterable,
+    Iterator,
+    Mapping,
+    MutableMapping,
+    MutableSequence,
+    Sequence,
+)
 
 import logging
 

@@ -44,6 +44,15 @@ Current implementation provides test configuration with fake URLs:
 ```python
 from __future__ import annotations
 
+from collections.abc import (
+    Iterable,
+    Iterator,
+    Mapping,
+    MutableMapping,
+    MutableSequence,
+    Sequence,
+)
+
 from flext_oracle_wms import FlextOracleWmsSettings
 
 settings = FlextOracleWmsSettings.model_validate({
@@ -90,7 +99,7 @@ export FLEXT_ORACLE_WMS_CACHE_TTL="3600"
 
 # FLEXT integration (requires implementation)
 export FLEXT_LOG_LEVEL="info"
-export FLEXT_ENABLE_METRICS="true"
+export FLEXT_ENABLE_METRICS=c.ParserBooleanToken.TRUE
 ```
 
 ## Configuration Classes
@@ -101,6 +110,15 @@ Configuration for Oracle WMS client (framework structure):
 
 ```python
 from __future__ import annotations
+
+from collections.abc import (
+    Iterable,
+    Iterator,
+    Mapping,
+    MutableMapping,
+    MutableSequence,
+    Sequence,
+)
 
 import os
 
@@ -125,6 +143,15 @@ implementation:
 ```python
 from __future__ import annotations
 
+from collections.abc import (
+    Iterable,
+    Iterator,
+    Mapping,
+    MutableMapping,
+    MutableSequence,
+    Sequence,
+)
+
 from flext_oracle_wms import c
 
 # Framework supports these methods (implementation required)
@@ -144,6 +171,15 @@ The framework includes Pydantic-based configuration validation:
 
 ```python
 from __future__ import annotations
+
+from collections.abc import (
+    Iterable,
+    Iterator,
+    Mapping,
+    MutableMapping,
+    MutableSequence,
+    Sequence,
+)
 
 import os
 

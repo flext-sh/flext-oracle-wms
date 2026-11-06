@@ -14,7 +14,17 @@ from __future__ import annotations
 
 import pytest
 
-from tests import _basic_password, _basic_token, _oauth_secret_456, _secret, c, m, tm, u
+from tests import (
+    _basic_password,
+    _basic_token,
+    _oauth_secret_456,
+    _secret,
+    c,
+    m,
+    p,
+    tm,
+    u,
+)
 
 # Method enum reused across cases.
 _Method = c.OracleWms.OracleWMSAuthMethod
@@ -115,7 +125,9 @@ class TestsFlextOracleWmsAuthentication:
             username="test_user",
             password=_basic_password(),
         )
-        assert u.OracleWms.validate_auth_settings(settings).unwrap() is True
+        tm.that(
+            u.OracleWms.validate_auth_settings(settings).unwrap() is True, truth=True
+        )
 
     @staticmethod
     def test_validate_business_rules_accepts_complete_oauth2() -> None:
@@ -125,7 +137,9 @@ class TestsFlextOracleWmsAuthentication:
             oauth2_client_id="id",
             oauth2_client_secret=_secret(),
         )
-        assert u.OracleWms.validate_auth_settings(settings).unwrap() is True
+        tm.that(
+            u.OracleWms.validate_auth_settings(settings).unwrap() is True, truth=True
+        )
 
     @staticmethod
     @pytest.mark.parametrize(
@@ -147,7 +161,7 @@ class TestsFlextOracleWmsAuthentication:
         ],
     )
     def test_validate_business_rules_reports_specific_failure(
-        settings: m.OracleWms.AuthSettings,
+        settings: p.OracleWms.AuthSettings,
         expected_fragment: str,
     ) -> None:
         """Incomplete/unsupported configs fail with an explanatory error."""
@@ -220,7 +234,7 @@ class TestsFlextOracleWmsAuthentication:
         ],
     )
     def test_authenticate_failure_carries_reason(
-        settings: m.OracleWms.AuthSettings,
+        settings: p.OracleWms.AuthSettings,
         expected_error: str,
     ) -> None:
         """Failed authentication surfaces the precise reason."""

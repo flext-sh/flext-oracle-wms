@@ -10,7 +10,7 @@ from typing import override
 
 from flext_tests import FlextTestsServiceBase
 
-from flext_oracle_wms import m
+from flext_oracle_wms import m, p
 from tests.settings import TestsFlextOracleWmsSettings
 
 
@@ -21,7 +21,7 @@ class TestsFlextOracleWmsServiceBase(FlextTestsServiceBase):
     # declares only its more-specific bootstrap settings type.
     @classmethod
     @override
-    def runtime_bootstrap_options(cls) -> m.RuntimeBootstrapOptions:
+    def runtime_bootstrap_options(cls) -> p.RuntimeBootstrapOptions:
         return m.RuntimeBootstrapOptions(settings_type=TestsFlextOracleWmsSettings)
 
 

@@ -66,7 +66,7 @@ padrão.
        72      _ = container.bind("FlextOracleWmsSettings", settings.model_dump(mode="python"))
        73
        74
->>>    75  def discover_wms_entities(client: FlextOracleWmsClient) -> p.Result[t.StrSequence]:
+>>>    75  def discover_wms_entities(client: FlextOracleWmsClient) -> p.Result[Sequence[str]]:
        76      """Discover available Oracle WMS entities.
        77
        78      Args:
@@ -88,7 +88,7 @@ padrão.
        98
 >>>    99  def query_entity_data(
       100      client: FlextOracleWmsClient, entity_name: str
-      101  ) -> p.Result[Sequence[t.StrMapping]]:
+      101  ) -> p.Result[Sequence[Mapping[str, str]]]:
       102      """Query data from a specific Oracle WMS entity.
       103
 ```
@@ -316,7 +316,7 @@ padrão.
       123
       124      def test_constructor_rejects_filters_exceeding_condition_limit(self) -> None:
       125          """Building an engine with too many conditions raises a validation error."""
->>>   126          with pytest.raises(FlextOracleWmsErrors.ValidationError):
+>>>   126          with u.Tests.raises(FlextOracleWmsErrors.ValidationError):
       127              u.Filter(
       128                  filters={
       129                      "id": m.OracleWms.FlextOracleWmsOperatorFilter(

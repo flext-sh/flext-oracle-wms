@@ -1,3 +1,4 @@
+# AUTO-GENERATED FILE — Regenerate with: make gen
 """FLEXT Oracle WMS Types.
 
 Copyright (c) 2026 FLEXT Team. All rights reserved.
@@ -6,56 +7,17 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from flext_api import t
 
-from flext_api import FlextApiTypes
-
-if TYPE_CHECKING:
-    from flext_oracle_wms import m
+from flext_oracle_wms._typings import FlextOracleWmsTypesDomain
 
 
-class FlextOracleWmsTypes(FlextApiTypes):
+class FlextOracleWmsTypes(t):
     """Oracle WMS type definitions extending t via MRO."""
 
-    class OracleWms:
-        """Oracle WMS domain namespace (flat members per AGENTS.md §149)."""
-
-        type FilterScalar = t.Scalar | None
-        type FilterList = t.SequenceOf[FlextOracleWmsTypes.OracleWms.FilterScalar]
-        type FilterEntry = (
-            FlextOracleWmsTypes.OracleWms.FilterScalar
-            | FlextOracleWmsTypes.OracleWms.FilterList
-            | m.OracleWms.FlextOracleWmsOperatorFilter
-        )
-        type FilterRecordValue = (
-            FlextOracleWmsTypes.OracleWms.FilterScalar
-            | FlextOracleWmsTypes.OracleWms.FilterList
-            | t.MappingKV[
-                str,
-                FlextOracleWmsTypes.OracleWms.FilterScalar
-                | FlextOracleWmsTypes.OracleWms.FilterList
-                | t.MappingKV[
-                    str,
-                    FlextOracleWmsTypes.OracleWms.FilterScalar
-                    | FlextOracleWmsTypes.OracleWms.FilterList,
-                ],
-            ]
-        )
-        type FilterRecord = t.MappingKV[
-            str,
-            FlextOracleWmsTypes.OracleWms.FilterScalar
-            | FlextOracleWmsTypes.OracleWms.FilterList
-            | t.MappingKV[
-                str,
-                FlextOracleWmsTypes.OracleWms.FilterScalar
-                | FlextOracleWmsTypes.OracleWms.FilterList,
-            ],
-        ]
-        # Same recursive union as ``FilterRecordValue`` — one owner defines the
-        # filter-value shape; this name re-exports it.
-        type NestedFilterValue = FlextOracleWmsTypes.OracleWms.FilterRecordValue
+    class OracleWms(FlextOracleWmsTypesDomain):
+        """Oracle WMS namespace composing the ``_typings`` family base."""
 
 
 t = FlextOracleWmsTypes
-
 __all__: list[str] = ["FlextOracleWmsTypes", "t"]

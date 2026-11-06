@@ -31,7 +31,7 @@ class TestsFlextOracleWmsSingerFlattening:
         tm.that(entity.description, none=True)
         tm.that(entity.primary_key, none=True)
         tm.that(entity.replication_key, none=True)
-        tm.that(entity.supports_incremental, eq=False)
+        tm.fail(entity.supports_incremental)
 
     @staticmethod
     def test_full_entity_round_trips_through_model_dump() -> None:
@@ -60,20 +60,20 @@ class TestsFlextOracleWmsSingerFlattening:
     @staticmethod
     @pytest.mark.parametrize(
         ("name", "endpoint"),
-        [("", "/valid"), ("valid", "no-leading-slash"), ("valid", "")],
+        [("", "/valid"), ("valid", "no-leading-slash"), ("valid", ...)],
     )
     def test_invalid_construction_raises_validation_error(
         name: str,
         endpoint: str,
     ) -> None:
         """Boundary violations reject construction with a ValidationError."""
-        with pytest.raises(c.ValidationError):
+        with u.Tests.raises(c.ValidationError):
             m.OracleWms.Entity(name=name, endpoint=endpoint)
 
     @staticmethod
     def test_unknown_field_is_forbidden() -> None:
         """extra="forbid" rejects fields outside the public schema."""
-        with pytest.raises(c.ValidationError):
+        with u.Tests.raises(c.ValidationError):
             m.OracleWms.Entity.model_validate({
                 "name": "inventory",
                 "endpoint": "/inventory",
@@ -88,7 +88,7 @@ class TestsFlextOracleWmsSingerFlattening:
         result = u.OracleWms.validate_wms_entity(entity)
 
         tm.ok(result)
-        tm.that(result.unwrap(), eq=True)
+        tm.ok(result.unwrap())
 
     @staticmethod
     def test_validate_entity_at_max_name_length_succeeds() -> None:
@@ -98,7 +98,7 @@ class TestsFlextOracleWmsSingerFlattening:
         result = u.OracleWms.validate_wms_entity(entity)
 
         tm.ok(result)
-        tm.that(result.unwrap(), eq=True)
+        tm.ok(result.unwrap())
 
     @staticmethod
     def test_validate_entity_rejects_overlong_name() -> None:

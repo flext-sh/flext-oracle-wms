@@ -10,10 +10,11 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
+from collections.abc import Mapping
 from typing import TYPE_CHECKING, Protocol, runtime_checkable
 
 if TYPE_CHECKING:
-    from collections.abc import Mapping
+    from flext_oracle_wms._protocols import FlextOracleWmsProtocolsDomain
 
 
 class FlextOracleWmsProtocolsConfig:
@@ -87,27 +88,8 @@ class FlextOracleWmsProtocolsConfig:
         def production(self) -> str: ...
 
     @runtime_checkable
-    class ApiEndpoint(Protocol):
-        """Structural surface of a validated Oracle WMS API endpoint."""
-
-        @property
-        def name(self) -> str: ...
-        @property
-        def method(self) -> str: ...
-        @property
-        def path(self) -> str: ...
-        @property
-        def version(self) -> str: ...
-        @property
-        def category(self) -> str: ...
-        @property
-        def description(self) -> str: ...
-        @property
-        def since_version(self) -> str: ...
-
-    @runtime_checkable
     class Config(Protocol):
-        """Structural surface of ``config.oracle_wms`` (validated domains)."""
+        """Structural surface of the ``config`` singleton (validated domains)."""
 
         @property
         def http(self) -> FlextOracleWmsProtocolsConfig.Http: ...
@@ -126,7 +108,7 @@ class FlextOracleWmsProtocolsConfig:
         @property
         def api_endpoints(
             self,
-        ) -> Mapping[str, FlextOracleWmsProtocolsConfig.ApiEndpoint]: ...
+        ) -> Mapping[str, FlextOracleWmsProtocolsDomain.ApiEndpoint]: ...
 
 
 __all__: list[str] = ["FlextOracleWmsProtocolsConfig"]

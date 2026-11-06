@@ -6,12 +6,17 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
+from collections.abc import Mapping
 from typing import TYPE_CHECKING, Self
 
-from flext_api import FlextApi, FlextApiSettings, u
+from flext_api import FlextApi, FlextApiSettings
 from flext_core import r
 
-from flext_oracle_wms import c, m, p, t
+from flext_oracle_wms.constants import c
+from flext_oracle_wms.models import m
+from flext_oracle_wms.protocols import p
+from flext_oracle_wms.typings import t
+from flext_oracle_wms.utilities import u
 
 if TYPE_CHECKING:
     from types import TracebackType
@@ -29,7 +34,7 @@ class FlextOracleWmsUtilitiesHttpClient:
             self,
             base_url: str,
             timeout: float = 30.0,
-            headers: t.StrMapping | None = None,
+            headers: Mapping[str, str] | None = None,
             *,
             verify_ssl: bool = True,
         ) -> None:
@@ -60,17 +65,17 @@ class FlextOracleWmsUtilitiesHttpClient:
 
         def __exit__(
             self,
-            exc_type: type[BaseException] | None,
-            exc_val: BaseException | None,
-            exc_tb: TracebackType | None,
+            _exc_type: type[BaseException] | None,
+            _exc_val: BaseException | None,
+            _exc_tb: TracebackType | None,
         ) -> None:
             """Exit the context-managed session and close the client."""
             self.close()
 
         @staticmethod
         def _normalize_headers(
-            headers: t.StrMapping | t.Api.WebHeaders | None,
-        ) -> t.StrMapping:
+            headers: Mapping[str, str] | t.Api.WebHeaders | None,
+        ) -> Mapping[str, str]:
             if headers is None:
                 return {}
             normalized: t.MutableStrMapping = {}
@@ -104,7 +109,7 @@ class FlextOracleWmsUtilitiesHttpClient:
         def delete(
             self,
             path: str,
-            headers: t.StrMapping | None = None,
+            headers: Mapping[str, str] | None = None,
         ) -> p.Result[t.JsonMapping]:
             """Make a DELETE request.
 
@@ -122,7 +127,7 @@ class FlextOracleWmsUtilitiesHttpClient:
             self,
             path: str,
             params: t.Api.WebParams | None = None,
-            headers: t.StrMapping | None = None,
+            headers: Mapping[str, str] | None = None,
         ) -> p.Result[t.JsonMapping]:
             """Make a GET request with railway-oriented error handling.
 
@@ -148,7 +153,7 @@ class FlextOracleWmsUtilitiesHttpClient:
             path: str,
             data: t.JsonMapping | None = None,
             json_data: t.JsonMapping | None = None,
-            headers: t.StrMapping | None = None,
+            headers: Mapping[str, str] | None = None,
         ) -> p.Result[t.JsonMapping]:
             """Make a POST request with railway-oriented error handling.
 
@@ -172,7 +177,7 @@ class FlextOracleWmsUtilitiesHttpClient:
             path: str,
             data: t.JsonMapping | None = None,
             json_data: t.JsonMapping | None = None,
-            headers: t.StrMapping | None = None,
+            headers: Mapping[str, str] | None = None,
         ) -> p.Result[t.JsonMapping]:
             """Make a PUT request with railway-oriented error handling.
 
@@ -223,7 +228,7 @@ class FlextOracleWmsUtilitiesHttpClient:
             method: str,
             path: str,
             params: t.Api.WebParams | None = None,
-            headers: t.StrMapping | None = None,
+            headers: Mapping[str, str] | None = None,
             body: t.JsonMapping | None = None,
         ) -> p.Result[t.JsonMapping]:
             """Execute HTTP request with FLEXT delegation.
@@ -253,7 +258,7 @@ class FlextOracleWmsUtilitiesHttpClient:
             method: str,
             path: str,
             params: t.Api.WebParams | None = None,
-            headers: t.StrMapping | None = None,
+            headers: Mapping[str, str] | None = None,
             body: t.JsonMapping | None = None,
         ) -> p.Result[t.JsonMapping]:
             """Execute a request while allowing validation and I/O exceptions upward.
@@ -285,18 +290,18 @@ class FlextOracleWmsUtilitiesHttpClient:
             method: str,
             path: str,
             params: t.Api.WebParams | None = None,
-            headers: t.StrMapping | None = None,
+            headers: Mapping[str, str] | None = None,
             body: t.JsonMapping | None = None,
-        ) -> p.Result[m.Api.HttpResponse]:
+        ) -> p.Result[p.Api.HttpResponse]:
             """Build and dispatch one FLEXT API request.
 
             Returns:
-                The resulting ``p.Result[m.Api.HttpResponse]``.
+                The resulting ``p.Result[p.Api.HttpResponse]``.
 
             """
             self._ensure_client()
             if self._client is None:
-                return r[m.Api.HttpResponse].fail("Client not initialized")
+                return r[p.Api.HttpResponse].fail("Client not initialized")
             request_headers: t.MutableStrMapping = dict(self.default_headers)
             request_headers.update(self._normalize_headers(headers))
             url = f"{self.base_url}/{path.lstrip('/')}" if path else self.base_url
@@ -363,7 +368,7 @@ class FlextOracleWmsUtilitiesHttpClient:
         def create(
             base_url: str,
             timeout: float = 30.0,
-            headers: t.StrMapping | None = None,
+            headers: Mapping[str, str] | None = None,
             *,
             verify_ssl: bool = True,
         ) -> FlextOracleWmsUtilitiesHttpClient.HttpClient:

@@ -7,7 +7,6 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from types import MappingProxyType
 from typing import TYPE_CHECKING
 
 from flext_core.lazy import install_lazy_exports
@@ -15,7 +14,7 @@ from flext_core.lazy import install_lazy_exports
 if TYPE_CHECKING:
     from flext_tests import api, d, h, r, td, tf, tk, tm, x
 
-    from flext_oracle_wms import e
+    from flext_oracle_wms import config, e, main, oracle_wms, settings
     from tests.base import TestsFlextOracleWmsServiceBase, s
     from tests.constants import TestsFlextOracleWmsConstants, c
     from tests.factories import (
@@ -71,13 +70,17 @@ __all__: tuple[str, ...] = (
     "_wms_username",
     "api",
     "c",
+    "config",
     "d",
     "e",
     "h",
     "m",
+    "main",
+    "oracle_wms",
     "p",
     "r",
     "s",
+    "settings",
     "t",
     "td",
     "tf",
@@ -90,7 +93,7 @@ __all__: tuple[str, ...] = (
 install_lazy_exports(
     __name__,
     globals(),
-    MappingProxyType({
+    {
         "TestsFlextOracleWmsConstants": ".constants",
         "TestsFlextOracleWmsModels": ".models",
         "TestsFlextOracleWmsProtocols": ".protocols",
@@ -117,13 +120,17 @@ install_lazy_exports(
         "_wms_username": ".factories",
         "api": "flext_tests",
         "c": ".constants",
+        "config": "flext_oracle_wms",
         "d": "flext_tests",
         "e": "flext_oracle_wms",
         "h": "flext_tests",
         "m": ".models",
+        "main": "flext_oracle_wms",
+        "oracle_wms": "flext_oracle_wms",
         "p": ".protocols",
         "r": "flext_tests",
         "s": ".base",
+        "settings": "flext_oracle_wms",
         "t": ".typings",
         "td": "flext_tests",
         "tf": "flext_tests",
@@ -131,6 +138,6 @@ install_lazy_exports(
         "tm": "flext_tests",
         "u": ".utilities",
         "x": "flext_tests",
-    }),
+    },
     public_exports=__all__,
 )
