@@ -34,7 +34,7 @@ Based on source code analysis:
 
 ### Module Structure
 
-```
+```text
 src/flext_oracle_wms/
 ├── wms_client.py          # Main Oracle WMS client
 ├── wms_discovery.py       # Entity discovery implementation
