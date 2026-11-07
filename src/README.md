@@ -43,7 +43,7 @@ for the FLEXT data integration platform.
 
 The source code follows Clean Architecture principles with clear separation of concerns:
 
-```
+```text
 src/flext_oracle_wms/
 ├── __init__.py              # Public API gateway with comprehensive exports
 ├── client.py                # Primary client interface for Oracle WMS operations

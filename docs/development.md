@@ -228,7 +228,7 @@ def operation() -> p.Result[str]:
 
 ### Current Test Structure
 
-```
+```text
 
 tests/
 ├── test_client.py         # Client functionality tests
