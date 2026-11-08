@@ -80,7 +80,7 @@ class FlextOracleWmsModelsDomain(FlextOracleWmsModelsConfig):
 
         Extends the ``config_models`` owner so the domain part overrides it
         covariantly (a valid subtype), and adds the domain
-        validation (non-empty identifiers) and the documented defaults.
+        validation (non-empty identifiers); the catalog supplies every field.
         """
 
         name: Annotated[str, m.Field(min_length=1)]
@@ -88,8 +88,6 @@ class FlextOracleWmsModelsDomain(FlextOracleWmsModelsConfig):
         path: Annotated[str, m.Field(min_length=1)]
         version: Annotated[str, m.Field(min_length=1)]
         category: Annotated[str, m.Field(min_length=1)]
-        description: str = ""
-        since_version: str = c.OracleWms.WMS_API_BASELINE_VERSION
 
     class AuthSettings(FlextApiModels.BaseModel):
         """Authentication configuration for Oracle WMS flows."""
