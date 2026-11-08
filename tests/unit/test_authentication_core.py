@@ -22,6 +22,7 @@ class TestsFlextOracleWmsAuthenticationCore:
     """Public-contract behavior of Oracle WMS auth settings, authenticator, client."""
 
     @pytest.fixture
+    @staticmethod
     def basic_settings() -> p.OracleWms.AuthSettings:
         """Return valid BASIC auth settings."""
         return m.OracleWms.AuthSettings(

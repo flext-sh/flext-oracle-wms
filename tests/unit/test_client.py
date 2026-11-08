@@ -27,6 +27,7 @@ class TestsFlextOracleWmsClient:
     """Public-contract tests for ``u.OracleWms.Client``."""
 
     @pytest.fixture
+    @staticmethod
     def settings() -> FlextOracleWmsSettings:
         """Deterministic runtime settings for a BASIC-auth client.
 
