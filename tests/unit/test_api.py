@@ -17,6 +17,7 @@ class TestsFlextOracleWmsApi:
     """Behavioral contract tests for the FlextOracleWmsApi facade."""
 
     @pytest.fixture
+    @staticmethod
     def api() -> FlextOracleWmsApi:
         """Return a facade built from explicit settings (no global lookup)."""
         return FlextOracleWmsApi(
