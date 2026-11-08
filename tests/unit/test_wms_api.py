@@ -12,7 +12,7 @@ from collections.abc import MutableMapping
 import pytest
 
 from flext_oracle_wms import FlextOracleWmsApi, FlextOracleWmsSettings, m
-from tests import _basic_password, _secret, tm, u
+from tests import _basic_password, _secret, c, tm, u
 
 
 class TestsFlextOracleWmsWmsApi:
@@ -120,6 +120,8 @@ class TestsFlextOracleWmsWmsApi:
             "path": "/n/",
             "version": "v1",
             "category": "test",
+            "description": "n endpoint",
+            "since_version": c.OracleWms.WMS_API_BASELINE_VERSION,
         }
         fields[blank_field] = ""
 
