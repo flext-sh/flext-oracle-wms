@@ -9,6 +9,8 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
+import base64
+import secrets
 from enum import StrEnum, unique
 from typing import ClassVar
 
@@ -37,6 +39,33 @@ class TestsFlextOracleWmsConstants(FlextTestsConstants, FlextOracleWmsConstants)
 
             API_VERSION_LGF_V10: ClassVar[str] = "LGF_V10"
             "Oracle WMS LGF API version 10 identifier."
+
+            BASIC_USERNAME: ClassVar[str] = "test_user"
+            "Canonical BASIC username used across authentication tests."
+            BASIC_PASSWORD: ClassVar[str] = secrets.token_urlsafe()
+            "Generated BASIC password used across authentication tests."
+            BASIC_TOKEN: ClassVar[str] = base64.b64encode(
+                f"{BASIC_USERNAME}:{BASIC_PASSWORD}".encode(),
+            ).decode("ascii")
+            "Base64 BASIC token of the canonical username and password."
+            WMS_PASSWORD: ClassVar[str] = secrets.token_urlsafe()
+            "Generated password for WMS-specific client tests."
+            WMS_PASSWORD_UNDERSCORE: ClassVar[str] = secrets.token_urlsafe()
+            "Second generated password for WMS-specific client tests."
+            TEST_PASS: ClassVar[str] = secrets.token_urlsafe()
+            "Generated password for client settings tests."
+            CUSTOM_PASSWORD: ClassVar[str] = secrets.token_urlsafe()
+            "Generated password for settings-resolution tests."
+            SHORT_PASSWORD: ClassVar[str] = secrets.token_urlsafe()
+            "Generated password for unsupported-method tests."
+            GENERIC_SECRET: ClassVar[str] = secrets.token_urlsafe()
+            "Generated client secret for OAuth2 client-secret tests."
+            OAUTH_SECRET: ClassVar[str] = secrets.token_urlsafe()
+            "Generated canonical OAuth2 client secret."
+            OAUTH_SECRET_DASHED: ClassVar[str] = secrets.token_urlsafe()
+            "Generated second OAuth2 client secret."
+            OAUTH_SECRET_NUMERIC: ClassVar[str] = secrets.token_urlsafe()
+            "Generated third OAuth2 client secret."
 
 
 c = TestsFlextOracleWmsConstants

@@ -11,10 +11,9 @@ import base64
 
 import pytest
 
-from tests import _basic_password, _oauth_secret, _secret, c, m, p, tm, u
+from tests import c, m, p, tm, u
 
 _AuthMethod = c.OracleWms.OracleWMSAuthMethod
-_BASIC_TOKEN = base64.b64encode(b"test_user:test_password").decode("ascii")
 
 
 @pytest.mark.unit
@@ -28,7 +27,7 @@ class TestsFlextOracleWmsAuthenticationCore:
         return m.OracleWms.AuthSettings(
             method=_AuthMethod.BASIC,
             username="test_user",
-            password=_basic_password(),
+            password=c.OracleWms.Tests.BASIC_PASSWORD,
         )
 
     # --- Auth method enum contract ---------------------------------------
@@ -73,7 +72,7 @@ class TestsFlextOracleWmsAuthenticationCore:
         """BASIC credentials round-trip through public fields."""
         tm.that(basic_settings.method, eq=_AuthMethod.BASIC)
         tm.that(basic_settings.username, eq="test_user")
-        tm.that(basic_settings.password, eq="test_password")
+        tm.that(basic_settings.password, eq=c.OracleWms.Tests.BASIC_PASSWORD)
 
     @staticmethod
     def test_oauth2_credentials_are_retained() -> None:
@@ -81,11 +80,11 @@ class TestsFlextOracleWmsAuthenticationCore:
         settings = m.OracleWms.AuthSettings(
             method=_AuthMethod.OAUTH2,
             oauth2_client_id="client_id",
-            oauth2_client_secret=_oauth_secret(),
+            oauth2_client_secret=c.OracleWms.Tests.OAUTH_SECRET,
         )
         tm.that(settings.method, eq=_AuthMethod.OAUTH2)
         tm.that(settings.oauth2_client_id, eq="client_id")
-        tm.that(settings.oauth2_client_secret, eq="client_secret")
+        tm.that(settings.oauth2_client_secret, eq=c.OracleWms.Tests.OAUTH_SECRET)
 
     @staticmethod
     @pytest.mark.parametrize("raw", ["BASIC", " Basic ", "basic", "BaSiC"])
@@ -113,7 +112,7 @@ class TestsFlextOracleWmsAuthenticationCore:
         settings = m.OracleWms.AuthSettings(
             method=_AuthMethod.OAUTH2,
             oauth2_client_id="id",
-            oauth2_client_secret=_secret(),
+            oauth2_client_secret=c.OracleWms.Tests.GENERIC_SECRET,
         )
         result = u.OracleWms.validate_auth_settings(settings)
         tm.ok(result)
@@ -164,7 +163,7 @@ class TestsFlextOracleWmsAuthenticationCore:
         # NOTE (multi-agent): auth lane keeps the injected settings private
         # (``_settings``); retention is asserted via observable public behavior.
         tm.that(authenticator.normalized_method, eq=basic_settings.normalized_method)
-        tm.that(authenticator.authenticate().unwrap(), eq=_BASIC_TOKEN)
+        tm.that(authenticator.authenticate().unwrap(), eq=c.OracleWms.Tests.BASIC_TOKEN)
 
     @staticmethod
     def test_authenticate_basic_yields_decodable_credentials(
@@ -175,8 +174,11 @@ class TestsFlextOracleWmsAuthenticationCore:
         result = authenticator.authenticate()
         tm.ok(result)
         token = result.unwrap()
-        tm.that(token, eq=_BASIC_TOKEN)
-        tm.that(base64.b64decode(token).decode(), eq="test_user:test_password")
+        tm.that(token, eq=c.OracleWms.Tests.BASIC_TOKEN)
+        tm.that(
+            base64.b64decode(token).decode(),
+            eq=f"{c.OracleWms.Tests.BASIC_USERNAME}:{c.OracleWms.Tests.BASIC_PASSWORD}",
+        )
 
     @staticmethod
     def test_authenticate_is_idempotent(
@@ -206,7 +208,7 @@ class TestsFlextOracleWmsAuthenticationCore:
                 m.OracleWms.AuthSettings(
                     method=_AuthMethod.OAUTH2,
                     oauth2_client_id="id",
-                    oauth2_client_secret=_secret(),
+                    oauth2_client_secret=c.OracleWms.Tests.GENERIC_SECRET,
                 ),
                 "OAuth2 not configured",
             ),
@@ -237,7 +239,7 @@ class TestsFlextOracleWmsAuthenticationCore:
         result = authenticator.get_auth_headers()
         tm.ok(result)
         headers = result.unwrap()
-        tm.that(headers, eq={"Authorization": f"Basic {_BASIC_TOKEN}"})
+        tm.that(headers, eq={"Authorization": f"Basic {c.OracleWms.Tests.BASIC_TOKEN}"})
 
     @staticmethod
     def test_get_auth_headers_propagates_authentication_failure() -> None:
@@ -273,7 +275,7 @@ class TestsFlextOracleWmsAuthenticationCore:
         settings = m.OracleWms.AuthSettings(
             method=_AuthMethod.OAUTH2,
             oauth2_client_id="id",
-            oauth2_client_secret=_secret(),
+            oauth2_client_secret=c.OracleWms.Tests.GENERIC_SECRET,
         )
         result = u.OracleWms.Client.from_auth_settings(settings)
         tm.fail(result)
