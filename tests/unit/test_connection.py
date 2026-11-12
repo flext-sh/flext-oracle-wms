@@ -10,7 +10,7 @@ from __future__ import annotations
 import pytest
 
 from flext_oracle_wms import FlextOracleWmsSettings, m
-from tests import _secret, r, tm, u
+from tests import c, r, tm, u
 
 
 class TestsFlextOracleWmsConnection:
@@ -33,7 +33,7 @@ class TestsFlextOracleWmsConnection:
         [
             ("base_url", "https://test-wms.example.com"),
             ("username", "test_user"),
-            ("password", "test_password"),
+            ("password", c.OracleWms.Tests.BASIC_PASSWORD),
             ("timeout", 30.0),
             ("retry_attempts", 3),
             ("api_version", "LGF_V10"),
@@ -73,13 +73,13 @@ class TestsFlextOracleWmsConnection:
         auth = m.OracleWms.AuthSettings(
             method="basic",
             username="alice",
-            password=_secret(),
+            password=c.OracleWms.Tests.GENERIC_SECRET,
         )
         result = u.OracleWms.Client.from_auth_settings(auth)
         tm.ok(result)
         built = result.unwrap()
         tm.that(built.settings.OracleWms.username, eq="alice")
-        tm.that(built.settings.OracleWms.password, eq="secret")
+        tm.that(built.settings.OracleWms.password, eq=c.OracleWms.Tests.GENERIC_SECRET)
 
     @staticmethod
     def test_discover_entities_returns_result_on_unreachable_host(

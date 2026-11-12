@@ -10,7 +10,7 @@ from __future__ import annotations
 import pytest
 
 from flext_oracle_wms import FlextOracleWmsApi, FlextOracleWmsSettings, m, s
-from tests import _secret, c, tm, u
+from tests import c, tm, u
 
 
 class TestsFlextOracleWmsApi:
@@ -25,7 +25,7 @@ class TestsFlextOracleWmsApi:
                 "OracleWms": {
                     "base_url": "http://wms.example",
                     "username": c.ContextScope.USER,
-                    "password": _secret(),
+                    "password": c.OracleWms.Tests.GENERIC_SECRET,
                 },
             }),
         )
@@ -97,7 +97,7 @@ class TestsFlextOracleWmsApi:
     def test_create_oracle_wms_client_succeeds_from_auth_settings() -> None:
         """create_oracle_wms_client returns a successful client result."""
         auth = m.OracleWms.AuthSettings(
-            username=c.ContextScope.USER, password=_secret()
+            username=c.ContextScope.USER, password=c.OracleWms.Tests.GENERIC_SECRET
         )
 
         result = FlextOracleWmsApi.create_oracle_wms_client(auth)

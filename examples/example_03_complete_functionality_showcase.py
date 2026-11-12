@@ -225,8 +225,8 @@ def showcase_6_error_handling(client: u.OracleWms.Client) -> None:
         invalid_config = FlextOracleWmsSettings.model_validate({
             "OracleWms": {
                 "base_url": "invalid-url",
-                "username": "",
-                "password": "",
+                "username": c.DEFAULT_EMPTY_STRING,
+                "password": c.DEFAULT_EMPTY_STRING,
                 "api_version": "LGF_V10",
                 "timeout": 30,
                 "retry_attempts": 3,
