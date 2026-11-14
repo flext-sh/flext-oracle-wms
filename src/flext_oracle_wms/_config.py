@@ -1,4 +1,4 @@
-"""FlextOracleWmsConfig — frozen, validated config singleton (ADR-005 / cosmos pattern).
+"""FlextOracleWmsConfig — frozen, validated config singleton (ADR-005).
 
 Every ``config/*.yaml`` file is auto-discovered and deep-merged at first
 ``fetch_global`` call. Each root-level YAML domain is a declared typed field
