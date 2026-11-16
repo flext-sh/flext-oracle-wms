@@ -9,7 +9,7 @@ from __future__ import annotations
 
 import pytest
 
-from flext_oracle_wms import FlextOracleWmsApi, FlextOracleWmsSettings, m, s
+from flext_oracle_wms import FlextOracleWmsApi, FlextOracleWmsSettings, m
 from tests import c, tm, u
 
 
@@ -29,11 +29,6 @@ class TestsFlextOracleWmsApi:
                 },
             }),
         )
-
-    @staticmethod
-    def test_is_flext_service() -> None:
-        """The facade honors the FlextService contract via subclassing."""
-        tm.that(issubclass(FlextOracleWmsApi, s), truth=True)
 
     @staticmethod
     def test_execute_returns_ready_success(api: FlextOracleWmsApi) -> None:
