@@ -9,7 +9,7 @@ from __future__ import annotations
 from collections.abc import Mapping
 from enum import StrEnum, unique
 from types import MappingProxyType
-from typing import ClassVar, Final
+from typing import ClassVar
 
 from flext_core import c, t
 
@@ -20,9 +20,9 @@ class FlextOracleWmsConstantsValues:
     class OracleWms:
         """WMS connection scalar constants - composed from base."""
 
-        FLEXT_WMS_VERSION: Final[str] = "1.0.0"
-        HTTP_BAD_REQUEST_THRESHOLD: Final[int] = 400
-        WMS_API_BASELINE_VERSION: Final[str] = "6.1"
+        FLEXT_WMS_VERSION: ClassVar[str] = "1.0.0"
+        HTTP_BAD_REQUEST_THRESHOLD: ClassVar[int] = 400
+        WMS_API_BASELINE_VERSION: ClassVar[str] = "6.1"
 
         API_ENDPOINTS: ClassVar[Mapping[str, Mapping[str, str]]] = MappingProxyType({
             "test": {
@@ -56,11 +56,11 @@ class FlextOracleWmsConstantsValues:
             "production": "https://prod-wms.example.com",
         })
 
-        DEFAULT_TIMEOUT: Final[int] = c.DEFAULT_TIMEOUT_SECONDS
-        DEFAULT_MAX_RETRIES: Final[int] = c.MAX_RETRY_ATTEMPTS
-        DEFAULT_RETRY_DELAY: Final[int] = c.DEFAULT_RETRY_DELAY_SECONDS
-        DISCOVERY_SUCCESS: Final[str] = "discovery_success"
-        DISCOVERY_FAILURE: Final[str] = "discovery_failure"
+        DEFAULT_TIMEOUT: ClassVar[int] = c.DEFAULT_TIMEOUT_SECONDS
+        DEFAULT_MAX_RETRIES: ClassVar[int] = c.MAX_RETRY_ATTEMPTS
+        DEFAULT_RETRY_DELAY: ClassVar[int] = c.DEFAULT_RETRY_DELAY_SECONDS
+        DISCOVERY_SUCCESS: ClassVar[str] = "discovery_success"
+        DISCOVERY_FAILURE: ClassVar[str] = "discovery_failure"
 
         @unique
         class WmsFilterOperator(StrEnum):
@@ -125,9 +125,9 @@ class FlextOracleWmsConstantsValues:
         class WmsProcessing:
             """WMS processing constants - domain-specific."""
 
-            DEFAULT_BATCH_SIZE: Final[int] = c.DEFAULT_SIZE
-            MAX_BATCH_SIZE: Final[int] = c.MAX_ITEMS
-            DEFAULT_PAGE_SIZE: Final[int] = c.DEFAULT_PAGE_SIZE
+            DEFAULT_BATCH_SIZE: ClassVar[int] = c.DEFAULT_SIZE
+            MAX_BATCH_SIZE: ClassVar[int] = c.MAX_ITEMS
+            DEFAULT_PAGE_SIZE: ClassVar[int] = c.DEFAULT_PAGE_SIZE
             MAX_SCHEMA_DEPTH: ClassVar[int] = 10
 
         class Filtering:
