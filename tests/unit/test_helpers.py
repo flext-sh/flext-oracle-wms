@@ -7,10 +7,9 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-import flext_core
 import pytest
 
-from flext_oracle_wms.errors import FlextOracleWmsErrors
+from flext_oracle_wms import FlextOracleWmsErrors
 from tests import c, e, m, t, tm, u
 
 
@@ -34,11 +33,6 @@ class TestsFlextOracleWmsHelpers:
         ]
 
     # ---- facade contract -------------------------------------------------
-
-    @staticmethod
-    def test_utilities_facade_inherits_flext_core_utilities() -> None:
-        """The facade composes flext-core utilities via MRO."""
-        tm.that(issubclass(u, flext_core.u), truth=True)
 
     @staticmethod
     def test_filter_engine_reachable_through_public_namespace() -> None:

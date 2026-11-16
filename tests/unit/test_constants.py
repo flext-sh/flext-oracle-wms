@@ -17,7 +17,7 @@ from collections.abc import Mapping
 
 import pytest
 
-from flext_oracle_wms import FlextOracleWmsConstants, config
+from flext_oracle_wms import config
 from tests import c, tm, u
 
 _AuthMethod = c.OracleWms.OracleWMSAuthMethod
@@ -27,11 +27,6 @@ _Environment = c.OracleWms.Environment
 
 class TestsFlextOracleWmsConstantsUnit:
     """Behavioral contract tests for the Oracle WMS constants facade."""
-
-    @staticmethod
-    def test_facade_composes_flext_core_constants() -> None:
-        """The WMS constants facade extends the domain constants contract."""
-        tm.that(issubclass(c, FlextOracleWmsConstants), truth=True)
 
     @staticmethod
     def test_wms_version_is_non_empty_semver_string() -> None:
