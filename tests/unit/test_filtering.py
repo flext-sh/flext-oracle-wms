@@ -24,7 +24,7 @@ import pytest
 from flext_tests import e, tm
 from pydantic import ValidationError
 
-from flext_oracle_wms.errors import FlextOracleWmsErrors
+from flext_oracle_wms import FlextOracleWmsErrors
 from tests import c, m, t, u
 
 # Why: mro-4p0t — public facade access is u.OracleWms.Filter, not the private
