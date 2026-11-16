@@ -61,9 +61,7 @@ class TestsFlextOracleWmsConstants(FlextTestsConstants, FlextOracleWmsConstants)
             "Fixed deterministic client secret for OAuth2 client-secret tests."
             OAUTH_SECRET: ClassVar[str] = f"{BASIC_USERNAME}-oauth-secret"
             "Fixed deterministic canonical OAuth2 client secret."
-            OAUTH_SECRET_DASHED: ClassVar[str] = (
-                f"{BASIC_USERNAME}-oauth-secret-dashed"
-            )
+            OAUTH_SECRET_DASHED: ClassVar[str] = f"{BASIC_USERNAME}-oauth-secret-dashed"
             "Fixed deterministic second OAuth2 client secret."
             OAUTH_SECRET_NUMERIC: ClassVar[str] = (
                 f"{BASIC_USERNAME}-oauth-secret-numeric"
