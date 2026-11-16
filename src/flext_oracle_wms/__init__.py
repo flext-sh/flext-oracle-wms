@@ -132,6 +132,18 @@ install_lazy_exports(
         "x": "flext_api",
     },
     public_exports=__all__,
+    deferred_members={
+        "FlextOracleWmsModelsConfig": (
+            "Http",
+            "Api",
+            "Processing",
+            "Filtering",
+            "Entities",
+            "Auth",
+            "Environments",
+            "ApiEndpoint",
+        ),
+    },
 )
 
 if not TYPE_CHECKING:
