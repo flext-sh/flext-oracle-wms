@@ -22,4 +22,14 @@ install_lazy_exports(
     globals(),
     {"FlextOracleWmsTypesDomain": ".domain"},
     public_exports=__all__,
+    deferred_members={
+        "FlextOracleWmsTypesDomain": (
+            "FilterScalar",
+            "FilterList",
+            "FilterEntry",
+            "FilterRecordValue",
+            "FilterRecord",
+            "NestedFilterValue",
+        ),
+    },
 )
