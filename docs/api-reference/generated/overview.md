@@ -26,7 +26,7 @@
   `FlextOracleWmsConstants`, `FlextOracleWmsErrors`, `FlextOracleWmsModels`,
   `FlextOracleWmsModelsConfig`, `FlextOracleWmsProtocols`, `FlextOracleWmsSettings`,
   `FlextOracleWmsTypes`, `FlextOracleWmsUtilities` (+10 more)
-- Exported module shortcuts: _none_
+- Exported module shortcuts: *none*
 - Generated module pages: `9`
 
 ## Next Pages
