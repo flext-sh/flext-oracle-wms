@@ -29,10 +29,5 @@ install_lazy_exports(
         "FlextOracleWmsConstantsValues": ".values",
     },
     public_exports=__all__,
-    deferred_members={
-        "FlextOracleWmsConstantsValues": (
-            "OracleWms",
-            "Config",
-        ),
-    },
+    deferred_members=("FlextOracleWmsConstantsValues",),
 )
