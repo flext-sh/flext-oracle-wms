@@ -40,14 +40,11 @@ install_lazy_exports(
         "FlextOracleWmsUtilitiesHttpClient": ".http_client",
     },
     public_exports=__all__,
-    deferred_members={
-        "FlextOracleWmsUtilitiesAuth": (
-            "validate_auth_settings",
-            "Authenticator",
-        ),
-        "FlextOracleWmsUtilitiesClient": ("Client",),
-        "FlextOracleWmsUtilitiesDiscovery": ("validate_wms_entity",),
-        "FlextOracleWmsUtilitiesFiltering": ("Filter",),
-        "FlextOracleWmsUtilitiesHttpClient": ("HttpClient",),
-    },
+    deferred_members=(
+        "FlextOracleWmsUtilitiesAuth",
+        "FlextOracleWmsUtilitiesClient",
+        "FlextOracleWmsUtilitiesDiscovery",
+        "FlextOracleWmsUtilitiesFiltering",
+        "FlextOracleWmsUtilitiesHttpClient",
+    ),
 )
