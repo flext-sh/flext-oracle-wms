@@ -14,6 +14,7 @@ from flext_oracle_wms._utilities import (
     FlextOracleWmsUtilitiesClient,
     FlextOracleWmsUtilitiesDiscovery,
     FlextOracleWmsUtilitiesFiltering,
+    FlextOracleWmsUtilitiesFilteringOperators,
     FlextOracleWmsUtilitiesHttpClient,
 )
 
@@ -33,6 +34,7 @@ class FlextOracleWmsUtilities(
         FlextOracleWmsUtilitiesClient,
         FlextOracleWmsUtilitiesDiscovery,
         FlextOracleWmsUtilitiesFiltering,
+        FlextOracleWmsUtilitiesFilteringOperators,
         FlextOracleWmsUtilitiesHttpClient,
     ):
         """Oracle WMS utilities extending u via MRO composition."""
