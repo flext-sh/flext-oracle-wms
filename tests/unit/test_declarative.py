@@ -19,22 +19,21 @@ from typing import TYPE_CHECKING
 
 import pytest
 
-from flext_oracle_wms import FlextOracleWmsApi, FlextOracleWmsSettings, m
-from tests import p, t, tm, u
+from tests import FlextOracleWmsApi, FlextOracleWmsSettings, m, p, t, tm, u
 
 if TYPE_CHECKING:
     from collections.abc import Generator
 
 
 @pytest.fixture
-def env_config() -> t.OracleWms.Tests.EnvConfig:
+def env_config() -> t.Tests.EnvConfig:
     """Provide .env configuration or deterministic test defaults.
 
     Returns:
-        The resulting ``t.OracleWms.Tests.EnvConfig``.
+        The resulting ``t.Tests.EnvConfig``.
 
     """
-    config_result = u.OracleWms.Tests.load_env_config(Path(__file__))
+    config_result = u.Tests.load_env_config(Path(__file__))
     if config_result.success and config_result.value.get("base_url"):
         return config_result.value
     return {
@@ -48,7 +47,7 @@ def env_config() -> t.OracleWms.Tests.EnvConfig:
 
 @pytest.fixture
 def oracle_wms_client(
-    env_config: t.OracleWms.Tests.EnvConfig,
+    env_config: t.Tests.EnvConfig,
 ) -> Generator[u.OracleWms.Client]:
     """Provide ``oracle_wms_client``.
 

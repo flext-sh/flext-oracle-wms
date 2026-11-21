@@ -9,8 +9,7 @@ from __future__ import annotations
 
 import pytest
 
-from flext_oracle_wms import FlextOracleWmsSettings, m
-from tests import c, tm, u
+from tests import FlextOracleWmsSettings, c, m, tm, u
 
 # Why: mro-4p0t — public facade access is u.OracleWms.Client, not the private
 # _utilities.client module (flext-oracle-wms-1sm3w sync fix).
@@ -79,7 +78,7 @@ class TestsFlextOracleWmsClientClass:
         auth = m.OracleWms.AuthSettings(
             method="oauth2",
             oauth2_client_id="client-id",
-            oauth2_client_secret=c.OracleWms.Tests.OAUTH_SECRET_DASHED,
+            oauth2_client_secret=c.Tests.OAUTH_SECRET_DASHED,
         )
 
         result = Client.from_auth_settings(auth)
@@ -93,7 +92,7 @@ class TestsFlextOracleWmsClientClass:
         auth = m.OracleWms.AuthSettings(
             method="basic",
             username="wms-user",
-            password=c.OracleWms.Tests.WMS_PASSWORD,
+            password=c.Tests.WMS_PASSWORD,
         )
 
         result = Client.from_auth_settings(auth)
@@ -102,7 +101,7 @@ class TestsFlextOracleWmsClientClass:
         built = result.unwrap()
         tm.that(built, is_=Client)
         tm.that(built.settings.OracleWms.username, eq="wms-user")
-        tm.that(built.settings.OracleWms.password, eq=c.OracleWms.Tests.WMS_PASSWORD)
+        tm.that(built.settings.OracleWms.password, eq=c.Tests.WMS_PASSWORD)
 
     @staticmethod
     @pytest.mark.parametrize(

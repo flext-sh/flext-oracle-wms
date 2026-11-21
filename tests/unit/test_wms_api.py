@@ -11,8 +11,7 @@ from collections.abc import MutableMapping
 
 import pytest
 
-from flext_oracle_wms import FlextOracleWmsApi, FlextOracleWmsSettings, m
-from tests import c, tm, u
+from tests import FlextOracleWmsApi, FlextOracleWmsSettings, c, m, tm, u
 
 
 class TestsFlextOracleWmsWmsApi:
@@ -137,7 +136,7 @@ class TestsFlextOracleWmsWmsApi:
         """Valid BASIC credentials yield a success result carrying a Client."""
         result = FlextOracleWmsApi.create_oracle_wms_client(
             m.OracleWms.AuthSettings(
-                username="test_user", password=c.OracleWms.Tests.BASIC_PASSWORD
+                username="test_user", password=c.Tests.BASIC_PASSWORD
             ),
         )
 
@@ -161,7 +160,7 @@ class TestsFlextOracleWmsWmsApi:
             m.OracleWms.AuthSettings(
                 method="oauth2",
                 oauth2_client_id="client",
-                oauth2_client_secret=c.OracleWms.Tests.GENERIC_SECRET,
+                oauth2_client_secret=c.Tests.GENERIC_SECRET,
             ),
         )
 

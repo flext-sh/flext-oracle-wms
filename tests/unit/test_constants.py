@@ -17,8 +17,7 @@ from collections.abc import Mapping
 
 import pytest
 
-from flext_oracle_wms import config
-from tests import c, tm, u
+from tests import c, config, tm, u
 
 _AuthMethod = c.OracleWms.OracleWMSAuthMethod
 _FilterOp = c.OracleWms.WmsFilterOperator
@@ -183,9 +182,9 @@ class TestsFlextOracleWmsConstantsUnit:
     @staticmethod
     def test_test_facade_adds_oracle_wms_category_taxonomy() -> None:
         """The test facade extends the domain with WMS API categories."""
-        categories = c.OracleWms.Tests.Categories
+        categories = c.Tests.Categories
         tm.that(categories.DATA_EXTRACT, eq="data_extract")
         tm.that(categories.ENTITY_OPERATIONS, eq="entity_operations")
-        version_token = c.OracleWms.Tests.API_VERSION_LGF_V10
+        version_token = c.Tests.API_VERSION_LGF_V10
         tm.that(version_token, is_=str)
         tm.that(version_token, truth=True)

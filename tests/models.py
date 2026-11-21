@@ -11,17 +11,14 @@ from __future__ import annotations
 
 from flext_tests import FlextTestsModels
 
-from flext_oracle_wms import FlextOracleWmsModels
+from tests import FlextOracleWmsModels
 
 
-class TestsFlextOracleWmsModels(FlextTestsModels):
+class TestsFlextOracleWmsModels(FlextTestsModels, FlextOracleWmsModels):
     """Test models combining TestsFlextModels with flext-oracle-wms models."""
 
-    class OracleWms(FlextOracleWmsModels.OracleWms):
-        """Oracle WMS domain test models namespace."""
-
-        class Tests(FlextTestsModels.Tests):
-            """Oracle WMS-specific test fixtures."""
+    class Tests(FlextTestsModels.Tests):
+        """Oracle WMS-specific test fixtures."""
 
 
 m = TestsFlextOracleWmsModels

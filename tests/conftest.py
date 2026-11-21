@@ -9,15 +9,7 @@ from __future__ import annotations
 
 import pytest
 
-from flext_oracle_wms import (
-    FlextOracleWmsApi,
-    FlextOracleWmsSettings,
-    config,
-    p,
-    settings,
-    u,
-)
-from tests import c
+from tests import FlextOracleWmsApi, FlextOracleWmsSettings, c, config, p, settings, u
 
 
 @pytest.fixture(name="settings")
@@ -33,7 +25,7 @@ def deterministic_settings() -> FlextOracleWmsSettings:
             "base_url": "https://test-wms.example.com",
             "timeout": 30.0,
             "username": "test_user",
-            "password": c.OracleWms.Tests.BASIC_PASSWORD,
+            "password": c.Tests.BASIC_PASSWORD,
         },
     })
 

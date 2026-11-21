@@ -15,14 +15,18 @@ from typing import TYPE_CHECKING, ClassVar, override
 from urllib.parse import urlparse
 
 from dotenv import load_dotenv
-from flext_tests import FlextTestsUtilities, r
+from flext_tests import FlextTestsUtilities
 
-from flext_oracle_wms import (
+from tests import (
     FlextOracleWmsApi,
     FlextOracleWmsSettings,
     FlextOracleWmsUtilities,
+    TestsFlextOracleWmsTypes,
+    c,
+    p,
+    r,
+    t,
 )
-from tests import TestsFlextOracleWmsTypes, c, p, t
 
 if TYPE_CHECKING:
     from pathlib import Path
@@ -31,273 +35,270 @@ if TYPE_CHECKING:
 class TestsFlextOracleWmsUtilities(FlextTestsUtilities, FlextOracleWmsUtilities):
     """Test utilities combining TestsFlextUtilities with flext-oracle-wms utilities."""
 
-    class OracleWms(FlextOracleWmsUtilities.OracleWms):
-        """OracleWms test utilities namespace."""
+    class Tests(FlextTestsUtilities.Tests):
+        """Oracle WMS-specific test helpers."""
 
-        class Tests:
-            """Oracle WMS-specific test helpers."""
+        class ConcreteApi(FlextOracleWmsApi):
+            """Concrete test facade for the abstract public API."""
 
-            class ConcreteApi(FlextOracleWmsApi):
-                """Concrete test facade for the abstract public API."""
-
-                @override
-                def execute(self) -> p.Result[bool]:
-                    """Execute the no-op test facade.
-
-                    Returns:
-                        The resulting ``p.Result[bool]``.
-
-                    """
-                    return r[bool].ok(value=True)
-
-            @classmethod
-            def build_client_settings(
-                cls,
-                env_config: TestsFlextOracleWmsTypes.OracleWms.Tests.EnvConfig,
-                api_version: str,
-            ) -> FlextOracleWmsSettings:
-                """Build client settings from normalized test environment data.
+            @override
+            def execute(self) -> p.Result[bool]:
+                """Execute the no-op test facade.
 
                 Returns:
-                    The resulting ``FlextOracleWmsSettings``.
+                    The resulting ``p.Result[bool]``.
 
                 """
-                # NOTE (multi-agent): ADR-005 — project scalars live under the
-                # nested ``OracleWms`` namespace; build via model_validate with
-                # the namespaced payload, never flat constructor kwargs.
-                return FlextOracleWmsSettings.model_validate({
-                    "OracleWms": {
-                        "base_url": u.to_str(
-                            env_config.get("base_url", ""),
-                            default="",
-                        ),
-                        "username": u.to_str(
-                            env_config.get("username", ""),
-                            default="",
-                        ),
-                        "password": u.to_str(
-                            env_config.get("password", ""),
-                            default="",
-                        ),
-                        "api_version": api_version,
-                        "auth_method": u.to_str(
-                            env_config.get("auth_method", "BASIC"),
-                            default="BASIC",
-                        ),
-                        "timeout": u.to_int(env_config.get("timeout", 30), default=30),
-                        "retry_attempts": u.to_int(
-                            env_config.get("retry_attempts", 3),
-                            default=3,
-                        ),
-                        "verify_ssl": u.to_bool(
-                            env_config.get("verify_ssl", True),
-                            default=True,
-                        ),
-                        "enable_logging": u.to_bool(
-                            env_config.get("enable_logging", True),
-                            default=True,
-                        ),
-                        "connection_pool_size": u.to_int(
-                            env_config.get("connection_pool_size", 20),
-                            default=20,
-                        ),
-                        "cache_duration": u.to_int(
-                            env_config.get("cache_duration", 3600),
-                            default=3600,
-                        ),
-                    },
-                })
+                return r[bool].ok(value=True)
 
-            @staticmethod
-            def find_env_file(start_path: Path) -> Path | None:
-                """Find the closest `.env` file in the test project hierarchy.
+        @classmethod
+        def build_client_settings(
+            cls,
+            env_config: TestsFlextOracleWmsTypes.Tests.EnvConfig,
+            api_version: str,
+        ) -> FlextOracleWmsSettings:
+            """Build client settings from normalized test environment data.
 
-                Returns:
-                    The resulting ``Path | None``.
+            Returns:
+                The resulting ``FlextOracleWmsSettings``.
 
-                """
-                current_dir = start_path.parent
-                for _ in range(4):
-                    env_path = current_dir / ".env"
-                    if env_path.exists():
-                        return env_path
-                    current_dir = current_dir.parent
-                project_root = start_path.parent.parent
-                env_path = project_root / ".env"
-                if env_path.exists():
-                    return env_path
-                return None
-
-            _ENVIRONMENT_ALIASES: ClassVar[t.MutableStrMapping] = {
-                "prod": "production",
-                "production": "production",
-                "stage": "staging",
-                "staging": "staging",
-                "test": "test",
-                "testing": "test",
-                "company_unknow": "test",
-                "local": "local",
-            }
-
-            @classmethod
-            def _resolve_environment_name(cls, base_url: str) -> str:
-                """Derive the environment name from the configured base URL.
-
-                Returns:
-                    The resulting ``str``.
-
-                """
-                default = "development"
-                if not base_url:
-                    return default
-                parsed = urlparse(base_url)
-                path_parts = parsed.path.strip("/").split("/")
-                if not path_parts or not path_parts[-1]:
-                    return default
-                env_name = path_parts[-1].lower()
-                return cls._ENVIRONMENT_ALIASES.get(env_name, default)
-
-            @classmethod
-            def load_env_config(
-                cls,
-                start_path: Path,
-            ) -> p.Result[TestsFlextOracleWmsTypes.OracleWms.Tests.EnvConfig]:
-                """Load declarative integration settings from the nearest `.env` file.
-
-                Returns:
-                    The resulting
-                        ``p.Result[TestsFlextOracleWmsTypes.OracleWms.Tests.EnvConfig]``.
-
-                """
-                env_path = cls.find_env_file(start_path)
-                if env_path is None:
-                    return r[TestsFlextOracleWmsTypes.OracleWms.Tests.EnvConfig].fail(
-                        "No .env file found for Oracle WMS integration tests",
-                    )
-                settings: t.MutableStrMapping = {}
-                try:
-                    with env_path.open(encoding="utf-8") as file_handle:
-                        for raw_line in file_handle:
-                            line = raw_line.strip()
-                            if line and not line.startswith("#") and "=" in line:
-                                key, value = line.split("=", 1)
-                                settings[key.strip()] = value.strip()
-                except (OSError, ValueError, TypeError) as exc:
-                    return r[TestsFlextOracleWmsTypes.OracleWms.Tests.EnvConfig].fail(
-                        f"Failed to load .env settings: {exc}",
-                        exception=exc,
-                    )
-                base_url = settings.get("ORACLE_WMS_BASE_URL", "")
-                return r[TestsFlextOracleWmsTypes.OracleWms.Tests.EnvConfig].ok({
-                    "base_url": base_url,
-                    "username": settings.get("ORACLE_WMS_USERNAME"),
-                    "password": settings.get("ORACLE_WMS_PASSWORD"),
-                    "environment": cls._resolve_environment_name(base_url),
-                    "api_version": "LGF_V10",
-                    "timeout": u.to_int(
-                        settings.get("ORACLE_WMS_TIMEOUT", "30"),
-                        default=30,
+            """
+            # NOTE (multi-agent): ADR-005 — project scalars live under the
+            # nested ``OracleWms`` namespace; build via model_validate with
+            # the namespaced payload, never flat constructor kwargs.
+            return FlextOracleWmsSettings.model_validate({
+                "OracleWms": {
+                    "base_url": u.to_str(
+                        env_config.get("base_url", ""),
+                        default="",
                     ),
-                    "max_retries": u.to_int(
-                        settings.get("ORACLE_WMS_MAX_RETRIES", "3"),
+                    "username": u.to_str(
+                        env_config.get("username", ""),
+                        default="",
+                    ),
+                    "password": u.to_str(
+                        env_config.get("password", ""),
+                        default="",
+                    ),
+                    "api_version": api_version,
+                    "auth_method": u.to_str(
+                        env_config.get("auth_method", "BASIC"),
+                        default="BASIC",
+                    ),
+                    "timeout": u.to_int(env_config.get("timeout", 30), default=30),
+                    "retry_attempts": u.to_int(
+                        env_config.get("retry_attempts", 3),
                         default=3,
                     ),
                     "verify_ssl": u.to_bool(
-                        settings.get(
-                            "ORACLE_WMS_VERIFY_SSL", c.ParserBooleanToken.TRUE
-                        ).lower()
-                        == c.ParserBooleanToken.TRUE,
+                        env_config.get("verify_ssl", True),
                         default=True,
                     ),
                     "enable_logging": u.to_bool(
-                        settings.get(
-                            "ORACLE_WMS_ENABLE_REQUEST_LOGGING",
-                            c.ParserBooleanToken.TRUE,
-                        ).lower()
-                        == c.ParserBooleanToken.TRUE,
+                        env_config.get("enable_logging", True),
                         default=True,
                     ),
-                })
+                    "connection_pool_size": u.to_int(
+                        env_config.get("connection_pool_size", 20),
+                        default=20,
+                    ),
+                    "cache_duration": u.to_int(
+                        env_config.get("cache_duration", 3600),
+                        default=3600,
+                    ),
+                },
+            })
 
-            @staticmethod
-            def load_test_env(project_root: Path) -> bool:
-                """Load the project `.env` into process environment when present.
+        @staticmethod
+        def find_env_file(start_path: Path) -> Path | None:
+            """Find the closest `.env` file in the test project hierarchy.
 
-                Returns:
-                    The resulting ``bool``.
+            Returns:
+                The resulting ``Path | None``.
 
-                """
-                env_file = project_root / ".env"
-                if env_file.exists():
-                    load_dotenv(env_file)
-                    return True
-                return False
+            """
+            current_dir = start_path.parent
+            for _ in range(4):
+                env_path = current_dir / ".env"
+                if env_path.exists():
+                    return env_path
+                current_dir = current_dir.parent
+            project_root = start_path.parent.parent
+            env_path = project_root / ".env"
+            if env_path.exists():
+                return env_path
+            return None
 
-            @staticmethod
-            def create_real_settings() -> p.Result[FlextOracleWmsSettings]:
-                """Create runtime settings from process environment variables.
+        _ENVIRONMENT_ALIASES: ClassVar[t.MutableStrMapping] = {
+            "prod": "production",
+            "production": "production",
+            "stage": "staging",
+            "staging": "staging",
+            "test": "test",
+            "testing": "test",
+            "company_unknow": "test",
+            "local": "local",
+        }
 
-                Returns:
-                    The resulting ``p.Result[FlextOracleWmsSettings]``.
+        @classmethod
+        def _resolve_environment_name(cls, base_url: str) -> str:
+            """Derive the environment name from the configured base URL.
 
-                """
-                base_url = os.getenv("ORACLE_WMS_BASE_URL") or os.getenv(
-                    "FLEXT_ORACLE_WMS_BASE_URL",
+            Returns:
+                The resulting ``str``.
+
+            """
+            default = "development"
+            if not base_url:
+                return default
+            parsed = urlparse(base_url)
+            path_parts = parsed.path.strip("/").split("/")
+            if not path_parts or not path_parts[-1]:
+                return default
+            env_name = path_parts[-1].lower()
+            return cls._ENVIRONMENT_ALIASES.get(env_name, default)
+
+        @classmethod
+        def load_env_config(
+            cls,
+            start_path: Path,
+        ) -> p.Result[TestsFlextOracleWmsTypes.Tests.EnvConfig]:
+            """Load declarative integration settings from the nearest `.env` file.
+
+            Returns:
+                The resulting
+                    ``p.Result[TestsFlextOracleWmsTypes.Tests.EnvConfig]``.
+
+            """
+            env_path = cls.find_env_file(start_path)
+            if env_path is None:
+                return r[TestsFlextOracleWmsTypes.Tests.EnvConfig].fail(
+                    "No .env file found for Oracle WMS integration tests",
                 )
-                username = os.getenv("ORACLE_WMS_USERNAME") or os.getenv(
-                    "FLEXT_ORACLE_WMS_USERNAME",
+            settings: t.MutableStrMapping = {}
+            try:
+                with env_path.open(encoding="utf-8") as file_handle:
+                    for raw_line in file_handle:
+                        line = raw_line.strip()
+                        if line and not line.startswith("#") and "=" in line:
+                            key, value = line.split("=", 1)
+                            settings[key.strip()] = value.strip()
+            except (OSError, ValueError, TypeError) as exc:
+                return r[TestsFlextOracleWmsTypes.Tests.EnvConfig].fail(
+                    f"Failed to load .env settings: {exc}",
+                    exception=exc,
                 )
-                password = os.getenv("ORACLE_WMS_PASSWORD") or os.getenv(
-                    "FLEXT_ORACLE_WMS_PASSWORD",
-                )
-                if not base_url or not username or not password:
-                    return r[FlextOracleWmsSettings].fail(
-                        "Real Oracle WMS credentials not available in .env",
-                    )
-                return r[FlextOracleWmsSettings].ok(
-                    FlextOracleWmsSettings.model_validate({
-                        "OracleWms": {
-                            "base_url": base_url,
-                            "username": username,
-                            "password": password,
-                            "timeout": int(os.getenv("ORACLE_WMS_TIMEOUT", "30")),
-                            "retry_attempts": int(
-                                os.getenv("ORACLE_WMS_MAX_RETRIES", "3"),
-                            ),
-                        },
-                    }),
-                )
+            base_url = settings.get("ORACLE_WMS_BASE_URL", "")
+            return r[TestsFlextOracleWmsTypes.Tests.EnvConfig].ok({
+                "base_url": base_url,
+                "username": settings.get("ORACLE_WMS_USERNAME"),
+                "password": settings.get("ORACLE_WMS_PASSWORD"),
+                "environment": cls._resolve_environment_name(base_url),
+                "api_version": "LGF_V10",
+                "timeout": u.to_int(
+                    settings.get("ORACLE_WMS_TIMEOUT", "30"),
+                    default=30,
+                ),
+                "max_retries": u.to_int(
+                    settings.get("ORACLE_WMS_MAX_RETRIES", "3"),
+                    default=3,
+                ),
+                "verify_ssl": u.to_bool(
+                    settings.get(
+                        "ORACLE_WMS_VERIFY_SSL", c.ParserBooleanToken.TRUE
+                    ).lower()
+                    == c.ParserBooleanToken.TRUE,
+                    default=True,
+                ),
+                "enable_logging": u.to_bool(
+                    settings.get(
+                        "ORACLE_WMS_ENABLE_REQUEST_LOGGING",
+                        c.ParserBooleanToken.TRUE,
+                    ).lower()
+                    == c.ParserBooleanToken.TRUE,
+                    default=True,
+                ),
+            })
 
-            @staticmethod
-            def sample_entities() -> Sequence[str]:
-                """Return the canonical sample entity list for tests."""
-                return [
-                    "action_code",
-                    "company",
-                    "facility",
-                    "item",
-                    "order_hdr",
-                    "order_dtl",
-                ]
+        @staticmethod
+        def load_test_env(project_root: Path) -> bool:
+            """Load the project `.env` into process environment when present.
 
-            @staticmethod
-            def sample_entity_data() -> TestsFlextOracleWmsTypes.JsonMapping:
-                """Return canonical sample entity payload data for tests."""
-                return {
-                    "result_count": 4,
-                    "page_count": 1,
-                    "page_nbr": 1,
-                    "next_page": None,
-                    "previous_page": None,
-                    "results": [
-                        {"id": 1, "code": "TEST_CODE", "description": "Test Record"},
-                        {
-                            "id": 2,
-                            "code": "TEST_CODE_2",
-                            "description": "Test Record 2",
-                        },
-                    ],
-                }
+            Returns:
+                The resulting ``bool``.
+
+            """
+            env_file = project_root / ".env"
+            if env_file.exists():
+                load_dotenv(env_file)
+                return True
+            return False
+
+        @staticmethod
+        def create_real_settings() -> p.Result[FlextOracleWmsSettings]:
+            """Create runtime settings from process environment variables.
+
+            Returns:
+                The resulting ``p.Result[FlextOracleWmsSettings]``.
+
+            """
+            base_url = os.getenv("ORACLE_WMS_BASE_URL") or os.getenv(
+                "FLEXT_ORACLE_WMS_BASE_URL",
+            )
+            username = os.getenv("ORACLE_WMS_USERNAME") or os.getenv(
+                "FLEXT_ORACLE_WMS_USERNAME",
+            )
+            password = os.getenv("ORACLE_WMS_PASSWORD") or os.getenv(
+                "FLEXT_ORACLE_WMS_PASSWORD",
+            )
+            if not base_url or not username or not password:
+                return r[FlextOracleWmsSettings].fail(
+                    "Real Oracle WMS credentials not available in .env",
+                )
+            return r[FlextOracleWmsSettings].ok(
+                FlextOracleWmsSettings.model_validate({
+                    "OracleWms": {
+                        "base_url": base_url,
+                        "username": username,
+                        "password": password,
+                        "timeout": int(os.getenv("ORACLE_WMS_TIMEOUT", "30")),
+                        "retry_attempts": int(
+                            os.getenv("ORACLE_WMS_MAX_RETRIES", "3"),
+                        ),
+                    },
+                }),
+            )
+
+        @staticmethod
+        def sample_entities() -> Sequence[str]:
+            """Return the canonical sample entity list for tests."""
+            return [
+                "action_code",
+                "company",
+                "facility",
+                "item",
+                "order_hdr",
+                "order_dtl",
+            ]
+
+        @staticmethod
+        def sample_entity_data() -> TestsFlextOracleWmsTypes.JsonMapping:
+            """Return canonical sample entity payload data for tests."""
+            return {
+                "result_count": 4,
+                "page_count": 1,
+                "page_nbr": 1,
+                "next_page": None,
+                "previous_page": None,
+                "results": [
+                    {"id": 1, "code": "TEST_CODE", "description": "Test Record"},
+                    {
+                        "id": 2,
+                        "code": "TEST_CODE_2",
+                        "description": "Test Record 2",
+                    },
+                ],
+            }
 
 
 u = TestsFlextOracleWmsUtilities
