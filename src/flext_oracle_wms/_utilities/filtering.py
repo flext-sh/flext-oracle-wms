@@ -6,11 +6,14 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from collections.abc import Mapping, MutableSequence, Sequence
+from collections.abc import Mapping, Sequence
 
 from flext_api import u
 from flext_core import e, r
 
+from flext_oracle_wms._utilities import (
+    FlextOracleWmsUtilitiesFilteringOperators as Operators,
+)
 from flext_oracle_wms.constants import c
 from flext_oracle_wms.errors import FlextOracleWmsErrors
 from flext_oracle_wms.models import m
@@ -22,7 +25,7 @@ class FlextOracleWmsUtilitiesFiltering:
     """Filtering utilities for Oracle WMS -- u.OracleWms.Filtering.*."""
 
     class Filter:
-        """Generic filter with functional composition and strict validation."""
+        """Filter engine: construction, matching and sorting over records."""
 
         logger = u.fetch_logger(__name__)
 
@@ -31,46 +34,36 @@ class FlextOracleWmsUtilitiesFiltering:
             *,
             filters: Mapping[str, t.OracleWms.FilterEntry] | None = None,
             case_sensitive: bool = False,
-            max_conditions: int = 50,
+            max_conditions: int = c.OracleWms.Filtering.MAX_FILTER_CONDITIONS,
         ) -> None:
-            """Initialize filter engine with strict condition limits.
+            """Initialize the engine with strict condition limits.
 
             Raises:
-                BaseError: If Invalid max_conditions.
-                ValidationError: If Filter validation failed.
+                BaseError: If ``max_conditions`` is invalid.
+                ValidationError: If the initial filters exceed the limit.
 
             """
-            if (
-                max_conditions <= 0
-                or max_conditions > c.OracleWms.Filtering.MAX_FILTER_CONDITIONS
-            ):
-                error_message = "Invalid max_conditions"
-                raise e.BaseError(error_message)
+            if not 0 < max_conditions <= c.OracleWms.Filtering.MAX_FILTER_CONDITIONS:
+                invalid_limit = "Invalid max_conditions"
+                raise e.BaseError(invalid_limit)
             self.max_conditions: int = max_conditions
             self.case_sensitive: bool = case_sensitive
             self.filters: Mapping[str, t.OracleWms.FilterEntry] = filters or {}
-            if (
-                self.filters
-                and self._validate_filter_conditions_total(self.filters).failure
-            ):
-                error_message = "Filter validation failed"
-                raise FlextOracleWmsErrors.ValidationError(error_message)
+            if self.filters and self._total(self.filters) > max_conditions:
+                invalid_filters = "Filter validation failed"
+                raise FlextOracleWmsErrors.ValidationError(invalid_filters)
 
         @classmethod
         def create_filter(
             cls,
             *,
             case_sensitive: bool = False,
-            max_conditions: int = 50,
+            max_conditions: int = c.OracleWms.Filtering.MAX_FILTER_CONDITIONS,
         ) -> FlextOracleWmsUtilitiesFiltering.Filter:
-            """Create a filter engine with explicit configuration.
-
-            Args:
-                case_sensitive: Whether string comparisons are case-sensitive.
-                max_conditions: Maximum number of filter conditions allowed.
+            """Create an engine with explicit configuration.
 
             Returns:
-                The resulting ``FlextOracleWmsUtilitiesFiltering.Filter``.
+                The configured filter engine.
 
             """
             return cls(case_sensitive=case_sensitive, max_conditions=max_conditions)
@@ -85,28 +78,15 @@ class FlextOracleWmsUtilitiesFiltering:
         ) -> p.Result[Sequence[t.OracleWms.FilterRecord]]:
             """Filter records by one field using optional operator semantics.
 
-            Args:
-                records: Records to filter.
-                field: Field name (dot path) compared on each record.
-                value: Comparison value for the field.
-                operator: Optional filter operator; defaults to equality.
-
             Returns:
-                The resulting ``p.Result[Sequence[t.OracleWms.FilterRecord]]``.
+                The filtered records.
 
             """
-            engine = cls()
-            filters: Mapping[str, t.OracleWms.FilterEntry]
-            if operator is None:
-                filters = {field: value}
-            else:
-                filters = {
-                    field: m.OracleWms.FlextOracleWmsOperatorFilter(
-                        operator=operator,
-                        value=value,
-                    ),
-                }
-            return engine.filter_records(records, filters)
+            model = m.OracleWms.FlextOracleWmsOperatorFilter
+            entry: t.OracleWms.FilterEntry = (
+                value if operator is None else model(operator=operator, value=value)
+            )
+            return cls().filter_records(records, {field: entry})
 
         @classmethod
         def filter_by_id_range(
@@ -116,134 +96,20 @@ class FlextOracleWmsUtilitiesFiltering:
             min_id: t.OracleWms.FilterScalar | None = None,
             max_id: t.OracleWms.FilterScalar | None = None,
         ) -> p.Result[Sequence[t.OracleWms.FilterRecord]]:
-            """Filter records by inclusive identifier range.
-
-            Args:
-                records: Records to filter.
-                id_field: Field name holding the identifier.
-                min_id: Optional inclusive lower bound.
-                max_id: Optional inclusive upper bound.
+            """Filter records by an inclusive identifier range.
 
             Returns:
-                The resulting ``p.Result[Sequence[t.OracleWms.FilterRecord]]``.
+                The filtered records.
 
             """
-            if not records:
-                return r[Sequence[t.OracleWms.FilterRecord]].ok([])
-            filtered: MutableSequence[t.OracleWms.FilterRecord] = []
-            for record in records:
-                field_value = record.get(id_field)
-                if field_value is None:
-                    continue
-                if min_id is not None and (not cls._check_min(field_value, min_id)):
-                    continue
-                if max_id is not None and (not cls._check_max(field_value, max_id)):
-                    continue
-                filtered.append(record)
-            return r[Sequence[t.OracleWms.FilterRecord]].ok(filtered)
-
-        @classmethod
-        def _check_max(
-            cls,
-            field_value: t.OracleWms.FilterRecordValue,
-            max_val: t.OracleWms.FilterScalar,
-        ) -> bool:
-            return cls._compare(field_value, max_val, "<=")
-
-        @classmethod
-        def _check_min(
-            cls,
-            field_value: t.OracleWms.FilterRecordValue,
-            min_val: t.OracleWms.FilterScalar,
-        ) -> bool:
-            return cls._compare(field_value, min_val, ">=")
-
-        @staticmethod
-        def _scalar_part(
-            value: t.OracleWms.FilterRecordValue | None,
-        ) -> t.Scalar | None:
-            """Narrow a filter value to its scalar candidate for numeric validation.
-
-            ``FilterRecordValue`` allows nested mappings that are outside the
-            ``t.JsonPayload`` contract of ``validate_value``; mappings and lists
-            can never satisfy a float adapter, so only scalars are forwarded.
-
-            Returns:
-                The resulting ``t.Scalar | None``.
-
-            """
-            return value if isinstance(value, c.SCALAR_TYPES) else None
-
-        @classmethod
-        def _compare(
-            cls,
-            left: t.OracleWms.FilterRecordValue | None,
-            right: t.OracleWms.FilterScalar | t.OracleWms.FilterList,
-            op: str,
-        ) -> bool:
-            if isinstance(left, str) and isinstance(right, str):
-                return cls._compare_string(left, right, op)
-            left_num = u.validate_value(
-                u.float_adapter(),
-                cls._scalar_part(left),
-                strict=True,
-            ).unwrap()
-            right_num = u.validate_value(
-                u.float_adapter(),
-                cls._scalar_part(right),
-                strict=True,
-            ).unwrap()
-            return cls._compare_float(left_num, right_num, op)
-
-        @staticmethod
-        def _compare_float(left_num: float, right_num: float, op: str) -> bool:
-            """Compare numeric filter values.
-
-            Returns:
-                The resulting ``bool``.
-
-            """
-            match op:
-                case ">":
-                    return left_num > right_num
-                case "<":
-                    return left_num < right_num
-                case ">=":
-                    return left_num >= right_num
-                case _:
-                    return left_num <= right_num
-
-        @staticmethod
-        def _compare_string(left_str: str, right_str: str, op: str) -> bool:
-            """Compare string filter values.
-
-            Returns:
-                The resulting ``bool``.
-
-            """
-            match op:
-                case ">":
-                    return left_str > right_str
-                case "<":
-                    return left_str < right_str
-                case ">=":
-                    return left_str >= right_str
-                case _:
-                    return left_str <= right_str
-
-        @staticmethod
-        def _condition_size(value: t.OracleWms.FilterEntry) -> int:
-            match value:
-                case list() as items:
-                    return len(items)
-                case m.OracleWms.FlextOracleWmsOperatorFilter() as condition:
-                    match condition.value:
-                        case list() as values:
-                            return len(values)
-                        case _:
-                            return 1
-                case _:
-                    return 1
+            selected: Sequence[t.OracleWms.FilterRecord] = [
+                record
+                for record in records
+                if (value := record.get(id_field)) is not None
+                and (min_id is None or Operators.compare(value, min_id, ">="))
+                and (max_id is None or Operators.compare(value, max_id, "<="))
+            ]
+            return r[Sequence[t.OracleWms.FilterRecord]].ok(selected)
 
         def filter_records(
             self,
@@ -251,30 +117,22 @@ class FlextOracleWmsUtilitiesFiltering:
             filters: Mapping[str, t.OracleWms.FilterEntry],
             limit: int | None = None,
         ) -> p.Result[Sequence[t.OracleWms.FilterRecord]]:
-            """Filter records against field conditions and optional limit.
-
-            Args:
-                records: Records to filter.
-                filters: Field conditions keyed by field name.
-                limit: Optional maximum number of records returned.
+            """Filter records against field conditions and an optional limit.
 
             Returns:
-                The resulting ``p.Result[Sequence[t.OracleWms.FilterRecord]]``.
+                The filtered records.
 
             """
-            if (result := self._validate_filters(filters)).failure:
+            total = self._total(filters)
+            if total > self.max_conditions:
                 return r[Sequence[t.OracleWms.FilterRecord]].fail(
-                    result.error or "Validation failed",
+                    f"Too many conditions. Max: {self.max_conditions}, Got: {total}",
                 )
             self.filters = filters
-            filtered = [
-                record
-                for record in records
-                if self._matches_all_filters(record, filters)
-            ]
-            if limit is not None:
-                filtered = filtered[:limit]
-            return r[Sequence[t.OracleWms.FilterRecord]].ok(filtered)
+            matched: Sequence[t.OracleWms.FilterRecord] = [
+                record for record in records if self._matches(record, filters)
+            ][:limit]
+            return r[Sequence[t.OracleWms.FilterRecord]].ok(matched)
 
         def sort_records(
             self,
@@ -285,237 +143,57 @@ class FlextOracleWmsUtilitiesFiltering:
         ) -> p.Result[Sequence[t.OracleWms.FilterRecord]]:
             """Sort records by a dot-path field.
 
-            Args:
-                records: Records to sort.
-                sort_field: Field name (dot path) used as the sort key.
-                ascending: Whether to sort ascending; defaults to ``True``.
-
             Returns:
-                The resulting ``p.Result[Sequence[t.OracleWms.FilterRecord]]``.
+                The sorted records.
 
             """
             try:
+                missing = "" if ascending else "zzz"
 
-                def key_func(record: t.OracleWms.FilterRecord) -> str:
-                    value = self._get_nested_value(record, sort_field)
-                    return str(
-                        value if value is not None else "" if ascending else "zzz",
-                    )
+                def sort_key(record: t.OracleWms.FilterRecord) -> str:
+                    value = Operators.path(record, sort_field)
+                    return str(missing if value is None else value)
 
                 return r[Sequence[t.OracleWms.FilterRecord]].ok(
-                    sorted(records, key=key_func, reverse=not ascending),
+                    sorted(records, key=sort_key, reverse=not ascending),
                 )
             except Exception as exc:
                 self.logger.exception("Sort failed")
                 return r[Sequence[t.OracleWms.FilterRecord]].fail_op("Sort", exc)
 
         @staticmethod
-        def _apply_null_semantics(
-            field_value: t.OracleWms.FilterRecordValue | None,
-            operator: c.OracleWms.WmsFilterOperator | str,
-            filter_value: t.OracleWms.FilterScalar | t.OracleWms.FilterList,
-        ) -> bool | None:
-            """Resolve the three-valued null comparison semantics.
+        def _total(filters: Mapping[str, t.OracleWms.FilterEntry]) -> int:
+            return sum(Operators.size(entry) for entry in filters.values())
 
-            Returns:
-                The resulting ``bool | None``: ``None`` when both values are
-                present and the operator match must run.
-
-            """
-            if (field_value is None and filter_value is not None) or (
-                field_value is not None and filter_value is None
-            ):
-                return False
-            if field_value is None and filter_value is None:
-                return operator in {
-                    c.OracleWms.WmsFilterOperator.EQ,
-                    c.OracleWms.WmsFilterOperator.GTE,
-                    c.OracleWms.WmsFilterOperator.LTE,
-                    "eq",
-                    "gte",
-                    "lte",
-                }
-            return None
-
-        def _match_operator(
-            self,
-            field_value: t.OracleWms.FilterRecordValue | None,
-            operator: c.OracleWms.WmsFilterOperator | str,
-            filter_value: t.OracleWms.FilterScalar | t.OracleWms.FilterList,
-        ) -> bool:
-            """Evaluate a single filter operator against present values.
-
-            Returns:
-                The resulting ``bool``.
-
-            """
-            match operator:
-                case c.OracleWms.WmsFilterOperator.EQ | "eq":
-                    result = self._normalize(field_value) == self._normalize(
-                        filter_value,
-                    )
-                case c.OracleWms.WmsFilterOperator.NE | "ne":
-                    result = self._normalize(field_value) != self._normalize(
-                        filter_value,
-                    )
-                case c.OracleWms.WmsFilterOperator.IN | "in":
-                    match filter_value:
-                        case list() as options:
-                            result = str(field_value) in [str(item) for item in options]
-                        case _:
-                            result = False
-                case c.OracleWms.WmsFilterOperator.CONTAINS | "contains":
-                    result = (
-                        isinstance(field_value, str)
-                        and str(filter_value) in field_value
-                    )
-                case c.OracleWms.WmsFilterOperator.GT | "gt":
-                    result = type(field_value) is type(
-                        filter_value,
-                    ) and self._compare(field_value, filter_value, ">")
-                case c.OracleWms.WmsFilterOperator.LT | "lt":
-                    result = type(field_value) is type(
-                        filter_value,
-                    ) and self._compare(field_value, filter_value, "<")
-                case c.OracleWms.WmsFilterOperator.GTE | "gte":
-                    result = type(field_value) is type(
-                        filter_value,
-                    ) and self._compare(field_value, filter_value, ">=")
-                case c.OracleWms.WmsFilterOperator.LTE | "lte":
-                    result = type(field_value) is type(
-                        filter_value,
-                    ) and self._compare(field_value, filter_value, "<=")
-                case _:
-                    result = False
-            return result
-
-        def _apply_operator(
-            self,
-            field_value: t.OracleWms.FilterRecordValue | None,
-            operator: c.OracleWms.WmsFilterOperator | str,
-            filter_value: (t.OracleWms.FilterScalar | t.OracleWms.FilterList),
-        ) -> bool:
-            """Apply one filter operator including null semantics.
-
-            Returns:
-                The resulting ``bool``.
-
-            """
-            null_result = self._apply_null_semantics(
-                field_value,
-                operator,
-                filter_value,
-            )
-            if null_result is not None:
-                return null_result
-            return self._match_operator(field_value, operator, filter_value)
-
-        @staticmethod
-        def _get_nested_value(
-            record: t.OracleWms.FilterRecord,
-            field: str,
-        ) -> t.OracleWms.NestedFilterValue | None:
-            keys = field.split(".")
-            # Try nested dict traversal first
-            current: (
-                t.OracleWms.NestedFilterValue
-                | Mapping[
-                    str,
-                    t.OracleWms.FilterScalar
-                    | t.OracleWms.FilterList
-                    | Mapping[
-                        str,
-                        t.OracleWms.FilterScalar | t.OracleWms.FilterList,
-                    ],
-                ]
-            ) = record
-            for key in keys:
-                match current:
-                    case dict() as mapping:
-                        next_value = mapping.get(key)
-                        if next_value is None:
-                            break
-                        current = next_value
-                    case _:
-                        break
-            else:
-                if not isinstance(current, dict):
-                    return current
-                return None
-            # Fallback: try underscore-joined flat key
-            if len(keys) > 1:
-                flat_key = "_".join(keys)
-                flat_value = record.get(flat_key)
-                if flat_value is not None:
-                    return flat_value if not isinstance(flat_value, dict) else None
-            return None
-
-        def _matches_all_filters(
+        def _matches(
             self,
             record: t.OracleWms.FilterRecord,
             filters: Mapping[str, t.OracleWms.FilterEntry],
         ) -> bool:
             return all(
-                (
-                    self._matches_condition(record, field, filter_value)
-                    for field, filter_value in filters.items()
-                ),
+                self._matches_entry(record, field, entry)
+                for field, entry in filters.items()
             )
 
-        def _matches_condition(
+        def _matches_entry(
             self,
             record: t.OracleWms.FilterRecord,
             field: str,
-            filter_value: t.OracleWms.FilterEntry,
+            entry: t.OracleWms.FilterEntry,
         ) -> bool:
-            field_value = self._get_nested_value(record, field)
-            match filter_value:
-                case m.OracleWms.FlextOracleWmsOperatorFilter() as condition:
-                    return self._apply_operator(
-                        field_value,
-                        condition.operator,
-                        condition.value,
-                    )
-                case list() as candidates:
-                    return (
-                        field_value in candidates if field_value is not None else False
-                    )
-                case _:
-                    return self._normalize(field_value) == self._normalize(filter_value)
-
-        def _normalize(
-            self,
-            value: (t.OracleWms.FilterRecordValue | t.OracleWms.FilterScalar),
-        ) -> t.OracleWms.FilterRecordValue | str:
-            match value:
-                case None:
-                    return ""
-                case str() as text if not self.case_sensitive:
-                    return text.lower()
-                case _:
-                    return value
-
-        def _validate_filter_conditions_total(
-            self,
-            filters: Mapping[str, t.OracleWms.FilterEntry],
-        ) -> p.Result[bool]:
-            total = sum(self._condition_size(value) for value in filters.values())
-            if total > self.max_conditions:
-                return r[bool].fail(
-                    f"Too many filter conditions: {total} > {self.max_conditions}",
+            value = Operators.path(record, field)
+            if isinstance(entry, m.OracleWms.FlextOracleWmsOperatorFilter):
+                return Operators.matches(
+                    value,
+                    entry.operator,
+                    entry.value,
+                    case_sensitive=self.case_sensitive,
                 )
-            return r[bool].ok(value=True)
-
-        def _validate_filters(
-            self,
-            filters: Mapping[str, t.OracleWms.FilterEntry],
-        ) -> p.Result[bool]:
-            total = sum(self._condition_size(value) for value in filters.values())
-            if total > self.max_conditions:
-                return r[bool].fail(
-                    f"Too many conditions. Max: {self.max_conditions}, Got: {total}",
-                )
-            return r[bool].ok(value=True)
+            if isinstance(entry, list):
+                return value is not None and value in entry
+            return Operators.normalize(
+                value, case_sensitive=self.case_sensitive
+            ) == Operators.normalize(entry, case_sensitive=self.case_sensitive)
 
 
 __all__: list[str] = ["FlextOracleWmsUtilitiesFiltering"]

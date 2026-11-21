@@ -16,6 +16,9 @@ if TYPE_CHECKING:
     from flext_oracle_wms._utilities.client import FlextOracleWmsUtilitiesClient
     from flext_oracle_wms._utilities.discovery import FlextOracleWmsUtilitiesDiscovery
     from flext_oracle_wms._utilities.filtering import FlextOracleWmsUtilitiesFiltering
+    from flext_oracle_wms._utilities.filtering_operators import (
+        FlextOracleWmsUtilitiesFilteringOperators,
+    )
     from flext_oracle_wms._utilities.http_client import (
         FlextOracleWmsUtilitiesHttpClient,
     )
@@ -26,6 +29,7 @@ __all__: tuple[str, ...] = (
     "FlextOracleWmsUtilitiesClient",
     "FlextOracleWmsUtilitiesDiscovery",
     "FlextOracleWmsUtilitiesFiltering",
+    "FlextOracleWmsUtilitiesFilteringOperators",
     "FlextOracleWmsUtilitiesHttpClient",
 )
 
@@ -37,6 +41,7 @@ install_lazy_exports(
         "FlextOracleWmsUtilitiesClient": ".client",
         "FlextOracleWmsUtilitiesDiscovery": ".discovery",
         "FlextOracleWmsUtilitiesFiltering": ".filtering",
+        "FlextOracleWmsUtilitiesFilteringOperators": ".filtering_operators",
         "FlextOracleWmsUtilitiesHttpClient": ".http_client",
     },
     public_exports=__all__,
@@ -45,6 +50,7 @@ install_lazy_exports(
         "FlextOracleWmsUtilitiesClient",
         "FlextOracleWmsUtilitiesDiscovery",
         "FlextOracleWmsUtilitiesFiltering",
+        "FlextOracleWmsUtilitiesFilteringOperators",
         "FlextOracleWmsUtilitiesHttpClient",
     ),
 )

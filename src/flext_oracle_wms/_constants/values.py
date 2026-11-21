@@ -81,6 +81,18 @@ class FlextOracleWmsConstantsValues:
             NOT_IN = "not_in"
             CONTAINS = "contains"
 
+        ORDERING_SYMBOLS: ClassVar[Mapping[WmsFilterOperator, str]] = MappingProxyType({
+            WmsFilterOperator.GT: ">",
+            WmsFilterOperator.LT: "<",
+            WmsFilterOperator.GTE: ">=",
+            WmsFilterOperator.LTE: "<=",
+        })
+        NULL_MATCHING_OPERATORS: ClassVar[frozenset[WmsFilterOperator]] = frozenset({
+            WmsFilterOperator.EQ,
+            WmsFilterOperator.GTE,
+            WmsFilterOperator.LTE,
+        })
+
         @unique
         class OracleWMSAuthMethod(StrEnum):
             """Auth methods.

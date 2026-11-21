@@ -20,30 +20,18 @@ class FlextOracleWmsTypesDomain:
 
     type FilterScalar = FlextApiTypes.Scalar | None
     type FilterList = Sequence[FilterScalar]
-    type FilterEntry = (
-        FilterScalar | FilterList | m.OracleWms.FlextOracleWmsOperatorFilter
-    )
+    type FilterValues = FilterScalar | FilterList
+    type FilterEntry = FilterValues | m.OracleWms.FlextOracleWmsOperatorFilter
     type FilterRecordValue = (
-        FilterScalar
-        | FilterList
+        FilterValues
         | Mapping[
             str,
-            FilterScalar
-            | FilterList
-            | Mapping[
-                str,
-                FilterScalar | FilterList,
-            ],
+            FilterValues | Mapping[str, FilterValues],
         ]
     )
     type FilterRecord = Mapping[
         str,
-        FilterScalar
-        | FilterList
-        | Mapping[
-            str,
-            FilterScalar | FilterList,
-        ],
+        FilterValues | Mapping[str, FilterValues],
     ]
     # Same recursive union as ``FilterRecordValue`` — one owner defines the
     # filter-value shape; this name re-exports it.
