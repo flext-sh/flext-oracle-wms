@@ -15,58 +15,53 @@ from typing import ClassVar
 
 from flext_tests import FlextTestsConstants
 
-from flext_oracle_wms import FlextOracleWmsConstants
+from tests import FlextOracleWmsConstants
 
 
 class TestsFlextOracleWmsConstants(FlextTestsConstants, FlextOracleWmsConstants):
     """Test constants for flext-oracle-wms."""
 
-    class OracleWms(FlextOracleWmsConstants.OracleWms):
-        """Oracle WMS domain test constants namespace."""
+    class Tests(FlextTestsConstants.Tests):
+        """Oracle WMS-specific test constants."""
 
-        class Tests(FlextTestsConstants.Tests):
-            """Oracle WMS-specific test constants."""
+        @unique
+        class Categories(StrEnum):
+            """Oracle WMS API category classifications."""
 
-            @unique
-            class Categories(StrEnum):
-                """Oracle WMS API category classifications."""
+            DATA_EXTRACT = "data_extract"
+            ENTITY_OPERATIONS = "entity_operations"
+            SETUP_TRANSACTIONAL = "setup_transactional"
+            AUTOMATION_OPERATIONS = "automation_operations"
 
-                DATA_EXTRACT = "data_extract"
-                ENTITY_OPERATIONS = "entity_operations"
-                SETUP_TRANSACTIONAL = "setup_transactional"
-                AUTOMATION_OPERATIONS = "automation_operations"
+        API_VERSION_LGF_V10: ClassVar[str] = "LGF_V10"
+        "Oracle WMS LGF API version 10 identifier."
 
-            API_VERSION_LGF_V10: ClassVar[str] = "LGF_V10"
-            "Oracle WMS LGF API version 10 identifier."
-
-            BASIC_USERNAME: ClassVar[str] = "test_user"
-            "Canonical BASIC username used across authentication tests."
-            BASIC_PASSWORD: ClassVar[str] = f"{BASIC_USERNAME}-basic-credential"
-            "Fixed deterministic BASIC password used across authentication tests."
-            BASIC_TOKEN: ClassVar[str] = base64.b64encode(
-                f"{BASIC_USERNAME}:{BASIC_PASSWORD}".encode(),
-            ).decode("ascii")
-            "Base64 BASIC token of the canonical username and password."
-            WMS_PASSWORD: ClassVar[str] = f"{BASIC_USERNAME}-wms-credential"
-            "Fixed deterministic password for WMS-specific client tests."
-            WMS_PASSWORD_UNDERSCORE: ClassVar[str] = f"{BASIC_USERNAME}_wms_credential"
-            "Second fixed deterministic password for WMS-specific client tests."
-            TEST_PASS: ClassVar[str] = f"{BASIC_USERNAME}-test-pass"
-            "Fixed deterministic password for client settings tests."
-            CUSTOM_PASSWORD: ClassVar[str] = f"{BASIC_USERNAME}-custom-credential"
-            "Fixed deterministic password for settings-resolution tests."
-            SHORT_PASSWORD: ClassVar[str] = f"{BASIC_USERNAME}-short"
-            "Fixed deterministic password for unsupported-method tests."
-            GENERIC_SECRET: ClassVar[str] = f"{BASIC_USERNAME}-client-secret"
-            "Fixed deterministic client secret for OAuth2 client-secret tests."
-            OAUTH_SECRET: ClassVar[str] = f"{BASIC_USERNAME}-oauth-secret"
-            "Fixed deterministic canonical OAuth2 client secret."
-            OAUTH_SECRET_DASHED: ClassVar[str] = f"{BASIC_USERNAME}-oauth-secret-dashed"
-            "Fixed deterministic second OAuth2 client secret."
-            OAUTH_SECRET_NUMERIC: ClassVar[str] = (
-                f"{BASIC_USERNAME}-oauth-secret-numeric"
-            )
-            "Fixed deterministic third OAuth2 client secret."
+        BASIC_USERNAME: ClassVar[str] = "test_user"
+        "Canonical BASIC username used across authentication tests."
+        BASIC_PASSWORD: ClassVar[str] = f"{BASIC_USERNAME}-basic-credential"
+        "Fixed deterministic BASIC password used across authentication tests."
+        BASIC_TOKEN: ClassVar[str] = base64.b64encode(
+            f"{BASIC_USERNAME}:{BASIC_PASSWORD}".encode(),
+        ).decode("ascii")
+        "Base64 BASIC token of the canonical username and password."
+        WMS_PASSWORD: ClassVar[str] = f"{BASIC_USERNAME}-wms-credential"
+        "Fixed deterministic password for WMS-specific client tests."
+        WMS_PASSWORD_UNDERSCORE: ClassVar[str] = f"{BASIC_USERNAME}_wms_credential"
+        "Second fixed deterministic password for WMS-specific client tests."
+        TEST_PASS: ClassVar[str] = f"{BASIC_USERNAME}-test-pass"
+        "Fixed deterministic password for client settings tests."
+        CUSTOM_PASSWORD: ClassVar[str] = f"{BASIC_USERNAME}-custom-credential"
+        "Fixed deterministic password for settings-resolution tests."
+        SHORT_PASSWORD: ClassVar[str] = f"{BASIC_USERNAME}-short"
+        "Fixed deterministic password for unsupported-method tests."
+        GENERIC_SECRET: ClassVar[str] = f"{BASIC_USERNAME}-client-secret"
+        "Fixed deterministic client secret for OAuth2 client-secret tests."
+        OAUTH_SECRET: ClassVar[str] = f"{BASIC_USERNAME}-oauth-secret"
+        "Fixed deterministic canonical OAuth2 client secret."
+        OAUTH_SECRET_DASHED: ClassVar[str] = f"{BASIC_USERNAME}-oauth-secret-dashed"
+        "Fixed deterministic second OAuth2 client secret."
+        OAUTH_SECRET_NUMERIC: ClassVar[str] = f"{BASIC_USERNAME}-oauth-secret-numeric"
+        "Fixed deterministic third OAuth2 client secret."
 
 
 c = TestsFlextOracleWmsConstants

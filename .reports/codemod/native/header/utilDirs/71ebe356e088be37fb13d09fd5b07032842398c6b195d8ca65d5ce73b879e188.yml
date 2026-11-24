@@ -1,0 +1,1 @@
+{"id":"exports--flext_oracle_wms._constants","language":"Python","rule":{"regex":"^(?:FlextOracleWmsConstantsBase|FlextOracleWmsConstantsValues)$"}}

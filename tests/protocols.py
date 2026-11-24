@@ -11,17 +11,14 @@ from __future__ import annotations
 
 from flext_tests import FlextTestsProtocols
 
-from flext_oracle_wms import FlextOracleWmsProtocols
+from tests import FlextOracleWmsProtocols
 
 
-class TestsFlextOracleWmsProtocols(FlextTestsProtocols):
+class TestsFlextOracleWmsProtocols(FlextTestsProtocols, FlextOracleWmsProtocols):
     """Test protocols combining TestsFlextProtocols and p."""
 
-    class OracleWms(FlextOracleWmsProtocols.OracleWms):
-        """OracleWms test protocols namespace."""
-
-        class Tests:
-            """OracleWms-specific test protocols."""
+    class Tests(FlextTestsProtocols.Tests):
+        """OracleWms-specific test protocols."""
 
 
 p = TestsFlextOracleWmsProtocols

@@ -17,8 +17,7 @@ from __future__ import annotations
 
 import pytest
 
-from flext_oracle_wms import FlextOracleWmsSettings, m
-from tests import c, tm, u
+from tests import FlextOracleWmsSettings, c, m, tm, u
 
 
 @pytest.mark.unit
@@ -101,7 +100,7 @@ class TestsFlextOracleWmsClientCore:
         auth = m.OracleWms.AuthSettings(
             method="basic",
             username="wms_user",
-            password=c.OracleWms.Tests.WMS_PASSWORD_UNDERSCORE,
+            password=c.Tests.WMS_PASSWORD_UNDERSCORE,
         )
         result = u.OracleWms.Client.from_auth_settings(auth)
         tm.ok(result)
@@ -113,7 +112,7 @@ class TestsFlextOracleWmsClientCore:
         auth = m.OracleWms.AuthSettings(
             method="oauth2",
             oauth2_client_id="client-id",
-            oauth2_client_secret=c.OracleWms.Tests.OAUTH_SECRET_DASHED,
+            oauth2_client_secret=c.Tests.OAUTH_SECRET_DASHED,
         )
         result = u.OracleWms.Client.from_auth_settings(auth)
         tm.fail(result)

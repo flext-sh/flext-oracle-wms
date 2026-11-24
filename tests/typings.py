@@ -13,23 +13,20 @@ from typing import TYPE_CHECKING
 
 from flext_tests import FlextTestsTypes
 
-from flext_oracle_wms import FlextOracleWmsTypes
+from tests import FlextOracleWmsTypes
 
 if TYPE_CHECKING:
-    from flext_oracle_wms import FlextOracleWmsUtilities
+    from tests import FlextOracleWmsUtilities
 
 
-class TestsFlextOracleWmsTypes(FlextTestsTypes):
+class TestsFlextOracleWmsTypes(FlextTestsTypes, FlextOracleWmsTypes):
     """Test types combining TestsFlextTypes with flext-oracle-wms types."""
 
-    class OracleWms(FlextOracleWmsTypes.OracleWms):
-        """Oracle WMS domain test type aliases."""
+    class Tests(FlextTestsTypes.Tests):
+        """Oracle WMS-specific test type aliases."""
 
-        class Tests(FlextTestsTypes.Tests):
-            """Oracle WMS-specific test type aliases."""
-
-            type Client = FlextOracleWmsUtilities.OracleWms.Client
-            type EnvConfig = FlextOracleWmsTypes.MetadataMapping
+        type Client = FlextOracleWmsUtilities.OracleWms.Client
+        type EnvConfig = FlextOracleWmsTypes.MetadataMapping
 
 
 t = TestsFlextOracleWmsTypes

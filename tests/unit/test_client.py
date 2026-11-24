@@ -12,8 +12,7 @@ from __future__ import annotations
 
 import pytest
 
-from flext_oracle_wms import FlextOracleWmsSettings, m, u
-from tests import c, tm
+from tests import FlextOracleWmsSettings, c, m, tm, u
 
 
 class TestsFlextOracleWmsClient:
@@ -32,7 +31,7 @@ class TestsFlextOracleWmsClient:
             "OracleWms": {
                 "base_url": "https://test.wms.com",
                 "username": "test_user",
-                "password": c.OracleWms.Tests.TEST_PASS,
+                "password": c.Tests.TEST_PASS,
                 "timeout": 30,
             },
         })
@@ -57,7 +56,7 @@ class TestsFlextOracleWmsClient:
             "OracleWms": {
                 "base_url": "https://custom.wms.com",
                 "username": "custom_user",
-                "password": c.OracleWms.Tests.CUSTOM_PASSWORD,
+                "password": c.Tests.CUSTOM_PASSWORD,
                 "timeout": 60,
                 "retry_attempts": 5,
             },
@@ -123,7 +122,7 @@ class TestsFlextOracleWmsClient:
         auth = m.OracleWms.AuthSettings(
             method="basic",
             username="alice",
-            password=c.OracleWms.Tests.GENERIC_SECRET,
+            password=c.Tests.GENERIC_SECRET,
         )
 
         result = u.OracleWms.Client.from_auth_settings(auth)
@@ -132,7 +131,7 @@ class TestsFlextOracleWmsClient:
         client = result.unwrap()
         tm.that(client, is_=u.OracleWms.Client)
         tm.that(client.settings.OracleWms.username, eq="alice")
-        tm.that(client.settings.OracleWms.password, eq=c.OracleWms.Tests.GENERIC_SECRET)
+        tm.that(client.settings.OracleWms.password, eq=c.Tests.GENERIC_SECRET)
 
     @staticmethod
     def test_from_auth_settings_basic_missing_credentials_fails() -> None:
@@ -151,7 +150,7 @@ class TestsFlextOracleWmsClient:
         auth = m.OracleWms.AuthSettings(
             method="oauth2",
             oauth2_client_id="client-id",
-            oauth2_client_secret=c.OracleWms.Tests.OAUTH_SECRET_DASHED,
+            oauth2_client_secret=c.Tests.OAUTH_SECRET_DASHED,
         )
 
         result = u.OracleWms.Client.from_auth_settings(auth)
@@ -166,7 +165,7 @@ class TestsFlextOracleWmsClient:
         auth = m.OracleWms.AuthSettings(
             method="kerberos",
             username="bob",
-            password=c.OracleWms.Tests.SHORT_PASSWORD,
+            password=c.Tests.SHORT_PASSWORD,
         )
 
         result = u.OracleWms.Client.from_auth_settings(auth)
