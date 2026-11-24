@@ -21,11 +21,6 @@ from flext_oracle_wms._utilities import (
 
 class FlextOracleWmsUtilities(
     FlextApiUtilities,
-    FlextOracleWmsUtilitiesAuth,
-    FlextOracleWmsUtilitiesClient,
-    FlextOracleWmsUtilitiesDiscovery,
-    FlextOracleWmsUtilitiesFiltering,
-    FlextOracleWmsUtilitiesHttpClient,
 ):
     """Oracle WMS utilities composing all domain-specific utility mixins via MRO."""
 
