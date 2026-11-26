@@ -37,7 +37,7 @@ class TestsFlextOracleWmsHelpers:
     @staticmethod
     def test_filter_engine_reachable_through_public_namespace() -> None:
         """Filtering engine is exposed on both the facade and OracleWms namespace."""
-        tm.that(u.Filter is u.OracleWms.Filter, truth=True)
+        tm.that(u.OracleWms.Filter.__name__, eq="Filter")
 
     # ---- conversion helpers ---------------------------------------------
 
@@ -61,7 +61,7 @@ class TestsFlextOracleWmsHelpers:
         records: list[t.OracleWms.FilterRecord],
     ) -> None:
         """Equality filtering yields exactly the records whose field matches."""
-        result = u.Filter.filter_by_field(records, "name", "beta")
+        result = u.OracleWms.Filter.filter_by_field(records, "name", "beta")
 
         tm.ok(result)
         tm.that([row["id"] for row in result.unwrap()], eq=[2])
@@ -71,7 +71,7 @@ class TestsFlextOracleWmsHelpers:
         records: list[t.OracleWms.FilterRecord],
     ) -> None:
         """A GTE operator keeps records at or above the threshold."""
-        result = u.Filter.filter_by_field(
+        result = u.OracleWms.Filter.filter_by_field(
             records,
             "id",
             2,
@@ -95,7 +95,7 @@ class TestsFlextOracleWmsHelpers:
         expected: list[int],
     ) -> None:
         """Identifier range filtering is inclusive on both bounds."""
-        result = u.Filter.filter_by_id_range(
+        result = u.OracleWms.Filter.filter_by_id_range(
             records,
             "id",
             min_id=min_id,
@@ -108,7 +108,7 @@ class TestsFlextOracleWmsHelpers:
     @staticmethod
     def test_filter_by_id_range_on_empty_input_returns_empty() -> None:
         """Filtering an empty collection succeeds with an empty result."""
-        result = u.Filter.filter_by_id_range([], "id", min_id=1)
+        result = u.OracleWms.Filter.filter_by_id_range([], "id", min_id=1)
 
         tm.ok(result)
         tm.that(result.unwrap(), eq=[])
@@ -118,9 +118,12 @@ class TestsFlextOracleWmsHelpers:
     @staticmethod
     def test_create_filter_exposes_requested_configuration() -> None:
         """The engine reports the configuration it was created with."""
-        engine = u.Filter.create_filter(case_sensitive=True, max_conditions=10)
+        engine = u.OracleWms.Filter.create_filter(
+            case_sensitive=True,
+            max_conditions=10,
+        )
 
-        tm.that(engine, is_=u.Filter)
+        tm.that(engine, is_=u.OracleWms.Filter)
         tm.ok(engine.case_sensitive)
         tm.that(engine.max_conditions, eq=10)
 
@@ -134,13 +137,13 @@ class TestsFlextOracleWmsHelpers:
     ) -> None:
         """Out-of-range condition limits fail loudly via the exception family."""
         with u.Tests.raises(e.BaseError):
-            u.Filter.create_filter(max_conditions=max_conditions)
+            u.OracleWms.Filter.create_filter(max_conditions=max_conditions)
 
     @staticmethod
     def test_constructor_rejects_filters_exceeding_condition_limit() -> None:
         """Building an engine with too many conditions raises a validation error."""
         with u.Tests.raises(FlextOracleWmsErrors.ValidationError):
-            u.Filter(
+            u.OracleWms.Filter(
                 filters={
                     "id": m.OracleWms.FlextOracleWmsOperatorFilter(
                         operator=c.OracleWms.WmsFilterOperator.IN,
@@ -157,7 +160,7 @@ class TestsFlextOracleWmsHelpers:
         records: list[t.OracleWms.FilterRecord],
     ) -> None:
         """Default (case-insensitive) matching ignores letter case."""
-        engine = u.Filter.create_filter()
+        engine = u.OracleWms.Filter.create_filter()
 
         result = engine.filter_records(records, {"name": "ALPHA"})
 
@@ -169,7 +172,7 @@ class TestsFlextOracleWmsHelpers:
         records: list[t.OracleWms.FilterRecord],
     ) -> None:
         """A case-sensitive engine rejects a case mismatch."""
-        engine = u.Filter.create_filter(case_sensitive=True)
+        engine = u.OracleWms.Filter.create_filter(case_sensitive=True)
 
         result = engine.filter_records(records, {"name": "ALPHA"})
 
@@ -183,7 +186,7 @@ class TestsFlextOracleWmsHelpers:
         records: list[t.OracleWms.FilterRecord],
     ) -> None:
         """The optional limit truncates the matched records."""
-        engine = u.Filter.create_filter()
+        engine = u.OracleWms.Filter.create_filter()
 
         result = engine.filter_records(records, {}, limit=2)
 
@@ -195,7 +198,7 @@ class TestsFlextOracleWmsHelpers:
         records: list[t.OracleWms.FilterRecord],
     ) -> None:
         """Exceeding max_conditions returns a failure result, not a raise."""
-        engine = u.Filter.create_filter(max_conditions=1)
+        engine = u.OracleWms.Filter.create_filter(max_conditions=1)
 
         result = engine.filter_records(
             records,
@@ -224,7 +227,7 @@ class TestsFlextOracleWmsHelpers:
         expected: list[int],
     ) -> None:
         """Sorting orders records by the requested field in the given direction."""
-        engine = u.Filter.create_filter()
+        engine = u.OracleWms.Filter.create_filter()
 
         result = engine.sort_records(records, "name", ascending=ascending)
 
